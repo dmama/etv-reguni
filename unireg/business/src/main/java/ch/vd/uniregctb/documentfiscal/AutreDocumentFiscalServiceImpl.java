@@ -140,7 +140,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 	@Override
 	public EnvoiFormulairesDemandeDegrevementICIResults envoyerFormulairesDemandeDegrevementICIEnMasse(RegDate dateTraitement, int nbThreads, @Nullable Integer nbMaxEnvois, StatusManager statusManager) {
-		final EnvoiFormulairesDemandeDegrevementICIProcessor processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(parametreAppService, transactionManager, this, hibernateTemplate, tiersService);
+		final EnvoiFormulairesDemandeDegrevementICIProcessor processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(parametreAppService, transactionManager, this, hibernateTemplate, tiersService, registreFoncierService);
 		return processor.run(nbThreads, nbMaxEnvois, dateTraitement, statusManager);
 	}
 

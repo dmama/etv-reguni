@@ -14,6 +14,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
@@ -31,7 +32,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 		super.runOnSetUp();
 
 		final RapprochementRFDAO rapprochementRFDAO = getBean(RapprochementRFDAO.class, "rapprochementRFDAO");
-		processor = new InitialisationIFoncProcessor(transactionManager, hibernateTemplate, rapprochementRFDAO);
+		final RegistreFoncierService registreFoncierService = getBean(RegistreFoncierService.class, "serviceRF");
+		processor = new InitialisationIFoncProcessor(transactionManager, hibernateTemplate, rapprochementRFDAO, registreFoncierService);
 	}
 
 	@Test

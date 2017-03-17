@@ -2,18 +2,22 @@ package ch.vd.uniregctb.registrefoncier;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -371,4 +375,117 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testGetCommune() throws Exception {
+		// mise en place fiscale
+		final long idImmeuble = doInNewTransactionAndSession(status -> {
+			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
+			final BienFondRF immeuble = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			return immeuble.getId();
+		});
+
+		// interrogation du service
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
+				Assert.assertNotNull(immeuble);
+
+				final Set<SituationRF> allSituations = immeuble.getSituations();
+				Assert.assertNotNull(allSituations);
+				Assert.assertEquals(1, allSituations.size());
+				final SituationRF situation = allSituations.iterator().next();
+				Assert.assertNotNull(situation);
+				Assert.assertEquals(date(2000, 1, 1), situation.getDateDebut());
+				Assert.assertNull(situation.getDateFin());
+
+				// avant la date de début de la situation
+				final Commune commune1990 = serviceRF.getCommune(immeuble, date(1990, 1, 1));
+				Assert.assertNotNull(commune1990);
+				Assert.assertEquals(MockCommune.Echallens.getNoOFS(), commune1990.getNoOFS());
+
+				// après la date de début
+				final Commune commune2001 = serviceRF.getCommune(immeuble, date(2001, 1, 1));
+				Assert.assertNotNull(commune2001);
+				Assert.assertSame(commune1990, commune2001);
+			}
+		});
+	}
+
+	@Test
+	public void testNumeroParcelleComplet() throws Exception {
+		// mise en place fiscale
+		final long idImmeuble = doInNewTransactionAndSession(status -> {
+			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
+			final BienFondRF immeuble = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			return immeuble.getId();
+		});
+
+		// interrogation du service
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
+				Assert.assertNotNull(immeuble);
+
+				final Set<SituationRF> allSituations = immeuble.getSituations();
+				Assert.assertNotNull(allSituations);
+				Assert.assertEquals(1, allSituations.size());
+				final SituationRF situation = allSituations.iterator().next();
+				Assert.assertNotNull(situation);
+				Assert.assertEquals(date(2000, 1, 1), situation.getDateDebut());
+				Assert.assertNull(situation.getDateFin());
+
+				// avant la date de début de la situation
+				final String noParcelle1990 = serviceRF.getNumeroParcelleComplet(immeuble, date(1990, 1, 1));
+				Assert.assertNotNull(noParcelle1990);
+				Assert.assertEquals("4514-4-2-1", noParcelle1990);
+
+				// après la date de début
+				final String noParcelle2001 = serviceRF.getNumeroParcelleComplet(immeuble, date(2001, 1, 1));
+				Assert.assertNotNull(noParcelle2001);
+				Assert.assertEquals("4514-4-2-1", noParcelle2001);
+			}
+		});
+	}
+
+	@Test
+	public void testGetSituation() throws Exception {
+
+		// mise en place fiscale
+		final long idImmeuble = doInNewTransactionAndSession(status -> {
+			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
+			final BienFondRF immeuble = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			return immeuble.getId();
+		});
+
+		// interrogation du service
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final ImmeubleRF immeuble = hibernateTemplate.get(ImmeubleRF.class, idImmeuble);
+				Assert.assertNotNull(immeuble);
+
+				final Set<SituationRF> allSituations = immeuble.getSituations();
+				Assert.assertNotNull(allSituations);
+				Assert.assertEquals(1, allSituations.size());
+				final SituationRF situation = allSituations.iterator().next();
+				Assert.assertNotNull(situation);
+				Assert.assertEquals(date(2000, 1, 1), situation.getDateDebut());
+				Assert.assertNull(situation.getDateFin());
+
+				// avant la date de début de la situation
+				final SituationRF situ1990 = serviceRF.getSituation(immeuble, date(1990, 1, 1));
+				Assert.assertNotNull(situ1990);
+				Assert.assertSame(situation, situ1990);
+
+				// après la date de début
+				final SituationRF situ2001 = serviceRF.getSituation(immeuble, date(2001, 1, 1));
+				Assert.assertNotNull(situ2001);
+				Assert.assertSame(situation, situ2001);
+			}
+		});
+	}
+
 }

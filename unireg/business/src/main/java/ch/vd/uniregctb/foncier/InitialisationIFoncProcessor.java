@@ -32,6 +32,7 @@ import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -46,11 +47,13 @@ public class InitialisationIFoncProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
 	private final RapprochementRFDAO rapprochementRFDAO;
+	private final RegistreFoncierService registreFoncierService;
 
-	public InitialisationIFoncProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, RapprochementRFDAO rapprochementRFDAO) {
+	public InitialisationIFoncProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, RapprochementRFDAO rapprochementRFDAO, RegistreFoncierService registreFoncierService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.rapprochementRFDAO = rapprochementRFDAO;
+		this.registreFoncierService = registreFoncierService;
 	}
 
 	public InitialisationIFoncResults run(RegDate dateReference, int nbThreads, StatusManager s) {
@@ -147,11 +150,7 @@ public class InitialisationIFoncProcessor {
 
 	@Nullable
 	private SituationRF getSituationValide(ImmeubleRF immeuble, RegDate dateReference) {
-		return immeuble.getSituations().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(situation -> situation.isValidAt(dateReference))
-				.findFirst()
-				.orElse(null);
+		return registreFoncierService.getSituation(immeuble, dateReference);
 	}
 
 	private static class InfoDroit implements DateRange {

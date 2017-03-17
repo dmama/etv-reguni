@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.foncier;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,8 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
@@ -19,6 +16,7 @@ import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -30,6 +28,8 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 	public final RegDate dateTraitement;
 	public final RegDate dateSeuilMutationRF;
 
+	private final RegistreFoncierService registreFoncierService;
+
 	private final List<DemandeDegrevementEnvoyee> envois = new LinkedList<>();
 	private final List<DemandeDegrevementNonEnvoyee> ignores = new LinkedList<>();
 	private final List<Erreur> erreurs = new LinkedList<>();
@@ -37,11 +37,12 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 	private int nbDroitsIgnores = 0;
 	private boolean wasInterrupted = false;
 
-	public EnvoiFormulairesDemandeDegrevementICIResults(int nbThreads, Integer nbMaxEnvois, RegDate dateTraitement, RegDate dateSeuilMutationRF) {
+	public EnvoiFormulairesDemandeDegrevementICIResults(int nbThreads, Integer nbMaxEnvois, RegDate dateTraitement, RegDate dateSeuilMutationRF, RegistreFoncierService registreFoncierService) {
 		this.nbThreads = nbThreads;
 		this.nbMaxEnvois = nbMaxEnvois;
 		this.dateTraitement = dateTraitement;
 		this.dateSeuilMutationRF = dateSeuilMutationRF;
+		this.registreFoncierService = registreFoncierService;
 	}
 
 	/**
@@ -115,7 +116,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		}
 	}
 
-	public static abstract class OutputInfoBaseAvecImmeuble<T extends OutputInfoBaseAvecImmeuble<T>> extends OutputInfoBase<T> {
+	public abstract class OutputInfoBaseAvecImmeuble<T extends OutputInfoBaseAvecImmeuble<T>> extends OutputInfoBase<T> {
 		public final Long idImmeuble;
 		public final String nomCommune;
 		public final Integer noOfsCommune;
@@ -132,9 +133,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 			super(noContribuable);
 			this.idImmeuble = Optional.ofNullable(immeuble).map(ImmeubleRF::getId).orElse(null);
 
-			final Optional<SituationRF> situation = Optional.ofNullable(immeuble).map(ImmeubleRF::getSituations).orElseGet(Collections::emptySet).stream()
-					.filter(sit -> RegDateHelper.isBeforeOrEqual(sit.getDateDebut(), dateTraitement, NullDateBehavior.EARLIEST))
-					.max(DateRangeComparator::compareRanges);
+			final Optional<SituationRF> situation = Optional.ofNullable(immeuble).map(i -> registreFoncierService.getSituation(i, dateTraitement));
 			this.nomCommune = situation.map(SituationRF::getCommune).map(CommuneRF::getNomRf).orElse(null);
 			this.noOfsCommune = situation.map(SituationRF::getCommune).map(CommuneRF::getNoOfs).orElse(null);
 			this.noParcelle = situation.map(SituationRF::getNoParcelle).orElse(null);
@@ -144,7 +143,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		}
 	}
 
-	public static final class DemandeDegrevementEnvoyee extends OutputInfoBaseAvecImmeuble<DemandeDegrevementEnvoyee> {
+	public final class DemandeDegrevementEnvoyee extends OutputInfoBaseAvecImmeuble<DemandeDegrevementEnvoyee> {
 		public final int periodeFiscale;
 
 		public DemandeDegrevementEnvoyee(Tiers contribuable, ImmeubleRF immeuble, RegDate dateTraitement, int periodeFiscale) {
@@ -184,7 +183,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		}
 	}
 
-	public static final class DemandeDegrevementNonEnvoyee extends OutputInfoBaseAvecImmeuble<DemandeDegrevementNonEnvoyee> {
+	public final class DemandeDegrevementNonEnvoyee extends OutputInfoBaseAvecImmeuble<DemandeDegrevementNonEnvoyee> {
 		public final RaisonIgnorance raison;
 		public final String messageAdditionnel;
 
@@ -204,7 +203,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		}
 	}
 
-	public static final class Erreur extends OutputInfoBaseAvecImmeuble<Erreur> {
+	public final class Erreur extends OutputInfoBaseAvecImmeuble<Erreur> {
 		public final String msg;
 		public Erreur(long noContribuable, RegDate dateTraitement, Exception e) {
 			super(noContribuable, null, dateTraitement);
