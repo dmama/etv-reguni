@@ -121,10 +121,7 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 	}
 
 	static String getTypeImmeuble(ImmeubleRF immeuble) {
-		return Optional.of(immeuble)
-				.map(Object::getClass)
-				.map(TYPES_IMMEUBLE::get)
-				.orElse(null);
+		return TYPES_IMMEUBLE.get(immeuble.getClass());
 	}
 
 	private String getSiegeEntreprise(Entreprise entreprise, RegDate dateReference) {

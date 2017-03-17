@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -545,9 +544,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		int start = 0;
 		while (matcher.find()) {
 			final String varName = matcher.group(1);
-			final String replacement = Optional.of(varName)
-					.map(replacements::get)
-					.orElse(StringUtils.EMPTY);
+			final String replacement = replacements.getOrDefault(varName, StringUtils.EMPTY);
 			b.append(url.substring(start, matcher.start()));
 			b.append(replacement);
 			start = matcher.end();

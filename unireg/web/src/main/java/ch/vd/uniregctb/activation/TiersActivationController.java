@@ -220,7 +220,7 @@ public class TiersActivationController implements MessageSourceAware {
 
 		String searchError = null;
 		try {
-			final Predicate<? super TiersIndexedDataView> filter = Optional.of(mode).map(RESULT_FILTERS::get).orElse(x -> true);
+			final Predicate<? super TiersIndexedDataView> filter = RESULT_FILTERS.getOrDefault(mode, x -> true);
 			final List<TiersIndexedDataView> results = searchTiers(view).stream()
 					.filter(filter)
 					.collect(Collectors.toList());
