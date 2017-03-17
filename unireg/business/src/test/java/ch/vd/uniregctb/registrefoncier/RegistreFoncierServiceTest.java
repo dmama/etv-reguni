@@ -79,11 +79,11 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
 
-			addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null,
+			addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null,
 			                           "48390a0e044", new IdentifiantAffaireRF(123, 2004, 202, 3),
 			                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble0, null);
 
-			addDroitPersonnePhysiqueRF(RegDate.get(1997, 10, 7), RegDate.get(1997, 7, 2), RegDate.get(2010, 2, 23), "Achat", "Achat",
+			addDroitPersonnePhysiqueRF(RegDate.get(1997, 10, 7), RegDate.get(1997, 7, 2), RegDate.get(2010, 2, 23), RegDate.get(2010, 2, 20), "Achat", "Achat",
 			                           "47e7d7e773", new IdentifiantAffaireRF(23, 1997, 13, 0),
 			                           new Fraction(1, 3), GenrePropriete.COPROPRIETE, tiersRF, immeuble1, null);
 
@@ -109,6 +109,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(RegDate.get(1997, 10, 7), droit0.getDateDebut());
 				assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutMetier());
 				assertEquals(RegDate.get(2010, 2, 23), droit0.getDateFin());
+				assertEquals(RegDate.get(2010, 2, 20), droit0.getDateFinMetier());
 				assertEquals("Achat", droit0.getMotifDebut());
 				assertEquals("Achat", droit0.getMotifFin());
 				assertEquals(new IdentifiantAffaireRF(23, 1997, 13, 0), droit0.getNumeroAffaire());
@@ -122,6 +123,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
 				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
 				assertNull(droit1.getDateFin());
+				assertNull(droit1.getDateFinMetier());
 				assertEquals("Achat", droit1.getMotifDebut());
 				assertNull(droit1.getMotifFin());
 				assertEquals(new IdentifiantAffaireRF(123, 2004, 202, 3), droit1.getNumeroAffaire());

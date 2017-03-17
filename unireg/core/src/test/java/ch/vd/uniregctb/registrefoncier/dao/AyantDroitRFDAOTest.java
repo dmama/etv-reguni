@@ -86,9 +86,9 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 			ids.immeuble = immeuble.getId();
 
 			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 1995, 23, 3);
-			addDroitCommunauteRF(dateAchat, dateAchat, null, "Achat", null, "48234923829", numeroAffaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communauteRF, immeuble);
-			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, "Achat", null, "47840038", numeroAffaire, new Fraction(1, 2), GenrePropriete.COMMUNE, arnoldRf, immeuble, communauteRF);
-			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, "Achat", null, "84893923", numeroAffaire, new Fraction(1, 2), GenrePropriete.COMMUNE, evelyneRf, immeuble, communauteRF);
+			addDroitCommunauteRF(dateAchat, dateAchat, null, null, "Achat", null, "48234923829", numeroAffaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communauteRF, immeuble);
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, null, "Achat", null, "47840038", numeroAffaire, new Fraction(1, 2), GenrePropriete.COMMUNE, arnoldRf, immeuble, communauteRF);
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, null, "Achat", null, "84893923", numeroAffaire, new Fraction(1, 2), GenrePropriete.COMMUNE, evelyneRf, immeuble, communauteRF);
 
 			return null;
 		});
@@ -148,10 +148,10 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 			ids.immeuble = immeuble.getId();
 
 			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 1995, 23, 3);
-			addDroitCommunauteRF(dateAchat, dateAchat, null, "Achat", null, "48234923829", numeroAffaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communauteRF, immeuble);
-			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, "Achat", null, "47840038", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, arnoldRf, immeuble, communauteRF);
-			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, "Achat", null, "84893923", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, evelyneRf, immeuble, communauteRF);
-			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, "Achat", null, "3403892", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, totrRf, immeuble, communauteRF);
+			addDroitCommunauteRF(dateAchat, dateAchat, null, null, "Achat", null, "48234923829", numeroAffaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communauteRF, immeuble);
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, null, "Achat", null, "47840038", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, arnoldRf, immeuble, communauteRF);
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, null, "Achat", null, "84893923", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, evelyneRf, immeuble, communauteRF);
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, null, "Achat", null, "3403892", numeroAffaire, new Fraction(1, 3), GenrePropriete.COMMUNE, totrRf, immeuble, communauteRF);
 
 			return null;
 		});
@@ -195,12 +195,12 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 
 			// on crée un droit de propriété pour Arnold
 			final IdentifiantAffaireRF affaireAchat = new IdentifiantAffaireRF(123, 1995, 23, 3);
-			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, "Achat", null, "47840038",
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, null, "Achat", null, "47840038",
 			                           affaireAchat, new Fraction(1, 3), GenrePropriete.COMMUNE, arnoldRf, immeuble, null);
 
 			// on crée un usufruit pour Evelnye
 			final IdentifiantAffaireRF affaireUsfruit = new IdentifiantAffaireRF(7, 2000, 2, null);
-			addUsufruitRF(RegDate.get(2000, 1, 1), RegDate.get(2000, 1, 1), null, "Achat", null, "34898934",
+			addUsufruitRF(RegDate.get(2000, 1, 1), RegDate.get(2000, 1, 1), null, null, "Achat", null, "34898934",
 			              affaireUsfruit, new IdentifiantDroitRF(7, 2000, 121), evelyneRf, immeuble);
 			return null;
 		});
