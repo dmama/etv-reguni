@@ -314,10 +314,7 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 
 	@Nullable
 	static TypImmeuble getTypeImmeuble(ImmeubleRF immeuble) {
-		return Optional.of(immeuble)
-				.map(Object::getClass)
-				.map(TYPES_IMMEUBLE::get)
-				.orElse(null);
+		return TYPES_IMMEUBLE.get(immeuble.getClass());
 	}
 
 	@Nullable
