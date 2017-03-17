@@ -672,11 +672,11 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="cancellationDate" type="common:dateType">
+			<xs:element name="cancellationDate" type="common:dateType" minOccurs="0">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>Date de radiation métier de l'immeuble.</jxb:javadoc>
+							<jxb:javadoc>Date de radiation technique de l'immeuble.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
