@@ -110,6 +110,7 @@ public class TiersView {
 
 	private EntrepriseView entreprise;
 	private EtablissementView etablissement;
+	private String exceptionDonneesCiviles;
 
 	private List<RegimeFiscalView> regimesFiscauxVD;
 	private List<RegimeFiscalView> regimesFiscauxCH;
@@ -724,5 +725,13 @@ public class TiersView {
 
 	public void setCivilSousControleACI(boolean civilSousControleACI) {
 		this.civilSousControleACI = civilSousControleACI;
+	}
+
+	public String getExceptionDonneesCiviles() {
+		return exceptionDonneesCiviles;
+	}
+
+	public void setExceptionDonneesCiviles(String exceptionDonneesCiviles) {
+		this.exceptionDonneesCiviles = exceptionDonneesCiviles;
 	}
 }

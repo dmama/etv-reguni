@@ -33,6 +33,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
@@ -250,8 +251,13 @@ public class TiersManager implements MessageSourceAware {
 					debiteurView.setNumero(dpi.getNumero());
 					debiteurView.setCategorieImpotSource(dpi.getCategorieImpotSource());
 					debiteurView.setPersonneContact(dpi.getPersonneContact());
-					final List<String> nomCourrier = getAdresseService().getNomCourrier(dpi, null, false);
-					debiteurView.setNomCourrier(nomCourrier);
+					try {
+						final List<String> nomCourrier = getAdresseService().getNomCourrier(dpi, null, false);
+						debiteurView.setNomCourrier(nomCourrier);
+					}
+					catch (ServiceOrganisationException e) {
+						debiteurView.setNomCourrier(Collections.singletonList("<erreur lors de l'accès au service civil>"));
+					}
 					debiteursView.add(debiteurView);
 				}
 			}
@@ -766,10 +772,17 @@ public class TiersManager implements MessageSourceAware {
 
 		// L'ACI est-elle actuellement maîtresse des données civiles pour cette entreprise?
 		final Etablissement etablissementPrincipalActuel = tiersService.getEtablissementPrincipal(entreprise, null);
-		final boolean serviceIDEObligEtendues = serviceIDEService.isServiceIDEObligEtendues(entreprise, null);
-		tiersView.setCivilSousControleACI(serviceIDEObligEtendues);
+		try {
+			tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // OrganisationView
 
-		tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // OrganisationView
+			final boolean serviceIDEObligEtendues = serviceIDEService.isServiceIDEObligEtendues(entreprise, null);
+			tiersView.setCivilSousControleACI(serviceIDEObligEtendues);
+		}
+		catch (ServiceOrganisationException e) {
+			tiersView.setCivilSousControleACI(false);
+			tiersView.setExceptionDonneesCiviles(e.getMessage());
+		}
+
 	}
 
 	/**
@@ -777,7 +790,12 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected void setEtablissement(TiersView tiersView, Etablissement etb) {
 		tiersView.setTiers(Objects.requireNonNull(etb));
-		tiersView.setEtablissement(entrepriseService.getEtablissement(etb));
+		try {
+			tiersView.setEtablissement(entrepriseService.getEtablissement(etb));
+		}
+		catch (ServiceOrganisationException e) {
+			tiersView.setExceptionDonneesCiviles(e.getMessage());
+		}
 	}
 
 	/**

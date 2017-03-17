@@ -19,6 +19,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
@@ -208,7 +209,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				try {
 					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles((Etablissement) tiers, true));
 				}
-				catch (DonneesCivilesException e) {
+				catch (ServiceOrganisationException e) {
 					tiersVisuView.setExceptionAdresseCiviles(e.getMessage());
 				}
 			}
@@ -216,7 +217,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				try {
 					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles((Entreprise) tiers, true));
 				}
-				catch (DonneesCivilesException e) {
+				catch (ServiceOrganisationException e) {
 					tiersVisuView.setExceptionAdresseCiviles(e.getMessage());
 				}
 			}
