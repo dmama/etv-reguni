@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -11,7 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.Annulable;
@@ -165,14 +168,12 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Nullable
 	@Override
 	public Commune getCommune(ImmeubleRF immeuble, RegDate dateReference) {
-		return immeuble.getSituations().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(situation -> situation.isValidAt(dateReference))
+		final SituationRF situation = getSituation(immeuble, dateReference);
+		return Optional.ofNullable(situation)
 				.map(SituationRF::getCommune)
 				.map(CommuneRF::getNoOfs)
 				.map(ofs -> infraService.getCommuneByNumeroOfs(ofs, dateReference))
 				.filter(Objects::nonNull)           // au cas où le numéro de commune est inconnu de l'infrastructure (c'est possible), pour ne pas finir sur une NPE...
-				.findFirst()
 				.orElse(null);
 	}
 
@@ -190,12 +191,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Nullable
 	@Override
 	public String getNumeroParcelleComplet(ImmeubleRF immeuble, RegDate dateReference) {
-		final SituationRF situation = immeuble.getSituations().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(s -> s.isValidAt(dateReference))
-				.findFirst()
-				.orElse(null);
-
+		final SituationRF situation = getSituation(immeuble, dateReference);
 		if (situation != null) {
 			return StringUtils.trimToNull(Stream.of(situation.getNoParcelle(), situation.getIndex1(), situation.getIndex2(), situation.getIndex3())
 					                              .filter(Objects::nonNull)
@@ -205,5 +201,15 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		else {
 			return null;
 		}
+	}
+
+	@Nullable
+	@Override
+	public SituationRF getSituation(ImmeubleRF immeuble, RegDate dateReference) {
+		return immeuble.getSituations().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(s -> s.isValidAt(dateReference) || RegDateHelper.isBefore(dateReference, s.getDateDebut(), NullDateBehavior.EARLIEST))
+				.min(Comparator.comparing(SituationRF::getDateDebut, Comparator.nullsFirst(Comparator.naturalOrder())))
+				.orElse(null);
 	}
 }

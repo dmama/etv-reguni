@@ -94,4 +94,12 @@ public interface RegistreFoncierService {
 	 */
 	@Nullable
 	String getNumeroParcelleComplet(ImmeubleRF immeuble, RegDate dateReference);
+
+	/**
+	 * @param immeuble immeuble du RF
+	 * @param dateReference date de référence
+	 * @return la situation valide à la date de référence ou, en l'absence d'une telle situation, la première situation valide après la date de référence
+	 */
+	@Nullable
+	SituationRF getSituation(ImmeubleRF immeuble, RegDate dateReference);
 }

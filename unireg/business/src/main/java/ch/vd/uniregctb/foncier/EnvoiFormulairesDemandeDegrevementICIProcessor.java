@@ -49,6 +49,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -65,15 +66,17 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;
 	private final ParametreAppService parametreAppService;
+	private final RegistreFoncierService registreFoncierService;
 
 	public EnvoiFormulairesDemandeDegrevementICIProcessor(ParametreAppService parametreAppService, PlatformTransactionManager transactionManager,
 	                                                      AutreDocumentFiscalService autreDocumentFiscalService, HibernateTemplate hibernateTemplate,
-	                                                      TiersService tiersService) {
+	                                                      TiersService tiersService, RegistreFoncierService registreFoncierService) {
 		this.transactionManager = transactionManager;
 		this.autreDocumentFiscalService = autreDocumentFiscalService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.parametreAppService = parametreAppService;
+		this.registreFoncierService = registreFoncierService;
 	}
 
 	private RegDate getDateDebutPriseEnCompteMutationRF() {
@@ -91,7 +94,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 		final List<EnvoiFormulairesDemandeDegrevementICIResults.InformationDroitsContribuable> couples = findCouples(dateTraitement);
 
 		final RegDate dateSeuilMutationRF = getDateDebutPriseEnCompteMutationRF();
-		final EnvoiFormulairesDemandeDegrevementICIResults rapportFinal = new EnvoiFormulairesDemandeDegrevementICIResults(nbThreads, nbMaxEnvois, dateTraitement, dateSeuilMutationRF);
+		final EnvoiFormulairesDemandeDegrevementICIResults rapportFinal = new EnvoiFormulairesDemandeDegrevementICIResults(nbThreads, nbMaxEnvois, dateTraitement, dateSeuilMutationRF, registreFoncierService);
 		final ParallelBatchTransactionTemplateWithResults<EnvoiFormulairesDemandeDegrevementICIResults.InformationDroitsContribuable, EnvoiFormulairesDemandeDegrevementICIResults> template
 				= new ParallelBatchTransactionTemplateWithResults<>(couples,
 				                                                    BATCH_SIZE,
@@ -117,7 +120,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 
 			@Override
 			public EnvoiFormulairesDemandeDegrevementICIResults createSubRapport() {
-				return new EnvoiFormulairesDemandeDegrevementICIResults(nbThreads, nbMaxEnvois, dateTraitement, dateSeuilMutationRF);
+				return new EnvoiFormulairesDemandeDegrevementICIResults(nbThreads, nbMaxEnvois, dateTraitement, dateSeuilMutationRF, registreFoncierService);
 			}
 		}, progressMonitor);
 

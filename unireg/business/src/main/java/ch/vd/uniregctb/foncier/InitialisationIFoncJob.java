@@ -10,6 +10,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.InitialisationIFoncRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -31,6 +32,7 @@ public class InitialisationIFoncJob extends JobDefinition {
 	private RapportService rapportService;
 	private HibernateTemplate hibernateTemplate;
 	private RapprochementRFDAO rapprochementRFDAO;
+	private RegistreFoncierService registreFoncierService;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -46,6 +48,10 @@ public class InitialisationIFoncJob extends JobDefinition {
 
 	public void setRapprochementRFDAO(RapprochementRFDAO rapprochementRFDAO) {
 		this.rapprochementRFDAO = rapprochementRFDAO;
+	}
+
+	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
+		this.registreFoncierService = registreFoncierService;
 	}
 
 	public InitialisationIFoncJob(int sortOrder, String description) {
@@ -75,7 +81,7 @@ public class InitialisationIFoncJob extends JobDefinition {
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		final RegDate dateReference = getRegDateValue(params, DATE_PARAM);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS_PARAM);
-		final InitialisationIFoncProcessor processor = new InitialisationIFoncProcessor(transactionManager, hibernateTemplate, rapprochementRFDAO);
+		final InitialisationIFoncProcessor processor = new InitialisationIFoncProcessor(transactionManager, hibernateTemplate, rapprochementRFDAO, registreFoncierService);
 		final InitialisationIFoncResults results = processor.run(dateReference, nbThreads, getStatusManager());
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

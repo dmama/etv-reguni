@@ -34,6 +34,7 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -56,7 +57,8 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		super.runOnSetUp();
 		final AutreDocumentFiscalService autreDocumentFiscalService = getBean(AutreDocumentFiscalService.class, "autreDocumentFiscalService");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
-		processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(parametreAppService, transactionManager, autreDocumentFiscalService, hibernateTemplate, tiersService);
+		final RegistreFoncierService registreFoncierService = getBean(RegistreFoncierService.class, "serviceRF");
+		processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(parametreAppService, transactionManager, autreDocumentFiscalService, hibernateTemplate, tiersService, registreFoncierService);
 		delaisService = getBean(DelaisService.class, "delaisService");
 
 		oldValueDateDebutPriseEnCompteMutationRF = parametreAppService.getDateDebutPriseEnCompteModificationPourNouvelleDemandeDegrevementICI();

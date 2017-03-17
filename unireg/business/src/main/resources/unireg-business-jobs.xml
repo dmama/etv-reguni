@@ -611,6 +611,7 @@
 		<property name="rapportService" ref="rapportService"/>
 		<property name="rapprochementRFDAO" ref="rapprochementRFDAO"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
     <bean id="dumpDatabaseJob" parent="schedulerJob" class="ch.vd.uniregctb.database.DumpDatabaseJob">
