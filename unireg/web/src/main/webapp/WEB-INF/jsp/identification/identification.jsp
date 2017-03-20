@@ -55,7 +55,7 @@
 					    <display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>
 
 					    <display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-						    <a href="../../tiers/visu.do?id=${personne.numero}&message=${messageData.id}"><unireg:numCTB numero="${personne.numero}" /></a>
+						    <a href="../../tiers/visu.do?id=${personne.numero}&message=${messageData.id}&source=${source}"><unireg:numCTB numero="${personne.numero}" /></a>
 					    </display:column>
 					    <display:column sortable ="true" titleKey="label.role" >
 						    <c:out value="${personne.roleLigne1}" />
