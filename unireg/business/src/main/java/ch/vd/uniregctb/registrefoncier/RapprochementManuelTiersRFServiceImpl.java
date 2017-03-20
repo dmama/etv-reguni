@@ -3,18 +3,22 @@ package ch.vd.uniregctb.registrefoncier;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.EsbHeader;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TypeTiers;
 
 public class RapprochementManuelTiersRFServiceImpl implements RapprochementManuelTiersRFService {
@@ -52,11 +56,35 @@ public class RapprochementManuelTiersRFServiceImpl implements RapprochementManue
 		}
 	}
 
+	@Override
+	public void marquerDemandesIdentificationManuelleEventuelles(TiersRF tiersRF, Tiers tiersUnireg) {
+		getEncoreATraiter(tiersRF).forEach(i -> {
+			final Reponse reponse = new Reponse();
+			reponse.setDate(DateHelper.getCurrentDate());
+			reponse.setNoContribuable(tiersUnireg.getNumero());
+
+			i.setEtat(IdentificationContribuable.Etat.TRAITE_AUTOMATIQUEMENT);
+			i.setCommentaireTraitement(null);
+			i.setNbContribuablesTrouves(1);
+			i.setReponse(reponse);
+			i.setDateTraitement(DateHelper.getCurrentDate());
+			i.setTraitementUser(AuthenticationHelper.getCurrentPrincipal());
+
+			// normalement, quand on fait ça, il faudrait envoyer le message de réponse au service demandeur
+			// mais ici, comme on traite des messages typés "rapprochement RF", Unireg est le service demandeur
+			// lui-même, donc pas besoin d'envoyer un quelconque message...
+		});
+	}
+
 	private boolean demandeATraiterExiste(TiersRF tiersRF) {
+		return getEncoreATraiter(tiersRF).findFirst().isPresent();
+	}
+
+	private Stream<IdentificationContribuable> getEncoreATraiter(TiersRF tiersRF) {
 		final List<IdentificationContribuable> found = identCtbDAO.find(TypeDemande.RAPPROCHEMENT_RF, emetteurDemandeIdentification, String.format("%d ", tiersRF.getId()));
-		return found != null && found.stream()
-				.map(IdentificationContribuable::getEtat)
-				.anyMatch(IdentificationContribuable.Etat::isEncoreATraiter);
+		return found.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(identif -> identif.getEtat().isEncoreATraiter());
 	}
 
 	private void creerDemandeIdentificationManuelle(TiersRF tiersRF) {
