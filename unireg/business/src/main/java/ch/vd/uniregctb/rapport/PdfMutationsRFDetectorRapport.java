@@ -22,6 +22,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 /**
  * Rapport PDF contenant les résultats du job de détection des mutations sur les immeubles du RF.
  */
+@SuppressWarnings("Duplicates")
 public class PdfMutationsRFDetectorRapport extends PdfRapport {
 
 	public void write(final MutationsRFDetectorResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status, ApplicationContext applicationContext) throws Exception {
@@ -72,6 +73,7 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 						table.addLigne("  - " + typeMutationName + " :", String.valueOf(count));
 					}
 				}
+				table.addLigne("Nombre d'avertissements :", String.valueOf(results.getAvertissements().size()));
 				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getNbErreurs()));
 				table.addLigne("Durée d'exécution du job :", formatDureeExecution(results.endTime - results.startTime));
 				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
@@ -92,6 +94,16 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 						addListeDetaillee(writer, titre, listVide, filename, contenu);
 					}
 				}
+			}
+		}
+
+		// Avertissement
+		{
+			final String filename = "avertissements.csv";
+			final String titre = " Liste des avertissements";
+			final String listeVide = "(aucun)";
+			try (TemporaryFile contenu = avertissementsAsCsvFile(results.getAvertissements(), filename, status)) {
+				addListeDetaillee(writer, titre, listeVide, filename, contenu);
 			}
 		}
 
@@ -164,6 +176,27 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 				return true;
 			}
 		});
+	}
+
+	private TemporaryFile avertissementsAsCsvFile(List<MutationsRFDetectorResults.Avertissement> liste, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
+		if (!liste.isEmpty()) {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<MutationsRFDetectorResults.Avertissement>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("ID_RF").append(COMMA);
+					b.append("MESSAGE");
+				}
+
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, MutationsRFDetectorResults.Avertissement elt) {
+					b.append(elt.idRF).append(COMMA);
+					b.append(CsvHelper.asCsvField(elt.message));
+					return true;
+				}
+			});
+		}
+		return contenu;
 	}
 
 	private TemporaryFile erreursAsCsvFile(List<MutationsRFDetectorResults.Erreur> liste, String filename, StatusManager status) {

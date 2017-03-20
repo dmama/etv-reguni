@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.dataimport;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 	private BerechtigtePerson currentSourceBeneficiaire;
 	private DienstbarkeitExtended currentSourceServitude;
 	private DienstbarkeitDiscrete next;
+	private final List<DienstbarkeitExtended> emptyServitudes = new ArrayList<>();
 
 	public DienstbarkeitDiscreteIterator(@NotNull Iterator<? extends DienstbarkeitExtended> sourceIterator) {
 		this.sourceIterator = sourceIterator;
@@ -75,6 +77,13 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 	}
 
 	/**
+	 * @return les servitudes qui n'ont pas de bénéficiaires. Cette collection est complète une fois que l'itérateur a été entièrement parcouru.
+	 */
+	public List<DienstbarkeitExtended> getEmptyServitudes() {
+		return emptyServitudes;
+	}
+
+	/**
 	 * Avance l'itérateur sur l'élément suivant et retourne cet élément.
 	 *
 	 * @return l'élément suivant ou <b>null</b> si on a atteint la fin de l'itérateur.
@@ -91,7 +100,12 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 				}
 				// on va chercher la source suivante
 				currentSourceServitude = sourceIterator.next();
-				benenficiaireIterator = currentSourceServitude.getLastRechtGruppe().getBerechtigtePerson().iterator();
+				final List<BerechtigtePerson> beneficiaires = currentSourceServitude.getLastRechtGruppe().getBerechtigtePerson();
+				if (beneficiaires.isEmpty()) {
+					// [SIFISC-23744] on mémorise les servitudes vides pour les annoncer dans le rapport
+					emptyServitudes.add(currentSourceServitude);
+				}
+				benenficiaireIterator = beneficiaires.iterator();
 				immeubleIterator = null;
 			}
 			// on va chercher le bénéficiaire suivant

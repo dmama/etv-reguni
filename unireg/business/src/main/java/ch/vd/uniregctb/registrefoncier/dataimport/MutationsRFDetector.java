@@ -127,7 +127,7 @@ public class MutationsRFDetector implements InitializingBean {
 				processImportPrincipal(importId, event.getFileUrl(), importInitial, nbThreads, statusManager);
 				break;
 			case SERVITUDES:
-				processImportServitudes(importId, event.getFileUrl(), importInitial, nbThreads, statusManager);
+				processImportServitudes(importId, event.getFileUrl(), importInitial, nbThreads, rapport, statusManager);
 				break;
 			default:
 				throw new IllegalArgumentException("Type d'import inconnu = [" + typeImport + "].");
@@ -225,7 +225,7 @@ public class MutationsRFDetector implements InitializingBean {
 		}
 	}
 
-	private void processImportServitudes(long importId, String fileUrl, boolean importInitial, int nbThreads, @NotNull StatusManager statusManager) {
+	private void processImportServitudes(long importId, String fileUrl, boolean importInitial, int nbThreads, @NotNull MutationsRFDetectorResults rapport, @NotNull StatusManager statusManager) {
 		try (InputStream is = zipRaftStore.get(fileUrl)) {
 
 			statusManager.setMessage("Détection des mutations...");
@@ -264,7 +264,7 @@ public class MutationsRFDetector implements InitializingBean {
 			});
 
 			// on détecte les changements et crée les mutations (en utilisant le parallèle batch transaction template)
-			processServitudes(importId, nbThreads, servitudes.values().iterator(), importInitial, statusManager);
+			processServitudes(importId, nbThreads, servitudes.values().iterator(), importInitial, rapport, statusManager);
 			processBeneficiaires(importId, nbThreads, beneficiaires.iterator(), importInitial, statusManager);
 
 			statusManager.setMessage("Traitement terminé.");
@@ -374,11 +374,19 @@ public class MutationsRFDetector implements InitializingBean {
 		droitRFDetector.processDroitsPropriete(importId, nbThreads, iterator, importInitial, statusManager);
 	}
 
-	public void processServitudes(long importId, int nbThreads, Iterator<DienstbarkeitExtendedElement> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
+	public void processServitudes(long importId, int nbThreads, Iterator<DienstbarkeitExtendedElement> iterator, boolean importInitial, @NotNull MutationsRFDetectorResults rapport, @Nullable StatusManager statusManager) {
 		// Les usufruits peuvent concerner plusieurs immeubles et plusieurs bénéficiaires, ce qui ne rentre pas dans le modèle de données des droits d'Unireg.
 		// On instancie donc un itérateur spécial qui va retourner autant de droit 'discrets' qu'il y a d'immeubles et de bénéficiaires.
 		final DienstbarkeitDiscreteIterator discreteIterator = new DienstbarkeitDiscreteIterator(iterator);
 		droitRFDetector.processServitudes(importId, nbThreads, discreteIterator, importInitial, statusManager);
+
+		// SIFISC-23744 : on renseigne les servitudes vides dans le rapport
+		discreteIterator.getEmptyServitudes()
+				.forEach(s -> {
+					final Dienstbarkeit dienstbarkeit = s.getDienstbarkeit();
+					rapport.addAvertissement(dienstbarkeit.getStandardRechtID(), "La servitude standardRechtID=[" + dienstbarkeit.getStandardRechtID() +
+							"] sur les immeubles idRF=[" + String.join(", ", dienstbarkeit.getBeteiligtesGrundstueckIDREF()) + "] ne possède pas de bénéficiaire.");
+				});
 	}
 
 	private void processBeneficiaires(long importId, int nbThreads, Iterator<ch.vd.capitastra.rechteregister.Personstamm> iterator, boolean importInitial, StatusManager statusManager) {

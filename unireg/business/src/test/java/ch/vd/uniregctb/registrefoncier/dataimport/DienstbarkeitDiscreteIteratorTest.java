@@ -178,6 +178,10 @@ public class DienstbarkeitDiscreteIteratorTest {
 
 			final DienstbarkeitDiscreteIterator iter = new DienstbarkeitDiscreteIterator(Collections.singletonList(servitude).iterator());
 			assertFalse(iter.hasNext()); // il y a bien une servitude, mais elle est vide et ignorée
+
+			final List<DienstbarkeitExtended> emptyServitudes = iter.getEmptyServitudes();
+			assertEquals(1, emptyServitudes.size());
+			assertEquals("2348923892389", emptyServitudes.get(0).getDienstbarkeit().getStandardRechtID());
 		}
 
 		// une servitude sans bénéficiaire suivi d'une servitude avec bénéficiaire
@@ -200,6 +204,11 @@ public class DienstbarkeitDiscreteIteratorTest {
 			assertTrue(iter.hasNext());
 			assertServitude(iter.next(), "4873838", "99999", marcel, null);
 			assertFalse(iter.hasNext());
+
+
+			final List<DienstbarkeitExtended> emptyServitudes = iter.getEmptyServitudes();
+			assertEquals(1, emptyServitudes.size());
+			assertEquals("2348923892389", emptyServitudes.get(0).getDienstbarkeit().getStandardRechtID());
 		}
 	}
 
