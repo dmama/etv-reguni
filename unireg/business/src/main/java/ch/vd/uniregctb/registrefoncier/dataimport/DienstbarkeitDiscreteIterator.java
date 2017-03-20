@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.rechteregister.BelastetesGrundstueck;
 import ch.vd.capitastra.rechteregister.BerechtigtePerson;
@@ -44,6 +45,7 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 	private Iterator<BelastetesGrundstueck> immeubleIterator;
 	private BerechtigtePerson currentSourceBeneficiaire;
 	private DienstbarkeitExtended currentSourceServitude;
+	private DienstbarkeitDiscrete next;
 
 	public DienstbarkeitDiscreteIterator(@NotNull Iterator<? extends DienstbarkeitExtended> sourceIterator) {
 		this.sourceIterator = sourceIterator;
@@ -51,11 +53,12 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 		this.immeubleIterator = null;
 		this.currentSourceBeneficiaire = null;
 		this.currentSourceServitude = null;
+		this.next = buildNext();
 	}
 
 	@Override
 	public boolean hasNext() {
-		return (immeubleIterator != null && immeubleIterator.hasNext()) || (benenficiaireIterator != null && benenficiaireIterator.hasNext()) || sourceIterator.hasNext();
+		return next != null;
 	}
 
 	/**
@@ -63,15 +66,38 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 	 */
 	@Override
 	public DienstbarkeitDiscrete next() {
+		try {
+			return next;
+		}
+		finally {
+			this.next = buildNext();
+		}
+	}
+
+	/**
+	 * Avance l'itérateur sur l'élément suivant et retourne cet élément.
+	 *
+	 * @return l'élément suivant ou <b>null</b> si on a atteint la fin de l'itérateur.
+	 */
+	@Nullable
+	private DienstbarkeitDiscrete buildNext() {
 
 		// on avance les itérateurs sur les servitudes et bénéficiaires si nécessaire
-		if (immeubleIterator == null || !immeubleIterator.hasNext()) {
-			if (benenficiaireIterator == null || !benenficiaireIterator.hasNext()) {
-				nextServitude();
+		while (immeubleIterator == null || !immeubleIterator.hasNext()) {
+			while (benenficiaireIterator == null || !benenficiaireIterator.hasNext()) {
+				if (!sourceIterator.hasNext()) {
+					// il n'y a plus de données, on a terminé
+					return null;
+				}
+				// on va chercher la source suivante
+				currentSourceServitude = sourceIterator.next();
+				benenficiaireIterator = currentSourceServitude.getLastRechtGruppe().getBerechtigtePerson().iterator();
+				immeubleIterator = null;
 			}
-			nextBeneficiaire();
+			// on va chercher le bénéficiaire suivant
+			currentSourceBeneficiaire = benenficiaireIterator.next();
+			immeubleIterator = currentSourceServitude.getLastRechtGruppe().getBelastetesGrundstueck().iterator();
 		}
-
 		// on va chercher l'immeuble suivant
 		final BelastetesGrundstueck immeuble = immeubleIterator.next();
 
@@ -88,22 +114,5 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 		}
 
 		return n;
-	}
-
-	private void nextBeneficiaire() {
-		currentSourceBeneficiaire = benenficiaireIterator.next();
-		immeubleIterator = currentSourceServitude.getLastRechtGruppe().getBelastetesGrundstueck().iterator();
-		if (!immeubleIterator.hasNext()) {
-			throw new IllegalArgumentException("La servitude standardRechtID=[" + currentSourceServitude.getDienstbarkeit().getStandardRechtID() + "] ne possède pas d'immeuble.");
-		}
-	}
-
-	private void nextServitude() {
-		currentSourceServitude = sourceIterator.next();
-		benenficiaireIterator = currentSourceServitude.getLastRechtGruppe().getBerechtigtePerson().iterator();
-		if (!benenficiaireIterator.hasNext()) {
-			throw new IllegalArgumentException("La servitude standardRechtID=[" + currentSourceServitude.getDienstbarkeit().getStandardRechtID() + "] ne possède pas de bénéficiaire.");
-		}
-		immeubleIterator = null;
 	}
 }

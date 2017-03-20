@@ -165,6 +165,45 @@ public class DienstbarkeitDiscreteIteratorTest {
 	}
 
 	/**
+	 * [SIFISC-23744] Ce test s'assure que l'itérateur ne crashe pas lorsqu'il rencontre une servitude sans bénéficiaire et que la servitude est simplement ignorée.
+	 */
+	@Test
+	public void testServitudeSansBeneficiaire() throws Exception {
+
+		// une seule servitude sans bénéficiaire
+		{
+			final DienstbarkeitExtended servitude = newServitude("2348923892389",
+			                                                     Collections.emptyList(),
+			                                                     Collections.singletonList("8888888"));
+
+			final DienstbarkeitDiscreteIterator iter = new DienstbarkeitDiscreteIterator(Collections.singletonList(servitude).iterator());
+			assertFalse(iter.hasNext()); // il y a bien une servitude, mais elle est vide et ignorée
+		}
+
+		// une servitude sans bénéficiaire suivi d'une servitude avec bénéficiaire
+		{
+			final BerechtigtePerson marcel = newBeneficiairePP("Marcel", "Fluuu");
+
+			// pas de bénéficiaire
+			final DienstbarkeitExtended servitude0 = newServitude("2348923892389",
+			                                                      Collections.emptyList(),
+			                                                      Arrays.asList("8888888", "7777777", "00000111"));
+			// un bénéficiaire
+			final DienstbarkeitExtended servitude1 = newServitude("4873838",
+			                                                      Collections.singletonList(marcel),
+			                                                      Arrays.asList("33333333", "99999"));
+			final List<DienstbarkeitExtended> servitudes = Arrays.asList(servitude0, servitude1);
+
+			final DienstbarkeitDiscreteIterator iter = new DienstbarkeitDiscreteIterator(servitudes.iterator());
+			assertTrue(iter.hasNext());
+			assertServitude(iter.next(), "4873838", "33333333", marcel, null);
+			assertTrue(iter.hasNext());
+			assertServitude(iter.next(), "4873838", "99999", marcel, null);
+			assertFalse(iter.hasNext());
+		}
+	}
+
+	/**
 	 * Asserte que la servitude ne possède qu'un seul immeuble avec les valeurs spécifiées.
 	 */
 	private static void assertServitude(DienstbarkeitDiscrete servitude, String servitudeIdRef, String immeublesIdRef, BerechtigtePerson beneficiaire, @Nullable List<BerechtigtePerson> communaute) {
