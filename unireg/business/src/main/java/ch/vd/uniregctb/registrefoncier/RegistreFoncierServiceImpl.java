@@ -55,7 +55,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		return ctb.getRapprochementsRF().stream()
 				.filter(AnnulableHelper::nonAnnule)                     // on ignore les rapprochements annulés
 				.flatMap(RegistreFoncierServiceImpl::getDroitsValides)  // on demande les droits valides pour le rapprochement
-				.sorted(DroitRF::compareTo)                             // on trie les droits pour garder un ordre constant entre chaque appel
+				.sorted()                             // on trie les droits pour garder un ordre constant entre chaque appel
 				.collect(Collectors.toList());
 	}
 
@@ -131,7 +131,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		// on va chercher la dernière situation
 		final SituationRF situation = immeuble.getSituations().stream()
 				.filter(Annulable::isNotAnnule)
-				.max(SituationRF::compareTo)
+				.max(Comparator.naturalOrder())
 				.orElseThrow(() -> new IllegalArgumentException("L'immeuble id=[" + immeubleId + "] ne possède pas de situation"));
 
 		// on prépare les paramètres de l'URL
