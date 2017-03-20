@@ -20,7 +20,12 @@ import ch.vd.uniregctb.evenement.identification.contribuable.EsbHeader;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.uniregctb.type.Sexe;
 
 public class RapprochementManuelTiersRFServiceTest extends BusinessTest {
 
@@ -432,5 +437,142 @@ public class RapprochementManuelTiersRFServiceTest extends BusinessTest {
 				Assert.assertEquals(String.valueOf(id), metadata.get("idTiersRF"));
 			}
 		});
+	}
+
+	@Test
+	public void testMarquage() throws Exception {
+
+		final class Ids {
+			long pp;
+			long pm;
+		}
+
+		// mise en place des données RF
+		final Ids idsRF = doInNewTransactionAndSession(status -> {
+			final PersonnePhysiqueRF pp = addPersonnePhysiqueRF("Francis", "Delamaisonnoire", date(1987, 7, 31), "5473i743278", 42L, null);
+			final PersonneMoraleRF pm = addPersonneMoraleRF("A la mauvaise combine", null, "86437zfg", 4312L, null);
+
+			final Ids res = new Ids();
+			res.pp = pp.getId();
+			res.pm = pm.getId();
+			return res;
+		});
+
+		// mise en place des données unireg
+		final Ids idsUnireg = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Francis", "Delamaisonnoire", date(1987, 7, 31), Sexe.MASCULIN);
+			final RegDate dateDebutEntreprise = date(1987, 4, 3);
+			final Entreprise pm = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(pm, dateDebutEntreprise, null, "A la mauvaise combine");
+			addFormeJuridique(pm, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SARL);
+
+			final Ids res = new Ids();
+			res.pp = pp.getNumero();
+			res.pm = pm.getNumero();
+			return res;
+		});
+
+		// appel du service de création de demande pour la personne physique
+		final Long idDemandePP = doInNewTransactionAndSession(status -> {
+			final PersonnePhysiqueRF rf = hibernateTemplate.get(PersonnePhysiqueRF.class, idsRF.pp);
+			Assert.assertNotNull(rf);
+
+			// demande de création
+			service.genererDemandeIdentificationManuelle(rf);
+
+			// récupération de l'identifiant
+			return identCtbDAO.getAll().stream()
+					.mapToLong(IdentificationContribuable::getId)
+					.max()
+					.getAsLong();
+		});
+
+		// appel du service de création de demande pour la personne morale
+		final Long idDemandePM = doInNewTransactionAndSession(status -> {
+			final PersonneMoraleRF rf = hibernateTemplate.get(PersonneMoraleRF.class, idsRF.pm);
+			Assert.assertNotNull(rf);
+
+			// demande de création
+			service.genererDemandeIdentificationManuelle(rf);
+
+			// récupération de l'identifiant
+			return identCtbDAO.getAll().stream()
+					.mapToLong(IdentificationContribuable::getId)
+					.max()
+					.getAsLong();
+		});
+
+		// maintenant, on a une demande générée sans réponse, vérifions donc les appels à marquer... (PM)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final IdentificationContribuable identification = hibernateTemplate.get(IdentificationContribuable.class, idDemandePM);
+				Assert.assertNotNull(identification);
+				Assert.assertNull(identification.getReponse());
+				Assert.assertEquals(IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT, identification.getEtat());
+				Assert.assertNull(identification.getCommentaireTraitement());
+				Assert.assertNull(identification.getNbContribuablesTrouves());
+				Assert.assertNull(identification.getDateTraitement());
+				Assert.assertNull(identification.getTraitementUser());
+
+				final TiersRF rf = hibernateTemplate.get(TiersRF.class, idsRF.pm);
+				final Tiers unireg = hibernateTemplate.get(Tiers.class, idsUnireg.pm);
+				service.marquerDemandesIdentificationManuelleEventuelles(rf, unireg);
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final IdentificationContribuable identification = hibernateTemplate.get(IdentificationContribuable.class, idDemandePM);
+				Assert.assertNotNull(identification);
+				Assert.assertNotNull(identification.getReponse());
+				Assert.assertEquals((Long) idsUnireg.pm, identification.getReponse().getNoContribuable());
+				Assert.assertNull(identification.getReponse().getNoMenageCommun());
+				Assert.assertEquals(IdentificationContribuable.Etat.TRAITE_AUTOMATIQUEMENT, identification.getEtat());
+				Assert.assertNull(identification.getCommentaireTraitement());
+				Assert.assertEquals((Integer) 1, identification.getNbContribuablesTrouves());
+				Assert.assertNotNull(identification.getDateTraitement());
+				Assert.assertNotNull(identification.getTraitementUser());
+			}
+		});
+
+		// maintenant, on a une demande générée sans réponse, vérifions donc les appels à marquer... (PP)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final IdentificationContribuable identification = hibernateTemplate.get(IdentificationContribuable.class, idDemandePP);
+				Assert.assertNotNull(identification);
+				Assert.assertNull(identification.getReponse());
+				Assert.assertEquals(IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT, identification.getEtat());
+				Assert.assertNull(identification.getCommentaireTraitement());
+				Assert.assertNull(identification.getNbContribuablesTrouves());
+				Assert.assertNull(identification.getDateTraitement());
+				Assert.assertNull(identification.getTraitementUser());
+
+				final TiersRF rf = hibernateTemplate.get(TiersRF.class, idsRF.pp);
+				final Tiers unireg = hibernateTemplate.get(Tiers.class, idsUnireg.pp);
+				service.marquerDemandesIdentificationManuelleEventuelles(rf, unireg);
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final IdentificationContribuable identification = hibernateTemplate.get(IdentificationContribuable.class, idDemandePP);
+				Assert.assertNotNull(identification);
+				Assert.assertNotNull(identification.getReponse());
+				Assert.assertEquals((Long) idsUnireg.pp, identification.getReponse().getNoContribuable());
+				Assert.assertNull(identification.getReponse().getNoMenageCommun());
+				Assert.assertEquals(IdentificationContribuable.Etat.TRAITE_AUTOMATIQUEMENT, identification.getEtat());
+				Assert.assertNull(identification.getCommentaireTraitement());
+				Assert.assertEquals((Integer) 1, identification.getNbContribuablesTrouves());
+				Assert.assertNotNull(identification.getDateTraitement());
+				Assert.assertNotNull(identification.getTraitementUser());
+			}
+		});
+
 	}
 }

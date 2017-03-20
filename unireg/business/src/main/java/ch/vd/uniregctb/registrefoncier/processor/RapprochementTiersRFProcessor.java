@@ -248,6 +248,10 @@ public class RapprochementTiersRFProcessor {
 			ctb.addRapprochementRF(saved);
 
 			rapport.addNouveauRapprochement(saved);
+
+			// en fait, il faudrait aussi marquer comme "traitée" une éventuelle demande d'identification manuelle
+			// encore en suspens concernant ce même tiers RF
+			rapprochementManuelService.marquerDemandesIdentificationManuelleEventuelles(tiersRF, ctb);
 		}
 	}
 
