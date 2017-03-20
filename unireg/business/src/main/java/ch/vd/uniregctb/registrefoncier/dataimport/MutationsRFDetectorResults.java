@@ -27,7 +27,30 @@ public class MutationsRFDetectorResults {
 
 	private boolean interrompu = false;
 
+	private final List<Avertissement> avertissements = new LinkedList<>();
 	private final List<Erreur> erreurs = new LinkedList<>();
+
+	public static final class Avertissement {
+		public final String idRF;
+		public final String message;
+
+		public Avertissement(String idRF, String message) {
+			this.idRF = idRF;
+			this.message = message;
+		}
+
+		public String getIdRF() {
+			return idRF;
+		}
+
+		@Override
+		public String toString() {
+			return "Avertissement{" +
+					"idRF='" + idRF + '\'' +
+					", message='" + message + '\'' +
+					'}';
+		}
+	}
 
 	public static final class Erreur {
 		public final String idRF;
@@ -87,6 +110,10 @@ public class MutationsRFDetectorResults {
 		this.endTime = System.currentTimeMillis();
 	}
 
+	public List<Avertissement> getAvertissements() {
+		return avertissements;
+	}
+
 	public List<Erreur> getErreurs() {
 		return erreurs;
 	}
@@ -97,6 +124,10 @@ public class MutationsRFDetectorResults {
 
 	public void setInterrompu(boolean interrompu) {
 		this.interrompu = interrompu;
+	}
+
+	public void addAvertissement(String idRf, String message) {
+		avertissements.add(new Avertissement(idRf, message));
 	}
 
 	public void addErrorException(Object id, Exception e) {
