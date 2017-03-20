@@ -303,7 +303,7 @@
 			<c:set var="onClickBoutonRetour" value="document.location='${param['urlRetour']}&onglet=rapportsPrestationTab';"/>
 		</c:if>
 		<c:if test="${not empty param['message']}">
-			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location='../identification/gestion-messages/edit.do?keepCriteria=true&id=${param['message']}'" />
+			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location='../identification/gestion-messages/edit.do?source=${param['source']}&keepCriteria=true&id=${param['message']}'" />
 		</c:if>
 		<c:if test="${not empty param['retour']}">
 			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location='../identification/gestion-messages/listTraite.do?keepCriteria=true'" />
