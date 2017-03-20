@@ -85,7 +85,7 @@ public class AnnonceIDESenderImpl implements AnnonceIDESender, InitializingBean 
 
 		if (!enabled) {
 			// On ne peut pas laisser la transaction se terminer normallement car cela conduirait à conserver une référence pour une annonce qui n'a pas été envoyée.
-			throw new AnnonceIDEException(String.format("Emission des annonces à l'IDE désactivés par configuration : abandon de l'annonce n°%d.", annonce.getNumero()));
+			throw new AnnonceIDEException(String.format("Emission des annonces à l'IDE désactivée par configuration : abandon de l'annonce n°%d.", annonce.getNumero()));
 		}
 
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
