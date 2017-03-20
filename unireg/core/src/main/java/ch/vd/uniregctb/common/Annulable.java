@@ -1,8 +1,9 @@
 package ch.vd.uniregctb.common;
 
 /**
- * Interface permettant de manipuler toutes les entités pouvant être annulé
+ * Interface permettant de manipuler toutes les entités pouvant être annulées
  * @author Baba NGOM <baba-issa.ngom@vd.ch>
+ * @see AnnulableHelper pour quelques méthodes utilitaires de manipulation des entités annulables
  */
 public interface Annulable {
 
@@ -11,10 +12,4 @@ public interface Annulable {
 	 */
 	boolean isAnnule();
 
-	/**
-	 * @return <b>false</b> si l'entite n'est pas annulée; <b>oui</b> si elle l'est.
-	 */
-	default boolean isNotAnnule() {
-		return !this.isAnnule();
-	}
 }

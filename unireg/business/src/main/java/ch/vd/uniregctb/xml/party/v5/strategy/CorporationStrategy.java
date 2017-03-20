@@ -28,7 +28,7 @@ import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
-import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.foncier.DegrevementICI;
@@ -333,7 +333,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		// les exonérations
 		final List<IfoncExemption> exemptions = to.getIfoncExemptions();
 		entreprise.getAllegementsFonciers().stream()
-				.filter(Annulable::isNotAnnule)
+				.filter(AnnulableHelper::nonAnnule)
 				.filter(a -> a instanceof ExonerationIFONC)
 				.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
 				.map(a -> LandTaxLighteningBuilder.buildIfoncExemption((ExonerationIFONC) a))
@@ -342,7 +342,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		// les dégrèvements
 		final List<IciAbatement> abatements = to.getIciAbatements();
 		entreprise.getAllegementsFonciers().stream()
-				.filter(Annulable::isNotAnnule)
+				.filter(AnnulableHelper::nonAnnule)
 				.filter(a -> a instanceof DegrevementICI)
 				.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
 				.map(a -> LandTaxLighteningBuilder.buildIciAbatement((DegrevementICI) a))
@@ -352,7 +352,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		final List<IciAbatementRequest> requests = to.getIciAbatementRequests();
 		entreprise.getAutresDocumentsFiscaux().stream()
 				.filter(d -> d instanceof DemandeDegrevementICI)
-				.filter(Annulable::isNotAnnule)
+				.filter(AnnulableHelper::nonAnnule)
 				.map (a -> (DemandeDegrevementICI)a)
 				.sorted(Comparator.<DemandeDegrevementICI, RegDate>comparing(AutreDocumentFiscal::getDateEnvoi).thenComparing(a -> a.getImmeuble().getId()))
 				.map(LandTaxLighteningBuilder::buildIciAbatementRequest)

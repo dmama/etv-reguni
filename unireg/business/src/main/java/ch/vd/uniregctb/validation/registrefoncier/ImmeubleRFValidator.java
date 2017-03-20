@@ -42,7 +42,7 @@ public class ImmeubleRFValidator extends EntityValidatorImpl<ImmeubleRF> {
 	private static <T extends DateRange> void validateCollectionFermee(@NotNull ValidationResults results, @Nullable Set<T> set, String message) {
 		if (set != null) {
 			set.stream()
-					.filter(e -> !(e instanceof Annulable) || ((Annulable) e).isNotAnnule())
+					.filter(e -> !(e instanceof Annulable) || !((Annulable) e).isAnnule())
 					.filter(e -> e.getDateFin() == null)
 					.findAny()
 					.ifPresent(e -> results.addError(message));

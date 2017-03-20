@@ -17,7 +17,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.Mine;
 import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
 import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
 import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
-import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -117,32 +117,32 @@ public abstract class ImmovablePropertyBuilder {
 		property.setCancellationDate(DataHelper.coreToXMLv2(immeuble.getDateRadiation()));
 
 		property.getLocations().addAll(immeuble.getSituations().stream()
-				                               .filter(Annulable::isNotAnnule)
+				                               .filter(AnnulableHelper::nonAnnule)
 				                               .sorted()
 				                               .map(ImmovablePropertyBuilder::newLocation)
 				                               .collect(Collectors.toList()));
 		property.getTaxEstimates().addAll(immeuble.getEstimations().stream()
-				                                  .filter(Annulable::isNotAnnule)
+				                                  .filter(AnnulableHelper::nonAnnule)
 				                                  .sorted()
 				                                  .map(ImmovablePropertyBuilder::newTaxEstimate)
 				                                  .collect(Collectors.toList()));
 		property.getTotalAreas().addAll(immeuble.getSurfacesTotales().stream()
-				                                .filter(Annulable::isNotAnnule)
+				                                .filter(AnnulableHelper::nonAnnule)
 				                                .sorted()
 				                                .map(ImmovablePropertyBuilder::newTotalArea)
 				                                .collect(Collectors.toList()));
 		property.getGroundAreas().addAll(immeuble.getSurfacesAuSol().stream()
-				                                 .filter(Annulable::isNotAnnule)
+				                                 .filter(AnnulableHelper::nonAnnule)
 				                                 .sorted()
 				                                 .map(ImmovablePropertyBuilder::newGroundArea)
 				                                 .collect(Collectors.toList()));
 		property.getBuildingSettings().addAll(immeuble.getImplantations().stream()
-				                                      .filter(Annulable::isNotAnnule)
+				                                      .filter(AnnulableHelper::nonAnnule)
 				                                      .sorted()
 				                                      .map(BuildingBuilder::newBuildSetting)
 				                                      .collect(Collectors.toList()));
 		property.getLandRights().addAll(immeuble.getDroits().stream()
-				                                .filter(Annulable::isNotAnnule)
+				                                .filter(AnnulableHelper::nonAnnule)
 				                                // on n'expose pas les droits des communautés (c'est les droits des personnes membres des communautés qui portent l'information)
 				                                .filter(d -> !(d instanceof DroitProprieteCommunauteRF))
 				                                .sorted()

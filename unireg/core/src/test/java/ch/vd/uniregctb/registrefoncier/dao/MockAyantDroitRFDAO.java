@@ -106,7 +106,7 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 
 	private static boolean hasDroitOfType(@NotNull AyantDroitRF ayantDroit, @NotNull TypeDroit typeDroit) {
 		return ayantDroit.getDroits().stream()
-				.anyMatch(d -> d.isNotAnnule() && d.getTypeDroit() == typeDroit);
+				.anyMatch(d -> !d.isAnnule() && d.getTypeDroit() == typeDroit);
 	}
 
 	@Nullable

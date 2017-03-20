@@ -17,7 +17,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -91,7 +90,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	 */
 	private static Stream<DroitRF> getDroitsValides(RapprochementRF rapprochement) {
 		return rapprochement.getTiersRF().getDroits().stream()
-				.filter(Annulable::isNotAnnule)
+				.filter(AnnulableHelper::nonAnnule)
 				.filter(d -> DateRangeHelper.intersect(d, rapprochement));
 	}
 
@@ -130,7 +129,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 		// on va chercher la dernière situation
 		final SituationRF situation = immeuble.getSituations().stream()
-				.filter(Annulable::isNotAnnule)
+				.filter(AnnulableHelper::nonAnnule)
 				.max(Comparator.naturalOrder())
 				.orElseThrow(() -> new IllegalArgumentException("L'immeuble id=[" + immeubleId + "] ne possède pas de situation"));
 

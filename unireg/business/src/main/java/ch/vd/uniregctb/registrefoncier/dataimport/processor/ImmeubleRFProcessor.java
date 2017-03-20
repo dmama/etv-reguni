@@ -11,7 +11,7 @@ import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
@@ -164,7 +164,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				.orElseThrow(() -> new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] ne contient pas de situation dans la DB."));
 
 		final EstimationRF persistedEstimation = persisted.getEstimations().stream()
-				.filter(Annulable::isNotAnnule)
+				.filter(AnnulableHelper::nonAnnule)
 				.max(new DateRangeComparator<>())   // les estimations fiscales se suivent sans discontinuer dans le temps, on va donc chercher la dernière valide.
 				.orElse(null);
 
@@ -217,7 +217,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 			// [SIFISC-22995] on annule automatiquement toutes les estimations fiscales en révision avec des intervalles métier négatifs
 			persisted.getEstimations().stream()
-					.filter(Annulable::isNotAnnule)
+					.filter(AnnulableHelper::nonAnnule)
 					.filter(EstimationRF::isEnRevision)
 					.forEach(e -> {
 						final RegDate dateDebutMetier = e.getDateDebutMetier();
@@ -259,7 +259,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				.filter(s -> s.getDateFin() == null)
 				.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
 		persisted.getEstimations().stream()
-				.filter(Annulable::isNotAnnule)
+				.filter(AnnulableHelper::nonAnnule)
 				.filter(e -> e.getDateFin() == null)
 				.forEach(e -> {
 					e.setDateFin(dateValeur.getOneDayBefore());
