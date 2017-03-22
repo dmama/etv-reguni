@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.registrefoncier.dao;
 
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,4 +14,7 @@ public interface DroitRFDAO extends GenericDAO<DroitRF, Long> {
 
 	@Nullable
 	DroitRF findActive(@NotNull DroitRFKey key);
+
+	@NotNull
+	List<DroitRF> findForAyantDroit(long tiersRFId, boolean fetchSituationsImmeuble);
 }

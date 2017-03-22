@@ -29,7 +29,9 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -247,6 +249,11 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 		}
 	}
 
+	@Transient
+	@NotNull
+	public DateRange getRangeMetier() {
+		return new DateRangeHelper.Range(dateDebutMetier, dateFinMetier);
+	}
 
 	@Transient
 	@NotNull

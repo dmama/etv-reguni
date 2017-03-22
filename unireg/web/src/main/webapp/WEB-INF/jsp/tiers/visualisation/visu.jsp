@@ -167,6 +167,14 @@
 					</authz:authorize>
 				</c:if>
 
+				<c:if test="${command.natureTiers == 'Entreprise'}">
+					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+						<li id="degrevementExoTab">
+							<a href="#tabContent_degrevementExoTab"><span><fmt:message key="label.degrevements.exonerations"/></span></a>
+						</li>
+					</authz:authorize>
+				</c:if>
+
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_REMARQUE_TIERS">
 					<li id="remarqueTab">
 						<a id="remarqueTabAnchor" href="#tabContent_remarqueTab"><fmt:message key="label.remarques" /></a>
@@ -268,6 +276,14 @@
 				</authz:authorize>
 			</c:if>
 
+			<c:if test="${command.natureTiers == 'Entreprise'}">
+				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+					<div id="tabContent_degrevementExoTab" class="visuTiers">
+						<jsp:include page="pm/degrevement-exoneration.jsp"/>
+					</div>
+				</authz:authorize>
+			</c:if>
+
             <authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_REMARQUE_TIERS">
 				<div id="tabContent_remarqueTab" class="visuTiers">
 						<jsp:include page="../common/remarque/remarques.jsp">
@@ -276,6 +292,7 @@
 				</div>
 			</authz:authorize>
 		</div>
+
 		<script type="text/javascript">
 			$(function() {
 				$("#tiersTabs").tabs({cookie:{}, cache:true, spinner:"<em>Chargement&#8230;</em>"});

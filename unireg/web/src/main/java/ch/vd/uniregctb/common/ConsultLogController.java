@@ -25,6 +25,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
+import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
@@ -87,7 +88,8 @@ public class ConsultLogController {
 		Tiers(Tiers.class),
 		UniteTraitementReqDes(UniteTraitement.class),
 		EvenementRFImport(EvenementRFImport.class),
-		EvenementRFMutation(EvenementRFMutation.class);
+		EvenementRFMutation(EvenementRFMutation.class),
+		AllegementFoncier(AllegementFoncier.class);
 
 		private final Class<? extends HibernateEntity> entityClass;
 
