@@ -4,6 +4,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<bean id="serviceRF" class="ch.vd.uniregctb.registrefoncier.RegistreFoncierServiceImpl">
+		<property name="tiersService" ref="tiersService"/>
 		<property name="batimentRFDAO" ref="batimentRFDAO"/>
 		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
 		<property name="ayantDroitRFDAO" ref="ayantDroitRFDAO"/>

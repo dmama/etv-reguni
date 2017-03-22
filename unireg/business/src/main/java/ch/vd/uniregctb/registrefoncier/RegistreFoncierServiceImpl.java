@@ -24,13 +24,19 @@ import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
+	private TiersService tiersService;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private BatimentRFDAO batimentRFDAO;
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private ServiceInfrastructureService infraService;
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
 
 	public void setImmeubleRFDAO(ImmeubleRFDAO immeubleRFDAO) {
 		this.immeubleRFDAO = immeubleRFDAO;
@@ -115,7 +121,12 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Nullable
 	@Override
 	public CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId) {
-		return ayantDroitRFDAO.getCommunauteMembreInfo(communauteId);
+		final CommunauteRFMembreInfo info = ayantDroitRFDAO.getCommunauteMembreInfo(communauteId);
+		// [SIFISC-23747] on trie la collection de tiers de telle manière que le leader de la communauté soit en première position
+		if (info != null) {
+			info.sortMembers(new CommunauteRFMembreComparator(tiersService));
+		}
+		return info;
 	}
 
 	@NotNull

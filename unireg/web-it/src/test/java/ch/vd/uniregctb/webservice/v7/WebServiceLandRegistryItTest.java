@@ -97,12 +97,13 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertSetting(RegDate.get(2016, 9, 13), null, 150, noImmo, 266023444, setting);
 
 		final List<LandRight> landRights = realEstate.getLandRights();
-		assertEquals(5, landRights.size());
-		assertLandOwnershipRight(RegDate.get(1981, 3, 6), RegDate.get(2017, 10, 17), "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, "Raymonde", "Grandjean", null, 264822986L, (LandOwnershipRight) landRights.get(0));
-		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 10035633, 264822986L, (LandOwnershipRight) landRights.get(1));
-		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, null, "Berard", null, 264822986L, (LandOwnershipRight) landRights.get(2));
-		assertUsufructRight(RegDate.get(1985, 10, 10), RegDate.get(2017, 10, 17), "Convention", null, "Charles", "de Noblebois", null, null, (UsufructRight) landRights.get(3));
-		assertHousingRight(RegDate.get(1999, 8, 8), null, "Convention", null, "Roland", "Proutch", null, null, (HousingRight) landRights.get(4));
+		assertEquals(6, landRights.size());
+		assertLandOwnershipRight(null, null, "Achat", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 21550, 264822986L, (LandOwnershipRight) landRights.get(0));
+		assertLandOwnershipRight(RegDate.get(1981, 3, 6), RegDate.get(2017, 10, 17), "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, "Raymonde", "Grandjean", null, 264822986L, (LandOwnershipRight) landRights.get(1));
+		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 10035633, 264822986L, (LandOwnershipRight) landRights.get(2));
+		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, null, "Berard", null, 264822986L, (LandOwnershipRight) landRights.get(3));
+		assertUsufructRight(RegDate.get(1985, 10, 10), RegDate.get(2017, 10, 17), "Convention", null, "Charles", "de Noblebois", null, null, (UsufructRight) landRights.get(4));
+		assertHousingRight(RegDate.get(1999, 8, 8), null, "Convention", null, "Roland", "Proutch", null, null, (HousingRight) landRights.get(5));
 	}
 
 	@Test
@@ -143,10 +144,12 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 
 		final List<RightHolder> members = community.getMembers();
 		assertNotNull(members);
-		assertEquals(3, members.size());
-		assertRightHolderParty(10035633, members.get(0));
-		assertRightHolderNaturalPerson("Raymonde", "Grandjean", null, members.get(1));
-		assertRightHolderNaturalPerson(null, "Berard", null, members.get(2));
+		assertEquals(4, members.size());
+		// [SIFISC-23747] les membres de la communauté doivent être triés
+		assertRightHolderParty(21550, members.get(0));      // Entreprise "BIGS Architecture et Entreprise Générale S.A."
+		assertRightHolderParty(10035633, members.get(1));   // Personne physique "Elisabeth Astrid Mary"
+		assertRightHolderNaturalPerson("Raymonde", "Grandjean", null, members.get(2));
+		assertRightHolderNaturalPerson(null, "Berard", null, members.get(3));
 	}
 
 	private static void assertRightHolderNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder owner) {
@@ -244,6 +247,19 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertRightHolderNaturalPerson(firstName, lastName, dateOfBirth, landRight.getRightHolder());
 	}
 
+	private static void assertLandOwnershipRight(RegDate dateFrom, RegDate dateTo, String startReason, Object endReason, OwnershipType type, int numerator, int denominator, long taxPayerNumber,
+	                                             Long communityId, LandOwnershipRight landRight) {
+		assertNotNull(landRight);
+		assertEquals(communityId, landRight.getCommunityId());
+		assertEquals(type, landRight.getType());
+		assertShare(numerator, denominator, landRight.getShare());
+		assertDate(dateFrom, landRight.getDateFrom());
+		assertDate(dateTo, landRight.getDateTo());
+		assertEquals(startReason, landRight.getStartReason());
+		assertEquals(endReason, landRight.getEndReason());
+		assertRightHolderParty(taxPayerNumber, landRight.getRightHolder());
+	}
+
 	private static void assertUsufructRight(RegDate dateFrom, RegDate dateTo, String startReason, Object endReason, String firstName, String lastName, RegDate dateOfBirth, Long communityId, UsufructRight right) {
 		assertNotNull(right);
 		assertEquals(communityId, right.getCommunityId());
@@ -262,18 +278,5 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertEquals(startReason, right.getStartReason());
 		assertEquals(endReason, right.getEndReason());
 		assertRightHolderNaturalPerson(firstName, lastName, dateOfBirth, right.getRightHolder());
-	}
-
-	private static void assertLandOwnershipRight(RegDate dateFrom, RegDate dateTo, String startReason, Object endReason, OwnershipType type, int numerator, int denominator, long taxPayerNumber,
-	                                             Long communityId, LandOwnershipRight landRight) {
-		assertNotNull(landRight);
-		assertEquals(communityId, landRight.getCommunityId());
-		assertEquals(type, landRight.getType());
-		assertShare(numerator, denominator, landRight.getShare());
-		assertDate(dateFrom, landRight.getDateFrom());
-		assertDate(dateTo, landRight.getDateTo());
-		assertEquals(startReason, landRight.getStartReason());
-		assertEquals(endReason, landRight.getEndReason());
-		assertRightHolderParty(taxPayerNumber, landRight.getRightHolder());
 	}
 }

@@ -57,6 +57,8 @@
 		<column>DPI_ACI_HC</column>
 		<column>IDE_DIRTY</column>
 		<column>IDE_DESACTIVE</column>
+		<column>NUMERO_ENTREPRISE</column>
+		<column>DATE_DEBUT_PREMIER_EXERCICE</column>
 		<row>
 			<value>PersonnePhysique</value>
 			<value>10035633</value>
@@ -114,6 +116,66 @@
 			<null />
 			<null />
 			<null />
+		</row>
+		<row>
+			<value>Entreprise</value>                          <!-- TIERS_TYPE -->
+			<value>21550</value>                               <!-- NUMERO -->
+			<null />                                           <!-- ANNULATION_DATE -->
+			<null />                                           <!-- ANNULATION_USER -->
+			<null />                                           <!-- LOG_CDATE -->
+			<null />                                           <!-- LOG_CUSER -->
+			<value>2008-01-01 00:00:00.0</value>               <!-- LOG_MDATE -->
+			<null />                                           <!-- LOG_MUSER -->
+			<null />                                           <!-- ADRESSE_BIC_SWIFT -->
+			<null />                                           <!-- ADRESSE_EMAIL -->
+			<null />                                           <!-- BLOC_REMB_AUTO -->
+			<null />                                           <!-- COMPLEMENT_NOM -->
+			<value>0</value>                                   <!-- DEBITEUR_INACTIF -->
+			<value>0</value>                                   <!-- INDEX_DIRTY -->
+			<value>CH4700767000A09430049</value>               <!-- NUMERO_COMPTE_BANCAIRE -->
+			<null />                                           <!-- NUMERO_TELECOPIE -->
+			<null />                                           <!-- NUMERO_TEL_PORTABLE -->
+			<null />                                           <!-- NUMERO_TEL_PRIVE -->
+			<null />                                           <!-- NUMERO_TEL_PROF -->
+			<null />                                           <!-- OID -->
+			<null />                                           <!-- PERSONNE_CONTACT -->
+			<null />                                           <!-- REINDEX_ON -->
+			<null />                                           <!-- TITULAIRE_COMPTE_BANCAIRE -->
+			<null />                                           <!-- DATE_LIMITE_EXCLUSION -->
+			<null />                                           <!-- AC_FORME_JURIDIQUE -->
+			<null />                                           <!-- AC_NOM -->
+			<null />                                           <!-- DISTRICT_FISCAL_ID -->
+			<null />                                           <!-- REGION_FISCALE_ID -->
+			<null />                                           <!-- NUMERO_CA -->
+			<null />                                           <!-- CATEGORIE_IMPOT_SOURCE -->
+			<null />                                           <!-- LOGICIEL_ID -->
+			<null />                                           <!-- MODE_COM -->
+			<null />                                           <!-- DPI_NOM1 -->
+			<null />                                           <!-- DPI_NOM2 -->
+			<null />                                           <!-- PERIODE_DECOMPTE -->
+			<null />                                           <!-- PERIODICITE_DECOMPTE -->
+			<null />                                           <!-- SANS_LISTE_RECAP -->
+			<null />                                           <!-- SANS_RAPPEL -->
+			<null />                                           <!-- NUMERO_ETABLISSEMENT -->
+			<null />                                           <!-- ANCIEN_NUMERO_SOURCIER -->
+			<null />                                           <!-- NH_CAT_ETRANGER -->
+			<null />                                           <!-- NH_DATE_DEBUT_VALID_AUTORIS -->
+			<null />                                           <!-- DATE_DECES -->
+			<null />                                           <!-- NH_DATE_NAISSANCE -->
+			<null />                                           <!-- PP_HABITANT -->
+			<null />                                           <!-- MAJORITE_TRAITEE -->
+			<null />                                           <!-- NH_NOM -->
+			<null />                                           <!-- NH_NUMERO_ASSURE_SOCIAL -->
+			<null />                                           <!-- NUMERO_INDIVIDU -->
+			<null />                                           <!-- NH_NO_OFS_NATIONALITE -->
+			<null />                                           <!-- NH_PRENOM -->
+			<null />                                           <!-- NH_SEXE -->
+			<null />                                           <!-- NH_TOUS_PRENOMS -->
+			<null />                                           <!-- DPI_ACI_HC -->
+			<value>0</value>                                   <!-- IDE_DIRTY -->
+			<value>0</value>                                   <!-- IDE_DESACTIVE -->
+			<value>101469711</value>                           <!-- NUMERO_ENTREPRISE -->
+			<value>19941014</value>                            <!-- DATE_DEBUT_PREMIER_EXERCICE -->
 		</row>
 	</table>
 	<table name="RF_IMMEUBLE">
@@ -512,6 +574,25 @@
 			<value>Proutch</value>
 			<value>Roland</value>
 		</row>
+		<row>
+			<value>PersonneMorale</value>
+			<value>306862280</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:16:30.869000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:16:30.869000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>_1f10915238106bdc0138106bfb5413e9</value>
+			<value>21550</value>
+			<value>160654</value>
+			<value>BIGS Architecture et Entreprise Générale S.A.</value>
+			<null />
+			<value>CH-550.0.143.901-7</value>
+			<null />
+			<null />
+			<null />
+		</row>
 	</table>
 	<table name="RF_DROIT">
 		<column>TYPE</column>
@@ -638,6 +719,31 @@
 			<value>264822986</value>
 		</row>
 		<row>
+			<value>DroitProprietePM</value>
+			<value>306972799</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.148000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.148000</value>
+			<value>TraiterMutationsRFJob</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>1f10915238106bdc01381071470f4f0d</value>
+			<value>Achat</value>
+			<null />
+			<value>010-2008/1995/0</value>
+			<null />
+			<value>4</value>
+			<value>1</value>
+			<value>COPROPRIETE</value>
+			<value>306862280</value>
+			<value>264310664</value>
+			<value>264822986</value>
+		</row>
+		<row>
 			<value>Usufruit</value>
 			<value>265220714</value>
 			<null />
@@ -714,6 +820,20 @@
 			<value>AUTO</value>
 			<value>10035633</value>
 			<value>264832266</value>
+		</row>
+		<row>
+			<value>308768409</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:55:03.571000</value>
+			<value>RapprocherTiersRFJob</value>
+			<value>2016-12-14 11:55:03.574000</value>
+			<value>RapprocherTiersRFJob</value>
+			<null />
+			<null />
+			<value>AUTO</value>
+			<value>21550</value>
+			<value>306862280</value>
 		</row>
 	</table>
 </dataset>

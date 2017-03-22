@@ -1,6 +1,11 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Les informations minimales sur les membres d'une communauté d'un point-de-vue Unireg.
@@ -16,28 +21,41 @@ public class CommunauteRFMembreInfo {
 	 * <p>
 	 * Le nombre d'éléments dans cette collection peut être plus petit que {@link #count}, si ou plusieurs tiers RF ne sont pas rapprochés avec des tiers Unireg.
 	 */
-	private Collection<Long> ctbIds;
+	@NotNull
+	private final List<Long> ctbIds;
 
 	/**
 	 * Les tiers RF des membres de la communauté qui n'ont pas été rapprochés avec des tiers Unireg.
 	 */
-	private Collection<TiersRF> tiersRF;
+	@NotNull
+	private final List<TiersRF> tiersRF;
 
-	public CommunauteRFMembreInfo(int count, Collection<Long> ctbIds, Collection<TiersRF> tiersRF) {
+	public CommunauteRFMembreInfo(int count, @NotNull Collection<Long> ctbIds, @NotNull Collection<TiersRF> tiersRF) {
 		this.count = count;
-		this.ctbIds = ctbIds;
-		this.tiersRF = tiersRF;
+		this.ctbIds = new ArrayList<>(ctbIds);
+		this.tiersRF = new ArrayList<>(tiersRF);
+	}
+
+	/**
+	 * Trie les membres de la communautés (identifiés par leurs ids de contribuables, les tiers RF non-rapprochés ne sont pas triés).
+	 *
+	 * @param comparator le comparateur à utiliser pour le tri.
+	 */
+	public void sortMembers(Comparator<Long> comparator) {
+		this.ctbIds.sort(comparator);
 	}
 
 	public int getCount() {
 		return count;
 	}
 
-	public Collection<Long> getCtbIds() {
+	@NotNull
+	public List<Long> getCtbIds() {
 		return ctbIds;
 	}
 
-	public Collection<TiersRF> getTiersRF() {
+	@NotNull
+	public List<TiersRF> getTiersRF() {
 		return tiersRF;
 	}
 }

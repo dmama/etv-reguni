@@ -32,6 +32,7 @@ public abstract class CommunityOfOwnersBuilder {
 	@NotNull
 	private static Collection<? extends RightHolder> buildMembers(@NotNull CommunauteRFMembreInfo membreInfo) {
 		final List<RightHolder> membres = new ArrayList<>(membreInfo.getCount());
+		// SIFISC-23747 : on retourne les membres rapprochés en premier, puis les membres non-rapprochés.
 		membreInfo.getCtbIds().forEach(i -> membres.add(new RightHolder(i.intValue(), null, 0, null)));
 		membreInfo.getTiersRF().forEach(t -> membres.add(new RightHolder(null, RightHolderBuilder.buildRightHolderIdentity(t), 0, null)));
 		return membres;
