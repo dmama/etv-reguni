@@ -132,6 +132,7 @@
 		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="serviceIDEService" ref="serviceIDEService"/>
+		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
 	<bean id="tiersEditManager" class="ch.vd.uniregctb.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">
@@ -301,6 +302,12 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="etiquetteService" ref="etiquetteService"/>
+	</bean>
+
+	<bean id="degrevementExonerationController" class="ch.vd.uniregctb.registrefoncier.DegrevementExonerationController">
+		<property name="registreFoncierService" ref="serviceRF"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 </beans>

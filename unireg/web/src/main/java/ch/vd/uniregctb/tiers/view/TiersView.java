@@ -123,6 +123,8 @@ public class TiersView {
 
 	private List<DomicileEtablissementView> domicilesEtablissement;
 
+	private List<CommuneView> communesImmeubles;
+
 	private boolean isAllowed;
 
 	private boolean addContactISAllowed;
@@ -733,5 +735,13 @@ public class TiersView {
 
 	public void setExceptionDonneesCiviles(String exceptionDonneesCiviles) {
 		this.exceptionDonneesCiviles = exceptionDonneesCiviles;
+	}
+
+	public List<CommuneView> getCommunesImmeubles() {
+		return communesImmeubles;
+	}
+
+	public void setCommunesImmeubles(List<CommuneView> communesImmeubles) {
+		this.communesImmeubles = communesImmeubles;
 	}
 }

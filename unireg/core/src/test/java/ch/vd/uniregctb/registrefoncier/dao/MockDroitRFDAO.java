@@ -19,6 +19,11 @@ public class MockDroitRFDAO implements DroitRFDAO {
 	}
 
 	@Override
+	public @NotNull List<DroitRF> findForAyantDroit(long tiersRFId, boolean fetchSituationsImmeuble) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<DroitRF> getAll() {
 		throw new NotImplementedException();
 	}

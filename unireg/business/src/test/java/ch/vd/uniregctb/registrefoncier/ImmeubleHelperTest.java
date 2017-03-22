@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.documentfiscal;
+package ch.vd.uniregctb.registrefoncier;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -7,21 +7,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
-import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 
-public class DemandeDegrevementICIHelperTest {
+public class ImmeubleHelperTest {
 
 	@Test
 	public void testGetNatureImmeubleSansImplantationNiSurfaceAuSol() throws Exception {
 		final ImmeubleRF immeuble = new BienFondRF();
 		immeuble.setSurfacesAuSol(Collections.emptySet());
 		immeuble.setImplantations(Collections.emptySet());
-		Assert.assertNull(DemandeDegrevementICIHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
+		Assert.assertNull(ImmeubleHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
 	}
 
 	@Test
@@ -34,7 +28,7 @@ public class DemandeDegrevementICIHelperTest {
 		immeuble.setSurfacesAuSol(Collections.singleton(surface));
 		immeuble.setImplantations(Collections.emptySet());
 
-		Assert.assertEquals("Jardin, route", DemandeDegrevementICIHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
+		Assert.assertEquals("Jardin, route", ImmeubleHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
 	}
 
 	@Test
@@ -59,7 +53,7 @@ public class DemandeDegrevementICIHelperTest {
 		immeuble.setSurfacesAuSol(Collections.emptySet());
 		immeuble.setImplantations(Collections.singleton(implantationRF));
 
-		Assert.assertEquals("Bâtiment industriel", DemandeDegrevementICIHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
+		Assert.assertEquals("Bâtiment industriel", ImmeubleHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
 	}
 
 	@Test
@@ -82,7 +76,7 @@ public class DemandeDegrevementICIHelperTest {
 			immeuble.getSurfacesAuSol().add(surface);
 		}
 
-		Assert.assertEquals("Jardin, route", DemandeDegrevementICIHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
+		Assert.assertEquals("Jardin, route", ImmeubleHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
 	}
 
 	@Test
@@ -105,7 +99,7 @@ public class DemandeDegrevementICIHelperTest {
 			immeuble.getSurfacesAuSol().add(surface);
 		}
 
-		Assert.assertEquals("Jardin, route / Piscine", DemandeDegrevementICIHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
+		Assert.assertEquals("Jardin, route / Piscine", ImmeubleHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
 	}
 
 	@Test
@@ -162,7 +156,7 @@ public class DemandeDegrevementICIHelperTest {
 			immeuble.getImplantations().add(implantationRF);
 		}
 
-		Assert.assertEquals("Bâtiment industriel / Bâtiment commercial / Jardin, route / Piscine", DemandeDegrevementICIHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
+		Assert.assertEquals("Bâtiment industriel / Bâtiment commercial / Jardin, route / Piscine", ImmeubleHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
 	}
 
 	@Test
@@ -208,7 +202,7 @@ public class DemandeDegrevementICIHelperTest {
 
 		// on ne prend que les natures qui ne font pas dépasser la longueur maximale
 		// dans l'ordre de leur surface décroissante
-		Assert.assertEquals("Bâtiment militaire à vocation industrielle / Terrain de foot / Jardin, route / Chemin de ronde", DemandeDegrevementICIHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
+		Assert.assertEquals("Bâtiment militaire à vocation industrielle / Terrain de foot / Jardin, route / Chemin de ronde", ImmeubleHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
 	}
 
 	@Test
@@ -221,6 +215,6 @@ public class DemandeDegrevementICIHelperTest {
 		immeuble.setSurfacesAuSol(Collections.singleton(surface));
 		immeuble.setImplantations(Collections.emptySet());
 
-		Assert.assertEquals("Jardin, route, chemin, petit bois, bâtiment industriel à vocation militaire, terrain d'aviation, ...", DemandeDegrevementICIHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
+		Assert.assertEquals("Jardin, route, chemin, petit bois, bâtiment industriel à vocation militaire, terrain d'aviation, ...", ImmeubleHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
 	}
 }

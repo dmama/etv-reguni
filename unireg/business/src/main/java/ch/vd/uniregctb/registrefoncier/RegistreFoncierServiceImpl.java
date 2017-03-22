@@ -23,15 +23,21 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
+	private DroitRFDAO droitRFDAO;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private BatimentRFDAO batimentRFDAO;
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private ServiceInfrastructureService infraService;
+
+	public void setDroitRFDAO(DroitRFDAO droitRFDAO) {
+		this.droitRFDAO = droitRFDAO;
+	}
 
 	public void setImmeubleRFDAO(ImmeubleRFDAO immeubleRFDAO) {
 		this.immeubleRFDAO = immeubleRFDAO;
@@ -52,10 +58,16 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@NotNull
 	@Override
 	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb) {
+		return getDroitsForCtb(ctb, false);
+	}
+
+	@NotNull
+	@Override
+	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble) {
 		return ctb.getRapprochementsRF().stream()
 				.filter(AnnulableHelper::nonAnnule)                     // on ignore les rapprochements annulés
-				.flatMap(RegistreFoncierServiceImpl::getDroitsValides)  // on demande les droits valides pour le rapprochement
-				.sorted(DroitRF::compareTo)                             // on trie les droits pour garder un ordre constant entre chaque appel
+				.flatMap(rapp -> getDroitsValides(rapp, prefetchSituationsImmeuble))  // on demande les droits valides pour le rapprochement
+				.sorted()                             // on trie les droits pour garder un ordre constant entre chaque appel
 				.collect(Collectors.toList());
 	}
 
@@ -87,11 +99,12 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	 * </pre>
 	 *
 	 * @param rapprochement un rapprochement entre un contribuable et un tiers RF
+	 * @param fetchSituations <code>true</code> s'il faut que les immeubles des droits retournés aient déjà leurs situations récupérées (optim)
 	 * @return les liste des droits valides pour le contribuable
 	 */
-	private static Stream<DroitRF> getDroitsValides(RapprochementRF rapprochement) {
-		return rapprochement.getTiersRF().getDroits().stream()
-				.filter(Annulable::isNotAnnule)
+	private Stream<DroitRF> getDroitsValides(RapprochementRF rapprochement, boolean fetchSituations) {
+		return droitRFDAO.findForAyantDroit(rapprochement.getTiersRF().getId(), fetchSituations).stream()
+				.filter(AnnulableHelper::nonAnnule)
 				.filter(d -> DateRangeHelper.intersect(d, rapprochement));
 	}
 
@@ -206,10 +219,19 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Nullable
 	@Override
 	public SituationRF getSituation(ImmeubleRF immeuble, RegDate dateReference) {
-		return immeuble.getSituations().stream()
+		final Optional<SituationRF> atOrNext = immeuble.getSituations().stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(s -> s.isValidAt(dateReference) || RegDateHelper.isBefore(dateReference, s.getDateDebut(), NullDateBehavior.EARLIEST))
-				.min(Comparator.comparing(SituationRF::getDateDebut, Comparator.nullsFirst(Comparator.naturalOrder())))
+				.min(Comparator.comparing(SituationRF::getDateDebut, Comparator.nullsFirst(Comparator.naturalOrder())));
+
+		if (atOrNext.isPresent()) {
+			return atOrNext.get();
+		}
+
+		// rien trouvé après, essayons avant...
+		return immeuble.getSituations().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.max(Comparator.comparing(SituationRF::getDateFin, NullDateBehavior.LATEST::compare))
 				.orElse(null);
 	}
 }

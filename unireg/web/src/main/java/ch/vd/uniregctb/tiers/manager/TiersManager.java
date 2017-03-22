@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +33,8 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
@@ -86,6 +90,11 @@ import ch.vd.uniregctb.rapport.RapportHelper;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DroitRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
+import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -129,6 +138,7 @@ import ch.vd.uniregctb.tiers.view.AdresseCivilViewComparator;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.AdresseViewComparator;
 import ch.vd.uniregctb.tiers.view.AllegementFiscalView;
+import ch.vd.uniregctb.tiers.view.CommuneView;
 import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
@@ -197,6 +207,8 @@ public class TiersManager implements MessageSourceAware {
 	protected ExerciceCommercialHelper exerciceCommercialHelper;
 
 	protected ServiceIDEService serviceIDEService;
+
+	protected RegistreFoncierService registreFoncierService;
 
 	/**
 	 * Recupere l'individu correspondant au tiers
@@ -783,6 +795,75 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setExceptionDonneesCiviles(e.getMessage());
 		}
 
+		tiersView.setCommunesImmeubles(getCommunesImmeubles(entreprise));
+	}
+
+	private List<CommuneView> getCommunesImmeubles(Contribuable ctb) {
+
+		// récupération de toutes les communes vaudoises
+		final Map<Integer, EntiteOFS> communesVaudoises = serviceInfrastructureService.getCommunesDeVaud().stream()
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toMap(Commune::getNoOFS,
+				                          Function.identity(),
+				                          (c1, c2) -> c2));
+
+		// les communes sur lesquelles l'entreprise a des immeubles
+		final Map<Integer, CommuneView> communes = registreFoncierService.getDroitsForCtb(ctb, true).stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(DroitRF::getImmeuble)
+				.filter(AnnulableHelper::nonAnnule)
+				.map(ImmeubleRF::getSituations)
+				.flatMap(Set::stream)
+				.filter(AnnulableHelper::nonAnnule)
+				.map(SituationRF::getCommune)
+				.filter(AnnulableHelper::nonAnnule)
+				.map(commune -> communesVaudoises.computeIfAbsent(commune.getNoOfs(), ofs -> buildCommuneInconnue(commune)))
+				.map(commune -> new CommuneView(commune.getNoOFS(), commune.getNomOfficiel()))
+				.collect(Collectors.toMap(CommuneView::getNoOfs,
+				                          Function.identity(),
+				                          (c1, c2) -> c2));
+
+		// si on a plusieurs communes avec un numéro OFS différent mais le même nom, on faut les distinguer
+		final Map<String, List<CommuneView>> parNom = communes.values().stream()
+				.collect(Collectors.toMap(CommuneView::getNom,
+				                          Collections::singletonList,
+				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+		for (List<CommuneView> lists : parNom.values()) {
+			if (lists.size() > 1) {
+				lists.forEach(view -> {
+					final String nouveauNom = String.format("%s (%d)", view.getNom(), view.getNoOfs());
+					communes.put(view.getNoOfs(), new CommuneView(view.getNoOfs(), nouveauNom));
+				});
+			}
+		}
+
+		return communes.values().stream()
+				.sorted(Comparator.comparing(CommuneView::getNom))
+				.collect(Collectors.toList());
+	}
+
+	private static EntiteOFS buildCommuneInconnue(CommuneRF communeRF) {
+		return new EntiteOFS() {
+			@Override
+			public String getNomCourt() {
+				return communeRF.getNomRf();
+			}
+
+			@Override
+			public String getNomOfficiel() {
+				return communeRF.getNomRf();
+			}
+
+			@Override
+			public int getNoOFS() {
+				return communeRF.getNoOfs();
+			}
+
+			@Override
+			public String getSigleOFS() {
+				return null;
+			}
+		};
 	}
 
 	/**
@@ -1474,6 +1555,10 @@ public class TiersManager implements MessageSourceAware {
 
 	public void setServiceIDEService(ServiceIDEService serviceIDEService) {
 		this.serviceIDEService = serviceIDEService;
+	}
+
+	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
+		this.registreFoncierService = registreFoncierService;
 	}
 }
 

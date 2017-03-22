@@ -25,6 +25,15 @@ public interface RegistreFoncierService {
 	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb);
 
 	/**
+	 * Détermine les droits sur des immeubles d'un contribuable Unireg.
+	 *
+	 * @param ctb un contribuable Unireg
+	 * @return une liste de droits.
+	 */
+	@NotNull
+	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble);
+
+	/**
 	 * @param immeubleId l'id technique d'un immeuble
 	 * @return l'immeuble qui correspond à l'id; ou <b>null</b> si aucun immeuble ne correspond.
 	 */
