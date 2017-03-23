@@ -60,6 +60,11 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 
 		final Set<Number> ids = new HashSet<>();
 
+		if (!exists(communauteId)) {
+			// la communauté n'existe pas
+			return null;
+		}
+
 		// on récupère les ids des tiers RF PMs
 		final Query query1 = getCurrentSession().createQuery("select d.ayantDroit.id from DroitProprietePersonneRF d where d.annulationDate is null and d.communaute.id = :communauteId");
 		query1.setParameter("communauteId", communauteId);
@@ -67,7 +72,8 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 		ids.addAll((List<Number>) query1.list());
 
 		if (ids.isEmpty()) {
-			return null;
+			// la communauté existe, mais elle est vide
+			return new CommunauteRFMembreInfo(0, Collections.emptyList(), Collections.emptyList());
 		}
 
 		// conversion ids tiers RF -> ids de tiers Unireg

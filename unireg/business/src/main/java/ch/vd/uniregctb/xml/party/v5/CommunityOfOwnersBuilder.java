@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
+import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.xml.EnumHelper;
@@ -21,6 +22,9 @@ public abstract class CommunityOfOwnersBuilder {
 	public static CommunityOfOwners newCommunity(CommunauteRF communaute, Function<Long, CommunauteRFMembreInfo> membreInfoProvider) {
 
 		final CommunauteRFMembreInfo membreInfo = membreInfoProvider.apply(communaute.getId());
+		if (membreInfo == null) {
+			throw new ProgrammingException("Les informations de la communauté id=[" + communaute.getId() + "] sont nulles.");
+		}
 
 		final CommunityOfOwners community = new CommunityOfOwners();
 		community.setId(communaute.getId());
