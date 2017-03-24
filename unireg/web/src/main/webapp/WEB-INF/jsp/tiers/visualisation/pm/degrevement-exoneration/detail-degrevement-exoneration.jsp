@@ -72,31 +72,9 @@
 	</c:if>
 	<c:choose>
 		<c:when test="${not empty exonerations}">
-			<unireg:nextRowClass reset="1"/>
-			<table class="display display_table">
-				<thead>
-				<tr>
-					<th><fmt:message key="label.date.debut"/></th>
-					<th><fmt:message key="label.date.fin"/></th>
-					<th><fmt:message key="label.pourcentage.exoneration"/></th>
-					<th>&nbsp;</th>
-				</tr>
-				</thead>
-				<tbody>
-				<c:forEach items="${exonerations}" var="exo">
-					<tr class='<unireg:nextRowClass/><c:if test="${exo.annule}"> strike</c:if>'>
-						<td><unireg:regdate regdate="${exo.dateDebut}"/></td>
-						<td><unireg:regdate regdate="${exo.dateFin}"/></td>
-						<td>
-							<fmt:formatNumber maxIntegerDigits="4" minFractionDigits="2" value="${exo.pourcentageExoneration}"/><c:if test="${exo.pourcentageExoneration != null}">&nbsp;&percnt;</c:if>
-						</td>
-						<td>
-							<unireg:consulterLog entityNature="AllegementFoncier" entityId="${exo.idExoneration}"/>
-						</td>
-					</tr>
-				</c:forEach>
-				</tbody>
-			</table>
+			<jsp:include page="../../../common/degrevement-exoneration/exonerations-table.jsp">
+				<jsp:param name="mode" value="visu"/>
+			</jsp:include>
 		</c:when>
 		<c:otherwise>
 			<span style="font-style: italic"><fmt:message key="label.aucune.donnee.exoneration"/></span>
