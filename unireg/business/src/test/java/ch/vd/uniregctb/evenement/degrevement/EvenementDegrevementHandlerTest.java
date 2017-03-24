@@ -620,11 +620,11 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 
 			// quelques dégrèvements pré-existants
 			// le premier ne devrait pas être modifié
-			addDegrevementICI(entreprise, immeuble, date(pf - 3, 1, 1), date(pf - 3, 12, 31), new DonneesUtilisation(10000, 1000, 100, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, null);
+			addDegrevementICI(entreprise, immeuble, pf - 3, pf - 3, new DonneesUtilisation(10000, 1000, 100, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, null);
 			// le second devra être revu pour sa date de fin (qui est après le début de la PF du formulaire)
-			addDegrevementICI(entreprise, immeuble, date(pf - 2, 1, 1), date(pf, 4, 12), new DonneesUtilisation(100000, 750, 75, BigDecimal.valueOf(75), BigDecimal.valueOf(75)), null, null);
+			addDegrevementICI(entreprise, immeuble, pf - 2, pf, new DonneesUtilisation(100000, 750, 75, BigDecimal.valueOf(75), BigDecimal.valueOf(75)), null, null);
 			// et le troisième devrait se retrouver annulé
-			addDegrevementICI(entreprise, immeuble, date(pf, 4, 13), null, new DonneesUtilisation(5, 2, 20, BigDecimal.valueOf(1), BigDecimal.valueOf(1)), null, null);
+			addDegrevementICI(entreprise, immeuble, pf + 1, null, new DonneesUtilisation(5, 2, 20, BigDecimal.valueOf(1), BigDecimal.valueOf(1)), null, null);
 
 			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
 			Assert.assertNotNull(formulaire);
@@ -703,7 +703,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 					Assert.assertNotNull(degrevement);
 					Assert.assertTrue(degrevement.isAnnule());
 					Assert.assertEquals(date(pf - 2, 1, 1), degrevement.getDateDebut());
-					Assert.assertEquals(date(pf, 4, 12), degrevement.getDateFin());
+					Assert.assertEquals(date(pf, 12, 31), degrevement.getDateFin());
 
 					// vérification des valeurs présentes
 					Assert.assertNotNull(degrevement.getLocation());
@@ -737,7 +737,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 					Assert.assertNotNull(degrevement);
 					Assert.assertFalse(degrevement.isAnnule());
 					Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
-					Assert.assertNull(degrevement.getDateFin());
+					Assert.assertEquals(date(pf, 12, 31), degrevement.getDateFin());
 
 					// nouvelles données
 					Assert.assertNotNull(degrevement.getLocation());
@@ -760,8 +760,8 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 				{
 					final DegrevementICI degrevement = degrevements.get(4);
 					Assert.assertNotNull(degrevement);
-					Assert.assertTrue(degrevement.isAnnule());
-					Assert.assertEquals(date(pf, 4, 13), degrevement.getDateDebut());
+					Assert.assertFalse(degrevement.isAnnule());
+					Assert.assertEquals(date(pf + 1, 1, 1), degrevement.getDateDebut());
 					Assert.assertNull(degrevement.getDateFin());
 
 					// vérification des valeurs présentes
@@ -835,7 +835,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
 			// une valeur pré-existante
-			addDegrevementICI(entreprise, immeuble, date(pf - 3, 1, 1), null, new DonneesUtilisation(10000, 1000, 100, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, null);
+			addDegrevementICI(entreprise, immeuble, pf - 3, null, new DonneesUtilisation(10000, 1000, 100, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, null);
 
 			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
 			Assert.assertNotNull(formulaire);

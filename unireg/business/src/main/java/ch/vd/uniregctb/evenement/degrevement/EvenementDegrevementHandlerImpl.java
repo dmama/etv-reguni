@@ -2,18 +2,21 @@ package ch.vd.uniregctb.evenement.degrevement;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.dperm.xml.common.v1.TypImmeuble;
 import ch.vd.dperm.xml.common.v1.TypeImposition;
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
@@ -24,6 +27,7 @@ import ch.vd.unireg.xml.event.degrevement.v1.Message;
 import ch.vd.unireg.xml.event.degrevement.v1.TypDateAttr;
 import ch.vd.unireg.xml.event.degrevement.v1.TypEntMax12Attr;
 import ch.vd.unireg.xml.event.degrevement.v1.TypPctPosDecMax32Attr;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.documentfiscal.DemandeDegrevementICIHelper;
 import ch.vd.uniregctb.foncier.DegrevementICI;
@@ -93,13 +97,11 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 
 		final Entreprise entreprise = formulaire.getEntreprise();
 		final ImmeubleRF immeuble = formulaire.getImmeuble();
-		final DateRange destinationRange = new DateRangeHelper.Range(RegDate.get(formulaire.getPeriodeFiscale(), 1, 1), null);
 
 		// TODO faut-il faire un contrôle spécifique si aucune valeur déclarée ne change ?
 
 		final DegrevementICI degrevement = new DegrevementICI();
-		degrevement.setDateDebut(destinationRange.getDateDebut());
-		degrevement.setDateFin(destinationRange.getDateFin());
+		degrevement.setDateDebut(RegDate.get(formulaire.getPeriodeFiscale(), 1, 1));
 		degrevement.setImmeuble(immeuble);
 		degrevement.setContribuable(entreprise);
 
@@ -122,31 +124,43 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 		// quitance implicite du formulaire
 		quittancerFormulaire(formulaire, XmlUtils.xmlcal2regdate(retour.getSupervision().getHorodatageReception()));
 
-		// TODO hypothèse : tous les dégrèvements ultérieurs du début de la période fiscale de la demande sont tronqués ou annulés
-		final RegDate dateFinMax = destinationRange.getDateDebut().getOneDayBefore();
-		entreprise.getAllegementsFonciersNonAnnulesTries(DegrevementICI.class).stream()
+		// si on a reçu une donnée pour une PF qui est aussi la PF de début d'une donnée existante, alors il faut annuler la donnée précédemment présente
+		// mais dans tous les autres cas, on ne considère que la nouvelle donnée qu'entre la PF de la demande et la PF de la donnée existante suivante
+		final List<DegrevementICI> existants = entreprise.getAllegementsFonciersNonAnnulesTries(DegrevementICI.class).stream()
 				.filter(deg -> deg.getImmeuble() == immeuble)
-				.filter(deg -> DateRangeHelper.intersect(deg, destinationRange))
-				.forEach(deg -> {
-					// si complètement dedans -> annulé
-					if (DateRangeHelper.within(deg, destinationRange)) {
-						deg.setAnnule(true);
+				.collect(Collectors.toList());
+
+		// annulation des existants (normalement, un seul) dont la PF de début est la même que celle de la demande
+		existants.stream()
+				.filter(deg -> deg.getDateDebut().year() == formulaire.getPeriodeFiscale())
+				.forEach(deg -> deg.setAnnule(true));
+
+		// trouvons maintenant la date de fin de cette donnée = le dernier jour de la PF qui précède la première donnée ultérieure
+		existants.stream()
+				.filter(AnnulableHelper::nonAnnule)             // et oui, il peut maintenant y avoir des instances annulées...
+				.map(DegrevementICI::getDateDebut)
+				.filter(debut -> debut.isAfter(degrevement.getDateDebut()))
+				.min(Comparator.naturalOrder())
+				.map(RegDate::getOneDayBefore)
+				.ifPresent(degrevement::setDateFin);
+
+		// il faut éventuellement raccourcir une donnée existante pour la faire se terminer à la veille de la date de début de la nouvelle instance
+		final RegDate nouvelleDateFin = degrevement.getDateDebut().getOneDayBefore();
+		existants.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(deg -> Pair.of(deg, DateRangeHelper.intersection(degrevement, deg)))
+				.filter(pair -> pair.getRight() != null)
+				.forEach(pair -> {
+					final DegrevementICI aRaccourcir = pair.getLeft();
+					if (aRaccourcir.getDateFin() == null) {
+						// on ferme juste
+						aRaccourcir.setDateFin(nouvelleDateFin);
 					}
 					else {
-						// il intersecte juste... comme le range de destination est ouvert à droite,
-						// une intersection non-complète signifie que c'est la date de début qui dépasse
-						// il y a donc deux cas :
-						// - sans date de fin existante -> on ferme
-						// - avec date de fin existante -> on annule, recopie et on ferme la copie à la veille de la nouvelle date de début
-						if (deg.getDateFin() == null) {
-							deg.setDateFin(dateFinMax);
-						}
-						else {
-							final DegrevementICI copie = deg.duplicate();
-							deg.setAnnule(true);
-							copie.setDateFin(dateFinMax);
-							entreprise.addAllegementFoncier(copie);
-						}
+						final DegrevementICI copy = aRaccourcir.duplicate();
+						aRaccourcir.setAnnule(true);
+						copy.setDateFin(nouvelleDateFin);
+						entreprise.addAllegementFoncier(copy);
 					}
 				});
 
