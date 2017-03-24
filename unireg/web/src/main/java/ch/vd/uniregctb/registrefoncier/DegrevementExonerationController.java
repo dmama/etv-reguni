@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,6 +64,8 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 @RequestMapping(value = "/degrevement-exoneration")
 public class DegrevementExonerationController {
 
+	public static final String VISU_CRITERIA_SESSION_NAME = "degExoVisuCriteria";
+
 	private RegistreFoncierService registreFoncierService;
 	private HibernateTemplate hibernateTemplate;
 	private ServiceInfrastructureService infraService;
@@ -97,7 +100,8 @@ public class DegrevementExonerationController {
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/immeubles.do", method = RequestMethod.GET)
 	@ResponseBody
-	public ChoixImmeubleView getImmeublesSurCommune(@RequestParam(value = "ctb") long idCtb,
+	public ChoixImmeubleView getImmeublesSurCommune(HttpSession session,
+	                                                @RequestParam(value = "ctb") long idCtb,
 	                                                @RequestParam(value = "ofsCommune") int ofsCommune,
 	                                                @RequestParam(value = "noParcelle", required = false) Integer noParcelle,
 	                                                @RequestParam(value = "index1", required = false) Integer index1,
@@ -155,6 +159,11 @@ public class DegrevementExonerationController {
 			}
 		}
 		views.sort(IMMEUBLE_VIEW_COMPARATOR);
+
+		// placement en session des derniers critères utilisés
+		session.setAttribute(VISU_CRITERIA_SESSION_NAME, new DegrevementExonerationVisuSessionData(idCtb, ofsCommune, noParcelle, index1, index2, index3));
+
+		// construction de la vue et retour
 		return new ChoixImmeubleView(views, numerosParcelles, numerosIndex1, numerosIndex2, numerosIndex3);
 	}
 

@@ -162,5 +162,45 @@
 			              });
 		}
 	};
+
+	<%-- Initialisation de la page si la session contient des informations sur le contribuable --%>
+	<%--@elvariable id="degExoVisuCriteria" type="ch.vd.uniregctb.registrefoncier.DegrevementExonerationVisuSessionData"--%>
+	<c:set var="degExoVisuCriteria" value="${sessionScope.degExoVisuCriteria}"/>
+	<c:if test="${degExoVisuCriteria != null && degExoVisuCriteria.idContribuable == command.entreprise.id}">
+		$(function() {
+			const queryString = DegrevementExoneration.buildQueryString(${degExoVisuCriteria.ofsCommune}, '${degExoVisuCriteria.noParcelle}', '${degExoVisuCriteria.index1}', '${degExoVisuCriteria.index2}', '${degExoVisuCriteria.index3}');
+			$('#selectCommune').val(${degExoVisuCriteria.ofsCommune});
+			$.get(App.curl(queryString), function(choix) {
+				const count = choix.immeubles.length;
+				if (count > 0) {
+					$('#immeubles-table').html(DegrevementExoneration.htmlTableImmeubles(choix.immeubles));
+					$('#immeubles-sur-commune').show();
+
+					const selectNoParcelle = $('#selectNoParcelle');
+					const selectIndex1 = $('#selectIndex1');
+					const selectIndex2 = $('#selectIndex2');
+					const selectIndex3 = $('#selectIndex3');
+					selectNoParcelle.html(DegrevementExoneration.htmlSelectNumeros(choix.numerosParcelles));
+					selectIndex1.html(DegrevementExoneration.htmlSelectNumeros(choix.numerosIndex1));
+					selectIndex2.html(DegrevementExoneration.htmlSelectNumeros(choix.numerosIndex2));
+					selectIndex3.html(DegrevementExoneration.htmlSelectNumeros(choix.numerosIndex3));
+
+					<c:if test="${degExoVisuCriteria.noParcelle != null}">
+						selectNoParcelle.val(${degExoVisuCriteria.noParcelle});
+					</c:if>
+					<c:if test="${degExoVisuCriteria.index1 != null}">
+						selectIndex1.val(${degExoVisuCriteria.index1});
+					</c:if>
+					<c:if test="${degExoVisuCriteria.index2 != null}">
+						selectIndex2.val(${degExoVisuCriteria.index2});
+					</c:if>
+					<c:if test="${degExoVisuCriteria.index3 != null}">
+						selectIndex3.val(${degExoVisuCriteria.index3});
+					</c:if>
+					$('.withParcelle').show();
+				}
+			}, 'json');
+		});
+	</c:if>
 </script>
 
