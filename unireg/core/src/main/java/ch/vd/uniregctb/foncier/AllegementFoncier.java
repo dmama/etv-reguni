@@ -94,8 +94,7 @@ public abstract class AllegementFoncier extends HibernateDateRangeEntity impleme
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "CTB_ID")
-	@ForeignKey(name = "FK_AFONC_CTB_ID")
+	@JoinColumn(name = "CTB_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_AFONC_CTB_ID", columnNames = "CTB_ID")
 	public Contribuable getContribuable() {
 		return contribuable;

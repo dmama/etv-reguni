@@ -145,12 +145,12 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 							final DegrevementICI copie = deg.duplicate();
 							deg.setAnnule(true);
 							copie.setDateFin(dateFinMax);
-							entreprise.addAllegementFoncier(hibernateTemplate.merge(copie));
+							entreprise.addAllegementFoncier(copie);
 						}
 					}
 				});
 
-		entreprise.addAllegementFoncier(hibernateTemplate.merge(degrevement));
+		entreprise.addAllegementFoncier(degrevement);
 
 		return quittance;
 	}

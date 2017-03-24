@@ -81,6 +81,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String MODIF_MANDATS_GENERAUX = "MANDATS_GENERAUX";
 	static final String MODIF_MANDATS_TIERS = "MANDATS_TIERS";
 	static final String MODIF_REMARQUES = "REMARQUES";
+	static final String MODIF_DEMANDES_DEGREVEMENT_ICI = "DEMANDES_DEGREVEMENT_ICI";
+	static final String MODIF_DEGREVEMENTS_ICI = "DEGREVEMENTS_ICI";
+	static final String MODIF_EXONERATIONS_IFONC = "EXONERATIONS_IFONC";
 	static final String MODIF_ETIQUETTES = "ETIQUETTES";
 	
 	private TiersService tiersService;
@@ -411,6 +414,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			map.put(MODIF_AUTRES_DOCS_FISCAUX, Boolean.FALSE);
 			map.put(MODIF_REMARQUES, Boolean.FALSE);
 			map.put(MODIF_MANDATS, Boolean.FALSE);
+			map.put(MODIF_DEMANDES_DEGREVEMENT_ICI, Boolean.FALSE);
+			map.put(MODIF_DEGREVEMENTS_ICI, Boolean.FALSE);
+			map.put(MODIF_EXONERATIONS_IFONC, Boolean.FALSE);
 			map.put(MODIF_ETIQUETTES, Boolean.FALSE);
 			return map;
 		}
@@ -660,6 +666,15 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.ENVOI_DEMANDE_BILAN_FINAL, Role.ENVOI_AUTORISATION_RADIATION, Role.ENVOI_LETTRE_TYPE_INFO_LIQUIDATION)) {
 				map.put(MODIF_AUTRES_DOCS_FISCAUX, Boolean.TRUE);
+			}
+			if (SecurityHelper.isGranted(securityProvider, Role.DEMANDES_DEGREVEMENT_ICI)) {
+				map.put(MODIF_DEMANDES_DEGREVEMENT_ICI, Boolean.TRUE);
+			}
+			if (SecurityHelper.isGranted(securityProvider, Role.DEGREVEMENTS_ICI)) {
+				map.put(MODIF_DEGREVEMENTS_ICI, Boolean.TRUE);
+			}
+			if (SecurityHelper.isGranted(securityProvider, Role.EXONERATIONS_IFONC)) {
+				map.put(MODIF_EXONERATIONS_IFONC, Boolean.TRUE);
 			}
 		}
 		else if (tiers instanceof Etablissement) {

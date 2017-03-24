@@ -480,3 +480,29 @@ input.bigbutton {
 	font-size: 150%;
 	padding: 10px 20px;
 }
+
+/**
+ * Dégrèvements et exonérations
+ */
+
+table.degrevement {
+	padding: 5px 0 5px 5px;
+}
+table.degrevement td.titre,th.titre {
+	width: 28%;
+}
+table.degrevement td.valeur,th.valeur {
+	width: 36%;
+}
+table.degrevement th.valeur {
+	padding: 0 0 0 1em;
+}
+table.degrevement input.nombre {
+	width: 15ex;
+}
+table.degrevement td.valeur span.computed {
+	padding: 0 0 0 1em;
+	font-style: italic;
+	font-weight: bold;
+	color: darkslateblue;
+}

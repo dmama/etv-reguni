@@ -1,0 +1,55 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/include/common.jsp"%>
+
+<%--@elvariable id="demandesDegrevement" type="java.util.List<ch.vd.uniregctb.registrefoncier.DemandeDegrevementICIView>"--%>
+
+<c:set value="${param.mode}" var="mode"/>       <%-- 'visu' ou 'edit' --%>
+
+<display:table name="${demandesDegrevement}" id="demande" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+	<display:column titleKey="label.periode.fiscale">
+		<c:out value="${demande.periodeFiscale}"/>
+	</display:column>
+	<display:column titleKey="label.date.envoi">
+		<unireg:regdate regdate="${demande.dateEnvoi}"/>
+		<c:choose>
+			<c:when test="${demande.urlVisualisationExterneDocument != null}">
+				&nbsp;<a href="#" class="pdf" title="Visualisation du courrier" onclick="VisuExterneDoc.openWindow('${demande.urlVisualisationExterneDocument}');">&nbsp;</a>
+			</c:when>
+			<c:when test="${demande.avecCopieConformeEnvoi}">
+				&nbsp;<a href="../autresdocs/copie-conforme-envoi.do?idDoc=${demande.id}&url_memorize=false" class="pdf" id="print-envoi-${demande.id}" title="Courrier envoyé" onclick="Link.tempSwap(this, '#disabled-print-envoi-${demande.id}');">&nbsp;</a>
+				<span class="pdf-grayed" id="disabled-print-envoi-${demande.id}" style="display: none;">&nbsp;</span>
+			</c:when>
+		</c:choose>
+	</display:column>
+	<display:column titleKey="label.date.delai.accorde">
+		<unireg:regdate regdate="${demande.delaiRetour}"/>
+	</display:column>
+	<display:column titleKey="label.date.retour">
+		<unireg:regdate regdate="${demande.dateRetour}"/>
+	</display:column>
+	<display:column titleKey="label.etat.avancement" >
+		<fmt:message key="option.etat.avancement.${demande.etat}" />
+		<c:choose>
+			<c:when test="${demande.urlVisualisationExterneRappel != null}">
+				&nbsp;<a href="#" class="pdf" title="Visualisation du courrier de rappel" onclick="VisuExterneDoc.openWindow('${demande.urlVisualisationExterneRappel}');">&nbsp;</a>
+			</c:when>
+			<c:when test="${demande.avecCopieConformeRappel}">
+				&nbsp;<a href="../autresdocs/copie-conforme-rappel.do?idDoc=${demande.id}&url_memorize=false" class="pdf" id="print-rappel-${demande.id}" title="Rappel envoyé" onclick="Link.tempSwap(this, '#disabled-print-rappel-${docFiscal.id}');">&nbsp;</a>
+				<span class="pdf-grayed" id="disabled-print-rappel-${demande.id}" style="display: none;">&nbsp;</span>
+			</c:when>
+		</c:choose>
+	</display:column>
+	<display:column class="action">
+		<c:choose>
+			<c:when test="${mode == 'visu'}">
+				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${demande.id}"/>
+			</c:when>
+			<c:when test="${mode == 'edit' && !demande.annule}">
+				<unireg:raccourciModifier link='/degrevement-exoneration/edit-demande-degrevement.do?id=${demande.id}' tooltip="Modifier la demande de dégrèvement"/>
+			</c:when>
+			<c:otherwise>
+				&nbsp;
+			</c:otherwise>
+		</c:choose>
+	</display:column>
+</display:table>
