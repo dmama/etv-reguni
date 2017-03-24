@@ -703,7 +703,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 
 			addDegrevementICI(entreprise,
 			                  immeuble,
-			                  dateDebutDroit,
+			                  dateDebutDroit.year(),
 			                  null,
 			                  new DonneesUtilisation(100000, null, 300, BigDecimal.valueOf(25), null),
 			                  new DonneesUtilisation(300000, null, 900, BigDecimal.valueOf(75), null),
@@ -1966,7 +1966,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 
 		final RegDate dateDebutEntreprise = date(1956, 3, 1);
 		final RegDate dateDebutDroit = date(1985, 11, 29);
-		final RegDate dateDebutDegrevement = date(2013, 1, 1);
+		final int pfDebutDegrevement = 2013;
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile -> rien
@@ -2004,7 +2004,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "b,deb4z754", new IdentifiantAffaireRF(74, dateDebutDroit.year(), 78, 4), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 			addEstimationFiscale(null, null, null, false, 285000L, "RG94", immeuble);
 
-			addDegrevementICI(entreprise, immeuble, dateDebutDegrevement, null, null, new DonneesUtilisation(null, null, null, BigDecimal.valueOf(100L), BigDecimal.valueOf(100L)), null);
+			addDegrevementICI(entreprise, immeuble, pfDebutDegrevement, null, null, new DonneesUtilisation(null, null, null, BigDecimal.valueOf(100L), BigDecimal.valueOf(100L)), null);
 
 			return new Ids(entreprise.getNumero(), immeuble.getId());
 		});
@@ -2044,7 +2044,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 
 		final RegDate dateDebutEntreprise = date(1956, 3, 1);
 		final RegDate dateDebutDroit = date(1985, 11, 29);
-		final RegDate dateDebutDegrevement = date(2013, 1, 1);
+		final int pfDebutDegrevement = 2013;
 		final RegDate dateTraitement = RegDate.get();
 
 		// mise en place civile -> rien
@@ -2082,7 +2082,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "b,deb4z754", new IdentifiantAffaireRF(74, dateDebutDroit.year(), 78, 4), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 			addEstimationFiscale(null, null, null, false, 285000L, "RG94", immeuble);
 
-			addDegrevementICI(entreprise, immeuble, dateDebutDegrevement, date(dateTraitement.year() - 1, 12, 31), null, new DonneesUtilisation(null, null, null, BigDecimal.valueOf(100L), BigDecimal.valueOf(100L)), null);
+			addDegrevementICI(entreprise, immeuble, pfDebutDegrevement, dateTraitement.year() - 1, null, new DonneesUtilisation(null, null, null, BigDecimal.valueOf(100L), BigDecimal.valueOf(100L)), null);
 
 			return new Ids(entreprise.getNumero(), immeuble.getId());
 		});

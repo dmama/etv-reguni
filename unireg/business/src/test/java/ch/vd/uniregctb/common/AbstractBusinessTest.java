@@ -1336,12 +1336,14 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return tiersDAO.addAndSave(entreprise, rf);
     }
 
-    protected DegrevementICI addDegrevementICI(Entreprise entreprise, ImmeubleRF immeuble, RegDate dateDebut, @Nullable RegDate dateFin, DonneesUtilisation locatif, DonneesUtilisation usagePropre, @Nullable DonneesLoiLogement loiLogement) {
+    protected DegrevementICI addDegrevementICI(Entreprise entreprise, ImmeubleRF immeuble, int pfDebut, @Nullable Integer pfFin, DonneesUtilisation locatif, DonneesUtilisation usagePropre, @Nullable DonneesLoiLogement loiLogement) {
     	final DegrevementICI deg = new DegrevementICI();
     	deg.setImmeuble(immeuble);
     	deg.setContribuable(entreprise);
-    	deg.setDateDebut(dateDebut);
-    	deg.setDateFin(dateFin);
+    	deg.setDateDebut(date(pfDebut, 1, 1));
+    	if (pfFin != null) {
+		    deg.setDateFin(date(pfFin, 12, 31));
+	    }
     	deg.setLocation(locatif);
     	deg.setPropreUsage(usagePropre);
     	deg.setLoiLogement(loiLogement);
