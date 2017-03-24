@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<%--@elvariable id="allPfDebut" type="java.util.List<Integer>"--%>
-
 <c:set var="commandName" value="${param.commandName}"/>
 
 <table border="0">

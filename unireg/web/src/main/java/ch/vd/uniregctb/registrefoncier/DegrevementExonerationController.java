@@ -210,6 +210,15 @@ public class DegrevementExonerationController {
 		return degrevement;
 	}
 
+	@NotNull
+	private ExonerationIFONC getExoneration(long id) {
+		final ExonerationIFONC exoneration = hibernateTemplate.get(ExonerationIFONC.class, id);
+		if (exoneration == null) {
+			throw new ObjectNotFoundException("L'identifiant " + id + " ne correspond à aucune donnée d'exonération connue.");
+		}
+		return exoneration;
+	}
+
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/visu.do", method = RequestMethod.GET)
 	public String showDetailDegrevementsExonerations(Model model,
@@ -260,6 +269,12 @@ public class DegrevementExonerationController {
 		model.addAttribute("immeuble", immeubleView);
 		return "tiers/visualisation/pm/degrevement-exoneration/detail-degrevement-exoneration";
 	}
+
+	//////////////////////////////////
+	//                              //
+	// Edition des dégrèvements ICI //
+	//                              //
+	//////////////////////////////////
 
 	@RequestMapping(value = "/edit-degrevements.do", method = RequestMethod.GET)
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -451,7 +466,9 @@ public class DegrevementExonerationController {
 				.filter(deg -> deg.getDateDebut().isAfter(view.getDateDebut()))
 				.map(DegrevementICI::getDateDebut)
 				.min(Comparator.naturalOrder())
-				.ifPresent(nextDebut -> view.setPfFin(nextDebut.getOneDayBefore().year()));
+				.map(RegDate::getOneDayBefore)
+				.map(RegDate::year)
+				.ifPresent(view::setPfFin);
 		if (view.getDateDebut() != degrevement.getDateDebut()) {
 			final List<DegrevementICI> copies = new ArrayList<>(autres.size());
 			autres.stream()
@@ -501,19 +518,259 @@ public class DegrevementExonerationController {
 		return "redirect:edit-degrevements.do?idContribuable=" + ctb.getNumero() + "&idImmeuble=" + degrevement.getImmeuble().getId();
 	}
 
-	@RequestMapping(value = "/edit-demandes-degrevement.do", method = RequestMethod.GET)
-	@Transactional(rollbackFor = Throwable.class, readOnly = true)
-	public String editDemandesDegrevement(Model model,
-	                                      @RequestParam(value = "idContribuable") long idContribuable,
-	                                      @RequestParam(value = "idImmeuble") long idImmeuble) {
-		throw new NotImplementedException("Pas encore implémenté !");
-	}
+	////////////////////////////////////
+	//                                //
+	// Edition des exonérations IFONC //
+	//                                //
+	////////////////////////////////////
 
 	@RequestMapping(value = "/edit-exonerations.do", method = RequestMethod.GET)
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	public String editExonerations(Model model,
 	                               @RequestParam(value = "idContribuable") long idContribuable,
 	                               @RequestParam(value = "idImmeuble") long idImmeuble) {
+
+		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
+		final ImmeubleRF immeuble = getImmeuble(idImmeuble);
+
+		final List<ExonerationIFONCView> exonerations = entreprise.getAllegementsFonciers().stream()
+				.filter(allegement -> allegement.getImmeuble() == immeuble)
+				.filter(allegement -> allegement instanceof ExonerationIFONC)
+				.map(allegement -> (ExonerationIFONC) allegement)
+				.map(ExonerationIFONCView::new)
+				.sorted(new AnnulableHelper.AnnulableDateRangeComparator<>(true))
+				.collect(Collectors.toList());
+
+		final ResumeImmeubleView immeubleView = new ResumeImmeubleView(immeuble, null, registreFoncierService);
+
+		model.addAttribute("idContribuable", idContribuable);
+		model.addAttribute("exonerations", exonerations);
+		model.addAttribute("immeuble", immeubleView);
+		return "tiers/edition/pm/degrevement-exoneration/edit-exonerations";
+	}
+
+	@RequestMapping(value = "/cancel-exoneration.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String cancelExoneration(@RequestParam("id") long idExoneration) {
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.EXONERATIONS_IFONC)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants pour effectuer cette opération.");
+		}
+
+		final ExonerationIFONC exoneration = getExoneration(idExoneration);
+		exoneration.setAnnule(true);
+		return "redirect:/degrevement-exoneration/edit-exonerations.do?idContribuable=" + exoneration.getContribuable().getNumero() + "&idImmeuble=" + exoneration.getImmeuble().getId();
+	}
+
+	@InitBinder(value = "addExonerationCommand")
+	public void initAddExonerationCommandBinder(WebDataBinder binder) {
+		binder.setValidator(new AbstractEditExonerationViewValidator());
+	}
+
+	@RequestMapping(value = "/add-exoneration.do", method = RequestMethod.GET)
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	public String addExoneration(Model model,
+	                             @RequestParam(value = "idContribuable") long idContribuable,
+	                             @RequestParam(value = "idImmeuble") long idImmeuble) {
+		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
+		return showAddExoneration(model, new AddExonerationView(entreprise.getNumero(), idImmeuble));
+	}
+
+	private String showAddExoneration(Model model, AddExonerationView view) {
+		model.addAttribute("idContribuable", view.getIdContribuable());
+		model.addAttribute("immeuble", new ResumeImmeubleView(getImmeuble(view.getIdImmeuble()), null, registreFoncierService));
+		model.addAttribute("addExonerationCommand", view);
+		return "tiers/edition/pm/degrevement-exoneration/add-exoneration";
+	}
+
+	@RequestMapping(value = "/add-exoneration.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String doAddExoneration(Model model,
+	                               @Valid @ModelAttribute("addExonerationCommand") AddExonerationView view,
+	                               BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			return showAddExoneration(model, view);
+		}
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.EXONERATIONS_IFONC)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants pour effectuer cette opération.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(view.getIdContribuable());
+		final Entreprise entreprise = getTiers(Entreprise.class, view.getIdContribuable(), EntrepriseNotFoundException::new);
+		final ImmeubleRF immeuble = getImmeuble(view.getIdImmeuble());
+
+		// on ne doit pas pouvoir réutiliser la période de début de validité d'une donnée existante
+		final List<ExonerationIFONC> autres = entreprise.getAllegementsFonciersNonAnnulesTries(ExonerationIFONC.class).stream()
+				.filter(deg -> deg.getImmeuble() == immeuble)
+				.collect(Collectors.toList());
+		if (autres.stream().anyMatch(exo -> exo.getDateDebut().year() == view.getPfDebut())) {
+			bindingResult.rejectValue("pfDebut", "error.degexo.exoneration.periode.debut.deja.utilisee");
+			return showAddExoneration(model, view);
+		}
+
+		// il faut adapter les dates de fin des dégrèvements existant, éventuellement, et aussi celle du nouveau
+		// - d'abord le nouveau : prendre le dégrèvement existant postérieur est assigner la date de fin du nouveau à la veille de la date de début de celui-ci
+		// - puis les existants, pour les arrêter si nécessaire à la veille de la date de début du nouveau
+		autres.stream()
+				.filter(exo -> exo.getDateDebut().isAfter(view.getDateDebut()))
+				.map(ExonerationIFONC::getDateDebut)
+				.min(Comparator.naturalOrder())
+				.ifPresent(nextDebut -> view.setPfFin(nextDebut.getOneDayBefore().year()));
+		autres.stream()
+				.map(exo -> Pair.of(exo, DateRangeHelper.intersection(exo, view)))
+				.filter(pair -> pair.getRight() != null)
+				.forEach(pair -> {
+					final ExonerationIFONC exo = pair.getLeft();
+					final RegDate nouvelleDateFin = pair.getRight().getDateDebut().getOneDayBefore();
+					if (exo.getDateFin() == null) {
+						// fermeture simple
+						exo.setDateFin(nouvelleDateFin);
+					}
+					else {
+						final ExonerationIFONC copy = exo.duplicate();
+						exo.setAnnule(true);
+						copy.setDateFin(nouvelleDateFin);
+						entreprise.addAllegementFoncier(copy);
+					}
+				});
+
+		// création d'une nouvelle entité
+		final ExonerationIFONC exoneration = new ExonerationIFONC();
+		exoneration.setImmeuble(immeuble);
+		exoneration.setDateDebut(view.getDateDebut());
+		exoneration.setDateFin(view.getDateFin());
+		exoneration.setPourcentageExoneration(view.getPourcentageExoneration());
+		entreprise.addAllegementFoncier(exoneration);
+
+		return "redirect:edit-exonerations.do?idContribuable=" + view.getIdContribuable() + "&idImmeuble=" + view.getIdImmeuble();
+	}
+
+	@InitBinder(value = "editExonerationCommand")
+	public void initEditExonerationCommandBinder(WebDataBinder binder) {
+		binder.setValidator(new AbstractEditExonerationViewValidator());
+	}
+
+	@RequestMapping(value = "/edit-exoneration.do", method = RequestMethod.GET)
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	public String editExoneration(Model model,
+	                              @RequestParam("id") long idExoneration) {
+
+		final ExonerationIFONC exoneration = getExoneration(idExoneration);
+		return showEditExoneration(model, exoneration, new EditExonerationView(exoneration));
+	}
+
+	private String showEditExoneration(Model model, ExonerationIFONC exoneration, EditExonerationView view) {
+		model.addAttribute("idContribuable", exoneration.getContribuable().getNumero());
+		model.addAttribute("immeuble", new ResumeImmeubleView(exoneration.getImmeuble(), null, registreFoncierService));
+		model.addAttribute("editExonerationCommand", view);
+		return "tiers/edition/pm/degrevement-exoneration/edit-exoneration";
+	}
+
+	private String showEditExoneration(Model model, EditExonerationView view) {
+		final ExonerationIFONC exoneration = getExoneration(view.getIdExoneration());
+		return showEditExoneration(model, exoneration, view);
+	}
+
+	@RequestMapping(value = "/edit-exoneration.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String doEditExoneration(Model model,
+	                                @Valid @ModelAttribute("editExonerationCommand") EditExonerationView view,
+	                                BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			return showEditExoneration(model, view);
+		}
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.EXONERATIONS_IFONC)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants pour effectuer cette opération.");
+		}
+
+		final ExonerationIFONC exoneration = getExoneration(view.getIdExoneration());
+		final Contribuable ctb = exoneration.getContribuable();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getNumero());
+
+		// on ne doit pas pouvoir réutiliser la période de début de validité d'une donnée existante
+		final ImmeubleRF immeuble = exoneration.getImmeuble();
+		final List<ExonerationIFONC> autres = ctb.getAllegementsFonciersNonAnnulesTries(ExonerationIFONC.class).stream()
+				.filter(exo -> exo.getImmeuble() == immeuble)
+				.filter(exo -> exo != exoneration)              // on ne prend que les autres !!!
+				.collect(Collectors.toList());
+		if (autres.stream().anyMatch(deg -> deg.getDateDebut().year() == view.getPfDebut())) {
+			bindingResult.rejectValue("pfDebut", "error.degexo.exoneration.periode.debut.deja.utilisee");
+			return showEditExoneration(model, exoneration, view);
+		}
+
+		// il faut adapter les dates de fin des exonérations existantes, éventuellement, et aussi celle de l'entité modifiée
+		// - recalculer la date de fin de l'entité modifiée
+		// - recalculer la date de fin de la précédente si on bouge la date de début de l'entité modifiée
+		// - recalculer les dates de fin des existantes
+		view.setPfFin(null);        // ré-initialisation de la donnée
+		autres.stream()
+				.filter(exo -> exo.getDateDebut().isAfter(view.getDateDebut()))
+				.map(ExonerationIFONC::getDateDebut)
+				.min(Comparator.naturalOrder())
+				.map(RegDate::getOneDayBefore)
+				.map(RegDate::year)
+				.ifPresent(view::setPfFin);
+		if (view.getDateDebut() != exoneration.getDateDebut()) {
+			final List<ExonerationIFONC> copies = new ArrayList<>(autres.size());
+			autres.stream()
+					.filter(exo -> exo.getDateFin() == exoneration.getDateDebut().getOneDayBefore())
+					.forEach(exo -> {
+						final ExonerationIFONC copy = exo.duplicate();
+						exo.setAnnule(true);
+
+						// calcul de la nouvelle date de fin
+						final RegDate nouvelleDateFin = Stream.concat(autres.stream().map(ExonerationIFONC::getDateDebut), Stream.of(view.getDateDebut()))
+								.filter(date -> date.isAfter(exo.getDateDebut()))
+								.min(Comparator.naturalOrder())
+								.map(RegDate::getOneDayBefore)
+								.orElse(null);
+
+						copy.setDateFin(nouvelleDateFin);
+						ctb.addAllegementFoncier(copy);
+						copies.add(copy);
+					});
+			autres.addAll(copies);
+		}
+		autres.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(exo -> Pair.of(exo, DateRangeHelper.intersection(exo, view)))
+				.filter(pair -> pair.getRight() != null)
+				.forEach(pair -> {
+					final ExonerationIFONC exo = pair.getLeft();
+					final RegDate nouvelleDateFin = pair.getRight().getDateDebut().getOneDayBefore();
+					if (exo.getDateFin() == null || exo.getId() == null) {
+						// fermeture simple sur les données simplement ouvertes ou sur les données en cours de création
+						exo.setDateFin(nouvelleDateFin);
+					}
+					else {
+						final ExonerationIFONC copy = exo.duplicate();
+						exo.setAnnule(true);
+						copy.setDateFin(nouvelleDateFin);
+						ctb.addAllegementFoncier(copy);
+					}
+				});
+
+		exoneration.setDateDebut(view.getDateDebut());
+		exoneration.setDateFin(view.getDateFin());
+		exoneration.setPourcentageExoneration(view.getPourcentageExoneration());
+
+		return "redirect:edit-exonerations.do?idContribuable=" + ctb.getNumero() + "&idImmeuble=" + exoneration.getImmeuble().getId();
+	}
+
+	///////////////////////////////////////////////////////////
+	//                                                       //
+	// Edition des formulaires de demande de dégrèvement ICI //
+	//                                                       //
+	///////////////////////////////////////////////////////////
+
+	@RequestMapping(value = "/edit-demandes-degrevement.do", method = RequestMethod.GET)
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	public String editDemandesDegrevement(Model model,
+	                                      @RequestParam(value = "idContribuable") long idContribuable,
+	                                      @RequestParam(value = "idImmeuble") long idImmeuble) {
 		throw new NotImplementedException("Pas encore implémenté !");
 	}
 }

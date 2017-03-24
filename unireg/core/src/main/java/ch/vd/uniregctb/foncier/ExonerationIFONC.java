@@ -6,9 +6,11 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
 
+import ch.vd.uniregctb.common.Duplicable;
+
 @Entity
 @DiscriminatorValue(value = "ExonerationIFONC")
-public class ExonerationIFONC extends AllegementFoncier {
+public class ExonerationIFONC extends AllegementFoncier implements Duplicable<ExonerationIFONC> {
 
 	/**
 	 * Pourcentage d'exonération pour l'impôt foncier (0-100, 2 décimales)
@@ -16,6 +18,17 @@ public class ExonerationIFONC extends AllegementFoncier {
 	private BigDecimal pourcentageExoneration;
 
 	public ExonerationIFONC() {
+	}
+
+	private ExonerationIFONC(ExonerationIFONC src) {
+		super(src);
+		this.pourcentageExoneration = src.pourcentageExoneration;
+	}
+
+	@Transient
+	@Override
+	public ExonerationIFONC duplicate() {
+		return new ExonerationIFONC(this);
 	}
 
 	@Transient
