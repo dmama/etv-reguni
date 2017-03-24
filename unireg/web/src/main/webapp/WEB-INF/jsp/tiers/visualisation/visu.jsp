@@ -279,7 +279,7 @@
 			<c:if test="${command.natureTiers == 'Entreprise'}">
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<div id="tabContent_degrevementExoTab" class="visuTiers">
-						<jsp:include page="pm/degrevement-exoneration.jsp"/>
+						<jsp:include page="pm/degrevement-exoneration/degrevement-exoneration.jsp"/>
 					</div>
 				</authz:authorize>
 			</c:if>

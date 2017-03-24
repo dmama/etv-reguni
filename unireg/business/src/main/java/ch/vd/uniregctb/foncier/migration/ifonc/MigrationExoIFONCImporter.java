@@ -217,7 +217,6 @@ public class MigrationExoIFONCImporter extends MigrationImporter {
 					// persistence
 					exosParImmeuble.values().stream()
 							.flatMap(List::stream)
-							.map(hibernateTemplate::merge)
 							.forEach(entreprise::addAllegementFoncier);
 				});
 				status.setMessage("Migration des exonérations IFONC...", monitor.getProgressInPercent());

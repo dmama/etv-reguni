@@ -67,6 +67,10 @@ public class Autorisations {
 	private final boolean mandatsSpeciaux;
 	private final boolean mandatsTiers;
 
+	private final boolean demandesDegrevementIci;
+	private final boolean degrevementsIci;
+	private final boolean exonerationsIfonc;
+
 	private final boolean remarques;
 
 	public Autorisations() {
@@ -113,6 +117,10 @@ public class Autorisations {
 		this.mandatsGeneraux = false;
 		this.mandatsSpeciaux = false;
 		this.mandatsTiers = false;
+
+		this.demandesDegrevementIci = false;
+		this.degrevementsIci = false;
+		this.exonerationsIfonc = false;
 
 		this.remarques = false;
 	}
@@ -162,6 +170,10 @@ public class Autorisations {
 		this.mandatsSpeciaux = isAllowed(map, AutorisationManagerImpl.MODIF_MANDATS_SPECIAUX);
 		this.mandatsTiers = isAllowed(map, AutorisationManagerImpl.MODIF_MANDATS_TIERS);
 
+		this.demandesDegrevementIci = isAllowed(map, AutorisationManagerImpl.MODIF_DEMANDES_DEGREVEMENT_ICI);
+		this.degrevementsIci = isAllowed(map, AutorisationManagerImpl.MODIF_DEGREVEMENTS_ICI);
+		this.exonerationsIfonc = isAllowed(map, AutorisationManagerImpl.MODIF_EXONERATIONS_IFONC);
+
 		this.remarques = isAllowed(map, AutorisationManagerImpl.MODIF_REMARQUES);
 	}
 
@@ -180,7 +192,7 @@ public class Autorisations {
 				|| (rapports && (rapportsEtablissements || rapportsDePrestations || rapportsDeTravail || autresRapports))
 				|| (mandats && (mandatsGeneraux || mandatsSpeciaux || mandatsTiers))
 				|| declarationImpots || questionnairesSNC || bouclements || donneesCiviles || debiteurs || mouvements || situationsFamille || etiquettes
-				|| etatsPM || regimesFiscaux || allegementsFiscaux || flagsPM || autresDocumentsFiscaux || remarques;
+				|| etatsPM || regimesFiscaux || allegementsFiscaux || flagsPM || autresDocumentsFiscaux || demandesDegrevementIci || degrevementsIci || exonerationsIfonc || remarques;
 	}
 
 	public boolean isDonneesFiscales() {
@@ -331,6 +343,18 @@ public class Autorisations {
 		return mandatsTiers && mandats;
 	}
 
+	public boolean isDemandesDegrevementIci() {
+		return demandesDegrevementIci;
+	}
+
+	public boolean isDegrevementsIci() {
+		return degrevementsIci;
+	}
+
+	public boolean isExonerationsIfonc() {
+		return exonerationsIfonc;
+	}
+
 	public boolean isRemarques() {
 		return remarques;
 	}
@@ -370,6 +394,9 @@ public class Autorisations {
 				", debiteurs=" + debiteurs +
 				", mouvements=" + mouvements +
 				", situationsFamille=" + situationsFamille +
+				", demandesDegrevementIci=" + demandesDegrevementIci +
+				", degrevementsIci=" + degrevementsIci +
+				", exonerationsIfonc=" + exonerationsIfonc +
 				", remarques=" + remarques +
 				'}';
 	}

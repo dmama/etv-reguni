@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
@@ -53,17 +52,7 @@ public abstract class AnnulableHelper {
 		 * @param timeReversed <code>false</code> si les {@link DateRange} doivent être triés chronologiquement, <code>true</code> s'il faut les trier à l'inverse.
 		 */
 		public AnnulableDateRangeComparator(boolean timeReversed) {
-			super(buildWrappedComparator(timeReversed));
-		}
-
-		private static <T extends DateRange> Comparator<T> buildWrappedComparator(boolean timeReversed) {
-			final Comparator<T> pure = new DateRangeComparator<>();
-			if (timeReversed) {
-				return new ReverseComparator<>(pure);
-			}
-			else {
-				return pure;
-			}
+			super(new DateRangeComparator<>(timeReversed ? DateRangeComparator.CompareOrder.DESCENDING : DateRangeComparator.CompareOrder.ASCENDING));
 		}
 	}
 

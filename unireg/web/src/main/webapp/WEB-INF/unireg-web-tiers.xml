@@ -308,6 +308,8 @@
 		<property name="registreFoncierService" ref="serviceRF"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="securityProviderInterface" ref="securityProviderInterface"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 </beans>

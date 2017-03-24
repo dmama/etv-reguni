@@ -291,7 +291,6 @@ public class MigrationDDImporter extends MigrationImporter {
 								subRapport.get().addDegrevementTraite(last.getLeft(), last.getRight());
 								return last.getLeft();
 							})
-							.map(hibernateTemplate::merge)
 							.forEach(entreprise::addAllegementFoncier);
 				});
 				status.setMessage("Migration des dégrèvements...", monitor.getProgressInPercent());

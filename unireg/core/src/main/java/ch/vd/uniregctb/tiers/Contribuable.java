@@ -499,7 +499,9 @@ public abstract class Contribuable extends Tiers {
 				.collect(Collectors.toList());
 	}
 
-	@OneToMany(mappedBy = "contribuable", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "CTB_ID", nullable = false)
+	@ForeignKey(name = "FK_AFONC_CTB_ID")
 	public Set<AllegementFoncier> getAllegementsFonciers() {
 		return allegementsFonciers;
 	}
