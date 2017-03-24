@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,6 +41,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ContribuableNotFoundException;
 import ch.vd.uniregctb.common.ControllerUtils;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.EntrepriseNotFoundException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -270,6 +272,122 @@ public class DegrevementExonerationController {
 		return "tiers/visualisation/pm/degrevement-exoneration/detail-degrevement-exoneration";
 	}
 
+	/**
+	 * Méthode générique pour gérer l'édition d'allègement foncier et en particulier
+	 * le changement de période fiscale de début par rapport à un existant
+	 * @param ctb contribuable
+	 * @param autres les autres allègements fonciers de même type
+	 * @param editedEntity l'entité en cours d'édition (ne doit pas faire partie de la liste des "autres")
+	 * @param newRange nouvelle période de validité de l'entité en cours d'édition
+	 * @param pfFinSetter callback qui permet de mettre à jour la période de fin dans le nouveau range de validité de l'entité en cours d'édition
+	 * @param <T> le type d'allègement foncier
+	 */
+	private static <T extends AllegementFoncier & Duplicable<T>> void computeEditionInfluenceOnOthers(Contribuable ctb,
+	                                                                                                  List<T> autres,
+	                                                                                                  T editedEntity,
+	                                                                                                  DateRange newRange,
+	                                                                                                  Consumer<Integer> pfFinSetter) {
+
+		// il faut adapter les dates de fin entités existantes, éventuellement, et aussi celle de l'entité modifiée
+		// - recalculer la date de fin de l'entité modifiée
+		// - recalculer la date de fin de la précédente si on bouge la date de début de l'entité modifiée
+		// - recalculer les dates de fin des existantes
+
+		final Integer pfFin = autres.stream()
+				.filter(af -> af.getDateDebut().isAfter(newRange.getDateDebut()))
+				.map(AllegementFoncier::getDateDebut)
+				.min(Comparator.naturalOrder())
+				.map(RegDate::getOneDayBefore)
+				.map(RegDate::year)
+				.orElse(null);
+		pfFinSetter.accept(pfFin);
+
+		if (newRange.getDateDebut() != editedEntity.getDateDebut()) {
+			final List<T> copies = new ArrayList<>(autres.size());
+			autres.stream()
+					.filter(af -> af.getDateFin() == editedEntity.getDateDebut().getOneDayBefore())
+					.forEach(af -> {
+						final T copy = af.duplicate();
+						af.setAnnule(true);
+
+						// calcul de la nouvelle date de fin
+						final RegDate nouvelleDateFin = Stream.concat(autres.stream().map(AllegementFoncier::getDateDebut), Stream.of(newRange.getDateDebut()))
+								.filter(date -> date.isAfter(af.getDateDebut()))
+								.min(Comparator.naturalOrder())
+								.map(RegDate::getOneDayBefore)
+								.orElse(null);
+
+						copy.setDateFin(nouvelleDateFin);
+						ctb.addAllegementFoncier(copy);
+						copies.add(copy);
+					});
+			autres.addAll(copies);
+		}
+		autres.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(af -> Pair.of(af, DateRangeHelper.intersection(af, newRange)))
+				.filter(pair -> pair.getRight() != null)
+				.forEach(pair -> {
+					final T af = pair.getLeft();
+					final RegDate nouvelleDateFin = pair.getRight().getDateDebut().getOneDayBefore();
+					if (af.getDateFin() == null || af.getId() == null) {
+						// fermeture simple sur les données simplement ouvertes ou sur les données en cours de création
+						af.setDateFin(nouvelleDateFin);
+					}
+					else {
+						final T copy = af.duplicate();
+						af.setAnnule(true);
+						copy.setDateFin(nouvelleDateFin);
+						ctb.addAllegementFoncier(copy);
+					}
+				});
+	}
+
+	/**
+	 * Méthode générique pour gérer l'ajout d'allègement foncier par rapport aux dates de validité des allègements existants de même type
+	 * @param ctb contribuable
+	 * @param preexisting les allègements fonciers de même type déjà existants
+	 * @param newRange période de validité de la nouvelle entité
+	 * @param pfFinSetter callback qui permet de mettre à jour la période de fin dans le range de validité de la nouvelle entité
+	 * @param <T> le type d'allègement foncier
+	 */
+	private static <T extends AllegementFoncier & Duplicable<T>> void computeAdditionInfluenceOnOthers(Contribuable ctb,
+	                                                                                                   List<T> preexisting,
+	                                                                                                   DateRange newRange,
+	                                                                                                   Consumer<Integer> pfFinSetter) {
+
+		// il faut adapter les dates de fin des entités existantes, éventuellement, et aussi celle de la nouvelle
+		// - d'abord la nouvelle : prendre l'entité existante postérieure et assigner la date de fin de la nouvelle entité à la veille de la date de début de celui-ci
+		// - puis les existantes, pour les arrêter si nécessaire à la veille de la date de début de la nouvelle
+
+		final Integer pfFin = preexisting.stream()
+				.filter(af -> af.getDateDebut().isAfter(newRange.getDateDebut()))
+				.map(AllegementFoncier::getDateDebut)
+				.min(Comparator.naturalOrder())
+				.map(RegDate::getOneDayBefore)
+				.map(RegDate::year)
+				.orElse(null);
+		pfFinSetter.accept(pfFin);
+
+		preexisting.stream()
+				.map(af -> Pair.of(af, DateRangeHelper.intersection(af, newRange)))
+				.filter(pair -> pair.getRight() != null)
+				.forEach(pair -> {
+					final T af = pair.getLeft();
+					final RegDate nouvelleDateFin = pair.getRight().getDateDebut().getOneDayBefore();
+					if (af.getDateFin() == null) {
+						// fermeture simple
+						af.setDateFin(nouvelleDateFin);
+					}
+					else {
+						final T copy = af.duplicate();
+						af.setAnnule(true);
+						copy.setDateFin(nouvelleDateFin);
+						ctb.addAllegementFoncier(copy);
+					}
+				});
+	}
+
 	//////////////////////////////////
 	//                              //
 	// Edition des dégrèvements ICI //
@@ -362,31 +480,8 @@ public class DegrevementExonerationController {
 			return showAddDegrevement(model, view);
 		}
 
-		// il faut adapter les dates de fin des dégrèvements existant, éventuellement, et aussi celle du nouveau
-		// - d'abord le nouveau : prendre le dégrèvement existant postérieur est assigner la date de fin du nouveau à la veille de la date de début de celui-ci
-		// - puis les existants, pour les arrêter si nécessaire à la veille de la date de début du nouveau
-		autres.stream()
-				.filter(deg -> deg.getDateDebut().isAfter(view.getDateDebut()))
-				.map(DegrevementICI::getDateDebut)
-				.min(Comparator.naturalOrder())
-				.ifPresent(nextDebut -> view.setPfFin(nextDebut.getOneDayBefore().year()));
-		autres.stream()
-				.map(deg -> Pair.of(deg, DateRangeHelper.intersection(deg, view)))
-				.filter(pair -> pair.getRight() != null)
-				.forEach(pair -> {
-					final DegrevementICI deg = pair.getLeft();
-					final RegDate nouvelleDateFin = pair.getRight().getDateDebut().getOneDayBefore();
-					if (deg.getDateFin() == null) {
-						// fermeture simple
-						deg.setDateFin(nouvelleDateFin);
-					}
-					else {
-						final DegrevementICI copy = deg.duplicate();
-						deg.setAnnule(true);
-						copy.setDateFin(nouvelleDateFin);
-						entreprise.addAllegementFoncier(copy);
-					}
-				});
+		// mise en place par rapport aux autres
+		computeAdditionInfluenceOnOthers(entreprise, autres, view, view::setPfFin);
 
 		// création d'une nouvelle entité
 		final DegrevementICI degrevement = new DegrevementICI();
@@ -457,57 +552,8 @@ public class DegrevementExonerationController {
 			return showEditDegrevement(model, degrevement, view);
 		}
 
-		// il faut adapter les dates de fin des dégrèvements existant, éventuellement, et aussi celle du modifié
-		// - recalculer la date de fin de l'entité modifiée
-		// - recalculer la date de fin du précédent si on bouge la date de début de l'entité modifiée
-		// - recalculer les dates de fin des existants
-		view.setPfFin(null);        // ré-initialisation de la donnée
-		autres.stream()
-				.filter(deg -> deg.getDateDebut().isAfter(view.getDateDebut()))
-				.map(DegrevementICI::getDateDebut)
-				.min(Comparator.naturalOrder())
-				.map(RegDate::getOneDayBefore)
-				.map(RegDate::year)
-				.ifPresent(view::setPfFin);
-		if (view.getDateDebut() != degrevement.getDateDebut()) {
-			final List<DegrevementICI> copies = new ArrayList<>(autres.size());
-			autres.stream()
-					.filter(deg -> deg.getDateFin() == degrevement.getDateDebut().getOneDayBefore())
-					.forEach(deg -> {
-						final DegrevementICI copy = deg.duplicate();
-						deg.setAnnule(true);
-
-						// calcul de la nouvelle date de fin
-						final RegDate nouvelleDateFin = Stream.concat(autres.stream().map(DegrevementICI::getDateDebut), Stream.of(view.getDateDebut()))
-								.filter(date -> date.isAfter(deg.getDateDebut()))
-								.min(Comparator.naturalOrder())
-								.map(RegDate::getOneDayBefore)
-								.orElse(null);
-
-						copy.setDateFin(nouvelleDateFin);
-						ctb.addAllegementFoncier(copy);
-						copies.add(copy);
-					});
-			autres.addAll(copies);
-		}
-		autres.stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.map(deg -> Pair.of(deg, DateRangeHelper.intersection(deg, view)))
-				.filter(pair -> pair.getRight() != null)
-				.forEach(pair -> {
-					final DegrevementICI deg = pair.getLeft();
-					final RegDate nouvelleDateFin = pair.getRight().getDateDebut().getOneDayBefore();
-					if (deg.getDateFin() == null || deg.getId() == null) {
-						// fermeture simple sur les données simplement ouvertes ou sur les données en cours de création
-						deg.setDateFin(nouvelleDateFin);
-					}
-					else {
-						final DegrevementICI copy = deg.duplicate();
-						deg.setAnnule(true);
-						copy.setDateFin(nouvelleDateFin);
-						ctb.addAllegementFoncier(copy);
-					}
-				});
+		// mise en place par rapport aux autres
+		computeEditionInfluenceOnOthers(ctb, autres, degrevement, view, view::setPfFin);
 
 		degrevement.setDateDebut(view.getDateDebut());
 		degrevement.setDateFin(view.getDateFin());
@@ -609,31 +655,8 @@ public class DegrevementExonerationController {
 			return showAddExoneration(model, view);
 		}
 
-		// il faut adapter les dates de fin des dégrèvements existant, éventuellement, et aussi celle du nouveau
-		// - d'abord le nouveau : prendre le dégrèvement existant postérieur est assigner la date de fin du nouveau à la veille de la date de début de celui-ci
-		// - puis les existants, pour les arrêter si nécessaire à la veille de la date de début du nouveau
-		autres.stream()
-				.filter(exo -> exo.getDateDebut().isAfter(view.getDateDebut()))
-				.map(ExonerationIFONC::getDateDebut)
-				.min(Comparator.naturalOrder())
-				.ifPresent(nextDebut -> view.setPfFin(nextDebut.getOneDayBefore().year()));
-		autres.stream()
-				.map(exo -> Pair.of(exo, DateRangeHelper.intersection(exo, view)))
-				.filter(pair -> pair.getRight() != null)
-				.forEach(pair -> {
-					final ExonerationIFONC exo = pair.getLeft();
-					final RegDate nouvelleDateFin = pair.getRight().getDateDebut().getOneDayBefore();
-					if (exo.getDateFin() == null) {
-						// fermeture simple
-						exo.setDateFin(nouvelleDateFin);
-					}
-					else {
-						final ExonerationIFONC copy = exo.duplicate();
-						exo.setAnnule(true);
-						copy.setDateFin(nouvelleDateFin);
-						entreprise.addAllegementFoncier(copy);
-					}
-				});
+		// mise en place par rapport aux autres
+		computeAdditionInfluenceOnOthers(entreprise, autres, view, view::setPfFin);
 
 		// création d'une nouvelle entité
 		final ExonerationIFONC exoneration = new ExonerationIFONC();
@@ -701,57 +724,8 @@ public class DegrevementExonerationController {
 			return showEditExoneration(model, exoneration, view);
 		}
 
-		// il faut adapter les dates de fin des exonérations existantes, éventuellement, et aussi celle de l'entité modifiée
-		// - recalculer la date de fin de l'entité modifiée
-		// - recalculer la date de fin de la précédente si on bouge la date de début de l'entité modifiée
-		// - recalculer les dates de fin des existantes
-		view.setPfFin(null);        // ré-initialisation de la donnée
-		autres.stream()
-				.filter(exo -> exo.getDateDebut().isAfter(view.getDateDebut()))
-				.map(ExonerationIFONC::getDateDebut)
-				.min(Comparator.naturalOrder())
-				.map(RegDate::getOneDayBefore)
-				.map(RegDate::year)
-				.ifPresent(view::setPfFin);
-		if (view.getDateDebut() != exoneration.getDateDebut()) {
-			final List<ExonerationIFONC> copies = new ArrayList<>(autres.size());
-			autres.stream()
-					.filter(exo -> exo.getDateFin() == exoneration.getDateDebut().getOneDayBefore())
-					.forEach(exo -> {
-						final ExonerationIFONC copy = exo.duplicate();
-						exo.setAnnule(true);
-
-						// calcul de la nouvelle date de fin
-						final RegDate nouvelleDateFin = Stream.concat(autres.stream().map(ExonerationIFONC::getDateDebut), Stream.of(view.getDateDebut()))
-								.filter(date -> date.isAfter(exo.getDateDebut()))
-								.min(Comparator.naturalOrder())
-								.map(RegDate::getOneDayBefore)
-								.orElse(null);
-
-						copy.setDateFin(nouvelleDateFin);
-						ctb.addAllegementFoncier(copy);
-						copies.add(copy);
-					});
-			autres.addAll(copies);
-		}
-		autres.stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.map(exo -> Pair.of(exo, DateRangeHelper.intersection(exo, view)))
-				.filter(pair -> pair.getRight() != null)
-				.forEach(pair -> {
-					final ExonerationIFONC exo = pair.getLeft();
-					final RegDate nouvelleDateFin = pair.getRight().getDateDebut().getOneDayBefore();
-					if (exo.getDateFin() == null || exo.getId() == null) {
-						// fermeture simple sur les données simplement ouvertes ou sur les données en cours de création
-						exo.setDateFin(nouvelleDateFin);
-					}
-					else {
-						final ExonerationIFONC copy = exo.duplicate();
-						exo.setAnnule(true);
-						copy.setDateFin(nouvelleDateFin);
-						ctb.addAllegementFoncier(copy);
-					}
-				});
+		// mise en place par rapport aux autres
+		computeEditionInfluenceOnOthers(ctb, autres, exoneration, view, view::setPfFin);
 
 		exoneration.setDateDebut(view.getDateDebut());
 		exoneration.setDateFin(view.getDateFin());
