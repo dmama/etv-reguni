@@ -31,6 +31,12 @@ public abstract class ServitudeRF extends DroitRF {
 	 */
 	private IdentifiantDroitRF identifiantDroit;
 
+	/**
+	 * Le numéro d'affaire.
+	 */
+	@Nullable
+	private IdentifiantAffaireRF numeroAffaire;
+
 	@Nullable
 	@ManyToOne
 	@JoinColumn(name = "COMMUNAUTE_ID")
@@ -60,6 +66,17 @@ public abstract class ServitudeRF extends DroitRF {
 
 	public void setIdentifiantDroit(IdentifiantDroitRF identifiantDroit) {
 		this.identifiantDroit = identifiantDroit;
+	}
+
+	@Nullable
+	@Column(name = "NO_AFFAIRE", length = LengthConstants.RF_NO_AFFAIRE)
+	@Type(type = "ch.vd.uniregctb.hibernate.IdentifiantAffaireRFUserType")
+	public IdentifiantAffaireRF getNumeroAffaire() {
+		return numeroAffaire;
+	}
+
+	public void setNumeroAffaire(@Nullable IdentifiantAffaireRF numeroAffaire) {
+		this.numeroAffaire = numeroAffaire;
 	}
 
 	@NotNull

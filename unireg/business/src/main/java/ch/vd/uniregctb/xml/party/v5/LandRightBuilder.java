@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.xml.party.v5;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -19,9 +20,11 @@ import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
@@ -72,10 +75,19 @@ public abstract class LandRightBuilder {
 		right.setEndReason(droitRF.getMotifFin());
 		right.setCommunityId(getCommunityId(droitRF.getCommunaute()));
 		right.setShare(getShare(droitRF.getPart()));
-		right.setCaseIdentifier(getCaseIdentifier(droitRF.getNumeroAffaire()));
+		right.setCaseIdentifier(getLastCaseIdentifier(droitRF));
 		right.setRightHolder(RightHolderBuilder.getRightHolder(droitRF.getAyantDroit(), ctbIdProvider));
 		right.setImmovablePropertyId(droitRF.getImmeuble().getId());
 		return right;
+	}
+
+	// Pour garder une compatiblité ascendante, on expose le dernier numéro d'affaire sur le droit lui-même
+	private static CaseIdentifier getLastCaseIdentifier(@NotNull DroitProprieteRF droitRF) {
+		return droitRF.getRaisonsAcquisition().stream()
+				.max(Comparator.naturalOrder())
+				.map(RaisonAcquisitionRF::getNumeroAffaire)
+				.map(LandRightBuilder::getCaseIdentifier)
+				.orElse(null);
 	}
 
 	@NotNull
@@ -88,7 +100,7 @@ public abstract class LandRightBuilder {
 		right.setEndReason(droitRF.getMotifFin());
 		right.setCommunityId(getCommunityId(droitRF.getCommunaute()));
 		right.setShare(getShare(droitRF.getPart()));
-		right.setCaseIdentifier(getCaseIdentifier(droitRF.getNumeroAffaire()));
+		right.setCaseIdentifier(getLastCaseIdentifier(droitRF));
 		right.setRightHolder(RightHolderBuilder.getRightHolder(droitRF.getAyantDroit(), ctbIdProvider));
 		right.setImmovablePropertyId(droitRF.getImmeuble().getId());
 		return right;

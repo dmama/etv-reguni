@@ -91,12 +91,6 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	@Nullable
 	private String motifFin;
 
-	/**
-	 * Le numéro d'affaire.
-	 */
-	@Nullable
-	private IdentifiantAffaireRF numeroAffaire;
-
 	@Transient
 	@Override
 	public Object getKey() {
@@ -113,7 +107,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 		this.id = id;
 	}
 
-	// Note : entre deux imports, on peut recevoir un droit avec le même masterId mais avec des données différentes (certainement des corrections). On ne met pas de contrainte unique donc.
+	// FIXME (msi) activer la contrainte unique=true quand les servitudes auront été revues
 	@Index(name = "IDX_DROIT_MASTER_ID_RF")
 	@Column(name = "MASTER_ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
 	public String getMasterIdRF() {
@@ -148,17 +142,6 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 
 	public void setImmeuble(ImmeubleRF immeuble) {
 		this.immeuble = immeuble;
-	}
-
-	@Nullable
-	@Column(name = "NO_AFFAIRE", length = LengthConstants.RF_NO_AFFAIRE)
-	@Type(type = "ch.vd.uniregctb.hibernate.IdentifiantAffaireRFUserType")
-	public IdentifiantAffaireRF getNumeroAffaire() {
-		return numeroAffaire;
-	}
-
-	public void setNumeroAffaire(@Nullable IdentifiantAffaireRF numeroAffaire) {
-		this.numeroAffaire = numeroAffaire;
 	}
 
 	@Nullable

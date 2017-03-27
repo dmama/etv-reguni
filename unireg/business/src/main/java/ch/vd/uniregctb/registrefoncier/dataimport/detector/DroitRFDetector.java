@@ -314,7 +314,7 @@ public class DroitRFDetector {
 					.collect(Collectors.toSet());
 
 			//noinspection StatementWithEmptyBody
-			if (!DroitRFHelper.dataEquals(activesDroits, droits, importInitial)) {
+			if (!DroitRFHelper.dataEquals(activesDroits, droits)) {
 				// les droits sont différents : on sauve une mutation en mode modification
 				final EvenementRFMutation mutation = new EvenementRFMutation();
 				mutation.setParentImport(parentImport);

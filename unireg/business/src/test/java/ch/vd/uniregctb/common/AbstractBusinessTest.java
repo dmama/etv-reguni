@@ -77,6 +77,7 @@ import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
@@ -406,10 +407,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		droit0.setDateFinMetier(dateFinMetier);
 		droit0.setMotifDebut(motifDebut);
 		droit0.setMotifFin(motifFin);
-		droit0.setNumeroAffaire(numeroAffaire);
 		droit0.setAyantDroit(tiersRF);
 		droit0.setMasterIdRF(masterIdRF);
 		droit0.setImmeuble(immeuble);
+		droit0.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
 		return hibernateTemplate.merge(droit0);
 	}
 
@@ -423,10 +424,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		droit0.setDateFin(dateFin);
 		droit0.setMotifDebut(motifDebut);
 		droit0.setMotifFin(motifFin);
-		droit0.setNumeroAffaire(numeroAffaire);
 		droit0.setAyantDroit(communaute);
 		droit0.setMasterIdRF(masterIdRF);
 		droit0.setImmeuble(immeuble);
+		droit0.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
 		return hibernateTemplate.merge(droit0);
 	}
 

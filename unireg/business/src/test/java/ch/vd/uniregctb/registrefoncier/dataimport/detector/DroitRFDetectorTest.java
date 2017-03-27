@@ -43,6 +43,7 @@ import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockAyantDroitRFDAO;
@@ -116,7 +117,7 @@ public class DroitRFDetectorTest {
 		// on devrait avoir deux événements de mutation de type CREATION sur chacun des propriétaires
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(2, mutations.size());
-		Collections.sort(mutations, new MutationComparator());
+		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
@@ -239,7 +240,7 @@ public class DroitRFDetectorTest {
 		//  - 1 pour la communauté (ayant-droit)
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(4, mutations.size());
-		Collections.sort(mutations, new MutationComparator());
+		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
@@ -413,7 +414,7 @@ public class DroitRFDetectorTest {
 		// on devrait avoir deux événements de mutation de type CREATION sur chacun des bénéficiaires
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(2, mutations.size());
-		Collections.sort(mutations, new MutationComparator());
+		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
@@ -562,7 +563,7 @@ public class DroitRFDetectorTest {
 		// on devrait avoir deux événements de mutation de type CREATION sur chacun des bénéficiaires + 1 pour la communauté
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(3, mutations.size());
-		Collections.sort(mutations, new MutationComparator());
+		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
@@ -731,13 +732,12 @@ public class DroitRFDetectorTest {
 		droitPP1.setImmeuble(immeuble1);
 		droitPP1.setCommunaute(null);
 		droitPP1.setDateDebut(dateImportInitial);
-		droitPP1.setMotifDebut("Achat");
 		droitPP1.setDateFin(null);
 		droitPP1.setMotifFin(null);
-		droitPP1.setDateDebutMetier(RegDate.get(2010, 4, 23));
-		droitPP1.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 33, 1));
 		droitPP1.setPart(new Fraction(1, 2));
 		droitPP1.setRegime(GenrePropriete.COPROPRIETE);
+		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
+		droitPP1.calculateDateEtMotifDebut();
 		pp1.addDroit(droitPP1);
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
@@ -746,13 +746,12 @@ public class DroitRFDetectorTest {
 		droitPP2.setImmeuble(immeuble1);
 		droitPP2.setCommunaute(null);
 		droitPP2.setDateDebut(dateImportInitial);
-		droitPP2.setMotifDebut("Achat");
 		droitPP2.setDateFin(null);
 		droitPP2.setMotifFin(null);
-		droitPP2.setDateDebutMetier(RegDate.get(2010, 4, 23));
-		droitPP2.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 33, 1));
 		droitPP2.setPart(new Fraction(1, 2));
 		droitPP2.setRegime(GenrePropriete.COPROPRIETE);
+		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
+		droitPP2.calculateDateEtMotifDebut();
 		pp2.addDroit(droitPP2);
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
@@ -761,13 +760,12 @@ public class DroitRFDetectorTest {
 		droitPP3.setImmeuble(immeuble2);
 		droitPP3.setCommunaute(null);
 		droitPP3.setDateDebut(dateImportInitial);
-		droitPP3.setMotifDebut("Achat");
 		droitPP3.setDateFin(null);
 		droitPP3.setMotifFin(null);
-		droitPP3.setDateDebutMetier(RegDate.get(2010, 3, 28));
-		droitPP3.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 28, 4));
 		droitPP3.setPart(new Fraction(1, 1));
 		droitPP3.setRegime(GenrePropriete.INDIVIDUELLE);
+		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
+		droitPP3.calculateDateEtMotifDebut();
 		pp2.addDroit(droitPP3);
 
 		// un mock avec les deux ayants-droits.
@@ -792,19 +790,25 @@ public class DroitRFDetectorTest {
 
 		// on envoie trois droits différents sur les mêmes propriétaires et immeubles
 		//  - part différente
-		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "37838sc9d94de", "382929efa218", new Fraction(2, 5), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
+		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "37838sc9d94de", "382929efa218",
+		                                               new Fraction(2, 5), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23),
+		                                               new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
 		//  - motif différent
-		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "029191d4fec44", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Vol autorisé");
+		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "029191d4fec44", "382929efa218",
+		                                               new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23),
+		                                               new IdentifiantAffaireRF(6, 2013, 33, 1), "Vol autorisé");
 		//  - type de propriété différent
-		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "029191d4fec44", "202930c0e0f3", new Fraction(1, 1), PersonEigentumsform.GESAMTEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
+		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "029191d4fec44", "202930c0e0f3",
+		                                               new Fraction(1, 1), PersonEigentumsform.GESAMTEIGENTUM, RegDate.get(2010, 3, 28),
+		                                               new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
 
-		List<PersonEigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
+		final List<PersonEigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
 		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
 
 		// on devrait avoir deux événements de mutation de type MODIFICATION sur chacun des propriétaires
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(2, mutations.size());
-		Collections.sort(mutations, new MutationComparator());
+		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
@@ -912,13 +916,12 @@ public class DroitRFDetectorTest {
 		droitPP1.setImmeuble(immeuble1);
 		droitPP1.setCommunaute(null);
 		droitPP1.setDateDebut(dateImportInitial);
-		droitPP1.setMotifDebut("Achat");
 		droitPP1.setDateFin(null);
 		droitPP1.setMotifFin(null);
-		droitPP1.setDateDebutMetier(RegDate.get(2010, 4, 23));
-		droitPP1.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 33, 1));
 		droitPP1.setPart(new Fraction(1, 2));
 		droitPP1.setRegime(GenrePropriete.COPROPRIETE);
+		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
+		droitPP1.calculateDateEtMotifDebut();
 		pp1.addDroit(droitPP1);
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
@@ -927,13 +930,12 @@ public class DroitRFDetectorTest {
 		droitPP2.setImmeuble(immeuble1);
 		droitPP2.setCommunaute(null);
 		droitPP2.setDateDebut(dateImportInitial);
-		droitPP2.setMotifDebut("Achat");
 		droitPP2.setDateFin(null);
 		droitPP2.setMotifFin(null);
-		droitPP2.setDateDebutMetier(RegDate.get(2010, 4, 23));
-		droitPP2.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 33, 1));
 		droitPP2.setPart(new Fraction(1, 2));
 		droitPP2.setRegime(GenrePropriete.COPROPRIETE);
+		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
+		droitPP2.calculateDateEtMotifDebut();
 		pp2.addDroit(droitPP2);
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
@@ -942,13 +944,12 @@ public class DroitRFDetectorTest {
 		droitPP3.setImmeuble(immeuble2);
 		droitPP3.setCommunaute(null);
 		droitPP3.setDateDebut(dateImportInitial);
-		droitPP3.setMotifDebut("Achat");
 		droitPP3.setDateFin(null);
 		droitPP3.setMotifFin(null);
-		droitPP3.setDateDebutMetier(RegDate.get(2010, 3, 28));
-		droitPP3.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 28, 4));
 		droitPP3.setPart(new Fraction(1, 1));
 		droitPP3.setRegime(GenrePropriete.INDIVIDUELLE);
+		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
+		droitPP3.calculateDateEtMotifDebut();
 		pp2.addDroit(droitPP3);
 
 		// un mock avec les deux ayants-droits.
@@ -1012,13 +1013,12 @@ public class DroitRFDetectorTest {
 		droitPP1.setImmeuble(immeuble1);
 		droitPP1.setCommunaute(null);
 		droitPP1.setDateDebut(dateImportInitial);
-		droitPP1.setMotifDebut("Achat");
 		droitPP1.setDateFin(null);
 		droitPP1.setMotifFin(null);
-		droitPP1.setDateDebutMetier(RegDate.get(2010, 4, 23));
-		droitPP1.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 33, 1));
 		droitPP1.setPart(new Fraction(1, 2));
 		droitPP1.setRegime(GenrePropriete.COPROPRIETE);
+		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
+		droitPP1.calculateDateEtMotifDebut();
 		pp1.addDroit(droitPP1);
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
@@ -1027,13 +1027,12 @@ public class DroitRFDetectorTest {
 		droitPP2.setImmeuble(immeuble1);
 		droitPP2.setCommunaute(null);
 		droitPP2.setDateDebut(dateImportInitial);
-		droitPP2.setMotifDebut("Achat");
 		droitPP2.setDateFin(null);
 		droitPP2.setMotifFin(null);
-		droitPP2.setDateDebutMetier(RegDate.get(2010, 4, 23));
-		droitPP2.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 33, 1));
 		droitPP2.setPart(new Fraction(1, 2));
 		droitPP2.setRegime(GenrePropriete.COPROPRIETE);
+		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
+		droitPP2.calculateDateEtMotifDebut();
 		pp2.addDroit(droitPP2);
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
@@ -1042,13 +1041,12 @@ public class DroitRFDetectorTest {
 		droitPP3.setImmeuble(immeuble2);
 		droitPP3.setCommunaute(null);
 		droitPP3.setDateDebut(dateImportInitial);
-		droitPP3.setMotifDebut("Achat");
 		droitPP3.setDateFin(null);
 		droitPP3.setMotifFin(null);
-		droitPP3.setDateDebutMetier(RegDate.get(2010, 3, 28));
-		droitPP3.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 28, 4));
 		droitPP3.setPart(new Fraction(1, 1));
 		droitPP3.setRegime(GenrePropriete.INDIVIDUELLE);
+		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
+		droitPP3.calculateDateEtMotifDebut();
 		pp2.addDroit(droitPP3);
 
 		// un mock avec les deux ayants-droits.
@@ -1077,7 +1075,7 @@ public class DroitRFDetectorTest {
 		// on devrait avoir deux événements de mutation de type SUPPRESSION sur chacun des propriétaires
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(2, mutations.size());
-		Collections.sort(mutations, new MutationComparator());
+		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
@@ -1224,7 +1222,7 @@ public class DroitRFDetectorTest {
 		// on devrait avoir deux événements de mutation de type MODIFICATION sur chacun des propriétaires
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(2, mutations.size());
-		Collections.sort(mutations, new MutationComparator());
+		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
@@ -1541,7 +1539,7 @@ public class DroitRFDetectorTest {
 		// on devrait avoir deux événements de mutation de type SUPPRESSION sur chacun des propriétaires
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(2, mutations.size());
-		Collections.sort(mutations, new MutationComparator());
+		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());

@@ -104,8 +104,8 @@ public class DateFinDroitsRFProcessor {
 
 		final ImmeubleRF immeuble = immeubleRFDAO.get(id);
 
-		// on essaie d'abord de calculer les dates de fin en se basant sur le masterId pour regrouper les droits.
-		processImmeuble(immeuble, GroupingStrategy.MASTER_ID, results);
+		// on essaie d'abord de calculer les dates de fin en se basant sur les ayant-droits pour regrouper les droits.
+		processImmeuble(immeuble, GroupingStrategy.AYANT_DROIT, results);
 
 		// pour tous les droits sans date de fin métier, on se base sur la date technique de l'import (= regroupement de tous les droits ayant changé entre deux imports).
 		processImmeuble(immeuble, GroupingStrategy.DATE_AFFAIRE, results);
@@ -143,13 +143,13 @@ public class DateFinDroitsRFProcessor {
 	 */
 	private enum GroupingStrategy {
 		/**
-		 * Regroupement des droits basé sur le couple date d'import + masterIdRF du droit (critère le plus précis). Utilisé principalement pour détecter les changements dans l'historique interne du droit.
+		 * Regroupement des droits basé sur le couple date d'import + id de l'ayant-droit (critère le plus précis). Utilisé principalement pour détecter les évolutions (changement de quote-part) du droit de propriété d'un propriétaire.
 		 */
-		MASTER_ID {
+		AYANT_DROIT {
 			@NotNull
 			@Override
 			public GroupingKey newKey(@NotNull RegDate dateAffaire, @NotNull DroitRF droit) {
-				return new GroupingKey(dateAffaire, droit.getMasterIdRF(), droit.getAyantDroit().getId());
+				return new GroupingKey(dateAffaire, null, droit.getAyantDroit().getId());
 			}
 		},
 		/**

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.Pair;
 
 public abstract class CollectionsUtils {
 
@@ -269,15 +271,63 @@ public abstract class CollectionsUtils {
 	}
 
 	/**
-	 * @param map                   map à transformer en chaîne de caractères
-	 * @param keyRenderer           le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les clé de la map
-	 * @param valueRenderer         le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les valeurs de la map
-	 * @param separator             le séparateur à placer entre la représentation de chacun des éléments de la collection
-	 * @param prefix                préfixe général de la chaîne de caractères
-	 * @param suffix                suffixe général de la chaîne de caractères
-	 * @param nullMapValue          valeur à renvoyer si la map est <code>null</code>
-	 * @param <K>                   type des clés de la map
-	 * @param <V>                   type des valeurs de la map
+	 * Analyse les deux collections fournies, supprime des collections les éléments communs pour les retourner.
+	 * <p/>
+	 * A noter que cette méthode tient compte des éléments dupliqués de manière unitaire. Ainsi,
+	 * si un élément A est présent deux fois dans la première collection et seulement une fois
+	 * dans la seconde collection alors il restera au final un élément A dans le première
+	 * collection et zéro dans la seconde collection :
+	 * <pre>
+	 *     (a, a, b, c) + (a, d, e) => (a, b, c) + (d, e)
+	 * </pre>
+	 *
+	 * @param left            une collection
+	 * @param right           une autre collection
+	 * @param equalityFunctor la function qui permet de détecter les éléments communs (optionnel)
+	 * @param <T>             le type des éléments des collections
+	 * @return la liste des paires d'éléments communs
+	 */
+	public static <T> List<Pair<T, T>> extractCommonElements(@NotNull Collection<? extends T> left,
+	                                                         @NotNull Collection<? extends T> right,
+	                                                         @Nullable BiFunction<T, T, Boolean> equalityFunctor) {
+
+		if (equalityFunctor == null) {
+			equalityFunctor = T::equals;
+		}
+
+		final List<Pair<T, T>> common = new LinkedList<>();
+
+		final Iterator<? extends T> liter = left.iterator();
+		while (liter.hasNext()) {
+			final T l = liter.next();
+
+			final Iterator<? extends T> riter = right.iterator();
+			while (riter.hasNext()) {
+				final T r = riter.next();
+
+				if (equalityFunctor.apply(l, r)) {
+					// les deux éléments sont équivalents, on les supprime donc des deux listes et on les insère dans la liste commune
+					liter.remove();
+					riter.remove();
+					common.add(new Pair<T, T>(l, r));
+					break;
+				}
+			}
+		}
+
+		return common;
+	}
+
+	/**
+	 * @param map           map à transformer en chaîne de caractères
+	 * @param keyRenderer   le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les clé de la map
+	 * @param valueRenderer le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les valeurs de la map
+	 * @param separator     le séparateur à placer entre la représentation de chacun des éléments de la collection
+	 * @param prefix        préfixe général de la chaîne de caractères
+	 * @param suffix        suffixe général de la chaîne de caractères
+	 * @param nullMapValue  valeur à renvoyer si la map est <code>null</code>
+	 * @param <K>           type des clés de la map
+	 * @param <V>           type des valeurs de la map
 	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné (les nulls de la collection sont ignorés)
 	 */
 	public static <K, V> String toString(Map<K, V> map,

@@ -150,7 +150,7 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			// second import du 07.02.2017
 			addDroitPropriete(jean, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 			                  RegDate.get(2017, 1, 7), null, RegDate.get(2001, 9, 4), null, "Succession", null,
-			                  new IdentifiantAffaireRF(5, 2001, 2174, 0), "473839273923");
+			                  new IdentifiantAffaireRF(5, 2001, 2174, 0), "2929181981818");
 
 			// import inital du 31.12.2016
 			addDroitPropriete(jacques, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
@@ -159,7 +159,7 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			// second import du 07.02.2017
 			addDroitPropriete(jacques, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 			                  RegDate.get(2017, 1, 7), null, RegDate.get(2013, 5, 31), null, "Succession", null,
-			                  new IdentifiantAffaireRF(5, 2012, 617, 0), "45838923783");
+			                  new IdentifiantAffaireRF(5, 2012, 617, 0), "3838929217821");
 
 			return null;
 		});
@@ -191,7 +191,7 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/*
-	 * Vérifie que le traitement calcule bien la date de fin métier regroupant les droits par masterIdRF lors du rattrapage de l'import initial.
+	 * Vérifie que le traitement calcule bien la date de fin métier regroupant les droits par ayant-droit lors du rattrapage de l'import initial.
 	 */
 	@Test
 	public void testProcessImmeubleRattrapageImportInitial2() throws Exception {
@@ -219,7 +219,7 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 				// second import du 01.01.2017
 				addDroitPropriete(pp0, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 				                  RegDate.get(2017, 1, 1), null, RegDate.get(1980, 12, 29), null, "Changement de régime", null,
-				                  new IdentifiantAffaireRF(11, null, 95580, null), "1f109152381026b5013810299b0b1905");
+				                  new IdentifiantAffaireRF(11, null, 95580, null), "21321321");
 
 				// import inital du 31.12.2016
 				addDroitPropriete(pp1, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
@@ -228,7 +228,7 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 				// second import du 01.01.2017
 				addDroitPropriete(pp1, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 				                  RegDate.get(2017, 1, 1), null, RegDate.get(1998, 2, 11), null, "Succession", null,
-				                  new IdentifiantAffaireRF(11, null, 115039, null), "1f109152381026b5013810299b0b1908");
+				                  new IdentifiantAffaireRF(11, null, 115039, null), "90392039");
 
 				return immeuble.getId();
 			}

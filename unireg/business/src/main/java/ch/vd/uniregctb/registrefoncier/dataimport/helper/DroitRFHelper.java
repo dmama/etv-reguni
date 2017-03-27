@@ -17,8 +17,6 @@ import ch.vd.capitastra.grundstueck.NatuerlichePersonGb;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.PersonEigentumsform;
 import ch.vd.capitastra.grundstueck.Rechtsgrund;
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -29,16 +27,14 @@ import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
-public class DroitRFHelper {
+public abstract class DroitRFHelper {
 
-	public static DroitRFKey newDroitRFKey(@NotNull PersonEigentumAnteil droit) {
-		return new DroitRFKey(droit.getMasterID());
+	private DroitRFHelper() {
 	}
 
-	public static boolean dataEquals(Set<DroitRF> droits, List<PersonEigentumAnteil> eigentums, boolean importInitial) {
+	public static boolean dataEquals(Set<DroitRF> droits, List<PersonEigentumAnteil> eigentums) {
 
 		//noinspection Duplicates
 		if ((droits == null || droits.isEmpty()) && (eigentums == null || eigentums.isEmpty())) {
@@ -59,7 +55,7 @@ public class DroitRFHelper {
 			boolean found = false;
 			for (int i = 0; i < remaining.size(); i++) {
 				DroitRF droitRF = remaining.get(i);
-				if (dataEquals(droitRF, e, importInitial, false)) {
+				if (dataEquals(droitRF, e)) {
 					remaining.remove(i);
 					found = true;
 					break;
@@ -74,8 +70,8 @@ public class DroitRFHelper {
 		return true;
 	}
 
-	public static boolean dataEquals(DroitRF droitRF, PersonEigentumAnteil personEigentumAnteil, boolean importInitial, boolean ignoreMotifs) {
-		return dataEquals(droitRF, get(personEigentumAnteil, importInitial, DroitRFHelper::simplisticAyantDroitProvider, DroitRFHelper::simplisticCommunauteProvider, DroitRFHelper::simplisticImmeubleProvider), ignoreMotifs);
+	public static boolean dataEquals(DroitRF droitRF, PersonEigentumAnteil personEigentumAnteil) {
+		return dataEquals(droitRF, get(personEigentumAnteil, DroitRFHelper::simplisticAyantDroitProvider, DroitRFHelper::simplisticCommunauteProvider, DroitRFHelper::simplisticImmeubleProvider));
 	}
 
 	/**
@@ -113,7 +109,7 @@ public class DroitRFHelper {
 		return c;
 	}
 
-	public static boolean dataEquals(@NotNull DroitRF left, @NotNull DroitRF right, boolean ignoreMotifs) {
+	public static boolean dataEquals(@NotNull DroitRF left, @NotNull DroitRF right) {
 
 		if (!left.getMasterIdRF().equals(right.getMasterIdRF())) {
 			return false;
@@ -124,42 +120,42 @@ public class DroitRFHelper {
 		}
 
 		if (left instanceof DroitProprietePersonnePhysiqueRF) {
-			return equalsDroitPropPP((DroitProprietePersonnePhysiqueRF) left, (DroitProprietePersonnePhysiqueRF) right, ignoreMotifs);
+			return equalsDroitPropPP((DroitProprietePersonnePhysiqueRF) left, (DroitProprietePersonnePhysiqueRF) right);
 		}
 		else if (left instanceof DroitProprietePersonneMoraleRF) {
-			return equalsDroitPropPM((DroitProprietePersonneMoraleRF) left, (DroitProprietePersonneMoraleRF) right, ignoreMotifs);
+			return equalsDroitPropPM((DroitProprietePersonneMoraleRF) left, (DroitProprietePersonneMoraleRF) right);
 		}
 		else if (left instanceof DroitProprieteCommunauteRF) {
-			return equalsDroitProp((DroitProprieteCommunauteRF) left, (DroitProprieteCommunauteRF) right, ignoreMotifs);
+			return equalsDroitProp((DroitProprieteCommunauteRF) left, (DroitProprieteCommunauteRF) right);
 		}
 		else {
 			throw new IllegalArgumentException("Type de tiers RF inconnu=[" + left.getClass() + "]");
 		}
 	}
 
-	private static boolean equalsDroitPropPP(@NotNull DroitProprietePersonnePhysiqueRF left, @NotNull DroitProprietePersonnePhysiqueRF right, boolean ignoreMotifs) {
+	private static boolean equalsDroitPropPP(@NotNull DroitProprietePersonnePhysiqueRF left, @NotNull DroitProprietePersonnePhysiqueRF right) {
 		return communauteEquals(left.getCommunaute(), right.getCommunaute()) &&
-				equalsDroitProp(left, right, ignoreMotifs);
+				equalsDroitProp(left, right);
 	}
 
-	private static boolean equalsDroitPropPM(@NotNull DroitProprietePersonneMoraleRF left, @NotNull DroitProprietePersonneMoraleRF right, boolean ignoreMotifs) {
+	private static boolean equalsDroitPropPM(@NotNull DroitProprietePersonneMoraleRF left, @NotNull DroitProprietePersonneMoraleRF right) {
 		return communauteEquals(left.getCommunaute(), right.getCommunaute()) &&
-				equalsDroitProp(left, right, ignoreMotifs);
+				equalsDroitProp(left, right);
 	}
 
-	private static boolean equalsDroitProp(@NotNull DroitProprieteRF left, @NotNull DroitProprieteRF right, boolean ignoreMotifs) {
+	private static boolean equalsDroitProp(@NotNull DroitProprieteRF left, @NotNull DroitProprieteRF right) {
 		return partEquals(left.getPart(), right.getPart()) &&
 				left.getRegime() == right.getRegime() &&
-				equalsDroit(left, right, ignoreMotifs);
+				RaisonAcquisitionRFHelper.dataEquals(left.getRaisonsAcquisition(), right.getRaisonsAcquisition()) &&
+				equalsDroit(left, right);
 	}
 
-	public static boolean equalsDroit(@NotNull DroitRF left, @NotNull DroitRF right, boolean ignoreMotifs) {
+	public static boolean equalsDroit(@NotNull DroitRF left, @NotNull DroitRF right) {
 		return ayantDroitEquals(left.getAyantDroit(), right.getAyantDroit()) &&
 				immeubleEquals(left.getImmeuble(), right.getImmeuble()) &&
-				numeroAffaireEquals(left.getNumeroAffaire(), right.getNumeroAffaire()) &&
 				left.getDateDebutMetier() == right.getDateDebutMetier() &&
-				left.getDateFinMetier() == right.getDateFinMetier() &&
-				(ignoreMotifs || Objects.equals(left.getMotifDebut(), right.getMotifDebut()));
+				// la date de fin métier n'est pas renseignée dans le fichier d'entrée, on ne la compare pas
+				Objects.equals(left.getMotifDebut(), right.getMotifDebut());
 	}
 
 	public static GenrePropriete getRegime(@Nullable PersonEigentumsform form) {
@@ -178,31 +174,6 @@ public class DroitRFHelper {
 		}
 	}
 
-	/**
-	 * @return le droit de référence à utiliser, c'est-à-dire (selon la spécification "Récupérer l'immeuble") :
-	 * <ul>
-	 *     <li>le droit le plus ancien, dans le cas de l'import initial (SIFISC-22400).</li>
-	 *     <li>le droit le plus récent, dans tous les autres cas.</li>
-	 * </ul>
-	 */
-	@Nullable
-	public static Rechtsgrund getDroitDeReference(@Nullable List<Rechtsgrund> rechtsgruende, boolean importInitial) {
-		if (rechtsgruende == null || rechtsgruende.isEmpty()) {
-			return null;
-		}
-		Rechtsgrund oldest = null;
-		Rechtsgrund newest = null;
-		for (Rechtsgrund rechtsgrund : rechtsgruende) {
-			if (oldest == null || RegDateHelper.isBefore(rechtsgrund.getBelegDatum(), oldest.getBelegDatum(), NullDateBehavior.EARLIEST)) {
-				oldest = rechtsgrund;
-			}
-			if (newest == null || RegDateHelper.isAfter(rechtsgrund.getBelegDatum(), newest.getBelegDatum(), NullDateBehavior.EARLIEST)) {
-				newest = rechtsgrund;
-			}
-		}
-		return importInitial ? oldest : newest;
-	}
-
 	private static boolean partEquals(@Nullable Fraction part, @Nullable Fraction quote) {
 		if (part == null || quote == null) {
 			return part == null && quote == null;
@@ -213,7 +184,7 @@ public class DroitRFHelper {
 		}
 	}
 
-	private static boolean numeroAffaireEquals(@Nullable IdentifiantAffaireRF left, @Nullable IdentifiantAffaireRF right) {
+	public static boolean numeroAffaireEquals(@Nullable IdentifiantAffaireRF left, @Nullable IdentifiantAffaireRF right) {
 		if (left == null || right == null) {
 			return left == null && right == null;
 		}
@@ -262,7 +233,6 @@ public class DroitRFHelper {
 
 	@NotNull
 	public static DroitProprieteRF newDroitRF(@NotNull PersonEigentumAnteil eigentumAnteil,
-	                                          boolean importInitial,
 	                                          @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
 	                                          @NotNull Function<String, CommunauteRF> communauteProvider,
 	                                          @NotNull Function<String, ImmeubleRF> immeubleProvider) {
@@ -275,67 +245,51 @@ public class DroitRFHelper {
 		if (natuerlichePerson != null) {
 
 			final DroitProprietePersonnePhysiqueRF d = new DroitProprietePersonnePhysiqueRF();
-			final Rechtsgrund rechtsgrund = getDroitDeReference(natuerlichePerson.getRechtsgruende(), importInitial);
-
 			d.setMasterIdRF(eigentumAnteil.getMasterID());
 			d.setAyantDroit(ayantDroitProvider.apply(natuerlichePerson.getPersonstammIDREF()));
 			d.setCommunaute(communauteProvider.apply(natuerlichePerson.getGemeinschatIDREF()));
 			d.setImmeuble(immeubleProvider.apply(eigentumAnteil.getBelastetesGrundstueckIDREF()));
-			d.setNumeroAffaire(getAffaire(rechtsgrund));
 			d.setPart(FractionHelper.get(eigentumAnteil.getQuote()));
 			d.setRegime(getRegime(eigentumAnteil.getPersonEigentumsForm()));
-			if (rechtsgrund != null) {
-				d.setDateDebutMetier(rechtsgrund.getBelegDatum());
-				d.setMotifDebut(getMotif(rechtsgrund.getRechtsgrundCode()));
-			}
+			natuerlichePerson.getRechtsgruende().forEach(r -> d.addRaisonAcquisition(RaisonAcquisitionRFHelper.newRaisonAcquisition(r)));
 
 			droit = d;
 		}
 		else if (juristischePerson != null) {
 
 			final DroitProprietePersonneMoraleRF d = new DroitProprietePersonneMoraleRF();
-			final Rechtsgrund rechtsgrund = getDroitDeReference(juristischePerson.getRechtsgruende(), importInitial);
-
 			d.setMasterIdRF(eigentumAnteil.getMasterID());
 			d.setAyantDroit(ayantDroitProvider.apply(juristischePerson.getPersonstammIDREF()));
 			d.setCommunaute(communauteProvider.apply(juristischePerson.getGemeinschatIDREF()));
 			d.setImmeuble(immeubleProvider.apply(eigentumAnteil.getBelastetesGrundstueckIDREF()));
-			d.setNumeroAffaire(getAffaire(rechtsgrund));
 			d.setPart(FractionHelper.get(eigentumAnteil.getQuote()));
 			d.setRegime(getRegime(eigentumAnteil.getPersonEigentumsForm()));
-			if (rechtsgrund != null) {
-				d.setDateDebutMetier(rechtsgrund.getBelegDatum());
-				d.setMotifDebut(getMotif(rechtsgrund.getRechtsgrundCode()));
-			}
+			juristischePerson.getRechtsgruende().forEach(r -> d.addRaisonAcquisition(RaisonAcquisitionRFHelper.newRaisonAcquisition(r)));
 
 			droit = d;
 		}
 		else if (gemeinschaft != null) {
 
 			final DroitProprieteCommunauteRF d = new DroitProprieteCommunauteRF();
-			final Rechtsgrund rechtsgrund = getDroitDeReference(gemeinschaft.getRechtsgruende(), importInitial);
-
 			d.setMasterIdRF(eigentumAnteil.getMasterID());
 			d.setAyantDroit(ayantDroitProvider.apply(gemeinschaft.getGemeinschatID()));
 			d.setImmeuble(immeubleProvider.apply(eigentumAnteil.getBelastetesGrundstueckIDREF()));
-			d.setNumeroAffaire(getAffaire(rechtsgrund));
 			d.setPart(FractionHelper.get(eigentumAnteil.getQuote()));
 			d.setRegime(getRegime(eigentumAnteil.getPersonEigentumsForm()));
-			if (rechtsgrund != null) {
-				d.setDateDebutMetier(rechtsgrund.getBelegDatum());
-				d.setMotifDebut(getMotif(rechtsgrund.getRechtsgrundCode()));
-			}
+			gemeinschaft.getRechtsgruende().forEach(r -> d.addRaisonAcquisition(RaisonAcquisitionRFHelper.newRaisonAcquisition(r)));
+
 			droit = d;
 		}
 		else {
 			throw new IllegalArgumentException("Type de droit inconnu masterIdRf=[" + eigentumAnteil.getMasterID() + "]");
 		}
 
+		droit.calculateDateEtMotifDebut();
 		return droit;
 	}
 
 	@Nullable
-	private static String getMotif(@Nullable CapiCode code) {
+	public static String getMotif(@Nullable CapiCode code) {
 		if (code == null) {
 			return null;
 		}
@@ -358,12 +312,12 @@ public class DroitRFHelper {
 
 	@Nullable
 	public static DroitProprieteRF get(@Nullable PersonEigentumAnteil eigentumAnteil,
-	                                   boolean importInitial, @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
+	                                   @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
 	                                   @NotNull Function<String, CommunauteRF> communauteProvider,
 	                                   @NotNull Function<String, ImmeubleRF> immeubleProvider) {
 		if (eigentumAnteil == null) {
 			return null;
 		}
-		return newDroitRF(eigentumAnteil, importInitial, ayantDroitProvider, communauteProvider, immeubleProvider);
+		return newDroitRF(eigentumAnteil, ayantDroitProvider, communauteProvider, immeubleProvider);
 	}
 }

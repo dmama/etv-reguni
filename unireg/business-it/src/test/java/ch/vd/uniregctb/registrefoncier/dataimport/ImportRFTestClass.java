@@ -36,6 +36,7 @@ import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
@@ -289,7 +290,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	                                                             @NotNull GenrePropriete regime, @NotNull RegDate dateDebutMetier, @NotNull IdentifiantAffaireRF affaire, @NotNull RegDate dateDebut, @NotNull String motifDebut,
 	                                                             @Nullable RegDate dateFin) {
 
-		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
 		droit.setDateDebut(dateDebut);
 		droit.setMotifDebut(motifDebut);
 		droit.setDateFin(dateFin);
@@ -298,10 +299,9 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		droit.setCommunaute(communaute);
 		droit.setMasterIdRF(idRfDroit);
 		droit.setDateDebutMetier(dateDebutMetier);
-		droit.setNumeroAffaire(affaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
-
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, affaire));
 		return droit;
 	}
 
@@ -309,7 +309,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	protected static DroitProprieteCommunauteRF newDroitColl(@NotNull String idRfDroit, @NotNull CommunauteRF communaute, @NotNull ImmeubleRF immeuble, @NotNull Fraction part, @NotNull GenrePropriete regime, @NotNull RegDate dateDebutMetier,
 	                                                         @NotNull IdentifiantAffaireRF affaire, @NotNull RegDate dateDebut, @NotNull String motifDebut, @Nullable RegDate dateFin) {
 
-		DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
+		final DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
 		droit.setDateDebut(dateDebut);
 		droit.setMotifDebut(motifDebut);
 		droit.setDateFin(dateFin);
@@ -317,10 +317,9 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		droit.setAyantDroit(communaute);
 		droit.setMasterIdRF(idRfDroit);
 		droit.setDateDebutMetier(dateDebutMetier);
-		droit.setNumeroAffaire(affaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
-
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, affaire));
 		return droit;
 	}
 

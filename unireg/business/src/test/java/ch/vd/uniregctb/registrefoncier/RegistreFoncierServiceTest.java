@@ -26,6 +26,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
 
+import static ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestCase.assertRaisonAcquisition;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -116,9 +117,12 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(RegDate.get(2010, 2, 20), droit0.getDateFinMetier());
 				assertEquals("Achat", droit0.getMotifDebut());
 				assertEquals("Achat", droit0.getMotifFin());
-				assertEquals(new IdentifiantAffaireRF(23, 1997, 13, 0), droit0.getNumeroAffaire());
 				assertEquals("47e7d7e773", droit0.getMasterIdRF());
 				assertEquals("02faeee", droit0.getImmeuble().getIdRF());
+
+				final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
+				assertEquals(1, raisons0.size());
+				assertRaisonAcquisition(RegDate.get(1997, 7, 2), "Achat", new IdentifiantAffaireRF(23, 1997, 13, 0), raisons0.iterator().next());
 
 				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
 				assertNull(droit1.getCommunaute());
@@ -130,9 +134,12 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertNull(droit1.getDateFinMetier());
 				assertEquals("Achat", droit1.getMotifDebut());
 				assertNull(droit1.getMotifFin());
-				assertEquals(new IdentifiantAffaireRF(123, 2004, 202, 3), droit1.getNumeroAffaire());
 				assertEquals("48390a0e044", droit1.getMasterIdRF());
 				assertEquals("01faeee", droit1.getImmeuble().getIdRF());
+
+				final Set<RaisonAcquisitionRF> raisons1 = droit1.getRaisonsAcquisition();
+				assertEquals(1, raisons1.size());
+				assertRaisonAcquisition(RegDate.get(2004, 4, 12), "Achat", new IdentifiantAffaireRF(123, 2004, 202, 3), raisons1.iterator().next());
 			}
 		});
 	}
@@ -257,7 +264,6 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(RegDate.get(2002, 2, 23), droit0.getDateFin());
 				assertEquals("Achat", droit0.getMotifDebut());
 				assertEquals("Vente", droit0.getMotifFin());
-				assertEquals(new IdentifiantAffaireRF(23, 1997, 13, 0), droit0.getNumeroAffaire());
 				assertEquals("47e7d7e773", droit0.getMasterIdRF());
 				assertEquals("03faeee", droit0.getImmeuble().getIdRF());
 
@@ -270,7 +276,6 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertNull(droit1.getDateFin());
 				assertEquals("Achat", droit1.getMotifDebut());
 				assertEquals("Vente", droit1.getMotifFin());
-				assertEquals(new IdentifiantAffaireRF(123, 2003, 22, 7), droit1.getNumeroAffaire());
 				assertEquals("834838c", droit1.getMasterIdRF());
 				assertEquals("05faeee", droit1.getImmeuble().getIdRF());
 
@@ -283,7 +288,6 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertNull(droit2.getDateFin());
 				assertEquals("Achat", droit2.getMotifDebut());
 				assertNull(droit2.getMotifFin());
-				assertEquals(new IdentifiantAffaireRF(123, 2004, 202, 3), droit2.getNumeroAffaire());
 				assertEquals("48390a0e044", droit2.getMasterIdRF());
 				assertEquals("01faeee", droit2.getImmeuble().getIdRF());
 
@@ -296,7 +300,6 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertNull(droit3.getDateFin());
 				assertEquals("Achat", droit3.getMotifDebut());
 				assertNull(droit3.getMotifFin());
-				assertEquals(new IdentifiantAffaireRF(23, 2010, 33, 30), droit3.getNumeroAffaire());
 				assertEquals("c83839e", droit3.getMasterIdRF());
 				assertEquals("06faeee", droit3.getImmeuble().getIdRF());
 			}

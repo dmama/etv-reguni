@@ -27,6 +27,8 @@ import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
 import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 
+import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.numeroAffaireEquals;
+
 public class ServitudesRFHelper {
 
 	public static DroitRFKey newServitudeRFKey(@NotNull DienstbarkeitDiscrete droit) {
@@ -131,7 +133,9 @@ public class ServitudesRFHelper {
 	private static boolean equalsServitude(@NotNull ServitudeRF left, @NotNull ServitudeRF right) {
 		return DroitRFHelper.communauteEquals(left.getCommunaute(), right.getCommunaute()) &&
 				Objects.equals(left.getIdentifiantDroit(), right.getIdentifiantDroit()) &&
-				DroitRFHelper.equalsDroit(left, right, false);
+				numeroAffaireEquals(left.getNumeroAffaire(), right.getNumeroAffaire()) &&
+				left.getDateFinMetier() == right.getDateFinMetier() &&
+				DroitRFHelper.equalsDroit(left, right);
 	}
 
 	@NotNull

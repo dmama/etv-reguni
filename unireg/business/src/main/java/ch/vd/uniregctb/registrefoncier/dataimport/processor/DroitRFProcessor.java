@@ -2,9 +2,11 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
@@ -14,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
@@ -21,8 +24,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -30,6 +33,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilListElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.RaisonAcquisitionRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
@@ -100,7 +104,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// on crée les droits en mémoire
 		final List<DroitProprieteRF> droits = droitList.stream()
 				.map(e -> (PersonEigentumAnteil) e)
-				.map(e -> DroitRFHelper.newDroitRF(e, importInitial, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble))
+				.map(e -> DroitRFHelper.newDroitRF(e, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble))
 				.collect(Collectors.toList());
 
 		// on les insère en DB
@@ -170,16 +174,20 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	private void processModification(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<DroitProprieteRF> droits) {
 
 		// on va chercher les droits de propriété actifs actuellement persistés
-		final List<DroitRF> persisted = ayantDroit.getDroits().stream()
+		final List<DroitProprieteRF> persisted = ayantDroit.getDroits().stream()
 				.filter(d -> d.isValidAt(null))
 				.filter(d -> d instanceof DroitProprieteRF)
+				.map(d -> (DroitProprieteRF) d)
 				.collect(Collectors.toList());
 
 		// on détermine les changements
-		List<DroitRF> toAddList = new LinkedList<>(droits);
-		List<DroitRF> toCloseList = new LinkedList<>(persisted);
-		CollectionsUtils.removeCommonElements(toAddList, toCloseList, (left, right) -> DroitRFHelper.dataEquals(left, right, false));   // on supprime les droits égaux en tant compte des motifs (pour être le plus précis possible)
-		CollectionsUtils.removeCommonElements(toAddList, toCloseList, (left, right) -> DroitRFHelper.dataEquals(left, right, true));    // on supprime les droits égaux sans tenir compte des motifs (pour être le plus complet possible)
+		final List<DroitProprieteRF> toAddList = new LinkedList<>(droits);
+		final List<DroitProprieteRF> toCloseList = new LinkedList<>(persisted);
+		CollectionsUtils.removeCommonElements(toAddList, toCloseList, DroitRFHelper::dataEquals);   // on supprime les droits égaux
+		final List<Pair<DroitProprieteRF, DroitProprieteRF>> toUpdateList = CollectionsUtils.extractCommonElements(toAddList, toCloseList, (l, r) -> l.getMasterIdRF().equals(r.getMasterIdRF()));
+
+		// on met-à-jour tous les droits qui changent (c'est-à-dire les changements dans les raisons d'acquisition)
+		toUpdateList.forEach(p -> processModification(p.getFirst(), p.getSecond()));
 
 		// on ferme toutes les droits à fermer
 		toCloseList.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
@@ -190,6 +198,25 @@ public class DroitRFProcessor implements MutationRFProcessor {
 			d.setDateDebut(dateValeur);
 			droitRFDAO.save(d);
 		});
+	}
+
+	private void processModification(@NotNull DroitProprieteRF droit, @NotNull DroitProprieteRF persisted) {
+		if (!droit.getMasterIdRF().equals(persisted.getMasterIdRF())) {
+			throw new IllegalArgumentException("Les mastersIdRF sont différents : [" + droit.getMasterIdRF() + "] et [" + persisted.getMasterIdRF() + "]");
+		}
+		if (!Objects.equals(droit.getPart(), persisted.getPart())) {
+			throw new IllegalArgumentException("Les parts ne sont pas égales entre l'ancien et le nouveau avec le masterIdRF=[" + droit.getMasterIdRF() + "]");
+		}
+
+		final List<RaisonAcquisitionRF> toDelete = new ArrayList<>(persisted.getRaisonsAcquisition());
+		final List<RaisonAcquisitionRF> toAdd = new ArrayList<>(droit.getRaisonsAcquisition());
+		CollectionsUtils.removeCommonElements(toDelete, toAdd, RaisonAcquisitionRFHelper::dataEquals);   // on supprime les raison d'acquisition qui n'ont pas changé
+
+		// on annule toutes les raisons en trop (on ne maintient pas d'historique dans les raisons d'acquisition car il s'agit déjà d'un historique)
+		toDelete.forEach(r -> r.setAnnule(true));
+
+		// on ajoute toutes les nouvelles raisons
+		toAdd.forEach(persisted::addRaisonAcquisition);
 	}
 
 	/**

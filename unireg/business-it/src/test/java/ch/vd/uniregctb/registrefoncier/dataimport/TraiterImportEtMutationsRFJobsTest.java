@@ -36,6 +36,7 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
@@ -47,6 +48,7 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
+import static ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestCase.assertRaisonAcquisition;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -391,9 +393,12 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertNull(droit0.getMotifFin());
 					assertEquals("1f1091523810039001381005be485efd", droit0.getMasterIdRF());
 					assertEquals("_1f10915238100390013810052537624b", droit0.getImmeuble().getIdRF());
-					assertEquals(new IdentifiantAffaireRF(3, "74'677"), droit0.getNumeroAffaire());
 					assertEquals(new Fraction(1, 1), droit0.getPart());
 					assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
+
+					final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
+					assertEquals(1, raisons0.size());
+					assertRaisonAcquisition(RegDate.get(1997, 6, 19), "Achat", new IdentifiantAffaireRF(3, "74'677"), raisons0.iterator().next());
 				}
 
 				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
@@ -713,9 +718,12 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertNull(droit0.getMotifFin());
 					assertEquals("1f1091523810039001381005be485efd", droit0.getMasterIdRF());
 					assertEquals("_1f10915238100390013810052537624b", droit0.getImmeuble().getIdRF());
-					assertEquals(new IdentifiantAffaireRF(3, "74'677"), droit0.getNumeroAffaire());
 					assertEquals(new Fraction(1, 1), droit0.getPart());
 					assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
+
+					final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
+					assertEquals(1, raisons0.size());
+					assertRaisonAcquisition(RegDate.get(1997, 6, 19), "Achat", new IdentifiantAffaireRF(3, "74'677"), raisons0.iterator().next());
 				}
 
 				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();

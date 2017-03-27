@@ -21,6 +21,7 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
@@ -50,15 +51,14 @@ public class LandRightBuilderTest {
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
-		droit.setMotifDebut("Achat");
-		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
 		droit.setRegime(GenrePropriete.COMMUNE);
 		droit.setCommunaute(communaute);
 		droit.setPart(new Fraction(2, 5));
-		droit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
 		droit.setAyantDroit(new PersonnePhysiqueRF());
 		droit.setImmeuble(immeuble);
+		droit.calculateDateEtMotifDebut();
 
 		final LandRight landRight = LandRightBuilder.newLandRight(droit, t -> ctbId);
 		assertNotNull(landRight);
@@ -90,15 +90,14 @@ public class LandRightBuilderTest {
 		final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
-		droit.setMotifDebut("Achat");
-		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
 		droit.setRegime(GenrePropriete.INDIVIDUELLE);
 		droit.setCommunaute(null);
 		droit.setPart(new Fraction(3, 5));
-		droit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
 		droit.setAyantDroit(new PersonneMoraleRF());
 		droit.setImmeuble(immeuble);
+		droit.calculateDateEtMotifDebut();
 
 		final LandRight landRight = LandRightBuilder.newLandRight(droit, t -> ctbId);
 		assertNotNull(landRight);

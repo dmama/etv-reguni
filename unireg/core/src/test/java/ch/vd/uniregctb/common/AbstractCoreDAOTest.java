@@ -89,6 +89,7 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
@@ -1606,9 +1607,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);
 		droit.setMasterIdRF(masterIdRF);
-		droit.setNumeroAffaire(numeroAffaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
 
 		final DroitProprietePersonnePhysiqueRF saved = merge(droit);
 		if (communaute != null) {
@@ -1632,9 +1633,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);
 		droit.setMasterIdRF(masterIdRF);
-		droit.setNumeroAffaire(numeroAffaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
 
 		final DroitProprietePersonneMoraleRF saved = merge(droit);
 		if (communaute != null) {
@@ -1656,9 +1657,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);
 		droit.setMasterIdRF(masterIdRF);
-		droit.setNumeroAffaire(numeroAffaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
 		return merge(droit);
 	}
 

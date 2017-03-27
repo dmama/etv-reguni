@@ -21,7 +21,9 @@ import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
@@ -152,5 +154,12 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 				assertEquals(type, pp.getType());
 			}
 		});
+	}
+
+	public static void assertRaisonAcquisition(RegDate dateAcquisition, String motif, IdentifiantAffaireRF numeroAffaire, RaisonAcquisitionRF raison) {
+		assertNotNull(raison);
+		assertEquals(dateAcquisition, raison.getDateAcquisition());
+		assertEquals(motif, raison.getMotifAcquisition());
+		assertEquals(numeroAffaire, raison.getNumeroAffaire());
 	}
 }

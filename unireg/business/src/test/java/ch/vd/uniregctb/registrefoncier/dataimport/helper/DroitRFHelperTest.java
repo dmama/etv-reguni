@@ -29,13 +29,13 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("Duplicates")
@@ -45,19 +45,19 @@ public class DroitRFHelperTest {
 	@Test
 	public void testDataEqualsListNullity() throws Exception {
 
-		assertTrue(DroitRFHelper.dataEquals((Set<DroitRF>) null, null, false));
-		assertTrue(DroitRFHelper.dataEquals(Collections.emptySet(), null, false));
-		assertTrue(DroitRFHelper.dataEquals(null, Collections.emptyList(), false));
-		assertTrue(DroitRFHelper.dataEquals(Collections.emptySet(), Collections.emptyList(), false));
+		assertTrue(DroitRFHelper.dataEquals((Set<DroitRF>) null, null));
+		assertTrue(DroitRFHelper.dataEquals(Collections.emptySet(), null));
+		assertTrue(DroitRFHelper.dataEquals(null, Collections.emptyList()));
+		assertTrue(DroitRFHelper.dataEquals(Collections.emptySet(), Collections.emptyList()));
 
-		assertFalse(DroitRFHelper.dataEquals(null, Collections.singletonList(new PersonEigentumAnteil()), false));
-		assertFalse(DroitRFHelper.dataEquals(Collections.singleton(new DroitProprietePersonnePhysiqueRF()), null, false));
+		assertFalse(DroitRFHelper.dataEquals(null, Collections.singletonList(new PersonEigentumAnteil())));
+		assertFalse(DroitRFHelper.dataEquals(Collections.singleton(new DroitProprietePersonnePhysiqueRF()), null));
 	}
 
 	@Test
 	public void testDataEqualsListDifferentSizes() throws Exception {
 		assertFalse(DroitRFHelper.dataEquals(Collections.singleton(new DroitProprietePersonnePhysiqueRF()),
-		                                     Arrays.asList(new PersonEigentumAnteil(), new PersonEigentumAnteil()), false));
+		                                     Arrays.asList(new PersonEigentumAnteil(), new PersonEigentumAnteil())));
 	}
 
 	@Test
@@ -76,13 +76,12 @@ public class DroitRFHelperTest {
 			droitPP1.setImmeuble(immeuble);
 			droitPP1.setCommunaute(null);
 			droitPP1.setDateDebut(RegDate.get(2010, 6, 1));
-			droitPP1.setMotifDebut("Achat");
 			droitPP1.setDateFin(null);
 			droitPP1.setMotifFin(null);
-			droitPP1.setDateDebutMetier(RegDate.get(2010, 4, 23));
-			droitPP1.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
 			droitPP1.setPart(new Fraction(1, 2));
 			droitPP1.setRegime(GenrePropriete.COPROPRIETE);
+			droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
+			droitPP1.calculateDateEtMotifDebut();
 		}
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
@@ -98,13 +97,12 @@ public class DroitRFHelperTest {
 			droitPP2.setImmeuble(immeuble);
 			droitPP2.setCommunaute(null);
 			droitPP2.setDateDebut(RegDate.get(2013, 9, 2));
-			droitPP2.setMotifDebut("Héritage");
 			droitPP2.setDateFin(null);
 			droitPP2.setMotifFin(null);
-			droitPP2.setDateDebutMetier(RegDate.get(2013, 8, 22));
-			droitPP2.setNumeroAffaire(new IdentifiantAffaireRF(6, 2013, 33, 1));
 			droitPP2.setPart(new Fraction(1, 1));
 			droitPP2.setRegime(GenrePropriete.INDIVIDUELLE);
+			droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2013, 8, 22), "Héritage", new IdentifiantAffaireRF(6, 2013, 33, 1)));
+			droitPP2.calculateDateEtMotifDebut();
 		}
 
 		final PersonEigentumAnteil eigentumAnteil1 = new PersonEigentumAnteil();
@@ -149,9 +147,9 @@ public class DroitRFHelperTest {
 			eigentumAnteil2.setPersonEigentumsForm(PersonEigentumsform.ALLEINEIGENTUM);
 		}
 
-		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP1, droitPP2)), Arrays.asList(eigentumAnteil1, eigentumAnteil2), false));
-		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP2, droitPP1)), Arrays.asList(eigentumAnteil2, eigentumAnteil1), false));
-		assertFalse(DroitRFHelper.dataEquals(new HashSet<>(Collections.singletonList(droitPP1)), Collections.singletonList(eigentumAnteil2), false));
+		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP1, droitPP2)), Arrays.asList(eigentumAnteil1, eigentumAnteil2)));
+		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP2, droitPP1)), Arrays.asList(eigentumAnteil2, eigentumAnteil1)));
+		assertFalse(DroitRFHelper.dataEquals(new HashSet<>(Collections.singletonList(droitPP1)), Collections.singletonList(eigentumAnteil2)));
 	}
 
 	@Test
@@ -169,13 +167,12 @@ public class DroitRFHelperTest {
 		droitPP.setImmeuble(immeuble);
 		droitPP.setCommunaute(null);
 		droitPP.setDateDebut(RegDate.get(2010, 6, 1));
-		droitPP.setMotifDebut("Achat");
 		droitPP.setDateFin(null);
 		droitPP.setMotifFin(null);
-		droitPP.setDateDebutMetier(RegDate.get(2010, 4, 23));
-		droitPP.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
 		droitPP.setPart(new Fraction(1, 2));
 		droitPP.setRegime(GenrePropriete.COPROPRIETE);
+		droitPP.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
+		droitPP.calculateDateEtMotifDebut();
 
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(RegDate.get(2010, 4, 23));
@@ -196,55 +193,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
 		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.MITEIGENTUM);
 
-		assertTrue(DroitRFHelper.dataEquals(droitPP, eigentumAnteil, false, false));
-	}
-
-	/**
-	 * [SIFISC-22997] Ce test vérifie que deux droits dont seuls les motifs sont différents sont considérés égaux.
-	 */
-	@Test
-	public void testDataEqualsDroitAvecMotifsDifferents() throws Exception {
-
-		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
-		pp.setIdRF("34838282030");
-
-		final ImmeubleRF immeuble = new BienFondRF();
-		immeuble.setIdRF("ae93920bc34");
-
-		final DroitProprietePersonnePhysiqueRF droitPP = new DroitProprietePersonnePhysiqueRF();
-		droitPP.setMasterIdRF("9a9c9e94923");
-		droitPP.setAyantDroit(pp);
-		droitPP.setImmeuble(immeuble);
-		droitPP.setCommunaute(null);
-		droitPP.setDateDebut(RegDate.get(2010, 6, 1));
-		droitPP.setMotifDebut("Achat");
-		droitPP.setDateFin(null);
-		droitPP.setMotifFin(null);
-		droitPP.setDateDebutMetier(RegDate.get(2010, 4, 23));
-		droitPP.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
-		droitPP.setPart(new Fraction(1, 2));
-		droitPP.setRegime(GenrePropriete.COPROPRIETE);
-
-		final Rechtsgrund recht = new Rechtsgrund();
-		recht.setBelegDatum(RegDate.get(2010, 4, 23));
-		recht.setAmtNummer(6);
-		recht.setBelegJahr(2010);
-		recht.setBelegNummer(120);
-		recht.setBelegNummerIndex(3);
-		recht.setRechtsgrundCode(new CapiCode(null, "Modification intitulé"));
-
-		final NatuerlichePersonGb natuerliche = new NatuerlichePersonGb();
-		natuerliche.setPersonstammIDREF("34838282030");
-		natuerliche.getRechtsgruende().add(recht);
-
-		final PersonEigentumAnteil eigentumAnteil = new PersonEigentumAnteil();
-		eigentumAnteil.setMasterID("9a9c9e94923");
-		eigentumAnteil.setNatuerlichePersonGb(natuerliche);
-		eigentumAnteil.setBelastetesGrundstueckIDREF("ae93920bc34");
-		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
-		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.MITEIGENTUM);
-
-		assertTrue(DroitRFHelper.dataEquals(droitPP, eigentumAnteil, false, true));
+		assertTrue(DroitRFHelper.dataEquals(droitPP, eigentumAnteil));
 	}
 
 	@Test
@@ -262,13 +211,12 @@ public class DroitRFHelperTest {
 		droitPM.setImmeuble(immeuble);
 		droitPM.setCommunaute(null);
 		droitPM.setDateDebut(RegDate.get(2010, 6, 1));
-		droitPM.setMotifDebut("Achat");
 		droitPM.setDateFin(null);
 		droitPM.setMotifFin(null);
-		droitPM.setDateDebutMetier(RegDate.get(2010, 4, 23));
-		droitPM.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
 		droitPM.setPart(new Fraction(1, 2));
 		droitPM.setRegime(GenrePropriete.INDIVIDUELLE);
+		droitPM.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
+		droitPM.calculateDateEtMotifDebut();
 
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(RegDate.get(2010, 4, 23));
@@ -289,7 +237,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
 		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.ALLEINEIGENTUM);
 
-		assertTrue(DroitRFHelper.dataEquals(droitPM, eigentumAnteil, false, false));
+		assertTrue(DroitRFHelper.dataEquals(droitPM, eigentumAnteil));
 	}
 
 	@Test
@@ -306,13 +254,12 @@ public class DroitRFHelperTest {
 		droitComm.setAyantDroit(communaute);
 		droitComm.setImmeuble(immeuble);
 		droitComm.setDateDebut(RegDate.get(2010, 6, 1));
-		droitComm.setMotifDebut("Achat");
 		droitComm.setDateFin(null);
 		droitComm.setMotifFin(null);
-		droitComm.setDateDebutMetier(RegDate.get(2010, 4, 23));
-		droitComm.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 120, 3));
 		droitComm.setPart(new Fraction(1, 2));
 		droitComm.setRegime(GenrePropriete.COMMUNE);
+		droitComm.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
+		droitComm.calculateDateEtMotifDebut();
 
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(RegDate.get(2010, 4, 23));
@@ -333,7 +280,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
 		eigentumAnteil.setPersonEigentumsForm(PersonEigentumsform.GESAMTEIGENTUM);
 
-		assertTrue(DroitRFHelper.dataEquals(droitComm, eigentumAnteil, false, false));
+		assertTrue(DroitRFHelper.dataEquals(droitComm, eigentumAnteil));
 	}
 
 	/**
@@ -349,7 +296,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setJuristischePersonGb(new JuristischePersonGb());
 
-		assertFalse(DroitRFHelper.dataEquals(droitPP, eigentumAnteil, false, false));
+		assertFalse(DroitRFHelper.dataEquals(droitPP, eigentumAnteil));
 	}
 
 	/**
@@ -365,7 +312,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setNatuerlichePersonGb(new NatuerlichePersonGb());
 
-		assertFalse(DroitRFHelper.dataEquals(droitPM, eigentumAnteil, false, false));
+		assertFalse(DroitRFHelper.dataEquals(droitPM, eigentumAnteil));
 	}
 
 	/**
@@ -381,51 +328,7 @@ public class DroitRFHelperTest {
 		eigentumAnteil.setMasterID("9a9c9e94923");
 		eigentumAnteil.setNatuerlichePersonGb(new NatuerlichePersonGb());
 
-		assertFalse(DroitRFHelper.dataEquals(droitComm, eigentumAnteil, false, false));
-	}
-
-	/**
-	 * [SIFISC-22400] Vérifie que le droit de référence est le plus ancien dans le cas de l'import initial et le plus récent dans tous les autres cas.
-	 */
-	@Test
-	public void testGetDroitDeReference() throws Exception {
-
-		final Rechtsgrund droit1 = new Rechtsgrund(1, null, null, RegDate.get(2010, 1, 22), null, null, null, null, null);
-		final Rechtsgrund droit2 = new Rechtsgrund(2, null, null, RegDate.get(2010, 9, 11), null, null, null, null, null);
-		final Rechtsgrund droit3 = new Rechtsgrund(3, null, null, RegDate.get(2014, 4, 12), null, null, null, null, null);
-
-		// import initial
-		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2, droit3), true));
-		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit3, droit1, droit2), true));
-
-		// autres imports
-		assertSame(droit3, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2, droit3), false));
-		assertSame(droit3, DroitRFHelper.getDroitDeReference(Arrays.asList(droit3, droit1, droit2), false));
-	}
-
-	@Test
-	public void testGetDroitDeReferenceListVide() throws Exception {
-		assertNull(DroitRFHelper.getDroitDeReference(Collections.emptyList(), true));
-		assertNull(DroitRFHelper.getDroitDeReference(Collections.emptyList(), false));
-	}
-
-	/**
-	 * Vérifie qu'une date de début nulle est considérée comme plus ancienne qu'une date renseignée.
-	 */
-	@Test
-	public void testGetDroitDeReferenceAnneeNulle() throws Exception {
-
-		final Rechtsgrund droit1 = new Rechtsgrund(1, null, null, null, null, null, null, null, null);
-		final Rechtsgrund droit2 = new Rechtsgrund(2, null, null, RegDate.get(2010, 9, 11), null, null, null, null, null);
-		final Rechtsgrund droit3 = new Rechtsgrund(3, null, null, RegDate.get(2014, 4, 12), null, null, null, null, null);
-
-		// import initial
-		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2, droit3), true));
-		assertSame(droit1, DroitRFHelper.getDroitDeReference(Arrays.asList(droit3, droit1, droit2), true));
-
-		// autres imports
-		assertSame(droit3, DroitRFHelper.getDroitDeReference(Arrays.asList(droit1, droit2, droit3), false));
-		assertSame(droit3, DroitRFHelper.getDroitDeReference(Arrays.asList(droit3, droit1, droit2), false));
+		assertFalse(DroitRFHelper.dataEquals(droitComm, eigentumAnteil));
 	}
 
 	/**

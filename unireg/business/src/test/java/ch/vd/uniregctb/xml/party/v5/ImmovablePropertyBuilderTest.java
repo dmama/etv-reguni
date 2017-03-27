@@ -38,6 +38,7 @@ import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
@@ -536,6 +537,7 @@ public class ImmovablePropertyBuilderTest {
 		droit.setDateDebut(dateDebut);
 		droit.setDateDebutMetier(dateDebut);
 		droit.setMotifDebut(motifDebut);
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebut, motifDebut, null));
 		return droit;
 	}
 }
