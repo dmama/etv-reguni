@@ -310,6 +310,7 @@
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="securityProviderInterface" ref="securityProviderInterface"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
 	</bean>
 
 </beans>

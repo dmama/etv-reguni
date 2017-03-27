@@ -28,6 +28,7 @@
 				<legend><span><fmt:message key="title.exoneration.ifonc.edition"/></span></legend>
 				<jsp:include page="../../../common/degrevement-exoneration/edit-exoneration-table.jsp">
 					<jsp:param name="commandName" value="editExonerationCommand"/>
+					<jsp:param name="allowPeriodeDebutEdit" value="false"/>
 				</jsp:include>
 			</fieldset>
 

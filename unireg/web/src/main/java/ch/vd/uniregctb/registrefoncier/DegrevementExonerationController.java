@@ -3,9 +3,11 @@ package ch.vd.uniregctb.registrefoncier;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,6 +52,7 @@ import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -72,6 +75,7 @@ public class DegrevementExonerationController {
 	private ServiceInfrastructureService infraService;
 	private SecurityProviderInterface securityProviderInterface;
 	private ControllerUtils controllerUtils;
+	private ParametreAppService parametreAppService;
 
 	private static final Comparator<ImmeubleView> IMMEUBLE_VIEW_COMPARATOR = Comparator.comparing(ImmeubleView::getNoParcelle)
 			.thenComparing(Comparator.comparing(ImmeubleView::getIndex1, Comparator.nullsFirst(Comparator.naturalOrder())))
@@ -96,6 +100,10 @@ public class DegrevementExonerationController {
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {
 		this.controllerUtils = controllerUtils;
+	}
+
+	public void setParametreAppService(ParametreAppService parametreAppService) {
+		this.parametreAppService = parametreAppService;
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -272,6 +280,58 @@ public class DegrevementExonerationController {
 	}
 
 	/**
+	 * @param existing la collection des éléments existants
+	 * @return la liste des périodes de début utilisables (celles correspondant aux éléments existants ont été indiquées comme non-utilisables)
+	 */
+	private List<PeriodeFiscaleView> buildPeriodesDebutAutorisees(Collection<? extends AllegementFoncier> existing) {
+		final Set<Integer> used = existing.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(AllegementFoncier::getDateDebut)
+				.map(RegDate::year)
+				.collect(Collectors.toSet());
+
+		final int first = parametreAppService.getPremierePeriodeFiscalePersonnesMorales();
+		final int last = RegDate.get().year() + 1;
+		final List<PeriodeFiscaleView> list = new LinkedList<>();
+		for (int i = first ; i <= last ; ++ i) {
+			list.add(new PeriodeFiscaleView(i, used.contains(i)));
+		}
+		return list;
+	}
+
+	/**
+	 * @param contribuable un contribuable
+	 * @param immeuble un immeuble
+	 * @param clazz la class des allègements fonciers qui nous intéressent
+	 * @param excluded l'allègement foncier dont il ne faut pas tenir compte
+	 * @param avecAnnules <code>true</code> si on veut les annulés aussi
+	 * @param <T> le type d'allègement foncier considéré
+	 * @return la liste des allègements fonciers non-annulés de même classe qui lient l'entreprise à l'immeuble
+	 */
+	private <T extends AllegementFoncier> List<T> getAllegementsFonciers(Contribuable contribuable, ImmeubleRF immeuble, Class<T> clazz, @Nullable T excluded, boolean avecAnnules) {
+		return getAllegementsFonciers(contribuable, immeuble.getId(), clazz, excluded, avecAnnules);
+	}
+
+	/**
+	 * @param contribuable un contribuable
+	 * @param idImmeuble l'identifiant technique d'un immeuble
+	 * @param clazz la class des allègements fonciers qui nous intéressent
+	 * @param excluded l'allègement foncier dont il ne faut pas tenir compte
+	 * @param avecAnnules <code>true</code> si on veut les annulés aussi
+	 * @param <T> le type d'allègement foncier considéré
+	 * @return la liste des allègements fonciers non-annulés de même classe qui lient l'entreprise à l'immeuble
+	 */
+	private <T extends AllegementFoncier> List<T> getAllegementsFonciers(Contribuable contribuable, long idImmeuble, Class<T> clazz, @Nullable T excluded, boolean avecAnnules) {
+		return contribuable.getAllegementsFonciers().stream()
+				.filter(af -> avecAnnules || !af.isAnnule())
+				.filter(af -> excluded == null || af != excluded)
+				.filter(af -> clazz.isAssignableFrom(af.getClass()))
+				.filter(af -> af.getImmeuble().getId() == idImmeuble)
+				.map(af -> (T) af)
+				.collect(Collectors.toList());
+	}
+
+	/**
 	 * Méthode générique pour gérer l'édition d'allègement foncier et en particulier
 	 * le changement de période fiscale de début par rapport à un existant
 	 * @param ctb contribuable
@@ -398,10 +458,7 @@ public class DegrevementExonerationController {
 		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
 		final ImmeubleRF immeuble = getImmeuble(idImmeuble);
 
-		final List<DegrevementICIView> degrevements = entreprise.getAllegementsFonciers().stream()
-				.filter(allegement -> allegement.getImmeuble() == immeuble)
-				.filter(allegement -> allegement instanceof DegrevementICI)
-				.map(allegement -> (DegrevementICI) allegement)
+		final List<DegrevementICIView> degrevements = getAllegementsFonciers(entreprise, immeuble, DegrevementICI.class, null, true).stream()
 				.map(DegrevementICIView::new)
 				.sorted(new AnnulableHelper.AnnulableDateRangeComparator<>(true))
 				.collect(Collectors.toList());
@@ -443,10 +500,13 @@ public class DegrevementExonerationController {
 	                             @RequestParam(value = "idContribuable") long idContribuable,
 	                             @RequestParam(value = "idImmeuble") long idImmeuble) {
 		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
-		return showAddDegrevement(model, new AddDegrevementView(entreprise.getNumero(), idImmeuble));
+		return showAddDegrevement(model,
+		                          getAllegementsFonciers(entreprise, idImmeuble, DegrevementICI.class, null, false),
+		                          new AddDegrevementView(entreprise.getNumero(), idImmeuble));
 	}
 
-	private String showAddDegrevement(Model model, AddDegrevementView view) {
+	private String showAddDegrevement(Model model, Collection<DegrevementICI> autres, AddDegrevementView view) {
+		model.addAttribute("periodesDebut", buildPeriodesDebutAutorisees(autres));
 		model.addAttribute("idContribuable", view.getIdContribuable());
 		model.addAttribute("immeuble", new ResumeImmeubleView(getImmeuble(view.getIdImmeuble()), null, registreFoncierService));
 		model.addAttribute("addDegrevementCommand", view);
@@ -459,25 +519,27 @@ public class DegrevementExonerationController {
 	                               @Valid @ModelAttribute("addDegrevementCommand") AddDegrevementView view,
 	                               BindingResult bindingResult) {
 
-		if (bindingResult.hasErrors()) {
-			return showAddDegrevement(model, view);
-		}
-
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEGREVEMENTS_ICI)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants pour effectuer cette opération.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdContribuable());
 		final Entreprise entreprise = getTiers(Entreprise.class, view.getIdContribuable(), EntrepriseNotFoundException::new);
+		if (bindingResult.hasErrors()) {
+			return showAddDegrevement(model,
+			                          getAllegementsFonciers(entreprise, view.getIdImmeuble(), DegrevementICI.class, null, false),
+			                          view);
+		}
+
 		final ImmeubleRF immeuble = getImmeuble(view.getIdImmeuble());
 
 		// on ne doit pas pouvoir réutiliser la période de début de validité d'une donnée existante
-		final List<DegrevementICI> autres = entreprise.getAllegementsFonciersNonAnnulesTries(DegrevementICI.class).stream()
-				.filter(deg -> deg.getImmeuble() == immeuble)
-				.collect(Collectors.toList());
+		final List<DegrevementICI> autres = getAllegementsFonciers(entreprise, immeuble, DegrevementICI.class, null, false);
 		if (autres.stream().anyMatch(deg -> deg.getDateDebut().year() == view.getAnneeDebut())) {
 			bindingResult.rejectValue("anneeDebut", "error.degexo.degrevement.periode.debut.deja.utilisee");
-			return showAddDegrevement(model, view);
+			return showAddDegrevement(model,
+			                          getAllegementsFonciers(entreprise, immeuble, DegrevementICI.class, null, false),
+			                          view);
 		}
 
 		// mise en place par rapport aux autres
@@ -543,10 +605,7 @@ public class DegrevementExonerationController {
 
 		// on ne doit pas pouvoir réutiliser la période de début de validité d'une donnée existante
 		final ImmeubleRF immeuble = degrevement.getImmeuble();
-		final List<DegrevementICI> autres = ctb.getAllegementsFonciersNonAnnulesTries(DegrevementICI.class).stream()
-				.filter(deg -> deg.getImmeuble() == immeuble)
-				.filter(deg -> deg != degrevement)              // on ne prend que les autres !!!
-				.collect(Collectors.toList());
+		final List<DegrevementICI> autres = getAllegementsFonciers(ctb, immeuble, DegrevementICI.class, degrevement, false);
 		if (autres.stream().anyMatch(deg -> deg.getDateDebut().year() == view.getAnneeDebut())) {
 			bindingResult.rejectValue("anneeDebut", "error.degexo.degrevement.periode.debut.deja.utilisee");
 			return showEditDegrevement(model, degrevement, view);
@@ -579,10 +638,7 @@ public class DegrevementExonerationController {
 		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
 		final ImmeubleRF immeuble = getImmeuble(idImmeuble);
 
-		final List<ExonerationIFONCView> exonerations = entreprise.getAllegementsFonciers().stream()
-				.filter(allegement -> allegement.getImmeuble() == immeuble)
-				.filter(allegement -> allegement instanceof ExonerationIFONC)
-				.map(allegement -> (ExonerationIFONC) allegement)
+		final List<ExonerationIFONCView> exonerations = getAllegementsFonciers(entreprise, immeuble, ExonerationIFONC.class, null, true).stream()
 				.map(ExonerationIFONCView::new)
 				.sorted(new AnnulableHelper.AnnulableDateRangeComparator<>(true))
 				.collect(Collectors.toList());
@@ -623,10 +679,13 @@ public class DegrevementExonerationController {
 	                             @RequestParam(value = "idContribuable") long idContribuable,
 	                             @RequestParam(value = "idImmeuble") long idImmeuble) {
 		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
-		return showAddExoneration(model, new AddExonerationView(entreprise.getNumero(), idImmeuble));
+		return showAddExoneration(model,
+		                          getAllegementsFonciers(entreprise, idImmeuble, ExonerationIFONC.class, null, false),
+		                          new AddExonerationView(entreprise.getNumero(), idImmeuble));
 	}
 
-	private String showAddExoneration(Model model, AddExonerationView view) {
+	private String showAddExoneration(Model model, Collection<ExonerationIFONC> autres, AddExonerationView view) {
+		model.addAttribute("periodesDebut", buildPeriodesDebutAutorisees(autres));
 		model.addAttribute("idContribuable", view.getIdContribuable());
 		model.addAttribute("immeuble", new ResumeImmeubleView(getImmeuble(view.getIdImmeuble()), null, registreFoncierService));
 		model.addAttribute("addExonerationCommand", view);
@@ -639,25 +698,27 @@ public class DegrevementExonerationController {
 	                               @Valid @ModelAttribute("addExonerationCommand") AddExonerationView view,
 	                               BindingResult bindingResult) {
 
-		if (bindingResult.hasErrors()) {
-			return showAddExoneration(model, view);
-		}
-
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.EXONERATIONS_IFONC)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants pour effectuer cette opération.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(view.getIdContribuable());
 		final Entreprise entreprise = getTiers(Entreprise.class, view.getIdContribuable(), EntrepriseNotFoundException::new);
+		if (bindingResult.hasErrors()) {
+			return showAddExoneration(model,
+			                          getAllegementsFonciers(entreprise, view.getIdImmeuble(), ExonerationIFONC.class, null, false),
+			                          view);
+		}
+
 		final ImmeubleRF immeuble = getImmeuble(view.getIdImmeuble());
 
 		// on ne doit pas pouvoir réutiliser la période de début de validité d'une donnée existante
-		final List<ExonerationIFONC> autres = entreprise.getAllegementsFonciersNonAnnulesTries(ExonerationIFONC.class).stream()
-				.filter(deg -> deg.getImmeuble() == immeuble)
-				.collect(Collectors.toList());
+		final List<ExonerationIFONC> autres = getAllegementsFonciers(entreprise, immeuble, ExonerationIFONC.class, null, false);
 		if (autres.stream().anyMatch(exo -> exo.getDateDebut().year() == view.getAnneeDebut())) {
 			bindingResult.rejectValue("anneeDebut", "error.degexo.exoneration.periode.debut.deja.utilisee");
-			return showAddExoneration(model, view);
+			return showAddExoneration(model,
+			                          getAllegementsFonciers(entreprise, immeuble, ExonerationIFONC.class, null, false),
+			                          view);
 		}
 
 		// mise en place par rapport aux autres
@@ -720,10 +781,7 @@ public class DegrevementExonerationController {
 
 		// on ne doit pas pouvoir réutiliser la période de début de validité d'une donnée existante
 		final ImmeubleRF immeuble = exoneration.getImmeuble();
-		final List<ExonerationIFONC> autres = ctb.getAllegementsFonciersNonAnnulesTries(ExonerationIFONC.class).stream()
-				.filter(exo -> exo.getImmeuble() == immeuble)
-				.filter(exo -> exo != exoneration)              // on ne prend que les autres !!!
-				.collect(Collectors.toList());
+		final List<ExonerationIFONC> autres = getAllegementsFonciers(ctb, immeuble, ExonerationIFONC.class, exoneration, false);
 		if (autres.stream().anyMatch(deg -> deg.getDateDebut().year() == view.getAnneeDebut())) {
 			bindingResult.rejectValue("anneeDebut", "error.degexo.exoneration.periode.debut.deja.utilisee");
 			return showEditExoneration(model, exoneration, view);

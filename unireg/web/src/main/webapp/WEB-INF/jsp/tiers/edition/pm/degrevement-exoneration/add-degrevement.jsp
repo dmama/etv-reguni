@@ -29,6 +29,7 @@
 				<legend><span><fmt:message key="title.degrevement.ici.ajout"/></span></legend>
 				<jsp:include page="../../../common/degrevement-exoneration/edit-degrevement-table.jsp">
 					<jsp:param name="commandName" value="addDegrevementCommand"/>
+					<jsp:param name="allowPeriodeDebutEdit" value="true"/>
 				</jsp:include>
 			</fieldset>
 

@@ -1,15 +1,34 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
+<%--@elvariable id="periodesDebut" type="java.util.List<ch.vd.uniregctb.registrefoncier.PeriodeFiscaleView>"--%>
+
 <c:set var="commandName" value="${param.commandName}"/>
+<c:set var="allowPeriodeDebutEdit" value="${param.allowPeriodeDebutEdit}"/>
 
 <table border="0">
 	<tr class="even">
 		<td style="width: 15%;"><fmt:message key="label.periode.fiscale.debut"/>&nbsp;:</td>
 		<td style="width: 35%;">
-			<form:input size="4" path="anneeDebut"/>
-			<span style="color: red;">*</span>
-			<form:errors path="anneeDebut" cssClass="error"/>
+			<c:choose>
+				<c:when test="${allowPeriodeDebutEdit}">
+					<form:select path="anneeDebut">
+						<form:option value=""/>
+						<c:forEach items="${periodesDebut}" var="periode">
+							<form:option value="${periode.annee}" disabled="${periode.interdite}"/>
+						</c:forEach>
+					</form:select>
+					<span style="color: red;">*</span>
+					<form:errors path="anneeDebut" cssClass="error"/>
+				</c:when>
+				<c:otherwise>
+					<form:hidden path="anneeDebut"/>
+					<c:set var="pfDebutName" value="${commandName}.anneeDebut"/>
+					<spring:bind path="${pfDebutName}">
+						<span style="padding-left: 1em;"><c:out value="${status.value}"/></span>
+					</spring:bind>
+				</c:otherwise>
+			</c:choose>
 		</td>
 		<td style="width: 15%;"><fmt:message key="label.periode.fiscale.fin"/>&nbsp;:</td>
 		<td style="width: 35%;">
