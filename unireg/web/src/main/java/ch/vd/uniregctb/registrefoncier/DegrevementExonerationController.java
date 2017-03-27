@@ -498,13 +498,20 @@ public class DegrevementExonerationController {
 		}
 
 		final DegrevementICI degrevement = getDegrevement(idDegrevement);
-		controllerUtils.checkAccesDossierEnEcriture(degrevement.getContribuable().getNumero());
+		final Contribuable contribuable = degrevement.getContribuable();
+		controllerUtils.checkAccesDossierEnEcriture(contribuable.getNumero());
 
 		degrevement.setAnnule(true);
+		getAllegementsFonciers(contribuable, degrevement.getImmeuble(), DegrevementICI.class, degrevement, false).stream()
+				.filter(deg -> deg.getDateFin() == degrevement.getDateDebut().getOneDayBefore())
+				.forEach(deg -> {
+					final DegrevementICI copy = deg.duplicate();
+					deg.setAnnule(true);
+					copy.setDateFin(degrevement.getDateFin());      // on rallonge le dégrèvement précédent s'il existe
+					contribuable.addAllegementFoncier(copy);
+				});
 
-		// TODO il y a sans doute des trucs à faire pour les autres données de dégrèvement, non ?
-
-		return "redirect:/degrevement-exoneration/edit-degrevements.do?idContribuable=" + degrevement.getContribuable().getNumero() + "&idImmeuble=" + degrevement.getImmeuble().getId();
+		return "redirect:/degrevement-exoneration/edit-degrevements.do?idContribuable=" + contribuable.getNumero() + "&idImmeuble=" + degrevement.getImmeuble().getId();
 	}
 
 	@InitBinder(value = "addDegrevementCommand")
@@ -682,13 +689,20 @@ public class DegrevementExonerationController {
 		}
 
 		final ExonerationIFONC exoneration = getExoneration(idExoneration);
+		final Contribuable contribuable = exoneration.getContribuable();
 		controllerUtils.checkAccesDossierEnEcriture(exoneration.getContribuable().getNumero());
 
 		exoneration.setAnnule(true);
+		getAllegementsFonciers(contribuable, exoneration.getImmeuble(), ExonerationIFONC.class, exoneration, false).stream()
+				.filter(exo -> exo.getDateFin() == exoneration.getDateDebut().getOneDayBefore())
+				.forEach(exo -> {
+					final ExonerationIFONC copy = exo.duplicate();
+					exo.setAnnule(true);
+					copy.setDateFin(exoneration.getDateFin());      // on rallonge l'exonération précédente si elle existe
+					contribuable.addAllegementFoncier(copy);
+				});
 
-		// TODO il y a sans doute des trucs à faire pour les autres exonérations, non ?
-
-		return "redirect:/degrevement-exoneration/edit-exonerations.do?idContribuable=" + exoneration.getContribuable().getNumero() + "&idImmeuble=" + exoneration.getImmeuble().getId();
+		return "redirect:/degrevement-exoneration/edit-exonerations.do?idContribuable=" + contribuable.getNumero() + "&idImmeuble=" + exoneration.getImmeuble().getId();
 	}
 
 	@InitBinder(value = "addExonerationCommand")
