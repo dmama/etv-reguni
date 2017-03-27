@@ -34,7 +34,6 @@ import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.DonneesLoiLogement;
 import ch.vd.uniregctb.foncier.DonneesUtilisation;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
@@ -71,15 +70,10 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	}
 
 	private TiersService tiersService;
-	private HibernateTemplate hibernateTemplate;
 	private RegistreFoncierService registreFoncierService;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {

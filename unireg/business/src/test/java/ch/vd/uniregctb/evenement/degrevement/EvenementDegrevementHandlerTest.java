@@ -63,7 +63,6 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 
 		final EvenementDegrevementHandlerImpl impl = new EvenementDegrevementHandlerImpl();
 		impl.setTiersService(tiersService);
-		impl.setHibernateTemplate(hibernateTemplate);
 		impl.setRegistreFoncierService(getBean(RegistreFoncierService.class, "serviceRF"));
 		handler = impl;
 	}

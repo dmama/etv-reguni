@@ -51,7 +51,6 @@
 
 	<bean id="evenementDegrevementHandler" class="ch.vd.uniregctb.evenement.degrevement.EvenementDegrevementHandlerImpl">
 		<property name="tiersService" ref="tiersService"/>
-		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="registreFoncierService" ref="serviceRF" />
 	</bean>
 
