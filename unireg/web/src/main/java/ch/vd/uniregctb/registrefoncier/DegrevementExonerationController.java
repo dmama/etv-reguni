@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -307,8 +306,8 @@ public class DegrevementExonerationController {
 
 		final int first = parametreAppService.getPremierePeriodeFiscalePersonnesMorales();
 		final int last = RegDate.get().year() + 1;
-		final List<PeriodeFiscaleView> list = new LinkedList<>();
-		for (int i = first ; i <= last ; ++ i) {
+		final List<PeriodeFiscaleView> list = new ArrayList<>(last - first + 1);
+		for (int i = last ; i >= first ; -- i) {
 			list.add(new PeriodeFiscaleView(i, used.contains(i)));
 		}
 		return list;
