@@ -202,12 +202,11 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	@Nullable
 	@Override
-	public Long getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference) {
+	public EstimationRF getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference) {
 		return immeuble.getEstimations().stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(est -> est.getRangeMetier().isValidAt(dateReference))
 				.findFirst()
-				.map(EstimationRF::getMontant)
 				.orElse(null);
 	}
 

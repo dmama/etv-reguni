@@ -16,9 +16,10 @@ public class ImmeubleView {
 	private final Integer index2;
 	private final Integer index3;
 	private final Long estimationFiscale;
+	private final String referenceEstimationFiscale;
 	private final String nature;
 
-	public ImmeubleView(long idImmeuble, RegDate dateDebutDroit, RegDate dateFinDroit, int noParcelle, Integer index1, Integer index2, Integer index3, Long estimationFiscale, String nature) {
+	public ImmeubleView(long idImmeuble, RegDate dateDebutDroit, RegDate dateFinDroit, int noParcelle, Integer index1, Integer index2, Integer index3, Long estimationFiscale, String referenceEstimationFiscale, String nature) {
 		this.id = idImmeuble;
 		this.dateDebutDroit = dateDebutDroit;
 		this.dateFinDroit = dateFinDroit;
@@ -27,6 +28,7 @@ public class ImmeubleView {
 		this.index2 = index2;
 		this.index3 = index3;
 		this.estimationFiscale = estimationFiscale;
+		this.referenceEstimationFiscale = referenceEstimationFiscale;
 		this.nature = nature;
 	}
 
@@ -60,6 +62,10 @@ public class ImmeubleView {
 
 	public Long getEstimationFiscale() {
 		return estimationFiscale;
+	}
+
+	public String getReferenceEstimationFiscale() {
+		return referenceEstimationFiscale;
 	}
 
 	public String getNature() {

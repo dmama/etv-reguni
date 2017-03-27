@@ -39,6 +39,7 @@ import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
@@ -348,6 +349,7 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	private BigDecimal extractEstimationFiscale(DemandeDegrevementICI formulaire) throws EsbBusinessException {
 		return Optional.of(formulaire)
 				.map(f -> DemandeDegrevementICIHelper.getEstimationFiscale(f, registreFoncierService))
+				.map(EstimationRF::getMontant)
 				.map(BigDecimal::valueOf)
 				.orElse(null);
 	}

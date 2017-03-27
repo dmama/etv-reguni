@@ -145,7 +145,7 @@ public class DegrevementExonerationController {
 			if (situation != null) {
 				// dans la liste de sortie ?
 				if (matchIndices(situation, noParcelle, index1, index2, index3)) {
-					final Long estimationFiscale = registreFoncierService.getEstimationFiscale(immeuble, periode.getDateFin());
+					final EstimationRF estimationFiscale = registreFoncierService.getEstimationFiscale(immeuble, periode.getDateFin());
 					final String nature = ImmeubleHelper.getNatureImmeuble(immeuble, periode.getDateFin(), Integer.MAX_VALUE);
 					final ImmeubleView view = new ImmeubleView(immeuble.getId(),
 					                                           periode.getDateDebut(),
@@ -154,7 +154,8 @@ public class DegrevementExonerationController {
 					                                           situation.getIndex1(),
 					                                           situation.getIndex2(),
 					                                           situation.getIndex3(),
-					                                           estimationFiscale,
+					                                           estimationFiscale != null ? estimationFiscale.getMontant() : null,
+					                                           estimationFiscale != null ? estimationFiscale.getReference() : null,
 					                                           nature);
 					views.add(view);
 				}

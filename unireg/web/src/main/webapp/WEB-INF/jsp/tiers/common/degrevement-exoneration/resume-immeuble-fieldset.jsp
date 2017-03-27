@@ -24,5 +24,9 @@
 			<td style="width: 15%;"><fmt:message key="label.estimation.fiscale"/>&nbsp;:</td>
 			<td style="width: 30%;"><c:out value="${immeuble.estimationFiscale}"/></td>
 		</tr>
+		<tr class="<unireg:nextRowClass/>">
+			<td style="width: 15%;"><fmt:message key="label.ref.estimation.fiscale"/>&nbsp;:</td>
+			<td style="width: 30%;"><c:out value="${immeuble.referenceEstimationFiscale}"/></td>
+		</tr>
 	</table>
 </fieldset>

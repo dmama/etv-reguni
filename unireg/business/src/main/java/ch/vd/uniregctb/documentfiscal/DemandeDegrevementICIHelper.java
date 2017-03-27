@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleHelper;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
@@ -42,7 +43,7 @@ public abstract class DemandeDegrevementICIHelper {
 	 * @return l'estimation fiscale de l'immeuble lié au formulaire de demande de dégrèvement
 	 */
 	@Nullable
-	public static Long getEstimationFiscale(DemandeDegrevementICI formulaire, RegistreFoncierService rfService) {
+	public static EstimationRF getEstimationFiscale(DemandeDegrevementICI formulaire, RegistreFoncierService rfService) {
 		final RegDate dateReference = getDateReference(formulaire);
 		return getEstimationFiscale(formulaire.getImmeuble(), dateReference, rfService);
 	}
@@ -54,7 +55,7 @@ public abstract class DemandeDegrevementICIHelper {
 	 * @return l'estimation fiscale de l'immeuble, à la date de référence
 	 */
 	@Nullable
-	static Long getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference, RegistreFoncierService rfService) {
+	static EstimationRF getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference, RegistreFoncierService rfService) {
 		return rfService.getEstimationFiscale(immeuble, dateReference);
 	}
 

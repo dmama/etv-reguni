@@ -94,7 +94,7 @@ public interface RegistreFoncierService {
 	 * @return l'estimation fiscale valide à la date de référence
 	 */
 	@Nullable
-	Long getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference);
+	EstimationRF getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference);
 
 	/**
 	 * @param immeuble immeuble du RF

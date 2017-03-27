@@ -119,7 +119,7 @@
 						var html;
 						if (count > 0) {
 							html = '<table class="display">';
-							html += '<tr><th>Parcelle</th><th>Date de début du premier droit connu</th><th>Date de fin du dernier droit connu</th><th>Nature de l&#39immeuble</th><th>Estimation fiscale (CHF)</th></tr>';
+							html += '<tr><th>Parcelle</th><th>Date de début du premier droit connu</th><th>Date de fin du dernier droit connu</th><th>Nature de l&#39immeuble</th><th>Référence EF</th><th>Estimation fiscale (CHF)</th></tr>';
 							for (var i = 0; i < count; ++i) {
 								const immeuble = immeubles[i];
 								html += '<tr class="' + (i % 2 == 0 ? 'odd' : 'even') + '">';
@@ -127,6 +127,7 @@
 								html += '<td style="width: 10%;">' + RegDate.format(immeuble.dateDebutDroit) + '</td>';
 								html += '<td style="width: 10%;">' + RegDate.format(immeuble.dateFinDroit) + '</td>';
 								html += '<td>' + StringUtils.escapeHTML(immeuble.nature) + '</td>';
+								html += '<td style="width: 10%;">' + StringUtils.escapeHTML(immeuble.referenceEstimationFiscale) + '</td>';
 								html += '<td style="text-align: right; width: 10%;">' + (immeuble.estimationFiscale == null ? '' : immeuble.estimationFiscale) + '</td>';
 								html += '</tr>';
 							}

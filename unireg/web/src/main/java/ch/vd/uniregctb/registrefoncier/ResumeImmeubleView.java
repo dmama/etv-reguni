@@ -10,6 +10,7 @@ public class ResumeImmeubleView {
 	private final long idImmeuble;
 	private final String noParcelleComplet;
 	private final Long estimationFiscale;
+	private final String referenceEstimationFiscale;
 	private final String nature;
 	private final Integer ofsCommune;
 	private final String nomCommune;
@@ -17,7 +18,16 @@ public class ResumeImmeubleView {
 	public ResumeImmeubleView(ImmeubleRF immeuble, RegDate dateReference, RegistreFoncierService service) {
 		this.idImmeuble = immeuble.getId();
 		this.noParcelleComplet = service.getNumeroParcelleComplet(immeuble, dateReference);
-		this.estimationFiscale = service.getEstimationFiscale(immeuble, dateReference);
+
+		final EstimationRF estimation = service.getEstimationFiscale(immeuble, dateReference);
+		if (estimation != null) {
+			this.estimationFiscale = estimation.getMontant();
+			this.referenceEstimationFiscale = estimation.getReference();
+		}
+		else {
+			this.estimationFiscale = null;
+			this.referenceEstimationFiscale = null;
+		}
 		this.nature = ImmeubleHelper.getNatureImmeuble(immeuble, dateReference, Integer.MAX_VALUE);
 
 		final Optional<Commune> commune = Optional.ofNullable(service.getCommune(immeuble, dateReference));
@@ -35,6 +45,10 @@ public class ResumeImmeubleView {
 
 	public Long getEstimationFiscale() {
 		return estimationFiscale;
+	}
+
+	public String getReferenceEstimationFiscale() {
+		return referenceEstimationFiscale;
 	}
 
 	public String getNature() {
