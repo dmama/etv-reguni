@@ -21,10 +21,8 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
@@ -120,34 +118,34 @@ public abstract class ImmovablePropertyBuilder {
 
 		property.getLocations().addAll(immeuble.getSituations().stream()
 				                               .filter(Annulable::isNotAnnule)
-				                               .sorted(SituationRF::compareTo)
+				                               .sorted()
 				                               .map(ImmovablePropertyBuilder::newLocation)
 				                               .collect(Collectors.toList()));
 		property.getTaxEstimates().addAll(immeuble.getEstimations().stream()
 				                                  .filter(Annulable::isNotAnnule)
-				                                  .sorted(EstimationRF::compareTo)
+				                                  .sorted()
 				                                  .map(ImmovablePropertyBuilder::newTaxEstimate)
 				                                  .collect(Collectors.toList()));
 		property.getTotalAreas().addAll(immeuble.getSurfacesTotales().stream()
 				                                .filter(Annulable::isNotAnnule)
-				                                .sorted(SurfaceTotaleRF::compareTo)
+				                                .sorted()
 				                                .map(ImmovablePropertyBuilder::newTotalArea)
 				                                .collect(Collectors.toList()));
 		property.getGroundAreas().addAll(immeuble.getSurfacesAuSol().stream()
 				                                 .filter(Annulable::isNotAnnule)
-				                                 .sorted(SurfaceAuSolRF::compareTo)
+				                                 .sorted()
 				                                 .map(ImmovablePropertyBuilder::newGroundArea)
 				                                 .collect(Collectors.toList()));
 		property.getBuildingSettings().addAll(immeuble.getImplantations().stream()
 				                                      .filter(Annulable::isNotAnnule)
-				                                      .sorted(ImplantationRF::compareTo)
+				                                      .sorted()
 				                                      .map(BuildingBuilder::newBuildSetting)
 				                                      .collect(Collectors.toList()));
 		property.getLandRights().addAll(immeuble.getDroits().stream()
 				                                .filter(Annulable::isNotAnnule)
 				                                // on n'expose pas les droits des communautés (c'est les droits des personnes membres des communautés qui portent l'information)
 				                                .filter(d -> !(d instanceof DroitProprieteCommunauteRF))
-				                                .sorted(DroitRF::compareTo)
+				                                .sorted()
 				                                .map(d -> LandRightBuilder.newLandRight(d, contribuableIdProvider))
 				                                .collect(Collectors.toList()));
 	}

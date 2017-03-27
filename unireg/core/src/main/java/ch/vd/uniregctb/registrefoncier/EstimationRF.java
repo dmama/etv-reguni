@@ -38,7 +38,7 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
 })
-public class EstimationRF extends HibernateDateRangeEntity implements LinkedEntity {
+public class EstimationRF extends HibernateDateRangeEntity implements LinkedEntity, Comparable<EstimationRF> {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -217,6 +217,7 @@ public class EstimationRF extends HibernateDateRangeEntity implements LinkedEnti
 	 * @param right une autre estimation.
 	 * @return le résultat de la comparaison selon {@link Comparable#compareTo(Object)}.
 	 */
+	@Override
 	public int compareTo(@NotNull EstimationRF right) {
 		int c = DateRangeComparator.compareRanges(this, right);
 		if (c != 0) {

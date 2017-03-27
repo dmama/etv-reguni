@@ -31,7 +31,7 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
 })
-public class SurfaceTotaleRF extends HibernateDateRangeEntity implements LinkedEntity {
+public class SurfaceTotaleRF extends HibernateDateRangeEntity implements LinkedEntity, Comparable<SurfaceTotaleRF> {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -96,6 +96,7 @@ public class SurfaceTotaleRF extends HibernateDateRangeEntity implements LinkedE
 	 * @param right une autre surface.
 	 * @return le résultat de la comparaison selon {@link Comparable#compareTo(Object)}.
 	 */
+	@Override
 	public int compareTo(@NotNull SurfaceTotaleRF right) {
 		int c = DateRangeComparator.compareRanges(this, right);
 		if (c != 0) {
