@@ -19,8 +19,8 @@ public class AbstractEditDegrevementViewValidator implements Validator {
 		final AbstractEditDegrevementView view = (AbstractEditDegrevementView) target;
 
 		// la période de début est obligatoire
-		if (view.getPfDebut() == null && !errors.hasFieldErrors("pfDebut")) {
-			errors.rejectValue("pfDebut", "error.champ.obligatoire");
+		if (view.getAnneeDebut() == null && !errors.hasFieldErrors("anneeDebut")) {
+			errors.rejectValue("anneeDebut", "error.champ.obligatoire");
 		}
 
 		// les montants, surfaces et volumes, si présents doivent être positifs ou nuls

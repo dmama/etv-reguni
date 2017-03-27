@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -279,14 +278,12 @@ public class DegrevementExonerationController {
 	 * @param autres les autres allègements fonciers de même type
 	 * @param editedEntity l'entité en cours d'édition (ne doit pas faire partie de la liste des "autres")
 	 * @param newRange nouvelle période de validité de l'entité en cours d'édition
-	 * @param pfFinSetter callback qui permet de mettre à jour la période de fin dans le nouveau range de validité de l'entité en cours d'édition
 	 * @param <T> le type d'allègement foncier
 	 */
 	private static <T extends AllegementFoncier & Duplicable<T>> void computeEditionInfluenceOnOthers(Contribuable ctb,
 	                                                                                                  List<T> autres,
 	                                                                                                  T editedEntity,
-	                                                                                                  DateRange newRange,
-	                                                                                                  Consumer<Integer> pfFinSetter) {
+	                                                                                                  AbstractYearRangeView newRange) {
 
 		// il faut adapter les dates de fin entités existantes, éventuellement, et aussi celle de l'entité modifiée
 		// - recalculer la date de fin de l'entité modifiée
@@ -300,7 +297,7 @@ public class DegrevementExonerationController {
 				.map(RegDate::getOneDayBefore)
 				.map(RegDate::year)
 				.orElse(null);
-		pfFinSetter.accept(pfFin);
+		newRange.setAnneeFin(pfFin);
 
 		if (newRange.getDateDebut() != editedEntity.getDateDebut()) {
 			final List<T> copies = new ArrayList<>(autres.size());
@@ -348,13 +345,11 @@ public class DegrevementExonerationController {
 	 * @param ctb contribuable
 	 * @param preexisting les allègements fonciers de même type déjà existants
 	 * @param newRange période de validité de la nouvelle entité
-	 * @param pfFinSetter callback qui permet de mettre à jour la période de fin dans le range de validité de la nouvelle entité
 	 * @param <T> le type d'allègement foncier
 	 */
 	private static <T extends AllegementFoncier & Duplicable<T>> void computeAdditionInfluenceOnOthers(Contribuable ctb,
 	                                                                                                   List<T> preexisting,
-	                                                                                                   DateRange newRange,
-	                                                                                                   Consumer<Integer> pfFinSetter) {
+	                                                                                                   AbstractYearRangeView newRange) {
 
 		// il faut adapter les dates de fin des entités existantes, éventuellement, et aussi celle de la nouvelle
 		// - d'abord la nouvelle : prendre l'entité existante postérieure et assigner la date de fin de la nouvelle entité à la veille de la date de début de celui-ci
@@ -367,7 +362,7 @@ public class DegrevementExonerationController {
 				.map(RegDate::getOneDayBefore)
 				.map(RegDate::year)
 				.orElse(null);
-		pfFinSetter.accept(pfFin);
+		newRange.setAnneeFin(pfFin);
 
 		preexisting.stream()
 				.map(af -> Pair.of(af, DateRangeHelper.intersection(af, newRange)))
@@ -427,7 +422,12 @@ public class DegrevementExonerationController {
 		}
 
 		final DegrevementICI degrevement = getDegrevement(idDegrevement);
+		controllerUtils.checkAccesDossierEnEcriture(degrevement.getContribuable().getNumero());
+
 		degrevement.setAnnule(true);
+
+		// TODO il y a sans doute des trucs à faire pour les autres données de dégrèvement, non ?
+
 		return "redirect:/degrevement-exoneration/edit-degrevements.do?idContribuable=" + degrevement.getContribuable().getNumero() + "&idImmeuble=" + degrevement.getImmeuble().getId();
 	}
 
@@ -475,13 +475,13 @@ public class DegrevementExonerationController {
 		final List<DegrevementICI> autres = entreprise.getAllegementsFonciersNonAnnulesTries(DegrevementICI.class).stream()
 				.filter(deg -> deg.getImmeuble() == immeuble)
 				.collect(Collectors.toList());
-		if (autres.stream().anyMatch(deg -> deg.getDateDebut().year() == view.getPfDebut())) {
-			bindingResult.rejectValue("pfDebut", "error.degexo.degrevement.periode.debut.deja.utilisee");
+		if (autres.stream().anyMatch(deg -> deg.getDateDebut().year() == view.getAnneeDebut())) {
+			bindingResult.rejectValue("anneeDebut", "error.degexo.degrevement.periode.debut.deja.utilisee");
 			return showAddDegrevement(model, view);
 		}
 
 		// mise en place par rapport aux autres
-		computeAdditionInfluenceOnOthers(entreprise, autres, view, view::setPfFin);
+		computeAdditionInfluenceOnOthers(entreprise, autres, view);
 
 		// création d'une nouvelle entité
 		final DegrevementICI degrevement = new DegrevementICI();
@@ -547,13 +547,13 @@ public class DegrevementExonerationController {
 				.filter(deg -> deg.getImmeuble() == immeuble)
 				.filter(deg -> deg != degrevement)              // on ne prend que les autres !!!
 				.collect(Collectors.toList());
-		if (autres.stream().anyMatch(deg -> deg.getDateDebut().year() == view.getPfDebut())) {
-			bindingResult.rejectValue("pfDebut", "error.degexo.degrevement.periode.debut.deja.utilisee");
+		if (autres.stream().anyMatch(deg -> deg.getDateDebut().year() == view.getAnneeDebut())) {
+			bindingResult.rejectValue("anneeDebut", "error.degexo.degrevement.periode.debut.deja.utilisee");
 			return showEditDegrevement(model, degrevement, view);
 		}
 
 		// mise en place par rapport aux autres
-		computeEditionInfluenceOnOthers(ctb, autres, degrevement, view, view::setPfFin);
+		computeEditionInfluenceOnOthers(ctb, autres, degrevement, view);
 
 		degrevement.setDateDebut(view.getDateDebut());
 		degrevement.setDateFin(view.getDateFin());
@@ -603,7 +603,12 @@ public class DegrevementExonerationController {
 		}
 
 		final ExonerationIFONC exoneration = getExoneration(idExoneration);
+		controllerUtils.checkAccesDossierEnEcriture(exoneration.getContribuable().getNumero());
+
 		exoneration.setAnnule(true);
+
+		// TODO il y a sans doute des trucs à faire pour les autres exonérations, non ?
+
 		return "redirect:/degrevement-exoneration/edit-exonerations.do?idContribuable=" + exoneration.getContribuable().getNumero() + "&idImmeuble=" + exoneration.getImmeuble().getId();
 	}
 
@@ -650,13 +655,13 @@ public class DegrevementExonerationController {
 		final List<ExonerationIFONC> autres = entreprise.getAllegementsFonciersNonAnnulesTries(ExonerationIFONC.class).stream()
 				.filter(deg -> deg.getImmeuble() == immeuble)
 				.collect(Collectors.toList());
-		if (autres.stream().anyMatch(exo -> exo.getDateDebut().year() == view.getPfDebut())) {
-			bindingResult.rejectValue("pfDebut", "error.degexo.exoneration.periode.debut.deja.utilisee");
+		if (autres.stream().anyMatch(exo -> exo.getDateDebut().year() == view.getAnneeDebut())) {
+			bindingResult.rejectValue("anneeDebut", "error.degexo.exoneration.periode.debut.deja.utilisee");
 			return showAddExoneration(model, view);
 		}
 
 		// mise en place par rapport aux autres
-		computeAdditionInfluenceOnOthers(entreprise, autres, view, view::setPfFin);
+		computeAdditionInfluenceOnOthers(entreprise, autres, view);
 
 		// création d'une nouvelle entité
 		final ExonerationIFONC exoneration = new ExonerationIFONC();
@@ -719,13 +724,13 @@ public class DegrevementExonerationController {
 				.filter(exo -> exo.getImmeuble() == immeuble)
 				.filter(exo -> exo != exoneration)              // on ne prend que les autres !!!
 				.collect(Collectors.toList());
-		if (autres.stream().anyMatch(deg -> deg.getDateDebut().year() == view.getPfDebut())) {
-			bindingResult.rejectValue("pfDebut", "error.degexo.exoneration.periode.debut.deja.utilisee");
+		if (autres.stream().anyMatch(deg -> deg.getDateDebut().year() == view.getAnneeDebut())) {
+			bindingResult.rejectValue("anneeDebut", "error.degexo.exoneration.periode.debut.deja.utilisee");
 			return showEditExoneration(model, exoneration, view);
 		}
 
 		// mise en place par rapport aux autres
-		computeEditionInfluenceOnOthers(ctb, autres, exoneration, view, view::setPfFin);
+		computeEditionInfluenceOnOthers(ctb, autres, exoneration, view);
 
 		exoneration.setDateDebut(view.getDateDebut());
 		exoneration.setDateFin(view.getDateFin());

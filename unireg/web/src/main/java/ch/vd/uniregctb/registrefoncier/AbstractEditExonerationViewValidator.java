@@ -19,8 +19,8 @@ public class AbstractEditExonerationViewValidator implements Validator {
 		final AbstractEditExonerationView view = (AbstractEditExonerationView) target;
 
 		// la période de début est obligatoire
-		if (view.getPfDebut() == null && !errors.hasFieldErrors("pfDebut")) {
-			errors.rejectValue("pfDebut", "error.champ.obligatoire");
+		if (view.getAnneeDebut() == null && !errors.hasFieldErrors("anneeDebut")) {
+			errors.rejectValue("anneeDebut", "error.champ.obligatoire");
 		}
 
 		// le pourcentage doit être compris entre 0 et 100, avec deux décimales

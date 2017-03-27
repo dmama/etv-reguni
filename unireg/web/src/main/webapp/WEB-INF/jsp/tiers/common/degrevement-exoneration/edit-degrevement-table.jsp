@@ -7,17 +7,17 @@
 	<tr class="even">
 		<td style="width: 15%;"><fmt:message key="label.periode.fiscale.debut"/>&nbsp;:</td>
 		<td style="width: 35%;">
-			<form:input size="4" path="pfDebut"/>
+			<form:input size="4" path="anneeDebut"/>
 			<span style="color: red;">*</span>
-			<form:errors path="pfDebut" cssClass="error"/>
+			<form:errors path="anneeDebut" cssClass="error"/>
 		</td>
 		<td style="width: 15%;"><fmt:message key="label.periode.fiscale.fin"/>&nbsp;:</td>
 		<td style="width: 35%;">
-			<c:set var="pfFinName" value="${commandName}.pfFin"/>
+			<c:set var="pfFinName" value="${commandName}.anneeFin"/>
 			<spring:bind path="${pfFinName}">
 				<span style="font-style: italic; color: gray; padding: 0 0 0 1em;"><c:out value="${status.value}"/></span>
 			</spring:bind>
-			<form:hidden path="pfFin"/>
+			<form:hidden path="anneeFin"/>
 		</td>
 	</tr>
 	<tr class="odd">
