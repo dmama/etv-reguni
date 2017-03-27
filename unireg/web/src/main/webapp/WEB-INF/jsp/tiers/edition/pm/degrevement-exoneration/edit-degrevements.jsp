@@ -4,6 +4,7 @@
 <%--@elvariable id="idContribuable" type="java.lang.Long"--%>
 <%--@elvariable id="degrevements" type="java.util.List<ch.vd.uniregctb.registrefoncier.DegrevementICIView>"--%>
 <%--@elvariable id="immeuble" type="ch.vd.uniregctb.registrefoncier.ResumeImmeubleView"--%>
+<%--@elvariable id="droits" type="java.util.List<ch.vd.uniregctb.registrefoncier.DroitView>"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
@@ -20,6 +21,8 @@
 				</td>
 			</tr>
 		</table>
+
+		<jsp:include page="../../../common/degrevement-exoneration/droits-fieldset.jsp"/>
 
 		<fieldset>
 			<legend><span><fmt:message key="label.degrevements.ici"/></span></legend>

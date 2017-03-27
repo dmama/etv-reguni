@@ -28,6 +28,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
+import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
@@ -89,7 +90,8 @@ public class ConsultLogController {
 		UniteTraitementReqDes(UniteTraitement.class),
 		EvenementRFImport(EvenementRFImport.class),
 		EvenementRFMutation(EvenementRFMutation.class),
-		AllegementFoncier(AllegementFoncier.class);
+		AllegementFoncier(AllegementFoncier.class),
+		DroitRF(DroitRF.class);
 
 		private final Class<? extends HibernateEntity> entityClass;
 

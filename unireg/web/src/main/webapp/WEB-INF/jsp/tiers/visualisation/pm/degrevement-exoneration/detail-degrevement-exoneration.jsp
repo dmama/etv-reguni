@@ -6,11 +6,14 @@
 <%--@elvariable id="degrevements" type="java.util.List<ch.vd.uniregctb.registrefoncier.DegrevementICIView>"--%>
 <%--@elvariable id="exonerations" type="java.util.List<ch.vd.uniregctb.registrefoncier.ExonerationIFONCView>"--%>
 <%--@elvariable id="immeuble" type="ch.vd.uniregctb.registrefoncier.ResumeImmeubleView"--%>
+<%--@elvariable id="droits" type="java.util.List<ch.vd.uniregctb.registrefoncier.DroitView>"--%>
 
 <unireg:setAuth var="autorisations" tiersId="${idContribuable}"/>
 <%--@elvariable id="autorisations" type="ch.vd.uniregctb.tiers.manager.Autorisations"--%>
 
 <jsp:include page="../../../common/degrevement-exoneration/resume-immeuble-fieldset.jsp"/>
+
+<jsp:include page="../../../common/degrevement-exoneration/droits-fieldset.jsp"/>
 
 <fieldset>
 	<legend><span><fmt:message key="label.demandes.degrevement.ici"/></span></legend>

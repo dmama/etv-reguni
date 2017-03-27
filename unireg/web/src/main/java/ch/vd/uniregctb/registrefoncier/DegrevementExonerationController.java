@@ -239,6 +239,7 @@ public class DegrevementExonerationController {
 		final ImmeubleRF immeuble = getImmeuble(idImmeuble);
 
 		// trouvons maintenant les liens entre les deux
+		// 0. les droits
 		// 1. les demandes de dégrèvement
 		// 2. les données de dégrèvement
 		// 3. les données d'exonération
@@ -269,6 +270,9 @@ public class DegrevementExonerationController {
 				.sorted(new AnnulableHelper.AnnulableDateRangeComparator<>(true))
 				.collect(Collectors.toList());
 
+		// les droits qui lient cette entreprise et cet immeuble
+		final List<DroitView> viewsDroits = buildListeDroits(entreprise, immeuble);
+
 		// l'immeuble lui-même
 		final ResumeImmeubleView immeubleView = new ResumeImmeubleView(immeuble, null, registreFoncierService);
 
@@ -277,7 +281,17 @@ public class DegrevementExonerationController {
 		model.addAttribute("degrevements", viewsDegrevements);
 		model.addAttribute("exonerations", viewsExonerations);
 		model.addAttribute("immeuble", immeubleView);
+		model.addAttribute("droits", viewsDroits);
 		return "tiers/visualisation/pm/degrevement-exoneration/detail-degrevement-exoneration";
+	}
+
+	private List<DroitView> buildListeDroits(Entreprise entreprise, ImmeubleRF immeuble) {
+		return registreFoncierService.getDroitsForCtb(entreprise).stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(dt -> dt.getImmeuble() == immeuble)
+				.sorted(Comparator.reverseOrder())
+				.map(DroitView::new)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -466,9 +480,13 @@ public class DegrevementExonerationController {
 
 		final ResumeImmeubleView immeubleView = new ResumeImmeubleView(immeuble, null, registreFoncierService);
 
+		// les droits qui lient cette entreprise et cet immeuble
+		final List<DroitView> viewsDroits = buildListeDroits(entreprise, immeuble);
+
 		model.addAttribute("idContribuable", idContribuable);
 		model.addAttribute("degrevements", degrevements);
 		model.addAttribute("immeuble", immeubleView);
+		model.addAttribute("droits", viewsDroits);
 		return "tiers/edition/pm/degrevement-exoneration/edit-degrevements";
 	}
 
@@ -646,9 +664,13 @@ public class DegrevementExonerationController {
 
 		final ResumeImmeubleView immeubleView = new ResumeImmeubleView(immeuble, null, registreFoncierService);
 
+		// les droits qui lient cette entreprise et cet immeuble
+		final List<DroitView> viewsDroits = buildListeDroits(entreprise, immeuble);
+
 		model.addAttribute("idContribuable", idContribuable);
 		model.addAttribute("exonerations", exonerations);
 		model.addAttribute("immeuble", immeubleView);
+		model.addAttribute("droits", viewsDroits);
 		return "tiers/edition/pm/degrevement-exoneration/edit-exonerations";
 	}
 
