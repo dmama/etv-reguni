@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
@@ -86,6 +87,7 @@ public class EvenementRFMutation extends HibernateEntity {
 	@ManyToOne
 	@JoinColumn(name = "IMPORT_ID", nullable = false)
 	@Index(name = "IDX_EV_RF_IMP_ID")
+	@ForeignKey(name = "FK_EV_MUT_RF_IMPORT_ID")
 	public EvenementRFImport getParentImport() {
 		return parentImport;
 	}
