@@ -655,8 +655,8 @@
 		<jackson.version>1.9.13</jackson.version>
 		<wsparty3.version>3.8</wsparty3.version>
 		<wsparty4.version>4.1</wsparty4.version>
-		<ws.v5.version>5.5</ws.v5.version>
-		<ws.v6.version>6.5</ws.v6.version>
+		<ws.v5.version>5.5.1</ws.v5.version>
+		<ws.v6.version>6.5.1</ws.v6.version>
 		<ws.v7.version>7.5</ws.v7.version>
 		<unireg.jaxb2.version>6.3</unireg.jaxb2.version>
 
