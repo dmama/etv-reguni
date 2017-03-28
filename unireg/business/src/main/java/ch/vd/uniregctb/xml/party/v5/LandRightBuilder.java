@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,7 @@ import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -66,7 +68,7 @@ public abstract class LandRightBuilder {
 	}
 
 	@NotNull
-	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonneMoraleRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonneRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
 		final LandOwnershipRight right = new LandOwnershipRight();
 		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutMetier()));
 		right.setDateTo(DataHelper.coreToXMLv2(droitRF.getDateFinMetier()));
@@ -75,34 +77,13 @@ public abstract class LandRightBuilder {
 		right.setEndReason(droitRF.getMotifFin());
 		right.setCommunityId(getCommunityId(droitRF.getCommunaute()));
 		right.setShare(getShare(droitRF.getPart()));
-		right.setCaseIdentifier(getLastCaseIdentifier(droitRF));
+		right.setCaseIdentifier(getFirstCaseIdentifier(droitRF));
 		right.setRightHolder(RightHolderBuilder.getRightHolder(droitRF.getAyantDroit(), ctbIdProvider));
 		right.setImmovablePropertyId(droitRF.getImmeuble().getId());
-		return right;
-	}
-
-	// Pour garder une compatiblité ascendante, on expose le dernier numéro d'affaire sur le droit lui-même
-	private static CaseIdentifier getLastCaseIdentifier(@NotNull DroitProprieteRF droitRF) {
-		return droitRF.getRaisonsAcquisition().stream()
-				.max(Comparator.naturalOrder())
-				.map(RaisonAcquisitionRF::getNumeroAffaire)
-				.map(LandRightBuilder::getCaseIdentifier)
-				.orElse(null);
-	}
-
-	@NotNull
-	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonnePhysiqueRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
-		final LandOwnershipRight right = new LandOwnershipRight();
-		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutMetier()));
-		right.setDateTo(DataHelper.coreToXMLv2(droitRF.getDateFinMetier()));
-		right.setType(EnumHelper.coreToXMLv5(droitRF.getRegime()));
-		right.setStartReason(droitRF.getMotifDebut());
-		right.setEndReason(droitRF.getMotifFin());
-		right.setCommunityId(getCommunityId(droitRF.getCommunaute()));
-		right.setShare(getShare(droitRF.getPart()));
-		right.setCaseIdentifier(getLastCaseIdentifier(droitRF));
-		right.setRightHolder(RightHolderBuilder.getRightHolder(droitRF.getAyantDroit(), ctbIdProvider));
-		right.setImmovablePropertyId(droitRF.getImmeuble().getId());
+		right.getAcquisitionReasons().addAll(droitRF.getRaisonsAcquisition().stream()
+				                                     .sorted()
+				                                     .map(AcquisitionReasonBuilder::get)
+				                                     .collect(Collectors.toList()));
 		return right;
 	}
 
@@ -147,8 +128,17 @@ public abstract class LandRightBuilder {
 		return new Share(part.getNumerateur(), part.getDenominateur());
 	}
 
+	// Pour garder une compatiblité ascendante (et être cohérent avec la date de début), on expose le premier numéro d'affaire sur le droit lui-même
+	private static CaseIdentifier getFirstCaseIdentifier(@NotNull DroitProprieteRF droitRF) {
+		return droitRF.getRaisonsAcquisition().stream()
+				.min(Comparator.naturalOrder())
+				.map(RaisonAcquisitionRF::getNumeroAffaire)
+				.map(LandRightBuilder::getCaseIdentifier)
+				.orElse(null);
+	}
+
 	@Nullable
-	private static CaseIdentifier getCaseIdentifier(@Nullable IdentifiantAffaireRF numeroAffaire) {
+	public static CaseIdentifier getCaseIdentifier(@Nullable IdentifiantAffaireRF numeroAffaire) {
 		if (numeroAffaire == null) {
 			return null;
 		}

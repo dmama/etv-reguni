@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.xml.party.v5;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.xml.party.landregistry.v1.AcquisitionReason;
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
 import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
@@ -56,6 +59,7 @@ public class LandRightBuilderTest {
 		droit.setCommunaute(communaute);
 		droit.setPart(new Fraction(2, 5));
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2017, 3, 2), "Succession", new IdentifiantAffaireRF(21, 2017, 17, 0)));
 		droit.setAyantDroit(new PersonnePhysiqueRF());
 		droit.setImmeuble(immeuble);
 		droit.calculateDateEtMotifDebut();
@@ -76,6 +80,12 @@ public class LandRightBuilderTest {
 		assertEquals(Integer.valueOf(ctbId.intValue()), landOwnershipRight.getRightHolder().getTaxPayerNumber());
 		assertEquals(123456L, landOwnershipRight.getImmovablePropertyId());
 		assertEquals(Long.valueOf(8765887L), landOwnershipRight.getCommunityId());
+
+		final List<AcquisitionReason> reasons = landOwnershipRight.getAcquisitionReasons();
+		assertNotNull(reasons);
+		assertEquals(2, reasons.size());
+		assertAcquisitionReason(RegDate.get(2016, 9, 22), "Achat", 21, "2016/322/3", reasons.get(0));
+		assertAcquisitionReason(RegDate.get(2017, 3, 2), "Succession", 21, "2017/17/0", reasons.get(1));
 	}
 
 	@Test
@@ -115,6 +125,11 @@ public class LandRightBuilderTest {
 		assertEquals(Integer.valueOf(ctbId.intValue()), landOwnershipRight.getRightHolder().getTaxPayerNumber());
 		assertEquals(123456L, landOwnershipRight.getImmovablePropertyId());
 		assertNull(landOwnershipRight.getCommunityId());
+
+		final List<AcquisitionReason> reasons = landOwnershipRight.getAcquisitionReasons();
+		assertNotNull(reasons);
+		assertEquals(1, reasons.size());
+		assertAcquisitionReason(RegDate.get(2016, 9, 22), "Achat", 21, "2016/322/3", reasons.get(0));
 	}
 
 	@Test
@@ -205,9 +220,16 @@ public class LandRightBuilderTest {
 		assertEquals(denominator, share.getDenominator());
 	}
 
-	private void assertCaseIdentifier(int officeNumber, String caseNumber, CaseIdentifier caseIdentifier) {
+	private static void assertCaseIdentifier(int officeNumber, String caseNumber, CaseIdentifier caseIdentifier) {
 		assertNotNull(caseIdentifier);
 		assertEquals(officeNumber, caseIdentifier.getOfficeNumber());
 		assertEquals(caseNumber, caseIdentifier.getCaseNumberText());
+	}
+
+	private static void assertAcquisitionReason(RegDate date, String r, int officeNumber, String caseNumber, AcquisitionReason reason) {
+		assertNotNull(reason);
+		assertEquals(date, DataHelper.xmlToCore(reason.getDate()));
+		assertEquals(r, reason.getReason());
+		assertCaseIdentifier(officeNumber, caseNumber, reason.getCaseIdentifier());
 	}
 }

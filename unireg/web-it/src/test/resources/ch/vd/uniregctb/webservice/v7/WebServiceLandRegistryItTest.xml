@@ -794,6 +794,84 @@
 			<null />
 		</row>
 	</table>
+	<table name="RF_RAISON_ACQUISITION">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_ACQUISITION</column>
+		<column>MOTIF_ACQUISITION</column>
+		<column>NO_AFFAIRE</column>
+		<column>DROIT_ID</column>
+		<row>
+			<value>1</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>19810306</value>
+			<value>Succession</value>
+			<value>012</value>
+			<value>265220445</value>
+		</row>
+		<row>
+			<value>2</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>19810306</value>
+			<value>Succession</value>
+			<value>012</value>
+			<value>265220603</value>
+		</row>
+		<row>
+			<value>3</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>19810306</value>
+			<value>Succession</value>
+			<value>012</value>
+			<value>265220713</value>
+		</row>
+		<row>
+			<value>4</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20140913</value>
+			<value>Voyage spatio-temporel</value>
+			<value>024-2014/12/1</value>
+			<value>265220713</value>
+		</row>
+		<row>
+			<value>5</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2016-12-14 11:21:47.655000</value>
+			<value>TraiterMutationsRFJob</value>
+			<null />
+			<value>Achat</value>
+			<value>010-2008/1995/0</value>
+			<value>306972799</value>
+		</row>
+	</table>
 	<table name="RAPPROCHEMENT_RF">
 		<column>ID</column>
 		<column>ANNULATION_DATE</column>

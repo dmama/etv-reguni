@@ -12,9 +12,11 @@ import org.springframework.http.ResponseEntity;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.common.v2.Date;
+import ch.vd.unireg.xml.party.landregistry.v1.AcquisitionReason;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingDescription;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
+import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
@@ -99,11 +101,18 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		final List<LandRight> landRights = realEstate.getLandRights();
 		assertEquals(6, landRights.size());
 		assertLandOwnershipRight(null, null, "Achat", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 21550, 264822986L, (LandOwnershipRight) landRights.get(0));
-		assertLandOwnershipRight(RegDate.get(1981, 3, 6), RegDate.get(2017, 10, 17), "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, "Raymonde", "Grandjean", null, 264822986L, (LandOwnershipRight) landRights.get(1));
+		final LandOwnershipRight landRight1 = (LandOwnershipRight) landRights.get(1);
+		assertLandOwnershipRight(RegDate.get(1981, 3, 6), RegDate.get(2017, 10, 17), "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, "Raymonde", "Grandjean", null, 264822986L, (LandOwnershipRight) landRight1);
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 10035633, 264822986L, (LandOwnershipRight) landRights.get(2));
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, null, "Berard", null, 264822986L, (LandOwnershipRight) landRights.get(3));
 		assertUsufructRight(RegDate.get(1985, 10, 10), RegDate.get(2017, 10, 17), "Convention", null, "Charles", "de Noblebois", null, null, (UsufructRight) landRights.get(4));
 		assertHousingRight(RegDate.get(1999, 8, 8), null, "Convention", null, "Roland", "Proutch", null, null, (HousingRight) landRights.get(5));
+
+		// [SIFISC-23894] ce droit possède plusieurs raisons d'acquisition
+		final List<AcquisitionReason> reasons = landRight1.getAcquisitionReasons();
+		assertEquals(2, reasons.size());
+		assertAcquisitionReason(RegDate.get(1981, 3, 6), "Succession", 12, null, reasons.get(0));
+		assertAcquisitionReason(RegDate.get(2014, 9, 13), "Voyage spatio-temporel", 24, "2014/12/1", reasons.get(1));
 	}
 
 	@Test
@@ -278,5 +287,18 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertEquals(startReason, right.getStartReason());
 		assertEquals(endReason, right.getEndReason());
 		assertRightHolderNaturalPerson(firstName, lastName, dateOfBirth, right.getRightHolder());
+	}
+
+	private static void assertAcquisitionReason(RegDate date, String r, int officeNumber, String caseNumber, AcquisitionReason reason) {
+		assertNotNull(reason);
+		assertDate(date, reason.getDate());
+		assertEquals(r, reason.getReason());
+		assertCaseIdentifier(officeNumber, caseNumber, reason.getCaseIdentifier());
+	}
+
+	private static void assertCaseIdentifier(int officeNumber, String caseNumber, CaseIdentifier caseIdentifier) {
+		assertNotNull(caseIdentifier);
+		assertEquals(officeNumber, caseIdentifier.getOfficeNumber());
+		assertEquals(caseNumber, caseIdentifier.getCaseNumberText());
 	}
 }
