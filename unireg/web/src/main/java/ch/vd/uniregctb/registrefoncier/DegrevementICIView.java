@@ -18,6 +18,7 @@ public class DegrevementICIView implements Annulable, DateRange {
 	private final DonneesUtilisation location;
 	private final DonneesUtilisation propreUsage;
 	private final DonneesLoiLogement loiLogement;
+	private final boolean nonIntegrable;
 
 	public DegrevementICIView(DegrevementICI data) {
 		this.idDegrevement = data.getId();
@@ -27,6 +28,7 @@ public class DegrevementICIView implements Annulable, DateRange {
 		this.location = Optional.ofNullable(data.getLocation()).map(DonneesUtilisation::new).orElse(null);
 		this.propreUsage = Optional.ofNullable(data.getPropreUsage()).map(DonneesUtilisation::new).orElse(null);
 		this.loiLogement = Optional.ofNullable(data.getLoiLogement()).map(DonneesLoiLogement::new).orElse(null);
+		this.nonIntegrable = data.isNonIntegrable();
 	}
 
 	@Override
@@ -58,5 +60,9 @@ public class DegrevementICIView implements Annulable, DateRange {
 
 	public DonneesLoiLogement getLoiLogement() {
 		return loiLogement;
+	}
+
+	public boolean isNonIntegrable() {
+		return nonIntegrable;
 	}
 }

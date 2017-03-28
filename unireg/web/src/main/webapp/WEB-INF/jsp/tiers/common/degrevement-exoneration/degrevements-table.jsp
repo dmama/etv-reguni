@@ -39,7 +39,12 @@
 	</thead>
 	<c:forEach items="${degrevements}" var="degrevement">
 		<tr class='<unireg:nextRowClass/><c:if test="${degrevement.annule}"> strike</c:if>'>
-			<td style="width: 10ex;"><unireg:regdate regdate="${degrevement.dateDebut}" format="yyyy"/></td>
+			<td style="width: 10ex;">
+				<unireg:regdate regdate="${degrevement.dateDebut}" format="yyyy"/>
+				<c:if test="${degrevement.nonIntegrable}">
+					<div style="float: right;" class="warning_icon" title='<fmt:message key="label.degrevement.non.integrable.tooltip"/>'>&nbsp;</div>
+				</c:if>
+			</td>
 			<td style="width: 10ex;"><unireg:regdate regdate="${degrevement.dateFin}" format="yyyy"/></td>
 			<td class="separator"></td>
 			<td style="text-align: right;">

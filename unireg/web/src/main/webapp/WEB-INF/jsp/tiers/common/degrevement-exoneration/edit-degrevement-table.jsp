@@ -2,9 +2,14 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <%--@elvariable id="periodesDebut" type="java.util.List<ch.vd.uniregctb.registrefoncier.PeriodeFiscaleView>"--%>
+<%--@elvariable id="degrevementNonIntegrable" type="java.lang.Boolean"--%>
 
 <c:set var="commandName" value="${param.commandName}"/>
 <c:set var="allowPeriodeDebutEdit" value="${param.allowPeriodeDebutEdit}"/>
+
+<c:if test="${degrevementNonIntegrable}">
+	<div class="flash-warning"><fmt:message key="label.degrevement.non.integrable.fulltext"/></div>
+</c:if>
 
 <table border="0">
 	<tr class="even">

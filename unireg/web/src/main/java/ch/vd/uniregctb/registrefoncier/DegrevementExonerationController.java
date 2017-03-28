@@ -536,6 +536,7 @@ public class DegrevementExonerationController {
 		model.addAttribute("idContribuable", view.getIdContribuable());
 		model.addAttribute("immeuble", new ResumeImmeubleView(getImmeuble(view.getIdImmeuble()), null, registreFoncierService));
 		model.addAttribute("addDegrevementCommand", view);
+		model.addAttribute("degrevementNonIntegrable", Boolean.FALSE);
 		return "tiers/edition/pm/degrevement-exoneration/add-degrevement";
 	}
 
@@ -579,6 +580,7 @@ public class DegrevementExonerationController {
 		degrevement.setLocation(view.getLocation());
 		degrevement.setPropreUsage(view.getPropreUsage());
 		degrevement.setLoiLogement(cleanupLoiLogement(view.getLoiLogement()));
+		degrevement.setNonIntegrable(Boolean.FALSE);        // ré-initialisation du flag dans tous les cas
 		entreprise.addAllegementFoncier(degrevement);
 
 		return "redirect:edit-degrevements.do?idContribuable=" + view.getIdContribuable() + "&idImmeuble=" + view.getIdImmeuble();
@@ -611,6 +613,7 @@ public class DegrevementExonerationController {
 	private String showEditDegrevement(Model model, DegrevementICI degrevement, EditDegrevementView view) {
 		model.addAttribute("idContribuable", degrevement.getContribuable().getNumero());
 		model.addAttribute("immeuble", new ResumeImmeubleView(degrevement.getImmeuble(), null, registreFoncierService));
+		model.addAttribute("degrevementNonIntegrable", degrevement.isNonIntegrable());
 		model.addAttribute("editDegrevementCommand", view);
 		return "tiers/edition/pm/degrevement-exoneration/edit-degrevement";
 	}
@@ -654,6 +657,7 @@ public class DegrevementExonerationController {
 		degrevement.setLocation(view.getLocation());
 		degrevement.setPropreUsage(view.getPropreUsage());
 		degrevement.setLoiLogement(cleanupLoiLogement(view.getLoiLogement()));
+		degrevement.setNonIntegrable(Boolean.FALSE);        // ré-initialisation du flag dans tous les cas
 
 		return "redirect:edit-degrevements.do?idContribuable=" + ctb.getNumero() + "&idImmeuble=" + degrevement.getImmeuble().getId();
 	}

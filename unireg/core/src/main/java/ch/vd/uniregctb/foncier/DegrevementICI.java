@@ -21,6 +21,12 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 	private DonneesUtilisation propreUsage;
 	private DonneesLoiLogement loiLogement;
 
+	/**
+	 * Flag setté par l'intégration automatique des données en provenance de e-Dégrèvement si l'un des champs
+	 * n'est pas intégrable (= mauvais format, valeur hors plage...)
+	 */
+	private Boolean nonIntegrable;
+
 	public DegrevementICI() {
 	}
 
@@ -29,6 +35,7 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 		this.location = Optional.ofNullable(src.location).map(DonneesUtilisation::new).orElse(null);
 		this.propreUsage = Optional.ofNullable(src.propreUsage).map(DonneesUtilisation::new).orElse(null);
 		this.loiLogement = Optional.ofNullable(src.loiLogement).map(DonneesLoiLogement::new).orElse(null);
+		this.nonIntegrable = src.nonIntegrable;
 	}
 
 	@Override
@@ -90,5 +97,19 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 
 	public void setLoiLogement(@Nullable DonneesLoiLogement loiLogement) {
 		this.loiLogement = loiLogement;
+	}
+
+	@Column(name = "DEG_NON_INTEGRABLE")
+	public Boolean getNonIntegrable() {
+		return nonIntegrable;
+	}
+
+	@Transient
+	public boolean isNonIntegrable() {
+		return nonIntegrable != null && nonIntegrable;
+	}
+
+	public void setNonIntegrable(Boolean nonIntegrable) {
+		this.nonIntegrable = nonIntegrable;
 	}
 }

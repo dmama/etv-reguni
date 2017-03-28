@@ -1338,6 +1338,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
     protected DegrevementICI addDegrevementICI(Entreprise entreprise, ImmeubleRF immeuble, int pfDebut, @Nullable Integer pfFin, DonneesUtilisation locatif, DonneesUtilisation usagePropre, @Nullable DonneesLoiLogement loiLogement) {
     	final DegrevementICI deg = new DegrevementICI();
+    	deg.setNonIntegrable(Boolean.FALSE);
     	deg.setImmeuble(immeuble);
     	deg.setContribuable(entreprise);
     	deg.setDateDebut(date(pfDebut, 1, 1));

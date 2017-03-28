@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.dperm.xml.common.v1.TypImmeuble;
 import ch.vd.dperm.xml.common.v1.TypeImposition;
@@ -52,6 +54,8 @@ import ch.vd.uniregctb.tiers.TiersService;
  * Handler métier des retours des données de dégrèvement
  */
 public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHandler {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDegrevementHandlerImpl.class);
 
 	private static final BigInteger BI_MAXINT = BigInteger.valueOf(Integer.MAX_VALUE);
 	private static final BigDecimal BD_HUNDRED = BigDecimal.valueOf(100L);
@@ -105,9 +109,30 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 		// appels soient revenus sans heurt
 
 		final DonneesMetier donneesMetier = retour.getDonneesMetier();
-		degrevement.setLocation(extractDonneesLocation(donneesMetier));
-		degrevement.setPropreUsage(extractDonneesPropreUsage(donneesMetier));
-		degrevement.setLoiLogement(extractDonneesLoiLogement(donneesMetier));
+		DonneesUtilisation location;
+		DonneesUtilisation propreUsage;
+		DonneesLoiLogement loiLogement;
+		try {
+			location = extractDonneesLocation(donneesMetier);
+			propreUsage = extractDonneesPropreUsage(donneesMetier);
+			loiLogement = extractDonneesLoiLogement(donneesMetier);
+
+			// ok, tout va bien, on dirait
+			degrevement.setNonIntegrable(Boolean.FALSE);
+		}
+		catch (DonneeNonIntegrableException e) {
+			LOGGER.error("Donnée non-intégrable présente dans le message entrant", e);
+			location = null;
+			propreUsage = null;
+			loiLogement = new DonneesLoiLogement(Boolean.FALSE, null, null, null);
+
+			// on le marque au fer rouge !
+			degrevement.setNonIntegrable(Boolean.TRUE);
+		}
+
+		degrevement.setLocation(location);
+		degrevement.setPropreUsage(propreUsage);
+		degrevement.setLoiLogement(loiLogement);
 
 		// on construit la réponse avant de faire une quelconque modification (cet appel peut également lancer une exception de départ dans TAO-Admin, i.e. avec commit de la transaction)
 		final QuittanceIntegrationMetierImmDetails quittance = buildQuittance(formulaire);
@@ -164,8 +189,18 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 		return quittance;
 	}
 
+	/**
+	 * Exception lancée en interne au moment de la détection d'une donnée non-intégrable
+	 * (en général des valeurs numériques hors de leur plage de validité)
+	 */
+	private static class DonneeNonIntegrableException extends Exception {
+		public DonneeNonIntegrableException(String message) {
+			super(message);
+		}
+	}
+
 	@Nullable
-	private static DonneesUtilisation extractDonneesLocation(DonneesMetier data) throws EsbBusinessException {
+	private static DonneesUtilisation extractDonneesLocation(DonneesMetier data) throws DonneeNonIntegrableException {
 		final Integer volume = extractInteger("volume locatif", data.getVolumeLocatif());
 		final Integer surface = extractInteger("surface locative", data.getSurfaceLocatif());
 		final Integer revenu = extractInteger("revenu locatif perçu", data.getRevenuLocatifEncaisse());
@@ -177,7 +212,7 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	}
 
 	@Nullable
-	private static DonneesUtilisation extractDonneesPropreUsage(DonneesMetier data) throws EsbBusinessException {
+	private static DonneesUtilisation extractDonneesPropreUsage(DonneesMetier data) throws DonneeNonIntegrableException {
 		final Integer volume = extractInteger("volume propre usage", data.getVolumePropreUsage());
 		final Integer surface = extractInteger("surface propre usage", data.getSurfacePropreUsage());
 		final Integer revenu = extractInteger("revenu estimé", data.getRevenuLocatifEstime());
@@ -189,19 +224,24 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	}
 
 	@NotNull
-	private static DonneesLoiLogement extractDonneesLoiLogement(DonneesMetier data) throws EsbBusinessException {
-		final RegDate dateOctroi = extractDate(data.getDateOctroi());
-		final RegDate dateEcheanceOctroi = extractDate(data.getDateEcheanceOctroi());
-		return new DonneesLoiLogement(data.isControleOfficeLogement(), dateOctroi, dateEcheanceOctroi, null);
+	private static DonneesLoiLogement extractDonneesLoiLogement(DonneesMetier data) throws DonneeNonIntegrableException {
+		if (data.isControleOfficeLogement()) {
+			final RegDate dateOctroi = extractDate(data.getDateOctroi());
+			final RegDate dateEcheanceOctroi = extractDate(data.getDateEcheanceOctroi());
+			return new DonneesLoiLogement(data.isControleOfficeLogement(), dateOctroi, dateEcheanceOctroi, null);
+		}
+		else {
+			return new DonneesLoiLogement(Boolean.FALSE, null, null, null);
+		}
 	}
 
 	@Nullable
-	private static Integer extractInteger(String description, TypEntMax12Attr value) throws EsbBusinessException {
+	private static Integer extractInteger(String description, TypEntMax12Attr value) throws DonneeNonIntegrableException {
 		if (value != null && value.isValide()) {
 			final BigInteger numericalValue = value.getValue();
 			if (numericalValue.compareTo(BigInteger.ZERO) < 0 || numericalValue.compareTo(BI_MAXINT) > 0) {
 				// valeur clairement hors domaine de validité...
-				throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, "L'attribut '" + description + "' est hors de son domaine de validité [0 - " + Integer.MAX_VALUE + "]", null);
+				throw new DonneeNonIntegrableException("L'attribut '" + description + "' est hors de son domaine de validité [0 - " + Integer.MAX_VALUE + "] : " + numericalValue);
 			}
 			return numericalValue.intValue();
 		}
@@ -209,12 +249,12 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	}
 
 	@Nullable
-	private static BigDecimal extractPourcentage(String description, TypPctPosDecMax32Attr value) throws EsbBusinessException {
+	private static BigDecimal extractPourcentage(String description, TypPctPosDecMax32Attr value) throws DonneeNonIntegrableException {
 		if (value != null && value.isValide()) {
 			final BigDecimal percent = value.getValue();
 			if (percent.compareTo(BigDecimal.ZERO) < 0 || percent.compareTo(BD_HUNDRED) > 0) {
 				// valeur hors du domaine de validité...
-				throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, "L'attribut '" + description + "' est hors de son domaine de validité [0.00 - 100.00]", null);
+				throw new DonneeNonIntegrableException("L'attribut '" + description + "' est hors de son domaine de validité [0.00 - 100.00] : " + percent);
 			}
 			return percent;
 		}
@@ -222,7 +262,7 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	}
 
 	@Nullable
-	private static RegDate extractDate(TypDateAttr value) throws EsbBusinessException {
+	private static RegDate extractDate(TypDateAttr value) {
 		if (value != null && value.isValide()) {
 			return XmlUtils.xmlcal2regdate(value.getValue());
 		}
@@ -322,7 +362,7 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	}
 
 	@Nullable
-	private String extractNatureImmeuble(DemandeDegrevementICI formulaire) throws EsbBusinessException {
+	private String extractNatureImmeuble(DemandeDegrevementICI formulaire) {
 		return StringUtils.trimToNull(DemandeDegrevementICIHelper.getNatureImmeuble(formulaire, MAX_NATURE_LENGTH));
 	}
 
@@ -335,7 +375,7 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	}
 
 	@Nullable
-	private BigDecimal extractEstimationFiscale(DemandeDegrevementICI formulaire) throws EsbBusinessException {
+	private BigDecimal extractEstimationFiscale(DemandeDegrevementICI formulaire) {
 		return Optional.of(formulaire)
 				.map(f -> DemandeDegrevementICIHelper.getEstimationFiscale(f, registreFoncierService))
 				.map(EstimationRF::getMontant)
