@@ -13,7 +13,9 @@
 	</bean>
 
 	<bean id="communeRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.CommuneRFValidator" parent="dateRangeEntityValidator" />
-	<bean id="droitRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DroitRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="droitRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DroitRFValidator" abstract="true" parent="dateRangeEntityValidator" />
+	<bean id="droitProprieteRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DroitProprieteRFValidator" parent="droitRFValidator" />
+	<bean id="servitudeRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ServitudeRFValidator" parent="droitRFValidator" />
 	<bean id="estimationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidator" parent="dateRangeEntityValidator" />
 	<bean id="immeubleRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ImmeubleRFValidator" parent="entityValidator" />
 	<bean id="implantationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ImplantationRFValidator" parent="dateRangeEntityValidator" />

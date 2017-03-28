@@ -71,6 +71,7 @@ public abstract class DroitProprieteRF extends DroitRF {
 		if (raisonsAcquisition == null) {
 			raisonsAcquisition = new HashSet<>();
 		}
+		raison.setDroit(this);
 		raisonsAcquisition.add(raison);
 	}
 

@@ -7,16 +7,7 @@ import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
 
 @SuppressWarnings("Duplicates")
-public class DroitRFValidator extends DateRangeEntityValidator<DroitRF> {
-	@Override
-	protected Class<DroitRF> getValidatedClass() {
-		return DroitRF.class;
-	}
-
-	@Override
-	protected String getEntityCategoryName() {
-		return "Le droit RF";
-	}
+public abstract class DroitRFValidator<T extends DroitRF> extends DateRangeEntityValidator<T> {
 
 	@Override
 	protected boolean isDateDebutNullAllowed() {
@@ -24,7 +15,7 @@ public class DroitRFValidator extends DateRangeEntityValidator<DroitRF> {
 	}
 
 	@Override
-	public ValidationResults validate(DroitRF entity) {
+	public ValidationResults validate(T entity) {
 		final ValidationResults results = super.validate(entity);
 
 		// une entité annulée est toujours valide...

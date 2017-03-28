@@ -58,13 +58,13 @@ public class EstimationRFValidatorTest {
 		assertValide(validator.validate(estimation));
 	}
 
-	private static void assertValide(ValidationResults results) {
+	public static void assertValide(ValidationResults results) {
 		assertNotNull(results);
 		assertEmpty(results.getErrors());
 		assertEmpty(results.getWarnings());
 	}
 
-	private static void assertErrors(List<String> errors, ValidationResults results) {
+	public static void assertErrors(List<String> errors, ValidationResults results) {
 		assertNotNull(results);
 		assertEquals(errors, results.getErrors());
 		assertEquals(0, results.getWarnings().size());

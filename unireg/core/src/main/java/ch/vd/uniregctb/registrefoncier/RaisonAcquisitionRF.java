@@ -54,7 +54,7 @@ public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<R
 	/**
 	 * Le droit concerné par la raison d'acquisition.
 	 */
-	private DroitRF droit;
+	private DroitProprieteRF droit;
 
 	// pour Hibernate
 	public RaisonAcquisitionRF() {
@@ -121,11 +121,11 @@ public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<R
 	@JoinColumn(name = "DROIT_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_RAISON_ACQ_RF_DROIT_ID", columnNames = "DROIT_ID")
 	@ForeignKey(name = "FK_RAISON_ACQ_RF_IMMEUBLE_ID")
-	public DroitRF getDroit() {
+	public DroitProprieteRF getDroit() {
 		return droit;
 	}
 
-	public void setDroit(DroitRF droit) {
+	public void setDroit(DroitProprieteRF droit) {
 		this.droit = droit;
 	}
 
