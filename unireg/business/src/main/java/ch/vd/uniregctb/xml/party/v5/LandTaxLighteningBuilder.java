@@ -71,10 +71,11 @@ public class LandTaxLighteningBuilder {
 		if (loi == null) {
 			return null;
 		}
-		HousingActData data = new HousingActData();
+		final HousingActData data = new HousingActData();
 		data.setGrantDate(DataHelper.coreToXMLv2(loi.getDateOctroi()));
 		data.setExpiryDate(DataHelper.coreToXMLv2(loi.getDateEcheance()));
 		data.setSocialNaturePercent(loi.getPourcentageCaractereSocial());
+		data.setUnderControlOfHousingOffice(loi.getControleOfficeLogement() != null && loi.getControleOfficeLogement());
 		return data;
 	}
 }
