@@ -81,7 +81,8 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 	@AttributeOverrides({
 			@AttributeOverride(name = "dateOctroi", column = @Column(name = "DEG_LL_OCTROI")),
 			@AttributeOverride(name = "dateEcheance", column = @Column(name = "DEG_LL_ECHEANCE")),
-			@AttributeOverride(name = "pourcentageCaractereSocial", column = @Column(name = "DEG_LL_CARAC_SOCIAL_POURCENT", precision = 5, scale = 2))
+			@AttributeOverride(name = "pourcentageCaractereSocial", column = @Column(name = "DEG_LL_CARAC_SOCIAL_POURCENT", precision = 5, scale = 2)),
+			@AttributeOverride(name = "controleOfficeLogement", column = @Column(name = "DEG_LL_CTRL_OFFICE_LOGEMENT"))
 	})
 	public DonneesLoiLogement getLoiLogement() {
 		return loiLogement;

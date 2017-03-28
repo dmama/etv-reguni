@@ -359,7 +359,7 @@ public class MigrationDDImporter extends MigrationImporter {
 			return null;
 		}
 		final BigDecimal pourcentage = BigDecimal.valueOf(usage.getPourdixmilleUsage(), 2);     // pour-dix-mille -> pour-cent
-		return new DonneesLoiLogement(null, null, pourcentage);
+		return new DonneesLoiLogement(usage.getPourdixmilleUsage() != 0, null, null, pourcentage);
 	}
 
 	@NotNull

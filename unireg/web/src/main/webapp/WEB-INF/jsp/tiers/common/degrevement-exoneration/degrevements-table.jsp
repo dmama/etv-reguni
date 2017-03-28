@@ -31,7 +31,7 @@
 		<th><fmt:message key="label.surface"/></th>
 		<th><fmt:message key="label.portion.declaree"/></th>
 		<th><fmt:message key="label.portion.arretee"/></th>
-		<th><fmt:message key="label.concerne.loi.logement"/></th>
+		<th>&nbsp;</th>
 		<th><fmt:message key="label.date.octroi"/></th>
 		<th><fmt:message key="label.date.echeance.octroi"/></th>
 		<th><fmt:message key="label.pourcentage.caractere.social"/></th>
@@ -146,7 +146,7 @@
 			<td class="separator"></td>
 			<td style="text-align: center;">
 				<c:choose>
-					<c:when test="${degrevement.loiLogement != null}">
+					<c:when test="${degrevement.loiLogement != null && degrevement.loiLogement.controleOfficeLogement}">
 						<input type="checkbox" disabled checked/>
 					</c:when>
 					<c:otherwise>

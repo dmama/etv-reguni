@@ -188,16 +188,11 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 		return null;
 	}
 
-	@Nullable
+	@NotNull
 	private static DonneesLoiLogement extractDonneesLoiLogement(DonneesMetier data) throws EsbBusinessException {
-		if (data.isControleOfficeLogement()) {
-			final RegDate dateOctroi = extractDate(data.getDateOctroi());
-			final RegDate dateEcheanceOctroi = extractDate(data.getDateEcheanceOctroi());
-			if (dateOctroi != null || dateEcheanceOctroi != null) {
-				return new DonneesLoiLogement(dateOctroi, dateEcheanceOctroi, null);
-			}
-		}
-		return null;
+		final RegDate dateOctroi = extractDate(data.getDateOctroi());
+		final RegDate dateEcheanceOctroi = extractDate(data.getDateEcheanceOctroi());
+		return new DonneesLoiLogement(data.isControleOfficeLogement(), dateOctroi, dateEcheanceOctroi, null);
 	}
 
 	@Nullable

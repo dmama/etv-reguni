@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 @Embeddable
 public class DonneesLoiLogement {
 
+	private Boolean controleOfficeLogement;
 	private RegDate dateOctroi;
 	private RegDate dateEcheance;
 	private BigDecimal pourcentageCaractereSocial;
@@ -18,14 +19,15 @@ public class DonneesLoiLogement {
 	public DonneesLoiLogement() {
 	}
 
-	public DonneesLoiLogement(RegDate dateOctroi, RegDate dateEcheance, BigDecimal pourcentageCaractereSocial) {
+	public DonneesLoiLogement(Boolean controleOfficeLogement, RegDate dateOctroi, RegDate dateEcheance, BigDecimal pourcentageCaractereSocial) {
+		this.controleOfficeLogement = controleOfficeLogement;
 		this.dateOctroi = dateOctroi;
 		this.dateEcheance = dateEcheance;
 		this.pourcentageCaractereSocial = pourcentageCaractereSocial;
 	}
 
 	public DonneesLoiLogement(DonneesLoiLogement src) {
-		this(src.dateOctroi, src.dateEcheance, src.pourcentageCaractereSocial);
+		this(src.controleOfficeLogement, src.dateOctroi, src.dateEcheance, src.pourcentageCaractereSocial);
 	}
 
 	@Column(name = "DATE_OCTROI")
@@ -55,5 +57,14 @@ public class DonneesLoiLogement {
 
 	public void setPourcentageCaractereSocial(BigDecimal pourcentageCaractereSocial) {
 		this.pourcentageCaractereSocial = pourcentageCaractereSocial;
+	}
+
+	@Column(name = "CTRL_OFFICE_LOGEMENT")
+	public Boolean getControleOfficeLogement() {
+		return controleOfficeLogement;
+	}
+
+	public void setControleOfficeLogement(Boolean controleOfficeLogement) {
+		this.controleOfficeLogement = controleOfficeLogement;
 	}
 }

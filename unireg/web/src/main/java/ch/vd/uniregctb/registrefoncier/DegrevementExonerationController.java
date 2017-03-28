@@ -48,6 +48,7 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
+import ch.vd.uniregctb.foncier.DonneesLoiLogement;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -577,10 +578,19 @@ public class DegrevementExonerationController {
 		degrevement.setDateFin(view.getDateFin());
 		degrevement.setLocation(view.getLocation());
 		degrevement.setPropreUsage(view.getPropreUsage());
-		degrevement.setLoiLogement(view.getLoiLogement());
+		degrevement.setLoiLogement(cleanupLoiLogement(view.getLoiLogement()));
 		entreprise.addAllegementFoncier(degrevement);
 
 		return "redirect:edit-degrevements.do?idContribuable=" + view.getIdContribuable() + "&idImmeuble=" + view.getIdImmeuble();
+	}
+
+	private static DonneesLoiLogement cleanupLoiLogement(DonneesLoiLogement source) {
+		if (source == null || source.getControleOfficeLogement() == null || !source.getControleOfficeLogement()) {
+			return new DonneesLoiLogement(Boolean.FALSE, null, null, null);
+		}
+		else {
+			return source;
+		}
 	}
 
 	@InitBinder(value = "editDegrevementCommand")
@@ -643,7 +653,7 @@ public class DegrevementExonerationController {
 		degrevement.setDateFin(view.getDateFin());
 		degrevement.setLocation(view.getLocation());
 		degrevement.setPropreUsage(view.getPropreUsage());
-		degrevement.setLoiLogement(view.getLoiLogement());
+		degrevement.setLoiLogement(cleanupLoiLogement(view.getLoiLogement()));
 
 		return "redirect:edit-degrevements.do?idContribuable=" + ctb.getNumero() + "&idImmeuble=" + degrevement.getImmeuble().getId();
 	}

@@ -34,7 +34,14 @@
 		<td style="width: 35%;">
 			<c:set var="pfFinName" value="${commandName}.anneeFin"/>
 			<spring:bind path="${pfFinName}">
-				<span style="font-style: italic; color: gray; padding-left: 1em;"><c:out value="${status.value}"/></span>
+				<c:choose>
+					<c:when test="${allowPeriodeDebutEdit}">
+						<span style="font-style: italic; color: gray; padding-left: 1em;"><c:out value="${status.value}"/></span>
+					</c:when>
+					<c:otherwise>
+						<span style="padding-left: 1em;"><c:out value="${status.value}"/></span>
+					</c:otherwise>
+				</c:choose>
 			</spring:bind>
 			<form:hidden path="anneeFin"/>
 		</td>
@@ -150,10 +157,16 @@
 				</table>
 			</fieldset>
 			<fieldset>
-				<legend><span><fmt:message key="label.donnees.loi.logement"/></span></legend>
+				<legend>
+					<span><fmt:message key="label.donnees.loi.logement"/></span>
+					<div style="padding-left: 2em; display: inline; font-weight: normal;">
+						<form:checkbox path="loiLogement.controleOfficeLogement" onchange="EditDegrevementDynamic.toggleControleOfficeLogement();" id="avecControleOfficeLogement"/>
+						<form:label path="loiLogement.controleOfficeLogement"><fmt:message key="option.ouinon.true"/></form:label>
+					</div>
+				</legend>
 				<unireg:nextRowClass reset="0"/>
 				<table class="degrevement">
-					<tr class="<unireg:nextRowClass/>">
+					<tr class="<unireg:nextRowClass/> ctrl-office-logement">
 						<td class="titre"><fmt:message key="label.date.octroi"/></td>
 						<td>
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -162,7 +175,7 @@
 							</jsp:include>
 						</td>
 					</tr>
-					<tr class="<unireg:nextRowClass/>">
+					<tr class="<unireg:nextRowClass/> ctrl-office-logement">
 						<td class="titre"><fmt:message key="label.date.echeance.octroi"/></td>
 						<td>
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -171,7 +184,7 @@
 							</jsp:include>
 						</td>
 					</tr>
-					<tr class="<unireg:nextRowClass/>">
+					<tr class="<unireg:nextRowClass/> ctrl-office-logement">
 						<td class="titre"><fmt:message key="label.pourcentage.caractere.social"/> (&percnt;)</td>
 						<td>
 							<form:input path="loiLogement.pourcentageCaractereSocial" cssClass="nombre"/>
@@ -212,6 +225,17 @@
 
 		resetValeurArreteePropreUsage: function() {
 			this._resetValeurArretee('locationPourcentageArrete', 'propreUsagePourcentageArrete');
+		},
+
+		toggleControleOfficeLogement: function() {
+			const lines = $('tr.ctrl-office-logement');
+			const avecCtrl = $('#avecControleOfficeLogement')[0].checked;
+			if (avecCtrl) {
+				lines.show();
+			}
+			else {
+				lines.hide();
+			}
 		},
 
 		initValeursArretees: function() {
@@ -275,6 +299,7 @@
 	$(function() {
 		EditDegrevementDynamic.calculatePourcentages();
 		EditDegrevementDynamic.initValeursArretees();
+		EditDegrevementDynamic.toggleControleOfficeLogement();
 	});
 
 </script>
