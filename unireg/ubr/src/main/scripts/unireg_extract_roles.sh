@@ -49,7 +49,7 @@ fi
 
 # Identification des communes / oid : les noms des fichiers sont de la forme ID_role_p?_AAAA[-X].csv
 (cd "$TMP_DIR" && ls -1 *_role_p?_*.csv) | sed -e 's/_.*$//' | sort -n | uniq | while read ID; do
-	FILES=$(cd "$TMP_DIR" && ls -1 *_role_p?_*.csv | grep "^$ID")
+	FILES=$(cd "$TMP_DIR" && ls -1 *_role_p?_*.csv | grep "^${ID}_")
 	ZIP_FILE=$(echo "$FILES" | sed -e '2,$ D' -e 's/-[0-9]\{1,\}//' -e 's/csv$/zip/')
 	if [ -e "$DEST/$ZIP_FILE" ]; then
 		echo "Le fichier $ZIP_FILE existe déjà dans le répertoire de destination : il NE sera PAS écrasé!" >&2
