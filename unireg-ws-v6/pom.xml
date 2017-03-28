@@ -10,7 +10,7 @@
 	<artifactId>unireg-ws-v6</artifactId>
 	<packaging>jar</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>6.5</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
+	<version>6.5.1</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
 	<!-- END_LVERSION -->
 
 	<name>Unireg - WS v6</name>
@@ -164,7 +164,7 @@
 									author="true"
 									classpath="${compile_classpath}"
 									destdir="target/ws.javadoc"
-									doctitle="Unireg - Documentation du web service v6 (6.5)"
+									doctitle="Unireg - Documentation du web service v6 (6.5.1)"
 									nodeprecated="false"
 									nodeprecatedlist="false"
 									noindex="false"
