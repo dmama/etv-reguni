@@ -6,14 +6,18 @@
 <c:set value="${param.mode}" var="mode"/>       <%-- 'visu' ou 'edit' --%>
 
 <unireg:nextRowClass reset="1"/>
-<table class="display display_table">
+<table class="display display_table degrevement_list">
 	<thead>
 	<tr>
 		<th rowspan="2"><fmt:message key="label.periode.fiscale.debut"/></th>
 		<th rowspan="2"><fmt:message key="label.periode.fiscale.fin"/></th>
+		<th rowspan="2" class="separator"></th>
 		<th colspan="5" style="text-align: center;"><fmt:message key="label.donnees.location"/></th>
+		<th rowspan="2" class="separator"></th>
 		<th colspan="5" style="text-align: center;"><fmt:message key="label.donnees.propre.usage"/></th>
+		<th rowspan="2" class="separator"></th>
 		<th colspan="4" style="text-align: center;"><fmt:message key="label.donnees.loi.logement"/></th>
+		<th rowspan="2" class="separator"></th>
 		<th rowspan="2">&nbsp;</th>
 	</tr>
 	<tr>
@@ -37,6 +41,7 @@
 		<tr class='<unireg:nextRowClass/><c:if test="${degrevement.annule}"> strike</c:if>'>
 			<td style="width: 10ex;"><unireg:regdate regdate="${degrevement.dateDebut}" format="yyyy"/></td>
 			<td style="width: 10ex;"><unireg:regdate regdate="${degrevement.dateFin}" format="yyyy"/></td>
+			<td class="separator"></td>
 			<td style="text-align: right;">
 				<c:choose>
 					<c:when test="${degrevement.location != null && degrevement.location.revenu != null}">
@@ -87,6 +92,7 @@
 					</c:otherwise>
 				</c:choose>
 			</td>
+			<td class="separator"></td>
 			<td style="text-align: right;">
 				<c:choose>
 					<c:when test="${degrevement.propreUsage != null && degrevement.propreUsage.revenu != null}">
@@ -137,6 +143,7 @@
 					</c:otherwise>
 				</c:choose>
 			</td>
+			<td class="separator"></td>
 			<td style="text-align: center;">
 				<c:choose>
 					<c:when test="${degrevement.loiLogement != null}">
@@ -177,6 +184,7 @@
 					</c:otherwise>
 				</c:choose>
 			</td>
+			<td class="separator"></td>
 			<td style="width: 5%;">
 				<c:choose>
 					<c:when test="${mode == 'visu'}">

@@ -506,3 +506,9 @@ table.degrevement td.valeur span.computed {
 	font-weight: bold;
 	color: darkslateblue;
 }
+table.degrevement_list th.separator, table.degrevement_list td.separator {
+	width: 1px;
+	padding: 0 !important;
+	background-image: url(bgpannelinner.jpg);
+	background-repeat: repeat;
+}
