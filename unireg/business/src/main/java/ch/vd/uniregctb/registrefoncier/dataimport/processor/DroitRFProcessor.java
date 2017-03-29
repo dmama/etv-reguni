@@ -217,6 +217,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 		// on ajoute toutes les nouvelles raisons
 		toAdd.forEach(persisted::addRaisonAcquisition);
+		persisted.calculateDateEtMotifDebut();
 	}
 
 	/**

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.registrefoncier;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class IdentifiantAffaireRFTest {
@@ -42,5 +43,34 @@ public class IdentifiantAffaireRFTest {
 		catch (IllegalArgumentException e) {
 			assertEquals("La string [01-1998] ne représente pas un identifiant d'affaire RF valide", e.getMessage());
 		}
+	}
+
+	@Test
+	public void testCompareTo() throws Exception {
+
+		final IdentifiantAffaireRF i1 = new IdentifiantAffaireRF(1, 2006, 1402, 0);
+		final IdentifiantAffaireRF i2 = new IdentifiantAffaireRF(6, 2006, 1402, 0);
+		final IdentifiantAffaireRF i3 = new IdentifiantAffaireRF(6, 2006, 1410, 0);
+		final IdentifiantAffaireRF i4 = new IdentifiantAffaireRF(6, null, null, null);
+
+		// numéro d'office en premier
+		assertTrue(i1.compareTo(i2) < 0);
+		assertTrue(i1.compareTo(i3) < 0);
+		assertTrue(i1.compareTo(i4) < 0);
+
+		// tri sur le numéro d'affaire
+		assertTrue(i2.compareTo(i1) > 0);
+		assertTrue(i2.compareTo(i3) < 0);
+		assertTrue(i2.compareTo(i4) > 0);
+
+		// tri sur le numéro d'affaire
+		assertTrue(i3.compareTo(i1) > 0);
+		assertTrue(i3.compareTo(i2) > 0);
+		assertTrue(i3.compareTo(i4) > 0);
+
+		// numéro d'affaire nuls en premier
+		assertTrue(i4.compareTo(i1) > 0);
+		assertTrue(i4.compareTo(i2) < 0);
+		assertTrue(i4.compareTo(i3) < 0);
 	}
 }

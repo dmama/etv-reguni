@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Comparator;
+import java.util.Objects;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
@@ -130,10 +131,19 @@ public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<R
 	}
 
 	/**
-	 * Ordre naturel : par date croissante, les dates nulles en premier.
+	 * Ordre naturel : par date croissante (les dates nulles en premier) puis par numéro d'affaire, puis par motif d'acquisition.
 	 */
 	@Override
 	public int compareTo(@NotNull RaisonAcquisitionRF o) {
-		return REG_DATE_COMPARATOR.compare(dateAcquisition, o.getDateAcquisition());
+		int c = REG_DATE_COMPARATOR.compare(this.dateAcquisition, o.getDateAcquisition());
+		if (c != 0) {
+			return c;
+		}
+		c = Objects.compare(this.numeroAffaire, o.numeroAffaire, Comparator.nullsFirst(Comparator.naturalOrder()));
+		if (c != 0) {
+			return c;
+		}
+		c = Objects.compare(this.motifAcquisition, o.motifAcquisition, Comparator.nullsFirst(Comparator.naturalOrder()));
+		return c;
 	}
 }

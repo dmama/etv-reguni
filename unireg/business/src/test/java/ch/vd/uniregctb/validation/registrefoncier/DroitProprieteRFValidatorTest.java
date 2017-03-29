@@ -100,4 +100,20 @@ public class DroitProprieteRFValidatorTest {
 					                                       "un motif de début (null) différent du motif de la première raison d'acquisition (Succession)"), validator.validate(droit));
 		}
 	}
+
+	/**
+	 * Cas du droit masterIdRF=1f1091523810039001381006087c42b2
+	 */
+	@Test
+	public void testDroitAvecRaisonsAcquisitionALaMemeDate() throws Exception {
+
+		// un droit avec plusieurs raisons d'acquisition à la même date => les raisons d'acquisition sont triées par date puis par identifiant d'affaire et c'est la première qui doit être utilisée
+		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setDateDebutMetier(RegDate.get(2005, 9, 30));
+		droit.setMotifDebut("Achat");
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 9, 30), "Achat", new IdentifiantAffaireRF(3, "2005/1462/0")));
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 9, 30), "Modification d'intitulé", new IdentifiantAffaireRF(3, "2005/1465/0")));
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 10, 20), "Changement de régime", new IdentifiantAffaireRF(3, "2005/1555/0")));
+		assertValide(validator.validate(droit));
+	}
 }

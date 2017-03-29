@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -8,12 +9,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * L'identifiant métier d'une affaire du registre foncier.
  */
-public class IdentifiantAffaireRF {
+public class IdentifiantAffaireRF implements Comparable<IdentifiantAffaireRF> {
 
 	/**
 	 * Le numéro de l'office foncier
@@ -110,5 +112,15 @@ public class IdentifiantAffaireRF {
 		final String numeroAffaire = matcher.group(2);
 
 		return new IdentifiantAffaireRF(numeroOffice, numeroAffaire);
+	}
+
+	@Override
+	public int compareTo(@NotNull IdentifiantAffaireRF o) {
+		int c = Integer.compare(this.numeroOffice, o.numeroOffice);
+		if (c != 0) {
+			return c;
+		}
+		c = Objects.compare(this.numeroAffaire, o.numeroAffaire, Comparator.nullsFirst(Comparator.naturalOrder()));
+		return c;
 	}
 }
