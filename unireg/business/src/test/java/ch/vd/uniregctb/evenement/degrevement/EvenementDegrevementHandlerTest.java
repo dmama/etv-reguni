@@ -563,11 +563,140 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 				Assert.assertNull(degrevement.getLocation());
 				Assert.assertNull(degrevement.getPropreUsage());
 				Assert.assertNotNull(degrevement.getLoiLogement());
-				Assert.assertTrue(degrevement.getLoiLogement().getControleOfficeLogement());
+				Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
 				Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
 				Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
 				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
-				Assert.assertFalse(degrevement.getNonIntegrable());
+				Assert.assertTrue(degrevement.getNonIntegrable());
+
+				// vérification de la quittance du formulaire de demande
+				final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+				Assert.assertEquals(1, formulaires.size());
+
+				final DemandeDegrevementICI formulaire = formulaires.get(0);
+				Assert.assertNotNull(formulaire);
+				Assert.assertEquals((Long) ids.idImmeuble, formulaire.getImmeuble().getId());
+				Assert.assertFalse(formulaire.isAnnule());
+				Assert.assertEquals(dateReception, formulaire.getDateRetour());
+			}
+		});
+	}
+
+	/**
+	 * Cas d'une date complètement hors de la plage de validité (1291 - 2400)
+	 */
+	@Test
+	public void testDateHorsPlageValidite() throws Exception {
+
+		final RegDate dateDebut = date(2007, 4, 1);
+		final RegDate dateChargement = date(2017, 1, 7);
+		final RegDate dateAchat = date(2016, 8, 3);
+		final RegDate dateEnvoiFormulaire = date(2017, 1, 9);
+		final int pf = 2016;
+		final RegDate dateReception = RegDate.get().addDays(-2);
+
+		final class Ids {
+			final long idPM;
+			final long idImmeuble;
+			final int noSequence;
+			public Ids(long idPM, long idImmeuble, int noSequence) {
+				this.idPM = idPM;
+				this.idImmeuble = idImmeuble;
+				this.noSequence = noSequence;
+			}
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Petite Arvine");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+		    addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		    addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
+		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
+		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
+		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
+		                             new IdentifiantAffaireRF(1234, "452"),
+		                             new Fraction(1, 1),
+		                             GenrePropriete.INDIVIDUELLE,
+		                             tiersRF, immeuble, null);
+			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
+			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
+
+			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
+			Assert.assertNotNull(formulaire);
+			return new Ids(entreprise.getNumero(), immeuble.getId(), formulaire.getNumeroSequence());
+		});
+
+		// réception des données (aucune donnée valide)
+		final RegDate dateOctroi = date(16, 4, 2);                  // 16 au lieu de 2016....
+		final RegDate dateEcheanceOctroi = date(2017, 12, 1);
+		final DonneesMetier donneesMetier = buildDonneesMetier(pf, ids.idPM, ids.noSequence,
+		                                                       1L, true,
+		                                                       2L, true,
+		                                                       3L, true,
+		                                                       BigDecimal.TEN, true,
+		                                                       4L, true,
+		                                                       5L, true,
+		                                                       6L, true,
+		                                                       BigDecimal.valueOf(20), true,
+		                                                       true,
+		                                                       dateOctroi, true,
+		                                                       dateEcheanceOctroi, true);
+		final Message retour = buildRetour(dateReception, donneesMetier);
+		final QuittanceIntegrationMetierImmDetails quittance = doInNewTransactionAndSession(new TxCallback<QuittanceIntegrationMetierImmDetails>() {
+			@Override
+			public QuittanceIntegrationMetierImmDetails execute(TransactionStatus status) throws Exception {
+				return handler.onRetourDegrevement(retour, null);
+			}
+		});
+
+		// vérification des données retournées
+		Assert.assertNotNull(quittance);
+		Assert.assertEquals(BigDecimal.valueOf(1234L), quittance.getEstimationFiscale());
+		Assert.assertEquals("Chemin", quittance.getNatureImmeuble());
+		Assert.assertNotNull(quittance.getCommune());
+		Assert.assertEquals(MockCommune.Aigle.getNomOfficiel(), quittance.getCommune().getLibelleCommune());
+		Assert.assertEquals(BigInteger.valueOf(MockCommune.Aigle.getNoOFS()), quittance.getCommune().getNumeroOfsCommune());
+		Assert.assertEquals((int) ids.idPM, quittance.getNumeroContribuable());
+		Assert.assertEquals("1423", quittance.getNumeroParcelle());
+		Assert.assertEquals(TypImmeuble.B_F, quittance.getTypeImmeuble());
+		Assert.assertEquals(TypeImposition.IMPOT_COMPLEMENTAIRE_IMMEUBLE, quittance.getTypeImpot());
+		Assert.assertTrue(quittance.isTraitementMetier());
+
+		// vérification en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(ids.idPM);
+				Assert.assertNotNull(entreprise);
+
+				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
+						.filter(af -> af instanceof DegrevementICI)
+						.map(af -> (DegrevementICI) af)
+						.collect(Collectors.toList());
+				Assert.assertEquals(1, degrevements.size());
+
+				final DegrevementICI degrevement = degrevements.get(0);
+				Assert.assertNotNull(degrevement);
+				Assert.assertFalse(degrevement.isAnnule());
+				Assert.assertEquals(date(pf, 1, 1), degrevement.getDateDebut());
+				Assert.assertNull(degrevement.getDateFin());
+
+				// vérification des valeurs sauvegardées (tout était invalide -> rien n'est présent)
+				Assert.assertNull(degrevement.getLocation());
+				Assert.assertNull(degrevement.getPropreUsage());
+				Assert.assertNotNull(degrevement.getLoiLogement());
+				Assert.assertFalse(degrevement.getLoiLogement().getControleOfficeLogement());
+				Assert.assertNull(degrevement.getLoiLogement().getDateEcheance());
+				Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
+				Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
+				Assert.assertTrue(degrevement.getNonIntegrable());
 
 				// vérification de la quittance du formulaire de demande
 				final List<DemandeDegrevementICI> formulaires = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);

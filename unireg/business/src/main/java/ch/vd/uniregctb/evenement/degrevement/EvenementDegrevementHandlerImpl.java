@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.dperm.xml.common.v1.TypImmeuble;
 import ch.vd.dperm.xml.common.v1.TypeImposition;
+import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -226,8 +227,8 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	@NotNull
 	private static DonneesLoiLogement extractDonneesLoiLogement(DonneesMetier data) throws DonneeNonIntegrableException {
 		if (data.isControleOfficeLogement()) {
-			final RegDate dateOctroi = extractDate(data.getDateOctroi());
-			final RegDate dateEcheanceOctroi = extractDate(data.getDateEcheanceOctroi());
+			final RegDate dateOctroi = extractDate("date d'octroi", data.getDateOctroi());
+			final RegDate dateEcheanceOctroi = extractDate("date d'échéance d'octroi", data.getDateEcheanceOctroi());
 			return new DonneesLoiLogement(data.isControleOfficeLogement(), dateOctroi, dateEcheanceOctroi, null);
 		}
 		else {
@@ -237,36 +238,49 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 
 	@Nullable
 	private static Integer extractInteger(String description, TypEntMax12Attr value) throws DonneeNonIntegrableException {
-		if (value != null && value.isValide()) {
-			final BigInteger numericalValue = value.getValue();
-			if (numericalValue.compareTo(BigInteger.ZERO) < 0 || numericalValue.compareTo(BI_MAXINT) > 0) {
-				// valeur clairement hors domaine de validité...
-				throw new DonneeNonIntegrableException("L'attribut '" + description + "' est hors de son domaine de validité [0 - " + Integer.MAX_VALUE + "] : " + numericalValue);
-			}
-			return numericalValue.intValue();
+		if (value == null) {
+			return null;
 		}
-		return null;
+		if (!value.isValide()) {
+			throw new DonneeNonIntegrableException("L'attribut '" + description + "' est indiqué comme non-valide dans les données transmises");
+		}
+		final BigInteger numericalValue = value.getValue();
+		if (numericalValue.compareTo(BigInteger.ZERO) < 0 || numericalValue.compareTo(BI_MAXINT) > 0) {
+			// valeur clairement hors domaine de validité...
+			throw new DonneeNonIntegrableException("L'attribut '" + description + "' est hors de son domaine de validité [0 - " + Integer.MAX_VALUE + "] : " + numericalValue);
+		}
+		return numericalValue.intValue();
 	}
 
 	@Nullable
 	private static BigDecimal extractPourcentage(String description, TypPctPosDecMax32Attr value) throws DonneeNonIntegrableException {
-		if (value != null && value.isValide()) {
-			final BigDecimal percent = value.getValue();
-			if (percent.compareTo(BigDecimal.ZERO) < 0 || percent.compareTo(BD_HUNDRED) > 0) {
-				// valeur hors du domaine de validité...
-				throw new DonneeNonIntegrableException("L'attribut '" + description + "' est hors de son domaine de validité [0.00 - 100.00] : " + percent);
-			}
-			return percent;
+		if (value == null){
+			return null;
 		}
-		return null;
+		if (!value.isValide()) {
+			throw new DonneeNonIntegrableException("L'attribut '" + description + "' est indiqué comme non-valide dans les données transmises");
+		}
+		final BigDecimal percent = value.getValue();
+		if (percent.compareTo(BigDecimal.ZERO) < 0 || percent.compareTo(BD_HUNDRED) > 0) {
+			// valeur hors du domaine de validité...
+			throw new DonneeNonIntegrableException("L'attribut '" + description + "' est hors de son domaine de validité [0.00 - 100.00] : " + percent);
+		}
+		return percent;
 	}
 
 	@Nullable
-	private static RegDate extractDate(TypDateAttr value) {
-		if (value != null && value.isValide()) {
-			return XmlUtils.xmlcal2regdate(value.getValue());
+	private static RegDate extractDate(String description, TypDateAttr value) throws DonneeNonIntegrableException {
+		if (value == null) {
+			return null;
 		}
-		return null;
+		if (!value.isValide()) {
+			throw new DonneeNonIntegrableException("L'attribut '" + description + "' est indiqué comme non-valide dans les données transmises.");
+		}
+		final RegDate date = XmlUtils.xmlcal2regdate(value.getValue());
+		if (date == null) {
+			throw new DonneeNonIntegrableException("L'attribut '" + description + "' est hors de son domaine de validité " + DateRangeHelper.toDisplayString(DateConstants.DEFAULT_VALIDITY_RANGE) + " : " + value.getValue());
+		}
+		return date;
 	}
 
 	/**
