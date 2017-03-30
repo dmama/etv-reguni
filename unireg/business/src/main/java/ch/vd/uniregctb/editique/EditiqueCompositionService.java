@@ -361,6 +361,16 @@ public interface EditiqueCompositionService {
 	void imprimeDemandeDegrevementICIForBatch(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException;
 
 	/**
+	 * Envoie à l'éditique le formulaire de demande de dégrèvement ICI à imprimer localement
+	 * @param demande le formulaire à imprimer
+	 * @param dateTraitement la date de traitement de l'envoi
+	 * @return le document imprimé, en quelque sorte...
+	 * @throws EditiqueException en cas de problème
+	 * @throws JMSException en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
+	 */
+	EditiqueResultat imprimeDemandeDegrevementICIOnline(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException, JMSException;
+
+	/**
 	 * Envoie à l'éditique une fourre neutre à imprimer localement
 	 * @param dateTraitement
 	 * @return le document imprimé

@@ -311,6 +311,8 @@
 		<property name="securityProviderInterface" ref="securityProviderInterface"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="parametreAppService" ref="parametreAppService"/>
+		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
+		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
 	</bean>
 
 </beans>

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,14 +38,22 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ContribuableNotFoundException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Duplicable;
+import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.EntrepriseNotFoundException;
+import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
+import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueResultatErreur;
+import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
@@ -76,6 +85,8 @@ public class DegrevementExonerationController {
 	private SecurityProviderInterface securityProviderInterface;
 	private ControllerUtils controllerUtils;
 	private ParametreAppService parametreAppService;
+	private AutreDocumentFiscalService autreDocumentFiscalService;
+	private RetourEditiqueControllerHelper retourEditiqueControllerHelper;
 
 	private static final Comparator<ImmeubleView> IMMEUBLE_VIEW_COMPARATOR = Comparator.comparing(ImmeubleView::getNoParcelle)
 			.thenComparing(Comparator.comparing(ImmeubleView::getIndex1, Comparator.nullsFirst(Comparator.naturalOrder())))
@@ -106,6 +117,14 @@ public class DegrevementExonerationController {
 		this.parametreAppService = parametreAppService;
 	}
 
+	public void setAutreDocumentFiscalService(AutreDocumentFiscalService autreDocumentFiscalService) {
+		this.autreDocumentFiscalService = autreDocumentFiscalService;
+	}
+
+	public void setRetourEditiqueControllerHelper(RetourEditiqueControllerHelper retourEditiqueControllerHelper) {
+		this.retourEditiqueControllerHelper = retourEditiqueControllerHelper;
+	}
+
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/immeubles.do", method = RequestMethod.GET)
 	@ResponseBody
@@ -117,6 +136,7 @@ public class DegrevementExonerationController {
 	                                                @RequestParam(value = "index2", required = false) Integer index2,
 	                                                @RequestParam(value = "index3", required = false) Integer index3) {
 
+		controllerUtils.checkAccesDossierEnLecture(idCtb);
 		final Contribuable ctb = getTiers(Contribuable.class, idCtb, ContribuableNotFoundException::new);
 
 		// on récupère tous les immeubles concernés une fois, et on agrège les périodes des droits pour chacun d'eux
@@ -229,12 +249,22 @@ public class DegrevementExonerationController {
 		return exoneration;
 	}
 
+	@NotNull
+	private DemandeDegrevementICI getDemandeDegrevement(long id) {
+		final DemandeDegrevementICI demande = hibernateTemplate.get(DemandeDegrevementICI.class, id);
+		if (demande == null) {
+			throw new ObjectNotFoundException("L'identifiant " + id + " ne correspond à aucun formulaire de demande de dégrèvement connu.");
+		}
+		return demande;
+	}
+
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/visu.do", method = RequestMethod.GET)
 	public String showDetailDegrevementsExonerations(Model model,
 	                                                 @RequestParam(value = "idCtb") long idContribuable,
 	                                                 @RequestParam(value = "idImmeuble") long idImmeuble) {
 
+		controllerUtils.checkAccesDossierEnLecture(idContribuable);
 		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
 		final ImmeubleRF immeuble = getImmeuble(idImmeuble);
 
@@ -304,7 +334,27 @@ public class DegrevementExonerationController {
 				.map(AllegementFoncier::getDateDebut)
 				.map(RegDate::year)
 				.collect(Collectors.toSet());
+		return buildPeriodesAutoriseesSauf(used);
+	}
 
+	/**
+	 * @param existing la collection des demandes de dégrèvement existantes
+	 * @return la liste des périodes fiscales utilisables (celles correspondant aux éléments existants sont indiquées comme non-utilisables)
+	 */
+	private List<PeriodeFiscaleView> buildPeriodesFiscalesAutorisees(Collection<DemandeDegrevementICI> existing) {
+		final Set<Integer> used = existing.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(DemandeDegrevementICI::getPeriodeFiscale)
+				.collect(Collectors.toSet());
+		return buildPeriodesAutoriseesSauf(used);
+	}
+
+	/**
+	 * @param used ensemble des périodes à exclure
+	 * @return une liste des périodes fiscales (dans l'ordre décroissant) depuis la première période fiscale des périodes morale (par défaut 2009)
+	 * jusqu'à l'année prochaine, toutes associées à un flag d'utilisabilité
+	 */
+	private List<PeriodeFiscaleView> buildPeriodesAutoriseesSauf(Set<Integer> used) {
 		final int first = parametreAppService.getPremierePeriodeFiscalePersonnesMorales();
 		final int last = RegDate.get().year() + 1;
 		final List<PeriodeFiscaleView> list = new ArrayList<>(last - first + 1);
@@ -343,6 +393,31 @@ public class DegrevementExonerationController {
 				.filter(af -> clazz.isAssignableFrom(af.getClass()))
 				.filter(af -> af.getImmeuble().getId() == idImmeuble)
 				.map(af -> (T) af)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * @param entreprise une entreprise
+	 * @param immeuble un immeuble
+	 * @param excluded la demande de dégrèvement dont il ne faut pas tenir compte
+	 * @param avecAnnulees <code>true</code> si on veut les demandes annulées aussi
+	 * @return la liste des demandes de dégrèvement qui lient l'entreprise à l'immeuble
+	 */
+	private List<DemandeDegrevementICI> getDemandesDegrevement(Entreprise entreprise, ImmeubleRF immeuble, DemandeDegrevementICI excluded, boolean avecAnnulees) {
+		return getDemandesDegrevement(entreprise, immeuble.getId(), excluded, avecAnnulees);
+	}
+
+	/**
+	 * @param entreprise une entreprise
+	 * @param idImmeuble l'identifiant technique d'un immeuble
+	 * @param excluded la demande de dégrèvement dont il ne faut pas tenir compte
+	 * @param avecAnnulees <code>true</code> si on veut les demandes annulées aussi
+	 * @return la liste des demandes de dégrèvement qui lient l'entreprise à l'immeuble
+	 */
+	private List<DemandeDegrevementICI> getDemandesDegrevement(Entreprise entreprise, long idImmeuble, DemandeDegrevementICI excluded, boolean avecAnnulees) {
+		return entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, avecAnnulees).stream()
+				.filter(dd -> excluded == null || dd != excluded)
+				.filter(dd -> dd.getImmeuble().getId() == idImmeuble)
 				.collect(Collectors.toList());
 	}
 
@@ -470,6 +545,7 @@ public class DegrevementExonerationController {
 	                               @RequestParam(value = "idContribuable") long idContribuable,
 	                               @RequestParam(value = "idImmeuble") long idImmeuble) {
 
+		controllerUtils.checkAccesDossierEnEcriture(idContribuable);
 		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
 		final ImmeubleRF immeuble = getImmeuble(idImmeuble);
 
@@ -525,6 +601,7 @@ public class DegrevementExonerationController {
 	public String addDegrevement(Model model,
 	                             @RequestParam(value = "idContribuable") long idContribuable,
 	                             @RequestParam(value = "idImmeuble") long idImmeuble) {
+		controllerUtils.checkAccesDossierEnEcriture(idContribuable);
 		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
 		return showAddDegrevement(model,
 		                          getAllegementsFonciers(entreprise, idImmeuble, DegrevementICI.class, null, false),
@@ -674,6 +751,7 @@ public class DegrevementExonerationController {
 	                               @RequestParam(value = "idContribuable") long idContribuable,
 	                               @RequestParam(value = "idImmeuble") long idImmeuble) {
 
+		controllerUtils.checkAccesDossierEnEcriture(idContribuable);
 		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
 		final ImmeubleRF immeuble = getImmeuble(idImmeuble);
 
@@ -728,6 +806,7 @@ public class DegrevementExonerationController {
 	public String addExoneration(Model model,
 	                             @RequestParam(value = "idContribuable") long idContribuable,
 	                             @RequestParam(value = "idImmeuble") long idImmeuble) {
+		controllerUtils.checkAccesDossierEnEcriture(idContribuable);
 		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
 		return showAddExoneration(model,
 		                          getAllegementsFonciers(entreprise, idImmeuble, ExonerationIFONC.class, null, false),
@@ -858,6 +937,187 @@ public class DegrevementExonerationController {
 	public String editDemandesDegrevement(Model model,
 	                                      @RequestParam(value = "idContribuable") long idContribuable,
 	                                      @RequestParam(value = "idImmeuble") long idImmeuble) {
-		throw new NotImplementedException("Pas encore implémenté !");
+
+		controllerUtils.checkAccesDossierEnEcriture(idContribuable);
+		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
+		final ImmeubleRF immeuble = getImmeuble(idImmeuble);
+
+		final List<DemandeDegrevementICIView> demandes = getDemandesDegrevement(entreprise, immeuble, null, true).stream()
+				.map(dd -> new DemandeDegrevementICIView(dd, infraService))
+				.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparingInt(DemandeDegrevementICIView::getPeriodeFiscale).reversed()))
+				.collect(Collectors.toList());
+
+		final ResumeImmeubleView immeubleView = new ResumeImmeubleView(immeuble, null, registreFoncierService);
+
+		// les droits qui lient cette entreprise et cet immeuble
+		final List<DroitView> viewsDroits = buildListeDroits(entreprise, immeuble);
+
+		model.addAttribute("idContribuable", idContribuable);
+		model.addAttribute("demandesDegrevement", demandes);
+		model.addAttribute("immeuble", immeubleView);
+		model.addAttribute("droits", viewsDroits);
+		return "tiers/edition/pm/degrevement-exoneration/edit-demandes-degrevement";
+	}
+
+	@RequestMapping(value = "/cancel-demande-degrevement.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String cancelDemandeDegrevement(@RequestParam(value = "id") long idDemande) {
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants pour effectuer cette opération.");
+		}
+
+		final DemandeDegrevementICI demande = getDemandeDegrevement(idDemande);
+		final Entreprise entreprise = demande.getEntreprise();
+		controllerUtils.checkAccesDossierEnEcriture(entreprise.getNumero());
+
+		demande.setAnnule(true);
+		return "redirect:/degrevement-exoneration/edit-demandes-degrevement.do?idContribuable=" + entreprise.getNumero() + "&idImmeuble=" + demande.getImmeuble().getId();
+	}
+
+	@InitBinder(value = "addDemandeDegrevementCommand")
+	public void initAddDemandeDegrevementCommandBinder(WebDataBinder binder) {
+		binder.setValidator(new AddDemandeDegrevementViewValidator());
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+	}
+
+	@RequestMapping(value = "/add-demande-degrevement.do", method = RequestMethod.GET)
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	public String addDemandeDegrevement(Model model,
+	                                    @RequestParam(value = "idContribuable") long idContribuable,
+	                                    @RequestParam(value = "idImmeuble") long idImmeuble) {
+
+		controllerUtils.checkAccesDossierEnEcriture(idContribuable);
+		final Entreprise entreprise = getTiers(Entreprise.class, idContribuable, EntrepriseNotFoundException::new);
+		final AddDemandeDegrevementView view = new AddDemandeDegrevementView(entreprise.getNumero(), idImmeuble);
+		view.setDelaiRetour(RegDate.get().addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI()));
+		return showAddDemandeDegrevement(model,
+		                                 getDemandesDegrevement(entreprise, idImmeuble, null, false),
+		                                 view);
+	}
+
+	private String showAddDemandeDegrevement(Model model, List<DemandeDegrevementICI> autres, AddDemandeDegrevementView view) {
+		model.addAttribute("periodes", buildPeriodesFiscalesAutorisees(autres));
+		model.addAttribute("idContribuable", view.getIdContribuable());
+		model.addAttribute("immeuble", new ResumeImmeubleView(getImmeuble(view.getIdImmeuble()), null, registreFoncierService));
+		model.addAttribute("addDemandeDegrevementCommand", view);
+		return "tiers/edition/pm/degrevement-exoneration/add-demande-degrevement";
+	}
+
+	@RequestMapping(value = "/add-demande-degrevement.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String doAddDemandeDegrevement(Model model,
+	                                      @Valid @ModelAttribute(value = "addDemandeDegrevementCommand") AddDemandeDegrevementView view,
+	                                      BindingResult bindingResult) throws IOException {
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants pour effectuer cette opération.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(view.getIdContribuable());
+		final Entreprise entreprise = getTiers(Entreprise.class, view.getIdContribuable(), EntrepriseNotFoundException::new);
+		if (bindingResult.hasErrors()) {
+			return showAddDemandeDegrevement(model,
+			                                 getDemandesDegrevement(entreprise, view.getIdImmeuble(), null, false),
+			                                 view);
+		}
+
+		final ImmeubleRF immeuble = getImmeuble(view.getIdImmeuble());
+
+		// on ne doit pas pouvoir réutiliser la période de début de validité d'une donnée existante
+		final List<DemandeDegrevementICI> autres = getDemandesDegrevement(entreprise, immeuble, null, false);
+		if (autres.stream().anyMatch(exo -> Objects.equals(exo.getPeriodeFiscale(), view.getPeriodeFiscale()))) {
+			bindingResult.rejectValue("periodeFiscale", "error.demande.degrevement.periode.fiscale.deja.utilisee");
+			return showAddDemandeDegrevement(model,
+			                                 getDemandesDegrevement(entreprise, immeuble, null, false),
+			                                 view);
+		}
+
+		final EditiqueResultat resultat;
+		try {
+			resultat = autreDocumentFiscalService.envoyerDemandeDegrevementICIOnline(entreprise, immeuble, view.getPeriodeFiscale(), RegDate.get(), view.getDelaiRetour());
+		}
+		catch (AutreDocumentFiscalException e) {
+			throw new ActionException("Impossoble d'imprimer le formulaire de demande de dégrèvement ICI", e);
+		}
+
+		final String redirect = String.format("redirect:/degrevement-exoneration/edit-demandes-degrevement.do?idContribuable=%d&idImmeuble=%d",
+	                                          entreprise.getNumero(),
+	                                          immeuble.getId());
+
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox = res -> redirect;
+
+		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = res -> {
+			Flash.error(EditiqueErrorHelper.getMessageErreurEditique(res));
+			return redirect;
+		};
+
+		return retourEditiqueControllerHelper.traiteRetourEditiqueAfterRedirect(resultat,
+		                                                                        "formulaire-demande-dégrèvement",
+		                                                                        redirect,
+		                                                                        inbox,
+		                                                                        null,
+		                                                                        erreur);
+	}
+
+	@InitBinder(value = "editDemandeDegrevementCommand")
+	public void initEditDemandeDegrevementCommandBinder(WebDataBinder binder) {
+		binder.setValidator(new EditDemandeDegrevementViewValidator());
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+	}
+
+	@RequestMapping(value = "/edit-demande-degrevement.do", method = RequestMethod.GET)
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	public String editDemandeDegrevement(Model model, @RequestParam(value = "id") long idDemande) {
+		final DemandeDegrevementICI demande = getDemandeDegrevement(idDemande);
+		return showEditDemandeDegrevement(model, demande, new EditDemandeDegrevementView(demande));
+	}
+
+	private String showEditDemandeDegrevement(Model model, DemandeDegrevementICI demande, EditDemandeDegrevementView view) {
+		model.addAttribute("idContribuable", demande.getEntreprise().getNumero());
+		model.addAttribute("immeuble", new ResumeImmeubleView(demande.getImmeuble(), null, registreFoncierService));
+		model.addAttribute("editDemandeDegrevementCommand", view);
+		return "tiers/edition/pm/degrevement-exoneration/edit-demande-degrevement";
+	}
+
+	private String showEditDemandeDegrevement(Model model, EditDemandeDegrevementView view) {
+		final DemandeDegrevementICI demande = getDemandeDegrevement(view.getIdDemandeDegrevement());
+		return showEditDemandeDegrevement(model, demande, view);
+	}
+
+	@RequestMapping(value = "/edit-demande-degrevement.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String doEditDemandeDegrevement(Model model,
+	                                       @Valid @ModelAttribute(value = "editDemandeDegrevementCommand") EditDemandeDegrevementView view,
+	                                       BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			return showEditDemandeDegrevement(model, view);
+		}
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants pour effectuer cette opération.");
+		}
+
+		final DemandeDegrevementICI demande = getDemandeDegrevement(view.getIdDemandeDegrevement());
+		final Entreprise entreprise = demande.getEntreprise();
+		final ImmeubleRF immeuble = demande.getImmeuble();
+		controllerUtils.checkAccesDossierEnEcriture(entreprise.getNumero());
+
+		// on ne doit pas pouvoir réutiliser la période fiscale d'une donnée existante
+		final List<DemandeDegrevementICI> autres = getDemandesDegrevement(entreprise, immeuble, demande, false);
+		if (autres.stream().anyMatch(exo -> Objects.equals(exo.getPeriodeFiscale(), view.getPeriodeFiscale()))) {
+			bindingResult.rejectValue("periodeFiscale", "error.demande.degrevement.periode.fiscale.deja.utilisee");
+			return showEditDemandeDegrevement(model, demande, view);
+		}
+
+		// la date de retour ne doit pas être avant la date d'émission
+		if (view.getDateRetour() != null && view.getDateRetour().isBefore(demande.getDateEnvoi())) {
+			bindingResult.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission");
+			return showEditDemandeDegrevement(model, demande, view);
+		}
+
+		demande.setDateRetour(view.getDateRetour());
+		return "redirect:/degrevement-exoneration/edit-demandes-degrevement.do?idContribuable=" + entreprise.getNumero() + "&idImmeuble=" + immeuble.getId();
 	}
 }

@@ -24,11 +24,8 @@
 	<display:column titleKey="label.date.delai.accorde">
 		<unireg:regdate regdate="${demande.delaiRetour}"/>
 	</display:column>
-	<display:column titleKey="label.date.retour">
-		<unireg:regdate regdate="${demande.dateRetour}"/>
-	</display:column>
-	<display:column titleKey="label.etat.avancement" >
-		<fmt:message key="option.etat.avancement.${demande.etat}" />
+	<display:column titleKey="label.date.rappel">
+		<unireg:regdate regdate="${demande.dateRappel}"/>
 		<c:choose>
 			<c:when test="${demande.urlVisualisationExterneRappel != null}">
 				&nbsp;<a href="#" class="pdf" title="Visualisation du courrier de rappel" onclick="VisuExterneDoc.openWindow('${demande.urlVisualisationExterneRappel}');">&nbsp;</a>
@@ -39,13 +36,25 @@
 			</c:when>
 		</c:choose>
 	</display:column>
-	<display:column class="action">
+	<display:column titleKey="label.date.retour">
+		<unireg:regdate regdate="${demande.dateRetour}"/>
+	</display:column>
+	<display:column titleKey="label.etat.avancement">
+		<fmt:message key="option.etat.avancement.${demande.etat}"/>
+	</display:column>
+	<display:column titleKey="label.code.controle">
+		<c:out value="${demande.codeControle}"/>
+	</display:column>
+	<display:column class="action" style="width: 5%;">
 		<c:choose>
 			<c:when test="${mode == 'visu'}">
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${demande.id}"/>
 			</c:when>
 			<c:when test="${mode == 'edit' && !demande.annule}">
-				<unireg:raccourciModifier link='/degrevement-exoneration/edit-demande-degrevement.do?id=${demande.id}' tooltip="Modifier la demande de dégrèvement"/>
+				<c:if test="${demande.dateRetour == null}">
+					<unireg:raccourciModifier link='edit-demande-degrevement.do?id=${demande.id}' tooltip="Modifier la demande de dégrèvement"/>
+				</c:if>
+				<unireg:raccourciAnnuler onClick="EditDemandeDegrevement.cancel(${demande.id});" tooltip="Annuler"/>
 			</c:when>
 			<c:otherwise>
 				&nbsp;
@@ -53,3 +62,15 @@
 		</c:choose>
 	</display:column>
 </display:table>
+
+<c:if test="${mode == 'edit'}">
+	<script type="application/javascript">
+		const EditDemandeDegrevement = {
+			cancel: function(idDemande) {
+				if (confirm('Voulez-vous réellement procéder à l\'annulation de ce formulaire de demande de dégrèvement ?')) {
+					App.executeAction('post:/degrevement-exoneration/cancel-demande-degrevement.do?id=' + idDemande);
+				}
+			}
+		};
+	</script>
+</c:if>

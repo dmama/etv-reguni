@@ -32,11 +32,8 @@
 			<display:column sortable ="true" titleKey="label.date.delai.accorde" sortProperty="delaiRetour">
 				<unireg:regdate regdate="${docFiscal.delaiRetour}"/>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.date.retour" sortProperty="dateRetour">
-				<unireg:regdate regdate="${docFiscal.dateRetour}"/>
-			</display:column>
-			<display:column sortable ="true" titleKey="label.etat.avancement" >
-				<fmt:message key="option.etat.avancement.${docFiscal.etat}" />
+			<display:column sortable ="true" titleKey="label.date.rappel" sortProperty="dateRetour">
+				<unireg:regdate regdate="${docFiscal.dateRappel}"/>
 				<c:choose>
 					<c:when test="${docFiscal.urlVisualisationExterneRappel != null}">
 						&nbsp;<a href="#" class="pdf" title="Visualisation du courrier de rappel" onclick="VisuExterneDoc.openWindow('${docFiscal.urlVisualisationExterneRappel}');">&nbsp;</a>
@@ -46,6 +43,12 @@
 						<span class="pdf-grayed" id="disabled-print-rappel-${docFiscal.id}" style="display: none;">&nbsp;</span>
 					</c:when>
 				</c:choose>
+			</display:column>
+			<display:column sortable ="true" titleKey="label.date.retour" sortProperty="dateRetour">
+				<unireg:regdate regdate="${docFiscal.dateRetour}"/>
+			</display:column>
+			<display:column sortable ="true" titleKey="label.etat.avancement">
+				<fmt:message key="option.etat.avancement.${docFiscal.etat}" />
 			</display:column>
 			<display:column class="action">
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>

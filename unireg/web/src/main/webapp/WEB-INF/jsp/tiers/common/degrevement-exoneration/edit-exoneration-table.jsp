@@ -23,8 +23,8 @@
 				</c:when>
 				<c:otherwise>
 					<form:hidden path="anneeDebut"/>
-					<c:set var="pfDebutName" value="${commandName}.anneeDebut"/>
-					<spring:bind path="${pfDebutName}">
+					<c:set var="pfName" value="${commandName}.anneeDebut"/>
+					<spring:bind path="${pfName}">
 						<span style="padding-left: 1em;"><c:out value="${status.value}"/></span>
 					</spring:bind>
 				</c:otherwise>

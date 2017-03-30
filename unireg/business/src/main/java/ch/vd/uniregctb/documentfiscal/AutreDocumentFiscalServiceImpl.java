@@ -273,6 +273,34 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		return saved;
 	}
 
+	@Override
+	public EditiqueResultat envoyerDemandeDegrevementICIOnline(Entreprise entreprise, ImmeubleRF immeuble, int periodeFiscale, RegDate dateTraitement, RegDate delaiRetour) throws AutreDocumentFiscalException {
+
+		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
+		demande.setDateEnvoi(dateTraitement);
+		demande.setDelaiRetour(delaiRetour);
+		demande.setCodeControle(buildCodeControleDemandeDegrevementICI(entreprise));
+		demande.setImmeuble(immeuble);
+		demande.setNumeroSequence(getNewSequenceNumberDemandeDegrevementICI(entreprise, periodeFiscale));
+		demande.setPeriodeFiscale(periodeFiscale);
+		demande.setEntreprise(entreprise);
+
+		final DemandeDegrevementICI saved = hibernateTemplate.merge(demande);
+		entreprise.addAutreDocumentFiscal(saved);
+		try {
+			// envoi du NIP à qui de droit
+			envoiCodeControlePourDemandeDegrevementICI(saved);
+
+			// impression éditique
+			return editiqueCompositionService.imprimeDemandeDegrevementICIOnline(saved, dateTraitement);
+
+			// TODO événement fiscal ?
+		}
+		catch (EditiqueException | EvenementDeclarationException | JMSException e) {
+			throw new AutreDocumentFiscalException(e);
+		}
+	}
+
 	/**
 	 * Envoi du NIP à qui de droit
 	 * @param demande la demande de dégrèvement à émettre

@@ -63,6 +63,17 @@ public interface AutreDocumentFiscalService {
 	DemandeDegrevementICI envoyerDemandeDegrevementICIBatch(Entreprise e, ImmeubleRF immeuble, int periodeFiscale, RegDate dateTraitement) throws AutreDocumentFiscalException;
 
 	/**
+	 * @param e entreprise pour laquelle on doit envoyer un formulaire de demande de dégrèvement (en mode online)
+	 * @param immeuble immeuble concerné par la demande de dégrèvement
+	 * @param periodeFiscale période fiscale à partir de laquelle le dégrèvement peut intervenir
+	 * @param dateTraitement date de traitement
+	 * @param delaiAccorde délai de retour accordé
+	 * @return le formulaire envoyé
+	 * @throws AutreDocumentFiscalException en cas de souci
+	 */
+	EditiqueResultat envoyerDemandeDegrevementICIOnline(Entreprise e, ImmeubleRF immeuble, int periodeFiscale, RegDate dateTraitement, RegDate delaiAccorde) throws AutreDocumentFiscalException;
+
+	/**
 	 * @param document autre document fiscal dont on veut récupérer le courrier initial
 	 * @return document PDF correspondant au courrier initial
 	 * @throws EditiqueException en cas de souci

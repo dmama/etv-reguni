@@ -992,6 +992,31 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
+	public EditiqueResultat imprimeDemandeDegrevementICIOnline(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException, JMSException {
+		final TypeDocumentEditique typeDocument = impressionDemandeDegrevementICIHelper.getTypeDocumentEditique();
+
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionDemandeDegrevementICIHelper.buildDocument(demande, dateTraitement);
+		root.getDocument().add(original);
+		final String nomDocument = impressionDemandeDegrevementICIHelper.construitIdDocument(demande);
+
+		// sauvegarde de la clé d'archivage
+		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
+		final CTypeImmeuble infoImmeuble = original.getLettreDegrevementImm().getImmeuble();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleDemandeDegrevementICI(demande, infoImmeuble.getCommune(), infoImmeuble.getNoParcelle(), infoArchivage, true);
+			demande.setCleArchivage(infoArchivage.getIdDocument());
+		}
+
+		final String description = String.format("Formulaire de demande de dégrèvement %d pour l'entreprise %s et l'immeuble %s de la commune de %s",
+		                                         demande.getPeriodeFiscale(),
+		                                         FormatNumeroHelper.numeroCTBToDisplay(demande.getEntreprise().getNumero()),
+		                                         infoImmeuble.getNoParcelle(),
+		                                         infoImmeuble.getCommune());
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, infoArchivage != null, description);
+	}
+
+	@Override
 	public EditiqueResultat imprimerFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) throws EditiqueException, JMSException {
 		final FichierImpression root = new FichierImpression();
 		final FichierImpression.Document original = impressionFourreNeutreHelper.buildDocument(fourreNeutre,dateTraitement);
