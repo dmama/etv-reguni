@@ -17,7 +17,7 @@
 			<unireg:raccourciAjouter tooltip="Ajouter un nouveau mandat" display="label.bouton.ajouter" link="ajouter-list.do?idMandant=${idMandant}"/>
 
 			<c:if test="${not empty mandats}">
-				<display:table name="${mandats}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+				<display:table name="${mandats}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
 					<display:column titleKey="label.type" style="width: 20ex;">
 						<fmt:message key="option.mandat.type.${courrier.typeMandat}"/>
 					</display:column>

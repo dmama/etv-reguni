@@ -18,7 +18,7 @@ import ch.vd.uniregctb.common.Annulable;
  * Si l'entité n'est pas annulée, mais a une date de fin dans le passé, la ligne (tr) portera la classe "histo-only", ce qui permettra de n'afficher, en contrôlant la présence
  * (ou l'absence) de cette classe, que les entités actuellement actives ou encore à venir
  */
-public class TableAnnuableDateRangeDecorator extends TableEntityDecorator {
+public class TableAnnulableDateRangeDecorator extends TableEntityDecorator {
 
 	@Override
 	public String addRowClass() {

@@ -10,7 +10,7 @@
 	<label class="noprint" for="histoDemandesDegrevement"><fmt:message key="label.historique"/></label>
 </c:if>
 
-<display:table name="${demandesDegrevement}" id="demande" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator" htmlId="demandesDegrevement">
+<display:table name="${demandesDegrevement}" id="demande" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator" htmlId="demandesDegrevement">
 	<display:column titleKey="label.periode.fiscale">
 		<c:out value="${demande.periodeFiscale}"/>
 	</display:column>

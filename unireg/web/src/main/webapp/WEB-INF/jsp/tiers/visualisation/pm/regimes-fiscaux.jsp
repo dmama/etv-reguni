@@ -21,7 +21,7 @@
 		<input class="noprint" name="rfvd_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('regimesVD','rfvd_histo', 'histo-only');" id="rfvd_histo" />
 		<label class="noprint" for="rfvd_histo"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+		<display:table name="${command.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 20%;">
 				<unireg:regdate regdate="${regimesVD.dateDebut}"/>
 			</display:column>
@@ -58,7 +58,7 @@
 		<input class="noprint" name="rfch_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('regimesCH','rfch_histo', 'histo-only');" id="rfch_histo" />
 		<label class="noprint" for="rfch_histo"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+		<display:table name="${command.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut" style="width: 20%;">
 				<unireg:regdate regdate="${regimesCH.dateDebut}"/>
 			</display:column>

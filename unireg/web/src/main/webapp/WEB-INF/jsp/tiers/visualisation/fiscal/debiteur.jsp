@@ -30,7 +30,7 @@
 			<input class="noprint" name="periodicites_histo"  id="isPeriodiciteHisto" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('periodicite','isPeriodiciteHisto', 'histo-only');"/>
 			<label class="noprint" for="isPeriodiciteHisto"><fmt:message key="label.historique" /></label>
 
-			<display:table name="command.periodicites" id="periodicite" pagesize="10" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator" sort="external">
+			<display:table name="command.periodicites" id="periodicite" pagesize="10" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator" sort="external">
 
 				<display:column titleKey="label.periodicite.decompte" style="width: 30%;">
 					<fmt:message key="option.periodicite.decompte.${periodicite.periodiciteDecompte}" />

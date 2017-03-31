@@ -23,7 +23,7 @@
 		<input class="noprint" name="courrier_histo"  id="isCourrierHisto" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('courrier','isCourrierHisto', 'histo-only');"/>
 		<label class="noprint" for="isCourrierHisto"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.mandatairesCourrier}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+		<display:table name="${command.mandatairesCourrier}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
 			<display:column titleKey="label.type" style="width: 20ex;">
 				<fmt:message key="option.mandat.type.${courrier.typeMandat}"/>
 			</display:column>
@@ -93,7 +93,7 @@
 		<input class="noprint" name="perception_histo"  id="isPerceptionHisto" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('mandatperc','isPerceptionHisto', 'histo-only');"/>
 		<label class="noprint" for="isPerceptionHisto"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.mandatairesPerception}" id="mandatperc" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+		<display:table name="${command.mandatairesPerception}" id="mandatperc" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
 			<display:column titleKey="label.date.debut" style="width: 12ex;">
 				<unireg:regdate regdate="${mandatperc.dateDebut}"/>
 			</display:column>

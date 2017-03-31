@@ -22,7 +22,7 @@
 		<input class="noprint" name="flag_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('flag-${param.group}','flag_histo-${param.group}', 'histo-only');" id="flag_histo-${param.group}" />
 		<label class="noprint" for="flag_histo-${param.group}"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${flags}" id="flag" htmlId="flag-${param.group}" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+		<display:table name="${flags}" id="flag" htmlId="flag-${param.group}" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
 			<display:column titleKey="label.date.debut" style="width: 20%;" sortable="true" sortProperty="dateDebut">
 				<unireg:regdate regdate="${flag.dateDebut}"/>
 			</display:column>

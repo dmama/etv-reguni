@@ -6,7 +6,7 @@
 <fieldset class="information">
 	<legend><span><fmt:message key="label.droits.rf"/></span></legend>
 
-	<display:table name="${droits}" id="droit" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+	<display:table name="${droits}" id="droit" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
 		<display:column titleKey="label.date.debut">
 			<unireg:regdate regdate="${droit.dateDebut}"/>
 		</display:column>
