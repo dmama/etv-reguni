@@ -45,4 +45,11 @@ public class ExonerationIFONCView implements Annulable, DateRange {
 	public BigDecimal getPourcentageExoneration() {
 		return pourcentageExoneration;
 	}
+
+	/**
+	 * @return <code>true</code> si le dégrèvement est complètement dans le passé
+	 */
+	public boolean isPast() {
+		return dateFin != null && dateFin.isBefore(RegDate.get());
+	}
 }

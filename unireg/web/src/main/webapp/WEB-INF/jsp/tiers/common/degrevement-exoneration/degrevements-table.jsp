@@ -5,8 +5,13 @@
 
 <c:set value="${param.mode}" var="mode"/>       <%-- 'visu' ou 'edit' --%>
 
-<unireg:nextRowClass reset="1"/>
-<table class="display display_table degrevement_list">
+<c:if test="${mode == 'visu'}">
+	<input class="noprint" id="histoDegrevements" type="checkbox" onclick="Histo.toggleRowsIsHistoFromClass('degrevements', 'histoDegrevements', 'histo-only');"/>
+	<label class="noprint" for="histoDegrevements"><fmt:message key="label.historique"/></label>
+</c:if>
+
+<unireg:nextRowClass reset="0"/>
+<table class="display display_table degrevement_list" id="degrevements">
 	<thead>
 	<tr>
 		<th rowspan="2"><fmt:message key="label.periode.fiscale.debut"/></th>
@@ -38,7 +43,7 @@
 	</tr>
 	</thead>
 	<c:forEach items="${degrevements}" var="degrevement">
-		<tr class='<unireg:nextRowClass/><c:if test="${degrevement.annule}"> strike</c:if>'>
+		<tr class='<unireg:nextRowClass/><c:if test="${degrevement.annule}"> strike</c:if><c:if test="${degrevement.annule || degrevement.past}"> histo-only</c:if>'>
 			<td style="width: 10ex;">
 				<unireg:regdate regdate="${degrevement.dateDebut}" format="yyyy"/>
 				<c:if test="${degrevement.nonIntegrable}">

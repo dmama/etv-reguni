@@ -150,7 +150,11 @@
 
 					showDegrevementExoneration: function(idImmeuble) {
 						const dialog = Dialog.create_dialog_div('visu-degrevement-exoneration-dialog');
-						dialog.load(App.curl('/degrevement-exoneration/visu.do?idCtb=${command.entreprise.id}&idImmeuble=' + idImmeuble));
+						dialog.load(App.curl('/degrevement-exoneration/visu.do?idCtb=${command.entreprise.id}&idImmeuble=' + idImmeuble), null, function() {
+							Histo.toggleRowsIsHistoFromClass('degrevements', 'histoDegrevements', 'histo-only');
+							Histo.toggleRowsIsHistoFromClass('exonerations', 'histoExonerations', 'histo-only');
+							Histo.toggleRowsIsHistoFromClass('demandesDegrevement', 'histoDemandesDegrevement', 'histo-only');
+						});
 
 						dialog.dialog({
 							              title: 'Détail des dégrèvements et exonérations sur un immeuble',

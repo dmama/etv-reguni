@@ -24,12 +24,10 @@ public class TableAnnuableDateRangeDecorator extends TableEntityDecorator {
 	public String addRowClass() {
 		final StringBuilder b = new StringBuilder(StringUtils.trimToEmpty(super.addRowClass()));
 		final Object rowObject = getCurrentRowObject();
-		if (rowObject instanceof DateRange && rowObject instanceof Annulable) {
-			final Annulable annulable = (Annulable) rowObject;
-			final DateRange range = (DateRange) rowObject;
-			if (annulable.isAnnule() || RegDateHelper.isBefore(range.getDateFin(), RegDate.get(), NullDateBehavior.LATEST)) {
-				b.append(" histo-only");
-			}
+		final boolean canceled = rowObject instanceof Annulable && ((Annulable) rowObject).isAnnule();
+		final boolean past = rowObject instanceof DateRange && RegDateHelper.isBefore(((DateRange) rowObject).getDateFin(), RegDate.get(), NullDateBehavior.LATEST);
+		if (canceled || past) {
+			b.append(" histo-only");
 		}
 		return StringUtils.trimToEmpty(b.toString());
 	}

@@ -5,7 +5,12 @@
 
 <c:set value="${param.mode}" var="mode"/>       <%-- 'visu' ou 'edit' --%>
 
-<display:table name="${demandesDegrevement}" id="demande" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator">
+<c:if test="${mode == 'visu'}">
+	<input class="noprint" id="histoDemandesDegrevement" type="checkbox" onclick="Histo.toggleRowsIsHistoFromClass('demandesDegrevement', 'histoDemandesDegrevement', 'histo-only');"/>
+	<label class="noprint" for="histoDemandesDegrevement"><fmt:message key="label.historique"/></label>
+</c:if>
+
+<display:table name="${demandesDegrevement}" id="demande" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnuableDateRangeDecorator" htmlId="demandesDegrevement">
 	<display:column titleKey="label.periode.fiscale">
 		<c:out value="${demande.periodeFiscale}"/>
 	</display:column>

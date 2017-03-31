@@ -5,8 +5,13 @@
 
 <c:set value="${param.mode}" var="mode"/>       <%-- 'visu' ou 'edit' --%>
 
+<c:if test="${mode == 'visu'}">
+	<input class="noprint" id="histoExonerations" type="checkbox" onclick="Histo.toggleRowsIsHistoFromClass('exonerations', 'histoExonerations', 'histo-only');"/>
+	<label class="noprint" for="histoExonerations"><fmt:message key="label.historique"/></label>
+</c:if>
+
 <unireg:nextRowClass reset="1"/>
-<table class="display display_table">
+<table class="display display_table" id="exonerations">
 	<thead>
 	<tr>
 		<th><fmt:message key="label.periode.fiscale.debut"/></th>
@@ -16,7 +21,7 @@
 	</tr>
 	</thead>
 	<c:forEach items="${exonerations}" var="exoneration">
-		<tr class='<unireg:nextRowClass/><c:if test="${exoneration.annule}"> strike</c:if>'>
+		<tr class='<unireg:nextRowClass/><c:if test="${exoneration.annule}"> strike</c:if><c:if test="${exoneration.annule || exoneration.past}"> histo-only</c:if>'>
 			<td><unireg:regdate regdate="${exoneration.dateDebut}" format="yyyy"/></td>
 			<td><unireg:regdate regdate="${exoneration.dateFin}" format="yyyy"/></td>
 			<td style="text-align: right;">

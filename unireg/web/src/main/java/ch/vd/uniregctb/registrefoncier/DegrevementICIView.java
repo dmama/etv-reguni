@@ -65,4 +65,11 @@ public class DegrevementICIView implements Annulable, DateRange {
 	public boolean isNonIntegrable() {
 		return nonIntegrable;
 	}
+
+	/**
+	 * @return <code>true</code> si le dégrèvement est complètement dans le passé
+	 */
+	public boolean isPast() {
+		return dateFin != null && dateFin.isBefore(RegDate.get());
+	}
 }
