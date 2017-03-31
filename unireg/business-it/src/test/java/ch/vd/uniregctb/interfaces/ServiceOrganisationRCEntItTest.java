@@ -17,6 +17,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -24,9 +25,11 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Page;
 import org.springframework.util.ResourceUtils;
 import org.xml.sax.SAXException;
 
+import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0022.v3.OrganisationData;
 import ch.vd.evd0022.v3.OrganisationLocation;
 import ch.vd.evd0022.v3.TypeOfLocation;
@@ -50,6 +53,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientImpl;
+import ch.vd.unireg.wsclient.rcent.RcEntNoticeQuery;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -89,6 +93,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/uniregctb/interfaces/organisation-bomaco-history.xml";
 
 	// annonce à l'IDE sur RCEnt
+	private static final String USER_ID = "unireg";
 	private static final long ID_ANNONCE = 180007882L;
 
 	private String baseUrl;
@@ -219,7 +224,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	@Test
 	public void testDirectGetAnnonceIDE() throws Exception {
-		String url = baseUrl + BASE_PATH_ANNONCE_IDE + "?noticeRequestId=" + ID_ANNONCE;
+		String url = baseUrl + BASE_PATH_ANNONCE_IDE + "?userId=" + USER_ID + "&noticeRequestId=" + ID_ANNONCE;
 		String xml = getUrlContent(url);
 		final ListOfNoticeRequest listOfNoticeRequest = (ListOfNoticeRequest) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(xml))).getValue();
 
@@ -231,10 +236,15 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	@Test
 	public void testRCEntClientGetAnnonceIDE() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
-		final ListOfNoticeRequest listOfNoticeRequest = client.getNoticeRequest(String.valueOf(ID_ANNONCE));
-
-		Assert.assertNotNull(listOfNoticeRequest);
-		Assert.assertEquals(1, listOfNoticeRequest.getNumberOfResults());
+		final RcEntNoticeQuery rcEntNoticeQuery = new RcEntNoticeQuery();
+		rcEntNoticeQuery.setUserId(USER_ID);
+		rcEntNoticeQuery.setNoticeId(ID_ANNONCE);
+		final Page<NoticeRequestReport> pages = client.findNotices(rcEntNoticeQuery, null, 1, 10);
+		Assert.assertNotNull(pages);
+		Assert.assertEquals(1, pages.getTotalElements());
+		final List<NoticeRequestReport> listOfNoticeRequest = pages.getContent();
+		Assert.assertEquals(1, listOfNoticeRequest.size());
+		Assert.assertEquals(Long.toString(ID_ANNONCE), listOfNoticeRequest.get(0).getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId());
 	}
 
 	@Test
