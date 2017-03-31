@@ -18,7 +18,7 @@ import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
-import ch.vd.capitastra.rechteregister.DienstbarkeitDiscreteList;
+import ch.vd.capitastra.rechteregister.DienstbarkeitExtended;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.BergwerkElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.BodenbedeckungElement;
@@ -36,8 +36,8 @@ import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigen
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.SdrElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.StockwerksEinheitElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.UnbekanntesGrundstueckElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitDiscreteListElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.LastRechtGruppeElement;
 
 public class XmlHelperRFImpl implements XmlHelperRF {
@@ -50,7 +50,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	private final JAXBContext surfacesAuSolContext;
 	private final JAXBContext surfaceListContext;
 	private final JAXBContext servitudeContext;
-	private final JAXBContext servitudeListContext;
+	private final JAXBContext servitudeEtendueContext;
 	private final JAXBContext communauteContext;
 	private final JAXBContext communeContext;
 	private final JAXBContext groupeBeneficiairesContext;
@@ -69,7 +69,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		communauteContext = JAXBContext.newInstance(GemeinschaftElement.class);
 		communeContext = JAXBContext.newInstance(GrundstueckNummerElement.class);
 		servitudeContext = JAXBContext.newInstance(DienstbarkeitElement.class);
-		servitudeListContext = JAXBContext.newInstance(DienstbarkeitDiscreteListElement.class);
+		servitudeEtendueContext = JAXBContext.newInstance(DienstbarkeitExtendedElement.class);
 		groupeBeneficiairesContext = JAXBContext.newInstance(LastRechtGruppeElement.class);
 		beneficiaireContext = JAXBContext.newInstance(ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.NatuerlichePersonstammElement.class,
 		                                              ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.JuristischePersonstammElement.class);
@@ -125,8 +125,8 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	}
 
 	@Override
-	public JAXBContext getServitudeListContext() {
-		return servitudeListContext;
+	public JAXBContext getServitudeEtendueContext() {
+		return servitudeEtendueContext;
 	}
 
 	public JAXBContext getGroupeBeneficiairesContext() {
@@ -308,13 +308,13 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	}
 
 	@Override
-	public String toXMLString(DienstbarkeitDiscreteList obj) {
+	public String toXMLString(DienstbarkeitExtended obj) {
 		try {
-			final Marshaller m = servitudeListContext.createMarshaller();
+			final Marshaller m = servitudeEtendueContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
 			final QName name = buildRechtQName(obj);
-			m.marshal(new JAXBElement<>(name, (Class<DienstbarkeitDiscreteList>) obj.getClass(), null, obj), w);
+			m.marshal(new JAXBElement<>(name, (Class<DienstbarkeitExtended>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
 		catch (JAXBException e) {

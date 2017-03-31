@@ -1,17 +1,34 @@
 package ch.vd.uniregctb.registrefoncier.dao;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 
 public class MockDroitRFDAO implements DroitRFDAO {
+
+	private final List<DroitRF> db = new ArrayList<>();
+
+	@Override
+	public @Nullable DroitRF find(@NotNull DroitRFKey key) {
+		return db.stream()
+				.filter(a -> Objects.equals(a.getMasterIdRF(), key.getMasterIdRF()))
+				.findFirst()
+				.orElse(null);
+	}
+
 	@Nullable
 	@Override
 	public DroitRF findActive(@NotNull DroitRFKey key) {
@@ -23,14 +40,27 @@ public class MockDroitRFDAO implements DroitRFDAO {
 		throw new NotImplementedException();
 	}
 
+	@NotNull
+	@Override
+	public Set<String> findIdsServitudesActives() {
+		return db.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(a -> a.isValidAt(RegDate.get()))
+				.map(DroitRF::getMasterIdRF)
+				.collect(Collectors.toSet());
+	}
+
 	@Override
 	public List<DroitRF> getAll() {
-		throw new NotImplementedException();
+		return db;
 	}
 
 	@Override
 	public DroitRF get(Long id) {
-		throw new NotImplementedException();
+		return db.stream()
+				.filter(a -> Objects.equals(a.getId(), id))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -45,7 +75,9 @@ public class MockDroitRFDAO implements DroitRFDAO {
 
 	@Override
 	public DroitRF save(DroitRF object) {
-		throw new NotImplementedException();
+		this.db.add(object);
+		object.setId((long) db.size());
+		return object;
 	}
 
 	@Override

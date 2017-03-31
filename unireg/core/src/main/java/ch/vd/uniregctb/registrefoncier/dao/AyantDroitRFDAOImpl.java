@@ -13,6 +13,7 @@ import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
@@ -35,9 +36,21 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 
 	@Override
 	public Set<String> findAvecDroitsActifs(@NotNull TypeDroit typeDroit) {
-		final String typeNames = getTypeNamesFor(typeDroit);
-		final String queryString = "select a.idRF from AyantDroitRF a left join a.droits d where TYPE(d) in (" + typeNames + ") and d.dateFin is null and a.droits is not empty";
-		final Query query = getCurrentSession().createQuery(queryString);
+
+		final Query query;
+		if (typeDroit == TypeDroit.DROIT_PROPRIETE) {
+			final String queryString = "select a.idRF from AyantDroitRF a left join a.droitsPropriete d where d.dateFin is null and a.droitsPropriete is not empty";
+			query = getCurrentSession().createQuery(queryString);
+		}
+		else if (typeDroit == TypeDroit.SERVITUDE) {
+			final String queryString = "select a.idRF from AyantDroitRF a left join a.servitudes d where (d.dateFin is null or :today < d.dateFin) and a.servitudes is not empty";
+			query = getCurrentSession().createQuery(queryString);
+			query.setParameter("today", RegDate.get());
+		}
+		else {
+			throw new IllegalArgumentException("Type de droit inconnu = [" + typeDroit + "]");
+		}
+
 		//noinspection unchecked
 		return new HashSet<>(query.list());
 	}

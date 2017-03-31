@@ -18,6 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -142,12 +143,18 @@ public class DegrevementExonerationController {
 		// on récupère tous les immeubles concernés une fois, et on agrège les périodes des droits pour chacun d'eux
 
 		final Map<Long, ImmeubleRF> immeublesParId = new HashMap<>();
-		final Map<Long, List<DateRange>> droitsParImmeuble = registreFoncierService.getDroitsForCtb(ctb, true).stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.peek(droit -> immeublesParId.put(droit.getImmeuble().getId(), droit.getImmeuble()))
-				.collect(Collectors.toMap(droit -> droit.getImmeuble().getId(),
-				                          droit -> Collections.singletonList(droit.getRangeMetier()),
-				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+		final Map<Long, List<DateRange>> droitsParImmeuble = new HashMap<>();
+
+		final List<DroitRF> droits = registreFoncierService.getDroitsForCtb(ctb, true);
+		for (DroitRF droit : droits) {
+			if (droit.isAnnule()) {
+				continue;
+			}
+			droit.getImmeubleList().forEach(i -> {
+				immeublesParId.put(i.getId(), i);
+				droitsParImmeuble.merge(i.getId(), Collections.singletonList(droit.getRangeMetier()), ListUtils::union);
+			});
+		}
 
 		final Set<Integer> numerosParcelles = new TreeSet<>();
 		final Set<Integer> numerosIndex1 = new TreeSet<>();
@@ -318,7 +325,7 @@ public class DegrevementExonerationController {
 	private List<DroitView> buildListeDroits(Entreprise entreprise, ImmeubleRF immeuble) {
 		return registreFoncierService.getDroitsForCtb(entreprise).stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.filter(dt -> dt.getImmeuble() == immeuble)
+				.filter(dt -> dt.getImmeubleList().contains(immeuble))
 				.sorted(Comparator.reverseOrder())
 				.map(DroitView::new)
 				.collect(Collectors.toList());

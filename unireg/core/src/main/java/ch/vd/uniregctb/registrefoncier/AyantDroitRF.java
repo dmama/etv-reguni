@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -9,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -41,9 +43,14 @@ public abstract class AyantDroitRF extends HibernateEntity {
 	private String idRF;
 
 	/**
-	 * Les droits sur des immeubles dont jouit l'ayant-droit.
+	 * Les droits de propriété sur des immeubles dont jouit l'ayant-droit.
 	 */
-	private Set<DroitRF> droits;
+	private Set<DroitProprieteRF> droitsPropriete;
+
+	/**
+	 * Les servitudes sur des immeubles dont jouit l'ayant-droit.
+	 */
+	private Set<ServitudeRF> servitudes;
 
 	@Transient
 	@Override
@@ -70,21 +77,52 @@ public abstract class AyantDroitRF extends HibernateEntity {
 		this.idRF = idRF;
 	}
 
-	// configuration hibernate : l'ayant-droit ne possède pas les droits
+	// configuration hibernate : l'ayant-droit ne possède pas les droits de propriété
 	@OneToMany(mappedBy = "ayantDroit")
-	public Set<DroitRF> getDroits() {
-		return droits;
+	public Set<DroitProprieteRF> getDroitsPropriete() {
+		return droitsPropriete;
 	}
 
-	public void setDroits(Set<DroitRF> droits) {
-		this.droits = droits;
+	public void setDroitsPropriete(Set<DroitProprieteRF> droitsPropriete) {
+		this.droitsPropriete = droitsPropriete;
 	}
 
-	public void addDroit(@NotNull DroitRF droit) {
-		if (this.droits == null) {
-			this.droits = new HashSet<>();
+	public void addDroitPropriete(@NotNull DroitProprieteRF droit) {
+		if (this.droitsPropriete == null) {
+			this.droitsPropriete = new HashSet<>();
 		}
-		this.droits.add(droit);
+		droit.setAyantDroit(this);
+		this.droitsPropriete.add(droit);
+	}
+
+	// configuration hibernate : l'ayant-droit ne possède pas les servitudes
+	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "ayantDroits")
+	public Set<ServitudeRF> getServitudes() {
+		return servitudes;
+	}
+
+	public void setServitudes(Set<ServitudeRF> servitudes) {
+		this.servitudes = servitudes;
+	}
+
+	public void addServitude(ServitudeRF servitude) {
+		if (this.servitudes == null) {
+			this.servitudes = new HashSet<>();
+		}
+		servitude.addAyantDroit(this);
+		this.servitudes.add(servitude);
+	}
+
+	@Transient
+	public Set<DroitRF> getDroitList() {
+		final Set<DroitRF> set = new HashSet<>();
+		if (droitsPropriete != null) {
+			set.addAll(droitsPropriete);
+		}
+		if (servitudes != null) {
+			set.addAll(servitudes);
+		}
+		return set;
 	}
 
 	public void copyDataTo(AyantDroitRF right) {

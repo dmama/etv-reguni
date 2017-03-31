@@ -2,6 +2,8 @@ package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,12 +23,10 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
@@ -123,7 +123,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(7, mutations.size());    // il y a 3 usufruits + 3 personnes physiques + 1 communauté
+				assertEquals(5, mutations.size());    // il y a 2 usufruits + 3 personnes physiques
 				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
@@ -256,140 +256,92 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				final EvenementRFMutation mut3 = mutations.get(3);
 				assertEquals(importId, mut3.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
-				assertEquals(TypeEntiteRF.AYANT_DROIT, mut3.getTypeEntite());
+				assertEquals(TypeEntiteRF.SERVITUDE, mut3.getTypeEntite());
 				assertEquals(TypeMutationRF.CREATION, mut3.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffefad54360", mut3.getIdRF());
+				assertEquals("1f109152380ffd8901380ffed6694392", mut3.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<Gemeinschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <GemeinschatID>_1f109152380ffd8901380ffefad54360</GemeinschatID>\n" +
-						             "    <Art>Gemeinderschaft</Art>\n" +
-						             "</Gemeinschaft>\n", mut3.getXmlContent());
+						             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+						             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
+						             "        <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
+						             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>\n" +
+						             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
+						             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
+						             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "        <AmtNummer>8</AmtNummer>\n" +
+						             "        <Stichwort>\n" +
+						             "            <TextDe>*Usufruit</TextDe>\n" +
+						             "            <TextFr>Usufruit</TextFr>\n" +
+						             "        </Stichwort>\n" +
+						             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
+						             "        <BelegAlt>2002/392</BelegAlt>\n" +
+						             "        <BeginDatum>2002-09-02</BeginDatum>\n" +
+						             "        <Entschaedigung>0</Entschaedigung>\n" +
+						             "        <Wert>0</Wert>\n" +
+						             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
+						             "        <Personenberechtigt>true</Personenberechtigt>\n" +
+						             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
+						             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
+						             "    </Dienstbarkeit>\n" +
+						             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffed66a43c1\">\n" +
+						             "        <StandardRechtIDREF>_1f109152380ffd8901380ffed6694392</StandardRechtIDREF>\n" +
+						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffed672445a\">\n" +
+						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>\n" +
+						             "        </BelastetesGrundstueck>\n" +
+						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffed66d4417\">\n" +
+						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe24b81b93\" MasterID=\"1f109152380ffd8901380ffe24b31b61\">\n" +
+						             "                <Name>Gaillard</Name>\n" +
+						             "                <Status>definitiv</Status>\n" +
+						             "                <Vorname>Roger</Vorname>\n" +
+						             "                <Geburtsdatum>\n" +
+						             "                    <Tag>2</Tag>\n" +
+						             "                    <Monat>2</Monat>\n" +
+						             "                    <Jahr>1938</Jahr>\n" +
+						             "                </Geburtsdatum>\n" +
+						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
+						             "                <NameEltern>Albert</NameEltern>\n" +
+						             "                <WeitereVornamen>Albert</WeitereVornamen>\n" +
+						             "                <PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>\n" +
+						             "            </NatuerlichePersonGb>\n" +
+						             "        </BerechtigtePerson>\n" +
+						             "    </LastRechtGruppe>\n" +
+						             "</DienstbarkeitExtended>\n", mut3.getXmlContent());
 
 				final EvenementRFMutation mut4 = mutations.get(4);
 				assertEquals(importId, mut4.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut4.getEtat());
 				assertEquals(TypeEntiteRF.SERVITUDE, mut4.getTypeEntite());
 				assertEquals(TypeMutationRF.CREATION, mut4.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffda5511644", mut4.getIdRF());
+				assertEquals("1f109152380ffd8901380ffefad54360", mut4.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitDiscreteList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <DienstbarkeitDiscretes>\n" +
-						             "        <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffefad64374\" MasterID=\"1f109152380ffd8901380ffefad54360\">\n" +
-						             "            <StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>\n" +
-						             "            <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>\n" +
-						             "            <RechtEintragJahrID>2006</RechtEintragJahrID>\n" +
-						             "            <RechtEintragNummerID>361</RechtEintragNummerID>\n" +
-						             "            <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+						             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffefad64374\" MasterID=\"1f109152380ffd8901380ffefad54360\">\n" +
+						             "        <StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>\n" +
+						             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>\n" +
+						             "        <RechtEintragJahrID>2006</RechtEintragJahrID>\n" +
+						             "        <RechtEintragNummerID>361</RechtEintragNummerID>\n" +
+						             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "        <AmtNummer>8</AmtNummer>\n" +
+						             "        <Stichwort>\n" +
+						             "            <TextDe>*Usufruit</TextDe>\n" +
+						             "            <TextFr>Usufruit</TextFr>\n" +
+						             "        </Stichwort>\n" +
+						             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
+						             "        <Beleg>\n" +
 						             "            <AmtNummer>8</AmtNummer>\n" +
-						             "            <Stichwort>\n" +
-						             "                <TextDe>*Usufruit</TextDe>\n" +
-						             "                <TextFr>Usufruit</TextFr>\n" +
-						             "            </Stichwort>\n" +
-						             "            <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "            <Beleg>\n" +
-						             "                <AmtNummer>8</AmtNummer>\n" +
-						             "                <BelegJahr>2006</BelegJahr>\n" +
-						             "                <BelegNummer>285</BelegNummer>\n" +
-						             "                <BelegNummerIndex>0</BelegNummerIndex>\n" +
-						             "            </Beleg>\n" +
-						             "            <BeginDatum>2006-06-30</BeginDatum>\n" +
-						             "            <Entschaedigung>0</Entschaedigung>\n" +
-						             "            <Wert>0</Wert>\n" +
-						             "            <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "            <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "            <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "            <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "        </Dienstbarkeit>\n" +
-						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffefadb441c\">\n" +
-						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>\n" +
-						             "        </BelastetesGrundstueck>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Jean-Claude</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>27</Tag>\n" +
-						             "                    <Monat>6</Monat>\n" +
-						             "                    <Jahr>1941</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>René</NameEltern>\n" +
-						             "                <WeitereVornamen>René</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </BerechtigtePerson>\n" +
-						             "        <Gemeinschaft VersionID=\"1f109152380ffd8901380ffefada43f6\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22067\" MasterID=\"1f109152380ffd8901380ffe25ae2003\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Anne-Lise</Vorname>\n" +
-						             "                <Ledigname>Audemars</Ledigname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>9</Tag>\n" +
-						             "                    <Monat>3</Monat>\n" +
-						             "                    <Jahr>1945</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Louis</NameEltern>\n" +
-						             "                <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </Gemeinschaft>\n" +
-						             "        <Gemeinschaft VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Jean-Claude</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>27</Tag>\n" +
-						             "                    <Monat>6</Monat>\n" +
-						             "                    <Jahr>1941</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>René</NameEltern>\n" +
-						             "                <WeitereVornamen>René</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </Gemeinschaft>\n" +
-						             "    </DienstbarkeitDiscretes>\n" +
-						             "</DienstbarkeitDiscreteList>\n", mut4.getXmlContent());
-
-				final EvenementRFMutation mut5 = mutations.get(5);
-				assertEquals(importId, mut5.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut5.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut5.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut5.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffda8131c65", mut5.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitDiscreteList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <DienstbarkeitDiscretes>\n" +
-						             "        <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffefad64374\" MasterID=\"1f109152380ffd8901380ffefad54360\">\n" +
-						             "            <StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>\n" +
-						             "            <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>\n" +
-						             "            <RechtEintragJahrID>2006</RechtEintragJahrID>\n" +
-						             "            <RechtEintragNummerID>361</RechtEintragNummerID>\n" +
-						             "            <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						             "            <AmtNummer>8</AmtNummer>\n" +
-						             "            <Stichwort>\n" +
-						             "                <TextDe>*Usufruit</TextDe>\n" +
-						             "                <TextFr>Usufruit</TextFr>\n" +
-						             "            </Stichwort>\n" +
-						             "            <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "            <Beleg>\n" +
-						             "                <AmtNummer>8</AmtNummer>\n" +
-						             "                <BelegJahr>2006</BelegJahr>\n" +
-						             "                <BelegNummer>285</BelegNummer>\n" +
-						             "                <BelegNummerIndex>0</BelegNummerIndex>\n" +
-						             "            </Beleg>\n" +
-						             "            <BeginDatum>2006-06-30</BeginDatum>\n" +
-						             "            <Entschaedigung>0</Entschaedigung>\n" +
-						             "            <Wert>0</Wert>\n" +
-						             "            <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "            <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "            <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "            <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "        </Dienstbarkeit>\n" +
+						             "            <BelegJahr>2006</BelegJahr>\n" +
+						             "            <BelegNummer>285</BelegNummer>\n" +
+						             "            <BelegNummerIndex>0</BelegNummerIndex>\n" +
+						             "        </Beleg>\n" +
+						             "        <BeginDatum>2006-06-30</BeginDatum>\n" +
+						             "        <Entschaedigung>0</Entschaedigung>\n" +
+						             "        <Wert>0</Wert>\n" +
+						             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
+						             "        <Personenberechtigt>true</Personenberechtigt>\n" +
+						             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
+						             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
+						             "    </Dienstbarkeit>\n" +
+						             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffefad743bc\">\n" +
+						             "        <StandardRechtIDREF>_1f109152380ffd8901380ffefad54360</StandardRechtIDREF>\n" +
 						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffefadb441c\">\n" +
 						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>\n" +
 						             "        </BelastetesGrundstueck>\n" +
@@ -410,24 +362,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
 						             "            </NatuerlichePersonGb>\n" +
 						             "        </BerechtigtePerson>\n" +
-						             "        <Gemeinschaft VersionID=\"1f109152380ffd8901380ffefada43f6\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22067\" MasterID=\"1f109152380ffd8901380ffe25ae2003\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Anne-Lise</Vorname>\n" +
-						             "                <Ledigname>Audemars</Ledigname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>9</Tag>\n" +
-						             "                    <Monat>3</Monat>\n" +
-						             "                    <Jahr>1945</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Louis</NameEltern>\n" +
-						             "                <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </Gemeinschaft>\n" +
-						             "        <Gemeinschaft VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
+						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
 						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
 						             "                <Name>Lassueur</Name>\n" +
 						             "                <Status>definitiv</Status>\n" +
@@ -442,61 +377,9 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 						             "                <WeitereVornamen>René</WeitereVornamen>\n" +
 						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
 						             "            </NatuerlichePersonGb>\n" +
-						             "        </Gemeinschaft>\n" +
-						             "    </DienstbarkeitDiscretes>\n" +
-						             "</DienstbarkeitDiscreteList>\n", mut5.getXmlContent());
-
-				final EvenementRFMutation mut6 = mutations.get(6);
-				assertEquals(importId, mut6.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut6.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut6.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut6.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffdabcc2441", mut6.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitDiscreteList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <DienstbarkeitDiscretes>\n" +
-						             "        <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
-						             "            <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
-						             "            <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>\n" +
-						             "            <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
-						             "            <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
-						             "            <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						             "            <AmtNummer>8</AmtNummer>\n" +
-						             "            <Stichwort>\n" +
-						             "                <TextDe>*Usufruit</TextDe>\n" +
-						             "                <TextFr>Usufruit</TextFr>\n" +
-						             "            </Stichwort>\n" +
-						             "            <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "            <BelegAlt>2002/392</BelegAlt>\n" +
-						             "            <BeginDatum>2002-09-02</BeginDatum>\n" +
-						             "            <Entschaedigung>0</Entschaedigung>\n" +
-						             "            <Wert>0</Wert>\n" +
-						             "            <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "            <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "            <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "            <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "        </Dienstbarkeit>\n" +
-						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffed672445a\">\n" +
-						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>\n" +
-						             "        </BelastetesGrundstueck>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffed66d4417\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe24b81b93\" MasterID=\"1f109152380ffd8901380ffe24b31b61\">\n" +
-						             "                <Name>Gaillard</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Roger</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>2</Tag>\n" +
-						             "                    <Monat>2</Monat>\n" +
-						             "                    <Jahr>1938</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Albert</NameEltern>\n" +
-						             "                <WeitereVornamen>Albert</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
 						             "        </BerechtigtePerson>\n" +
-						             "    </DienstbarkeitDiscretes>\n" +
-						             "</DienstbarkeitDiscreteList>\n", mut6.getXmlContent());
+						             "    </LastRechtGruppe>\n" +
+						             "</DienstbarkeitExtended>\n", mut4.getXmlContent());
 			}
 		});
 
@@ -559,19 +442,13 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				PersonnePhysiqueRF pp3 = newPersonnePhysique("_1f109152380ffd8901380ffda5511644", 0L, 10385019L, "Lassueur", "Jean-Claude", RegDate.get(1941, 6, 27));
 				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
-				CommunauteRF communaute = newCommunauté("_1f109152380ffd8901380ffefad54360", TypeCommunaute.INDIVISION);
-				communaute = (CommunauteRF) ayantDroitRFDAO.save(communaute);
-
 				// les servitudes
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", bienFond1, pp1, null, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
 				                                new IdentifiantDroitRF(8, 2005, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", bienFond2, pp2, communaute, dateImportInitial, RegDate.get(2006, 6, 30), null, null,
-				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
-				UsufruitRF usu3 = newUsufruitRF("1f109152380ffd8901380ffefad54360", bienFond2, pp3, communaute, dateImportInitial, RegDate.get(2006, 6, 30), null, null,
+				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
 				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
 				droitRFDAO.save(usu1);
 				droitRFDAO.save(usu2);
-				droitRFDAO.save(usu3);
 			}
 		});
 
@@ -663,21 +540,14 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				PersonnePhysiqueRF pp3 = newPersonnePhysique("_1f109152380ffd8901380ffda5511644", 0L, 10385019L, "Lassueur", "Jean-Claude", RegDate.get(1941, 6, 27));
 				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
-				CommunauteRF communaute = newCommunauté("_1f109152380ffd8901380ffefad54360", TypeCommunaute.INDIVISION);
-				communaute = (CommunauteRF) ayantDroitRFDAO.save(communaute);
-
 				// identifiant du droit différent
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", bienFond1, pp1, null, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
-				                                new IdentifiantDroitRF(8, 2002, 333), new IdentifiantAffaireRF(8, 2002, 392, null));
+				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+				                                new IdentifiantDroitRF(8, 2002, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
 				// index non-renseigné
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", bienFond2, pp2, communaute, dateImportInitial, RegDate.get(2006, 6, 30), null, null,
-				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, null));
-				// index non-renseigné
-				UsufruitRF usu3 = newUsufruitRF("1f109152380ffd8901380ffefad54360", bienFond2, pp3, communaute, dateImportInitial, RegDate.get(2006, 6, 30), null, null,
-				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, null));
+				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30),
+				                                null, null, new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, null));
 				droitRFDAO.save(usu1);
 				droitRFDAO.save(usu2);
-				droitRFDAO.save(usu3);
 			}
 		});
 
@@ -709,7 +579,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(3, mutations.size());    // les 3 usufruits dans le fichier d'import sont différents
+				assertEquals(2, mutations.size());    // les 2 usufruits dans le fichier d'import sont différents
 				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
@@ -717,126 +587,90 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 				assertEquals(TypeEntiteRF.SERVITUDE, mut0.getTypeEntite());
 				assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffda5511644", mut0.getIdRF());
+				assertEquals("1f109152380ffd8901380ffed6694392", mut0.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitDiscreteList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <DienstbarkeitDiscretes>\n" +
-						             "        <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffefad64374\" MasterID=\"1f109152380ffd8901380ffefad54360\">\n" +
-						             "            <StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>\n" +
-						             "            <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>\n" +
-						             "            <RechtEintragJahrID>2006</RechtEintragJahrID>\n" +
-						             "            <RechtEintragNummerID>361</RechtEintragNummerID>\n" +
-						             "            <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						             "            <AmtNummer>8</AmtNummer>\n" +
-						             "            <Stichwort>\n" +
-						             "                <TextDe>*Usufruit</TextDe>\n" +
-						             "                <TextFr>Usufruit</TextFr>\n" +
-						             "            </Stichwort>\n" +
-						             "            <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "            <Beleg>\n" +
-						             "                <AmtNummer>8</AmtNummer>\n" +
-						             "                <BelegJahr>2006</BelegJahr>\n" +
-						             "                <BelegNummer>285</BelegNummer>\n" +
-						             "                <BelegNummerIndex>0</BelegNummerIndex>\n" +
-						             "            </Beleg>\n" +
-						             "            <BeginDatum>2006-06-30</BeginDatum>\n" +
-						             "            <Entschaedigung>0</Entschaedigung>\n" +
-						             "            <Wert>0</Wert>\n" +
-						             "            <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "            <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "            <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "            <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "        </Dienstbarkeit>\n" +
-						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffefadb441c\">\n" +
-						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>\n" +
+						             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+						             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
+						             "        <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
+						             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>\n" +
+						             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
+						             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
+						             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "        <AmtNummer>8</AmtNummer>\n" +
+						             "        <Stichwort>\n" +
+						             "            <TextDe>*Usufruit</TextDe>\n" +
+						             "            <TextFr>Usufruit</TextFr>\n" +
+						             "        </Stichwort>\n" +
+						             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
+						             "        <BelegAlt>2002/392</BelegAlt>\n" +
+						             "        <BeginDatum>2002-09-02</BeginDatum>\n" +
+						             "        <Entschaedigung>0</Entschaedigung>\n" +
+						             "        <Wert>0</Wert>\n" +
+						             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
+						             "        <Personenberechtigt>true</Personenberechtigt>\n" +
+						             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
+						             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
+						             "    </Dienstbarkeit>\n" +
+						             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffed66a43c1\">\n" +
+						             "        <StandardRechtIDREF>_1f109152380ffd8901380ffed6694392</StandardRechtIDREF>\n" +
+						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffed672445a\">\n" +
+						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>\n" +
 						             "        </BelastetesGrundstueck>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
+						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffed66d4417\">\n" +
+						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe24b81b93\" MasterID=\"1f109152380ffd8901380ffe24b31b61\">\n" +
+						             "                <Name>Gaillard</Name>\n" +
 						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Jean-Claude</Vorname>\n" +
+						             "                <Vorname>Roger</Vorname>\n" +
 						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>27</Tag>\n" +
-						             "                    <Monat>6</Monat>\n" +
-						             "                    <Jahr>1941</Jahr>\n" +
+						             "                    <Tag>2</Tag>\n" +
+						             "                    <Monat>2</Monat>\n" +
+						             "                    <Jahr>1938</Jahr>\n" +
 						             "                </Geburtsdatum>\n" +
 						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>René</NameEltern>\n" +
-						             "                <WeitereVornamen>René</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
+						             "                <NameEltern>Albert</NameEltern>\n" +
+						             "                <WeitereVornamen>Albert</WeitereVornamen>\n" +
+						             "                <PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>\n" +
 						             "            </NatuerlichePersonGb>\n" +
 						             "        </BerechtigtePerson>\n" +
-						             "        <Gemeinschaft VersionID=\"1f109152380ffd8901380ffefada43f6\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22067\" MasterID=\"1f109152380ffd8901380ffe25ae2003\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Anne-Lise</Vorname>\n" +
-						             "                <Ledigname>Audemars</Ledigname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>9</Tag>\n" +
-						             "                    <Monat>3</Monat>\n" +
-						             "                    <Jahr>1945</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Louis</NameEltern>\n" +
-						             "                <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </Gemeinschaft>\n" +
-						             "        <Gemeinschaft VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Jean-Claude</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>27</Tag>\n" +
-						             "                    <Monat>6</Monat>\n" +
-						             "                    <Jahr>1941</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>René</NameEltern>\n" +
-						             "                <WeitereVornamen>René</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </Gemeinschaft>\n" +
-						             "    </DienstbarkeitDiscretes>\n" +
-						             "</DienstbarkeitDiscreteList>\n", mut0.getXmlContent());
+						             "    </LastRechtGruppe>\n" +
+						             "</DienstbarkeitExtended>\n", mut0.getXmlContent());
 
 				final EvenementRFMutation mut1 = mutations.get(1);
 				assertEquals(importId, mut1.getParentImport().getId());
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 				assertEquals(TypeEntiteRF.SERVITUDE, mut1.getTypeEntite());
 				assertEquals(TypeMutationRF.MODIFICATION, mut1.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffda8131c65", mut1.getIdRF());
+				assertEquals("1f109152380ffd8901380ffefad54360", mut1.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitDiscreteList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <DienstbarkeitDiscretes>\n" +
-						             "        <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffefad64374\" MasterID=\"1f109152380ffd8901380ffefad54360\">\n" +
-						             "            <StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>\n" +
-						             "            <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>\n" +
-						             "            <RechtEintragJahrID>2006</RechtEintragJahrID>\n" +
-						             "            <RechtEintragNummerID>361</RechtEintragNummerID>\n" +
-						             "            <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
+						             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffefad64374\" MasterID=\"1f109152380ffd8901380ffefad54360\">\n" +
+						             "        <StandardRechtID>_1f109152380ffd8901380ffefad54360</StandardRechtID>\n" +
+						             "        <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BeteiligtesGrundstueckIDREF>\n" +
+						             "        <RechtEintragJahrID>2006</RechtEintragJahrID>\n" +
+						             "        <RechtEintragNummerID>361</RechtEintragNummerID>\n" +
+						             "        <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
+						             "        <AmtNummer>8</AmtNummer>\n" +
+						             "        <Stichwort>\n" +
+						             "            <TextDe>*Usufruit</TextDe>\n" +
+						             "            <TextFr>Usufruit</TextFr>\n" +
+						             "        </Stichwort>\n" +
+						             "        <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
+						             "        <Beleg>\n" +
 						             "            <AmtNummer>8</AmtNummer>\n" +
-						             "            <Stichwort>\n" +
-						             "                <TextDe>*Usufruit</TextDe>\n" +
-						             "                <TextFr>Usufruit</TextFr>\n" +
-						             "            </Stichwort>\n" +
-						             "            <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "            <Beleg>\n" +
-						             "                <AmtNummer>8</AmtNummer>\n" +
-						             "                <BelegJahr>2006</BelegJahr>\n" +
-						             "                <BelegNummer>285</BelegNummer>\n" +
-						             "                <BelegNummerIndex>0</BelegNummerIndex>\n" +
-						             "            </Beleg>\n" +
-						             "            <BeginDatum>2006-06-30</BeginDatum>\n" +
-						             "            <Entschaedigung>0</Entschaedigung>\n" +
-						             "            <Wert>0</Wert>\n" +
-						             "            <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "            <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "            <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "            <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "        </Dienstbarkeit>\n" +
+						             "            <BelegJahr>2006</BelegJahr>\n" +
+						             "            <BelegNummer>285</BelegNummer>\n" +
+						             "            <BelegNummerIndex>0</BelegNummerIndex>\n" +
+						             "        </Beleg>\n" +
+						             "        <BeginDatum>2006-06-30</BeginDatum>\n" +
+						             "        <Entschaedigung>0</Entschaedigung>\n" +
+						             "        <Wert>0</Wert>\n" +
+						             "        <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
+						             "        <Personenberechtigt>true</Personenberechtigt>\n" +
+						             "        <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
+						             "        <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
+						             "    </Dienstbarkeit>\n" +
+						             "    <LastRechtGruppe VersionID=\"1f109152380ffd8901380ffefad743bc\">\n" +
+						             "        <StandardRechtIDREF>_1f109152380ffd8901380ffefad54360</StandardRechtIDREF>\n" +
 						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffefadb441c\">\n" +
 						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe090827e1</BelastetesGrundstueckIDREF>\n" +
 						             "        </BelastetesGrundstueck>\n" +
@@ -857,24 +691,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
 						             "            </NatuerlichePersonGb>\n" +
 						             "        </BerechtigtePerson>\n" +
-						             "        <Gemeinschaft VersionID=\"1f109152380ffd8901380ffefada43f6\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22067\" MasterID=\"1f109152380ffd8901380ffe25ae2003\">\n" +
-						             "                <Name>Lassueur</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Anne-Lise</Vorname>\n" +
-						             "                <Ledigname>Audemars</Ledigname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>9</Tag>\n" +
-						             "                    <Monat>3</Monat>\n" +
-						             "                    <Jahr>1945</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Louis</NameEltern>\n" +
-						             "                <NameEhegatte>Jean-Claude</NameEhegatte>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda8131c65</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
-						             "        </Gemeinschaft>\n" +
-						             "        <Gemeinschaft VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
+						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffefada43f7\">\n" +
 						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe25b22068\" MasterID=\"1f109152380ffd8901380ffe25ae2004\">\n" +
 						             "                <Name>Lassueur</Name>\n" +
 						             "                <Status>definitiv</Status>\n" +
@@ -889,61 +706,9 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 						             "                <WeitereVornamen>René</WeitereVornamen>\n" +
 						             "                <PersonstammIDREF>_1f109152380ffd8901380ffda5511644</PersonstammIDREF>\n" +
 						             "            </NatuerlichePersonGb>\n" +
-						             "        </Gemeinschaft>\n" +
-						             "    </DienstbarkeitDiscretes>\n" +
-						             "</DienstbarkeitDiscreteList>\n", mut1.getXmlContent());
-
-				final EvenementRFMutation mut2 = mutations.get(2);
-				assertEquals(importId, mut2.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut2.getTypeEntite());
-				assertEquals(TypeMutationRF.MODIFICATION, mut2.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffdabcc2441", mut2.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<DienstbarkeitDiscreteList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-						             "    <DienstbarkeitDiscretes>\n" +
-						             "        <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
-						             "            <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
-						             "            <BeteiligtesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BeteiligtesGrundstueckIDREF>\n" +
-						             "            <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
-						             "            <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
-						             "            <Bereinigungsmarkierung>false</Bereinigungsmarkierung>\n" +
-						             "            <AmtNummer>8</AmtNummer>\n" +
-						             "            <Stichwort>\n" +
-						             "                <TextDe>*Usufruit</TextDe>\n" +
-						             "                <TextFr>Usufruit</TextFr>\n" +
-						             "            </Stichwort>\n" +
-						             "            <Rechtzusatz>conventionnel</Rechtzusatz>\n" +
-						             "            <BelegAlt>2002/392</BelegAlt>\n" +
-						             "            <BeginDatum>2002-09-02</BeginDatum>\n" +
-						             "            <Entschaedigung>0</Entschaedigung>\n" +
-						             "            <Wert>0</Wert>\n" +
-						             "            <Meldungspflichtig>gem_code</Meldungspflichtig>\n" +
-						             "            <Personenberechtigt>true</Personenberechtigt>\n" +
-						             "            <Grundstueckeberechtigt>false</Grundstueckeberechtigt>\n" +
-						             "            <EintragungAlsSdR>false</EintragungAlsSdR>\n" +
-						             "        </Dienstbarkeit>\n" +
-						             "        <BelastetesGrundstueck VersionID=\"1f109152380ffd8901380ffed672445a\">\n" +
-						             "            <BelastetesGrundstueckIDREF>_1f109152380ffd8901380ffe15bb729c</BelastetesGrundstueckIDREF>\n" +
-						             "        </BelastetesGrundstueck>\n" +
-						             "        <BerechtigtePerson VersionID=\"1f109152380ffd8901380ffed66d4417\">\n" +
-						             "            <NatuerlichePersonGb VersionID=\"1f109152380ffd8901380ffe24b81b93\" MasterID=\"1f109152380ffd8901380ffe24b31b61\">\n" +
-						             "                <Name>Gaillard</Name>\n" +
-						             "                <Status>definitiv</Status>\n" +
-						             "                <Vorname>Roger</Vorname>\n" +
-						             "                <Geburtsdatum>\n" +
-						             "                    <Tag>2</Tag>\n" +
-						             "                    <Monat>2</Monat>\n" +
-						             "                    <Jahr>1938</Jahr>\n" +
-						             "                </Geburtsdatum>\n" +
-						             "                <Zivilstand>unbekannt</Zivilstand>\n" +
-						             "                <NameEltern>Albert</NameEltern>\n" +
-						             "                <WeitereVornamen>Albert</WeitereVornamen>\n" +
-						             "                <PersonstammIDREF>_1f109152380ffd8901380ffdabcc2441</PersonstammIDREF>\n" +
-						             "            </NatuerlichePersonGb>\n" +
 						             "        </BerechtigtePerson>\n" +
-						             "    </DienstbarkeitDiscretes>\n" +
-						             "</DienstbarkeitDiscreteList>\n", mut2.getXmlContent());
+						             "    </LastRechtGruppe>\n" +
+						             "</DienstbarkeitExtended>\n", mut1.getXmlContent());
 			}
 		});
 	}
@@ -1005,19 +770,13 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				PersonnePhysiqueRF pp3 = newPersonnePhysique("_1f109152380ffd8901380ffda5511644", 0L, 10385019L, "Lassueur", "Jean-Claude", RegDate.get(1941, 6, 27));
 				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
-				CommunauteRF communaute = newCommunauté("_1f109152380ffd8901380ffefad54360", TypeCommunaute.INDIVISION);
-				communaute = (CommunauteRF) ayantDroitRFDAO.save(communaute);
-
 				// les servitudes
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", bienFond1, pp1, null, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
 				                                new IdentifiantDroitRF(8, 2005, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", bienFond2, pp2, communaute, dateImportInitial, RegDate.get(2006, 6, 30), null, null,
-				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
-				UsufruitRF usu3 = newUsufruitRF("1f109152380ffd8901380ffefad54360", bienFond2, pp3, communaute, dateImportInitial, RegDate.get(2006, 6, 30), null, null,
+				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
 				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
 				droitRFDAO.save(usu1);
 				droitRFDAO.save(usu2);
-				droitRFDAO.save(usu3);
 			}
 		});
 
@@ -1045,37 +804,27 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		});
 
 		// on vérifie que les mutations attendues sont bien dans la DB
-		doInNewTransaction(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(3, mutations.size());    // les 3 droits qui existent dans la DB devront être fermés
-				mutations.sort(new MutationComparator());
+		doInNewTransaction(status -> {
+			final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+			assertEquals(2, mutations.size());    // les 3 droits qui existent dans la DB devront être fermés
+			mutations.sort(new MutationComparator());
 
-				final EvenementRFMutation mut0 = mutations.get(0);
-				assertEquals(importId, mut0.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut0.getTypeEntite());
-				assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffda5511644", mut0.getIdRF());
-				assertNull(mut0.getXmlContent());
+			final EvenementRFMutation mut0 = mutations.get(0);
+			assertEquals(importId, mut0.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+			assertEquals(TypeEntiteRF.SERVITUDE, mut0.getTypeEntite());
+			assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());
+			assertEquals("1f109152380ffd8901380ffed6694392", mut0.getIdRF());
+			assertNull(mut0.getXmlContent());
 
-				final EvenementRFMutation mut1 = mutations.get(1);
-				assertEquals(importId, mut1.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut1.getTypeEntite());
-				assertEquals(TypeMutationRF.SUPPRESSION, mut1.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffda8131c65", mut1.getIdRF());
-				assertNull(mut1.getXmlContent());
-
-				final EvenementRFMutation mut2 = mutations.get(2);
-				assertEquals(importId, mut2.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(TypeEntiteRF.SERVITUDE, mut2.getTypeEntite());
-				assertEquals(TypeMutationRF.SUPPRESSION, mut2.getTypeMutation());
-				assertEquals("_1f109152380ffd8901380ffdabcc2441", mut2.getIdRF());
-				assertNull(mut2.getXmlContent());
-			}
+			final EvenementRFMutation mut1 = mutations.get(1);
+			assertEquals(importId, mut1.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+			assertEquals(TypeEntiteRF.SERVITUDE, mut1.getTypeEntite());
+			assertEquals(TypeMutationRF.SUPPRESSION, mut1.getTypeMutation());
+			assertEquals("1f109152380ffd8901380ffefad54360", mut1.getIdRF());
+			assertNull(mut1.getXmlContent());
+			return null;
 		});
 	}
 }

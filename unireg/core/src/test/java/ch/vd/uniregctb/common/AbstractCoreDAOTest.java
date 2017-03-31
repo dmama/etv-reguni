@@ -1667,8 +1667,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
 	                                   TiersRF tiersRF, BienFondRF immeuble) {
 		final UsufruitRF droit = new UsufruitRF();
-		droit.setImmeuble(immeuble);
-		droit.setAyantDroit(tiersRF);
+		droit.addImmeuble(immeuble);
+		droit.addAyantDroit(tiersRF);
 		droit.setDateDebut(dateDebut);
 		droit.setDateDebutMetier(dateDebutMetier);
 		droit.setDateFin(dateFin);
@@ -1685,8 +1685,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected DroitHabitationRF addDroitHabitationRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
 	                                                 TiersRF tiersRF, BienFondRF immeuble) {
 		final DroitHabitationRF droit = new DroitHabitationRF();
-		droit.setImmeuble(immeuble);
-		droit.setAyantDroit(tiersRF);
+		droit.addImmeuble(immeuble);
+		droit.addAyantDroit(tiersRF);
 		droit.setDateDebut(dateDebut);
 		droit.setDateDebutMetier(dateDebutMetier);
 		droit.setDateFin(dateFin);

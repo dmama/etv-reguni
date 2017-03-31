@@ -22,6 +22,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
@@ -230,7 +231,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final AyantDroitRF pp1 = ayantDroitRFDAO.get(ids.pp1);
 				assertNotNull(pp1);
 
-				final List<DroitRF> droits1 = new ArrayList<>(pp1.getDroits());
+				final List<DroitProprieteRF> droits1 = new ArrayList<>(pp1.getDroitsPropriete());
 				assertEquals(1, droits1.size());
 
 				final DroitProprietePersonnePhysiqueRF droit11 = (DroitProprietePersonnePhysiqueRF) droits1.get(0);
@@ -251,7 +252,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final AyantDroitRF pp2 = ayantDroitRFDAO.get(ids.pp2);
 				assertNotNull(pp2);
 
-				final List<DroitRF> droits2 = new ArrayList<>(pp2.getDroits());
+				final List<DroitProprieteRF> droits2 = new ArrayList<>(pp2.getDroitsPropriete());
 				assertEquals(1, droits2.size());
 
 				final DroitProprietePersonnePhysiqueRF droit21 = (DroitProprietePersonnePhysiqueRF) droits2.get(0);
@@ -475,7 +476,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final AyantDroitRF pp1 = ayantDroitRFDAO.get(ids.pp1);
 				assertNotNull(pp1);
 
-				final List<DroitRF> droits1 = new ArrayList<>(pp1.getDroits());
+				final List<DroitProprieteRF> droits1 = new ArrayList<>(pp1.getDroitsPropriete());
 				assertEquals(2, droits1.size());
 				droits1.sort(Comparator.comparing(DroitRF::getMasterIdRF));
 
@@ -514,7 +515,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final AyantDroitRF pp2 = ayantDroitRFDAO.get(ids.pp2);
 				assertNotNull(pp2);
 
-				final List<DroitRF> droits2 = new ArrayList<>(pp2.getDroits());
+				final List<DroitProprieteRF> droits2 = new ArrayList<>(pp2.getDroitsPropriete());
 				assertEquals(1, droits2.size());
 
 				// le droit n'a pas changé
@@ -666,7 +667,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final AyantDroitRF pp1 = ayantDroitRFDAO.get(ids.pp1);
 				assertNotNull(pp1);
 
-				final List<DroitRF> droits1 = new ArrayList<>(pp1.getDroits());
+				final List<DroitProprieteRF> droits1 = new ArrayList<>(pp1.getDroitsPropriete());
 				assertEquals(1, droits1.size());
 
 				// l'ancien droit a été fermé
@@ -688,7 +689,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				final AyantDroitRF pp2 = ayantDroitRFDAO.get(ids.pp2);
 				assertNotNull(pp2);
 
-				final List<DroitRF> droits2 = new ArrayList<>(pp2.getDroits());
+				final List<DroitProprieteRF> droits2 = new ArrayList<>(pp2.getDroitsPropriete());
 				assertEquals(1, droits2.size());
 
 				// le droit n'a pas changé

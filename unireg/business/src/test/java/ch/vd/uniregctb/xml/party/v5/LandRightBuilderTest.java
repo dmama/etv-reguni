@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.xml.party.v5;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -11,8 +12,10 @@ import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
@@ -135,16 +138,26 @@ public class LandRightBuilderTest {
 	@Test
 	public void testNewUsufructRight() throws Exception {
 
-		final Long ctbId = 2928282L;
+		final long ctbId1 = 2928282L;
+		final long ctbId2 = 4573282L;
 
-		final CommunauteRF communaute = new CommunauteRF();
-		communaute.setId(8765887L);
-		communaute.setType(TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
-		communaute.setIdRF("a8283ee322");
+		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
+		pp1.setId(ctbId1);
 
-		final BienFondRF immeuble = new BienFondRF();
-		immeuble.setIdRF("a8388e8e83");
-		immeuble.setId(123456L);
+		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
+		pp2.setId(ctbId2);
+
+		final BienFondRF immeuble1 = new BienFondRF();
+		immeuble1.setIdRF("a8388e8e83");
+		immeuble1.setId(123456L);
+		immeuble1.setDroitsPropriete(Collections.emptySet());
+		immeuble1.setServitudes(Collections.emptySet());
+
+		final BienFondRF immeuble2 = new BienFondRF();
+		immeuble2.setIdRF("a26271e8e2");
+		immeuble2.setId(4783711L);
+		immeuble2.setDroitsPropriete(Collections.emptySet());
+		immeuble2.setServitudes(Collections.emptySet());
 
 		final UsufruitRF usufruit = new UsufruitRF();
 		usufruit.setDateDebut(RegDate.get(2016, 11, 3));
@@ -152,12 +165,13 @@ public class LandRightBuilderTest {
 		usufruit.setMotifDebut("Convention");
 		usufruit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		usufruit.setDateFinMetier(RegDate.get(2017, 4, 14));
-		usufruit.setCommunaute(communaute);
 		usufruit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
-		usufruit.setAyantDroit(new PersonnePhysiqueRF());
-		usufruit.setImmeuble(immeuble);
+		usufruit.addAyantDroit(pp1);
+		usufruit.addAyantDroit(pp2);
+		usufruit.addImmeuble(immeuble1);
+		usufruit.addImmeuble(immeuble2);
 
-		final LandRight landRight = LandRightBuilder.newLandRight(usufruit, t -> ctbId);
+		final LandRight landRight = LandRightBuilder.newLandRight(usufruit, AyantDroitRF::getId);
 		assertNotNull(landRight);
 		assertTrue(landRight instanceof UsufructRight);
 
@@ -168,37 +182,59 @@ public class LandRightBuilderTest {
 		assertEquals("Convention", usufructRight.getStartReason());
 		assertNull(usufructRight.getEndReason());
 		assertCaseIdentifier(21, "2016/322/3", usufructRight.getCaseIdentifier());
-		assertEquals(Integer.valueOf(ctbId.intValue()), usufructRight.getRightHolder().getTaxPayerNumber());
+
+		final List<RightHolder> rightHolders = usufructRight.getRightHolders();
+		assertEquals(2, rightHolders.size());
+		assertEquals(Integer.valueOf((int) ctbId1), rightHolders.get(0).getTaxPayerNumber());
+		assertEquals(Integer.valueOf((int) ctbId2), rightHolders.get(1).getTaxPayerNumber());
+
+		final List<Long> immovablePropertyIds = usufructRight.getImmovablePropertyIds();
+		assertEquals(2, immovablePropertyIds.size());
+		assertEquals(Long.valueOf(123456L), immovablePropertyIds.get(0));
+		assertEquals(Long.valueOf(4783711L), immovablePropertyIds.get(1));
+
+		// pour des raisons de compatibilité ascendante, ces deux propriétés sont encore renseignées
 		assertEquals(123456L, usufructRight.getImmovablePropertyId());
-		assertEquals(Long.valueOf(8765887L), usufructRight.getCommunityId());
+		assertEquals(Integer.valueOf((int) ctbId1), usufructRight.getRightHolder().getTaxPayerNumber());
 	}
 
 	@Test
 	public void testNewHousingRight() throws Exception {
 
-		final Long ctbId = 2928282L;
+		final long ctbId1 = 2928282L;
+		final long ctbId2 = 4573282L;
 
-		final CommunauteRF communaute = new CommunauteRF();
-		communaute.setId(8765887L);
-		communaute.setType(TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
-		communaute.setIdRF("a8283ee322");
+		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
+		pp1.setId(ctbId1);
 
-		final BienFondRF immeuble = new BienFondRF();
-		immeuble.setIdRF("a8388e8e83");
-		immeuble.setId(123456L);
+		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
+		pp2.setId(ctbId2);
 
-		final DroitHabitationRF dh = new DroitHabitationRF();
-		dh.setDateDebut(RegDate.get(2016, 11, 3));
-		dh.setDateFin(RegDate.get(2017, 9, 22));
-		dh.setMotifDebut("Convention");
-		dh.setDateDebutMetier(RegDate.get(2016, 9, 22));
-		dh.setDateFinMetier(RegDate.get(2017, 4, 14));
-		dh.setCommunaute(communaute);
-		dh.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
-		dh.setAyantDroit(new PersonnePhysiqueRF());
-		dh.setImmeuble(immeuble);
+		final BienFondRF immeuble1 = new BienFondRF();
+		immeuble1.setIdRF("a8388e8e83");
+		immeuble1.setId(123456L);
+		immeuble1.setDroitsPropriete(Collections.emptySet());
+		immeuble1.setServitudes(Collections.emptySet());
 
-		final LandRight landRight = LandRightBuilder.newLandRight(dh, t -> ctbId);
+		final BienFondRF immeuble2 = new BienFondRF();
+		immeuble2.setIdRF("a26271e8e2");
+		immeuble2.setId(4783711L);
+		immeuble2.setDroitsPropriete(Collections.emptySet());
+		immeuble2.setServitudes(Collections.emptySet());
+
+		final DroitHabitationRF droitHabitation = new DroitHabitationRF();
+		droitHabitation.setDateDebut(RegDate.get(2016, 11, 3));
+		droitHabitation.setDateFin(RegDate.get(2017, 9, 22));
+		droitHabitation.setMotifDebut("Convention");
+		droitHabitation.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		droitHabitation.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droitHabitation.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
+		droitHabitation.addAyantDroit(pp1);
+		droitHabitation.addAyantDroit(pp2);
+		droitHabitation.addImmeuble(immeuble1);
+		droitHabitation.addImmeuble(immeuble2);
+
+		final LandRight landRight = LandRightBuilder.newLandRight(droitHabitation, AyantDroitRF::getId);
 		assertNotNull(landRight);
 		assertTrue(landRight instanceof HousingRight);
 
@@ -209,9 +245,20 @@ public class LandRightBuilderTest {
 		assertEquals("Convention", housingRight.getStartReason());
 		assertNull(housingRight.getEndReason());
 		assertCaseIdentifier(21, "2016/322/3", housingRight.getCaseIdentifier());
-		assertEquals(Integer.valueOf(ctbId.intValue()), housingRight.getRightHolder().getTaxPayerNumber());
+
+		final List<RightHolder> rightHolders = housingRight.getRightHolders();
+		assertEquals(2, rightHolders.size());
+		assertEquals(Integer.valueOf((int) ctbId1), rightHolders.get(0).getTaxPayerNumber());
+		assertEquals(Integer.valueOf((int) ctbId2), rightHolders.get(1).getTaxPayerNumber());
+
+		final List<Long> immovablePropertyIds = housingRight.getImmovablePropertyIds();
+		assertEquals(2, immovablePropertyIds.size());
+		assertEquals(Long.valueOf(123456L), immovablePropertyIds.get(0));
+		assertEquals(Long.valueOf(4783711L), immovablePropertyIds.get(1));
+
+		// pour des raisons de compatibilité ascendante, ces deux propriétés sont encore renseignées
 		assertEquals(123456L, housingRight.getImmovablePropertyId());
-		assertEquals(Long.valueOf(8765887L), housingRight.getCommunityId());
+		assertEquals(Integer.valueOf((int) ctbId1), housingRight.getRightHolder().getTaxPayerNumber());
 	}
 
 	private void assertShare(int numerator, int denominator, Share share) {

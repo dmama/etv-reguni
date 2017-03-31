@@ -114,6 +114,8 @@ drop table RF_SITUATION cascade constraints;
 drop table RF_IMPLANTATION cascade constraints;
 drop table RF_ESTIMATION cascade constraints;
 drop table RF_RAISON_ACQUISITION cascade constraints;
+drop table RF_SERVITUDE_AYANT_DROIT cascade constraints;
+drop table RF_SERVITUDE_IMMEUBLE cascade constraints;
 drop table RF_DROIT cascade constraints;
 drop table RF_IMMEUBLE cascade constraints;
 drop table RF_DESCRIPTION_BATIMENT cascade constraints;

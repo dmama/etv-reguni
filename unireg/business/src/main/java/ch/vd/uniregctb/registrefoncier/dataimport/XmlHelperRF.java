@@ -11,7 +11,7 @@ import ch.vd.capitastra.grundstueck.GrundstueckExport;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
-import ch.vd.capitastra.rechteregister.DienstbarkeitDiscreteList;
+import ch.vd.capitastra.rechteregister.DienstbarkeitExtended;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GrundstueckNummerElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilListElement;
@@ -72,9 +72,9 @@ public interface XmlHelperRF {
 	JAXBContext getServitudeContext();
 
 	/**
-	 * @return le context JAXB pour les listes de servitudes (fichier séparé du fichier principal).
+	 * @return le context JAXB pour les servitudes 'étendues'
 	 */
-	JAXBContext getServitudeListContext();
+	JAXBContext getServitudeEtendueContext();
 
 	/**
 	 * @return le context JAXB pour les groupes de bénéficiaires de servitudes (fichier séparé du fichier principal).
@@ -144,7 +144,7 @@ public interface XmlHelperRF {
 	/**
 	 * Converti la servitude dans sa représentation XML
 	 */
-	String toXMLString(DienstbarkeitDiscreteList list);
+	String toXMLString(DienstbarkeitExtended dienstbarkeit);
 
 	/**
 	 * Converti le groupe de bénéficiaires de servitude dans sa représentation XML

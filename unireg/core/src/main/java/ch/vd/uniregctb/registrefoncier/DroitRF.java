@@ -2,7 +2,6 @@ package ch.vd.uniregctb.registrefoncier;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -12,18 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -58,16 +49,6 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	private String masterIdRF;
 
 	/**
-	 * L'ayant-droit concerné par le droit.
-	 */
-	private AyantDroitRF ayantDroit;
-
-	/**
-	 * L'immeuble concerné par le droit.
-	 */
-	private ImmeubleRF immeuble;
-
-	/**
 	 * La date de début du droit telle que renseignée dans le registre foncier (la date de début normale est une date technique qui correspond à la date d'import de la donnée).
 	 */
 	@Nullable
@@ -91,6 +72,19 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	@Nullable
 	private String motifFin;
 
+	public DroitRF() {
+	}
+
+	public DroitRF(DroitRF right) {
+		super(right);
+		this.id = right.id;
+		this.masterIdRF = right.masterIdRF;
+		this.dateDebutMetier = right.dateDebutMetier;
+		this.dateFinMetier = right.dateFinMetier;
+		this.motifDebut = right.motifDebut;
+		this.motifFin = right.motifFin;
+	}
+
 	@Transient
 	@Override
 	public Object getKey() {
@@ -107,41 +101,14 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 		this.id = id;
 	}
 
-	// FIXME (msi) activer la contrainte unique=true quand les servitudes auront été revues
 	@Index(name = "IDX_DROIT_MASTER_ID_RF")
-	@Column(name = "MASTER_ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
+	@Column(name = "MASTER_ID_RF", nullable = false, unique = true, length = LengthConstants.RF_ID_RF)
 	public String getMasterIdRF() {
 		return masterIdRF;
 	}
 
 	public void setMasterIdRF(String masterIdRF) {
 		this.masterIdRF = masterIdRF;
-	}
-
-	// configuration hibernate : l'ayant-droit ne possède pas les droits (les droits pointent vers les ayants-droits, c'est tout)
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "AYANT_DROIT_ID", nullable = false)
-	@Index(name = "IDX_DROIT_RF_AYANT_DROIT_ID", columnNames = "AYANT_DROIT_ID")
-	@ForeignKey(name = "FK_DROIT_RF_AYANT_DROIT_ID")
-	public AyantDroitRF getAyantDroit() {
-		return ayantDroit;
-	}
-
-	public void setAyantDroit(AyantDroitRF ayantDroit) {
-		this.ayantDroit = ayantDroit;
-	}
-
-	// configuration hibernate : l'immeuble ne possède pas les droits (les droits pointent vers les immeubles, c'est tout)
-	@ManyToOne
-	@JoinColumn(name = "IMMEUBLE_ID", nullable = false)
-	@ForeignKey(name = "FK_DROIT_RF_IMMEUBLE_ID")
-	@Index(name = "IDX_DROIT_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
-	public ImmeubleRF getImmeuble() {
-		return immeuble;
-	}
-
-	public void setImmeuble(ImmeubleRF immeuble) {
-		this.immeuble = immeuble;
 	}
 
 	@Nullable
@@ -190,8 +157,6 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	 * Compare le droit courant avec un autre droit. Les propriétés utilisées pour la comparaison sont :
 	 * <ul>
 	 * <li>les dates de début et de fin</li>
-	 * <li>l'id de l'ayant-droit</li>
-	 * <li>l'id de l'immeuble</li>
 	 * </ul>
 	 *
 	 * @param right un autre droit.
@@ -199,37 +164,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	 */
 	@Override
 	public int compareTo(@NotNull DroitRF right) {
-		int c = DateRangeComparator.compareRanges(this, right);
-		if (c != 0) {
-			return c;
-		}
-		c = ObjectUtils.compare(ayantDroit.getId(), right.ayantDroit.getId(), false);
-		if (c != 0) {
-			return c;
-		}
-		return ObjectUtils.compare(immeuble.getId(), right.immeuble.getId(), false);
-	}
-
-	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
-		// on ne veut pas retourner les tiers Unireg dans le cas de la validation/indexation/parentés, car ils ne sont pas influencés par les données RF
-		if (ayantDroit instanceof TiersRF && (context == Context.TACHES || context == Context.DATA_EVENT)) {
-			final TiersRF tiersRF = (TiersRF) ayantDroit;
-			// on cherche tous les contribuables concernés ou ayant été concernés par ce droit
-			final List<Object> list = new ArrayList<>();
-			list.addAll(Optional.of(tiersRF)
-					            .map(TiersRF::getRapprochements) // la collection peut être nulle si l'entité vient juste d'être créée
-					            .map(r -> r.stream()
-							            .map(RapprochementRF::getContribuable)
-							            .collect(Collectors.toList()))
-					            .orElseGet(Collections::emptyList));
-			// on ajoute l'immeuble, évidemment
-			list.add(immeuble);
-			return list;
-		}
-		else {
-			return Collections.singletonList(immeuble);
-		}
+		return DateRangeComparator.compareRanges(this, right);
 	}
 
 	@Transient
@@ -241,4 +176,18 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	@Transient
 	@NotNull
 	public abstract TypeDroit getTypeDroit();
+
+	/**
+	 * @return une liste des ayants-droits concernés par ce droit.
+	 */
+	@Transient
+	@NotNull
+	public abstract List<AyantDroitRF> getAyantDroitList();
+
+	/**
+	 * @return une liste des immeubles concernés par ce droit.
+	 */
+	@Transient
+	@NotNull
+	public abstract List<ImmeubleRF> getImmeubleList();
 }

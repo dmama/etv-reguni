@@ -46,6 +46,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.detector.AyantDroitRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.BatimentRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.DroitRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.ImmeubleRFDetector;
+import ch.vd.uniregctb.registrefoncier.dataimport.detector.ServitudeRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.SurfaceAuSolRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -68,6 +69,7 @@ public class MutationsRFDetector implements InitializingBean {
 	private final AyantDroitRFDetector ayantDroitRFDetector;
 	private final BatimentRFDetector batimentRFDetector;
 	private final DroitRFDetector droitRFDetector;
+	private final ServitudeRFDetector servitudeRFDetector;
 	private final ImmeubleRFDetector immeubleRFDetector;
 	private final SurfaceAuSolRFDetector surfaceAuSolRFDetector;
 
@@ -80,6 +82,7 @@ public class MutationsRFDetector implements InitializingBean {
 	                           AyantDroitRFDetector ayantDroitRFDetector,
 	                           BatimentRFDetector batimentRFDetector,
 	                           DroitRFDetector droitRFDetector,
+	                           ServitudeRFDetector servitudeRFDetector,
 	                           ImmeubleRFDetector immeubleRFDetector,
 	                           SurfaceAuSolRFDetector surfaceAuSolRFDetector) {
 		this.serviceImportRF = serviceImportRF;
@@ -91,6 +94,7 @@ public class MutationsRFDetector implements InitializingBean {
 		this.ayantDroitRFDetector = ayantDroitRFDetector;
 		this.batimentRFDetector = batimentRFDetector;
 		this.droitRFDetector = droitRFDetector;
+		this.servitudeRFDetector = servitudeRFDetector;
 		this.immeubleRFDetector = immeubleRFDetector;
 		this.surfaceAuSolRFDetector = surfaceAuSolRFDetector;
 	}
@@ -127,7 +131,7 @@ public class MutationsRFDetector implements InitializingBean {
 				processImportPrincipal(importId, event.getFileUrl(), importInitial, nbThreads, statusManager);
 				break;
 			case SERVITUDES:
-				processImportServitudes(importId, event.getFileUrl(), importInitial, nbThreads, rapport, statusManager);
+				processImportServitudes(importId, event.getFileUrl(), nbThreads, rapport, statusManager);
 				break;
 			default:
 				throw new IllegalArgumentException("Type d'import inconnu = [" + typeImport + "].");
@@ -225,7 +229,7 @@ public class MutationsRFDetector implements InitializingBean {
 		}
 	}
 
-	private void processImportServitudes(long importId, String fileUrl, boolean importInitial, int nbThreads, @NotNull MutationsRFDetectorResults rapport, @NotNull StatusManager statusManager) {
+	private void processImportServitudes(long importId, String fileUrl, int nbThreads, @NotNull MutationsRFDetectorResults rapport, @NotNull StatusManager statusManager) {
 		try (InputStream is = zipRaftStore.get(fileUrl)) {
 
 			statusManager.setMessage("Détection des mutations...");
@@ -264,8 +268,8 @@ public class MutationsRFDetector implements InitializingBean {
 			});
 
 			// on détecte les changements et crée les mutations (en utilisant le parallèle batch transaction template)
-			processServitudes(importId, nbThreads, servitudes.values().iterator(), importInitial, rapport, statusManager);
-			processBeneficiaires(importId, nbThreads, beneficiaires.iterator(), importInitial, statusManager);
+			processServitudes(importId, nbThreads, servitudes.values().iterator(), rapport, statusManager);
+			processBeneficiaires(importId, nbThreads, beneficiaires.iterator(), statusManager);
 
 			statusManager.setMessage("Traitement terminé.");
 		}
@@ -374,22 +378,11 @@ public class MutationsRFDetector implements InitializingBean {
 		droitRFDetector.processDroitsPropriete(importId, nbThreads, iterator, importInitial, statusManager);
 	}
 
-	public void processServitudes(long importId, int nbThreads, Iterator<DienstbarkeitExtendedElement> iterator, boolean importInitial, @NotNull MutationsRFDetectorResults rapport, @Nullable StatusManager statusManager) {
-		// Les usufruits peuvent concerner plusieurs immeubles et plusieurs bénéficiaires, ce qui ne rentre pas dans le modèle de données des droits d'Unireg.
-		// On instancie donc un itérateur spécial qui va retourner autant de droit 'discrets' qu'il y a d'immeubles et de bénéficiaires.
-		final DienstbarkeitDiscreteIterator discreteIterator = new DienstbarkeitDiscreteIterator(iterator);
-		droitRFDetector.processServitudes(importId, nbThreads, discreteIterator, importInitial, statusManager);
-
-		// SIFISC-23744 : on renseigne les servitudes vides dans le rapport
-		discreteIterator.getEmptyServitudes()
-				.forEach(s -> {
-					final Dienstbarkeit dienstbarkeit = s.getDienstbarkeit();
-					rapport.addAvertissement(dienstbarkeit.getStandardRechtID(), "La servitude standardRechtID=[" + dienstbarkeit.getStandardRechtID() +
-							"] sur les immeubles idRF=[" + String.join(", ", dienstbarkeit.getBeteiligtesGrundstueckIDREF()) + "] ne possède pas de bénéficiaire.");
-				});
+	public void processServitudes(long importId, int nbThreads, Iterator<DienstbarkeitExtendedElement> iterator, @NotNull MutationsRFDetectorResults rapport, @Nullable StatusManager statusManager) {
+		servitudeRFDetector.processServitudes(importId, nbThreads, iterator, rapport, statusManager);
 	}
 
-	private void processBeneficiaires(long importId, int nbThreads, Iterator<ch.vd.capitastra.rechteregister.Personstamm> iterator, boolean importInitial, StatusManager statusManager) {
+	private void processBeneficiaires(long importId, int nbThreads, Iterator<ch.vd.capitastra.rechteregister.Personstamm> iterator, StatusManager statusManager) {
 		ayantDroitRFDetector.processAyantDroits(importId, nbThreads, iterator, statusManager);
 	}
 

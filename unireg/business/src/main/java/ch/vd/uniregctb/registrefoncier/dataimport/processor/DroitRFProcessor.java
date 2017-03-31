@@ -156,7 +156,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	 * Traite l'ajout des droits de propriété sur un ayant-droit qui vient d'être créé.
 	 */
 	private void processCreation(@Nullable RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<DroitProprieteRF> droits) {
-		if (!ayantDroit.getDroits().isEmpty()) {
+		if (!ayantDroit.getDroitsPropriete().isEmpty()) {
 			throw new IllegalArgumentException("L'ayant-droit idRF=[" + ayantDroit.getIdRF() + "] possède déjà des droits alors que la mutation est de type CREATION.");
 		}
 
@@ -174,10 +174,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	private void processModification(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<DroitProprieteRF> droits) {
 
 		// on va chercher les droits de propriété actifs actuellement persistés
-		final List<DroitProprieteRF> persisted = ayantDroit.getDroits().stream()
+		final List<DroitProprieteRF> persisted = ayantDroit.getDroitsPropriete().stream()
 				.filter(d -> d.isValidAt(null))
-				.filter(d -> d instanceof DroitProprieteRF)
-				.map(d -> (DroitProprieteRF) d)
 				.collect(Collectors.toList());
 
 		// on détermine les changements
@@ -225,9 +223,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	 */
 	private void processSuppression(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit) {
 		// on ferme tous les droits de propriété encore ouverts
-		ayantDroit.getDroits().stream()
+		ayantDroit.getDroitsPropriete().stream()
 				.filter(d -> d.isValidAt(null))
-				.filter(d -> d instanceof DroitProprieteRF)
 				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
 	}
 }

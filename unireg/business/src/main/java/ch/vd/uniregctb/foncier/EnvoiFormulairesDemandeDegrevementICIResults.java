@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.foncier;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -71,6 +73,77 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 
 		public long getIdImmeuble() {
 			return idImmeuble;
+		}
+	}
+
+	public final class ImmeubleInfo implements Comparable<ImmeubleInfo> {
+
+		public final Long idImmeuble;
+		public final String nomCommune;
+		public final Integer noOfsCommune;
+		public final Integer noParcelle;
+		public final Integer index1;
+		public final Integer index2;
+		public final Integer index3;
+		public final OutputInfoBaseAvecImmeubles parent;
+
+		public ImmeubleInfo(@NotNull ImmeubleRF immeuble, RegDate dateTraitement, OutputInfoBaseAvecImmeubles parent) {
+			this.idImmeuble = immeuble.getId();
+			final SituationRF situation = registreFoncierService.getSituation(immeuble, dateTraitement);
+			if (situation == null) {
+				this.nomCommune = null;
+				this.noOfsCommune = null;
+				this.noParcelle = null;
+				this.index1 = null;
+				this.index2 = null;
+				this.index3 = null;
+			}
+			else {
+				this.nomCommune = situation.getCommune().getNomRf();
+				this.noOfsCommune = situation.getCommune().getNoOfs();
+				this.noParcelle = situation.getNoParcelle();
+				this.index1 = situation.getIndex1();
+				this.index2 = situation.getIndex2();
+				this.index3 = situation.getIndex3();
+			}
+			this.parent = parent;
+		}
+
+		public Long getIdImmeuble() {
+			return idImmeuble;
+		}
+
+		public String getNomCommune() {
+			return nomCommune;
+		}
+
+		public Integer getNoOfsCommune() {
+			return noOfsCommune;
+		}
+
+		public Integer getNoParcelle() {
+			return noParcelle;
+		}
+
+		public Integer getIndex1() {
+			return index1;
+		}
+
+		public Integer getIndex2() {
+			return index2;
+		}
+
+		public Integer getIndex3() {
+			return index3;
+		}
+
+		public OutputInfoBaseAvecImmeubles getParent() {
+			return parent;
+		}
+
+		@Override
+		public int compareTo(@NotNull ImmeubleInfo o) {
+			return Long.compare(idImmeuble, o.idImmeuble);
 		}
 	}
 
@@ -143,6 +216,28 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		}
 	}
 
+	public abstract class OutputInfoBaseAvecImmeubles<T extends OutputInfoBaseAvecImmeubles<T>> extends OutputInfoBase<T> {
+
+		private final List<ImmeubleInfo> immeubleInfos;
+
+		public OutputInfoBaseAvecImmeubles(Tiers contribuable, @Nullable ImmeubleRF immeuble, RegDate dateTraitement) {
+			super(contribuable.getNumero());
+			this.immeubleInfos = (immeuble == null ? Collections.emptyList() : Collections.singletonList(new ImmeubleInfo(immeuble, dateTraitement, this)));
+		}
+
+		public OutputInfoBaseAvecImmeubles(Tiers contribuable, @NotNull List<ImmeubleRF> immeubles, RegDate dateTraitement) {
+			super(contribuable.getNumero());
+			this.immeubleInfos = immeubles.stream()
+					.map((immeuble) -> new ImmeubleInfo(immeuble, dateTraitement, this))
+					.sorted(Comparator.naturalOrder())
+					.collect(Collectors.toList());
+		}
+
+		public List<ImmeubleInfo> getImmeubleInfos() {
+			return immeubleInfos;
+		}
+	}
+
 	public final class DemandeDegrevementEnvoyee extends OutputInfoBaseAvecImmeuble<DemandeDegrevementEnvoyee> {
 		public final int periodeFiscale;
 
@@ -183,7 +278,8 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		}
 	}
 
-	public final class DemandeDegrevementNonEnvoyee extends OutputInfoBaseAvecImmeuble<DemandeDegrevementNonEnvoyee> {
+	public final class DemandeDegrevementNonEnvoyee extends OutputInfoBaseAvecImmeubles<DemandeDegrevementNonEnvoyee> {
+
 		public final RaisonIgnorance raison;
 		public final String messageAdditionnel;
 
@@ -193,13 +289,33 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 			this.messageAdditionnel = messageAdditionnel;
 		}
 
+		public DemandeDegrevementNonEnvoyee(Entreprise entreprise, @NotNull List<ImmeubleRF> immeubles, RegDate dateTraitement, RaisonIgnorance raison, String messageAdditionnel) {
+			super(entreprise, immeubles, dateTraitement);
+			this.raison = raison;
+			this.messageAdditionnel = messageAdditionnel;
+		}
+
 		@Override
 		public int compareTo(@NotNull DemandeDegrevementNonEnvoyee o) {
 			int comparison = super.compareTo(o);
-			if (comparison == 0) {
-				comparison = Comparator.<Long>nullsFirst(Comparator.naturalOrder()).compare(idImmeuble, o.idImmeuble);
+			if (comparison != 0) {
+				return comparison;
 			}
-			return comparison;
+			// on compare les tailles des listes d'immeubles
+			comparison = Integer.compare(this.getImmeubleInfos().size(), o.getImmeubleInfos().size());
+			if (comparison != 0) {
+				return comparison;
+			}
+			// on compare les ids des immeubles
+			for (int i = 0; i < getImmeubleInfos().size(); i++) {
+				final ImmeubleInfo left = getImmeubleInfos().get(i);
+				final ImmeubleInfo right = o.getImmeubleInfos().get(i);
+				comparison = Comparator.<ImmeubleInfo>nullsFirst(Comparator.naturalOrder()).compare(left, right);
+				if (comparison != 0) {
+					return comparison;
+				}
+			}
+			return 0;
 		}
 	}
 
@@ -237,7 +353,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 
 	public void addContribuableTotalementExonere(Entreprise entreprise, List<DroitImmeuble> idsDroitsImmeubles) {
 		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
-		                                                  null,
+		                                                  (ImmeubleRF) null,
 		                                                  dateTraitement,
 		                                                  RaisonIgnorance.CONTRIBUABLE_TOTALEMENT_EXONERE,
 		                                                  String.format("%d droit(s) concernés pour %d immeuble(s)",
@@ -308,9 +424,9 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		++ this.nbDroitsIgnores;
 	}
 
-	public void addDroitNonPropriete(Entreprise entreprise, ImmeubleRF immeuble, Class<? extends DroitRF> classeDroit) {
+	public void addDroitNonPropriete(Entreprise entreprise, @NotNull List<ImmeubleRF> immeubles, Class<? extends DroitRF> classeDroit) {
 		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
-		                                                  immeuble,
+		                                                  immeubles,
 		                                                  dateTraitement,
 		                                                  RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION,
 		                                                  classeDroit.getSimpleName()));

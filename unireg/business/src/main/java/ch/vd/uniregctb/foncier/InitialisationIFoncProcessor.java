@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Query;
 import org.jetbrains.annotations.Nullable;
@@ -29,10 +29,13 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
+import ch.vd.uniregctb.registrefoncier.ServitudeCombinationIterator;
+import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -131,11 +134,39 @@ public class InitialisationIFoncProcessor {
 	}
 
 	private void traiterDroit(DroitRF droit, InitialisationIFoncResults rapport) {
+		if (droit instanceof DroitProprieteRF) {
+			traiterDroitPropriete((DroitProprieteRF) droit, rapport);
+		}
+		else if (droit instanceof ServitudeRF) {
+			traiterServitude((ServitudeRF) droit, rapport);
+		}
+		else {
+			throw new IllegalArgumentException("Type de droit inconnu = [" + droit.getClass().getSimpleName() + "]");
+		}
+	}
+
+	private void traiterDroitPropriete(DroitProprieteRF droit, InitialisationIFoncResults rapport) {
 		final AyantDroitRF ayantDroit = droit.getAyantDroit();
 		final ImmeubleRF immeuble = droit.getImmeuble();
 		final Contribuable contribuable = getTiersRapproche(ayantDroit, rapport.dateReference);
 		final SituationRF situation = getSituationValide(immeuble, rapport.dateReference);
-		rapport.addDroit(contribuable, droit, situation);
+		rapport.addDroitPropriete(contribuable, droit, situation);
+	}
+
+	private void traiterServitude(ServitudeRF servitude, InitialisationIFoncResults rapport) {
+
+		// une servitude peut contenir plusieurs bénénificiaires et plusieurs immeubles -> on calcule toutes
+		// les combinaisons possibles et on insère une ligne par combinaison
+		final ServitudeCombinationIterator iterator = new ServitudeCombinationIterator(Collections.singletonList(servitude).iterator());
+		while (iterator.hasNext()) {
+			final ServitudeRF combinaison = iterator.next();
+
+			final AyantDroitRF ayantDroit = combinaison.getAyantDroits().iterator().next(); // par définition, il n'y a plus qu'un ayant-droit dans la combinaison
+			final ImmeubleRF immeuble = combinaison.getImmeubles().iterator().next(); // par définition, il n'y a plus qu'un ayant-droit dans la combinaison
+			final Contribuable contribuable = getTiersRapproche(ayantDroit, rapport.dateReference);
+			final SituationRF situation = getSituationValide(immeuble, rapport.dateReference);
+			rapport.addServitude(contribuable, combinaison, situation);
+		}
 	}
 
 	@Nullable
@@ -189,17 +220,25 @@ public class InitialisationIFoncProcessor {
 		transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		return transactionTemplate.execute(status -> hibernateTemplate.execute(session -> {
 
-			final String hql = "SELECT IMM.id, DT.id, DT.dateDebutMetier, DT.dateFinMetier FROM ImmeubleRF IMM LEFT OUTER JOIN IMM.droits DT WHERE DT.annulationDate IS NULL AND IMM.annulationDate IS NULL";
-			final Query query = session.createQuery(hql);
+			final String hqlDroits = "SELECT IMM.id, DT.id, DT.dateDebutMetier, DT.dateFinMetier FROM ImmeubleRF IMM LEFT OUTER JOIN IMM.droitsPropriete DT WHERE DT.annulationDate IS NULL AND IMM.annulationDate IS NULL";
+			final String hqlServitudes = "SELECT IMM.id, DT.id, DT.dateDebutMetier, DT.dateFinMetier FROM ImmeubleRF IMM LEFT OUTER JOIN IMM.servitudes DT WHERE DT.annulationDate IS NULL AND IMM.annulationDate IS NULL";
 
-			//noinspection unchecked
-			final Iterator<Object[]> iterator = query.iterate();
-			final Iterable<Object[]> iterable = () -> iterator;
-			return StreamSupport.stream(iterable.spliterator(), false)
-					.map(array -> Pair.of((Long) array[0], array[1] == null ? null : new InfoDroit((Long) array[1], (RegDate) array[2], (RegDate) array[3])))
-					.collect(Collectors.toMap(Pair::getLeft,
-					                          pair -> pair.getRight() == null ? Collections.<InfoDroit>emptyList() : Collections.singletonList(pair.getRight()),
-					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
+			final Map<Long, List<InfoDroit>> mapDroits = mapDroitsParImmeuble(session.createQuery(hqlDroits));
+			final Map<Long, List<InfoDroit>> mapServitudes = mapDroitsParImmeuble(session.createQuery(hqlServitudes));
+			mapServitudes.entrySet().forEach(e -> mapDroits.merge(e.getKey(), e.getValue(), ListUtils::union));
+
+			return mapDroits;
 		}));
+	}
+
+	private static Map<Long, List<InfoDroit>> mapDroitsParImmeuble(Query query) {
+		//noinspection unchecked
+		final Iterator<Object[]> iterator = query.iterate();
+		final Iterable<Object[]> iterable = () -> iterator;
+		return StreamSupport.stream(iterable.spliterator(), false)
+				.map(row -> Pair.of((Long) row[0], row[1] == null ? null : new InfoDroit((Long) row[1], (RegDate) row[2], (RegDate) row[3])))
+				.collect(Collectors.toMap(Pair::getLeft,
+				                          pair -> pair.getRight() == null ? Collections.<InfoDroit>emptyList() : Collections.singletonList(pair.getRight()),
+				                          ListUtils::union));
 	}
 }

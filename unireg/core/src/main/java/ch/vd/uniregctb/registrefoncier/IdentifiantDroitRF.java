@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -34,6 +35,12 @@ public class IdentifiantDroitRF {
 		this.numeroOffice = numeroOffice;
 		this.annee = annee;
 		this.numero = numero;
+	}
+
+	public IdentifiantDroitRF(@NotNull IdentifiantDroitRF right) {
+		this.numeroOffice = right.numeroOffice;
+		this.annee = right.annee;
+		this.numero = right.numero;
 	}
 
 	public int getNumeroOffice() {

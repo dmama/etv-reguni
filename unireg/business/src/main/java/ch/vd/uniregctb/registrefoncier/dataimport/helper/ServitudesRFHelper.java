@@ -12,12 +12,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.rechteregister.Beleg;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
-import ch.vd.capitastra.rechteregister.DienstbarkeitDiscrete;
+import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.capitastra.rechteregister.StandardRecht;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -31,12 +29,12 @@ import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.nu
 
 public class ServitudesRFHelper {
 
-	public static DroitRFKey newServitudeRFKey(@NotNull DienstbarkeitDiscrete droit) {
+	public static DroitRFKey newServitudeRFKey(DienstbarkeitExtendedElement droit) {
 		return new DroitRFKey(droit.getDienstbarkeit().getMasterID());
 	}
 
 
-	public static boolean dataEquals(Set<DroitRF> servitudes, List<DienstbarkeitDiscrete> dienstbarkeits) {
+	public static boolean dataEquals(Set<ServitudeRF> servitudes, List<DienstbarkeitExtendedElement> dienstbarkeits) {
 
 		//noinspection Duplicates
 		if ((servitudes == null || servitudes.isEmpty()) && (dienstbarkeits == null || dienstbarkeits.isEmpty())) {
@@ -52,12 +50,12 @@ public class ServitudesRFHelper {
 			return false;
 		}
 
-		List<DroitRF> remaining = new ArrayList<>(servitudes);
-		for (DienstbarkeitDiscrete d : dienstbarkeits) {
+		List<ServitudeRF> remaining = new ArrayList<>(servitudes);
+		for (DienstbarkeitExtendedElement d : dienstbarkeits) {
 			boolean found = false;
 			for (int i = 0; i < remaining.size(); i++) {
-				DroitRF droitRF = remaining.get(i);
-				if (dataEquals(droitRF, d)) {
+				ServitudeRF servitudeRF = remaining.get(i);
+				if (dataEquals(servitudeRF, d)) {
 					remaining.remove(i);
 					found = true;
 					break;
@@ -73,8 +71,8 @@ public class ServitudesRFHelper {
 	}
 
 
-	static boolean dataEquals(DroitRF droitRF, DienstbarkeitDiscrete dienstbarkeit) {
-		return dataEquals(droitRF, get(dienstbarkeit, ServitudesRFHelper::simplisticAyantDroitProvider, ServitudesRFHelper::simplisticCommunauteProvider, ServitudesRFHelper::simplisticImmeubleProvider));
+	public static boolean dataEquals(ServitudeRF droitRF, DienstbarkeitExtendedElement dienstbarkeit) {
+		return dataEquals(droitRF, get(dienstbarkeit, ServitudesRFHelper::simplisticAyantDroitProvider, ServitudesRFHelper::simplisticImmeubleProvider));
 	}
 
 	/**
@@ -99,52 +97,34 @@ public class ServitudesRFHelper {
 		return i;
 	}
 
-	/**
-	 * Provider de communauté simplifié au maximum pour retourner une communauté avec juste l'idRF de renseigné.
-	 */
-	@Nullable
-	private static CommunauteRF simplisticCommunauteProvider(@Nullable String idRf) {
-		if (idRf == null) {
-			return null;
-		}
-		final CommunauteRF c = new CommunauteRF();
-		c.setIdRF(idRf);
-		return c;
-	}
-
-	public static boolean dataEquals(@NotNull DroitRF left, @NotNull DroitRF right) {
+	public static boolean dataEquals(@NotNull ServitudeRF left, @NotNull ServitudeRF right) {
 
 		if (!left.getMasterIdRF().equals(right.getMasterIdRF())) {
 			return false;
 		}
 
+		//noinspection SimplifiableIfStatement
 		if (!left.getClass().equals(right.getClass())) {
 			return false;
 		}
 
-		if (left instanceof ServitudeRF) {
-			return equalsServitude((ServitudeRF) left, (ServitudeRF) right);
-		}
-		else {
-			throw new IllegalArgumentException("Type de servitude RF inconnu=[" + left.getClass() + "]");
-		}
+		return equalsServitude(left, right);
 	}
 
 	private static boolean equalsServitude(@NotNull ServitudeRF left, @NotNull ServitudeRF right) {
-		return DroitRFHelper.communauteEquals(left.getCommunaute(), right.getCommunaute()) &&
-				Objects.equals(left.getIdentifiantDroit(), right.getIdentifiantDroit()) &&
+		return Objects.equals(left.getIdentifiantDroit(), right.getIdentifiantDroit()) &&
 				numeroAffaireEquals(left.getNumeroAffaire(), right.getNumeroAffaire()) &&
 				left.getDateFinMetier() == right.getDateFinMetier() &&
 				DroitRFHelper.equalsDroit(left, right);
 	}
 
 	@NotNull
-	public static ServitudeRF newServitudeRF(@NotNull DienstbarkeitDiscrete dienstbarkeitDiscrete,
+	public static ServitudeRF newServitudeRF(@NotNull DienstbarkeitExtendedElement dienstbarkeitExtended,
 	                                         @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
-	                                         @NotNull Function<String, CommunauteRF> communauteProvider,
 	                                         @NotNull Function<String, ImmeubleRF> immeubleProvider) {
 
-		final Dienstbarkeit dienstbarkeit = dienstbarkeitDiscrete.getDienstbarkeit();
+		final Dienstbarkeit dienstbarkeit = dienstbarkeitExtended.getDienstbarkeit();
+		final LastRechtGruppe lastRechtGruppe = dienstbarkeitExtended.getLastRechtGruppe();
 		final String masterIdRF = dienstbarkeit.getMasterID();
 
 		final String typeServitude = Optional.of(dienstbarkeit)
@@ -164,15 +144,17 @@ public class ServitudesRFHelper {
 			throw new IllegalArgumentException("Type de servitude inconnue = [" + typeServitude + "]");
 		}
 
-		final String personIDRef = DienstbarkeitExtendedElement.getPersonIDRef(DienstbarkeitExtendedElement.getPerson(dienstbarkeitDiscrete.getBerechtigtePerson()));
+		lastRechtGruppe.getBerechtigtePerson().forEach(person -> {
+			final String personIDRef = DienstbarkeitExtendedElement.getPersonIDRef(DienstbarkeitExtendedElement.getPerson(person));
+			servitude.addAyantDroit(ayantDroitProvider.apply(personIDRef));
+		});
+
+		lastRechtGruppe.getBelastetesGrundstueck().forEach(grundstueck -> {
+			servitude.addImmeuble(immeubleProvider.apply(grundstueck.getBelastetesGrundstueckIDREF()));
+
+		});
 
 		servitude.setMasterIdRF(masterIdRF);
-		servitude.setAyantDroit(ayantDroitProvider.apply(personIDRef));
-		if (!dienstbarkeitDiscrete.getGemeinschaft().isEmpty()) {
-			// il s'agit d'une communauté implicite qui est crée matérialisée dans Unireg. Pour ce faire, on utilise l'ID de l'usufruit comme identifiant de la communauté.
-			servitude.setCommunaute(communauteProvider.apply(dienstbarkeit.getStandardRechtID()));
-		}
-		servitude.setImmeuble(immeubleProvider.apply(dienstbarkeitDiscrete.getBelastetesGrundstueck().getBelastetesGrundstueckIDREF()));
 		servitude.setIdentifiantDroit(getIdentifiantDroit(dienstbarkeit));
 		servitude.setNumeroAffaire(getAffaire(dienstbarkeit));
 		servitude.setDateDebutMetier(dienstbarkeit.getBeginDatum());
@@ -209,13 +191,12 @@ public class ServitudesRFHelper {
 	}
 
 	@Nullable
-	public static ServitudeRF get(@Nullable DienstbarkeitDiscrete servitude,
+	public static ServitudeRF get(@Nullable DienstbarkeitExtendedElement servitude,
 	                              @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
-	                              @NotNull Function<String, CommunauteRF> communauteProvider,
 	                              @NotNull Function<String, ImmeubleRF> immeubleProvider) {
 		if (servitude == null) {
 			return null;
 		}
-		return newServitudeRF(servitude, ayantDroitProvider, communauteProvider, immeubleProvider);
+		return newServitudeRF(servitude, ayantDroitProvider, immeubleProvider);
 	}
 }

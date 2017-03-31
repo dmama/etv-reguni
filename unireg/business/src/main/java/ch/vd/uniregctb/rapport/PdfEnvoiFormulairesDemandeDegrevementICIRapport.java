@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
@@ -135,7 +136,11 @@ public class PdfEnvoiFormulairesDemandeDegrevementICIRapport extends PdfRapport 
 	private static TemporaryFile ignoresAsCsvFile(List<EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee> ignores, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		if (!ignores.isEmpty()) {
-			contenu = CsvHelper.asCsvTemporaryFile(ignores, filename, status, new CsvHelper.FileFiller<EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee>() {
+			// il peut y avoir plusieurs immeubles sur les servitudes -> on imprime plusieurs lignes, une par immeuble
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignores.stream()
+					.flatMap(d -> d.getImmeubleInfos().stream())
+					.collect(Collectors.toList());
+			contenu = CsvHelper.asCsvTemporaryFile(immeubleInfos, filename, status, new CsvHelper.FileFiller<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA);
@@ -151,17 +156,18 @@ public class PdfEnvoiFormulairesDemandeDegrevementICIRapport extends PdfRapport 
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee elt) {
-					b.append(elt.noContribuable).append(COMMA);
-					b.append(elt.idImmeuble).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.nomCommune)).append(COMMA);
-					b.append(elt.noOfsCommune).append(COMMA);
-					b.append(elt.noParcelle).append(COMMA);
-					b.append(Optional.ofNullable(elt.index1).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
-					b.append(Optional.ofNullable(elt.index2).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
-					b.append(Optional.ofNullable(elt.index3).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
-					b.append(elt.raison).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.messageAdditionnel));
+				public boolean fillLine(CsvHelper.LineFiller b, EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo elt) {
+					final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee nonEnvoyee = (EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee) elt.getParent();
+					b.append(elt.getParent().noContribuable).append(COMMA);
+					b.append(elt.getIdImmeuble()).append(COMMA);
+					b.append(CsvHelper.escapeChars(elt.getNomCommune())).append(COMMA);
+					b.append(elt.getNoOfsCommune()).append(COMMA);
+					b.append(elt.getNoParcelle()).append(COMMA);
+					b.append(Optional.ofNullable(elt.getIndex1()).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+					b.append(Optional.ofNullable(elt.getIndex2()).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+					b.append(Optional.ofNullable(elt.getIndex3()).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+					b.append(nonEnvoyee.raison).append(COMMA);
+					b.append(CsvHelper.escapeChars(nonEnvoyee.messageAdditionnel));
 					return true;
 				}
 			});

@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
@@ -69,7 +70,7 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final ImmeubleRF immeuble = immeubleRFDAO.get(id);
 			assertNotNull(immeuble);
 
-			final List<DroitRF> droits = new ArrayList<>(immeuble.getDroits());
+			final List<DroitProprieteRF> droits = new ArrayList<>(immeuble.getDroitsPropriete());
 			assertEquals(2, droits.size());
 			droits.sort(new DateRangeComparator<>());
 			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), "Achat", "Vente", droits.get(0));
@@ -110,7 +111,7 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final ImmeubleRF immeuble = immeubleRFDAO.get(id);
 			assertNotNull(immeuble);
 
-			final List<DroitRF> droits = new ArrayList<>(immeuble.getDroits());
+			final List<DroitProprieteRF> droits = new ArrayList<>(immeuble.getDroitsPropriete());
 			assertEquals(2, droits.size());
 			droits.sort(new DateRangeComparator<>());
 			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 13), "Achat", "Vente", droits.get(0));
@@ -175,9 +176,10 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final ImmeubleRF immeuble = immeubleRFDAO.get(ids.immeuble);
 			assertNotNull(immeuble);
 
-			final List<DroitRF> droits = new ArrayList<>(immeuble.getDroits());
+			final List<DroitProprieteRF> droits = new ArrayList<>(immeuble.getDroitsPropriete());
 			assertEquals(4, droits.size());
-			droits.sort(Comparator.<DroitRF, Long>comparing(d -> d.getAyantDroit().getId()).thenComparing(DateRangeComparator::compareRanges));
+			droits.sort(Comparator.<DroitProprieteRF, Long>comparing(d -> d.getAyantDroit().getId())
+					            .thenComparing(DateRangeComparator::compareRanges));
 
 			// les droits de jean
 			assertDatesDroit(null, RegDate.get(2017, 1, 6), RegDate.get(1997, 4, 21), RegDate.get(2001, 9, 4), "Succession", "Succession", droits.get(0));
@@ -245,9 +247,9 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final ImmeubleRF immeuble = immeubleRFDAO.get(immeubleId);
 			assertNotNull(immeuble);
 
-			final List<DroitRF> droits = new ArrayList<>(immeuble.getDroits());
-			assertEquals(4, droits.size());
-			droits.sort(Comparator.<DroitRF, Long>comparing(d -> d.getAyantDroit().getId()).thenComparing(DateRangeComparator::compareRanges));
+			final List<DroitProprieteRF> droits = new ArrayList<>(immeuble.getDroitsPropriete());
+			droits.sort(Comparator.<DroitProprieteRF, Long>comparing(d -> d.getAyantDroit().getId())
+					            .thenComparing(DateRangeComparator::compareRanges));
 
 			// les droits d'Isabelle
 			assertDatesDroit(null, RegDate.get(2016, 12, 31), RegDate.get(1961, 2, 4), RegDate.get(1980, 12, 29), "Succession", "Changement de régime", droits.get(0));

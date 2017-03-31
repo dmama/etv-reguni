@@ -21,6 +21,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
@@ -139,7 +140,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ppId);
 				assertNotNull(pp);
 
-				final Set<DroitRF> droits = pp.getDroits();
+				final Set<DroitProprieteRF> droits = pp.getDroitsPropriete();
 				assertNotNull(droits);
 				assertEquals(2, droits.size());
 
@@ -270,7 +271,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ppId);
 				assertNotNull(pp);
 
-				final Set<DroitRF> droits = pp.getDroits();
+				final Set<DroitProprieteRF> droits = pp.getDroitsPropriete();
 				assertNotNull(droits);
 				assertEquals(3, droits.size());
 
@@ -420,7 +421,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ppId);
 				assertNotNull(pp);
 
-				final Set<DroitRF> droits = pp.getDroits();
+				final Set<DroitProprieteRF> droits = pp.getDroitsPropriete();
 				assertNotNull(droits);
 				assertEquals(2, droits.size());
 
@@ -550,7 +551,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ppId);
 				assertNotNull(pp);
 
-				final Set<DroitRF> droits = pp.getDroits();
+				final Set<DroitProprieteRF> droits = pp.getDroitsPropriete();
 				assertNotNull(droits);
 				assertEquals(2, droits.size());
 

@@ -39,7 +39,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("Duplicates")
 public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 
 	private static final String DB_UNIT_DATA_FILE = "WebServiceLandRegistryItTest.xml";
@@ -102,11 +104,20 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertEquals(6, landRights.size());
 		assertLandOwnershipRight(null, null, "Achat", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 21550, 264822986L, (LandOwnershipRight) landRights.get(0));
 		final LandOwnershipRight landRight1 = (LandOwnershipRight) landRights.get(1);
-		assertLandOwnershipRight(RegDate.get(1981, 3, 6), RegDate.get(2017, 10, 17), "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, "Raymonde", "Grandjean", null, 264822986L, (LandOwnershipRight) landRight1);
+		assertLandOwnershipRight(RegDate.get(1981, 3, 6), RegDate.get(2017, 10, 17), "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, "Raymonde", "Grandjean", null, 264822986L, landRight1);
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 10035633, 264822986L, (LandOwnershipRight) landRights.get(2));
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, null, "Berard", null, 264822986L, (LandOwnershipRight) landRights.get(3));
-		assertUsufructRight(RegDate.get(1985, 10, 10), RegDate.get(2017, 10, 17), "Convention", null, "Charles", "de Noblebois", null, null, (UsufructRight) landRights.get(4));
-		assertHousingRight(RegDate.get(1999, 8, 8), null, "Convention", null, "Roland", "Proutch", null, null, (HousingRight) landRights.get(5));
+
+		assertUsufructRight(RegDate.get(1985, 10, 10), RegDate.get(2017, 10, 17), "Convention", null, landRights.get(4));
+		final List<RightHolder> usufructHolders = ((UsufructRight) landRights.get(4)).getRightHolders();
+		assertEquals(2, usufructHolders.size());
+		assertRightHolderNaturalPerson("Charles", "de Noblebois", null, usufructHolders.get(0));
+		assertRightHolderNaturalPerson("Roland", "Proutch", null, usufructHolders.get(1));
+
+		assertHousingRight(RegDate.get(1999, 8, 8), null, "Convention", null, landRights.get(5));
+		final List<RightHolder> housingRightHolders = ((HousingRight) landRights.get(5)).getRightHolders();
+		assertEquals(1, housingRightHolders.size());
+		assertRightHolderNaturalPerson("Charles", "de Noblebois", null, housingRightHolders.get(0));
 
 		// [SIFISC-23894] ce droit possède plusieurs raisons d'acquisition
 		final List<AcquisitionReason> reasons = landRight1.getAcquisitionReasons();
@@ -269,24 +280,22 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertRightHolderParty(taxPayerNumber, landRight.getRightHolder());
 	}
 
-	private static void assertUsufructRight(RegDate dateFrom, RegDate dateTo, String startReason, Object endReason, String firstName, String lastName, RegDate dateOfBirth, Long communityId, UsufructRight right) {
+	private static void assertUsufructRight(RegDate dateFrom, RegDate dateTo, String startReason, String endReason, LandRight right) {
 		assertNotNull(right);
-		assertEquals(communityId, right.getCommunityId());
+		assertTrue(right instanceof UsufructRight);
 		assertDate(dateFrom, right.getDateFrom());
 		assertDate(dateTo, right.getDateTo());
 		assertEquals(startReason, right.getStartReason());
 		assertEquals(endReason, right.getEndReason());
-		assertRightHolderNaturalPerson(firstName, lastName, dateOfBirth, right.getRightHolder());
 	}
 
-	private static void assertHousingRight(RegDate dateFrom, RegDate dateTo, String startReason, Object endReason, String firstName, String lastName, RegDate dateOfBirth, Long communityId, HousingRight right) {
+	private static void assertHousingRight(RegDate dateFrom, RegDate dateTo, String startReason, String endReason, LandRight right) {
 		assertNotNull(right);
-		assertEquals(communityId, right.getCommunityId());
+		assertTrue(right instanceof HousingRight);
 		assertDate(dateFrom, right.getDateFrom());
 		assertDate(dateTo, right.getDateTo());
 		assertEquals(startReason, right.getStartReason());
 		assertEquals(endReason, right.getEndReason());
-		assertRightHolderNaturalPerson(firstName, lastName, dateOfBirth, right.getRightHolder());
 	}
 
 	private static void assertAcquisitionReason(RegDate date, String r, int officeNumber, String caseNumber, AcquisitionReason reason) {

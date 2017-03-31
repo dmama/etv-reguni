@@ -2,24 +2,18 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.capitastra.rechteregister.DienstbarkeitDiscrete;
-import ch.vd.capitastra.rechteregister.DienstbarkeitDiscreteList;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
@@ -28,8 +22,10 @@ import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.ServitudesRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
+import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 /**
@@ -56,7 +52,7 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 
 		unmarshaller = ThreadLocal.withInitial(() -> {
 			try {
-				return xmlHelperRF.getServitudeListContext().createUnmarshaller();
+				return xmlHelperRF.getServitudeEtendueContext().createUnmarshaller();
 			}
 			catch (JAXBException e) {
 				throw new RuntimeException(e);
@@ -72,54 +68,53 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 		}
 
 		final RegDate dateValeur = mutation.getParentImport().getDateEvenement();
+		final TypeMutationRF typeMutation = mutation.getTypeMutation();
+		final String servitudeIdRF = mutation.getIdRF();
 
-		final String ayantDroitIdRF = mutation.getIdRF();
-		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(ayantDroitIdRF));
-		if (ayantDroit == null) {
-			throw new IllegalArgumentException("L'ayant-droit avec l'idRF=[" + ayantDroitIdRF + "] n'existe pas.");
-		}
+		if (typeMutation == TypeMutationRF.CREATION || typeMutation == TypeMutationRF.MODIFICATION) {
 
-		// on interpète le XML
-		final List<DienstbarkeitDiscrete> servitudesList;
-		try {
-			final String content = mutation.getXmlContent();
-			if (content == null) {
-				servitudesList = Collections.emptyList();
+			// on interpète le XML
+			final DienstbarkeitExtendedElement dienstbarkeit;
+			try {
+				final String content = mutation.getXmlContent();
+				final StringSource source = new StringSource(content);
+				dienstbarkeit = (DienstbarkeitExtendedElement) unmarshaller.get().unmarshal(source);
+			}
+			catch (JAXBException e) {
+				throw new RuntimeException(e);
+			}
+
+			// on crée la servitude en mémoire
+			final ServitudeRF servitude = ServitudesRFHelper.newServitudeRF(dienstbarkeit, this::findAyantDroit, this::findImmeuble);
+
+			// on traite la mutation
+			if (typeMutation == TypeMutationRF.CREATION) {
+				processCreation(importInitial ? null : dateValeur, servitude);
 			}
 			else {
-				final StringSource source = new StringSource(content);
-				final DienstbarkeitDiscreteList servitudesListImport = (DienstbarkeitDiscreteList) unmarshaller.get().unmarshal(source);
-				servitudesList = servitudesListImport.getDienstbarkeitDiscretes();
+				processModification(dateValeur, servitude);
 			}
 		}
-		catch (JAXBException e) {
-			throw new RuntimeException(e);
+		else if (typeMutation == TypeMutationRF.SUPPRESSION) {
+			processSuppression(dateValeur, servitudeIdRF);
 		}
-
-		// on crée les servitudes en mémoire
-		final List<ServitudeRF> servitudes = servitudesList.stream()
-				.map(e -> ServitudesRFHelper.newServitudeRF(e, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble))
-				.collect(Collectors.toList());
-
-		// on les insère en DB
-		switch (mutation.getTypeMutation()) {
-		case CREATION:
-			processCreation(importInitial ? null : dateValeur, ayantDroit, servitudes);
-			break;
-		case MODIFICATION:
-			processModification(dateValeur, ayantDroit, servitudes);
-			break;
-		case SUPPRESSION:
-			processSuppression(dateValeur, ayantDroit);
-			break;
-		default:
-			throw new IllegalArgumentException("Type de mutation inconnu = [" + mutation.getTypeMutation() + "]");
+		else {
+			throw new IllegalArgumentException("Type de mutation inconnu = [" + typeMutation + "]");
 		}
 
 		// on renseigne le rapport
 		if (rapport != null) {
 			rapport.addProcessed(mutation.getId(), TypeEntiteRF.DROIT, mutation.getTypeMutation());
 		}
+	}
+
+	@NotNull
+	private AyantDroitRF findAyantDroit(@NotNull String idRf) {
+		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRf));
+		if (ayantDroit == null) {
+			throw new IllegalArgumentException("L'ayant-droit idRF=[" + idRf + "] n'existe pas dans la DB.");
+		}
+		return ayantDroit;
 	}
 
 	@NotNull
@@ -134,69 +129,39 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 		return immeuble;
 	}
 
-	@Nullable
-	private CommunauteRF findCommunaute(@Nullable String idRf) {
-		if (idRf == null) {
-			return null;
-		}
-		final CommunauteRF communaute = (CommunauteRF) ayantDroitRFDAO.find(new AyantDroitRFKey(idRf));
-		if (communaute == null) {
-			throw new IllegalArgumentException("La communauté idRF=[" + idRf + "] n'existe pas dans la DB.");
-		}
-		return communaute;
+	/**
+	 * Traite l'ajout d'une servitude.
+	 */
+	private void processCreation(@Nullable RegDate dateValeur, @NotNull ServitudeRF servitude) {
+
+		// on sauve la nouvelle servitude
+		servitude.setDateDebut(dateValeur);
+		droitRFDAO.save(servitude);
 	}
 
 	/**
-	 * Traite l'ajout des servitudes sur un ayant-droit qui vient d'être créé.
+	 * Traite la modification d'une servitude sur un ayant-droit
 	 */
-	private void processCreation(@Nullable RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<ServitudeRF> droits) {
-		if (!ayantDroit.getDroits().isEmpty()) {
-			throw new IllegalArgumentException("L'ayant-droit idRF=[" + ayantDroit.getIdRF() + "] possède déjà des droits alors que la mutation est de type CREATION.");
+	private void processModification(@NotNull RegDate dateValeur, @NotNull ServitudeRF servitude) {
+
+		final DroitRF persisted = droitRFDAO.find(new DroitRFKey(servitude.getMasterIdRF()));
+		if (persisted == null) {
+			throw new IllegalArgumentException("La servitude idRF=[" + servitude.getMasterIdRF() + "] n'existe pas dans la DB.");
 		}
 
-		// on sauve les nouvelles servitudes
-		droits.forEach(d -> {
-			d.setAyantDroit(ayantDroit);
-			d.setDateDebut(dateValeur);
-			droitRFDAO.save(d);
-		});
+		// FIXME (msi) que faire ?
+		throw new NotImplementedException();
 	}
 
 	/**
-	 * Traite la modification des servitudes sur un ayant-droit qui existe déjà et - potentiellement - possède déjà des droits.
+	 * Traite la suppression (= fermeture) d'une servitude
 	 */
-	private void processModification(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<ServitudeRF> droits) {
-
-		// on va chercher les servitudes actives actuellement persistées
-		final List<DroitRF> persisted = ayantDroit.getDroits().stream()
-				.filter(d -> d.isValidAt(RegDate.get()))
-				.filter(d -> d instanceof ServitudeRF)
-				.collect(Collectors.toList());
-
-		// on détermine les changements
-		List<DroitRF> toAddList = new LinkedList<>(droits);
-		List<DroitRF> toCloseList = new LinkedList<>(persisted);
-		CollectionsUtils.removeCommonElements(toAddList, toCloseList, ServitudesRFHelper::dataEquals);
-
-		// on ferme toutes les servitudes à fermer
-		toCloseList.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
-
-		// on ajoute toutes les nouvelles servitudes
-		toAddList.forEach(d -> {
-			d.setAyantDroit(ayantDroit);
-			d.setDateDebut(dateValeur);
-			droitRFDAO.save(d);
-		});
-	}
-
-	/**
-	 * Traite la suppression (= fermeture) de toutes les servitudes d'un ayant-droit.
-	 */
-	private void processSuppression(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit) {
-		// on ferme toutes les servitudes encore ouvertes
-		ayantDroit.getDroits().stream()
-				.filter(d -> d.isValidAt(RegDate.get()))
-				.filter(d -> d instanceof ServitudeRF)
-				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
+	private void processSuppression(@NotNull RegDate dateValeur, String servitudeIdRF) {
+		final DroitRF persisted = droitRFDAO.find(new DroitRFKey(servitudeIdRF));
+		if (persisted == null) {
+			throw new IllegalArgumentException("La servitude idRF=[" + servitudeIdRF + "] n'existe pas dans la DB.");
+		}
+		// on ferme la servitude
+		persisted.setDateFin(dateValeur.getOneDayBefore());
 	}
 }

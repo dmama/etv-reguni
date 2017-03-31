@@ -9,20 +9,40 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.rf.GenrePropriete;
+import ch.vd.uniregctb.tiers.Contribuable;
 
 @Entity
 public abstract class DroitProprieteRF extends DroitRF {
+
+	/**
+	 * L'ayant-droit concerné par le droit.
+	 */
+	private AyantDroitRF ayantDroit;
+
+	/**
+	 * L'immeuble concerné par le droit.
+	 */
+	private ImmeubleRF immeuble;
+
 
 	private Fraction part;
 
@@ -32,6 +52,33 @@ public abstract class DroitProprieteRF extends DroitRF {
 	 * Les raison d'acquisition du droit.
 	 */
 	private Set<RaisonAcquisitionRF> raisonsAcquisition;
+
+	// configuration hibernate : l'ayant-droit ne possède pas les droits (les droits pointent vers les ayants-droits, c'est tout)
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "AYANT_DROIT_ID")
+	@Index(name = "IDX_DROIT_RF_AYANT_DROIT_ID", columnNames = "AYANT_DROIT_ID")
+	@ForeignKey(name = "FK_DROIT_RF_AYANT_DROIT_ID")
+	public AyantDroitRF getAyantDroit() {
+		return ayantDroit;
+	}
+
+	public void setAyantDroit(AyantDroitRF ayantDroit) {
+		this.ayantDroit = ayantDroit;
+	}
+
+	// configuration hibernate : l'immeuble ne possède pas les droits (les droits pointent vers les immeubles, c'est tout)
+	@ManyToOne
+	@JoinColumn(name = "IMMEUBLE_ID")
+	@ForeignKey(name = "FK_DROIT_RF_IMMEUBLE_ID")
+	@Index(name = "IDX_DROIT_RF_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
+	public ImmeubleRF getImmeuble() {
+		return immeuble;
+	}
+
+	public void setImmeuble(ImmeubleRF immeuble) {
+		this.immeuble = immeuble;
+	}
+
 
 	@AttributeOverrides({
 			@AttributeOverride(name = "numerateur", column = @Column(name = "PART_PROP_NUM")),
@@ -84,6 +131,79 @@ public abstract class DroitProprieteRF extends DroitRF {
 	@Override
 	public TypeDroit getTypeDroit() {
 		return TypeDroit.DROIT_PROPRIETE;
+	}
+
+	@Transient
+	@Override
+	public @NotNull List<AyantDroitRF> getAyantDroitList() {
+		return Collections.singletonList(ayantDroit);
+	}
+
+	@Transient
+	@Override
+	public @NotNull List<ImmeubleRF> getImmeubleList() {
+		return Collections.singletonList(immeuble);
+	}
+
+	/**
+	 * Compare le droit courant avec un autre droit. Les propriétés utilisées pour la comparaison sont :
+	 * <ul>
+	 * <li>les dates de début et de fin</li>
+	 * <li>l'id de l'ayant-droit</li>
+	 * <li>l'id de l'immeuble</li>
+	 * </ul>
+	 *
+	 * @param right un autre droit.
+	 * @return le résultat de la comparaison selon {@link Comparable#compareTo(Object)}.
+	 */
+	@Override
+	public int compareTo(@NotNull DroitRF right) {
+		int c = super.compareTo(right);
+		if (c != 0) {
+			return c;
+		}
+		if (right instanceof DroitProprieteRF) {
+			final DroitProprieteRF rightProp =(DroitProprieteRF) right;
+			c = ObjectUtils.compare(ayantDroit.getId(), rightProp.ayantDroit.getId(), false);
+			if (c != 0) {
+				return c;
+			}
+			c = ObjectUtils.compare(immeuble.getId(), rightProp.immeuble.getId(), false);
+		}
+		else {
+			c = -1;
+		}
+		return c;
+	}
+
+	@Override
+	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+		// on ne veut pas retourner les tiers Unireg dans le cas de la validation/indexation/parentés, car ils ne sont pas influencés par les données RF
+		if (ayantDroit instanceof TiersRF && (context == Context.TACHES || context == Context.DATA_EVENT)) {
+			final List<Object> list = new ArrayList<>();
+			// on cherche tous les contribuables concernés ou ayant été concernés par ce droit
+			list.addAll(findLinkedContribuables((TiersRF) ayantDroit));
+			// on ajoute l'immeuble, évidemment
+			list.add(immeuble);
+			return list;
+		}
+		else {
+			return Collections.singletonList(immeuble);
+		}
+	}
+
+	/**
+	 * @param tiersRF un tiers RF
+	 * @return on cherche tous les contribuables concernés ou ayant été concernés par le tiers RF spécifié.
+	 */
+	@NotNull
+	public static List<Contribuable> findLinkedContribuables(@NotNull TiersRF tiersRF) {
+		return Optional.of(tiersRF)
+				.map(TiersRF::getRapprochements) // la collection peut être nulle si l'entité vient juste d'être créée
+				.map(r -> r.stream()
+						.map(RapprochementRF::getContribuable)
+						.collect(Collectors.toList()))
+				.orElseGet(Collections::emptyList);
 	}
 
 	/**

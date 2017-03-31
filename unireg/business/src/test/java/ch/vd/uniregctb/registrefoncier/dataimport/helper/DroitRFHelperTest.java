@@ -23,7 +23,7 @@ import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -45,7 +45,7 @@ public class DroitRFHelperTest {
 	@Test
 	public void testDataEqualsListNullity() throws Exception {
 
-		assertTrue(DroitRFHelper.dataEquals((Set<DroitRF>) null, null));
+		assertTrue(DroitRFHelper.dataEquals((Set<DroitProprieteRF>) null, null));
 		assertTrue(DroitRFHelper.dataEquals(Collections.emptySet(), null));
 		assertTrue(DroitRFHelper.dataEquals(null, Collections.emptyList()));
 		assertTrue(DroitRFHelper.dataEquals(Collections.emptySet(), Collections.emptyList()));

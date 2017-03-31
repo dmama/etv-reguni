@@ -2,6 +2,7 @@ package ch.vd.uniregctb.xml.party.v5;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -10,12 +11,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
+import ch.vd.unireg.xml.party.landregistry.v1.EasementRight;
 import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 import ch.vd.uniregctb.common.ProgrammingException;
+import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -26,7 +30,9 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
@@ -90,29 +96,40 @@ public abstract class LandRightBuilder {
 	@NotNull
 	public static UsufructRight newUsufructRight(@NotNull UsufruitRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
 		final UsufructRight right = new UsufructRight();
-		right.setDateFrom(DataHelper.coreToXMLv2(usufruitRF.getDateDebutMetier()));
-		right.setDateTo(DataHelper.coreToXMLv2(usufruitRF.getDateFinMetier()));
-		right.setStartReason(usufruitRF.getMotifDebut());
-		right.setEndReason(usufruitRF.getMotifFin());
-		right.setCommunityId(getCommunityId(usufruitRF.getCommunaute()));
-		right.setCaseIdentifier(getCaseIdentifier(usufruitRF.getNumeroAffaire()));
-		right.setRightHolder(RightHolderBuilder.getRightHolder(usufruitRF.getAyantDroit(), ctbIdProvider));
-		right.setImmovablePropertyId(usufruitRF.getImmeuble().getId());
+		fillEasementRight(usufruitRF, right, ctbIdProvider);
 		return right;
 	}
 
 	@NotNull
 	public static HousingRight newHousingRight(@NotNull DroitHabitationRF droitHabitationRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
 		final HousingRight right = new HousingRight();
-		right.setDateFrom(DataHelper.coreToXMLv2(droitHabitationRF.getDateDebutMetier()));
-		right.setDateTo(DataHelper.coreToXMLv2(droitHabitationRF.getDateFinMetier()));
-		right.setStartReason(droitHabitationRF.getMotifDebut());
-		right.setEndReason(droitHabitationRF.getMotifFin());
-		right.setCommunityId(getCommunityId(droitHabitationRF.getCommunaute()));
-		right.setCaseIdentifier(getCaseIdentifier(droitHabitationRF.getNumeroAffaire()));
-		right.setRightHolder(RightHolderBuilder.getRightHolder(droitHabitationRF.getAyantDroit(), ctbIdProvider));
-		right.setImmovablePropertyId(droitHabitationRF.getImmeuble().getId());
+		fillEasementRight(droitHabitationRF, right, ctbIdProvider);
 		return right;
+	}
+
+	private static void fillEasementRight(@NotNull ServitudeRF servitude, EasementRight right, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+
+		right.setDateFrom(DataHelper.coreToXMLv2(servitude.getDateDebutMetier()));
+		right.setDateTo(DataHelper.coreToXMLv2(servitude.getDateFinMetier()));
+		right.setStartReason(servitude.getMotifDebut());
+		right.setEndReason(servitude.getMotifFin());
+		right.setCaseIdentifier(getCaseIdentifier(servitude.getNumeroAffaire()));
+
+		final List<RightHolder> rightHolders = servitude.getAyantDroits().stream()
+				.sorted(Comparator.comparing(AyantDroitRF::getId))
+				.map(r -> RightHolderBuilder.getRightHolder(r, ctbIdProvider))
+				.collect(Collectors.toList());
+		right.getRightHolders().addAll(rightHolders);
+
+		final List<Long> immovablePropIds = servitude.getImmeubles().stream()
+				.sorted(Comparator.comparing(ImmeubleRF::getId))
+				.map(ImmeubleRF::getId)
+				.collect(Collectors.toList());
+		right.getImmovablePropertyIds().addAll(immovablePropIds);
+
+		// pour des raisons de compatibilité ascendante, on renseigne encore ces deux propriétés
+		right.setRightHolder(rightHolders.get(0));
+		right.setImmovablePropertyId(immovablePropIds.get(0));
 	}
 
 	private static Long getCommunityId(@Nullable CommunauteRF communaute) {

@@ -64,7 +64,10 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>L'ayant-droit qui possède le droit.</jxb:javadoc>
+							<jxb:javadoc>L'ayant-droit qui possède le droit.
+								Note : pour des raisons historique, l'ayant-droit est exposé dans la classe de base des droits, mais cette situation n'est correcte
+								que dans le cas des droits de propriété : dans le cas des servitudes, il peut en effet y a voir plusieurs ayants-droits concernés.
+								Si le droit est une servitude, il ne faut pas utiliser cet élément mais l'élément 'rightHolders' de la structure 'easementRightType'.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
@@ -73,7 +76,10 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>L'id technique Unireg de l'immeuble correspondant.</jxb:javadoc>
+							<jxb:javadoc>L'id technique Unireg de l'immeuble correspondant.
+								Note : pour des raisons historique, l'id de l'immeuble est exposé dans la classe de base des droits, mais cette situation n'est correcte
+								que dans le cas des droits de propriété : dans le cas des servitudes, il peut en effet y a voir plusieurs immeubles concernés.
+								Si le droit est une servitude, il ne faut pas utiliser cet élément mais l'élément 'immovablePropertyIds' de la structure 'easementRightType'.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
@@ -154,11 +160,20 @@
 		<xs:complexContent>
 			<xs:extension base="land:landRightType">
 				<xs:sequence>
-					<xs:element name="communityId" type="xs:long" minOccurs="0">
+					<xs:element name="rightHolders" type="land:rightHolderType" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Si renseigné, l'id technique de la communauté d'usufruitiers qui ont véritablement le droit d'usufruit. Si nul, il s'agit d'un usufruit normal.</jxb:javadoc>
+									<jxb:javadoc>Les bénéficiaires de la servitude.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="immovablePropertyIds" type="xs:long" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Les ids techniques Unireg des immeubles grévés par la servitude.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>

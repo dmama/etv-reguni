@@ -6,8 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -17,7 +19,6 @@ import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
@@ -30,7 +31,6 @@ import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
-import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Contribuable;
 
@@ -94,8 +94,6 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		final Map<Class<? extends DroitRF>, Function<?, CommunauteRF>> map = new HashMap<>();
 		addToIdCommunauteExtractors(map, DroitProprietePersonneMoraleRF.class, DroitProprietePersonneRF::getCommunaute);
 		addToIdCommunauteExtractors(map, DroitProprietePersonnePhysiqueRF.class, DroitProprietePersonneRF::getCommunaute);
-		addToIdCommunauteExtractors(map, UsufruitRF.class, ServitudeRF::getCommunaute);
-		addToIdCommunauteExtractors(map, DroitHabitationRF.class, ServitudeRF::getCommunaute);
 		addToIdCommunauteExtractors(map, DroitProprieteCommunauteRF.class, droit -> (CommunauteRF) droit.getAyantDroit());
 		return map;
 	}
@@ -164,7 +162,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		public final Fraction part;
 		public final InfoImmeuble infoImmeuble;
 
-		public InfoExtraction(@Nullable Contribuable contribuable, DroitRF droit, @Nullable SituationRF situation) {
+		public InfoExtraction(@Nullable Contribuable contribuable, @NotNull DroitProprieteRF droit, @Nullable SituationRF situation) {
 			// information du contribuable
 			if (contribuable != null) {
 				idContribuable = contribuable.getNumero();
@@ -186,18 +184,51 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			dateDebut = droit.getDateDebutMetier();
 			motifFin = droit.getMotifFin();
 			dateFin = droit.getDateFinMetier();
-			if (droit instanceof DroitProprieteRF) {
-				final DroitProprieteRF droitPropriete = (DroitProprieteRF) droit;
-				regime = droitPropriete.getRegime();
-				part = droitPropriete.getPart();
-			}
-			else {
-				regime = null;
-				part = null;
-			}
+			regime = droit.getRegime();
+			part = droit.getPart();
 
 			// les données de l'immeuble et de sa situation
 			infoImmeuble = new InfoImmeuble(droit.getImmeuble(), situation);
+		}
+
+		public InfoExtraction(@Nullable Contribuable contribuable, @NotNull ServitudeRF servitude, @Nullable SituationRF situation) {
+
+			// préconditions
+			final Set<AyantDroitRF> ayantDroits = servitude.getAyantDroits();
+			if (ayantDroits.size() != 1) {
+				throw new IllegalArgumentException("La servitude ne doit contenir qu'un seul bénéficiaire");
+			}
+			final Set<ImmeubleRF> immeubles = servitude.getImmeubles();
+			if (immeubles.size() != 1) {
+				throw new IllegalArgumentException("La servitude ne doit contenir qu'un seul immeuble");
+			}
+
+			// information du contribuable
+			if (contribuable != null) {
+				idContribuable = contribuable.getNumero();
+			}
+			else {
+				idContribuable = null;
+			}
+
+			// information d'identification en provenance du RF
+			identificationRF = buildNomPrenomRaisonSociale(ayantDroits.iterator().next());
+
+			// l'éventuelle communauté
+			idCommunaute = Optional.ofNullable(extractCommunaute(servitude)).map(CommunauteRF::getId).orElse(null);
+
+			// les données du droit lui-même
+			classAyantDroit = ayantDroits.iterator().next().getClass();
+			classDroit = servitude.getClass();
+			motifDebut = servitude.getMotifDebut();
+			dateDebut = servitude.getDateDebutMetier();
+			motifFin = servitude.getMotifFin();
+			dateFin = servitude.getDateFinMetier();
+			regime = null;
+			part = null;
+
+			// les données de l'immeuble et de sa situation
+			infoImmeuble = new InfoImmeuble(immeubles.iterator().next(), situation);
 		}
 
 		public InfoExtraction(ImmeubleRF immeuble, @Nullable SituationRF situation) {
@@ -253,8 +284,12 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		this.erreurs.add(new ErreurImmeuble(idImmeuble, e));
 	}
 
-	public void addDroit(@Nullable Contribuable contribuable, DroitRF droit, @Nullable SituationRF situation) {
+	public void addDroitPropriete(@Nullable Contribuable contribuable, @NotNull DroitProprieteRF droit, @Nullable SituationRF situation) {
 		this.lignesExtraites.add(new InfoExtraction(contribuable, droit, situation));
+	}
+
+	public void addServitude(@Nullable Contribuable contribuable, @NotNull ServitudeRF servitude, @Nullable SituationRF situation) {
+		this.lignesExtraites.add(new InfoExtraction(contribuable, servitude, situation));
 	}
 
 	public void addImmeubleSansDroit(ImmeubleRF immeuble, @Nullable SituationRF situation) {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -21,6 +22,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
@@ -141,11 +143,11 @@ public abstract class ImmovablePropertyBuilder {
 				                                      .sorted()
 				                                      .map(BuildingBuilder::newBuildSetting)
 				                                      .collect(Collectors.toList()));
-		property.getLandRights().addAll(immeuble.getDroits().stream()
+		property.getLandRights().addAll(Stream.concat(immeuble.getDroitsPropriete().stream(), immeuble.getServitudes().stream())
 				                                .filter(AnnulableHelper::nonAnnule)
 				                                // on n'expose pas les droits des communautés (c'est les droits des personnes membres des communautés qui portent l'information)
 				                                .filter(d -> !(d instanceof DroitProprieteCommunauteRF))
-				                                .sorted()
+				                                .sorted(new DroitRFRangeMetierComparator())
 				                                .map(d -> LandRightBuilder.newLandRight(d, contribuableIdProvider))
 				                                .collect(Collectors.toList()));
 	}

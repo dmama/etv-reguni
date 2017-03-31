@@ -30,6 +30,7 @@
 		<constructor-arg ref="ayantDroitRFDetector"/>
 		<constructor-arg ref="batimentRFDetector"/>
 		<constructor-arg ref="droitRFDetector"/>
+		<constructor-arg ref="servitudeRFDetector"/>
 		<constructor-arg ref="immeubleRFDetector"/>
 		<constructor-arg ref="surfaceAuSolRFDetector"/>
 	</bean>
@@ -58,7 +59,14 @@
 		<constructor-arg ref="transactionManager"/>
 		<constructor-arg ref="ayantDroitRFDetector"/>
 		<constructor-arg ref="tempRFCacheDroits"/>
-		<constructor-arg ref="tempRFCacheServitudes"/>
+	</bean>
+
+	<bean id="servitudeRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.ServitudeRFDetector">
+		<constructor-arg ref="xmlHelperRF"/>
+		<constructor-arg ref="droitRFDAO"/>
+		<constructor-arg ref="evenementRFImportDAO" />
+		<constructor-arg ref="evenementRFMutationDAO" />
+		<constructor-arg ref="transactionManager"/>
 	</bean>
 
 	<bean id="immeubleRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.ImmeubleRFDetector">

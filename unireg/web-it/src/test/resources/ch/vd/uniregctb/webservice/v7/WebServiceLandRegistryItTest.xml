@@ -764,8 +764,8 @@
 			<value>4</value>
 			<value>1</value>
 			<null />
-			<value>265043585</value>
-			<value>264310664</value>
+			<null />
+			<null />
 			<null />
 		</row>
 		<row>
@@ -789,9 +789,37 @@
 			<value>4</value>
 			<value>1</value>
 			<null />
-			<value>265043586</value>
-			<value>264310664</value>
 			<null />
+			<null />
+			<null />
+		</row>
+	</table>
+	<table name="RF_SERVITUDE_AYANT_DROIT">
+		<column>DROIT_ID</column>
+		<column>AYANT_DROIT_ID</column>
+		<row>
+			<value>265220714</value>
+			<value>265043585</value>
+		</row>
+		<row>
+			<value>265220714</value>
+			<value>265043586</value>
+		</row>
+		<row>
+			<value>265220715</value>
+			<value>265043585</value>
+		</row>
+	</table>
+	<table name="RF_SERVITUDE_IMMEUBLE">
+		<column>DROIT_ID</column>
+		<column>IMMEUBLE_ID</column>
+		<row>
+			<value>265220714</value>
+			<value>264310664</value>
+		</row>
+		<row>
+			<value>265220715</value>
+			<value>264310664</value>
 		</row>
 	</table>
 	<table name="RF_RAISON_ACQUISITION">

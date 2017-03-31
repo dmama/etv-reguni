@@ -34,7 +34,7 @@ public abstract class DroitRFHelper {
 	private DroitRFHelper() {
 	}
 
-	public static boolean dataEquals(Set<DroitRF> droits, List<PersonEigentumAnteil> eigentums) {
+	public static boolean dataEquals(Set<DroitProprieteRF> droits, List<PersonEigentumAnteil> eigentums) {
 
 		//noinspection Duplicates
 		if ((droits == null || droits.isEmpty()) && (eigentums == null || eigentums.isEmpty())) {
@@ -50,11 +50,11 @@ public abstract class DroitRFHelper {
 			return false;
 		}
 
-		List<DroitRF> remaining = new ArrayList<>(droits);
+		List<DroitProprieteRF> remaining = new ArrayList<>(droits);
 		for (PersonEigentumAnteil e : eigentums) {
 			boolean found = false;
 			for (int i = 0; i < remaining.size(); i++) {
-				DroitRF droitRF = remaining.get(i);
+				DroitProprieteRF droitRF = remaining.get(i);
 				if (dataEquals(droitRF, e)) {
 					remaining.remove(i);
 					found = true;
@@ -70,7 +70,7 @@ public abstract class DroitRFHelper {
 		return true;
 	}
 
-	public static boolean dataEquals(DroitRF droitRF, PersonEigentumAnteil personEigentumAnteil) {
+	public static boolean dataEquals(DroitProprieteRF droitRF, PersonEigentumAnteil personEigentumAnteil) {
 		return dataEquals(droitRF, get(personEigentumAnteil, DroitRFHelper::simplisticAyantDroitProvider, DroitRFHelper::simplisticCommunauteProvider, DroitRFHelper::simplisticImmeubleProvider));
 	}
 
@@ -109,7 +109,7 @@ public abstract class DroitRFHelper {
 		return c;
 	}
 
-	public static boolean dataEquals(@NotNull DroitRF left, @NotNull DroitRF right) {
+	public static boolean dataEquals(@NotNull DroitProprieteRF left, @NotNull DroitProprieteRF right) {
 
 		if (!left.getMasterIdRF().equals(right.getMasterIdRF())) {
 			return false;
@@ -144,16 +144,16 @@ public abstract class DroitRFHelper {
 	}
 
 	private static boolean equalsDroitProp(@NotNull DroitProprieteRF left, @NotNull DroitProprieteRF right) {
-		return partEquals(left.getPart(), right.getPart()) &&
+		return ayantDroitEquals(left.getAyantDroit(), right.getAyantDroit()) &&
+				immeubleEquals(left.getImmeuble(), right.getImmeuble()) &&
+				partEquals(left.getPart(), right.getPart()) &&
 				left.getRegime() == right.getRegime() &&
 				RaisonAcquisitionRFHelper.dataEquals(left.getRaisonsAcquisition(), right.getRaisonsAcquisition()) &&
 				equalsDroit(left, right);
 	}
 
 	public static boolean equalsDroit(@NotNull DroitRF left, @NotNull DroitRF right) {
-		return ayantDroitEquals(left.getAyantDroit(), right.getAyantDroit()) &&
-				immeubleEquals(left.getImmeuble(), right.getImmeuble()) &&
-				left.getDateDebutMetier() == right.getDateDebutMetier() &&
+		return left.getDateDebutMetier() == right.getDateDebutMetier() &&
 				// la date de fin métier n'est pas renseignée dans le fichier d'entrée, on ne la compare pas
 				Objects.equals(left.getMotifDebut(), right.getMotifDebut());
 	}

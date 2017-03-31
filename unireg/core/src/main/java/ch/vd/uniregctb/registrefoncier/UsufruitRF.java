@@ -3,6 +3,8 @@ package ch.vd.uniregctb.registrefoncier;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Droit de type usufruit sur un immeuble. L'ayant-droit d'un droit habitation est soit une personne morale, soit une personne physique.
  */
@@ -10,4 +12,15 @@ import javax.persistence.Entity;
 @DiscriminatorValue("Usufruit")
 public class UsufruitRF extends ServitudeRF {
 
+	public UsufruitRF() {
+	}
+
+	public UsufruitRF(@NotNull UsufruitRF right) {
+		super(right);
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return new UsufruitRF(this);
+	}
 }

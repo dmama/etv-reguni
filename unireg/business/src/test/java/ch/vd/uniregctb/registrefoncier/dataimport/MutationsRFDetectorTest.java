@@ -103,8 +103,8 @@ public class MutationsRFDetectorTest extends BusinessTest {
 			UsufruitRF usufruit = new UsufruitRF();
 			usufruit.setMasterIdRF("23489238923");
 			usufruit.setDateDebut(RegDate.get(2000, 1, 1));
-			usufruit.setImmeuble(immeuble);
-			usufruit.setAyantDroit(pp);
+			usufruit.addImmeuble(immeuble);
+			usufruit.addAyantDroit(pp);
 			droitRFDAO.save(usufruit);
 
 			return null;

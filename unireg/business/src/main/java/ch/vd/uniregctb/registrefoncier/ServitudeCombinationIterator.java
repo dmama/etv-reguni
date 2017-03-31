@@ -1,16 +1,13 @@
-package ch.vd.uniregctb.registrefoncier.dataimport;
+package ch.vd.uniregctb.registrefoncier;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import ch.vd.capitastra.rechteregister.BelastetesGrundstueck;
-import ch.vd.capitastra.rechteregister.BerechtigtePerson;
-import ch.vd.capitastra.rechteregister.DienstbarkeitDiscrete;
-import ch.vd.capitastra.rechteregister.DienstbarkeitExtended;
 
 /**
  * Iterateur qui découpe par immeuble et par bénéficiaire les servitudes exposées par l'itérateur source.
@@ -39,17 +36,17 @@ import ch.vd.capitastra.rechteregister.DienstbarkeitExtended;
  *     </li>
  * </ul>
  */
-public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDiscrete> {
+public class ServitudeCombinationIterator implements Iterator<ServitudeRF> {
 
-	private final Iterator<? extends DienstbarkeitExtended> sourceIterator;
-	private Iterator<BerechtigtePerson> benenficiaireIterator;
-	private Iterator<BelastetesGrundstueck> immeubleIterator;
-	private BerechtigtePerson currentSourceBeneficiaire;
-	private DienstbarkeitExtended currentSourceServitude;
-	private DienstbarkeitDiscrete next;
-	private final List<DienstbarkeitExtended> emptyServitudes = new ArrayList<>();
+	private final Iterator<? extends ServitudeRF> sourceIterator;
+	private Iterator<AyantDroitRF> benenficiaireIterator;
+	private Iterator<ImmeubleRF> immeubleIterator;
+	private AyantDroitRF currentSourceBeneficiaire;
+	private ServitudeRF currentSourceServitude;
+	private ServitudeRF next;
+	private final List<ServitudeRF> emptyServitudes = new ArrayList<>();
 
-	public DienstbarkeitDiscreteIterator(@NotNull Iterator<? extends DienstbarkeitExtended> sourceIterator) {
+	public ServitudeCombinationIterator(@NotNull Iterator<? extends ServitudeRF> sourceIterator) {
 		this.sourceIterator = sourceIterator;
 		this.benenficiaireIterator = null;
 		this.immeubleIterator = null;
@@ -67,7 +64,7 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 	 * @return la servitude suivante. La servitude retournée ne possède qu'un seul immeuble, par contrat.
 	 */
 	@Override
-	public DienstbarkeitDiscrete next() {
+	public ServitudeRF next() {
 		try {
 			return next;
 		}
@@ -79,7 +76,7 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 	/**
 	 * @return les servitudes qui n'ont pas de bénéficiaires. Cette collection est complète une fois que l'itérateur a été entièrement parcouru.
 	 */
-	public List<DienstbarkeitExtended> getEmptyServitudes() {
+	public List<ServitudeRF> getEmptyServitudes() {
 		return emptyServitudes;
 	}
 
@@ -89,7 +86,7 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 	 * @return l'élément suivant ou <b>null</b> si on a atteint la fin de l'itérateur.
 	 */
 	@Nullable
-	private DienstbarkeitDiscrete buildNext() {
+	private ServitudeRF buildNext() {
 
 		// on avance les itérateurs sur les servitudes et bénéficiaires si nécessaire
 		while (immeubleIterator == null || !immeubleIterator.hasNext()) {
@@ -100,7 +97,8 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 				}
 				// on va chercher la source suivante
 				currentSourceServitude = sourceIterator.next();
-				final List<BerechtigtePerson> beneficiaires = currentSourceServitude.getLastRechtGruppe().getBerechtigtePerson();
+				final List<AyantDroitRF> beneficiaires = new ArrayList<>(currentSourceServitude.getAyantDroits());
+				beneficiaires.sort(Comparator.comparing(AyantDroitRF::getIdRF, Comparator.nullsFirst(Comparator.naturalOrder())));
 				if (beneficiaires.isEmpty()) {
 					// [SIFISC-23744] on mémorise les servitudes vides pour les annoncer dans le rapport
 					emptyServitudes.add(currentSourceServitude);
@@ -110,22 +108,23 @@ public class DienstbarkeitDiscreteIterator implements Iterator<DienstbarkeitDisc
 			}
 			// on va chercher le bénéficiaire suivant
 			currentSourceBeneficiaire = benenficiaireIterator.next();
-			immeubleIterator = currentSourceServitude.getLastRechtGruppe().getBelastetesGrundstueck().iterator();
+			final List<ImmeubleRF> immeubles = new ArrayList<>(currentSourceServitude.getImmeubles());
+			immeubles.sort(Comparator.comparing(ImmeubleRF::getIdRF, Comparator.nullsFirst(Comparator.naturalOrder())));
+			immeubleIterator = immeubles.iterator();
 		}
 		// on va chercher l'immeuble suivant
-		final BelastetesGrundstueck immeuble = immeubleIterator.next();
+		final ImmeubleRF immeuble = immeubleIterator.next();
 
 		// on crée une copie de la servitude avec un seul immeuble et un seul propriétaire renseigné
-		final DienstbarkeitDiscrete n = new DienstbarkeitDiscrete();
-		n.setDienstbarkeit(currentSourceServitude.getDienstbarkeit());
-		n.setBerechtigtePerson(currentSourceBeneficiaire);
-		n.setBelastetesGrundstueck(immeuble);
-
-		final List<BerechtigtePerson> beneficiaires = currentSourceServitude.getLastRechtGruppe().getBerechtigtePerson();
-		if (beneficiaires.size() > 1) {
-			// on considère que s'il y a plus qu'un bénéficiaire, il s'agit d'une communauté implicite
-			n.getGemeinschaft().addAll(beneficiaires);
+		final ServitudeRF n;
+		try {
+			n = (ServitudeRF) currentSourceServitude.clone();
 		}
+		catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+		n.setAyantDroits(Collections.singleton(currentSourceBeneficiaire));
+		n.setImmeubles(Collections.singleton(immeuble));
 
 		return n;
 	}

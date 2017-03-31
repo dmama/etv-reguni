@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.helper;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -16,19 +15,20 @@ import ch.vd.capitastra.rechteregister.Beleg;
 import ch.vd.capitastra.rechteregister.BerechtigtePerson;
 import ch.vd.capitastra.rechteregister.CapiCode;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
-import ch.vd.capitastra.rechteregister.DienstbarkeitDiscrete;
+import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.capitastra.rechteregister.NatuerlichePersonGb;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,19 +42,19 @@ public class ServitudesRFHelperTest {
 	@Test
 	public void testDataEqualsListNullity() throws Exception {
 
-		assertTrue(ServitudesRFHelper.dataEquals((Set<DroitRF>) null, null));
+		assertTrue(ServitudesRFHelper.dataEquals((Set<ServitudeRF>) null, null));
 		assertTrue(ServitudesRFHelper.dataEquals(Collections.emptySet(), null));
 		assertTrue(ServitudesRFHelper.dataEquals(null, Collections.emptyList()));
 		assertTrue(ServitudesRFHelper.dataEquals(Collections.emptySet(), Collections.emptyList()));
 
-		assertFalse(ServitudesRFHelper.dataEquals(null, Collections.singletonList(new DienstbarkeitDiscrete())));
+		assertFalse(ServitudesRFHelper.dataEquals(null, Collections.singletonList(new DienstbarkeitExtendedElement())));
 		assertFalse(ServitudesRFHelper.dataEquals(Collections.singleton(new UsufruitRF()), null));
 	}
 
 	@Test
 	public void testDataEqualsListDifferentSizes() throws Exception {
 		assertFalse(ServitudesRFHelper.dataEquals(Collections.singleton(new UsufruitRF()),
-		                                          Arrays.asList(new DienstbarkeitDiscrete(), new DienstbarkeitDiscrete())));
+		                                          Arrays.asList(new DienstbarkeitExtendedElement(), new DienstbarkeitExtendedElement())));
 	}
 
 	@Test
@@ -82,15 +82,15 @@ public class ServitudesRFHelperTest {
 		final BelastetesGrundstueck grundstueck1 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
 		final Dienstbarkeit dienstbarkeit1 = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
-		final DienstbarkeitDiscrete discreteDienstbarkeit1 = newDienstbarkeitDiscrete(grundstueck1, natuerlichePerson1, dienstbarkeit1, null);
+		final DienstbarkeitExtendedElement discreteDienstbarkeit1 = newDienstbarkeitExtended(grundstueck1, natuerlichePerson1, dienstbarkeit1);
 
 		final BelastetesGrundstueck grundstueck2 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe090827e1", null, null);
 		final NatuerlichePersonGb natuerlichePerson2 = newNatuerlichePersonGb("Anne-Lise", "Lassueur", "_1f109152380ffd8901380ffda8131c65");
 		final Dienstbarkeit dienstbarkeit2 = newDienstbarkeit("1f109152380ffd8901380ffefad54360", "_1f109152380ffd8901380ffefad54360", 2006, 361, 8, "Usufruit", null, new Beleg(8, 2006, 285, 0), RegDate.get(2006, 6, 30), null);
-		final DienstbarkeitDiscrete discreteDienstbarkeit2 = newDienstbarkeitDiscrete(grundstueck2, natuerlichePerson2, dienstbarkeit2, null);
+		final DienstbarkeitExtendedElement discreteDienstbarkeit2 = newDienstbarkeitExtended(grundstueck2, natuerlichePerson2, dienstbarkeit2);
 
-		final Set<DroitRF> servitudes = new HashSet<>(Arrays.<DroitRF>asList(servitude1, servitude2));
-		final List<DienstbarkeitDiscrete> dienstbarkeits = Arrays.asList(discreteDienstbarkeit1, discreteDienstbarkeit2);
+		final Set<ServitudeRF> servitudes = new HashSet<>(Arrays.<ServitudeRF>asList(servitude1, servitude2));
+		final List<DienstbarkeitExtendedElement> dienstbarkeits = Arrays.asList(discreteDienstbarkeit1, discreteDienstbarkeit2);
 
 		assertTrue(ServitudesRFHelper.dataEquals(servitudes, dienstbarkeits));
 	}
@@ -110,7 +110,7 @@ public class ServitudesRFHelperTest {
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
 		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
-		final DienstbarkeitDiscrete discreteDienstbarkeit = newDienstbarkeitDiscrete(grundstueck, natuerlichePerson, dienstbarkeit, null);
+		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(grundstueck, natuerlichePerson, dienstbarkeit);
 
 		assertTrue(ServitudesRFHelper.dataEquals(usufruit, discreteDienstbarkeit));
 	}
@@ -130,7 +130,7 @@ public class ServitudesRFHelperTest {
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
 		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Droit d'habitation", "2002/392", null, RegDate.get(2002, 9, 2), null);
-		final DienstbarkeitDiscrete discreteDienstbarkeit = newDienstbarkeitDiscrete(grundstueck, natuerlichePerson, dienstbarkeit, null);
+		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(grundstueck, natuerlichePerson, dienstbarkeit);
 
 		assertTrue(ServitudesRFHelper.dataEquals(droitHabitation, discreteDienstbarkeit));
 	}
@@ -147,9 +147,9 @@ public class ServitudesRFHelperTest {
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
 		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
-		final DienstbarkeitDiscrete discreteDienstbarkeit = newDienstbarkeitDiscrete(grundstueck, natuerlichePerson1, dienstbarkeit, null);
+		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(grundstueck, natuerlichePerson1, dienstbarkeit);
 
-		final ServitudeRF servitude = ServitudesRFHelper.newServitudeRF(discreteDienstbarkeit, (id) -> pp1, (id) -> null, (id) -> immeuble);
+		final ServitudeRF servitude = ServitudesRFHelper.newServitudeRF(discreteDienstbarkeit, (id) -> pp1, (id) -> immeuble);
 		assertNotNull(servitude);
 		assertTrue(servitude instanceof UsufruitRF);
 		assertEquals("1f109152380ffd8901380ffed6694392", servitude.getMasterIdRF());
@@ -159,9 +159,14 @@ public class ServitudesRFHelperTest {
 		assertNull(servitude.getMotifFin());
 		assertIdentifiantDroit(2005, 699, 8, servitude.getIdentifiantDroit());
 		assertNumeroAffaire(8, "2002/392", servitude.getNumeroAffaire());
-		assertNull(servitude.getCommunaute());
-		assertSame(pp1, servitude.getAyantDroit());
-		assertSame(immeuble, servitude.getImmeuble());
+
+		final Set<AyantDroitRF> ayantDroits = servitude.getAyantDroits();
+		assertEquals(1, ayantDroits.size());
+		assertSame(pp1, ayantDroits.iterator().next());
+
+		final Set<ImmeubleRF> immeubles = servitude.getImmeubles();
+		assertEquals(1, immeubles.size());
+		assertSame(immeuble, immeubles.iterator().next());
 	}
 
 	@Test
@@ -176,9 +181,9 @@ public class ServitudesRFHelperTest {
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
 		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Droit d'habitation", "2002/392", null, RegDate.get(2002, 9, 2), null);
-		final DienstbarkeitDiscrete discreteDienstbarkeit = newDienstbarkeitDiscrete(grundstueck, natuerlichePerson1, dienstbarkeit, null);
+		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(grundstueck, natuerlichePerson1, dienstbarkeit);
 
-		final ServitudeRF servitude = ServitudesRFHelper.newServitudeRF(discreteDienstbarkeit, (id) -> pp1, (id) -> null, (id) -> immeuble);
+		final ServitudeRF servitude = ServitudesRFHelper.newServitudeRF(discreteDienstbarkeit, (id) -> pp1, (id) -> immeuble);
 		assertNotNull(servitude);
 		assertTrue(servitude instanceof DroitHabitationRF);
 		assertEquals("1f109152380ffd8901380ffed6694392", servitude.getMasterIdRF());
@@ -188,9 +193,14 @@ public class ServitudesRFHelperTest {
 		assertNull(servitude.getMotifFin());
 		assertIdentifiantDroit(2005, 699, 8, servitude.getIdentifiantDroit());
 		assertNumeroAffaire(8, "2002/392", servitude.getNumeroAffaire());
-		assertNull(servitude.getCommunaute());
-		assertSame(pp1, servitude.getAyantDroit());
-		assertSame(immeuble, servitude.getImmeuble());
+
+		final Set<AyantDroitRF> ayantDroits = servitude.getAyantDroits();
+		assertEquals(1, ayantDroits.size());
+		assertSame(pp1, ayantDroits.iterator().next());
+
+		final Set<ImmeubleRF> immeubles = servitude.getImmeubles();
+		assertEquals(1, immeubles.size());
+		assertSame(immeuble, immeubles.iterator().next());
 	}
 
 	@Test
@@ -209,9 +219,9 @@ public class ServitudesRFHelperTest {
 		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
 		final NatuerlichePersonGb natuerlichePerson2 = newNatuerlichePersonGb("Anne-Lise", "Lassueur", "_1f109152380ffd8901380ffda8131c65");
 		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
-		final DienstbarkeitDiscrete discreteDienstbarkeit = newDienstbarkeitDiscrete(grundstueck, natuerlichePerson1, dienstbarkeit, Arrays.asList(natuerlichePerson1, natuerlichePerson2));
+		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(grundstueck, natuerlichePerson1, dienstbarkeit);
 
-		final ServitudeRF servitude = ServitudesRFHelper.newServitudeRF(discreteDienstbarkeit, (id) -> pp1, (id) -> communaute, (id) -> immeuble);
+		final ServitudeRF servitude = ServitudesRFHelper.newServitudeRF(discreteDienstbarkeit, (id) -> pp1, (id) -> immeuble);
 		assertNotNull(servitude);
 		assertTrue(servitude instanceof UsufruitRF);
 		assertEquals("1f109152380ffd8901380ffed6694392", servitude.getMasterIdRF());
@@ -221,9 +231,14 @@ public class ServitudesRFHelperTest {
 		assertNull(servitude.getMotifFin());
 		assertIdentifiantDroit(2005, 699, 8, servitude.getIdentifiantDroit());
 		assertNumeroAffaire(8, "2002/392", servitude.getNumeroAffaire());
-		assertSame(communaute, servitude.getCommunaute());
-		assertSame(pp1, servitude.getAyantDroit());
-		assertSame(immeuble, servitude.getImmeuble());
+
+		final Set<AyantDroitRF> ayantDroits = servitude.getAyantDroits();
+		assertEquals(1, ayantDroits.size());
+		assertSame(pp1, ayantDroits.iterator().next());
+
+		final Set<ImmeubleRF> immeubles = servitude.getImmeubles();
+		assertEquals(1, immeubles.size());
+		assertSame(immeuble, immeubles.iterator().next());
 	}
 
 	private static void assertNumeroAffaire(int numeroOffice, @Nullable String annee, IdentifiantAffaireRF numeroAffaire) {
@@ -240,16 +255,28 @@ public class ServitudesRFHelperTest {
 	}
 
 	@NotNull
-	public static DienstbarkeitDiscrete newDienstbarkeitDiscrete(BelastetesGrundstueck grundstueck, NatuerlichePersonGb natuerlichePersonGb, Dienstbarkeit dienstbarkeit, Collection<NatuerlichePersonGb> gemeinchaft) {
-		final DienstbarkeitDiscrete d = new DienstbarkeitDiscrete();
-		d.setBelastetesGrundstueck(grundstueck);
-		d.setBerechtigtePerson(new BerechtigtePerson(natuerlichePersonGb, null, null, null));
+	public static DienstbarkeitExtendedElement newDienstbarkeitExtended(BelastetesGrundstueck grundstueck, NatuerlichePersonGb natuerlichePersonGb, Dienstbarkeit dienstbarkeit) {
+		final DienstbarkeitExtendedElement d = new DienstbarkeitExtendedElement();
+
+		final LastRechtGruppe rechtGruppe = new LastRechtGruppe();
+		rechtGruppe.getBelastetesGrundstueck().add(new BelastetesGrundstueck(grundstueck.getBelastetesGrundstueckIDREF(), null, null));
+		rechtGruppe.getBerechtigtePerson().add(new BerechtigtePerson(natuerlichePersonGb, null, null, null));
+		d.setLastRechtGruppe(rechtGruppe);
+
 		d.setDienstbarkeit(dienstbarkeit);
-		if (gemeinchaft != null) {
-			gemeinchaft.stream()
-					.map(p -> new BerechtigtePerson(p, null, null, null))
-					.forEach(b -> d.getGemeinschaft().add(b));
-		}
+		return d;
+	}
+
+	@NotNull
+	public static DienstbarkeitExtendedElement newDienstbarkeitExtended(List<BelastetesGrundstueck> grundstuecks, List<NatuerlichePersonGb> persons, Dienstbarkeit dienstbarkeit) {
+		final DienstbarkeitExtendedElement d = new DienstbarkeitExtendedElement();
+
+		final LastRechtGruppe rechtGruppe = new LastRechtGruppe();
+		grundstuecks.forEach(g -> rechtGruppe.getBelastetesGrundstueck().add(new BelastetesGrundstueck(g.getBelastetesGrundstueckIDREF(), null, null)));
+		persons.forEach(p -> rechtGruppe.getBerechtigtePerson().add(new BerechtigtePerson(p, null, null, null)));
+		d.setLastRechtGruppe(rechtGruppe);
+
+		d.setDienstbarkeit(dienstbarkeit);
 		return d;
 	}
 
@@ -286,10 +313,10 @@ public class ServitudesRFHelperTest {
 		servitude1.setDateFinMetier(dateFinOfficielle);
 		servitude1.setMotifDebut(null);
 		servitude1.setMotifFin(null);
-		servitude1.setImmeuble(immeuble1);
+		servitude1.addImmeuble(immeuble1);
 		servitude1.setMasterIdRF(masterIdRF);
 		servitude1.setNumeroAffaire(numeroAffaire);
-		servitude1.setAyantDroit(pp1);
+		servitude1.addAyantDroit(pp1);
 		return servitude1;
 	}
 
@@ -302,10 +329,10 @@ public class ServitudesRFHelperTest {
 		servitude1.setDateFinMetier(dateFinOfficielle);
 		servitude1.setMotifDebut(null);
 		servitude1.setMotifFin(null);
-		servitude1.setImmeuble(immeuble1);
+		servitude1.addImmeuble(immeuble1);
 		servitude1.setMasterIdRF(masterIdRF);
 		servitude1.setNumeroAffaire(numeroAffaire);
-		servitude1.setAyantDroit(pp1);
+		servitude1.addAyantDroit(pp1);
 		return servitude1;
 	}
 }

@@ -43,6 +43,10 @@ public class MutationsRFDetectorResults {
 			return idRF;
 		}
 
+		public String getMessage() {
+			return message;
+		}
+
 		@Override
 		public String toString() {
 			return "Avertissement{" +

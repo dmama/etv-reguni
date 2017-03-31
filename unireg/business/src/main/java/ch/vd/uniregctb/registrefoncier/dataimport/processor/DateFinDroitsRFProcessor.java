@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,9 +20,11 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -112,12 +115,15 @@ public class DateFinDroitsRFProcessor {
 	}
 
 	private void processImmeuble(ImmeubleRF immeuble, GroupingStrategy groupingStrategy, TraitementFinsDeDroitRFResults results) {
-		final List<DroitRF> droits = new ArrayList<>(immeuble.getDroits());
+		final List<DroitProprieteRF> droits = immeuble.getDroitsPropriete().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.collect(Collectors.toList());
+
 		droits.sort(new DateRangeComparator<>());   // tri par ordre croissant chronologique des dates d'import
 
 		// on regroupe les droits par affaire pour pouvoir lier les débuts de certains droits aux fins des autres
 		final Map<GroupingKey, Affaire> affaires = new HashMap<>();
-		for (DroitRF droit : droits) {
+		for (DroitProprieteRF droit : droits) {
 			if (droit.getDateFin() != null && droit.getDateFinMetier() == null) {
 				// le droit a été fermé, on l'ajoute à la liste des anciens droits
 				final RegDate dateAffaire = droit.getDateFin().getOneDayAfter();
@@ -146,9 +152,8 @@ public class DateFinDroitsRFProcessor {
 		 * Regroupement des droits basé sur le couple date d'import + id de l'ayant-droit (critère le plus précis). Utilisé principalement pour détecter les évolutions (changement de quote-part) du droit de propriété d'un propriétaire.
 		 */
 		AYANT_DROIT {
-			@NotNull
 			@Override
-			public GroupingKey newKey(@NotNull RegDate dateAffaire, @NotNull DroitRF droit) {
+			public GroupingKey newKey(@NotNull RegDate dateAffaire, DroitProprieteRF droit) {
 				return new GroupingKey(dateAffaire, null, droit.getAyantDroit().getId());
 			}
 		},
@@ -156,9 +161,8 @@ public class DateFinDroitsRFProcessor {
 		 * Regroupement des droits basé sur la date d'import (critère le plus large). Utilisé en dernier recours lorsque tous les autres modes de regroupement ont échoué.
 		 */
 		DATE_AFFAIRE {
-			@NotNull
 			@Override
-			public GroupingKey newKey(@NotNull RegDate dateAffaire, @NotNull DroitRF droit) {
+			public GroupingKey newKey(@NotNull RegDate dateAffaire, DroitProprieteRF droit) {
 				return new GroupingKey(dateAffaire, null, null);
 			}
 		};
@@ -170,8 +174,7 @@ public class DateFinDroitsRFProcessor {
 		 * @param droit       le droit concerné
 		 * @return une clé de regroupement.
 		 */
-		@NotNull
-		public abstract GroupingKey newKey(@NotNull RegDate dateAffaire, @NotNull DroitRF droit);
+		public abstract GroupingKey newKey(@NotNull RegDate dateAffaire, DroitProprieteRF droit);
 	}
 
 	/**

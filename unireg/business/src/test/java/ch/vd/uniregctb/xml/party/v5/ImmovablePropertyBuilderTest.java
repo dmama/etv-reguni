@@ -99,8 +99,10 @@ public class ImmovablePropertyBuilderTest {
 
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
 
-		pp.setDroits(Collections.singleton(droit));
-		ppe.setDroits(Collections.singleton(droit));
+		pp.setDroitsPropriete(Collections.singleton(droit));
+		pp.setServitudes(Collections.emptySet());
+		ppe.setDroitsPropriete(Collections.singleton(droit));
+		ppe.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
@@ -169,8 +171,10 @@ public class ImmovablePropertyBuilderTest {
 
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, pcp);
 
-		pp.setDroits(Collections.singleton(droit));
-		pcp.setDroits(Collections.singleton(droit));
+		pp.setDroitsPropriete(Collections.singleton(droit));
+		pp.setServitudes(Collections.emptySet());
+		pcp.setDroitsPropriete(Collections.singleton(droit));
+		pcp.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final CoOwnershipShare coos = (CoOwnershipShare) ImmovablePropertyBuilder.newImmovableProperty(pcp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
@@ -236,8 +240,10 @@ public class ImmovablePropertyBuilderTest {
 
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ddp);
 
-		pp.setDroits(Collections.singleton(droit));
-		ddp.setDroits(Collections.singleton(droit));
+		pp.setDroitsPropriete(Collections.singleton(droit));
+		pp.setServitudes(Collections.emptySet());
+		ddp.setDroitsPropriete(Collections.singleton(droit));
+		ddp.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final DistinctAndPermanentRight dpr = (DistinctAndPermanentRight) ImmovablePropertyBuilder.newImmovableProperty(ddp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
@@ -302,8 +308,10 @@ public class ImmovablePropertyBuilderTest {
 
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, m);
 
-		pp.setDroits(Collections.singleton(droit));
-		m.setDroits(Collections.singleton(droit));
+		pp.setDroitsPropriete(Collections.singleton(droit));
+		pp.setServitudes(Collections.emptySet());
+		m.setDroitsPropriete(Collections.singleton(droit));
+		m.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final Mine mine = (Mine) ImmovablePropertyBuilder.newImmovableProperty(m, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
@@ -372,8 +380,10 @@ public class ImmovablePropertyBuilderTest {
 
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, bienFond);
 
-		pp.setDroits(Collections.singleton(droit));
-		bienFond.setDroits(Collections.singleton(droit));
+		pp.setDroitsPropriete(Collections.singleton(droit));
+		pp.setServitudes(Collections.emptySet());
+		bienFond.setDroitsPropriete(Collections.singleton(droit));
+		bienFond.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
 		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFond, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);

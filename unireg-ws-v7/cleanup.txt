@@ -5,6 +5,7 @@ Cleanup à faire pour une éventuelle version 8 du web-service
 - voir s'il faut remonter les collections 'ifoncExemptions' et 'iciAbatements' sur le type 'taxpayerType'.
 - transformer l'élément 'taxEstimateType::amout' en long et supprimer le binding correspondant
 - déplacer l'élément 'caseIdentifier' de 'landRightType' à 'easementRightType'
+- descendre les éléments 'rightHolder' et 'immovablePropertyId' de 'landRightType' à 'landOwnershipRightType'.
 
 Reprise du contenu du cleanup précédent
 ------------------------------------------------------------

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
@@ -164,13 +165,13 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			// - il existe déjà une demande de dégrèvement non-annulée dont la PF est l'année suivant l'estimation fiscale en cours
 
 			final DroitRF droit = hibernateTemplate.get(DroitRF.class, idDroitImmeuble.getIdDroit());
-			final ImmeubleRF immeuble = droit.getImmeuble();
 
 			// s'il s'agit d'un droit qui n'est pas un droit de propriété, on l'ignore
 			if (!(droit instanceof DroitProprieteRF)) {
-				rapport.addDroitNonPropriete(entreprise, immeuble, droit.getClass());
+				rapport.addDroitNonPropriete(entreprise, droit.getImmeubleList(), droit.getClass());
 				continue;
 			}
+			final ImmeubleRF immeuble = ((DroitProprieteRF)droit).getImmeuble();
 
 			// quelle est l'estimation fiscale courante ?
 			// si on trie les estimations fiscales par leur "année de référence", alors la "courante"
@@ -369,9 +370,10 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 	@NotNull
 	List<EnvoiFormulairesDemandeDegrevementICIResults.InformationDroitsContribuable> findCouples(RegDate dateTraitement) {
 
-		final String hql = "SELECT DISTINCT RAPP.contribuable.id, DT.id, DT.immeuble.id"
+		// les droits de propriété pointent vers un immeuble
+		final String hqlProps = "SELECT DISTINCT RAPP.contribuable.id, DT.id, DT.immeuble.id"
 				+ " FROM RapprochementRF AS RAPP"
-				+ " JOIN RAPP.tiersRF.droits AS DT"
+				+ " JOIN RAPP.tiersRF.droitsPropriete AS DT"
 				+ " WHERE RAPP.contribuable.class = 'Entreprise'"
 				+ " AND (RAPP.dateDebut IS NULL OR RAPP.dateDebut <= :dateTraitement)"
 				+ " AND (RAPP.dateFin IS NULL OR RAPP.dateFin >= :dateTraitement)"
@@ -381,10 +383,34 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 				+ " AND (DT.dateFin IS NULL OR DT.dateFin >= :debutAnnee)"
 				+ " ORDER BY DT.immeuble.id, RAPP.contribuable.id";         // ordonné d'abord par immeuble pour que la TreeMap soit plus équilibrée (ordre d'entrée aléatoire sur la clé...)
 
+		// les servitudes pointent vers plusieurs immeubles
+		final String hqlServ = "SELECT DISTINCT RAPP.contribuable.id, DT.id, IMM.id"
+				+ " FROM RapprochementRF AS RAPP"
+				+ " JOIN RAPP.tiersRF.servitudes AS DT"
+				+ " JOIN DT.immeubles AS IMM"
+				+ " WHERE RAPP.contribuable.class = 'Entreprise'"
+				+ " AND (RAPP.dateDebut IS NULL OR RAPP.dateDebut <= :dateTraitement)"
+				+ " AND (RAPP.dateFin IS NULL OR RAPP.dateFin >= :dateTraitement)"
+				+ " AND RAPP.annulationDate IS NULL"
+				+ " AND DT.annulationDate IS NULL"
+				+ " AND DT.dateDebutMetier <= :debutAnnee"
+				+ " AND (DT.dateFin IS NULL OR DT.dateFin >= :debutAnnee)"
+				+ " ORDER BY IMM.id, RAPP.contribuable.id";         // ordonné d'abord par immeuble pour que la TreeMap soit plus équilibrée (ordre d'entrée aléatoire sur la clé...)
+
+		final SortedMap<Long, List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble>> mapProps = executeFindInfoDroitsHql(dateTraitement, hqlProps);
+		final SortedMap<Long, List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble>> mapServ = executeFindInfoDroitsHql(dateTraitement, hqlServ);
+		mapProps.putAll(mapServ);
+
+		return mapProps.entrySet().stream()
+				.map(entry -> new EnvoiFormulairesDemandeDegrevementICIResults.InformationDroitsContribuable(entry.getKey(), entry.getValue()))
+				.collect(Collectors.toCollection(LinkedList::new));
+	}
+
+	private SortedMap<Long, List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble>> executeFindInfoDroitsHql(RegDate dateTraitement, String hqlProps) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-		final SortedMap<Long, List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble>> map = template.execute(status -> hibernateTemplate.execute(session -> {
-			final Query query = session.createQuery(hql);
+		return template.execute(status -> hibernateTemplate.execute(session -> {
+			final Query query = session.createQuery(hqlProps);
 			query.setParameter("dateTraitement", dateTraitement);
 			query.setParameter("debutAnnee", RegDate.get(dateTraitement.year(), 1, 1));
 
@@ -399,12 +425,8 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 					})
 					.collect(Collectors.toMap(Pair::getLeft,
 					                          pair -> Collections.singletonList(pair.getRight()),
-					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+					                          ListUtils::union,
 					                          TreeMap::new));
 		}));
-
-		return map.entrySet().stream()
-				.map(entry -> new EnvoiFormulairesDemandeDegrevementICIResults.InformationDroitsContribuable(entry.getKey(), entry.getValue()))
-				.collect(Collectors.toCollection(LinkedList::new));
 	}
 }

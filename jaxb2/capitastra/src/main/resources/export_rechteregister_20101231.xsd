@@ -461,24 +461,10 @@
 	<!-- ********************************************************** -->
 	<!-- Ajout DSI - Utilisation réservée pour Unireg ! -->
 	<xs:element name="DienstbarkeitExtended" type="recht:DienstbarkeitExtendedType" />
-	<xs:element name="DienstbarkeitDiscreteList" type="recht:DienstbarkeitDiscreteListType" />
 	<xs:complexType name="DienstbarkeitExtendedType">
 		<xs:sequence>
 			<xs:element name="Dienstbarkeit" type="recht:DienstbarkeitType" />
 			<xs:element name="LastRechtGruppe" type="recht:LastRechtGruppeType" />
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="DienstbarkeitDiscreteType">
-		<xs:sequence>
-			<xs:element name="Dienstbarkeit" type="recht:DienstbarkeitType" />
-			<xs:element name="BelastetesGrundstueck" type="recht:BelastetesGrundstueckType"/>
-			<xs:element name="BerechtigtePerson" type="recht:BerechtigtePersonType"/>
-			<xs:element name="Gemeinschaft" type="recht:BerechtigtePersonType" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="DienstbarkeitDiscreteListType">
-		<xs:sequence>
-			<xs:element name="DienstbarkeitDiscretes" type="recht:DienstbarkeitDiscreteType" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 	<!-- /Ajout DSI -->

@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ForeignKey;
@@ -133,10 +134,10 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 			return Collections.emptyList();
 		}
 
-		// on expose les numéros de contribubales à travers les communautés : si le rapprochement change,
+		// on expose les numéros de contribuables à travers les communautés : si le rapprochement change,
 		// toutes les communautés liées doivent être invalidées.
 		final List<CommunauteRF> communautes = Optional.of(tiersRF)
-				.map(AyantDroitRF::getDroits)   // la collection peut être nulle si l'entité vient juste d'être créée
+				.map(AyantDroitRF::getDroitsPropriete)   // la collection peut être nulle si l'entité vient juste d'être créée
 				.map(l -> l.stream()
 						.filter(d -> d instanceof DroitProprietePersonneRF)
 						.map(d -> ((DroitProprietePersonneRF) d).getCommunaute())
@@ -147,10 +148,8 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 		// on expose les numéros de contribuables à travers les propriétaies des droits exposés sur les immeubles : si le rapprochement change,
 		// tous les droits exposés sur les immeubles liés doivent être invalidés.
 		final List<ImmeubleRF> immeubles = Optional.of(tiersRF)
-				.map(AyantDroitRF::getDroits) // la collection peut être nulle si l'entité vient juste d'être créée
-				.map(l -> l.stream()
-						.map(DroitRF::getImmeuble)
-						.collect(Collectors.toList()))
+				.map(AyantDroitRF::getDroitList) // la collection peut être nulle si l'entité vient juste d'être créée
+				.map(RapprochementRF::getImmeubles)
 				.orElseGet(Collections::emptyList);
 
 		final List<Object> entities = new ArrayList<>(communautes.size() + immeubles.size() + 1);
@@ -160,4 +159,11 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 
 		return entities;
 	}
+
+	private static List<ImmeubleRF> getImmeubles(Set<DroitRF> set) {
+		return set.stream()
+				.flatMap(d -> d.getImmeubleList().stream())
+				.collect(Collectors.toList());
+	}
+
 }

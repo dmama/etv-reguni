@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -85,7 +86,12 @@ public abstract class ImmeubleRF extends HibernateEntity {
 	/**
 	 * Les droits définis sur l'immeuble.
 	 */
-	private Set<DroitRF> droits;
+	private Set<DroitProprieteRF> droitsPropriete;
+
+	/**
+	 * Les servitudes définies sur l'immeuble
+	 */
+	private Set<ServitudeRF> servitudes;
 
 	@Nullable
 	private RegDate dateRadiation;
@@ -217,14 +223,24 @@ public abstract class ImmeubleRF extends HibernateEntity {
 		this.implantations = implantations;
 	}
 
-	// configuration hibernate : l'immeuble ne possède pas les droits
+	// configuration hibernate : l'immeuble ne possède pas les droits de propriété
 	@OneToMany(mappedBy = "immeuble")
-	public Set<DroitRF> getDroits() {
-		return droits;
+	public Set<DroitProprieteRF> getDroitsPropriete() {
+		return droitsPropriete;
 	}
 
-	public void setDroits(Set<DroitRF> droits) {
-		this.droits = droits;
+	public void setDroitsPropriete(Set<DroitProprieteRF> droitsPropriete) {
+		this.droitsPropriete = droitsPropriete;
+	}
+
+	// configuration hibernate : l'immeuble ne possède pas les servitudes
+	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "immeubles")
+	public Set<ServitudeRF> getServitudes() {
+		return servitudes;
+	}
+
+	public void setServitudes(Set<ServitudeRF> servitudes) {
+		this.servitudes = servitudes;
 	}
 
 	@Nullable

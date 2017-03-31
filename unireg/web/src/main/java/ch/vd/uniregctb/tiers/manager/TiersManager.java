@@ -91,7 +91,6 @@ import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
@@ -810,7 +809,7 @@ public class TiersManager implements MessageSourceAware {
 		// les communes sur lesquelles l'entreprise a des immeubles
 		final Map<Integer, CommuneView> communes = registreFoncierService.getDroitsForCtb(ctb, true).stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.map(DroitRF::getImmeuble)
+				.flatMap(d -> d.getImmeubleList().stream())
 				.filter(AnnulableHelper::nonAnnule)
 				.map(ImmeubleRF::getSituations)
 				.flatMap(Set::stream)

@@ -44,6 +44,9 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
 
+import static ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance;
+
+@SuppressWarnings("Duplicates")
 public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends BusinessTest {
 
 	private EnvoiFormulairesDemandeDegrevementICIProcessor processor;
@@ -381,16 +384,20 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertEquals("Lausanne", ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 112, ignore.noParcelle);
-			Assert.assertNull(ignore.index1);
-			Assert.assertNull(ignore.index2);
-			Assert.assertNull(ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DATE_MUTATION_AVANT_SEUIL, ignore.raison);
-			Assert.assertEquals("Estimation fiscale (01.12.1993)", ignore.messageAdditionnel);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   null,
+			                   null,
+			                   null,
+			                   RaisonIgnorance.DATE_MUTATION_AVANT_SEUIL,
+			                   "Estimation fiscale (01.12.1993)",
+			                   immeubleInfos.get(0));
 		}
 
 		// vérification en base...
@@ -559,16 +566,20 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertEquals("Lausanne", ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 112, ignore.noParcelle);
-			Assert.assertEquals((Integer) 54, ignore.index1);
-			Assert.assertEquals((Integer) 12, ignore.index2);
-			Assert.assertEquals((Integer) 53, ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.ESTIMATION_FISCALE_ABSENTE_OU_ZERO, ignore.raison);
-			Assert.assertEquals(null, ignore.messageAdditionnel);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   54,
+			                   12,
+			                   53,
+			                   RaisonIgnorance.ESTIMATION_FISCALE_ABSENTE_OU_ZERO,
+			                   null,
+			                   immeubleInfos.get(0));
 		}
 
 		// vérification en base...
@@ -639,16 +650,20 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertEquals("Lausanne", ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 112, ignore.noParcelle);
-			Assert.assertEquals((Integer) 54, ignore.index1);
-			Assert.assertEquals((Integer) 12, ignore.index2);
-			Assert.assertEquals((Integer) 53, ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.ESTIMATION_FISCALE_ABSENTE_OU_ZERO, ignore.raison);
-			Assert.assertEquals(null, ignore.messageAdditionnel);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   54,
+			                   12,
+			                   53,
+			                   RaisonIgnorance.ESTIMATION_FISCALE_ABSENTE_OU_ZERO,
+			                   null,
+			                   immeubleInfos.get(0));
 		}
 
 		// vérification en base...
@@ -727,16 +742,20 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertEquals("Lausanne", ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 112, ignore.noParcelle);
-			Assert.assertEquals((Integer) 54, ignore.index1);
-			Assert.assertEquals((Integer) 12, ignore.index2);
-			Assert.assertEquals((Integer) 53, ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEGREVEMENT_DEJA_ACTIF_ANNEE_SUIVANT_DEBUT_DROIT, ignore.raison);
-			Assert.assertEquals("Année suivant début de droit : " + (dateDebutDroit.year() + 1), ignore.messageAdditionnel);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   54,
+			                   12,
+			                   53,
+			                   RaisonIgnorance.DEGREVEMENT_DEJA_ACTIF_ANNEE_SUIVANT_DEBUT_DROIT,
+			                   "Année suivant début de droit : " + (dateDebutDroit.year() + 1),
+			                   immeubleInfos.get(0));
 		}
 
 		// vérification en base...
@@ -921,16 +940,20 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertEquals("Lausanne", ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 112, ignore.noParcelle);
-			Assert.assertEquals((Integer) 54, ignore.index1);
-			Assert.assertEquals((Integer) 12, ignore.index2);
-			Assert.assertEquals((Integer) 53, ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT, ignore.raison);
-			Assert.assertEquals("Demande émise le " + RegDateHelper.dateToDisplayString(dateDebutDroit.addDays(10)) + " pour la PF " + (dateDebutDroit.year() + 1), ignore.messageAdditionnel);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   54,
+			                   12,
+			                   53,
+			                   RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT,
+			                   "Demande émise le " + RegDateHelper.dateToDisplayString(dateDebutDroit.addDays(10)) + " pour la PF " + (dateDebutDroit.year() + 1),
+			                   immeubleInfos.get(0));
 		}
 
 		// vérification en base...
@@ -1117,16 +1140,20 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertEquals("Lausanne", ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 112, ignore.noParcelle);
-			Assert.assertEquals((Integer) 54, ignore.index1);
-			Assert.assertEquals((Integer) 12, ignore.index2);
-			Assert.assertEquals((Integer) 53, ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_ESTIMATION_FISCALE, ignore.raison);
-			Assert.assertEquals("Demande émise le 25.01.2015 pour la PF 2016", ignore.messageAdditionnel);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   54,
+			                   12,
+			                   53,
+			                   RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_ESTIMATION_FISCALE,
+			                   "Demande émise le 25.01.2015 pour la PF 2016",
+			                   immeubleInfos.get(0));
 		}
 
 		// vérification en base...
@@ -1197,16 +1224,8 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertNull(ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertNull(ignore.nomCommune);
-			Assert.assertNull(ignore.noOfsCommune);
-			Assert.assertNull(ignore.noParcelle);
-			Assert.assertNull(ignore.index1);
-			Assert.assertNull(ignore.index2);
-			Assert.assertNull(ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.CONTRIBUABLE_TOTALEMENT_EXONERE, ignore.raison);
-			Assert.assertEquals("1 droit(s) concernés pour 1 immeuble(s)", ignore.messageAdditionnel);
+			assertEmpty(ignore.getImmeubleInfos());
 		}
 
 		// vérification en base...
@@ -1637,30 +1656,38 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertEquals("Lausanne", ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 112, ignore.noParcelle);
-			Assert.assertNull(ignore.index1);
-			Assert.assertNull(ignore.index2);
-			Assert.assertNull(ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION, ignore.raison);
-			Assert.assertEquals(UsufruitRF.class.getSimpleName(), ignore.messageAdditionnel);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   null,
+			                   null,
+			                   null,
+			                   RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION,
+			                   UsufruitRF.class.getSimpleName(),
+			                   immeubleInfos.get(0));
 		}
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(1);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertEquals("Lausanne", ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 112, ignore.noParcelle);
-			Assert.assertNull(ignore.index1);
-			Assert.assertNull(ignore.index2);
-			Assert.assertNull(ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION, ignore.raison);
-			Assert.assertEquals(DroitHabitationRF.class.getSimpleName(), ignore.messageAdditionnel);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   null,
+			                   null,
+			                   null,
+			                   RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION,
+			                   DroitHabitationRF.class.getSimpleName(),
+			                   immeubleInfos.get(0));
 		}
 
 		// vérification en base...
@@ -1675,10 +1702,6 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 				Assert.assertEquals(0, demandes.size());
 			}
 		});
-	}
-
-	private static EstimationRF buildDummyEstimationRF(String reference, RegDate dateInscription) {
-		return buildDummyEstimationRF(reference, dateInscription, null);
 	}
 
 	private static EstimationRF buildDummyEstimationRF(String reference, RegDate dateInscription, Long montant) {
@@ -1801,16 +1824,20 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertEquals("Lausanne", ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 112, ignore.noParcelle);
-			Assert.assertNull(ignore.index1);
-			Assert.assertNull(ignore.index2);
-			Assert.assertNull(ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT, ignore.raison);
-			Assert.assertEquals("Demande émise le 22.07.2010 pour la PF 2011", ignore.messageAdditionnel);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   null,
+			                   null,
+			                   null,
+			                   RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT,
+			                   "Demande émise le 22.07.2010 pour la PF 2011",
+			                   immeubleInfos.get(0));
 		}
 
 		// vérification en base...
@@ -1941,19 +1968,22 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = resultSecondRun.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.idImmeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
-			Assert.assertEquals("Lausanne", ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 112, ignore.noParcelle);
-			Assert.assertNull(ignore.index1);
-			Assert.assertNull(ignore.index2);
-			Assert.assertNull(ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT, ignore.raison);
-			Assert.assertEquals(String.format("Demande émise le %s pour la PF %d",
-			                                  RegDateHelper.dateToDisplayString(dateEmission.getValue()),
-			                                  dateDebutDroit.year() + 1),
-			                    ignore.messageAdditionnel);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   null,
+			                   null,
+			                   null,
+			                   RaisonIgnorance.DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT,
+			                   String.format("Demande émise le %s pour la PF %d",
+			                                 RegDateHelper.dateToDisplayString(dateEmission.getValue()),
+			                                 dateDebutDroit.year() + 1),
+			                   immeubleInfos.get(0));
 		}
 	}
 
@@ -2021,16 +2051,20 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.immeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.pm, ignore.noContribuable);
-			Assert.assertEquals("La Sarraz", ignore.nomCommune);
-			Assert.assertEquals((Integer) 5498, ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 579, ignore.noParcelle);
-			Assert.assertNull(ignore.index1);
-			Assert.assertNull(ignore.index2);
-			Assert.assertNull(ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEGREVEMENT_ULTERIEUR_DEJA_PRESENT, ignore.raison);
-			Assert.assertEquals("Dégrèvement (01.01.2013 - ?) (période visée : 1995)", ignore.messageAdditionnel);      // 1995 à cause de l'estimation fiscale RG94
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.immeuble,
+			                   ids.pm,
+			                   "La Sarraz",
+			                   5498,
+			                   579,
+			                   null,
+			                   null,
+			                   null,
+			                   RaisonIgnorance.DEGREVEMENT_ULTERIEUR_DEJA_PRESENT,
+			                   "Dégrèvement (01.01.2013 - ?) (période visée : 1995)",   // 1995 à cause de l'estimation fiscale RG94
+			                   immeubleInfos.get(0));
 		}
 	}
 
@@ -2099,16 +2133,20 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
 			Assert.assertNotNull(ignore);
-			Assert.assertEquals((Long) ids.immeuble, ignore.idImmeuble);
 			Assert.assertEquals(ids.pm, ignore.noContribuable);
-			Assert.assertEquals(MockCommune.Lausanne.getNomOfficiel(), ignore.nomCommune);
-			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ignore.noOfsCommune);
-			Assert.assertEquals((Integer) 579, ignore.noParcelle);
-			Assert.assertNull(ignore.index1);
-			Assert.assertNull(ignore.index2);
-			Assert.assertNull(ignore.index3);
-			Assert.assertEquals(EnvoiFormulairesDemandeDegrevementICIResults.RaisonIgnorance.DEGREVEMENT_ULTERIEUR_DEJA_PRESENT, ignore.raison);
-			Assert.assertEquals(String.format("Dégrèvement (01.01.2013 - 31.12.%d) (période visée : 1995)", dateTraitement.year() - 1), ignore.messageAdditionnel);      // 1995 à cause de l'estimation fiscale RG94
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.immeuble,
+			                   ids.pm,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   579,
+			                   null,
+			                   null,
+			                   null,
+			                   RaisonIgnorance.DEGREVEMENT_ULTERIEUR_DEJA_PRESENT,
+			                   String.format("Dégrèvement (01.01.2013 - 31.12.%d) (période visée : 1995)", dateTraitement.year() - 1),
+			                   immeubleInfos.get(0));
 		}
 
 		// vérification en base...
@@ -2123,5 +2161,30 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 				Assert.assertEquals(0, demandes.size());
 			}
 		});
+	}
+
+	private static void assertImmeubleInfo(Long idImmeuble,
+	                                       long idContribuable,
+	                                       String nomCommune,
+	                                       Integer noOfsCommune,
+	                                       Integer noParcelle,
+	                                       Integer index1,
+	                                       Integer index2,
+	                                       Integer index3,
+	                                       RaisonIgnorance raison,
+	                                       String messageAdditionnel,
+	                                       EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo immeubleInfo) {
+		Assert.assertNotNull(immeubleInfo);
+		final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee parent = (EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee) immeubleInfo.getParent();
+		Assert.assertEquals(idImmeuble, immeubleInfo.idImmeuble);
+		Assert.assertEquals(idContribuable, parent.noContribuable);
+		Assert.assertEquals(nomCommune, immeubleInfo.nomCommune);
+		Assert.assertEquals(noOfsCommune, immeubleInfo.noOfsCommune);
+		Assert.assertEquals(noParcelle, immeubleInfo.noParcelle);
+		Assert.assertEquals(index1, immeubleInfo.index1);
+		Assert.assertEquals(index2, immeubleInfo.index2);
+		Assert.assertEquals(index3, immeubleInfo.index3);
+		Assert.assertEquals(raison, parent.raison);
+		Assert.assertEquals(messageAdditionnel, parent.messageAdditionnel);
 	}
 }

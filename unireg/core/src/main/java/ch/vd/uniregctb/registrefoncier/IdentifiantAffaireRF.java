@@ -41,6 +41,11 @@ public class IdentifiantAffaireRF implements Comparable<IdentifiantAffaireRF> {
 		this.numeroAffaire = numeroAffaire;
 	}
 
+	public IdentifiantAffaireRF(@NotNull IdentifiantAffaireRF right) {
+		this.numeroOffice = right.numeroOffice;
+		this.numeroAffaire = right.numeroAffaire;
+	}
+
 	@Nullable
 	private static String buildNumeroAffaire(@Nullable Integer annee, @Nullable Integer numero, @Nullable Integer index) {
 		if (annee == null && numero == null && index == null) {

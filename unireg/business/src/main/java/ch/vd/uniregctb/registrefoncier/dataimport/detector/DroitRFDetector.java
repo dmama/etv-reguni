@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.detector;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,13 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.common.Rechteinhaber;
-import ch.vd.capitastra.grundstueck.Gemeinschaft;
-import ch.vd.capitastra.grundstueck.GemeinschaftsArt;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
-import ch.vd.capitastra.rechteregister.BerechtigtePerson;
-import ch.vd.capitastra.rechteregister.DienstbarkeitDiscrete;
-import ch.vd.capitastra.rechteregister.DienstbarkeitDiscreteList;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -42,16 +34,12 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
-import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.TypeDroit;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilListElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.BlacklistRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
-import ch.vd.uniregctb.registrefoncier.dataimport.helper.ServitudesRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -68,7 +56,6 @@ public class DroitRFDetector {
 	private final AyantDroitRFDetector ayantDroitRFDetector;
 
 	private final PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
-	private final PersistentCache<ArrayList<DienstbarkeitDiscrete>> cacheServitudes;
 
 	public DroitRFDetector(XmlHelperRF xmlHelperRF,
 	                       AyantDroitRFDAO ayantDroitRFDAO,
@@ -76,9 +63,8 @@ public class DroitRFDetector {
 	                       EvenementRFMutationDAO evenementRFMutationDAO,
 	                       PlatformTransactionManager transactionManager,
 	                       AyantDroitRFDetector ayantDroitRFDetector,
-	                       PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits,
-	                       PersistentCache<ArrayList<DienstbarkeitDiscrete>> cacheServitudes) {
-		this(20, xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits, cacheServitudes);
+	                       PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits) {
+		this(20, xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 	}
 
 	public DroitRFDetector(int batchSize,
@@ -88,8 +74,7 @@ public class DroitRFDetector {
 	                       EvenementRFMutationDAO evenementRFMutationDAO,
 	                       PlatformTransactionManager transactionManager,
 	                       AyantDroitRFDetector ayantDroitRFDetector,
-	                       PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits,
-	                       PersistentCache<ArrayList<DienstbarkeitDiscrete>> cacheServitudes) {
+	                       PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits) {
 		this.batchSize = batchSize;
 		this.xmlHelperRF = xmlHelperRF;
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
@@ -98,7 +83,6 @@ public class DroitRFDetector {
 		this.transactionManager = transactionManager;
 		this.ayantDroitRFDetector = ayantDroitRFDetector;
 		this.cacheDroits = cacheDroits;
-		this.cacheServitudes = cacheServitudes;
 	}
 
 	public void processDroitsPropriete(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
@@ -127,81 +111,6 @@ public class DroitRFDetector {
 		// inutile de garder des données en mémoire ou sur le disque
 		cacheDroits.clear();
 	}
-
-	public void processServitudes(long importId, int nbThreads, Iterator<DienstbarkeitDiscrete> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
-
-		if (statusManager != null) {
-			statusManager.setMessage("Détection des mutations sur les servitudes... (regroupement)");
-		}
-
-		// Note: on utilise un cache persistant pour limiter l'utilisation mémoire, mais on est pas
-		//       du tout intéressé par le côté persistent des données, on commence donc par tout effacer.
-		cacheServitudes.clear();
-
-		// on regroupe tous les droits par bénéficiaires
-		groupByAyantDroit(iterator, cacheServitudes, DroitRFDetector::getImmeubleIdRef, DroitRFDetector::getBeneficiaireIdRef);
-
-		if (statusManager != null) {
-			statusManager.setMessage("Détection des mutations sur les servitudes...", 50);
-		}
-
-		// on détecte les mutations qui doivent être générées
-		forEachAyantDroit(cacheServitudes, this::detecterMutationsServitudes, importId, importInitial, nbThreads, statusManager);
-
-		// détection des mutations de type SUPRESSION
-		detectMutationsDeSuppression(cacheServitudes, TypeDroit.SERVITUDE, importId);
-
-		// détection des communautés
-		processCommunautesServitudes(cacheServitudes, importId);
-
-		// inutile de garder des données en mémoire ou sur le disque
-		cacheDroits.clear();
-	}
-
-	/**
-	 * Extrait les communautés définies dans les servitudes passées en paramètre et génère les mutations de création/modification.
-	 */
-	private void processCommunautesServitudes(PersistentCache<ArrayList<DienstbarkeitDiscrete>> cacheServitudes, long importId) {
-
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(s -> {
-			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
-
-			// on traite aussi toutes les communautés que l'on trouve
-			//
-			// Note : dans l'export du registre foncier, les communautés ne sont pas fournies dans la liste des propriétaires. A la place,
-			//        elles sont fournies en tant qu'entité implicite dans la liste des droits. Dans Unireg, nous sommes partis sur le principe
-			//        de traiter les communautés comme des ayant-droits et de les stocker dans la base.
-
-			// on recherche tous les communautés sur les servitudes (une communauté peut se retrouver plusieurs fois)
-			final Map<String, Gemeinschaft> communautes = new HashMap<>();
-			cacheServitudes.entrySet().stream()
-					.map(Map.Entry::getValue)
-					.flatMap(Collection::stream)
-					.map(DroitRFDetector::getCommunauteFromServitude)
-					.filter(Objects::nonNull)
-					.forEach(c -> communautes.computeIfAbsent(c.getGemeinschatID(), (k) -> c));
-
-			// on détecte les mutations sur les communautés
-			communautes.values()
-					.forEach(g -> processAyantDroit(parentImport, g));
-
-			return null;
-		});
-	}
-
-	private static String getImmeubleIdRef(DienstbarkeitDiscrete servitude) {
-		return servitude.getBelastetesGrundstueck().getBelastetesGrundstueckIDREF();
-	}
-
-	private static String getBeneficiaireIdRef(DienstbarkeitDiscrete servitude) {
-		final BerechtigtePerson beneficiaire = servitude.getBerechtigtePerson();
-		if (beneficiaire == null) {
-			throw new IllegalArgumentException("Il n'y a pas de bénéficiaire sur la servitude standardRechtId=[" + servitude.getDienstbarkeit().getStandardRechtID() + "]");
-		}
-		return DienstbarkeitExtendedElement.getPersonIDRef(DienstbarkeitExtendedElement.getPerson(beneficiaire));
-	}
-
 
 	private static <T> void groupByAyantDroit(Iterator<T> iterator, PersistentCache<ArrayList<T>> cacheDroits, Function<T, String> immeubleIdRefProvider, Function<T, String> ayantDroitIdRefProvider) {
 		while (iterator.hasNext()) {
@@ -308,9 +217,8 @@ public class DroitRFDetector {
 		}
 		else {
 			// on récupère les droits actifs actuels
-			final Set<DroitRF> activesDroits = ayantDroit.getDroits().stream()
+			final Set<DroitProprieteRF> activesDroits = ayantDroit.getDroitsPropriete().stream()
 					.filter(d -> d.isValidAt(null))
-					.filter(d -> d instanceof DroitProprieteRF)
 					.collect(Collectors.toSet());
 
 			//noinspection StatementWithEmptyBody
@@ -339,60 +247,6 @@ public class DroitRFDetector {
 				.map(PersonEigentumAnteil::getGemeinschaft)
 				.filter(Objects::nonNull)
 				.forEach(g -> processAyantDroit(parentImport, g));
-	}
-
-	/**
-	 * Cette méthode détecte les changements (création ou update) sur les servitudes d'un bénéficiaire et crée les mutations correspondantes.
-	 */
-	private void detecterMutationsServitudes(@NotNull String idRF, @NotNull List<DienstbarkeitDiscrete> servitudes, @NotNull EvenementRFImport parentImport, boolean importInitial) {
-
-		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF));
-		if (ayantDroit == null) {
-			// l'ayant-droit n'existe pas : il va être créé et on doit donc sauver une mutation en mode création.
-			final EvenementRFMutation mutation = new EvenementRFMutation();
-			mutation.setParentImport(parentImport);
-			mutation.setEtat(EtatEvenementRF.A_TRAITER);
-			mutation.setTypeEntite(TypeEntiteRF.SERVITUDE);
-			mutation.setTypeMutation(TypeMutationRF.CREATION);
-			mutation.setIdRF(idRF); // idRF de l'ayant-droit
-			mutation.setXmlContent(xmlHelperRF.toXMLString(new DienstbarkeitDiscreteList(servitudes)));
-			evenementRFMutationDAO.save(mutation);
-		}
-		else {
-			// on récupère les servitudes actives actuelles
-			final Set<DroitRF> activesServitudes = ayantDroit.getDroits().stream()
-					.filter(d -> d.isValidAt(RegDate.get()))    // les usufruits peuvent posséder des dates de fin dans le futur
-					.filter(d -> d instanceof ServitudeRF)
-					.collect(Collectors.toSet());
-
-			//noinspection StatementWithEmptyBody
-			if (!ServitudesRFHelper.dataEquals(activesServitudes, servitudes)) {
-				// les droits sont différents : on sauve une mutation en mode modification
-				final EvenementRFMutation mutation = new EvenementRFMutation();
-				mutation.setParentImport(parentImport);
-				mutation.setEtat(EtatEvenementRF.A_TRAITER);
-				mutation.setTypeEntite(TypeEntiteRF.SERVITUDE);
-				mutation.setTypeMutation(TypeMutationRF.MODIFICATION);
-				mutation.setIdRF(idRF); // idRF de l'ayant-droit
-				mutation.setXmlContent(xmlHelperRF.toXMLString(new DienstbarkeitDiscreteList(servitudes)));
-				evenementRFMutationDAO.save(mutation);
-			}
-			else {
-				// les droits sont égaux : rien à faire
-			}
-		}
-	}
-
-	@Nullable
-	private static Gemeinschaft getCommunauteFromServitude(@NotNull DienstbarkeitDiscrete servitude) {
-		if (servitude.getGemeinschaft().isEmpty()) {
-			return null;
-		}
-		// on instancie une communauté à partir des données de l'usufruit, faute de mieux
-		final Gemeinschaft gemeinschaft = new Gemeinschaft();
-		gemeinschaft.setGemeinschatID(servitude.getDienstbarkeit().getStandardRechtID());
-		gemeinschaft.setArt(GemeinschaftsArt.GEMEINDERSCHAFT);
-		return gemeinschaft;
 	}
 
 	private <T> void detectMutationsDeSuppression(PersistentCache<ArrayList<T>> cacheDroits, TypeDroit typeDroit, long importId) {

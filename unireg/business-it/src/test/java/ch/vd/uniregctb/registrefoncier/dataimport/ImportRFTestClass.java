@@ -257,18 +257,36 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	@NotNull
-	public static UsufruitRF newUsufruitRF(String masterIdRF, BienFondRF immeuble, PersonnePhysiqueRF personne, CommunauteRF communaute, RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier,
+	public static UsufruitRF newUsufruitRF(String masterIdRF,
+	                                       BienFondRF immeuble,
+	                                       PersonnePhysiqueRF personne,
+	                                       RegDate dateDebut,
+	                                       RegDate dateDebutMetier,
+	                                       RegDate dateFin,
+	                                       RegDate dateFinMetier,
+	                                       IdentifiantDroitRF identifiantDroit,
+	                                       IdentifiantAffaireRF numeroAffaire) {
+		return newUsufruitRF(masterIdRF, Collections.singletonList(immeuble), Collections.singletonList(personne),dateDebut, dateDebutMetier, dateFin, dateFinMetier, identifiantDroit, numeroAffaire);
+	}
+
+	@NotNull
+	public static UsufruitRF newUsufruitRF(String masterIdRF,
+	                                       List<ImmeubleRF> immeubles,
+	                                       List<PersonnePhysiqueRF> personnes,
+	                                       RegDate dateDebut,
+	                                       RegDate dateDebutMetier,
+	                                       RegDate dateFin,
+	                                       RegDate dateFinMetier,
 	                                       IdentifiantDroitRF identifiantDroit,
 	                                       IdentifiantAffaireRF numeroAffaire) {
 		final UsufruitRF usu = new UsufruitRF();
-		usu.setAyantDroit(personne);
-		usu.setCommunaute(communaute);
+		immeubles.forEach(usu::addImmeuble);
+		personnes.forEach(usu::addAyantDroit);
 		usu.setDateDebut(dateDebut);
 		usu.setDateDebutMetier(dateDebutMetier);
 		usu.setDateFin(dateFin);
 		usu.setDateFinMetier(dateFinMetier);
 		usu.setIdentifiantDroit(identifiantDroit);
-		usu.setImmeuble(immeuble);
 		usu.setMasterIdRF(masterIdRF);
 		usu.setNumeroAffaire(numeroAffaire);
 		return usu;
