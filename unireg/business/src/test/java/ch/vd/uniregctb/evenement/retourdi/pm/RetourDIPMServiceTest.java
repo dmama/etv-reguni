@@ -481,7 +481,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);      // même année en repoussant
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
@@ -576,7 +576,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 3, 31);      // même année en avançant
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
@@ -585,7 +585,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, nouvelleFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
@@ -619,7 +619,24 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
 				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				Assert.assertEquals(Collections.emptyList(), taches);
+				if (RegDate.get().month() > 3) {
+					// oui, une tâche a été créée, parce que la période se temine justement au 31.03, qui est passé
+					Assert.assertEquals(1, taches.size());
+					final Tache tache = taches.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(date(annee, 4, 1), tacheEnvoi.getDateDebut());
+					Assert.assertEquals(date(annee, 4, 1), tacheEnvoi.getDateDebutExercice());
+					Assert.assertEquals(date(annee + 1, 3, 31), tacheEnvoi.getDateFin());
+					Assert.assertEquals(date(annee + 1, 3, 31), tacheEnvoi.getDateFinExercice());
+				}
+				else {
+					Assert.assertEquals(Collections.emptyList(), taches);
+				}
 
 				// la déclaration
 				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
@@ -680,7 +697,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(6, 30), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, nouvelleFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
@@ -789,7 +806,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);      // même année en repoussant
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
@@ -798,7 +815,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(entreprise, ancienneFinExerciceCommercial.getLastDayOfTheMonth().getOneDayAfter().addMonths(-1), DayMonth.get(3, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, nouvelleFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
@@ -1043,7 +1060,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addBouclement(entreprise, dateDebutEntreprise, DayMonth.get(3, 31), 12);
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens);
+				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, ancienneFinExerciceCommercial.addYears(1), MotifFor.FIN_EXPLOITATION, MockCommune.Echallens);
 
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 
@@ -1136,7 +1153,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					final Bouclement bouclement = bouclements.get(1);
 					Assert.assertNotNull(bouclement);
 					Assert.assertFalse(bouclement.isAnnule());
-					Assert.assertEquals(date(annee + 1, 12, 1), bouclement.getDateDebut());
+					Assert.assertEquals(date(annee + 1, 3, 1), bouclement.getDateDebut());
 					Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
 					Assert.assertEquals(12, bouclement.getPeriodeMois());
 				}
