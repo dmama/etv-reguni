@@ -42,7 +42,7 @@ public enum TypeDocumentEditique {
 	//
 
 	DEMANDE_DEGREVEMENT_ICI("U1PTLDEG", "414", "demandeDegrevementICI"),
-	RAPPEL_DEMANDE_DEGREVEMENT_ICI("U1PULDEG", "415", "rappelDemandeDegrevementICI"),
+	RAPPEL_DEMANDE_DEGREVEMENT_ICI("U1PURDEG", "415", "rappelDemandeDegrevementICI"),
 
 	//
 	// Autour des questionnaires SNC
