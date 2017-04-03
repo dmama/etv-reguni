@@ -31,7 +31,7 @@
 			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
 				<property name="destination" value="${extprop.jms.queue.notification.document.sortant.reponse}"/>
 				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="1"/>
+				<property name="maxSessions" value="${extprop.jms.queue.notification.document.sortant.reponse.consumers}"/>
 				<property name="maxMessagesPerSessions" value="1"/>
 			</bean>
 		</property>
