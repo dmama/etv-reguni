@@ -30,6 +30,8 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIProcessor;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
+import ch.vd.uniregctb.foncier.RappelFormulairesDemandeDegrevementICIProcessor;
+import ch.vd.uniregctb.foncier.RappelFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.DelaisService;
@@ -142,6 +144,12 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	public EnvoiFormulairesDemandeDegrevementICIResults envoyerFormulairesDemandeDegrevementICIEnMasse(RegDate dateTraitement, int nbThreads, @Nullable Integer nbMaxEnvois, StatusManager statusManager) {
 		final EnvoiFormulairesDemandeDegrevementICIProcessor processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(parametreAppService, transactionManager, this, hibernateTemplate, tiersService, registreFoncierService);
 		return processor.run(nbThreads, nbMaxEnvois, dateTraitement, statusManager);
+	}
+
+	@Override
+	public RappelFormulairesDemandeDegrevementICIResults envoyerRappelsFormulairesDemandeDegrevementICIEnMasse(RegDate dateTraitement, StatusManager statusManager) {
+		final RappelFormulairesDemandeDegrevementICIProcessor processor = new RappelFormulairesDemandeDegrevementICIProcessor(parametreAppService, transactionManager, this, hibernateTemplate, registreFoncierService, delaiService);
+		return processor.run(dateTraitement, statusManager);
 	}
 
 	@Override
@@ -341,6 +349,16 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	public void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement) throws AutreDocumentFiscalException {
 		try {
 			editiqueCompositionService.imprimeRappelLettreBienvenueForBatch(lettre, dateTraitement);
+		}
+		catch (EditiqueException e) {
+			throw new AutreDocumentFiscalException(e);
+		}
+	}
+
+	@Override
+	public void envoyerRappelFormulaireDemandeDegrevementICIBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement) throws AutreDocumentFiscalException {
+		try {
+			editiqueCompositionService.imprimeRappelFormulaireDemandeDegrevementICIForBatch(formulaire, dateTraitement);
 		}
 		catch (EditiqueException e) {
 			throw new AutreDocumentFiscalException(e);

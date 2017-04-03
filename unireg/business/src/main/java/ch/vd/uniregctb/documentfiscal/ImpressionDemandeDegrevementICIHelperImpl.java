@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.editique.unireg.CTypeAffranchissement;
 import ch.vd.editique.unireg.CTypeDegrevementImm;
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
@@ -100,7 +102,8 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 		}
 	}
 
-	private CTypeImmeuble buildInfoImmeuble(DemandeDegrevementICI demande) throws EditiqueException {
+	@Override
+	public CTypeImmeuble buildInfoImmeuble(DemandeDegrevementICI demande) throws EditiqueException {
 		final int periodeFiscale = demande.getPeriodeFiscale();
 		final RegDate dateReference = RegDate.get(periodeFiscale, 1, 1);
 		final ImmeubleRF immeuble = demande.getImmeuble();
@@ -108,7 +111,7 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 
 		final CTypeImmeuble type = new CTypeImmeuble();
 		type.setCommune(nomCommune);
-		type.setMontantFiscalRF(Optional.ofNullable(DemandeDegrevementICIHelper.getEstimationFiscale(demande, registreFoncierService)).map(Object::toString).orElse(null));
+		type.setMontantFiscalRF(Optional.ofNullable(DemandeDegrevementICIHelper.getEstimationFiscale(demande, registreFoncierService)).map(EstimationRF::getMontant).map(Object::toString).orElse(null));
 		type.setNature(DemandeDegrevementICIHelper.getNatureImmeuble(demande, NATURE_SIZE_LIMIT));
 		type.setNoParcelle(DemandeDegrevementICIHelper.getNumeroParcelleComplet(demande, registreFoncierService));
 		type.setType(getTypeImmeuble(immeuble));
@@ -124,7 +127,9 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 		return TYPES_IMMEUBLE.get(immeuble.getClass());
 	}
 
-	private String getSiegeEntreprise(Entreprise entreprise, RegDate dateReference) {
+	@Override
+	@Nullable
+	public String getSiegeEntreprise(Entreprise entreprise, RegDate dateReference) {
 		final ForFiscalPrincipalPM ffp = entreprise.getForFiscalPrincipalAt(dateReference);
 		final String siege;
 		if (ffp != null) {
@@ -152,7 +157,8 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 		return siege;
 	}
 
-	private static String buildCodeBarres(DemandeDegrevementICI demande) {
+	@Override
+	public String buildCodeBarres(DemandeDegrevementICI demande) {
 		return String.format("070041000%04d%09d00%02d%05d",
 		                     demande.getPeriodeFiscale(),
 		                     demande.getEntreprise().getNumero(),

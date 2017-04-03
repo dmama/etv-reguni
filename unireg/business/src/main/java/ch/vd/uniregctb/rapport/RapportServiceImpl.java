@@ -91,6 +91,7 @@ import ch.vd.uniregctb.document.MigrationExoIFONCRapport;
 import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
+import ch.vd.uniregctb.document.RappelFormulairesDemandeDegrevementICIRapport;
 import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
@@ -120,6 +121,7 @@ import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.evenement.ide.AnnonceIDEJobResults;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.foncier.InitialisationIFoncResults;
+import ch.vd.uniregctb.foncier.RappelFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporterResults;
 import ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
@@ -1798,6 +1800,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(EnvoiFormulairesDemandeDegrevementICIRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfEnvoiFormulairesDemandeDegrevementICIRapport document = new PdfEnvoiFormulairesDemandeDegrevementICIRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RappelFormulairesDemandeDegrevementICIRapport generateRapport(RappelFormulairesDemandeDegrevementICIResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportRappelDemandesDegrevementICI";
+		final String description = "Rapport d'exécution du job d'envoi en masse des rappels de formulaires de demande de dégrèvement ICI.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RappelFormulairesDemandeDegrevementICIRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRappelFormulairesDemandeDegrevementICIRapport document = new PdfRappelFormulairesDemandeDegrevementICIRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

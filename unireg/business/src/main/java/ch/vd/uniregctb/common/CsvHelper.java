@@ -103,7 +103,7 @@ public abstract class CsvHelper {
 
 		@Override
 		public LineFiller append(Object o) {
-			appendCharSequence(String.format("%s", o));
+			appendCharSequence(o == null ? StringUtils.EMPTY : String.format("%s", o));
 			return this;
 		}
 

@@ -8,6 +8,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
+import ch.vd.uniregctb.foncier.RappelFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Entreprise;
 
@@ -42,6 +43,14 @@ public interface AutreDocumentFiscalService {
 	 * @return les données du rapport d'exécution
 	 */
 	EnvoiFormulairesDemandeDegrevementICIResults envoyerFormulairesDemandeDegrevementICIEnMasse(RegDate dateTraitement, int nbThreads, @Nullable Integer nbMaxEnvois, StatusManager statusManager);
+
+	/**
+	 * Envoi des rappels des formulaires de demande de dégrèvement ICI en masse
+	 * @param dateTraitement date de traitement (= assimilée à la date du jour)
+	 * @param statusManager status manager (pour la gestion de l'interruption du job ou la mesure de la progression)
+	 * @return les données du rapport d'exécution
+	 */
+	RappelFormulairesDemandeDegrevementICIResults envoyerRappelsFormulairesDemandeDegrevementICIEnMasse(RegDate dateTraitement, StatusManager statusManager);
 
 	/**
 	 * @param e entreprise pour laquelle on doit envoyer une lettre de bienvenue (en mode batch)
@@ -93,6 +102,13 @@ public interface AutreDocumentFiscalService {
 	 * @throws AutreDocumentFiscalException en cas de souci
 	 */
 	void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement) throws AutreDocumentFiscalException;
+
+	/**
+	 * @param formulaire le formulaire de demande de dégrèvement ICI à rappeler (la date de rappel effective doit déjà être assignée)
+	 * @param dateTraitement date de traitement
+	 * @throws AutreDocumentFiscalException en cas de souci
+	 */
+	void envoyerRappelFormulaireDemandeDegrevementICIBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement) throws AutreDocumentFiscalException;
 
 	/**
 	 * Génération d'une nouvelle lettre d'autorisation de radiation du RC en impression locale

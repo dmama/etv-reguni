@@ -16,7 +16,7 @@ import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
 
 /**
- * Rapport PDF contenant les résultats du job de migration des demandes de dégrèvement de SIMPA-PM.
+ * Rapport PDF contenant les résultats d'envoi des demandes de dégrèvement ICI
  */
 public class PdfEnvoiFormulairesDemandeDegrevementICIRapport extends PdfRapport {
 

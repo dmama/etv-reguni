@@ -361,6 +361,13 @@
 		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
+	
+	<bean id="envoiRappelsFormulairesDemandeDegrevementICIJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.RappelDemandesDegrevementICIJob">
+		<constructor-arg value="456"/>
+		<constructor-arg value="Envoyer les rappels des formulaires de demande de dégrèvement ICI"/>
+		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
 
 	<bean id="determineQuestionnairesSNCJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.snc.DeterminerQuestionnairesSNCJob">
 		<constructor-arg value="460"/>

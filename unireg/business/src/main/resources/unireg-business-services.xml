@@ -320,6 +320,10 @@
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
+	<bean id="impressionRappelDemandeDegrevementICIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.documentfiscal.ImpressionRappelDemandeDegrevementICIHelperImpl">
+		<property name="demandeHelper" ref="impressionDemandeDegrevementICIHelper"/>
+	</bean>
+
 	<bean id="impressionFourreNeutreHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.fourreNeutre.ImpressionFourreNeutreHelperImpl"/>
 
 	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">

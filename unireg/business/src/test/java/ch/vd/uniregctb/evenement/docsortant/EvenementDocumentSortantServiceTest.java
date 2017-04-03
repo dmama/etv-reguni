@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.docsortant;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
@@ -259,6 +260,115 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 		Assert.assertEquals(cleArchivage, doc.getArchive().getIdDocument());
 		Assert.assertEquals(FormatNumeroHelper.numeroCTBToDisplay(id), doc.getArchive().getNomDossier());
 		Assert.assertEquals(TypeDocumentEditique.DEMANDE_DEGREVEMENT_ICI.getCodeDocumentArchivage(), doc.getArchive().getTypDocument());
+		Assert.assertEquals(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE, doc.getArchive().getTypDossier());
+	}
+
+	@Test
+	public void testRappelFormulaireDemandeDegrevement() throws Exception {
+
+		final RegDate dateDebut = date(2005, 3, 14);
+		final RegDate dateEnvoiDocument = RegDate.get().addDays(-33);
+		final RegDate dateRappel = RegDate.get().addDays(-1);
+		final String cleArchivage = "56782433289024328sdnjas";
+
+		// mise en place fiscale
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Machin truc");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+
+				final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+				final BienFondRF immeuble = addBienFondRF("85343fldfg", null, commune, 42);
+
+				final PersonneMoraleRF pmRF = addPersonneMoraleRF("Machin truc", null, "87553zhgfsjh", 35623, null);
+				addDroitPersonneMoraleRF(null, dateDebut, null, null, "Achat", null, "578567fdbdfbsd", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
+				addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
+
+				final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateEnvoiDocument, dateEnvoiDocument.addDays(30), null, null, dateEnvoiDocument.year() + 1, immeuble);
+				demande.setCodeControle("U74157");
+
+				return entreprise.getNumero();
+			}
+		});
+
+		// envoi d'un nouveau document sortant
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				final List<DemandeDegrevementICI> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+				Assert.assertNotNull(demandes);
+				Assert.assertEquals(1, demandes.size());
+
+				final DemandeDegrevementICI demande = demandes.get(0);
+				Assert.assertNotNull(demande);
+				Assert.assertFalse(demande.isAnnule());
+
+				demande.setDateRappel(dateRappel);
+
+				final CTypeInfoArchivage infoArchivage = new CTypeInfoArchivage();
+				infoArchivage.setDatTravail(String.valueOf(dateRappel.index()));
+				infoArchivage.setIdDocument(cleArchivage);
+				infoArchivage.setNomApplication(ConstantesEditique.APPLICATION_ARCHIVAGE);
+				infoArchivage.setNomDossier(FormatNumeroHelper.numeroCTBToDisplay(id));
+				infoArchivage.setTypDocument(TypeDocumentEditique.RAPPEL_DEMANDE_DEGREVEMENT_ICI.getCodeDocumentArchivage());
+				infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
+
+				service.signaleRappelDemandeDegrevementICI(demande, "Ma super commune", "42-12-4", infoArchivage, false);
+			}
+		});
+
+		// vérification du contenu collecté
+		final Map<String, Documents> collectes = collectingSender.getCollected();
+		Assert.assertNotNull(collectes);
+		Assert.assertEquals(1, collectes.size());
+		final Map.Entry<String, Documents> entry = collectes.entrySet().iterator().next();
+		Assert.assertNotNull(entry);
+		Assert.assertNotNull(entry.getKey());
+		Assert.assertTrue(entry.getKey(), entry.getKey().startsWith("RDDICI " + id + " "));
+		final Documents docs = entry.getValue();
+		Assert.assertNotNull(docs);
+		Assert.assertNotNull(docs.getHorodatage());
+		Assert.assertNotNull(docs.getDocumentSortant());
+		Assert.assertEquals(1, docs.getDocumentSortant().size());
+		final Document doc = docs.getDocumentSortant().get(0);
+		Assert.assertNotNull(doc);
+		Assert.assertNotNull(doc.getDonneesMetier());
+		Assert.assertNotNull(doc.getArchive());
+		Assert.assertNotNull(doc.getCaracteristiques());
+		Assert.assertNotNull(doc.getIdentifiantSupervision());
+		Assert.assertNull(doc.getIdentifiantRepelec());
+		Assert.assertNull(doc.getUrl());
+
+		Assert.assertTrue(doc.getIdentifiantSupervision(), doc.getIdentifiantSupervision().startsWith("UNIREG-RDDICI " + id + " "));
+
+		Assert.assertEquals(Population.PM, doc.getDonneesMetier().getAxe());
+		Assert.assertEquals((int) id, doc.getDonneesMetier().getNumeroContribuable());
+		Assert.assertNull(doc.getDonneesMetier().getMontant());
+		Assert.assertNotNull(doc.getDonneesMetier().getPeriodesFiscales());
+		Assert.assertNotNull(doc.getDonneesMetier().getPeriodesFiscales().getPeriodeFiscale());
+		Assert.assertEquals(Collections.singletonList(BigInteger.valueOf(dateEnvoiDocument.year() + 1)), doc.getDonneesMetier().getPeriodesFiscales().getPeriodeFiscale());
+		Assert.assertNull(doc.getDonneesMetier().isPeriodeFiscalePerenne());
+
+		Assert.assertEquals("UNIREG", doc.getCaracteristiques().getEmetteur());
+		Assert.assertEquals("Rappel de formulaire de demande de dégrèvement ICI Ma super commune 42-12-4", doc.getCaracteristiques().getNomDocument());
+		Assert.assertNull(doc.getCaracteristiques().getSousTypeDocument());
+		Assert.assertEquals(TypeDocumentSortant.RAPPEL_DEMANDE_DEGREVEMENT_ICI.getCodeTypeDocumentSortant().getCode(), doc.getCaracteristiques().getTypeDocument());
+		Assert.assertEquals(CodeSupport.CED, doc.getCaracteristiques().getSupport());
+		Assert.assertNotNull(doc.getCaracteristiques().getArchivage());
+		Assert.assertEquals(false, doc.getCaracteristiques().getArchivage().isValeurProbante());
+		Assert.assertNull(doc.getCaracteristiques().getArchivage().getNombreAnneesValeurProbante());
+
+		Assert.assertEquals(cleArchivage, doc.getArchive().getIdDocument());
+		Assert.assertEquals(FormatNumeroHelper.numeroCTBToDisplay(id), doc.getArchive().getNomDossier());
+		Assert.assertEquals(TypeDocumentEditique.RAPPEL_DEMANDE_DEGREVEMENT_ICI.getCodeDocumentArchivage(), doc.getArchive().getTypDocument());
 		Assert.assertEquals(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE, doc.getArchive().getTypDossier());
 	}
 }

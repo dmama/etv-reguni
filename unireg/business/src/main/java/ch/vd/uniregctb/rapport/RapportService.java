@@ -78,6 +78,7 @@ import ch.vd.uniregctb.document.MigrationExoIFONCRapport;
 import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
+import ch.vd.uniregctb.document.RappelFormulairesDemandeDegrevementICIRapport;
 import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
@@ -107,6 +108,7 @@ import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.evenement.ide.AnnonceIDEJobResults;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.foncier.InitialisationIFoncResults;
+import ch.vd.uniregctb.foncier.RappelFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporterResults;
 import ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
@@ -740,6 +742,14 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	EnvoiFormulairesDemandeDegrevementICIRapport generateRapport(EnvoiFormulairesDemandeDegrevementICIResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui envoie les rappels des formulaires de demande de dégrèvement ICI en masse
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	RappelFormulairesDemandeDegrevementICIRapport generateRapport(RappelFormulairesDemandeDegrevementICIResults results, StatusManager status);
 
 	/**
 	 * Génère le rapport d'exécution du batch qui calcule les dates de fin métier sur les droits du RF.

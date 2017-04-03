@@ -190,6 +190,10 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
+	public void imprimeRappelFormulaireDemandeDegrevementICIForBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement) throws EditiqueException {
+	}
+
+	@Override
 	public EditiqueResultat imprimeDemandeDegrevementICIOnline(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException, JMSException {
 		return dummyResultat();
 	}

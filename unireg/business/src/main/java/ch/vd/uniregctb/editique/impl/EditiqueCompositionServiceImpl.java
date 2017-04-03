@@ -57,6 +57,7 @@ import ch.vd.uniregctb.documentfiscal.ImpressionDemandeBilanFinalHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionDemandeDegrevementICIHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionLettreBienvenueHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionLettreTypeInformationLiquidationHelper;
+import ch.vd.uniregctb.documentfiscal.ImpressionRappelDemandeDegrevementICIHelper;
 import ch.vd.uniregctb.documentfiscal.ImpressionRappelHelper;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
@@ -115,6 +116,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionDemandeBilanFinalHelper impressionDemandeBilanFinalHelper;
 	private ImpressionLettreTypeInformationLiquidationHelper impressionLettreTypeInformationLiquidationHelper;
 	private ImpressionDemandeDegrevementICIHelper impressionDemandeDegrevementICIHelper;
+	private ImpressionRappelDemandeDegrevementICIHelper impressionRappelDemandeDegrevementICIHelper;
 	private EvenementDocumentSortantService evenementDocumentSortantService;
 	private ImpressionFourreNeutreHelper impressionFourreNeutreHelper;
 
@@ -225,6 +227,10 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	public void setImpressionDemandeDegrevementICIHelper(ImpressionDemandeDegrevementICIHelper impressionDemandeDegrevementICIHelper) {
 		this.impressionDemandeDegrevementICIHelper = impressionDemandeDegrevementICIHelper;
+	}
+
+	public void setImpressionRappelDemandeDegrevementICIHelper(ImpressionRappelDemandeDegrevementICIHelper impressionRappelDemandeDegrevementICIHelper) {
+		this.impressionRappelDemandeDegrevementICIHelper = impressionRappelDemandeDegrevementICIHelper;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -1014,6 +1020,26 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		                                         infoImmeuble.getNoParcelle(),
 		                                         infoImmeuble.getCommune());
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, infoArchivage != null, description);
+	}
+
+	@Override
+	public void imprimeRappelFormulaireDemandeDegrevementICIForBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement) throws EditiqueException {
+		final TypeDocumentEditique typeDocument = impressionRappelDemandeDegrevementICIHelper.getTypeDocumentEditique();
+
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionRappelDemandeDegrevementICIHelper.buildDocument(formulaire, dateTraitement);
+		root.getDocument().add(original);
+
+		// sauvegarde de la clé d'archivage
+		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
+		final CTypeImmeuble infoImmeuble = original.getLettreDegrevementImmRappel().getImmeuble();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleRappelDemandeDegrevementICI(formulaire, infoImmeuble.getCommune(), infoImmeuble.getNoParcelle(), infoArchivage, false);
+			formulaire.setCleArchivageRappel(infoArchivage.getIdDocument());
+		}
+
+		final String nomDocument = impressionRappelDemandeDegrevementICIHelper.construitIdDocument(formulaire);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, infoArchivage != null);
 	}
 
 	@Override

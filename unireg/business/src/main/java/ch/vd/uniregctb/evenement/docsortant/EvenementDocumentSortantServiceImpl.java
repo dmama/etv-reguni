@@ -377,7 +377,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       dd.getEntreprise(),
 		                       local,
 		                       dd.getPeriodeFiscale(),
-		                       null,
+		                       dd.getNumeroSequence(),
 		                       String.valueOf(dd.getId()),
 		                       infoArchivage);
 	}
@@ -390,7 +390,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       dd.getEntreprise(),
 		                       local,
 		                       dd.getPeriodeFiscale(),
-		                       null,
+		                       dd.getNumeroSequence(),
 		                       String.valueOf(dd.getId()),
 		                       infoArchivage);
 	}
