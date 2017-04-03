@@ -3,14 +3,12 @@
 <c:set var="mySource" value="${param.source}"/>
 <table>
 	<tr class="<unireg:nextRowClass/>" >
-		<td width="25%">
+		<td width="50%" colspan="2">
 			<b><fmt:message key="label.message" /></b>
 		</td>
-		<td width="25%">&nbsp;</td>
-		<td width="25%">
-			<b><fmt:message key="label.personne" /></b>
+		<td width="50%" colspan="2">
+			<b><fmt:message key="label.personne.organisation" /></b>
 		</td>
-		<td width="25%">&nbsp;</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">
@@ -23,7 +21,7 @@
 			</form:select>	
 		</td>
 		<td width="25%">
-			<fmt:message key="label.nom" />&nbsp;:
+			<fmt:message key="label.nom.raison" />&nbsp;:
 		</td>
 		<td width="25%">
 			<form:input  path="nom" id="nom" cssErrorClass="input-with-errors" />
