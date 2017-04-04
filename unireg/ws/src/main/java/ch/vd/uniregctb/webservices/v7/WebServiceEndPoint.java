@@ -512,6 +512,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Supplier<String> params = () -> String.format("getImmovableProperty{immId=%d, user=%s}", immId, WebServiceHelper.enquote(user));
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
 			final ImmovableProperty immovable = target.getImmovablePropery(userLogin, immId);
+			if (immovable == null) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "L'immeuble n'existe pas."));
+			}
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
 				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createImmovableProperty(immovable)).build());
@@ -525,6 +528,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Supplier<String> params = () -> String.format("getBuilding{buildingId=%d, user=%s}", buildingId, WebServiceHelper.enquote(user));
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
 			final Building building = target.getBuilding(userLogin, buildingId);
+			if (building == null) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "Le bâtiment n'existe pas."));
+			}
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
 				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createBuilding(building)).build());
@@ -538,6 +544,9 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		final Supplier<String> params = () -> String.format("getCommunityOfOwners{communityId=%d, user=%s}", communityId, WebServiceHelper.enquote(user));
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
 			final CommunityOfOwners community = target.getCommunityOfOwners(userLogin, communityId);
+			if (community == null) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "La communauté n'existe pas."));
+			}
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
 				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createCommunityOfOwners(community)).build());
