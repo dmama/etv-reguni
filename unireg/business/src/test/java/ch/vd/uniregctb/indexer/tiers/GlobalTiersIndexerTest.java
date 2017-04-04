@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -259,8 +260,8 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 			}
 
 			@Override
-			protected int getOfferTimeoutInSeconds() {
-				return 2;       // pour accélérer un peu le mouvement dans les tests
+			protected Duration getOfferTimeout() {
+				return Duration.ofSeconds(2);       // pour accélérer un peu le mouvement dans les tests
 			}
 		};
 

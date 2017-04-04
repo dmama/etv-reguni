@@ -2,6 +2,8 @@ package ch.vd.uniregctb.worker;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,6 +19,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.uniregctb.common.ProgrammingException;
 
 public class WorkingQueue<T> {
@@ -24,14 +27,14 @@ public class WorkingQueue<T> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WorkingQueue.class);
 
 	private static class Element<T> {
-		private long creationTime = System.nanoTime();
+		private Instant creationTime = InstantHelper.get();
 		private T data;
 
 		private Element(T data) {
 			this.data = data;
 		}
 
-		public long getCreationTime() {
+		public Instant getCreationTime() {
 			return creationTime;
 		}
 
@@ -103,7 +106,7 @@ public class WorkingQueue<T> {
 		this.inprocessing = new HashSet<>();
 		this.listeners = new ArrayList<>();
 		for (int i = 0; i < nbThreads; ++i) {
-			SimpleListener<T> l = new SimpleListener<>(this, queue, worker);
+			final SimpleListener<T> l = new SimpleListener<>(this, queue, worker);
 			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
@@ -120,7 +123,7 @@ public class WorkingQueue<T> {
 		this.inprocessing = new HashSet<>();
 		this.listeners = new ArrayList<>();
 		for (int i = 0; i < nbThreads; ++i) {
-			BatchListener<T> l = new BatchListener<>(this, queue, worker);
+			final BatchListener<T> l = new BatchListener<>(this, queue, worker);
 			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
@@ -131,7 +134,7 @@ public class WorkingQueue<T> {
 		this.inprocessing = new HashSet<>(capacity);
 		this.listeners = new ArrayList<>();
 		for (int i = 0; i < nbThreads; ++i) {
-			SimpleListener<T> l = new SimpleListener<>(this, queue, worker);
+			final SimpleListener<T> l = new SimpleListener<>(this, queue, worker);
 			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
@@ -142,7 +145,7 @@ public class WorkingQueue<T> {
 		this.inprocessing = new HashSet<>(capacity);
 		this.listeners = new ArrayList<>();
 		for (int i = 0; i < nbThreads; ++i) {
-			BatchListener<T> l = new BatchListener<>(this, queue, worker);
+			final BatchListener<T> l = new BatchListener<>(this, queue, worker);
 			l.setName(worker.getName() + '-' + i);
 			this.listeners.add(l);
 		}
@@ -176,7 +179,10 @@ public class WorkingQueue<T> {
 		queue.put(d);
 	}
 
-	public boolean offer(T data, long timeout, TimeUnit unit) throws InterruptedException {
+	public boolean offer(T data, Duration timeout) throws InterruptedException {
+		if (timeout.isNegative() || timeout.isZero()) {
+			throw new IllegalArgumentException("timeout should be positive.");
+		}
 
 		final Element<T> d = new Element<>(data);
 
@@ -190,7 +196,7 @@ public class WorkingQueue<T> {
 
 		boolean res = false;
 		try {
-			res = queue.offer(d, timeout, unit);
+			res = queue.offer(d, timeout.toNanos(), TimeUnit.NANOSECONDS);
 		}
 		finally {
 			if (!res) {
@@ -401,7 +407,7 @@ public class WorkingQueue<T> {
 	 * @throws DeadThreadException si tous les workers sont morts, ou qu'il n'y pas de workers définis.
 	 */
 	public void sync() throws DeadThreadException {
-		final long syncTime = System.nanoTime();
+		final Instant syncTime = InstantHelper.get();
 		synchronized (inprocessing) {
 			while (!allProcessedUpTo(syncTime)) {
 				if (!anyWorkerAlive()) {
@@ -481,10 +487,18 @@ public class WorkingQueue<T> {
 		}
 	}
 
-	private boolean allProcessedUpTo(long syncTime) {
+	private boolean allProcessedUpTo(Instant syncTime) {
 		boolean allProcessed = true;
 		for (Element<T> element : inprocessing) {
-			if (element.getCreationTime() < syncTime) {
+			//
+			// ATTENTION : bien qu'ayant une précision à la nano-seconde, un Instant
+			// n'a qu'une résolution beaucoup plus faible... en JDK8, les
+			// objects Clock sont basés sur System.currentTimeMillis() dont la résolution
+			// est très loin de la nano-seconde (il parait que ça sera meilleur en JDK9, voir https://bugs.openjdk.java.net/browse/JDK-8068730)
+			//
+			// Par conséquent, la comparaison ici DOIT inclure le cas "creation time == sync time"
+			//
+			if (element.creationTime.compareTo(syncTime) <= 0) {
 				allProcessed = false;
 				break;
 			}

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.indexer.async;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
@@ -103,15 +103,14 @@ public class MassTiersIndexer {
 	 * Insère le tiers spécifié dans la queue, en attendant le temps nécessaire pour qu'une place se libère dans la queue.
 	 *
 	 * @param id      l'id du tiers à réindexer
-	 * @param timeout le temps maximum d'attente avant d'abandonner l'insertion, en unités de <tt>unit</tt>
-	 * @param unit    une <tt>TimeUnit</tt> qui détermine comment intérpréter le paramètre <tt>timeout</tt>
+	 * @param timeout le temps maximum d'attente avant d'abandonner l'insertion
 	 * @return <tt>true</tt> en cas de succès, ou <tt>false</tt> si le temps maximum d'attente est dépassé avant qu'une place se libère dans la queue.
 	 * @throws Exception s'il n'est pas possible d'accepter l'id
 	 */
-	public boolean offerTiersForIndexation(Long id, long timeout, TimeUnit unit) throws Exception {
+	public boolean offerTiersForIndexation(Long id, Duration timeout) throws Exception {
 		Assert.isTrue(isInit);
 		Assert.isTrue(enabled, "L'ASYNC indexer est disabled, ne devrait pas etre appelé!");
-		return queue.offer(id, timeout, unit);
+		return queue.offer(id, timeout);
 	}
 
 	/**

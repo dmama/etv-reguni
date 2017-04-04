@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
@@ -327,7 +327,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		int i = 0;
 
 		// période de la boucle d'attente lors du remplissage complet de la queue de traitement
-		final int offerTimeout = getOfferTimeoutInSeconds();
+		final Duration offerTimeout = getOfferTimeout();
 
 		// sera mis à "true" si on détecte que tous les threads sont morts prématurément
 		boolean deadThreads = false;
@@ -348,7 +348,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 				// insère l'id dans la queue à indexer, mais de manière à pouvoir interrompre le processus si
 				// plus personne ne prélève de tiers dans la queue (p.a. si tous les threads d'indexations sont morts).
-				while (!asyncIndexer.offerTiersForIndexation(id, offerTimeout, TimeUnit.SECONDS) && !statusManager.interrupted()) {
+				while (!asyncIndexer.offerTiersForIndexation(id, offerTimeout) && !statusManager.interrupted()) {
 
 					// si tous les threads sont morts, il est temps de tout arrêter...
 					if (!asyncIndexer.isAlive()) {
@@ -358,7 +358,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 					}
 
 					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug(String.format("La queue d'indexation est pleine, attente de %d secondes...", offerTimeout));
+						LOGGER.debug(String.format("La queue d'indexation est pleine, attente de %d milli-secondes...", offerTimeout.toMillis()));
 					}
 				}
 
@@ -404,10 +404,10 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	/**
 	 * Surchargeable dans les tests pour avoir des temps de latence plus faibles
-	 * @return la délai d'attente, en secondes, quand la queue est pleine
+	 * @return le délai d'attente, quand la queue est pleine
 	 */
-	protected int getOfferTimeoutInSeconds() {
-		return 10;
+	protected Duration getOfferTimeout() {
+		return Duration.ofSeconds(10);
 	}
 
 	private static class DeltaIds {
