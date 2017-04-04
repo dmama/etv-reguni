@@ -501,7 +501,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			final FiscalEvents events = target.getFiscalEvents(userLogin, partyNo);
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
-				return ExecutionResult.with(Response.ok(fiscalEventsObjectFactory.createFiscalEvents(events)).build());
+				return ExecutionResult.with(Response.ok(fiscalEventsObjectFactory.createFiscalEvents(events), preferred).build(), events.getEvents().size());
 			}
 			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
@@ -517,7 +517,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			}
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
-				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createImmovableProperty(immovable)).build());
+				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createImmovableProperty(immovable), preferred).build(), 1);
 			}
 			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
@@ -533,7 +533,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			}
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
-				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createBuilding(building)).build());
+				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createBuilding(building), preferred).build(), 1);
 			}
 			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
@@ -549,7 +549,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			}
 			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 			if (preferred == MediaType.APPLICATION_XML_TYPE) {
-				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createCommunityOfOwners(community)).build());
+				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createCommunityOfOwners(community), preferred).build(), 1);
 			}
 			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
