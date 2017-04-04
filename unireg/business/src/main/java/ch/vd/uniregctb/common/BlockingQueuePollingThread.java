@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -24,8 +25,8 @@ public abstract class BlockingQueuePollingThread<T> extends PollingThread<T> {
 	 * @param name nom du thread
 	 * @param queue queue à surveiller
 	 */
-	protected BlockingQueuePollingThread(String name, long pollingTimeout, @NotNull TimeUnit pollingTimeoutUnit, @NotNull BlockingQueue<T> queue) {
-		super(name, pollingTimeout, pollingTimeoutUnit);
+	protected BlockingQueuePollingThread(String name, @NotNull Duration pollingTimeout, @NotNull BlockingQueue<T> queue) {
+		super(name, pollingTimeout);
 		this.queue = queue;
 	}
 
@@ -38,7 +39,7 @@ public abstract class BlockingQueuePollingThread<T> extends PollingThread<T> {
 	}
 
 	@Override
-	protected final T poll(long timeout, @NotNull TimeUnit timeUnit) throws InterruptedException {
-		return queue.poll(timeout, timeUnit);
+	protected final T poll(@NotNull Duration timeout) throws InterruptedException {
+		return queue.poll(timeout.toNanos(), TimeUnit.NANOSECONDS);
 	}
 }

@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.common;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
@@ -12,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.InstantHelper;
+
 public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AsyncStorageWithPeriodicCleanup.class);
@@ -22,9 +26,9 @@ public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 	private Timer cleanupTimer;
 
 	/**
-	 * Période (en secondes) de lancement des tâches de cleanup (doit être strictement positif)
+	 * Période de lancement des tâches de cleanup (doit être strictement positif)
 	 */
-	private final int cleanupPeriod;
+	private final Duration cleanupPeriod;
 
 	/**
 	 * Nom du thread utilisé par le timer {@link #cleanupTimer}
@@ -48,13 +52,13 @@ public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 					@Override
 					public Object execute(Iterable<Map.Entry<K, Mutable<V>>> entries) {
 						final Iterator<Map.Entry<K, Mutable<V>>> iterator = entries.iterator();
-						final long now = TimeHelper.getPreciseCurrentTimeMillis();
-						final long lastAcceptedTimestamp = now - getMaximumAcceptedAge();
+						final Instant now = InstantHelper.get();
+						final Instant lastAcceptedTimestamp = now.minus(getMaximumAcceptedAge());
 						while (iterator.hasNext()) {
 							final Map.Entry<K, Mutable<V>> entry = iterator.next();
 							final CleanupMutableObject<V> dataHolder = (CleanupMutableObject<V>) entry.getValue();
-							final long responseArrivalTs = dataHolder.ts;
-							if (responseArrivalTs < lastAcceptedTimestamp) {
+							final Instant responseArrivalTime = dataHolder.ts;
+							if (responseArrivalTime.isBefore(lastAcceptedTimestamp)) {
 								onPurge(entry.getKey(), dataHolder.getValue());
 								iterator.remove();
 							}
@@ -80,13 +84,16 @@ public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 		/**
 		 * @return En millisecondes, l'age maximal accepté pour une donnée (= au delà, elle sera purgée)
 		 */
-		protected long getMaximumAcceptedAge() {
-			return cleanupPeriod * 1000L;
+		protected Duration getMaximumAcceptedAge() {
+			return cleanupPeriod;
 		}
 	}
 
 	public AsyncStorageWithPeriodicCleanup(int cleanupPeriodSeconds, String cleanupThreadName) {
-		this.cleanupPeriod = cleanupPeriodSeconds;
+		if (cleanupPeriodSeconds <= 0) {
+			throw new IllegalArgumentException("La période de cleanup en secondes doit être strictement positive");
+		}
+		this.cleanupPeriod = Duration.ofSeconds(cleanupPeriodSeconds);
 		this.cleanupThreadName = cleanupThreadName;
 	}
 
@@ -95,10 +102,10 @@ public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 	 * @param <V> le type de valeur stockée
 	 */
 	protected static class CleanupMutableObject<V> extends MutableObject<V> {
-		public final long ts;
+		public final Instant ts;
 		public CleanupMutableObject(@Nullable V data) {
 			super(data);
-			this.ts = TimeHelper.getPreciseCurrentTimeMillis();
+			this.ts = InstantHelper.get();
 		}
 	}
 
@@ -127,7 +134,7 @@ public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 	 */
 	public void start() {
 		cleanupTimer = new Timer(cleanupThreadName);
-		cleanupTimer.schedule(buildCleanupTask(), cleanupPeriod * 1000L, cleanupPeriod * 1000L);
+		cleanupTimer.schedule(buildCleanupTask(), cleanupPeriod.toMillis(), cleanupPeriod.toMillis());
 	}
 
 	/**

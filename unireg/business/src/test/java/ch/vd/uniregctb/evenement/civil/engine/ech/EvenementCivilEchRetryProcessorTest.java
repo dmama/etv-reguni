@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jetbrains.annotations.NotNull;
@@ -130,7 +130,7 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 			}
 
 			@Override
-			public Batch poll(long timeout, TimeUnit unit) throws InterruptedException {
+			public Batch poll(Duration timeout) throws InterruptedException {
 				throw new NotImplementedException();
 			}
 

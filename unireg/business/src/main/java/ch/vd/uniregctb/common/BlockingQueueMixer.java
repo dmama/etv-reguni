@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -16,8 +17,8 @@ import org.slf4j.LoggerFactory;
  */
 public class BlockingQueueMixer<T> {
 
-	private static final int POLL_TIMEOUT = 100;    // ms
-	private static final int OFFER_TIMEOUT = 100;    // ms
+	private static final Duration POLL_TIMEOUT = Duration.ofMillis(100);
+	private static final Duration OFFER_TIMEOUT = Duration.ofMillis(100);
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BlockingQueueMixer.class);
 
@@ -101,7 +102,7 @@ public class BlockingQueueMixer<T> {
 		private boolean offered;
 
 		private DispatchingThread(String name, @NotNull BlockingQueue<T> input, @NotNull BlockingQueue<T> output) {
-			super(name, POLL_TIMEOUT, TimeUnit.MILLISECONDS, input);
+			super(name, POLL_TIMEOUT, input);
 			this.output = output;
 		}
 
@@ -110,7 +111,7 @@ public class BlockingQueueMixer<T> {
 			offered = false;
 			transitting = element;
 			while (!shouldStop()) {
-				if (output.offer(transitting, OFFER_TIMEOUT, TimeUnit.MILLISECONDS)) {
+				if (output.offer(transitting, OFFER_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS)) {
 					transitting = null;
 					offered = true;
 					break;

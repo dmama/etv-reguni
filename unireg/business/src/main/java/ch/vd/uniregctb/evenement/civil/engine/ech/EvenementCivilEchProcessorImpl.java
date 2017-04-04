@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -149,8 +150,8 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 
 		@Override
-		protected EvenementCivilNotificationQueue.Batch poll(long timeout, @NotNull TimeUnit timeUnit) throws InterruptedException {
-			return notificationQueue.poll(timeout, timeUnit);
+		protected EvenementCivilNotificationQueue.Batch poll(@NotNull Duration pollingTimeout) throws InterruptedException {
+			return notificationQueue.poll(pollingTimeout);
 		}
 
 		@Override

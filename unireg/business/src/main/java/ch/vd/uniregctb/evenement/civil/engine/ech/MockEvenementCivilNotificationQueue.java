@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.time.Duration;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 
@@ -18,7 +18,7 @@ public class MockEvenementCivilNotificationQueue implements EvenementCivilNotifi
 	}
 
 	@Override
-	public Batch poll(long timeout, TimeUnit unit) throws InterruptedException {
+	public Batch poll(Duration timeout) throws InterruptedException {
 		return null;
 	}
 

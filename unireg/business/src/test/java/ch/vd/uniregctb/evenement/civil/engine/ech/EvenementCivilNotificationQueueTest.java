@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,8 +83,8 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			@Override
 			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
-				Assert.assertNull(queue.poll(1, TimeUnit.MILLISECONDS));
-				Assert.assertNull(queue.poll(20, TimeUnit.MILLISECONDS));
+				Assert.assertNull(queue.poll(Duration.ofMillis(1)));
+				Assert.assertNull(queue.poll(Duration.ofMillis(20)));
 			}
 		});
 	}
@@ -123,7 +124,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Assert.assertEquals(2, queue.getTotalCount());
 
 				// première récupération : individu sans événement -> collection vide (timeout > 1s pour laisser le délai s'écouler, voir plus haut)
-				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(1500, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(Duration.ofMillis(1500));
 				Assert.assertNotNull(infoSans);
 				Assert.assertEquals(noIndividuSans, infoSans.noIndividu);
 				Assert.assertNotNull(infoSans.contenu);
@@ -131,7 +132,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Assert.assertEquals(1, queue.getTotalCount());
 
 				// deuxième récupération : individu avec événements -> collection avec 3 éléments (seulements les événements non traités)
-				final EvenementCivilNotificationQueue.Batch infoAvec = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoAvec = queue.poll(Duration.ofMillis(1));
 				Assert.assertNotNull(infoAvec);
 				Assert.assertEquals(noIndividu, infoAvec.noIndividu);
 				Assert.assertNotNull(infoAvec.contenu);
@@ -179,7 +180,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				}
 
 				// troisième tentative de récupération : rien
-				Assert.assertNull(queue.poll(1, TimeUnit.MILLISECONDS));
+				Assert.assertNull(queue.poll(Duration.ofMillis(1)));
 			}
 		});
 	}
@@ -215,7 +216,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Assert.assertEquals(2, queue.getTotalCount());
 
 				// première récupération : individu sans événement -> collection vide (timeout > 1s pour laisser le délai s'écouler, voir plus haut)
-				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(1500, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(Duration.ofMillis(1500));
 				Assert.assertNotNull(infoSans);
 				Assert.assertEquals(noIndividuSans, infoSans.noIndividu);
 				Assert.assertNotNull(infoSans.contenu);
@@ -223,7 +224,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Assert.assertEquals(1, queue.getTotalCount());
 
 				// deuxième récupération : individu avec événements -> collection avec 3 éléments (seulements les événements non traités)
-				final EvenementCivilNotificationQueue.Batch infoAvec = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoAvec = queue.poll(Duration.ofMillis(1));
 				Assert.assertNotNull(infoAvec);
 				Assert.assertEquals(noIndividu, infoAvec.noIndividu);
 				Assert.assertNotNull(infoAvec.contenu);
@@ -271,7 +272,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				}
 
 				// troisième tentative de récupération : rien
-				Assert.assertNull(queue.poll(1, TimeUnit.MILLISECONDS));
+				Assert.assertNull(queue.poll(Duration.ofMillis(1)));
 			}
 		});
 
@@ -300,12 +301,12 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 
 				// après 800ms, on ne devrait toujours rien voir
 				Thread.sleep(800);
-				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
 				Assert.assertNull(infoVide);
 
 				// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
 				Thread.sleep(300);
-				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
 				Assert.assertNotNull(infoNonVide);
 				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 			}
@@ -334,7 +335,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
 
 				// Pas de délai -> on doit donc tout de suite récupérer notre individu
-				final EvenementCivilNotificationQueue.Batch info = queue.poll(10, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch info = queue.poll(Duration.ofMillis(10));
 				Assert.assertNotNull(info);
 				Assert.assertEquals(noIndividu, info.noIndividu);
 			}
@@ -363,7 +364,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				queue.post(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);
 
 				// le poll doit recevoir l'événement immédiatement
-				final EvenementCivilNotificationQueue.Batch info = queue.poll(10, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch info = queue.poll(Duration.ofMillis(10));
 				Assert.assertNotNull(info);
 				Assert.assertEquals(noIndividu, info.noIndividu);
 			}
@@ -402,7 +403,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				queue.post(noIndividuTemoin, EvenementCivilEchProcessingMode.MANUAL);
 
 				for (l = 1; l < nbEvtsBatch; l++) {
-					final EvenementCivilNotificationQueue.Batch info = queue.poll(1, TimeUnit.MILLISECONDS);
+					final EvenementCivilNotificationQueue.Batch info = queue.poll(Duration.ofMillis(1));
 					Assert.assertNotNull(info);
 					if (info.noIndividu == noIndividuTemoin) {
 						LOGGER.info("Témoin sorti en position " + l);
@@ -438,12 +439,12 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 
 				// après 800ms, on ne devrait toujours rien voir
 				Thread.sleep(800);
-				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
 				Assert.assertNull(infoVide);
 
 				// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
 				Thread.sleep(300);
-				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
 				Assert.assertNotNull(infoNonVide);
 				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 			}
@@ -510,7 +511,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				public void run() {
 					while (!stop) {
 						try {
-							queue.poll(1, TimeUnit.SECONDS);
+							queue.poll(Duration.ofSeconds(1));
 						}
 						catch (InterruptedException e) {
 							throw new RuntimeException(e);
@@ -627,12 +628,12 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 
 				// après 800ms, on ne devrait toujours rien voir
 				Thread.sleep(800);
-				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
 				Assert.assertNull(infoVide);
 
 				// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
 				Thread.sleep(300);
-				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
 				Assert.assertNotNull(infoNonVide);
 				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 			}
@@ -663,17 +664,17 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 
 				// après 800ms, on ne devrait toujours rien voir
 				Thread.sleep(800);
-				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(Duration.ofMillis(1));
 				Assert.assertNull(infoVide);
 
 				// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
 				Thread.sleep(300);
-				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(Duration.ofMillis(1));
 				Assert.assertNotNull(infoNonVide);
 				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 
 				// mais pas une seconde fois (= doublon bien détecté)
-				final EvenementCivilNotificationQueue.Batch infoVide2 = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch infoVide2 = queue.poll(Duration.ofMillis(1));
 				Assert.assertNull(infoVide2);
 			}
 		});

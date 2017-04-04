@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.common;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +14,7 @@ public abstract class PollingThread<T> extends Thread {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PollingThread.class);
 
-	private final long pollingTimeout;
-	private final TimeUnit pollingTimeoutUnit;
+	private final Duration pollingTimeout;
 
 	private volatile boolean shouldStop = false;
 
@@ -23,12 +22,14 @@ public abstract class PollingThread<T> extends Thread {
 	 * Constructor
 	 * @param name nom du thread
 	 * @param pollingTimeout le timeout de chaque itération de polling
-	 * @param pollingTimeoutUnit l'unité du timeout de chaque itération de polling
 	 */
-	protected PollingThread(String name, long pollingTimeout, @NotNull TimeUnit pollingTimeoutUnit) {
+	protected PollingThread(String name, @NotNull Duration pollingTimeout) {
 		super(name);
+
+		if (pollingTimeout.isZero() || pollingTimeout.isNegative()) {
+			throw new IllegalArgumentException("pollingTimeout doit être strictement positif");
+		}
 		this.pollingTimeout = pollingTimeout;
-		this.pollingTimeoutUnit = pollingTimeoutUnit;
 	}
 
 	/**
@@ -36,7 +37,7 @@ public abstract class PollingThread<T> extends Thread {
 	 * @param name nom du thread
 	 */
 	protected PollingThread(String name) {
-		this(name, 100, TimeUnit.MILLISECONDS);
+		this(name, Duration.ofMillis(100));
 	}
 
 	/**
@@ -72,7 +73,7 @@ public abstract class PollingThread<T> extends Thread {
 		}
 		try {
 			while (!shouldStop) {
-				final T elt = poll(pollingTimeout, pollingTimeoutUnit);
+				final T elt = poll(pollingTimeout);
 				if (elt != null && !shouldStop) {
 					try {
 						Throwable thrown = null;
@@ -119,11 +120,10 @@ public abstract class PollingThread<T> extends Thread {
 	/**
 	 * A implémenter par les sous-classes, pour fournir un élément issu du <i>poll</i>
 	 * @param timeout durée maximale d'attente
-	 * @param timeUnit unité de la durée maximale d'attente
 	 * @return un élément <i>pollé</i>, ou <code>null</code> si aucun ne s'est présenté avant le <i>timeout</i>
 	 * @throws InterruptedException si le thread a été interrompu pendant l'attente
 	 */
-	protected abstract T poll(long timeout, @NotNull TimeUnit timeUnit) throws InterruptedException;
+	protected abstract T poll(@NotNull Duration timeout) throws InterruptedException;
 
 	/**
 	 * Surchargeable par les classes dérivées pour être notifiées quand un élément a été récupéré

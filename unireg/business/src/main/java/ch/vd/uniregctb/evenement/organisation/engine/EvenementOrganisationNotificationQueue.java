@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -63,11 +63,10 @@ public interface EvenementOrganisationNotificationQueue {
 	/**
 	 * Va chercher le prochain lot de traitement d'événements pour un organisation
 	 * @param timeout temps d'attente maximum avant de rendre la main
-	 * @param unit unité du temps d'attente maximum
 	 * @return si aucun événement, <code>null</code> ; sinon, la liste triée (premier dans la liste = plus ancien) des événements à traiter sur la prochain organisation. <b>Nota bene:</b> la liste en question peut être vide...
 	 * @throws InterruptedException en cas d'interruption du thread pendant l'attente
 	 */
-	Batch poll(long timeout, TimeUnit unit) throws InterruptedException;
+	Batch poll(Duration timeout) throws InterruptedException;
 
 	/**
 	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue

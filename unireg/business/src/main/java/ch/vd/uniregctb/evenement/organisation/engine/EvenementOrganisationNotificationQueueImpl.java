@@ -50,7 +50,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  * pas être faits en même temps, d'où l'utilisation d'un {@link ReentrantLock ReentrantLock}.
  * <p/>
  * Mais du coup, il était assez raisonnable de penser que la méthode {@link BlockingQueue#poll} devait subir le même genre de contrainte. Et si
- * c'est bien le cas, alors cela signifie qu'aucun appel à {@link #post(Long, EvenementOrganisationProcessingMode) post()} ne pourrait être fait pendant que la méthode {@link #poll(long, TimeUnit) poll}
+ * c'est bien le cas, alors cela signifie qu'aucun appel à {@link #post(Long, EvenementOrganisationProcessingMode) post()} ne pourrait être fait pendant que la méthode {@link #poll(java.time.Duration) poll}
  * est en attente sur l'appel à {@link BlockingQueue#poll}, ce qui n'est pas très bon en terme de performances...
  * <p/>
  * Il restait donc deux axes :
@@ -70,7 +70,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
  * organisation va de toute façon également récupérer cet événement-là.
  * <p/>
  * En revanche, si on choisit le second cas, alors on perd l'élimination des doublons, et on risque relativement souvent de voir la méthode
- * {@link #poll(long, TimeUnit) poll} faire une requête en base dans le vide (car les événements auraient déjà été traités par
+ * {@link #poll(java.time.Duration) poll} faire une requête en base dans le vide (car les événements auraient déjà été traités par
  * le passage précédent de la valeur en doublon). Notons bien que ce cas n'est pas totalement exclu dans la première solution, dans le
  * cas où l'identifiant de l'organisation est enlevée de la queue entre le moment où l'événenement correspondant est effectivement committé en base
  * et le moment où la méthode {@link #post(Long, EvenementOrganisationProcessingMode) post()} vérifie sa présence... mais cela devrait se produire moins souvent.
@@ -252,8 +252,11 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 	}
 
 	@Override
-	public Batch poll(long timeout, TimeUnit unit) throws InterruptedException {
-		final DelayedOrganisation elt = finalQueue.poll(timeout, unit);
+	public Batch poll(Duration timeout) throws InterruptedException {
+		if (timeout.isZero() || timeout.isNegative()) {
+			throw new IllegalArgumentException("timeout should be positive");
+		}
+		final DelayedOrganisation elt = finalQueue.poll(timeout.toNanos(), TimeUnit.NANOSECONDS);
 		if (elt != null) {
 			// 1. trouve tous les événements de cette organisation qui sont dans un état A_TRAITER, EN_ATTENTE, EN_ERREUR
 			// 2. tri de ces événements par date, puis ordre arrivée

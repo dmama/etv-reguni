@@ -4,6 +4,7 @@ package ch.vd.uniregctb.evenement.organisation.engine.processor;
  * @author Raphaël Marmier, 2015-07-27
  */
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -38,8 +39,8 @@ class ProcessorThread extends PollingThread<EvenementOrganisationNotificationQue
 	}
 
 	@Override
-	protected EvenementOrganisationNotificationQueue.Batch poll(long timeout, @NotNull TimeUnit timeUnit) throws InterruptedException {
-		return eventQueue.poll(timeout, timeUnit);
+	protected EvenementOrganisationNotificationQueue.Batch poll(@NotNull Duration timeout) throws InterruptedException {
+		return eventQueue.poll(timeout);
 	}
 
 	@Override
