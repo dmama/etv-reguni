@@ -160,8 +160,7 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 		assertNotNull(lastAdr, "Aucune adresse connue!");
 		lastAdr.setDateFinValidite(dateArriveeLausanne.getOneDayBefore());
 
-		final Adresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null);
-		adrs.add(adresse);
+		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null));
 	}
 
 	@Check(id = 2, descr = "Vérifions maintenant que le couple (ainsi qu'Antoine, qui était à la source de la surcharge d'adresse) sont bien passés sur Lausanne")

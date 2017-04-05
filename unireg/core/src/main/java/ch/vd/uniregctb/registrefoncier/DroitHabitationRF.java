@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,8 +20,9 @@ public class DroitHabitationRF extends ServitudeRF {
 		super(right);
 	}
 
+	@Transient
 	@Override
-	public Object clone() throws CloneNotSupportedException {
+	public DroitHabitationRF duplicate() {
 		return new DroitHabitationRF(this);
 	}
 }

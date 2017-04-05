@@ -102,7 +102,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 				adresse.setDateDebutValidite(dateArrivee);
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setCommuneAdresse(MockCommune.Lausanne);
-				individu.getAdresses().add(adresse);
+				individu.addAdresse(adresse);
 			}
 		});
 

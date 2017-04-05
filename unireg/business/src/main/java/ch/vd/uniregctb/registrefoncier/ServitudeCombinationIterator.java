@@ -116,13 +116,7 @@ public class ServitudeCombinationIterator implements Iterator<ServitudeRF> {
 		final ImmeubleRF immeuble = immeubleIterator.next();
 
 		// on crée une copie de la servitude avec un seul immeuble et un seul propriétaire renseigné
-		final ServitudeRF n;
-		try {
-			n = (ServitudeRF) currentSourceServitude.clone();
-		}
-		catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
+		final ServitudeRF n = currentSourceServitude.duplicate();
 		n.setAyantDroits(Collections.singleton(currentSourceBeneficiaire));
 		n.setImmeubles(Collections.singleton(immeuble));
 

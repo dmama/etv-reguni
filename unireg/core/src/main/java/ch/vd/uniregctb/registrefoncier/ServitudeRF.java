@@ -19,13 +19,14 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.LengthConstants;
 
 /**
  * Servitude sur un immeuble. L'ayant-droit d'un droit habitation est soit une personne morale, soit une personne physique.
  */
 @Entity
-public abstract class ServitudeRF extends DroitRF implements Cloneable {
+public abstract class ServitudeRF extends DroitRF implements Duplicable<ServitudeRF> {
 
 	/**
 	 * Les ayant-droits concernés par la servitude.
@@ -192,7 +193,4 @@ public abstract class ServitudeRF extends DroitRF implements Cloneable {
 			return immeubles == null ? Collections.emptyList() : new ArrayList<>(immeubles);
 		}
 	}
-
-	@Override
-	public abstract Object clone() throws CloneNotSupportedException;
 }

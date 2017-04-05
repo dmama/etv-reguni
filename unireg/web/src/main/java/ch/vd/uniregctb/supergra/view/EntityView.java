@@ -9,13 +9,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.supergra.EntityKey;
 import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 
 /**
  * Le form-backing object de la méthode {@link ch.vd.uniregctb.supergra.SuperGraController#showEntity(ch.vd.uniregctb.supergra.EntityType, long, org.springframework.ui.Model, javax.servlet.http.HttpServletRequest)}.
  */
-public class EntityView implements Cloneable {
+public class EntityView implements Duplicable<EntityView> {
 
 	private EntityKey key;
 	private ValidationResults validationResults;
@@ -27,7 +28,7 @@ public class EntityView implements Cloneable {
 	public EntityView() {
 	}
 
-	public EntityView(EntityView right) {
+	private EntityView(EntityView right) {
 		this.key = right.key;
 		if (right.attributes != null) {
 			// deep copy
@@ -95,9 +96,8 @@ public class EntityView implements Cloneable {
 		isPersonnePhysique = personnePhysique;
 	}
 
-	@SuppressWarnings({"CloneDoesntCallSuperClone"})
 	@Override
-	public Object clone() throws CloneNotSupportedException {
+	public EntityView duplicate() {
 		return new EntityView(this);
 	}
 

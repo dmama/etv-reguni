@@ -140,7 +140,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 				final MockAdresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateNaissance, null);
 				adresse.setDateDebutValidite(dateNaissance);
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
-				individu.getAdresses().add(adresse);
+				individu.addAdresse(adresse);
 			}
 		});
 		

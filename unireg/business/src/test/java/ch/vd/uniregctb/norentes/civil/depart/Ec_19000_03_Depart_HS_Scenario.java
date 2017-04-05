@@ -6,7 +6,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -90,9 +89,8 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			marieIndividus(indCedric, indSandra, RegDate.get(2003, 7, 11));
 		}
 
-		private Adresse createAdresse(Individu individu, TypeAdresseCivil type, Rue rue, CasePostale casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite,
-		                              RegDate finValidite) {
-			MockAdresse adresse = new MockAdresse();
+		private MockAdresse createAdresse(Individu individu, TypeAdresseCivil type, Rue rue, CasePostale casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite, RegDate finValidite) {
+			final MockAdresse adresse = new MockAdresse();
 			adresse.setTypeAdresse(type);
 
 			// localité
@@ -118,9 +116,8 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			return adresse;
 		}
 
-		public Adresse addAdresse(MockIndividu individu, TypeAdresseCivil type, Rue rue, CasePostale casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite, RegDate finValidite) {
-
-			final Adresse adresse = createAdresse(individu, type, rue, casePostale, localite, commune, pays, debutValidite, finValidite);
+		public MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, Rue rue, CasePostale casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite, RegDate finValidite) {
+			final MockAdresse adresse = createAdresse(individu, type, rue, casePostale, localite, commune, pays, debutValidite, finValidite);
 			add(individu, adresse);
 			return adresse;
 		}

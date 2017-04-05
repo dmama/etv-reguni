@@ -37,28 +37,19 @@ public abstract class DepartScenario extends EvenementCivilScenario {
 	}
 
 	protected void ouvrirAdresseZurich(MockIndividu individu, RegDate dateOuverture) {
-		final Collection<Adresse> adrs = individu.getAdresses();
-		final Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateOuverture, null);
-		adrs.add(aa);
+		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateOuverture, null));
 	}
 
-
-
 	protected void ouvrirAdresseEnney(MockIndividu individu, RegDate dateOuverture) {
-		final Collection<Adresse> adrs = individu.getAdresses();
-		final Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Enney.CheminDAfflon, null, dateOuverture, null);
-		adrs.add(aa);
+		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Enney.CheminDAfflon, null, dateOuverture, null));
 	}
 
 	protected void ouvrirAdresseEtranger(MockIndividu individu, RegDate dateOuverture, Pays paysDepart) {
-		final Collection<Adresse> adrs = individu.getAdresses();
-
 		final MockAdresse adresse = new MockAdresse();
 		adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 		adresse.setPays(paysDepart);
 		adresse.setDateDebutValidite(dateOuverture);
-
-		adrs.add(adresse);
+		individu.addAdresse(adresse);
 	}
 
 }

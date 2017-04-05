@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -30,7 +29,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		strategy = buildStrategy();
 	}
 
-	protected static Adresse buildAdresse(TypeAdresseCivil type, String numero, Integer egid, DateRange range, Localisation localisationPrecedente, Localisation localisationSuivante) {
+	protected static MockAdresse buildAdresse(TypeAdresseCivil type, String numero, Integer egid, DateRange range, Localisation localisationPrecedente, Localisation localisationSuivante) {
 		final MockAdresse adr = new MockAdresse("Rue du bignou", numero, "1096", "Villette");
 		adr.setTypeAdresse(type);
 		adr.setEgid(egid);
@@ -67,7 +66,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 			public void buildAdresses(MockIndividu individu) {
 				for (TypeAdresseCivil type : TypeAdresseCivil.values()) {
 					if (type != typeInteressant) {
-						individu.getAdresses().add(buildAdresse(type, "12", 123, null, null, null));
+						individu.addAdresse(buildAdresse(type, "12", 123, null, null, null));
 					}
 				}
 			}
@@ -88,7 +87,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, null, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
 			           }
 		           }
 		);
@@ -108,7 +107,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			@Override
 			public void buildAdresses(MockIndividu individu) {
-				individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
+				individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
 			}
 		}, noEvt2, null);
 
@@ -127,12 +126,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", 123, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range, precedente, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
 			           }
 		           }
 		);
@@ -155,14 +154,14 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", 123, range1, precedente1, suivante1));
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", 123, range2, precedente2, suivante2));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range1, precedente1, suivante1));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range2, precedente2, suivante2));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", 123, range1, precedente1, suivante1));
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", 123, range2, precedente2, suivante2));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range1, precedente1, suivante1));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range2, precedente2, suivante2));
 			           }
 		           }
 		);
@@ -185,14 +184,14 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", 123, range1, precedente1, suivante1));
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", 123, range2, precedente2, suivante2));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range1, precedente1, suivante1));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", 123, range2, precedente2, suivante2));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", 123, range2, precedente2, suivante2));
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", 123, range1, precedente1, suivante1));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range2, precedente2, suivante2));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", 123, range1, precedente1, suivante1));
 			           }
 		           }
 		);
@@ -214,12 +213,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid1, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid1, range, precedente, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid2, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid2, range, precedente, suivante));
 			           }
 		           }
 		);
@@ -241,12 +240,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid1, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid1, range, precedente, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid2, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid2, range, precedente, suivante));
 			           }
 		           }
 		);
@@ -267,12 +266,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", null, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", null, range, precedente, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante));
 			           }
 		           }
 		);
@@ -293,12 +292,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", null, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", null, range, precedente, suivante));
 			           }
 		           }
 		);
@@ -320,12 +319,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range1, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range1, precedente, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range2, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range2, precedente, suivante));
 			           }
 		           }
 		);
@@ -347,12 +346,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range1, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range1, precedente, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range2, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range2, precedente, suivante));
 			           }
 		           }
 		);
@@ -374,12 +373,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
 			           }
 		           }
 		);
@@ -401,12 +400,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
 			           }
 		           }
 		);
@@ -428,12 +427,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
 			           }
 		           }
 		);
@@ -455,12 +454,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
 			           }
 		           }
 		);
@@ -482,12 +481,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
 			           }
 		           }
 		);
@@ -509,12 +508,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
 			           }
 		           }
 		);
@@ -536,12 +535,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente1, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente2, suivante));
 			           }
 		           }
 		);
@@ -563,12 +562,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante1));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante2));
 			           }
 		           }
 		);
@@ -589,12 +588,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, null, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, null, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante));
 			           }
 		           }
 		);
@@ -615,12 +614,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, null));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, null));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, suivante));
 			           }
 		           }
 		);
@@ -641,12 +640,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, null, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, null, suivante));
 			           }
 		           }
 		);
@@ -667,12 +666,12 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "12", egid, range, precedente, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, null));
+				           individu.addAdresse(buildAdresse(getTypeAdresseResidence(), "13", egid, range, precedente, null));
 			           }
 		           }
 		);
@@ -693,14 +692,14 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.PRINCIPALE, "12", 123, range1, precedente, null));
-				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "12", 12345, range2, null, suivante));
+				           individu.addAdresse(buildAdresse(TypeAdresseCivil.PRINCIPALE, "12", 123, range1, precedente, null));
+				           individu.addAdresse(buildAdresse(TypeAdresseCivil.SECONDAIRE, "12", 12345, range2, null, suivante));
 			           }
 		           }, noEvt2, new AddressBuilder() {
 			           @Override
 			           public void buildAdresses(MockIndividu individu) {
-				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "13", 12345, range2, null, suivante));
-				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.PRINCIPALE, "13", 123, range1, precedente, null));
+				           individu.addAdresse(buildAdresse(TypeAdresseCivil.SECONDAIRE, "13", 12345, range2, null, suivante));
+				           individu.addAdresse(buildAdresse(TypeAdresseCivil.PRINCIPALE, "13", 123, range1, precedente, null));
 			           }
 		           }
 		);

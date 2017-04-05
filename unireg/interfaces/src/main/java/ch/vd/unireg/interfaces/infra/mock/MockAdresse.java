@@ -10,9 +10,10 @@ import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
-public class MockAdresse implements Adresse, MockCloneable {
+public class MockAdresse implements Adresse, Duplicable<MockAdresse> {
 
 	public CasePostale casePostale;
 	public RegDate dateDebutValidite;
@@ -37,7 +38,6 @@ public class MockAdresse implements Adresse, MockCloneable {
 	public Localisation localisationSuivante;
 
 	public MockAdresse() {
-
 	}
 
 	public MockAdresse(TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
@@ -98,6 +98,30 @@ public class MockAdresse implements Adresse, MockCloneable {
 		this.casePostale = casePostale;
 		this.numeroPostal = numeroPostal;
 		this.localite = localite;
+	}
+
+	private MockAdresse(MockAdresse source) {
+		casePostale = source.casePostale;
+		dateDebutValidite = source.dateDebutValidite;
+		dateFinValidite = source.dateFinValidite;
+		lieu = source.lieu;
+		localite = source.localite;
+		npa = source.npa;
+		numero = source.numero;
+		numeroAppartement = source.numeroAppartement;
+		numeroRue = source.numeroRue;
+		numeroOrdrePostal = source.numeroOrdrePostal;
+		numeroPostal = source.numeroPostal;
+		numeroPostalComplementaire = source.numeroPostalComplementaire;
+		noOfsPays = source.noOfsPays;
+		rue = source.rue;
+		titre = source.titre;
+		typeAdresse = source.typeAdresse;
+		noOfsCommuneAdresse = source.noOfsCommuneAdresse;
+		egid = source.egid;
+		ewid = source.ewid;
+		localisationPrecedente = source.localisationPrecedente;
+		localisationSuivante = source.localisationSuivante;
 	}
 
 	@Override
@@ -298,7 +322,7 @@ public class MockAdresse implements Adresse, MockCloneable {
 	}
 
 	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+	public MockAdresse duplicate() {
+		return new MockAdresse(this);
 	}
 }

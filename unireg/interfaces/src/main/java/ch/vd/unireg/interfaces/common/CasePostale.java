@@ -16,17 +16,12 @@ import ch.vd.uniregctb.type.TexteCasePostale;
  */
 public class CasePostale implements Serializable {
 
-	private static final long serialVersionUID = 2958384367125929556L;
+	private static final long serialVersionUID = 8748093849874697183L;
 
 	public static final CasePostale VIDE = new CasePostale(TexteCasePostale.CASE_POSTALE,null,null);
-	private TexteCasePostale type;
-	private Integer numero;
-	private Integer npa;
-
-	@SuppressWarnings("UnusedDeclaration")
-	private CasePostale() {
-		// pour la serialization
-	}
+	private final TexteCasePostale type;
+	private final Integer numero;
+	private final Integer npa;
 
 	public CasePostale(TexteCasePostale type, Integer numero) {
 		this(type, numero, null);
@@ -59,11 +54,6 @@ public class CasePostale implements Serializable {
 	public Integer getNpa() {
 		return npa;
 	}
-
-	public void setNpa(Integer npa) {
-		this.npa = npa;
-	}
-
 
 	public String toString() {
 		if (numero == null) {

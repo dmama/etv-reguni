@@ -178,7 +178,7 @@ public class SuperGraController {
 		model.addAttribute("entity", view);
 
 		// On mémorise une version de référence pour pouvoir détecter de nouveaux deltas plus tard
-		final EntityView referenceView = (EntityView) view.clone();
+		final EntityView referenceView = view.duplicate();
 		request.getSession().setAttribute("referenceEntity", referenceView);
 
 		return "supergra/entity";

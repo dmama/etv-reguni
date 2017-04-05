@@ -8,9 +8,10 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.uniregctb.type.Sexe;
 
-public interface Individu extends EntiteCivile {
+public interface Individu {
 
 	/**
 	 * @return le statut (actif, inactif, remplacé par...) de l'individu
@@ -137,6 +138,11 @@ public interface Individu extends EntiteCivile {
 	 * @return l'historique des conjoints de l'individu.
 	 */
 	List<RelationVersIndividu> getConjoints();
+
+	/**
+	 * @return la liste des adresses de l'individu
+	 */
+	Collection<Adresse> getAdresses();
 
 	/**
 	 * Copie les parties spécifiées à partir de l'individu spécifié.

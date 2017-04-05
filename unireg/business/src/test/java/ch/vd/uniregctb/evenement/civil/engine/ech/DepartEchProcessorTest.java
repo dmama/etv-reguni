@@ -851,7 +851,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 					final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDepart.getOneDayAfter(), null);
 					newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
-					individu.getAdresses().add(newAddress);
+					individu.addAdresse(newAddress);
 				}
 			});
 
@@ -2097,7 +2097,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				prn.setDateFinValidite(dateDepart);
 				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Albanie.getNoOFS(), null));
 
-				adresses.add(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateArriveeSecondaire, null));
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateArriveeSecondaire, null));
 			}
 		});
 

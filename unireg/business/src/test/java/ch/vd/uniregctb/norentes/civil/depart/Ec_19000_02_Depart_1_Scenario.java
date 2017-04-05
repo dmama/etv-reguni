@@ -180,7 +180,6 @@ public class Ec_19000_02_Depart_1_Scenario extends EvenementCivilScenario {
 			last = (MockAdresse)a;
 		}
 		last.setDateFinValidite(dateDepartBex);
-
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttendu) {

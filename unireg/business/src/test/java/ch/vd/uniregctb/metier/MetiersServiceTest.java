@@ -785,8 +785,8 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+						individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
+						individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
 
@@ -805,7 +805,7 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
 
 						// on ne connait que l'adresse courrier sur Genève (= prise par défaut pour l'adresse de domicile)
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateSeparation, null));
+						individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateSeparation, null));
 					}
 				});
 
@@ -939,7 +939,7 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
+						individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
 					}
 				});
 
@@ -1051,7 +1051,7 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
+						individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
 					}
 				});
 
@@ -1066,7 +1066,7 @@ public class MetiersServiceTest extends BusinessTest {
 						final RegDate dateDepart = dateSeparation.addDays(-20);
 
 						// on ne connait que l'adresse courrier à Paris (= non prise par défaut pour l'adresse de domicile)
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
+						individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
 					}
 				});
 
@@ -1183,8 +1183,8 @@ public class MetiersServiceTest extends BusinessTest {
 						                                                 null)); // cette localisation ne doit pas être prise en compte puisqu'une adresse suivante existe
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+						individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
+						individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
 
@@ -1332,8 +1332,8 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+						individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
+						individu.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
 

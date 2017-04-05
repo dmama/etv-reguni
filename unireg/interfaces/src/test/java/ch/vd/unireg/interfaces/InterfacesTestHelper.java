@@ -6,17 +6,12 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 
 public class InterfacesTestHelper {
+
 	public static Localisation newLocalisation(MockCommune commune) {
-		Localisation l = new Localisation();
-		l.setNoOfs(commune.getNoOFS());
-		l.setType(commune.isVaudoise() ? LocalisationType.CANTON_VD : LocalisationType.HORS_CANTON);
-		return l;
+		return new Localisation(commune.isVaudoise() ? LocalisationType.CANTON_VD : LocalisationType.HORS_CANTON, commune.getNoOFS(), null);
 	}
 
 	public static Localisation newLocalisation(MockPays pays) {
-		Localisation l = new Localisation();
-		l.setNoOfs(pays.getNoOFS());
-		l.setType(LocalisationType.HORS_SUISSE);
-		return l;
+		return new Localisation(LocalisationType.HORS_SUISSE, pays.getNoOFS(), null);
 	}
 }

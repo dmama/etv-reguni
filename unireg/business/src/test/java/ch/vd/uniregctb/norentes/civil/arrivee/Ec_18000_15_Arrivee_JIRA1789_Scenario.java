@@ -159,8 +159,7 @@ public class Ec_18000_15_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 		assertNotNull(lastAdr, "Aucune adresse connue!");
 		lastAdr.setDateFinValidite(dateArrivee.getOneDayBefore());
 
-		final Adresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, nouvelleRue, null, dateArrivee, null);
-		adrs.add(adresse);
+		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, nouvelleRue, null, dateArrivee, null));
 	}
 
 	@Check(id = 2, descr = "Vérifions maintenant que le couple est bien resté à Bex (un seul des deux conjoints a déménagé pour le moment)")

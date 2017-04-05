@@ -44,7 +44,7 @@ public class AnnonceIDEQuery implements Serializable {
 
 	@Nullable
 	public StatutAnnonce[] getStatus() {
-		return this.status == null ? null : this.status.clone();
+		return this.status == null ? null : Arrays.copyOf(this.status, this.status.length);
 	}
 
 	public Long getCantonalId() {
@@ -80,7 +80,7 @@ public class AnnonceIDEQuery implements Serializable {
 	}
 
 	public void setStatus(StatutAnnonce[] status) {
-		this.status = status == null ? null : status.clone();
+		this.status = status == null ? null : Arrays.copyOf(status, status.length);
 	}
 
 	public void setCantonalId(Long cantonalId) {

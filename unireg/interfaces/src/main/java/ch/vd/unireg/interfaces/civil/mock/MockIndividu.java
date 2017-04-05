@@ -1,11 +1,13 @@
 package ch.vd.unireg.interfaces.civil.mock;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,9 +24,12 @@ import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.PermisListImpl;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.StatutIndividu;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.type.Sexe;
 
-public class MockIndividu extends MockEntiteCivile implements Individu {
+public class MockIndividu implements Individu {
 
 	private StatutIndividu statut;
 	private String prenomUsuel;
@@ -37,6 +42,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private List<RelationVersIndividu> conjoints;
 	private MockEtatCivilList etatsCivils;
 	private List<Nationalite> nationalites;
+	private List<MockAdresse> adresses;
 	private long noTechnique;
 	private String noAVS11;
 	private String nouveauNoAVS;
@@ -57,7 +63,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	public MockIndividu(MockIndividu right, @NotNull RegDate upTo) {
-		super(right, right.availableParts);
 		this.statut = right.statut;
 		this.prenomUsuel = right.prenomUsuel;
 		this.tousPrenoms = right.tousPrenoms;
@@ -82,15 +87,16 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.conjoints = right.conjoints;
 		this.etatsCivils = right.etatsCivils;
 		this.permis = right.permis;
+		this.adresses = deepCopy(right.adresses);
+
 		limitHistoTo(upTo);
 
 		this.availableParts.addAll(right.availableParts);
 	}
 
 	private void limitHistoTo(RegDate date) {
-
-		if (getAdresses() != null) {
-			setAdresses(CollectionLimitator.limit(getAdresses(), date, CollectionLimitator.ADRESSE_LIMITATOR));
+		if (adresses != null) {
+			adresses = CollectionLimitator.limit(adresses, date, CollectionLimitator.ADRESSE_LIMITATOR);
 		}
 		if (parents != null) {
 			parents = CollectionLimitator.limit(parents, date, CollectionLimitator.RELATION_LIMITATOR);
@@ -108,7 +114,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	public MockIndividu(MockIndividu right, Set<AttributeIndividu> parts) {
-		super(right, parts);
 		this.statut = right.statut;
 		this.prenomUsuel = right.prenomUsuel;
 		this.tousPrenoms = right.tousPrenoms;
@@ -350,6 +355,25 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.sexe = sexe;
 	}
 
+	/**
+	 * Collection en lecture seule !!!
+	 * -> utiliser {@link #addAdresse} si on veut en rajouter une
+	 */
+	@Override
+	public Collection<Adresse> getAdresses() {
+		if (adresses == null) {
+			return Collections.emptyList();
+		}
+		return Collections.unmodifiableList(adresses.stream().collect(Collectors.toList()));
+	}
+
+	public void addAdresse(MockAdresse adresse) {
+		if (adresses == null ) {
+			adresses = new ArrayList<>();
+		}
+		adresses.add(adresse);
+	}
+
 	public boolean isNonHabitantNonRenvoye() {
 		return nonHabitantNonRenvoye;
 	}
@@ -360,19 +384,34 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	@Override
 	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {
-		super.copyPartsFrom(individu, parts);
+		final MockIndividu source = (MockIndividu) individu;
+		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
+			adresses = deepCopy(source.adresses);
+		}
 		if (parts != null && parts.contains(AttributeIndividu.CONJOINTS)) {
-			conjoints = individu.getConjoints();
+			conjoints = source.getConjoints();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
-			origines = individu.getOrigines();
+			origines = source.getOrigines();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
-			parents = individu.getParents();
+			parents = source.getParents();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
-			permis = individu.getPermis();
+			permis = source.getPermis();
 		}
+	}
+
+	private static <T extends Duplicable<? extends T>> List<T> deepCopy(List<T> original) {
+		if (original == null) {
+			return null;
+		}
+
+		final List<T> newCollection = new ArrayList<>(original.size());
+		for (T elt : original) {
+			newCollection.add(elt.duplicate());
+		}
+		return newCollection;
 	}
 
 	@Override

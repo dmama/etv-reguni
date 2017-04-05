@@ -1036,27 +1036,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	/**
-	 * @see java.lang.Object#clone()
-	 */
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		Tiers tiersClone = null;
-		try {
-			// On récupère l'instance à renvoyer par l'appel de la
-			// méthode super.clone()
-			tiersClone = (Tiers) super.clone();
-			tiersClone.setForsFiscaux(null);
-		}
-		catch (CloneNotSupportedException cnse) {
-			LOGGER.debug("Clone not supported", cnse);
-		}
-		// tiersClone.setAdressesTiers(null);
-
-		// on renvoie le clone
-		return tiersClone;
-	}
-
-	/**
 	 * @return vrai s'il existe un for principal (ou une succession ininterrompue de fors principaux) durant la période spécifiée.
 	 */
 	public static boolean existForPrincipal(List<? extends ForFiscalPrincipal> principaux, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {

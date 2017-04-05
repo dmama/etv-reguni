@@ -132,8 +132,7 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 		assertNotNull(lastAdr, "Aucune adresse connue!");
 		lastAdr.setDateFinValidite(dateArriveeLausanne.getOneDayBefore());
 
-		final Adresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null);
-		adrs.add(adresse);
+		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null));
 	}
 
 	@Check(id = 2, descr = "Vérifions maintenant que la surcharge fiscale n'est pas effacée et que l'historique des adresses est correct")

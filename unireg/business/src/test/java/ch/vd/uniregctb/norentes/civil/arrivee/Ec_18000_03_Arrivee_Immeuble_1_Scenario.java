@@ -156,7 +156,6 @@ public class Ec_18000_03_Arrivee_Immeuble_1_Scenario extends EvenementCivilScena
 			last = (MockAdresse)a;
 		}
 		last.setDateFinValidite(dateDemenagement);
-		Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateDemenagement.addDays(1), null);
-		adrs.add(aa);
+		ind.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateDemenagement.addDays(1), null));
 	}
 }

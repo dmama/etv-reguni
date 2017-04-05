@@ -11,14 +11,11 @@ import ch.vd.unireg.interfaces.common.Adresse;
  */
 public class Localisation implements Serializable {
 
-	private static final long serialVersionUID = 2685740788096283313L;
+	private static final long serialVersionUID = 3291002122245844939L;
 
-	private LocalisationType type;
-	private Integer noOfs;
-	private Adresse adresseCourrier;
-
-	public Localisation() {
-	}
+	private final LocalisationType type;
+	private final Integer noOfs;
+	private final Adresse adresseCourrier;
 
 	public Localisation(LocalisationType type, Integer noOfs, @Nullable Adresse adresseCourrier) {
 		this.type = type;
@@ -33,10 +30,6 @@ public class Localisation implements Serializable {
 		return type;
 	}
 
-	public void setType(LocalisationType type) {
-		this.type = type;
-	}
-
 	/**
 	 * @return le numéro Ofs du lieu civil concerné (numéro Ofs de commune ou de pays en fonction du type).
 	 */
@@ -45,18 +38,10 @@ public class Localisation implements Serializable {
 		return noOfs;
 	}
 
-	public void setNoOfs(Integer noOfs) {
-		this.noOfs = noOfs;
-	}
-
 	/**
 	 * @return l'adresse courrier si elle est connue.
 	 */
 	public Adresse getAdresseCourrier() {
 		return adresseCourrier;
-	}
-
-	public void setAdresseCourrier(Adresse adresseCourrier) {
-		this.adresseCourrier = adresseCourrier;
 	}
 }

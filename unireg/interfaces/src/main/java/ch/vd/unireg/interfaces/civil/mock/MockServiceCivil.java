@@ -171,10 +171,6 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		etatsCivils.add(new MockEtatCivil(dateNaissance, TypeEtatCivil.CELIBATAIRE));
 		individu.setEtatsCivils(etatsCivils);
 
-		// Adresses
-		final List<Adresse> sdresses = new ArrayList<>();
-		individu.setAdresses(sdresses);
-
 		// Conjoints
 		individu.setConjoints(new ArrayList<>());
 
@@ -590,18 +586,13 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	/**
 	 * Ajoute une adresse pour individu dans le mock
 	 */
-	protected void add(MockIndividu individu, Adresse adresse) {
+	protected void add(MockIndividu individu, MockAdresse adresse) {
 		Assert.notNull(individu);
 
 		final Long numero = individu.getNoTechnique();
 		Assert.notNull(numero);
 
-		Collection<Adresse> list = individu.getAdresses();
-		if (list == null) {
-			list = new ArrayList<>();
-			individu.setAdresses(list);
-		}
-		list.add(adresse);
+		individu.addAdresse(adresse);
 	}
 
 	public MockIndividu getIndividu(Long numeroIndividu) {

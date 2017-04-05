@@ -78,7 +78,7 @@ public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				adr.setNoOfsPays(MockPays.Suisse.getNoOFS());
 				adr.setNpa(Integer.toString(MockLocalite.Prilly.getNPA()));
 				adr.setNumeroRue(MockRue.Prilly.CheminDeLaPossession.getNoRue());
-				individu.getAdresses().add(adr);
+				individu.addAdresse(adr);
 			}
 		});
 

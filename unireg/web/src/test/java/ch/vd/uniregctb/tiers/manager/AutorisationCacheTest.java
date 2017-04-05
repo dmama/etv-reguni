@@ -136,7 +136,7 @@ public class AutorisationCacheTest extends WebTest {
 
 				final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
 				newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFS(), null));
-				individu.getAdresses().add(newAddress);
+				individu.addAdresse(newAddress);
 			}
 		});
 
@@ -177,7 +177,7 @@ public class AutorisationCacheTest extends WebTest {
 
 				final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
 				newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFS(), null));
-				individu.getAdresses().add(newAddress);
+				individu.addAdresse(newAddress);
 			}
 		});
 

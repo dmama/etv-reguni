@@ -197,8 +197,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 			last = (MockAdresse)a;
 		}
 		last.setDateFinValidite(dateDepartBex);
-		Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.CheminDeLaTranchee, null, dateArriveeOrbe, null);
-		adrs.add(aa);
+		ind.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.CheminDeLaTranchee, null, dateArriveeOrbe, null));
 	}
 
 	@Check(id=2, descr="Vérifie que les Habitant ont toujours leur For à Bex mais leur adresse a Orbe")

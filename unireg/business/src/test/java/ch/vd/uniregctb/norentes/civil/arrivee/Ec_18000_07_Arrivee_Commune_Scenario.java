@@ -97,9 +97,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 			lastAdr = (MockAdresse)a;
 		}
 		lastAdr.setDateFinValidite(dateDemenagement);
-
-		Adresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null);
-		adrs.add(adresse);
+		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null));
 	}
 
 	@Etape(id=2, descr="Déménagement de Adrienne")

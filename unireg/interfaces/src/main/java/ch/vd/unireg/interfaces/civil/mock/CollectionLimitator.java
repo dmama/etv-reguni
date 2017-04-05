@@ -58,7 +58,7 @@ public class CollectionLimitator {
 		}
 	};
 
-	public static <T> List<T> limit(Collection<T> original, RegDate date, Limitator<T> limitator) {
+	public static <T> List<T> limit(Collection<T> original, RegDate date, Limitator<? super T> limitator) {
 		if (original == null) {
 			return null;
 		}
