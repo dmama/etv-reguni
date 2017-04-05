@@ -137,21 +137,21 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	@Nullable
 	@Override
 	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_IMMEUBLES);
+		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_IMMEUBLES, Role.VISU_ALL);
 		return target.getImmovablePropery(user, immId);
 	}
 
 	@Nullable
 	@Override
 	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_IMMEUBLES);
+		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_IMMEUBLES, Role.VISU_ALL);
 		return target.getBuilding(user, buildingId);
 	}
 
 	@Nullable
 	@Override
 	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
-		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_IMMEUBLES);
+		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_IMMEUBLES, Role.VISU_ALL);
 		return target.getCommunityOfOwners(user, communityId);
 	}
 }
