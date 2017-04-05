@@ -3,6 +3,8 @@ package ch.vd.uniregctb.registrefoncier.dao;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,10 +20,8 @@ public class BatimentRFDAOImpl extends BaseDAOImpl<BatimentRF, Long> implements 
 
 	@Nullable
 	@Override
-	public BatimentRF find(@NotNull BatimentRFKey key) {
-		final Query query = getCurrentSession().createQuery("from BatimentRF where masterIdRF = :masterIdRF");
-		query.setParameter("masterIdRF", key.getMasterIdRF());
-		return (BatimentRF) query.uniqueResult();
+	public BatimentRF find(@NotNull BatimentRFKey key, @Nullable FlushMode flushModeOverride) {
+		return findUnique("from BatimentRF where masterIdRF = :masterIdRF", buildNamedParameters(Pair.of("masterIdRF", key.getMasterIdRF())), flushModeOverride);
 	}
 
 	@NotNull

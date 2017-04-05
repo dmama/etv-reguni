@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +66,7 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 		final RegDate dateValeur = mutation.getParentImport().getDateEvenement();
 
 		final String idImmeubleRF = mutation.getIdRF();
-		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idImmeubleRF));
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idImmeubleRF), FlushMode.MANUAL);
 		if (immeuble == null) {
 			throw new IllegalArgumentException("L'immeuble avec l'idRF=[" + idImmeubleRF + "] n'existe pas.");
 		}

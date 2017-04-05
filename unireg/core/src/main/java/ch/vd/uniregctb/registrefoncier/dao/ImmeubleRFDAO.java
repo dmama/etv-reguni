@@ -15,7 +15,7 @@ import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
 
 	@Nullable
-	ImmeubleRF find(@NotNull ImmeubleRFKey key);
+	ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride);
 
 	/**
 	 * @return les ids RF des immeubles qui possèdent des surfaces au sol actives.

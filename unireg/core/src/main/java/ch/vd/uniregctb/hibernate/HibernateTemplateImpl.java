@@ -109,6 +109,26 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 		}
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode) {
+		final Session session = getCurrentSession();
+		final FlushMode oldFlushMode = session.getFlushMode();
+		if (flushMode != null) {
+			session.setFlushMode(flushMode);
+		}
+		try {
+			final Query query = session.createQuery(hql);
+			HibernateQueryHelper.assignNamedParameterValues(query, namedParams);
+			return (T) query.uniqueResult();
+		}
+		finally {
+			if (flushMode != null) {
+				session.setFlushMode(oldFlushMode);
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Iterator<T> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode) {

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
@@ -84,7 +85,7 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
 			@Nullable
 			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
 				return null;
 			}
 		};
@@ -125,7 +126,7 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
 			@Nullable
 			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
 				return null;
 			}
 		};
@@ -223,7 +224,7 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
 			@Nullable
 			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
 				return null;
 			}
 		};
@@ -486,7 +487,7 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO() {
 			@Nullable
 			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
 				return null;
 			}
 		};
@@ -849,7 +850,7 @@ public class ImmeubleRFDetectorTest {
 
 		@Nullable
 		@Override
-		public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+		public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
 			if (key.getIdRF().equals(idRfBienFond)) {
 				return bienFond;
 			}

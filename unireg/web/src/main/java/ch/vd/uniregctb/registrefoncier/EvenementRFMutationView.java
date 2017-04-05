@@ -35,7 +35,7 @@ public class EvenementRFMutationView {
 		this.idRF = right.getIdRF();
 		if (this.typeEntite == TypeEntiteRF.IMMEUBLE) {
 			this.entityId = Optional.of(immeubleRFDAO)
-					.map(d -> d.find(new ImmeubleRFKey(this.idRF)))
+					.map(d -> d.find(new ImmeubleRFKey(this.idRF), null))
 					.map(ImmeubleRF::getId)
 					.orElse(null);
 		}

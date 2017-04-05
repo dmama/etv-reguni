@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,10 +30,8 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 
 	@Nullable
 	@Override
-	public AyantDroitRF find(@NotNull AyantDroitRFKey key) {
-		final Query query = getCurrentSession().createQuery("from AyantDroitRF where idRF = :idRF");
-		query.setParameter("idRF", key.getIdRF());
-		return (AyantDroitRF) query.uniqueResult();
+	public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
+		return findUnique("from AyantDroitRF where idRF = :idRF", buildNamedParameters(Pair.of("idRF", key.getIdRF())), flushModeOverride);
 	}
 
 	@Override

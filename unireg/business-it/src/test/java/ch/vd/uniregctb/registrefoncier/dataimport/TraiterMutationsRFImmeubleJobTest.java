@@ -381,7 +381,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.find(new ImmeubleRFKey("_1f109152381026b501381028a73d1852"));
+				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.find(new ImmeubleRFKey("_1f109152381026b501381028a73d1852"), null);
 				assertNotNull(bienFond);
 				{
 					assertEquals("_1f109152381026b501381028a73d1852", bienFond.getIdRF());
@@ -415,7 +415,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertFalse(estimation.isEnRevision());
 				}
 
-				final DroitDistinctEtPermanentRF ddo = (DroitDistinctEtPermanentRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc3971feb60139e36d062130f3"));
+				final DroitDistinctEtPermanentRF ddo = (DroitDistinctEtPermanentRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc3971feb60139e36d062130f3"), null);
 				assertNotNull(ddo);
 				{
 					assertEquals("_8af806cc3971feb60139e36d062130f3", ddo.getIdRF());
@@ -448,7 +448,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertFalse(estimation.isEnRevision());
 				}
 
-				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806fc45d223e60149c23f475365d5"));
+				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806fc45d223e60149c23f475365d5"), null);
 				assertNotNull(ppe);
 				{
 					assertEquals("_8af806fc45d223e60149c23f475365d5", ppe.getIdRF());
@@ -482,7 +482,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					assertFalse(estimation.isEnRevision());
 				}
 
-				final PartCoproprieteRF copro = (PartCoproprieteRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc5043853201508e1e8a3a1a71"));
+				final PartCoproprieteRF copro = (PartCoproprieteRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc5043853201508e1e8a3a1a71"), null);
 				assertNotNull(copro);
 				{
 					assertEquals("_8af806cc5043853201508e1e8a3a1a71", copro.getIdRF());
@@ -829,7 +829,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 
 				// pas de changement
-				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.find(new ImmeubleRFKey("_1f109152381026b501381028a73d1852"));
+				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.find(new ImmeubleRFKey("_1f109152381026b501381028a73d1852"), null);
 				assertNotNull(bienFond);
 				{
 					assertEquals("_1f109152381026b501381028a73d1852", bienFond.getIdRF());
@@ -864,7 +864,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				}
 
 				// l'estimation a changé
-				final DroitDistinctEtPermanentRF ddo = (DroitDistinctEtPermanentRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc3971feb60139e36d062130f3"));
+				final DroitDistinctEtPermanentRF ddo = (DroitDistinctEtPermanentRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc3971feb60139e36d062130f3"), null);
 				assertNotNull(ddo);
 				{
 					assertEquals("_8af806cc3971feb60139e36d062130f3", ddo.getIdRF());
@@ -912,7 +912,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				}
 
 				// pas de changement
-				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806fc45d223e60149c23f475365d5"));
+				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806fc45d223e60149c23f475365d5"), null);
 				assertNotNull(ppe);
 				{
 					assertEquals("_8af806fc45d223e60149c23f475365d5", ppe.getIdRF());
@@ -947,7 +947,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				}
 
 				// le numéro de parcelle à changé
-				final PartCoproprieteRF copro = (PartCoproprieteRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc5043853201508e1e8a3a1a71"));
+				final PartCoproprieteRF copro = (PartCoproprieteRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc5043853201508e1e8a3a1a71"), null);
 				assertNotNull(copro);
 				{
 					assertEquals("_8af806cc5043853201508e1e8a3a1a71", copro.getIdRF());
@@ -1114,7 +1114,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 
 				// l'immeuble est radié, ainsi que les situations, les estimations et les surfaces totales
-				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.find(new ImmeubleRFKey("_1f109152381026b501381028a73d1852"));
+				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.find(new ImmeubleRFKey("_1f109152381026b501381028a73d1852"), null);
 				assertNotNull(bienFond);
 				{
 					assertEquals("_1f109152381026b501381028a73d1852", bienFond.getIdRF());
@@ -1158,7 +1158,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				}
 
 				// l'immeuble est radié, ainsi que les situations, les estimations et les surfaces totales
-				final DroitDistinctEtPermanentRF ddo = (DroitDistinctEtPermanentRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc3971feb60139e36d062130f3"));
+				final DroitDistinctEtPermanentRF ddo = (DroitDistinctEtPermanentRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc3971feb60139e36d062130f3"), null);
 				assertNotNull(ddo);
 				{
 					assertEquals("_8af806cc3971feb60139e36d062130f3", ddo.getIdRF());
@@ -1200,7 +1200,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				}
 
 				// l'immeuble est radié, ainsi que les situations, les estimations et les surfaces totales
-				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806fc45d223e60149c23f475365d5"));
+				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806fc45d223e60149c23f475365d5"), null);
 				assertNotNull(ppe);
 				{
 					assertEquals("_8af806fc45d223e60149c23f475365d5", ppe.getIdRF());
@@ -1243,7 +1243,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				}
 
 				// l'immeuble est radié, ainsi que les situations, les estimations et les surfaces totales
-				final PartCoproprieteRF copro = (PartCoproprieteRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc5043853201508e1e8a3a1a71"));
+				final PartCoproprieteRF copro = (PartCoproprieteRF) immeubleRFDAO.find(new ImmeubleRFKey("_8af806cc5043853201508e1e8a3a1a71"), null);
 				assertNotNull(copro);
 				{
 					assertEquals("_8af806cc5043853201508e1e8a3a1a71", copro.getIdRF());

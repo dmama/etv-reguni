@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,7 +80,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		final RegDate dateValeur = mutation.getParentImport().getDateEvenement();
 
 		final String ayantDroitIdRF = mutation.getIdRF();
-		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(ayantDroitIdRF));
+		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(ayantDroitIdRF), FlushMode.MANUAL);
 		if (ayantDroit == null) {
 			throw new IllegalArgumentException("L'ayant-droit avec l'idRF=[" + ayantDroitIdRF + "] n'existe pas.");
 		}
@@ -130,7 +131,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 	@NotNull
 	private ImmeubleRF findImmeuble(@NotNull String idRf) {
-		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf));
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf), FlushMode.MANUAL);
 		if (immeuble == null) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] n'existe pas dans la DB.");
 		}
@@ -145,7 +146,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		if (idRf == null) {
 			return null;
 		}
-		final CommunauteRF communaute = (CommunauteRF) ayantDroitRFDAO.find(new AyantDroitRFKey(idRf));
+		final CommunauteRF communaute = (CommunauteRF) ayantDroitRFDAO.find(new AyantDroitRFKey(idRf), FlushMode.MANUAL);
 		if (communaute == null) {
 			throw new IllegalArgumentException("La communauté idRF=[" + idRf + "] n'existe pas dans la DB.");
 		}

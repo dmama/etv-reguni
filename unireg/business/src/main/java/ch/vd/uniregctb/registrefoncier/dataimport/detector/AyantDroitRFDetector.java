@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +115,7 @@ public class AyantDroitRFDetector {
 	public void processAyantDroit(EvenementRFImport parentImport, Rechteinhaber rechteinhaber) {
 
 		final AyantDroitRFKey key = AyantDroitRFHelper.newAyantDroitKey(rechteinhaber);
-		final AyantDroitRF ayantDroitRF = ayantDroitRFDAO.find(key);
+		final AyantDroitRF ayantDroitRF = ayantDroitRFDAO.find(key, FlushMode.MANUAL);
 
 		// on détermine ce qu'il faut faire
 		final TypeMutationRF typeMutation;

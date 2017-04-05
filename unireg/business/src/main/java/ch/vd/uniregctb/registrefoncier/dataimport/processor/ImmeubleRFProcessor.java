@@ -4,6 +4,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.camel.converter.jaxp.StringSource;
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -120,11 +121,6 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 	private void processCreation(@Nullable RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
 
-		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(newImmeuble));
-		if (persisted != null) {
-			throw new IllegalArgumentException("L'immeuble idRF=[" + newImmeuble.getIdRF() + "] existe déjà dans la DB.");
-		}
-
 		// on va chercher les nouvelles situations et estimations
 		final SituationRF newSituation = CollectionsUtils.getFirst(newImmeuble.getSituations());     // par définition, le nouvel immeuble ne contient que l'état courant,
 		if (newSituation == null) {                                                                  // il ne contient donc qu'un seul élément de chaque collection
@@ -149,7 +145,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 		final String idRF = newImmeuble.getIdRF();
 
-		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(newImmeuble));
+		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(newImmeuble), FlushMode.MANUAL);
 		if (persisted == null) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] n'existe pas dans la DB.");
 		}
@@ -251,7 +247,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 	private void processSuppression(@NotNull RegDate dateValeur, @NotNull String idRF) {
 
-		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(idRF));
+		final ImmeubleRF persisted = immeubleRFDAO.find(new ImmeubleRFKey(idRF), FlushMode.MANUAL);
 		if (persisted == null) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] n'existe pas dans la DB.");
 		}

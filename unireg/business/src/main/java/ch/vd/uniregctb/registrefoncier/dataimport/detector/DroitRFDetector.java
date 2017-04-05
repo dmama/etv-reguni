@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -203,7 +204,7 @@ public class DroitRFDetector {
 	 */
 	private void detecterMutationsDroitsPropriete(@NotNull String idRF, @NotNull List<PersonEigentumAnteil> droits, @NotNull EvenementRFImport parentImport, boolean importInitial) {
 
-		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF));
+		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF), FlushMode.MANUAL);
 		if (ayantDroit == null) {
 			// l'ayant-droit n'existe pas : il va être créé et on doit donc sauver une mutation en mode création.
 			final EvenementRFMutation mutation = new EvenementRFMutation();

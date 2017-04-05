@@ -89,7 +89,7 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 
 	@Nullable
 	@Override
-	public AyantDroitRF find(@NotNull AyantDroitRFKey key) {
+	public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
 		return db.stream()
 				.filter(a -> Objects.equals(a.getIdRF(), key.getIdRF()))
 				.findFirst()

@@ -143,7 +143,7 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.find(new AyantDroitRFKey("3893728273382823"));
+				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.find(new AyantDroitRFKey("3893728273382823"), null);
 				assertNotNull(pp);
 				assertEquals("3893728273382823", pp.getIdRF());
 				assertEquals(3727L, pp.getNoRF());
@@ -152,14 +152,14 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				assertEquals("Prénom", pp.getPrenom());
 				assertEquals(RegDate.get(1956, 1, 23), pp.getDateNaissance());
 
-				final PersonneMoraleRF pm = (PersonneMoraleRF) ayantDroitRFDAO.find(new AyantDroitRFKey("48349384890202"));
+				final PersonneMoraleRF pm = (PersonneMoraleRF) ayantDroitRFDAO.find(new AyantDroitRFKey("48349384890202"), null);
 				assertNotNull(pm);
 				assertEquals("48349384890202", pm.getIdRF());
 				assertEquals(3727L, pm.getNoRF());
 				assertEquals(Long.valueOf(827288022L), pm.getNoContribuable());
 				assertEquals("Raison sociale", pm.getRaisonSociale());
 
-				final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) ayantDroitRFDAO.find(new AyantDroitRFKey("574739202303482"));
+				final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) ayantDroitRFDAO.find(new AyantDroitRFKey("574739202303482"), null);
 				assertNotNull(coll);
 				assertEquals("574739202303482", coll.getIdRF());
 				assertEquals(3727L, coll.getNoRF());
@@ -236,7 +236,7 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				final CommunauteRF pp = (CommunauteRF) ayantDroitRFDAO.find(new AyantDroitRFKey("72828ce8f830a"));
+				final CommunauteRF pp = (CommunauteRF) ayantDroitRFDAO.find(new AyantDroitRFKey("72828ce8f830a"), null);
 				assertNotNull(pp);
 				assertEquals("72828ce8f830a", pp.getIdRF());
 				Assert.assertEquals(TypeCommunaute.COMMUNAUTE_HEREDITAIRE, pp.getType());
@@ -362,7 +362,7 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 
 				// le no RF a changé
-				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.find(new AyantDroitRFKey("3893728273382823"));
+				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.find(new AyantDroitRFKey("3893728273382823"), null);
 				assertNotNull(pp);
 				assertEquals("3893728273382823", pp.getIdRF());
 				assertEquals(3727L, pp.getNoRF());
@@ -372,7 +372,7 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				assertEquals(RegDate.get(1956, 1, 23), pp.getDateNaissance());
 
 				// la raison sociale a changé
-				final PersonneMoraleRF pm = (PersonneMoraleRF) ayantDroitRFDAO.find(new AyantDroitRFKey("48349384890202"));
+				final PersonneMoraleRF pm = (PersonneMoraleRF) ayantDroitRFDAO.find(new AyantDroitRFKey("48349384890202"), null);
 				assertNotNull(pm);
 				assertEquals("48349384890202", pm.getIdRF());
 				assertEquals(3727L, pm.getNoRF());
@@ -380,7 +380,7 @@ public class TraiterMutationsRFAyantDroitJobTest extends ImportRFTestClass {
 				assertEquals("Raison sociale", pm.getRaisonSociale());
 
 				// le numéro de contribuable a changé
-				final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) ayantDroitRFDAO.find(new AyantDroitRFKey("574739202303482"));
+				final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) ayantDroitRFDAO.find(new AyantDroitRFKey("574739202303482"), null);
 				assertNotNull(coll);
 				assertEquals("574739202303482", coll.getIdRF());
 				assertEquals(3727L, coll.getNoRF());

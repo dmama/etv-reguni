@@ -21,7 +21,7 @@ public class MockBatimentRFDAO implements BatimentRFDAO {
 
 	@Nullable
 	@Override
-	public BatimentRF find(@NotNull BatimentRFKey key) {
+	public BatimentRF find(@NotNull BatimentRFKey key, @Nullable FlushMode flushModeOverride) {
 		return db.stream()
 				.filter(b -> Objects.equals(b.getMasterIdRF(), key.getMasterIdRF()))
 				.findFirst()

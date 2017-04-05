@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +136,7 @@ public class SurfaceAuSolRFDetector {
 					final String idRF = ((IdRfCacheKey) e.getKey()).getIdRF();
 					final List<Bodenbedeckung> nouvellesSurfaces = e.getValue();
 
-					final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRF));
+					final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRF), FlushMode.MANUAL);
 					if (immeuble == null) {
 						// l'immeuble n'existe pas : il va être créé et on doit donc sauver une mutation en mode création.
 						final EvenementRFMutation mut = new EvenementRFMutation();

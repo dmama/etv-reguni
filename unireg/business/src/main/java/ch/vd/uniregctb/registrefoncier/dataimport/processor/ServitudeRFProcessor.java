@@ -4,6 +4,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.camel.converter.jaxp.StringSource;
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,7 +111,7 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 
 	@NotNull
 	private AyantDroitRF findAyantDroit(@NotNull String idRf) {
-		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRf));
+		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRf), FlushMode.MANUAL);
 		if (ayantDroit == null) {
 			throw new IllegalArgumentException("L'ayant-droit idRF=[" + idRf + "] n'existe pas dans la DB.");
 		}
@@ -119,7 +120,7 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 
 	@NotNull
 	private ImmeubleRF findImmeuble(@NotNull String idRf) {
-		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf));
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf), FlushMode.MANUAL);
 		if (immeuble == null) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] n'existe pas dans la DB.");
 		}

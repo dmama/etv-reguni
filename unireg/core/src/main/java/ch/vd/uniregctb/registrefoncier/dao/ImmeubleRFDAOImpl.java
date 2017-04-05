@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
 import org.hibernate.NonUniqueResultException;
 import org.hibernate.Query;
@@ -23,10 +24,8 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 
 	@Nullable
 	@Override
-	public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
-		final Query query = getCurrentSession().createQuery("from ImmeubleRF where idRF = :idRF");
-		query.setParameter("idRF", key.getIdRF());
-		return (ImmeubleRF) query.uniqueResult();
+	public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
+		return findUnique("from ImmeubleRF where idRF = :idRF", buildNamedParameters(Pair.of("idRF", key.getIdRF())), flushModeOverride);
 	}
 
 	@NotNull

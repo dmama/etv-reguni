@@ -4,6 +4,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.camel.converter.jaxp.StringSource;
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,7 +124,7 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 
 		final String idRF = ayantDroit.getIdRF();
 
-		final AyantDroitRF persisted = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF));
+		final AyantDroitRF persisted = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF), FlushMode.MANUAL);
 		if (persisted == null) {
 			throw new IllegalArgumentException("L'ayant-droit idRF=[" + idRF + "] n'existe pas dans la DB.");
 		}

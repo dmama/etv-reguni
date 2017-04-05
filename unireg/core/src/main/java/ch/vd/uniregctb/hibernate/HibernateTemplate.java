@@ -76,6 +76,17 @@ public interface HibernateTemplate {
 	<T> List<T> find(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode);
 
 	/**
+	 * Returns the unique entity corresponding to the given HQL request (using named parameters)
+	 *
+	 * @param hql         HQL request
+	 * @param namedParams named parameters in the HQL request
+	 * @param flushMode   if set, flushMode to use during the HQL treatment
+	 * @param <T>         entities' type
+	 * @return list of found entities
+	 */
+	<T> T findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushMode);
+
+	/**
 	 * Returns an iterator on the list of entities corresponding to the given HQL request (using named parameters)
 	 * @param hql HQL request
 	 * @param namedParams named parameters in the HQL request

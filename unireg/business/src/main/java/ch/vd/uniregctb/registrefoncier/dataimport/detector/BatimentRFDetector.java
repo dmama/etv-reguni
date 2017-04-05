@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +97,7 @@ public class BatimentRFDetector {
 
 					// on va voir si le bâtiment existe dans la base
 					final BatimentRFKey key = BatimentRFHelper.newBatimentRFKey(gebaeude);
-					final BatimentRF batiment = batimentRFDAO.find(key);
+					final BatimentRF batiment = batimentRFDAO.find(key, FlushMode.MANUAL);
 
 					// on détermine ce qu'il faut faire
 					final TypeMutationRF typeMutation;

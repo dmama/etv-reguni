@@ -30,7 +30,7 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 
 	@Nullable
 	@Override
-	public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+	public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
 		return db.stream()
 				.filter(i -> Objects.equals(i.getIdRF(), key.getIdRF()))
 				.findFirst()

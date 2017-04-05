@@ -32,6 +32,10 @@ public abstract class BaseDAOImpl<T, PK extends Serializable> extends GenericDAO
 		return hibernateTemplate.find(hql, namedParams, flushModeOverride);
 	}
 
+	public <U> U findUnique(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushModeOverride) {
+		return hibernateTemplate.findUnique(hql, namedParams, flushModeOverride);
+	}
+
 	public <U> Iterator<U> iterate(String hql, @Nullable Map<String, ?> namedParams, @Nullable FlushMode flushModeOverride) {
 		return hibernateTemplate.iterate(hql, namedParams, flushModeOverride);
 	}

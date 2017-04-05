@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
@@ -235,9 +236,8 @@ public class SurfaceAuSolRFDetectorTest {
 
 		// un mock de DAO qui simule l'existence d'un immeuble
 		immeubleRFDAO = new MockImmeubleRFDAO() {
-			@Nullable
 			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key, FlushMode flushModeOverride) {
 				if (key.getIdRF().equals(immeuble.getIdRF())) {
 					return immeuble;
 				}
@@ -324,7 +324,7 @@ public class SurfaceAuSolRFDetectorTest {
 		immeubleRFDAO = new MockImmeubleRFDAO() {
 			@Nullable
 			@Override
-			public ImmeubleRF find(@NotNull ImmeubleRFKey key) {
+			public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
 				if (key.getIdRF().equals(immeuble.getIdRF())) {
 					return immeuble;
 				}

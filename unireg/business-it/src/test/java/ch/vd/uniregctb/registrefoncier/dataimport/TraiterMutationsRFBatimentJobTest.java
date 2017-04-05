@@ -157,7 +157,7 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("1f109152381026b50138102aa28557e0"));
+				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("1f109152381026b50138102aa28557e0"), null);
 				assertNotNull(batiment0);
 				assertEquals("1f109152381026b50138102aa28557e0", batiment0.getMasterIdRF());
 
@@ -175,7 +175,7 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				assertEquals(dateImport, implantation00.getDateDebut());
 				assertNull(implantation00.getDateFin());
 
-				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("1f10915238106bdc0138107364741e62"));
+				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("1f10915238106bdc0138107364741e62"), null);
 				assertNotNull(batiment1);
 				assertEquals("1f10915238106bdc0138107364741e62", batiment1.getMasterIdRF());
 
@@ -302,7 +302,7 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("8af80e6254709f6801547708f4c10ebd"));
+				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("8af80e6254709f6801547708f4c10ebd"), null);
 				assertNotNull(batiment0);
 				assertEquals("8af80e6254709f6801547708f4c10ebd", batiment0.getMasterIdRF());
 
@@ -320,7 +320,7 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				assertEquals(dateImport, implantation00.getDateDebut());
 				assertNull(implantation00.getDateFin());
 
-				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("8af806fc3b8f410e013c437c69a112ed"));
+				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("8af806fc3b8f410e013c437c69a112ed"), null);
 				assertNotNull(batiment1);
 				assertEquals("8af806fc3b8f410e013c437c69a112ed", batiment1.getMasterIdRF());
 
@@ -468,7 +468,7 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("1f109152381026b50138102aa28557e0"));
+				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("1f109152381026b50138102aa28557e0"), null);
 				assertNotNull(batiment0);
 				assertEquals("1f109152381026b50138102aa28557e0", batiment0.getMasterIdRF());
 
@@ -499,7 +499,7 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				assertEquals(dateImportInitial, implantation00.getDateDebut());
 				assertNull(implantation00.getDateFin());
 
-				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("1f10915238106bdc0138107364741e62"));
+				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("1f10915238106bdc0138107364741e62"), null);
 				assertNotNull(batiment1);
 				assertEquals("1f10915238106bdc0138107364741e62", batiment1.getMasterIdRF());
 
@@ -625,7 +625,7 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("1f109152381026b50138102aa28557e0"));
+				final BatimentRF batiment0 = batimentRFDAO.find(new BatimentRFKey("1f109152381026b50138102aa28557e0"), null);
 				assertNotNull(batiment0);
 				assertEquals("1f109152381026b50138102aa28557e0", batiment0.getMasterIdRF());
 
@@ -647,7 +647,7 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				assertEquals(dateImportInitial, implantation00.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), implantation00.getDateFin());
 
-				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("1f10915238106bdc0138107364741e62"));
+				final BatimentRF batiment1 = batimentRFDAO.find(new BatimentRFKey("1f10915238106bdc0138107364741e62"), null);
 				assertNotNull(batiment1);
 				assertEquals("1f10915238106bdc0138107364741e62", batiment1.getMasterIdRF());
 

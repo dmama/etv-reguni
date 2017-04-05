@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dao;
 
 import java.util.Set;
 
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +16,7 @@ import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 public interface AyantDroitRFDAO extends GenericDAO<AyantDroitRF, Long> {
 
 	@Nullable
-	AyantDroitRF find(@NotNull AyantDroitRFKey key);
+	AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride);
 
 	/**
 	 * @param typeDroit le type de droit à considérer
