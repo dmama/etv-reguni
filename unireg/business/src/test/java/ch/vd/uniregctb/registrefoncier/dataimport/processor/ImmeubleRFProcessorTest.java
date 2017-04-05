@@ -806,6 +806,89 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/**
+	 * [SIFISC-24013] Ce test vérifie que le processing d'une mutation sur un immeuble radiée réactive bien l'immeuble.
+	 */
+	@Test
+	public void testProcessMutationModificationImmeubleRadie() throws Exception {
+
+		final RegDate dateRadiation = RegDate.get(2010, 12, 31);
+		final RegDate dateValeur = RegDate.get(2016, 10, 1);
+
+		// précondition : il y a un immeuble radié dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				CommuneRF commune = new CommuneRF();
+				commune.setNoRf(294);
+				commune.setNomRf("Pétahouchnok");
+				commune.setNoOfs(66666);
+				commune = communeRFDAO.save(commune);
+
+				final BienFondRF bienFond = new BienFondRF();
+				bienFond.setIdRF("_1f109152381026b501381028a73d1852");
+				bienFond.setEgrid("CH938391457759");
+				bienFond.setCfa(false);
+				bienFond.setDateRadiation(dateRadiation);   // <---- immeuble radié
+
+				final SituationRF situation = new SituationRF();
+				situation.setDateDebut(RegDate.get(1988, 1, 1));
+				situation.setDateFin(dateRadiation);
+				situation.setCommune(commune);
+				situation.setNoParcelle(5089);
+				bienFond.addSituation(situation);
+
+				immeubleRFDAO.save(bienFond);
+				assertEquals(1, immeubleRFDAO.getAll().size());
+			}
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, dateValeur, TypeEntiteRF.IMMEUBLE, TypeMutationRF.MODIFICATION, "_1f109152381026b501381028a73d1852");
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation, false, null);
+			}
+		});
+
+		// postcondition : la mutation est traitée et l'immeuble n'est plus radié dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+				assertEquals(1, immeubles.size());
+
+				// l'immeuble n'est plus radié
+				final ImmeubleRF immeuble0 = immeubles.get(0);
+				assertEquals("_1f109152381026b501381028a73d1852", immeuble0.getIdRF());
+				assertEquals("CH938391457759", immeuble0.getEgrid());
+				assertNull(immeuble0.getDateRadiation());
+
+				// la situation est de nouveau active
+				final Set<SituationRF> situations = immeuble0.getSituations();
+				assertEquals(1, situations.size());
+
+				final SituationRF situation0 = situations.iterator().next();
+				assertEquals(RegDate.get(1988, 1, 1), situation0.getDateDebut());
+				assertNull(situation0.getDateFin());
+				assertEquals(294, situation0.getCommune().getNoRf());
+				assertEquals(5089, situation0.getNoParcelle());
+				assertNull(situation0.getIndex1());
+				assertNull(situation0.getIndex2());
+				assertNull(situation0.getIndex3());
+			}
+		});
+	}
+
+	/**
 	 * Ce test vérifie que le processing d'une mutation de modification d'un immeuble sans estimation fiscale fonctionne bien.
 	 */
 	@Test

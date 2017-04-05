@@ -97,6 +97,65 @@ public class ImmeubleRFHelperTest {
 	}
 
 	/**
+	 * Ce test vérifie que deux immeubles identiques mais dont l'un est radié sont bien considérés inégaux.
+	 */
+	@Test
+	public void testCurrentDataEqualsImmeubleRadie() throws Exception {
+
+		final CommuneRF commune = new CommuneRF();
+		commune.setNoRf(2233);
+
+		final SituationRF situation = new SituationRF();
+		situation.setCommune(commune);
+		situation.setNoParcelle(109);
+		situation.setIndex1(17);
+
+		final EstimationRF estimation = new EstimationRF();
+		estimation.setMontant(120000L);
+		estimation.setReference("2015");
+		estimation.setDateInscription(RegDate.get(2015, 7, 1));
+		estimation.setEnRevision(false);
+		estimation.setDateDebut(RegDate.get(2000, 1, 1));
+
+		final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
+		surfaceTotale.setSurface(1329);
+
+		final BienFondRF immeuble = new BienFondRF();
+		immeuble.setIdRF("382929efa218");
+		immeuble.setCfa(true);
+		immeuble.setEgrid("CH282891891");
+		immeuble.addSituation(situation);
+		immeuble.addEstimation(estimation);
+		immeuble.addSurfaceTotale(surfaceTotale);
+		immeuble.setDateRadiation(RegDate.get(2017, 1, 1)); // <---- immeuble radié
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+
+		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
+		amtlicheBewertung.setAmtlicherWert(120000L);
+		amtlicheBewertung.setProtokollNr("2015");
+		amtlicheBewertung.setProtokollDatum(RegDate.get(2015, 7, 1));
+		amtlicheBewertung.setProtokollGueltig(true);
+
+		final GrundstueckFlaeche flaeche = new GrundstueckFlaeche();
+		flaeche.setFlaeche(1329);
+
+		final Liegenschaft grundstueck = new Liegenschaft();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setLigUnterartEnum("cfa");
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+		grundstueck.setGrundstueckFlaeche(flaeche);
+
+		// l'immeuble est radié : pas égal
+		assertFalse(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
+	}
+
+	/**
 	 * Ce test vérifie que deux immeubles avec des situations différentes sont bien considérés inégaux.
 	 */
 	@Test

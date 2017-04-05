@@ -154,7 +154,12 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] n'existe pas dans la DB.");
 		}
 		if (persisted.getDateRadiation() != null) {
-			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] est radié, il ne devrait plus changer.");
+			// [SIFISC-24013] si l'immeuble est radié, on le réactive
+			persisted.setDateRadiation(null);
+			// on réactive aussi sa dernière situation
+			persisted.getSituations().stream()
+					.max(new DateRangeComparator<>())
+					.ifPresent(s -> s.setDateFin(null));
 		}
 
 		// on va chercher les situations, estimations et surfaces totales courantes

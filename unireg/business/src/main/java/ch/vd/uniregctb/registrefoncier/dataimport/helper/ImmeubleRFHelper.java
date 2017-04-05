@@ -80,6 +80,12 @@ public abstract class ImmeubleRFHelper {
 		}
 		// [/blindage]
 
+		// on vérifie l'état de radiation
+		if (immeuble.getDateRadiation() != null) {
+			// un immeuble radié est forcément différent d'un immeuble que l'on reçoit du RF (qui par définition n'est pas radié)
+			return false;
+		}
+
 		// on vérifie la situation courante
 		final SituationRF situation = immeuble.getSituations().stream()
 				.filter(r -> r.isValidAt(null))
