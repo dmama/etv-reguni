@@ -10,17 +10,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.party.adminauth.v5.AdministrativeAuthority;
-import ch.vd.unireg.xml.party.agent.v1.Agent;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.debtor.v5.Debtor;
 import ch.vd.unireg.xml.party.establishment.v2.Establishment;
 import ch.vd.unireg.xml.party.othercomm.v3.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
-import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
-import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxpayer.v5.Taxpayer;
-import ch.vd.unireg.xml.party.taxresidence.v4.TaxLiability;
 import ch.vd.unireg.xml.party.v5.Party;
 
 public class PartyJsonContainer {
@@ -174,6 +170,7 @@ public class PartyJsonContainer {
 			replacePolymorphicTaxDeclarations(naturalPerson);
 			replacePolymorphicRelationsBetweenParties(naturalPerson);
 			replacePolymorphicAgents(naturalPerson);
+			replacePolymorphicData(naturalPerson.getLandRights(), JsonLandRightHelper::jsonEquivalentOf);
 			return new PartyJsonContainer(naturalPerson);
 		}
 	}
@@ -206,6 +203,7 @@ public class PartyJsonContainer {
 			replacePolymorphicTaxDeclarations(corporation);
 			replacePolymorphicRelationsBetweenParties(corporation);
 			replacePolymorphicAgents(corporation);
+			replacePolymorphicData(corporation.getLandRights(), JsonLandRightHelper::jsonEquivalentOf);
 			return new PartyJsonContainer(corporation);
 		}
 	}
