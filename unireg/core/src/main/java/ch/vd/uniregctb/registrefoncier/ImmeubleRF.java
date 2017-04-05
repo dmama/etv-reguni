@@ -14,6 +14,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
@@ -92,6 +93,12 @@ public abstract class ImmeubleRF extends HibernateEntity {
 	 * Les servitudes définies sur l'immeuble
 	 */
 	private Set<ServitudeRF> servitudes;
+
+	/**
+	 * L'ayant-droit correspondant à cet immeuble. Renseigné si cet immeuble possède des droits vers d'autres immeubles.
+	 */
+	@Nullable
+	private ImmeubleBeneficiaireRF equivalentBeneficiaire;
 
 	@Nullable
 	private RegDate dateRadiation;
@@ -241,6 +248,16 @@ public abstract class ImmeubleRF extends HibernateEntity {
 
 	public void setServitudes(Set<ServitudeRF> servitudes) {
 		this.servitudes = servitudes;
+	}
+
+	@Nullable
+	@OneToOne(mappedBy = "immeuble")
+	public ImmeubleBeneficiaireRF getEquivalentBeneficiaire() {
+		return equivalentBeneficiaire;
+	}
+
+	public void setEquivalentBeneficiaire(@Nullable ImmeubleBeneficiaireRF equivalentBeneficiaire) {
+		this.equivalentBeneficiaire = equivalentBeneficiaire;
 	}
 
 	@Nullable

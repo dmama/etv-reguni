@@ -27,7 +27,10 @@ import ch.vd.uniregctb.common.LengthConstants;
  * Ayant-droit sur un ou plusieurs immeubles. Un ayant-droit est soit un tiers (personne physique ou morale), soit une communauté (regroupement de personnes physiques ou morales).
  */
 @Entity
-@Table(name = "RF_AYANT_DROIT", uniqueConstraints = @UniqueConstraint(name = "IDX_AYANTDROIT_ID_RF", columnNames = "ID_RF"))
+@Table(name = "RF_AYANT_DROIT", uniqueConstraints = {
+		@UniqueConstraint(name = "IDX_AYANTDROIT_ID_RF", columnNames = "ID_RF"),
+		@UniqueConstraint(name = "IDX_AYANTDROIT_IMMEUBLE_ID", columnNames = "IMMEUBLE_ID")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class AyantDroitRF extends HibernateEntity {

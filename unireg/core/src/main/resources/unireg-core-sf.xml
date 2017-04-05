@@ -240,6 +240,7 @@
 		<value>ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitHabitationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF</value>
@@ -247,6 +248,7 @@
 		<value>ch.vd.uniregctb.registrefoncier.DroitRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.EstimationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ImmeubleRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ImplantationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.MineRF</value>
