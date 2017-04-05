@@ -14,7 +14,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 /**
  * Classes et méthodes utiles pour la manipulation du type polymorphique {@link LandRight} avec JSON
  */
-public class JsonLandRightHelper {
+public abstract class JsonLandRightHelper {
 
 	/**
 	 * Interface pour définir l'attribut "rightType" en JSON
