@@ -9,6 +9,7 @@ import ch.vd.capitastra.common.Rechteinhaber;
 import ch.vd.capitastra.grundstueck.GeburtsDatum;
 import ch.vd.capitastra.grundstueck.Gemeinschaft;
 import ch.vd.capitastra.grundstueck.GemeinschaftsArt;
+import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.JuristischePersonUnterart;
 import ch.vd.capitastra.grundstueck.JuristischePersonstamm;
 import ch.vd.capitastra.grundstueck.NatuerlichePersonstamm;
@@ -19,6 +20,7 @@ import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
@@ -38,6 +40,9 @@ public abstract class AyantDroitRFHelper {
 		}
 		else if (right instanceof ch.vd.capitastra.rechteregister.Personstamm) {
 			return dataEquals(left, (ch.vd.capitastra.rechteregister.Personstamm) right);
+		}
+		else if (right instanceof Grundstueck) {
+			return dataEquals(left, (Grundstueck) right);
 		}
 		else {
 			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + right.getClass() + "]");
@@ -145,6 +150,20 @@ public abstract class AyantDroitRFHelper {
 		return communaute.getType() == getTypeCommunaute(right.getArt());
 	}
 
+	/**
+	 * @return <b>vrai</b> si les deux ayant-droits spécifiés possèdent les mêmes données; <b>faux</b> autrement.
+	 */
+	public static boolean dataEquals(@NotNull AyantDroitRF left, @NotNull Grundstueck right) {
+		// [blindage] les valeurs suivantes ne doivent jamais changer (le modèle est construit sur ce prédicat)
+		if (!(left instanceof ImmeubleBeneficiaireRF)) {
+			throw new IllegalArgumentException("Le type de l'ayant-droit idRF=[" + left.getIdRF() + "] a changé.");
+		}
+		// [/blindage]
+
+		// la seule valeur mémorisée sur un immeuble bénéficiaire est l'IdRF de l'immeuble correspondant.
+		return Objects.equals(left.getIdRF(), right.getGrundstueckID());
+	}
+
 	@Nullable
 	private static TypeCommunaute getTypeCommunaute(@Nullable GemeinschaftsArt art) {
 		if (art == null) {
@@ -215,6 +234,9 @@ public abstract class AyantDroitRFHelper {
 		}
 		else if (rechteinhaber instanceof ch.vd.capitastra.rechteregister.Personstamm) {
 			return new AyantDroitRFKey(((ch.vd.capitastra.rechteregister.Personstamm) rechteinhaber).getPersonstammID());
+		}
+		else if (rechteinhaber instanceof Grundstueck) {
+			return new AyantDroitRFKey(((Grundstueck) rechteinhaber).getGrundstueckID());
 		}
 		else {
 			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + rechteinhaber.getClass() + "]");

@@ -10,6 +10,8 @@ import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.CapiCode;
 import ch.vd.capitastra.grundstueck.Gemeinschaft;
+import ch.vd.capitastra.grundstueck.GrundstueckEigentumAnteil;
+import ch.vd.capitastra.grundstueck.GrundstueckEigentumsform;
 import ch.vd.capitastra.grundstueck.JuristischePersonGb;
 import ch.vd.capitastra.grundstueck.NatuerlichePersonGb;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
@@ -21,11 +23,13 @@ import ch.vd.uniregctb.common.UniregJUnit4Runner;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
@@ -105,6 +109,27 @@ public class DroitRFHelperTest {
 			droitPP2.calculateDateEtMotifDebut();
 		}
 
+		final DroitProprieteImmeubleRF droitImm3 = new DroitProprieteImmeubleRF();
+		{
+			final ImmeubleBeneficiaireRF beneficiaire1 = new ImmeubleBeneficiaireRF();
+			beneficiaire1.setIdRF("5848cd8483");
+
+			final ImmeubleRF immeuble2 = new BienFondRF();
+			immeuble2.setIdRF("ae93920bc34");
+
+			droitImm3.setMasterIdRF("029382719");
+			droitImm3.setAyantDroit(beneficiaire1);
+			droitImm3.setImmeuble(immeuble2);
+			droitImm3.setDateDebut(RegDate.get(2015, 3, 27));
+			droitImm3.setDateFin(null);
+			droitImm3.setMotifDebut(null);
+			droitImm3.setMotifFin(null);
+			droitImm3.setPart(new Fraction(1, 14));
+			droitImm3.setRegime(GenrePropriete.COPROPRIETE);
+			droitImm3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2015,2,10), "Constitution de parts de copropriété", new IdentifiantAffaireRF(6, 2015, 3400, 1)));
+			droitImm3.calculateDateEtMotifDebut();
+		}
+
 		final PersonEigentumAnteil eigentumAnteil1 = new PersonEigentumAnteil();
 		{
 			final Rechtsgrund recht = new Rechtsgrund();
@@ -147,9 +172,29 @@ public class DroitRFHelperTest {
 			eigentumAnteil2.setPersonEigentumsForm(PersonEigentumsform.ALLEINEIGENTUM);
 		}
 
+		final GrundstueckEigentumAnteil eigentumAnteil3 = new GrundstueckEigentumAnteil();
+		{
+			final Rechtsgrund recht = new Rechtsgrund();
+			recht.setBelegDatum(RegDate.get(2015,2,10));
+			recht.setAmtNummer(6);
+			recht.setBelegJahr(2015);
+			recht.setBelegNummer(3400);
+			recht.setBelegNummerIndex(1);
+			recht.setRechtsgrundCode(new CapiCode(null, "Constitution de parts de copropriété"));
+
+			eigentumAnteil3.setMasterID("029382719");
+			eigentumAnteil3.setBerechtigtesGrundstueckIDREF("5848cd8483");
+			eigentumAnteil3.setBelastetesGrundstueckIDREF("ae93920bc34");
+			eigentumAnteil3.setQuote(new Quote(1L, 14L, null, null));
+			eigentumAnteil3.setGrundstueckEigentumsForm(GrundstueckEigentumsform.MITEIGENTUM);
+			eigentumAnteil3.getRechtsgruende().add(recht);
+		}
+
 		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP1, droitPP2)), Arrays.asList(eigentumAnteil1, eigentumAnteil2)));
 		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP2, droitPP1)), Arrays.asList(eigentumAnteil2, eigentumAnteil1)));
+		assertTrue(DroitRFHelper.dataEquals(new HashSet<>(Arrays.asList(droitPP1, droitImm3)), Arrays.asList(eigentumAnteil1, eigentumAnteil3)));
 		assertFalse(DroitRFHelper.dataEquals(new HashSet<>(Collections.singletonList(droitPP1)), Collections.singletonList(eigentumAnteil2)));
+		assertFalse(DroitRFHelper.dataEquals(new HashSet<>(Collections.singletonList(droitImm3)), Collections.singletonList(eigentumAnteil2)));
 	}
 
 	@Test
@@ -283,6 +328,46 @@ public class DroitRFHelperTest {
 		assertTrue(DroitRFHelper.dataEquals(droitComm, eigentumAnteil));
 	}
 
+	@Test
+	public void testDataEqualsDroitProprieteImmeuble() throws Exception {
+
+		final ImmeubleBeneficiaireRF beneficiaire1 = new ImmeubleBeneficiaireRF();
+		beneficiaire1.setIdRF("5848cd8483");
+
+		final ImmeubleRF immeuble2 = new BienFondRF();
+		immeuble2.setIdRF("ae93920bc34");
+
+		final DroitProprieteImmeubleRF droitImm = new DroitProprieteImmeubleRF();
+		droitImm.setMasterIdRF("029382719");
+		droitImm.setAyantDroit(beneficiaire1);
+		droitImm.setImmeuble(immeuble2);
+		droitImm.setDateDebut(RegDate.get(2015, 3, 27));
+		droitImm.setDateFin(null);
+		droitImm.setMotifDebut(null);
+		droitImm.setMotifFin(null);
+		droitImm.setPart(new Fraction(1, 14));
+		droitImm.setRegime(GenrePropriete.COPROPRIETE);
+		droitImm.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2015,2,10), "Constitution de parts de copropriété", new IdentifiantAffaireRF(6, 2015, 3400, 1)));
+		droitImm.calculateDateEtMotifDebut();
+
+		final Rechtsgrund recht = new Rechtsgrund();
+		recht.setBelegDatum(RegDate.get(2015, 2, 10));
+		recht.setAmtNummer(6);
+		recht.setBelegJahr(2015);
+		recht.setBelegNummer(3400);
+		recht.setBelegNummerIndex(1);
+		recht.setRechtsgrundCode(new CapiCode(null, "Constitution de parts de copropriété"));
+
+		final GrundstueckEigentumAnteil eigentumAnteil = new GrundstueckEigentumAnteil();
+		eigentumAnteil.setMasterID("029382719");
+		eigentumAnteil.setBerechtigtesGrundstueckIDREF("5848cd8483");
+		eigentumAnteil.setBelastetesGrundstueckIDREF("ae93920bc34");
+		eigentumAnteil.setQuote(new Quote(1L, 14L, null, null));
+		eigentumAnteil.setGrundstueckEigentumsForm(GrundstueckEigentumsform.MITEIGENTUM);
+		eigentumAnteil.getRechtsgruende().add(recht);
+
+		assertTrue(DroitRFHelper.dataEquals(droitImm, eigentumAnteil));
+	}
 	/**
 	 * Vérifie qu'un droit sur une personne physique n'est pas égal au droit sur une personne morale.
 	 */

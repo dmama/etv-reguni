@@ -5,9 +5,9 @@ import java.util.Iterator;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
+import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
-import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 
 /**
@@ -19,7 +19,7 @@ public class FichierImmeubleIteratorAdapter implements FichierImmeublesRFParser.
 	private static final int QUEUE_SIZE = 100;
 
 	private final QueuedIterator<Grundstueck> immeublesIterator = new QueuedIterator<>(QUEUE_SIZE);
-	private final QueuedIterator<PersonEigentumAnteil> droitsIterator = new QueuedIterator<>(QUEUE_SIZE);
+	private final QueuedIterator<EigentumAnteil> droitsIterator = new QueuedIterator<>(QUEUE_SIZE);
 	private final QueuedIterator<Personstamm> proprietairesIterator = new QueuedIterator<>(QUEUE_SIZE);
 	private final QueuedIterator<Gebaeude> constructionsIterator = new QueuedIterator<>(QUEUE_SIZE);
 	private final QueuedIterator<Bodenbedeckung> surfacesIterator = new QueuedIterator<>(QUEUE_SIZE);
@@ -37,7 +37,7 @@ public class FichierImmeubleIteratorAdapter implements FichierImmeublesRFParser.
 	/**
 	 * @return un itérateur sur les droits.
 	 */
-	public Iterator<PersonEigentumAnteil> getDroitsIterator() {
+	public Iterator<EigentumAnteil> getDroitsIterator() {
 		return droitsIterator;
 	}
 
@@ -68,7 +68,7 @@ public class FichierImmeubleIteratorAdapter implements FichierImmeublesRFParser.
 	}
 
 	@Override
-	public void onDroit(@NotNull PersonEigentumAnteil droit) {
+	public void onDroit(EigentumAnteil droit) {
 		immeublesIterator.done();
 		droitsIterator.put(droit);
 	}

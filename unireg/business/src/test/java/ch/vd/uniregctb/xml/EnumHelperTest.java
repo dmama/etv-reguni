@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
+import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -62,6 +63,8 @@ public class EnumHelperTest {
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLCorporationv2", TypeAssujettissement.class), EnumSet.of(TypeAssujettissement.DIPLOMATE_SUISSE, TypeAssujettissement.INDIGENT, TypeAssujettissement.MIXTE_137_1, TypeAssujettissement.MIXTE_137_2, TypeAssujettissement.SOURCE_PURE, TypeAssujettissement.VAUDOIS_DEPENSE));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLCorporationv3", TypeAssujettissement.class), EnumSet.of(TypeAssujettissement.DIPLOMATE_SUISSE, TypeAssujettissement.INDIGENT, TypeAssujettissement.MIXTE_137_1, TypeAssujettissement.MIXTE_137_2, TypeAssujettissement.SOURCE_PURE, TypeAssujettissement.VAUDOIS_DEPENSE));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLCorporationv4", TypeAssujettissement.class), EnumSet.of(TypeAssujettissement.DIPLOMATE_SUISSE, TypeAssujettissement.INDIGENT, TypeAssujettissement.MIXTE_137_1, TypeAssujettissement.MIXTE_137_2, TypeAssujettissement.SOURCE_PURE, TypeAssujettissement.VAUDOIS_DEPENSE));
+		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv1", GenrePropriete.class), EnumSet.of(GenrePropriete.PPE, GenrePropriete.FONDS_DOMINANT));
+		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv2", GenrePropriete.class), EnumSet.of(GenrePropriete.PPE, GenrePropriete.FONDS_DOMINANT));
 
 		// boucle sur toutes les méthodes statiques publiques coreToXML... qui prennent un type énuméré en paramètre
 		final Method[] methods = EnumHelper.class.getDeclaredMethods();

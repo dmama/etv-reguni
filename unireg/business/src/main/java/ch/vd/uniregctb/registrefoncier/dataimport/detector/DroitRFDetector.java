@@ -18,7 +18,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.common.Rechteinhaber;
+import ch.vd.capitastra.grundstueck.EigentumAnteil;
+import ch.vd.capitastra.grundstueck.Grundstueck;
+import ch.vd.capitastra.grundstueck.GrundstueckEigentumAnteil;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
+import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -56,7 +60,7 @@ public class DroitRFDetector {
 	private final PlatformTransactionManager transactionManager;
 	private final AyantDroitRFDetector ayantDroitRFDetector;
 
-	private final PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits;
+	private final PersistentCache<ArrayList<EigentumAnteil>> cacheDroits;
 
 	public DroitRFDetector(XmlHelperRF xmlHelperRF,
 	                       AyantDroitRFDAO ayantDroitRFDAO,
@@ -64,7 +68,7 @@ public class DroitRFDetector {
 	                       EvenementRFMutationDAO evenementRFMutationDAO,
 	                       PlatformTransactionManager transactionManager,
 	                       AyantDroitRFDetector ayantDroitRFDetector,
-	                       PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits) {
+	                       PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
 		this(20, xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 	}
 
@@ -75,7 +79,7 @@ public class DroitRFDetector {
 	                       EvenementRFMutationDAO evenementRFMutationDAO,
 	                       PlatformTransactionManager transactionManager,
 	                       AyantDroitRFDetector ayantDroitRFDetector,
-	                       PersistentCache<ArrayList<PersonEigentumAnteil>> cacheDroits) {
+	                       PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
 		this.batchSize = batchSize;
 		this.xmlHelperRF = xmlHelperRF;
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
@@ -86,7 +90,7 @@ public class DroitRFDetector {
 		this.cacheDroits = cacheDroits;
 	}
 
-	public void processDroitsPropriete(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
+	public void processDroitsPropriete(long importId, int nbThreads, Iterator<EigentumAnteil> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
 
 		if (statusManager != null) {
 			statusManager.setMessage("Détection des mutations sur les droits de propriété... (regroupement)");
@@ -97,7 +101,7 @@ public class DroitRFDetector {
 		cacheDroits.clear();
 
 		// on regroupe tous les droits par ayant-droit
-		groupByAyantDroit(iterator, cacheDroits, PersonEigentumAnteil::getBelastetesGrundstueckIDREF, DroitRFHelper::getIdRF);
+		groupByAyantDroit(iterator, cacheDroits, EigentumAnteil::getBelastetesGrundstueckIDREF, DroitRFHelper::getAyantDroitIdRF);
 
 		if (statusManager != null) {
 			statusManager.setMessage("Détection des mutations sur les droits de propriété...", 50);
@@ -202,7 +206,7 @@ public class DroitRFDetector {
 	/**
 	 * Cette méthode détecte les changements (création ou update) sur les droits de propriété d'un ayant-droit et crée les mutations correspondantes.
 	 */
-	private void detecterMutationsDroitsPropriete(@NotNull String idRF, @NotNull List<PersonEigentumAnteil> droits, @NotNull EvenementRFImport parentImport, boolean importInitial) {
+	private void detecterMutationsDroitsPropriete(@NotNull String idRF, @NotNull List<EigentumAnteil> droits, @NotNull EvenementRFImport parentImport, boolean importInitial) {
 
 		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF), FlushMode.MANUAL);
 		if (ayantDroit == null) {
@@ -245,9 +249,33 @@ public class DroitRFDetector {
 		//        elles sont fournies en tant qu'entité implicite dans la liste des droits. Dans Unireg, nous sommes partis sur le principe
 		//        de traiter les communautés comme des ayant-droits et de les stocker dans la base.
 		droits.stream()
+				.filter(e -> e instanceof PersonEigentumAnteil)
+				.map(e -> (PersonEigentumAnteil) e)
 				.map(PersonEigentumAnteil::getGemeinschaft)
 				.filter(Objects::nonNull)
 				.forEach(g -> processAyantDroit(parentImport, g));
+
+		// on traite aussi tous les immeubles dominants que l'on trouve
+
+		// Note: dans l'export du registre foncier, les immeubles dominants ne sont pas fournis dans la liste des propriétéaires.
+		//       A la place, ils sont fournis comme simple référence (IDRef) dans les droits entre immeubles (GrundstueckEigentumAnteilType).
+		//       Dans Unireg, les immeubles dominants sont considérés comme des ayants-droits à part entière et doivent être
+		//       persistés dans la base.
+		droits.stream()
+				.filter(e -> e instanceof GrundstueckEigentumAnteil)
+				.map(e -> (GrundstueckEigentumAnteil) e)
+				.map(GrundstueckEigentumAnteil::getBerechtigtesGrundstueckIDREF)
+				.map(DroitRFDetector::newDummyGrundstueck)
+				.forEach(g -> processAyantDroit(parentImport, g));
+	}
+
+	@NotNull
+	private static Grundstueck newDummyGrundstueck(@NotNull String idRF) {
+		// note: la seule information qui nous intéresse ici est l'idRF, on utilise donc l'immeuble inconnu
+		// pour éviter de devoir résoudre le type d'immeuble exacte.
+		final Grundstueck g = new UnbekanntesGrundstueck();
+		g.setGrundstueckID(idRF);
+		return g;
 	}
 
 	private <T> void detectMutationsDeSuppression(PersistentCache<ArrayList<T>> cacheDroits, TypeDroit typeDroit, long importId) {

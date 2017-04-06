@@ -15,9 +15,9 @@ import org.codehaus.stax2.XMLInputFactory2;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
+import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
-import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 
 /**
@@ -39,6 +39,8 @@ public class FichierImmeublesRFParser {
 
 	private static final String LIST_DROITS = "EigentumList";
 	private static final String DROIT_PROPRIETE_PERSONNEL = "PersonEigentumAnteil";
+	private static final String DROIT_PROPRIETE_IMMEUBLE = "GrundstueckEigentumAnteil";
+	private static final String DROIT_PROPRIETE_DESHERENCE = "HerrenlosEigentum";
 
 
 	private static final String LIST_PROPRIETAIRES = "PersonstammList";
@@ -73,7 +75,7 @@ public class FichierImmeublesRFParser {
 
 		void onImmeuble(@NotNull Grundstueck immeuble);
 
-		void onDroit(@NotNull PersonEigentumAnteil droit);
+		void onDroit(EigentumAnteil droit);
 
 		void onProprietaire(@NotNull Personstamm personne);
 
@@ -304,14 +306,14 @@ public class FichierImmeublesRFParser {
 			final int eventType = xmlStreamReader.getEventType();
 			if (eventType == XMLStreamConstants.START_ELEMENT) {
 				final String localName = xmlStreamReader.getLocalName();
-				if (DROIT_PROPRIETE_PERSONNEL.equals(localName)) {
-					final PersonEigentumAnteil droit = (PersonEigentumAnteil) unmarshaller.unmarshal(xmlStreamReader);
+				if (DROIT_PROPRIETE_PERSONNEL.equals(localName) || DROIT_PROPRIETE_IMMEUBLE.equals(localName) || DROIT_PROPRIETE_DESHERENCE.equals(localName)) {
+					final EigentumAnteil droit = (EigentumAnteil) unmarshaller.unmarshal(xmlStreamReader);
 					if (droit != null) {
 						callback.onDroit(droit);
 					}
 				}
 				else {
-					// on ignore les autres droits de type GrundstueckEigentumAnteil et HerrenlosEigentum
+					// on ignore les autres types de droits (si ils existent)
 					xmlStreamReader.next();
 				}
 			}

@@ -4,11 +4,11 @@ import javax.xml.bind.JAXBContext;
 
 import ch.vd.capitastra.common.Rechteinhaber;
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
+import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Gemeinschaft;
 import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.GrundstueckExport;
-import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.DienstbarkeitExtended;
@@ -94,7 +94,7 @@ public interface XmlHelperRF {
 	/**
 	 * Converti le droit spécifié dans sa représentation XML.
 	 */
-	String toXMLString(PersonEigentumAnteil obj);
+	String toXMLString(EigentumAnteil obj);
 
 	/**
 	 * Converti le propriétaire spécifié dans sa représentation XML.

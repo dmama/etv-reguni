@@ -15,9 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
+import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
-import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.uniregctb.registrefoncier.dataimport.FichierImmeublesRFParser;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
@@ -79,7 +79,7 @@ public class GrepImportImmeuble {
 			}
 
 			@Override
-			public void onDroit(@NotNull PersonEigentumAnteil droit) {
+			public void onDroit(EigentumAnteil droit) {
 				String xml = toXMLString(droit);
 				if (pattern.matcher(xml).find()) {
 					System.out.println(xml);
@@ -131,7 +131,7 @@ public class GrepImportImmeuble {
 		return xmlHelper.toXMLString(obj);
 	}
 
-	private String toXMLString(PersonEigentumAnteil obj) {
+	private String toXMLString(EigentumAnteil obj) {
 		return xmlHelper.toXMLString(obj);
 	}
 

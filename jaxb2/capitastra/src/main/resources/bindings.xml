@@ -133,14 +133,9 @@
 			<inheritance:implements>ch.vd.capitastra.common.Rechteinhaber</inheritance:implements>
 		</jxb:bindings>
 
-		<!--<jxb:bindings node="//xs:simpleType[@name='PersonEigentumsformType']">-->
-			<!--<jxb:typesafeEnumClass name="PersonEigentumsform">-->
-				<!--<jxb:typesafeEnumMember name="PROPRIETE_INDIVIDUELLE" value="alleineigentum"/>-->
-				<!--<jxb:typesafeEnumMember name="COPROPRIETE_SIMPLE" value="miteigentum"/>-->
-				<!--<jxb:typesafeEnumMember name="PROPRIETE_COMMUNE" value="gesamteigentum"/>-->
-				<!--<jxb:typesafeEnumMember name="PROPRIETE_EN_DESHERENCE" value="herrenlos"/>-->
-			<!--</jxb:typesafeEnumClass>-->
-		<!--</jxb:bindings>-->
+		<jxb:bindings node="//xs:complexType[@name='GrundstueckType']">
+			<inheritance:implements>ch.vd.capitastra.common.Rechteinhaber</inheritance:implements>
+		</jxb:bindings>
 
 	</jxb:bindings>
 

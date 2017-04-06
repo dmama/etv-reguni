@@ -13,12 +13,14 @@ import org.junit.runner.RunWith;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
+import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.GebaeudeArt;
 import ch.vd.capitastra.grundstueck.GeburtsDatum;
 import ch.vd.capitastra.grundstueck.Gemeinschaft;
 import ch.vd.capitastra.grundstueck.GewoehnlichesMiteigentum;
 import ch.vd.capitastra.grundstueck.Grundstueck;
+import ch.vd.capitastra.grundstueck.GrundstueckEigentumAnteil;
 import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
 import ch.vd.capitastra.grundstueck.JuristischePersonGb;
 import ch.vd.capitastra.grundstueck.JuristischePersonstamm;
@@ -142,10 +144,10 @@ public class FichierImmeublesRFParserTest {
 		}
 
 		// on s'assure que les droits ont bien été parsés
-		final List<PersonEigentumAnteil> droits = callback.getDroits();
-		assertEquals(3, droits.size()); // le droit de type GrundstueckEigentumAnteil est ignoré
+		final List<EigentumAnteil> droits = callback.getDroits();
+		assertEquals(4, droits.size());
 
-		final PersonEigentumAnteil droit0 = droits.get(0);
+		final PersonEigentumAnteil droit0 = (PersonEigentumAnteil) droits.get(0);
 		{
 			assertEquals(Long.valueOf(1), droit0.getQuote().getAnteilZaehler());
 			assertEquals(Long.valueOf(2), droit0.getQuote().getAnteilNenner());
@@ -155,22 +157,22 @@ public class FichierImmeublesRFParserTest {
 			assertNotNull(personnePhysique);
 			assertEquals("_1f109152380ffd8901380ffdb60b39f4", personnePhysique.getPersonstammIDREF());
 
-			final List<Rechtsgrund> droitsFoncier = personnePhysique.getRechtsgruende();
-			assertNotNull(droitsFoncier);
-			assertEquals(1, droitsFoncier.size());
+			final List<Rechtsgrund> raisonsAcquisition = personnePhysique.getRechtsgruende();
+			assertNotNull(raisonsAcquisition);
+			assertEquals(1, raisonsAcquisition.size());
 
-			final Rechtsgrund droitFoncier0 = droitsFoncier.get(0);
-			assertEquals(RegDate.get(2007, 10, 19), droitFoncier0.getBelegDatum());
-			assertEquals("Achat", droitFoncier0.getRechtsgrundCode().getTextFr());
-			assertEquals(8, droitFoncier0.getAmtNummer());
-			assertEquals(Integer.valueOf(2007), droitFoncier0.getBelegJahr());
-			assertEquals(Integer.valueOf(497), droitFoncier0.getBelegNummer());
-			assertEquals(Integer.valueOf(0), droitFoncier0.getBelegNummerIndex());
+			final Rechtsgrund raison0 = raisonsAcquisition.get(0);
+			assertEquals(RegDate.get(2007, 10, 19), raison0.getBelegDatum());
+			assertEquals("Achat", raison0.getRechtsgrundCode().getTextFr());
+			assertEquals(8, raison0.getAmtNummer());
+			assertEquals(Integer.valueOf(2007), raison0.getBelegJahr());
+			assertEquals(Integer.valueOf(497), raison0.getBelegNummer());
+			assertEquals(Integer.valueOf(0), raison0.getBelegNummerIndex());
 
 			assertEquals(PersonEigentumsform.MITEIGENTUM, droit0.getPersonEigentumsForm());
 		}
 
-		final PersonEigentumAnteil droit1 = droits.get(1);
+		final PersonEigentumAnteil droit1 = (PersonEigentumAnteil) droits.get(1);
 		{
 			assertEquals(Long.valueOf(1), droit1.getQuote().getAnteilZaehler());
 			assertEquals(Long.valueOf(6), droit1.getQuote().getAnteilNenner());
@@ -184,7 +186,7 @@ public class FichierImmeublesRFParserTest {
 			assertEquals(PersonEigentumsform.MITEIGENTUM, droit1.getPersonEigentumsForm());
 		}
 
-		final PersonEigentumAnteil droit2 = droits.get(2);
+		final PersonEigentumAnteil droit2 = (PersonEigentumAnteil) droits.get(2);
 		{
 			assertEquals(Long.valueOf(1), droit2.getQuote().getAnteilZaehler());
 			assertEquals(Long.valueOf(1), droit2.getQuote().getAnteilNenner());
@@ -196,6 +198,25 @@ public class FichierImmeublesRFParserTest {
 			assertEmpty(personneMorale.getRechtsgruende());
 
 			assertEquals(PersonEigentumsform.ALLEINEIGENTUM, droit2.getPersonEigentumsForm());
+		}
+
+		final GrundstueckEigentumAnteil droit3 = (GrundstueckEigentumAnteil) droits.get(3);
+		{
+			assertEquals(Long.valueOf(1), droit3.getQuote().getAnteilZaehler());
+			assertEquals(Long.valueOf(14), droit3.getQuote().getAnteilNenner());
+			assertEquals("_8af806fa40347c3301409bf788af25a5", droit3.getBelastetesGrundstueckIDREF());
+			assertEquals("_8af806fa40347c3301409c009e4e25db", droit3.getBerechtigtesGrundstueckIDREF());
+
+			final List<Rechtsgrund> raisonsAcquisition = droit3.getRechtsgruende();
+			assertEquals(1, raisonsAcquisition.size());
+
+			final Rechtsgrund raison0 = raisonsAcquisition.get(0);
+			assertEquals(RegDate.get(2013, 8, 8), raison0.getBelegDatum());
+			assertEquals("Constitution de parts de copropriété", raison0.getRechtsgrundCode().getTextFr());
+			assertEquals(6, raison0.getAmtNummer());
+			assertEquals(Integer.valueOf(2013), raison0.getBelegJahr());
+			assertEquals(Integer.valueOf(6302), raison0.getBelegNummer());
+			assertEquals(Integer.valueOf(0), raison0.getBelegNummerIndex());
 		}
 	}
 
@@ -334,7 +355,7 @@ public class FichierImmeublesRFParserTest {
 	private static class TestCallback implements FichierImmeublesRFParser.Callback {
 
 		private final List<Grundstueck> immeubles = new ArrayList<>();
-		private final List<PersonEigentumAnteil> droits = new ArrayList<>();
+		private final List<EigentumAnteil> droits = new ArrayList<>();
 		private final List<Personstamm> proprietaires = new ArrayList<>();
 		private final List<Gebaeude> batiments = new ArrayList<>();
 		private final List<Bodenbedeckung> surfaces = new ArrayList<>();
@@ -345,7 +366,7 @@ public class FichierImmeublesRFParserTest {
 		}
 
 		@Override
-		public void onDroit(@NotNull PersonEigentumAnteil droit) {
+		public void onDroit(EigentumAnteil droit) {
 			droits.add(droit);
 		}
 
@@ -368,7 +389,7 @@ public class FichierImmeublesRFParserTest {
 			return immeubles;
 		}
 
-		public List<PersonEigentumAnteil> getDroits() {
+		public List<EigentumAnteil> getDroits() {
 			return droits;
 		}
 

@@ -21,9 +21,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
+import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.capitastra.grundstueck.Grundstueck;
-import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
@@ -382,7 +382,7 @@ public class MutationsRFDetector implements InitializingBean {
 		immeubleRFDetector.processImmeubles(importId, nbThreads, iterator, statusManager);
 	}
 
-	public void processDroits(long importId, int nbThreads, Iterator<PersonEigentumAnteil> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
+	public void processDroits(long importId, int nbThreads, Iterator<EigentumAnteil> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
 		droitRFDetector.processDroitsPropriete(importId, nbThreads, iterator, importInitial, statusManager);
 	}
 
