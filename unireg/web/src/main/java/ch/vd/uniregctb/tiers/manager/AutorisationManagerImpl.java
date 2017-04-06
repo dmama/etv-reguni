@@ -27,7 +27,6 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -734,23 +733,11 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	 * @return <b>vrai</b> si l'utilisateur courant a le droit de saisir une nouvelle situation de famille sur le contribuable spécifié; <b>faux</b> autrement.
 	 */
 	protected boolean isSituationFamilleActive(Contribuable contribuable) {
-		Set<ForFiscal> forsFiscaux = contribuable.getForsFiscaux();
-		for (ForFiscal forFiscal : forsFiscaux) {
-			if (forFiscal instanceof ForFiscalPrincipal) {
-				ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
-				//[UNIREG-1278] il doit être possible de créer une situation de famille même si le contribuable est hors canton
-				if (forFiscalPrincipal.getDateFin() == null) {
-					return true;
-				}
-			}
-			if (forFiscal instanceof ForFiscalSecondaire) {
-				ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscal;
-				if (forFiscalSecondaire.getDateFin() == null) {
-					return true;
-				}
-			}
-		}
-		return false;
+		// [UNIREG-1278] il doit être possible de créer une situation de famille même si le contribuable est hors canton
+		// [SIFISC-23943] il ne faut pas tenir compte des fors annulés !!!
+		return contribuable.getForsFiscauxNonAnnules(false).stream()
+				.filter(ff -> ff instanceof ForFiscalPrincipal || ff instanceof ForFiscalSecondaire)
+				.anyMatch(ff -> ff.getDateFin() == null);
 	}
 
 	/**
