@@ -76,7 +76,7 @@ public class DelayedDownloadServiceImpl implements DelayedDownloadService, Initi
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.scheduler = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory(new DefaultThreadNameGenerator("DelayedDownloadCleanup")));
+		this.scheduler = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory(new DefaultThreadNameGenerator("DelayedDownloadCleanup"), Boolean.TRUE));
 		this.scheduler.scheduleWithFixedDelay(new CleanupTask(), 30L, 30L, TimeUnit.MINUTES);      // toutes les 30 minutes...
 	}
 

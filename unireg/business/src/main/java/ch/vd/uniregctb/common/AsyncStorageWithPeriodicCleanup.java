@@ -133,7 +133,8 @@ public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 	 * Démarre les threads annexes (cleanup)
 	 */
 	public void start() {
-		cleanupTimer = new Timer(cleanupThreadName);
+		// un thread daemon est tout-à-fait suffisant, cela ne doit en aucun cas bloquer l'arrêt de l'application
+		cleanupTimer = new Timer(cleanupThreadName, true);
 		cleanupTimer.schedule(buildCleanupTask(), cleanupPeriod.toMillis(), cleanupPeriod.toMillis());
 	}
 

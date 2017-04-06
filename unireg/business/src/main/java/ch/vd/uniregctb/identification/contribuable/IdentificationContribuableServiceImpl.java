@@ -211,6 +211,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 					}
 				}
 			};
+			thread.setDaemon(true);         // si la JVM doit être arrêtée avant que l'update soit terminé, on n'a pas besoin d'attendre...
 			thread.start();
 		}
 

@@ -69,7 +69,7 @@ public class AgeTrackingBlockingQueueMixer<T extends Aged> extends BlockingQueue
 	@Override
 	public void start(ThreadNameGenerator threadNameGenerator) {
 		super.start(threadNameGenerator);
-		tickingTimer = new Timer("Tick-" + threadNameGenerator.getNewThreadName());
+		tickingTimer = new Timer("Tick-" + threadNameGenerator.getNewThreadName(), true);
 		tickingTimer.schedule(new TickingTask(), slotDuration, slotDuration);
 	}
 

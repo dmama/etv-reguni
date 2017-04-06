@@ -28,6 +28,7 @@ public class EvenementOrganisationProcessorFacade implements EvenementOrganisati
 	public void start() {
 		if (processor == null) {
 			processor = new ProcessorThread(notificationQueue, internalProcessor, publisher);
+			processor.setDaemon(false);         // attention, ce thread est très actif en écriture, il ne faudrait pas l'arrêter trop brusquement si possible
 			processor.start();
 		}
 	}

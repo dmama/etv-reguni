@@ -40,7 +40,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	private static final long UNE_MINUTE = 60000L;
 	private int logPeriode = 5; // 5 * UNE_MINUTE
 
-	private final Timer timer = new Timer("StatsServiceTicking");
+	private final Timer timer = new Timer("StatsServiceTicking", true);
 	private final Map<String, ServiceTracingInterface> rawServices = new HashMap<>();
 	private final Map<String, UniregCacheInterface> cachedServices = new HashMap<>();
 	private final Map<String, LoadMonitor> loadMonitors = new HashMap<>();

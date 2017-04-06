@@ -87,7 +87,8 @@ public class LoadAverager {
 	public void start() {
 		Assert.isNull(timer);
 
-		timer = new Timer(String.format("Load-%s", nomService));
+		// un thread daemon est tout-à-fait suffisant, cela ne doit en aucun cas bloquer l'arrêt de l'application
+		timer = new Timer(String.format("Load-%s", nomService), true);
 		timer.schedule(new SamplingTask(), samplingPeriod, samplingPeriod);
 	}
 

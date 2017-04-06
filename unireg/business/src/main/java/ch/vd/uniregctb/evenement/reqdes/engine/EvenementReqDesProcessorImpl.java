@@ -303,6 +303,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		workerThread = new WorkerThread();
+		workerThread.setDaemon(false);         // attention, ce thread est très actif en écriture, il ne faudrait pas l'arrêter trop brusquement si possible
 		workerThread.start();
 	}
 
