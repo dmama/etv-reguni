@@ -22,12 +22,15 @@ import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -70,6 +73,24 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 				pp.setPrenom(prenom);
 				pp.setDateNaissance(dateNaissance);
 				return ayantDroitRFDAO.save(pp).getId();
+			}
+		});
+	}
+
+	protected Long insertImmeubleBeneficiaire(@NotNull String idRF) throws Exception {
+		return doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRF), null);
+				if (immeuble == null) {
+					throw new IllegalArgumentException("L'immeuble avec l'idRF=[" +idRF+							                                   "] n'existe pas dans la base.");
+				}
+
+				ImmeubleBeneficiaireRF imm = new ImmeubleBeneficiaireRF();
+				imm.setIdRF(idRF);
+				imm.setImmeuble(immeuble);
+				return ayantDroitRFDAO.save(imm).getId();
 			}
 		});
 	}
@@ -152,6 +173,22 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 				assertNotNull(pp);
 				assertEquals(idRF, pp.getIdRF());
 				assertEquals(type, pp.getType());
+			}
+		});
+	}
+
+	protected void assertOneImmeubleBeneficiaireInDB(final String idRF) throws Exception {
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final List<AyantDroitRF> ayantsDroits = ayantDroitRFDAO.getAll();
+				assertEquals(1, ayantsDroits.size());
+
+				final ImmeubleBeneficiaireRF pp = (ImmeubleBeneficiaireRF) ayantsDroits.get(0);
+				assertNotNull(pp);
+				assertEquals(idRF, pp.getIdRF());
+				assertEquals(idRF, pp.getImmeuble().getIdRF());
 			}
 		});
 	}

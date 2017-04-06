@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PersonEigentumAnteilList xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+	<GrundstueckEigentumAnteil MasterID="3838292">
+		<Quote>
+			<AnteilZaehler>1</AnteilZaehler>
+			<AnteilNenner>1</AnteilNenner>
+		</Quote>
+		<BelastetesGrundstueckIDREF>_1f109152381009be0138100ba7e31031</BelastetesGrundstueckIDREF>
+		<BerechtigtesGrundstueckIDREF>_8af806fc4a35927c014ae2a6e76041b8</BerechtigtesGrundstueckIDREF>
+		<GrundstueckEigentumsForm>DominierendesGrundstueck</GrundstueckEigentumsForm>
+		<Rechtsgruende>
+			<AmtNummer>6</AmtNummer>
+			<RechtsgrundCode>
+				<TextFr>Constitution de PPE</TextFr>
+			</RechtsgrundCode>
+			<BelegDatum>2010-04-11</BelegDatum>
+			<BelegAlt>2013/17/0</BelegAlt>
+		</Rechtsgruende>
+	</GrundstueckEigentumAnteil>
+</PersonEigentumAnteilList>

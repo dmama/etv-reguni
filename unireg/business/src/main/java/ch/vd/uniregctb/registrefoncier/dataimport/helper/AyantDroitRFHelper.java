@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.helper;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,7 @@ import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
@@ -244,7 +246,7 @@ public abstract class AyantDroitRFHelper {
 	}
 
 	@NotNull
-	public static AyantDroitRF newAyantDroitRF(@NotNull Rechteinhaber rechteinhaber) {
+	public static AyantDroitRF newAyantDroitRF(@NotNull Rechteinhaber rechteinhaber, @NotNull Function<String, ImmeubleRF> immeubleProvider) {
 
 		final AyantDroitRF ayantDroitRF;
 		if (rechteinhaber instanceof NatuerlichePersonstamm) {
@@ -315,6 +317,15 @@ public abstract class AyantDroitRFHelper {
 			communaute.setIdRF(gemeinschaft.getGemeinschatID());
 			communaute.setType(getTypeCommunaute(gemeinschaft.getArt()));
 			ayantDroitRF = communaute;
+		}
+		else if (rechteinhaber instanceof Grundstueck) {
+			final Grundstueck grundstueck =(Grundstueck) rechteinhaber;
+			final String idRF = grundstueck.getGrundstueckID();
+			final ImmeubleRF immeuble = immeubleProvider.apply(idRF);
+			final ImmeubleBeneficiaireRF dominant = new ImmeubleBeneficiaireRF();
+			dominant.setIdRF(idRF);
+			dominant.setImmeuble(immeuble);
+			ayantDroitRF = dominant;
 		}
 		else {
 			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + rechteinhaber.getClass() + "]");

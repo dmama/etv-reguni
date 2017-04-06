@@ -9,17 +9,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.common.Rechteinhaber;
-import ch.vd.capitastra.grundstueck.Gemeinschaft;
-import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.AyantDroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
+import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 /**
  * Processeur spécialisé pour traiter les mutations sur les ayants-droits.
@@ -30,24 +31,19 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 	private final AyantDroitRFDAO ayantDroitRFDAO;
 
 	@NotNull
-	private final ThreadLocal<Unmarshaller> proprietaireUnmarshaller;
-	private final ThreadLocal<Unmarshaller> communauteUnmarshaller;
+	private final ImmeubleRFDAO immeubleRFDAO;
+
+	@NotNull
+	private final ThreadLocal<Unmarshaller> ayantDroitUnmarshaller;
 	private final ThreadLocal<Unmarshaller> beneficiairesUnmarshaller;
 
-	public AyantDroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
+	public AyantDroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
+		this.immeubleRFDAO = immeubleRFDAO;
 
-		proprietaireUnmarshaller = ThreadLocal.withInitial(() -> {
+		ayantDroitUnmarshaller = ThreadLocal.withInitial(() -> {
 			try {
-				return xmlHelperRF.getProprietaireContext().createUnmarshaller();
-			}
-			catch (JAXBException e) {
-				throw new RuntimeException(e);
-			}
-		});
-		communauteUnmarshaller = ThreadLocal.withInitial(() -> {
-			try {
-				return xmlHelperRF.getCommunauteContext().createUnmarshaller();
+				return xmlHelperRF.getAyantDroitContext().createUnmarshaller();
 			}
 			catch (JAXBException e) {
 				throw new RuntimeException(e);
@@ -75,28 +71,21 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 		try {
 			// on essaie pour voir si on a un propriétaire
 			final StringSource source = new StringSource(mutation.getXmlContent());
-			ayantDroitImport = (Personstamm) proprietaireUnmarshaller.get().unmarshal(source);
+			ayantDroitImport = (Rechteinhaber) ayantDroitUnmarshaller.get().unmarshal(source);
 		}
 		catch (JAXBException e1) {
 			try {
-				// c'est pas un propriétaire, c'est peut-être une communauté
+				// c'est pas un propriétaire, c'est peut-être un bénéficiaire de servitude
 				final StringSource source = new StringSource(mutation.getXmlContent());
-				ayantDroitImport = (Gemeinschaft) communauteUnmarshaller.get().unmarshal(source);
+				ayantDroitImport = (ch.vd.capitastra.rechteregister.Personstamm) beneficiairesUnmarshaller.get().unmarshal(source);
 			}
 			catch (JAXBException e2) {
-				try {
-					// c'est pas un propriétaire ni une communauté, c'est peut-être un bénéficiaire de servitude
-					final StringSource source = new StringSource(mutation.getXmlContent());
-					ayantDroitImport = (ch.vd.capitastra.rechteregister.Personstamm) beneficiairesUnmarshaller.get().unmarshal(source);
-				}
-				catch (JAXBException e3) {
-					throw new RuntimeException(e3);
-				}
+				throw new RuntimeException(e2);
 			}
 		}
 
 		// on crée l'ayant-droit en mémoire
-		final AyantDroitRF ayantDroit = AyantDroitRFHelper.newAyantDroitRF(ayantDroitImport);
+		final AyantDroitRF ayantDroit = AyantDroitRFHelper.newAyantDroitRF(ayantDroitImport, this::findImmeuble);
 
 		// on l'insère en DB
 		switch (mutation.getTypeMutation()) {
@@ -114,6 +103,18 @@ public class AyantDroitRFProcessor implements MutationRFProcessor {
 		if (rapport != null) {
 			rapport.addProcessed(mutation.getId(), TypeEntiteRF.AYANT_DROIT, mutation.getTypeMutation());
 		}
+	}
+
+	@NotNull
+	private ImmeubleRF findImmeuble(@NotNull String idRf) {
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf), FlushMode.MANUAL);
+		if (immeuble == null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] n'existe pas dans la DB.");
+		}
+		if (immeuble.getDateRadiation() != null) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] est radié, il ne devrait plus changer.");
+		}
+		return immeuble;
 	}
 
 	private void processCreation(AyantDroitRF ayantDroit) {

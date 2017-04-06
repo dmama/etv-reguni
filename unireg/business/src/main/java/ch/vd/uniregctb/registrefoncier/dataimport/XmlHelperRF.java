@@ -37,6 +37,11 @@ public interface XmlHelperRF {
 	JAXBContext getDroitListContext();
 
 	/**
+	 * @return le context JAXB pour les ayant-droits (PPs, PM, communautéss, immeuble bénéficiaires, ..)
+	 */
+	JAXBContext getAyantDroitContext();
+
+	/**
 	 * @return le context JAXB pour les propriétaires
 	 */
 	JAXBContext getProprietaireContext();

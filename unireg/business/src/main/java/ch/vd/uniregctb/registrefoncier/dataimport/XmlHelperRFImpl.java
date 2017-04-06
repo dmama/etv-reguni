@@ -47,6 +47,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	private final JAXBContext immeubleContext;
 	private final JAXBContext droitContext;
 	private final JAXBContext droitListContext;
+	private final JAXBContext ayantDroitContext;
 	private final JAXBContext proprietaireContext;
 	private final JAXBContext batimentContext;
 	private final JAXBContext surfacesAuSolContext;
@@ -64,6 +65,10 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		                                          UnbekanntesGrundstueckElement.class);
 		droitContext = JAXBContext.newInstance(PersonEigentumAnteilElement.class, GrundstueckEigentumAnteilElement.class, HerrenlosEigentumElement.class);
 		droitListContext = JAXBContext.newInstance(PersonEigentumAnteilListElement.class);
+		ayantDroitContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class,
+		                                            JuristischePersonstammElement.class,
+		                                            GemeinschaftElement.class,
+		                                            UnbekanntesGrundstueckElement.class);
 		proprietaireContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class, JuristischePersonstammElement.class);
 		batimentContext = JAXBContext.newInstance(GebaeudeElement.class);
 		surfacesAuSolContext = JAXBContext.newInstance(BodenbedeckungElement.class);
@@ -90,6 +95,11 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	@Override
 	public JAXBContext getDroitListContext() {
 		return droitListContext;
+	}
+
+	@Override
+	public JAXBContext getAyantDroitContext() {
+		return ayantDroitContext;
 	}
 
 	@Override

@@ -9,10 +9,13 @@ import ch.vd.capitastra.grundstueck.GemeinschaftsArt;
 import ch.vd.capitastra.grundstueck.JuristischePersonUnterart;
 import ch.vd.capitastra.grundstueck.JuristischePersonstamm;
 import ch.vd.capitastra.grundstueck.NatuerlichePersonstamm;
+import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.UniregJUnit4Runner;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
@@ -343,7 +346,7 @@ public class AyantDroitRFHelperTest {
 		natuerliche.setVorname("Prénom");
 		natuerliche.setGeburtsdatum(new GeburtsDatum(23, 1, 1956));
 
-		final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) AyantDroitRFHelper.newAyantDroitRF(natuerliche);
+		final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) AyantDroitRFHelper.newAyantDroitRF(natuerliche, idRF -> null);
 		assertEquals("3893728273382823", pp.getIdRF());
 		assertEquals(3727L, pp.getNoRF());
 		assertEquals(Long.valueOf(827288022L), pp.getNoContribuable());
@@ -363,7 +366,7 @@ public class AyantDroitRFHelperTest {
 		natuerliche.setVorname("Prénom");
 		natuerliche.setGeburtsdatum(new ch.vd.capitastra.rechteregister.GeburtsDatum(23, 1, 1956));
 
-		final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) AyantDroitRFHelper.newAyantDroitRF(natuerliche);
+		final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) AyantDroitRFHelper.newAyantDroitRF(natuerliche, idRF -> null);
 		assertEquals("3893728273382823", pp.getIdRF());
 		assertEquals(0L, pp.getNoRF());
 		assertEquals(Long.valueOf(827288022L), pp.getNoContribuable());
@@ -382,11 +385,25 @@ public class AyantDroitRFHelperTest {
 		juristische.setName("Raison sociale");
 		juristische.setUnterart(JuristischePersonUnterart.SCHWEIZERISCHE_JURISTISCHE_PERSON);
 
-		final PersonneMoraleRF pp = (PersonneMoraleRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		final PersonneMoraleRF pp = (PersonneMoraleRF) AyantDroitRFHelper.newAyantDroitRF(juristische, idRF -> null);
 		assertEquals("48349384890202", pp.getIdRF());
 		assertEquals(3727L, pp.getNoRF());
 		assertEquals(Long.valueOf(827288022L), pp.getNoContribuable());
 		assertEquals("Raison sociale", pp.getRaisonSociale());
+	}
+
+	@Test
+	public void testNewAyantDroitImmeubleBeneficiaire() throws Exception {
+
+		final UnbekanntesGrundstueck grundstueck = new UnbekanntesGrundstueck();
+		grundstueck.setGrundstueckID("48349384890202");
+
+		final BienFondRF bienFond = new BienFondRF();
+		bienFond.setIdRF("48349384890202");
+
+		final ImmeubleBeneficiaireRF imm = (ImmeubleBeneficiaireRF) AyantDroitRFHelper.newAyantDroitRF(grundstueck, idRF -> bienFond);
+		assertEquals("48349384890202", imm.getIdRF());
+		assertEquals("48349384890202", imm.getImmeuble().getIdRF());
 	}
 
 	@Test
@@ -399,7 +416,7 @@ public class AyantDroitRFHelperTest {
 		juristische.setName("Raison sociale");
 		juristische.setUnterart(ch.vd.capitastra.rechteregister.JuristischePersonUnterart.SCHWEIZERISCHE_JURISTISCHE_PERSON);
 
-		final PersonneMoraleRF pp = (PersonneMoraleRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		final PersonneMoraleRF pp = (PersonneMoraleRF) AyantDroitRFHelper.newAyantDroitRF(juristische, idRF -> null);
 		assertEquals("48349384890202", pp.getIdRF());
 		assertEquals(0L, pp.getNoRF());
 		assertEquals(Long.valueOf(827288022L), pp.getNoContribuable());
@@ -419,7 +436,7 @@ public class AyantDroitRFHelperTest {
 		juristische.setName("Raison sociale");
 		juristische.setUnterart(JuristischePersonUnterart.SCHWEIZERISCHE_JURISTISCHE_PERSON);
 
-		final PersonneMoraleRF pp = (PersonneMoraleRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		final PersonneMoraleRF pp = (PersonneMoraleRF) AyantDroitRFHelper.newAyantDroitRF(juristische, idRF -> null);
 		assertEquals("48349384890202", pp.getIdRF());
 		assertEquals(3727L, pp.getNoRF());
 		assertNull(pp.getNoContribuable());
@@ -436,7 +453,7 @@ public class AyantDroitRFHelperTest {
 		juristische.setName("Raison sociale");
 		juristische.setUnterart(JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
 
-		final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) AyantDroitRFHelper.newAyantDroitRF(juristische, idRF -> null);
 		assertEquals("574739202303482", coll.getIdRF());
 		assertEquals(3727L, coll.getNoRF());
 		assertEquals(Long.valueOf(827288022L), coll.getNoContribuable());
@@ -453,7 +470,7 @@ public class AyantDroitRFHelperTest {
 		juristische.setName("Raison sociale");
 		juristische.setUnterart(ch.vd.capitastra.rechteregister.JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
 
-		final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) AyantDroitRFHelper.newAyantDroitRF(juristische, idRF -> null);
 		assertEquals("574739202303482", coll.getIdRF());
 		assertEquals(0L, coll.getNoRF());
 		assertEquals(Long.valueOf(827288022L), coll.getNoContribuable());
@@ -473,7 +490,7 @@ public class AyantDroitRFHelperTest {
 		juristische.setName("Raison sociale");
 		juristische.setUnterart(JuristischePersonUnterart.OEFFENTLICHE_KOERPERSCHAFT);
 
-		final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) AyantDroitRFHelper.newAyantDroitRF(juristische);
+		final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) AyantDroitRFHelper.newAyantDroitRF(juristische, idRF -> null);
 		assertEquals("574739202303482", coll.getIdRF());
 		assertEquals(3727L, coll.getNoRF());
 		assertNull(coll.getNoContribuable());

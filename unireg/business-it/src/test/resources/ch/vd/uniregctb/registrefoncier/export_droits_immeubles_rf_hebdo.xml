@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GrundstueckExport xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck export_grundstueck_20140310.xsd"><!--GrundstueckExport-->
+    <GrundstueckList>
+        <Liegenschaft xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+            <GrundstueckID>_1f1091523810912201381096f5f65a60</GrundstueckID>
+            <EGrid>CH774575838377</EGrid>
+            <GrundstueckNummer VersionID="1f1091523810912201381096f5f85aa6">
+                <BfsNr>132</BfsNr>
+                <Gemeindenamen>Lausanne</Gemeindenamen>
+                <StammNr>5198</StammNr>
+            </GrundstueckNummer>
+            <IstKopie>false</IstKopie>
+            <AmtlicheBewertung VersionID="1f109152381091220138109b0a56434f">
+                <AmtlicherWert>0</AmtlicherWert>
+                <Ertragswert>0</Ertragswert>
+                <ProtokollGueltig>true</ProtokollGueltig>
+                <MitEwKomponente>unbekannt</MitEwKomponente>
+            </AmtlicheBewertung>
+            <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>
+            <BeschreibungUebergeben>true</BeschreibungUebergeben>
+            <EigentumUebergeben>true</EigentumUebergeben>
+            <PfandrechtUebergeben>true</PfandrechtUebergeben>
+            <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>
+            <GrundlastUebergeben>true</GrundlastUebergeben>
+            <AnmerkungUebergeben>true</AnmerkungUebergeben>
+            <VormerkungUebergeben>true</VormerkungUebergeben>
+            <Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+            <BereitZurVerifikation>false</BereitZurVerifikation>
+            <NutzungLandwirtschaft>nein</NutzungLandwirtschaft>
+            <NutzungWald>unbekannt</NutzungWald>
+            <NutzungEisenbahn>nein</NutzungEisenbahn>
+            <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>
+            <GrundstueckFlaeche VersionID="1f109152381091220138109df95e1a45" MasterID="1f109152381091220138109de9bf782c">
+                <Flaeche>389</Flaeche>
+                <Qualitaet>
+                    <TextDe>*numérique</TextDe>
+                    <TextFr>numérique</TextFr>
+                </Qualitaet>
+                <ProjektMutation>false</ProjektMutation>
+                <GeometrischDarstellbar>false</GeometrischDarstellbar>
+                <UeberlagerndeRechte>false</UeberlagerndeRechte>
+                <Rechtsgruende>
+                    <AmtNummer>7</AmtNummer>
+                    <RechtsgrundCode>
+                        <TextDe>*Mensuration</TextDe>
+                        <TextFr>Mensuration</TextFr>
+                    </RechtsgrundCode>
+                    <BelegDatum>2001-09-21</BelegDatum>
+                    <BelegJahr>2001</BelegJahr>
+                    <BelegNummer>3850</BelegNummer>
+                    <BelegNummerIndex>0</BelegNummerIndex>
+                </Rechtsgruende>
+            </GrundstueckFlaeche>
+        </Liegenschaft>
+        <StockwerksEinheit xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+            <GrundstueckID>_1f1091523810912201381096f93f6bfe</GrundstueckID>
+            <EGrid>CH768065658534</EGrid>
+            <GrundstueckNummer VersionID="1f1091523810912201381096f9416c6c">
+                <BfsNr>132</BfsNr>
+                <Gemeindenamen>Lausanne</Gemeindenamen>
+                <StammNr>16590</StammNr>
+            </GrundstueckNummer>
+            <IstKopie>false</IstKopie>
+            <AmtlicheBewertung VersionID="1f109152381091220138109b0a564356">
+                <AmtlicherWert>109000</AmtlicherWert>
+                <Ertragswert>0</Ertragswert>
+                <ProtokollNr>2010</ProtokollNr>
+                <ProtokollDatum>2010-12-09</ProtokollDatum>
+                <ProtokollGueltig>true</ProtokollGueltig>
+                <MitEwKomponente>unbekannt</MitEwKomponente>
+            </AmtlicheBewertung>
+            <GrundbuchFuehrung>Eidgenoessisch</GrundbuchFuehrung>
+            <BeschreibungUebergeben>true</BeschreibungUebergeben>
+            <EigentumUebergeben>true</EigentumUebergeben>
+            <PfandrechtUebergeben>true</PfandrechtUebergeben>
+            <DienstbarkeitUebergeben>true</DienstbarkeitUebergeben>
+            <GrundlastUebergeben>true</GrundlastUebergeben>
+            <AnmerkungUebergeben>true</AnmerkungUebergeben>
+            <VormerkungUebergeben>true</VormerkungUebergeben>
+            <Bereinigungsmarkierung>false</Bereinigungsmarkierung>
+            <BereitZurVerifikation>false</BereitZurVerifikation>
+            <NutzungLandwirtschaft>nein</NutzungLandwirtschaft>
+            <NutzungWald>unbekannt</NutzungWald>
+            <NutzungEisenbahn>nein</NutzungEisenbahn>
+            <NutzungVerwaltungsvermoegen>nein</NutzungVerwaltungsvermoegen>
+            <StammGrundstueck VersionID="1f109152381091220138109daa84404c">
+                <Quote>
+                    <AnteilZaehler>32</AnteilZaehler>
+                    <AnteilNenner>1000</AnteilNenner>
+                    <QuoteUnbekannt>false</QuoteUnbekannt>
+                </Quote>
+                <BelastetesGrundstueck VersionID="1f1091523810912201381096f5f65a60">
+                    <EGrid>CH774575838377</EGrid>
+                    <GrundstueckNummer>
+                        <BfsNr>132</BfsNr>
+                        <Gemeindenamen>Lausanne</Gemeindenamen>
+                        <StammNr>5198</StammNr>
+                    </GrundstueckNummer>
+                    <GrundstueckArt>Liegenschaft</GrundstueckArt>
+                </BelastetesGrundstueck>
+            </StammGrundstueck>
+        </StockwerksEinheit>
+    </GrundstueckList>
+    <EigentumList>
+        <GrundstueckEigentumAnteil VersionID="1f109152381091220138109daa84404c" MasterID="1f109152381091220138109daa7e4012">
+            <Quote>
+                <AnteilZaehler>32</AnteilZaehler>
+                <AnteilNenner>1000</AnteilNenner>
+                <QuoteUnbekannt>false</QuoteUnbekannt>
+            </Quote>
+            <BelastetesGrundstueckIDREF>_1f1091523810912201381096f5f65a60</BelastetesGrundstueckIDREF>      <!-- fonds servant -->
+            <BerechtigtesGrundstueckIDREF>_1f1091523810912201381096f93f6bfe</BerechtigtesGrundstueckIDREF>  <!-- fonds dominant -->
+            <GrundstueckEigentumsForm>Stockwerk</GrundstueckEigentumsForm>
+            <Rechtsgruende>
+                <AmtNummer>7</AmtNummer>
+                <RechtsgrundCode>
+                    <TextDe>*Constitution de propriété par étages</TextDe>
+                    <TextFr>Constitution de PPE</TextFr>
+                </RechtsgrundCode>
+                <BelegDatum>1989-12-22+01:00</BelegDatum>
+                <BelegAlt>489253</BelegAlt>
+            </Rechtsgruende>
+        </GrundstueckEigentumAnteil>
+    </EigentumList>
+</GrundstueckExport>

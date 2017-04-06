@@ -114,6 +114,7 @@
 
 	<bean id="ayantDroitRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.AyantDroitRFProcessor">
 		<constructor-arg ref="ayantDroitRFDAO"/>
+		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="xmlHelperRF"/>
 	</bean>
 

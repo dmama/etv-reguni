@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.capitastra.grundstueck.EigentumAnteil;
-import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -104,7 +103,6 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 		// on crée les droits en mémoire
 		final List<DroitProprieteRF> droits = droitList.stream()
-				.map(e -> (PersonEigentumAnteil) e)
 				.map(e -> DroitRFHelper.newDroitRF(e, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble))
 				.collect(Collectors.toList());
 
