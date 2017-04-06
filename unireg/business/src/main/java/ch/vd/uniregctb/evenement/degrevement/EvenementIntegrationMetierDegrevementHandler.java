@@ -6,6 +6,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -20,7 +21,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import ch.vd.technical.esb.util.StringSource;
 import ch.vd.unireg.xml.degrevement.quittance.v1.QuittanceIntegrationMetierImmDetails;
 import ch.vd.unireg.xml.event.degrevement.v1.Message;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -59,15 +59,15 @@ public class EvenementIntegrationMetierDegrevementHandler implements EvenementIn
 	}
 
 	@Override
-	public Document handleMessage(String xml, Map<String, String> metaDonnees) throws Exception {
+	public Document handleMessage(Source xml, Map<String, String> metaDonnees) throws Exception {
 		LOGGER.info("Arrivée d'un message de retour de formulaire de dégrèvement ICI");
 
-		AuthenticationHelper.pushPrincipal("RetourDegrèvement");
+		AuthenticationHelper.pushPrincipal("RetourDégrèvement");
 		try {
 			// lecture des données entrantes
 			final Message message;
 			try {
-				message = parse(new StringSource(xml));
+				message = parse(xml);
 			}
 			catch (JAXBException | SAXException | IOException e) {
 				throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
@@ -89,7 +89,7 @@ public class EvenementIntegrationMetierDegrevementHandler implements EvenementIn
 		}
 	}
 
-	protected Document buildDocument(QuittanceIntegrationMetierImmDetails quittance) throws Exception {
+	protected Document buildDocument(QuittanceIntegrationMetierImmDetails quittance) throws JAXBException, ParserConfigurationException {
 		final Marshaller marshaller = responseJaxbContext.createMarshaller();
 
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

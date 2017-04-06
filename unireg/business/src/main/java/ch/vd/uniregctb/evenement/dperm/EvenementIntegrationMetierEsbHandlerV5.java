@@ -23,6 +23,7 @@ import ch.vd.dperm.xml.integration.v5.ElementsIntegrationMetier;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.util.StringSource;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -105,8 +106,10 @@ public class EvenementIntegrationMetierEsbHandlerV5 implements EsbMessageHandler
 		}
 
 		final String xmlInterne = StringEscapeUtils.unescapeXml(integration.getXmlUnitaire());
-		final Document response = handler.handleMessage(xmlInterne, EsbMessageHelper.extractCustomHeaders(message));
-		answer(message, response);
+		final Document response = handler.handleMessage(new StringSource(xmlInterne), EsbMessageHelper.extractCustomHeaders(message));
+		if (response != null) {
+			answer(message, response);
+		}
 	}
 
 	private void answer(EsbMessage request, Document responseBody) throws Exception {
