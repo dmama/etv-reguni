@@ -13,6 +13,6 @@ elif [[ ! "$LIMIT" =~ ^0*[1-9][0-9]*$ ]]; then
 	exit 1
 fi
 
-find ~/logs/$ENVIRONMENT -name "*.log*" -type f -mtime +$LIMIT | while read FILE; do if [ -e "$FILE" ]; then rm -f "$FILE"; fi; done
-find ~/logs/$ENVIRONMENT -type d -empty | while read DIR; do if [ -d "$DIR" ]; then rmdir "$DIR"; fi; done
-find ~/logs/$ENVIRONMENT -mindepth 2 -type d -mtime +$(($LIMIT + 31)) ! -path "*/repository/*" | while read DIR; do if [ -d "$DIR" ]; then rm -rf "$DIR"; fi; done
+find -H ~/logs/$ENVIRONMENT -name "*.log*" -type f -mtime +$LIMIT | while read FILE; do if [ -e "$FILE" ]; then rm -f "$FILE"; fi; done
+find -H ~/logs/$ENVIRONMENT -type d -empty | while read DIR; do if [ -d "$DIR" ]; then rmdir "$DIR"; fi; done
+find -H ~/logs/$ENVIRONMENT -mindepth 2 -type d -mtime +$(($LIMIT + 31)) ! -path "*/repository/*" | while read DIR; do if [ -d "$DIR" ]; then rm -rf "$DIR"; fi; done
