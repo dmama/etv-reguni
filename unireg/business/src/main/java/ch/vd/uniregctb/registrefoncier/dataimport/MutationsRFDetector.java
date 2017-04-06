@@ -7,8 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -206,11 +207,18 @@ public class MutationsRFDetector implements InitializingBean {
 			final FichierImmeubleIteratorAdapter adapter = new FichierImmeubleIteratorAdapter();
 
 			// on parse le fichier (dans un thread séparé)
-			ExecutorCompletionService<Boolean> ecs = new ExecutorCompletionService<>(Executors.newFixedThreadPool(1));
-			ecs.submit(() -> {
-				fichierImmeubleParser.processFile(is, adapter);    // <-- émetteur des données
-				return true;
-			});
+			final Future<?> future;
+			final ExecutorService executor = Executors.newFixedThreadPool(1);
+			try {
+				future = executor.submit(() -> {
+					fichierImmeubleParser.processFile(is, adapter);    // <-- émetteur des données
+					return null;
+				});
+			}
+			finally {
+				// une fois la tâche terminée, l'exécuteur s'éteindra proprement
+				executor.shutdown();
+			}
 
 			// on détecte les changements et crée les mutations
 			processImmeubles(importId, nbThreads, adapter.getImmeublesIterator(), new SubStatusManager(0, 20, statusManager));   // <-- consommateur des données
@@ -220,7 +228,7 @@ public class MutationsRFDetector implements InitializingBean {
 			processSurfaces(importId, nbThreads, adapter.getSurfacesIterator(), new SubStatusManager(80, 100, statusManager));
 
 			// on attend que le parsing soit terminé
-			ecs.take().get();
+			future.get();
 
 			statusManager.setMessage("Traitement terminé.");
 		}
