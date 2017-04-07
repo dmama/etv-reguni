@@ -36,6 +36,7 @@ import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
+import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
@@ -319,6 +320,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
+				.sorted(new DroitRFRangeMetierComparator())
 				.map((droitRF) -> LandRightBuilder.newLandRight(droitRF, ctbIdProvider))
 				.forEach(landRights::add);
 	}

@@ -36,6 +36,7 @@ import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
+import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
@@ -324,6 +325,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
+				.sorted(new DroitRFRangeMetierComparator())
 				.map((droitRF) -> LandRightBuilder.newLandRight(droitRF, contribuableIdProvider))
 				.forEach(landRights::add);
 	}
