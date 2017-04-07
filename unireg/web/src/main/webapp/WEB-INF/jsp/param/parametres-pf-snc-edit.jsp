@@ -35,6 +35,7 @@
 						<jsp:param name="path" value="rappelReglementaire" />
 						<jsp:param name="id" value="rappelReglementaire" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 			</tr>
 			<tr>
@@ -44,6 +45,7 @@
 						<jsp:param name="path" value="rappelEffectif" />
 						<jsp:param name="id" value="rappelEffectif" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 			</tr>
 		</table>

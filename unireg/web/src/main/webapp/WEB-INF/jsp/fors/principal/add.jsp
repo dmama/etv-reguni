@@ -105,6 +105,7 @@
 							<%--@elvariable id="genresImpot" type="java.util.Map<GenreImpot, String>"--%>
 							<form:select path="genreImpot" items="${genresImpot}" id="genreImpot"
 							             onchange="updateMotifsFors();"/>
+							<span style="color: red;">*</span>
 						</td>
 						<td width="20%"><fmt:message key="label.rattachement"/>&nbsp;:</td>
 						<td>
@@ -112,6 +113,7 @@
 							<form:select path="motifRattachement"
 									items="${rattachements}" id="rattachement"
 									onchange="updateMotifsFors(); selectRattachement(this.options[this.selectedIndex].value);"/>
+							<span style="color: red;">*</span>
 							<form:errors path="motifRattachement" cssClass="error"/>
 						</td>
 					</tr>
@@ -122,6 +124,7 @@
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
+							<span style="color: red;">*</span>
 						</td>
 						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 						<td>
@@ -151,6 +154,7 @@
 								<%--@elvariable id="typesForFiscal" type="java.util.Map<TypeAutoriteFiscale, String>"--%>
 								<form:select path="typeAutoriteFiscale" items="${typesForFiscal}" id="optionTypeAutoriteFiscale"
 								             onchange="selectAutoriteFiscale(this.options[this.selectedIndex].value);" />
+								<span style="color: red;">*</span>
 							</div>
 							<div id="mandatory_type_for" style="display: none;"></div>
 						</td>
@@ -165,6 +169,7 @@
 						</td>
 						<td>
 							<input id="autoriteFiscale" size="25" />
+							<span style="color: red;">*</span>
 							<form:errors path="noAutoriteFiscale" cssClass="error" />
 							<form:hidden path="noAutoriteFiscale" />
 						</td>
@@ -176,6 +181,7 @@
 							<td><fmt:message key="label.mode.imposition"/>&nbsp;:</td>
 							<td>
 								<form:select path="modeImposition" items="${modesImposition}" />
+								<span style="color: red;">*</span>
 								<form:errors path="modeImposition" cssClass="error" />
 							</td>
 							<td>&nbsp;</td>

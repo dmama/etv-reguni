@@ -74,6 +74,7 @@
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
+							<span style="color: red;">*</span>
 						</td>
 						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 						<td>
@@ -103,6 +104,7 @@
 						</td>
 						<td>
 							<input id="autoriteFiscale" size="25" value="${command.nomAutoriteFiscale}"/>
+							<span style="color: red;">*</span>
 							<form:errors path="noAutoriteFiscale" cssClass="error" />
 							<form:hidden path="noAutoriteFiscale" />
 							<form:hidden path="nomAutoriteFiscale" />

@@ -85,6 +85,7 @@
                         </td>
                         <td>
                             <input id="autoriteFiscale" size="25"/>
+	                        <span style="color: red;">*</span>
                             <form:errors path="numeroAutoriteFiscale" cssClass="error"/>
                             <form:hidden path="numeroAutoriteFiscale"/>
                         </td>
@@ -96,6 +97,7 @@
                                 <jsp:param name="path" value="dateDebut" />
                                 <jsp:param name="id" value="dateDebut" />
                             </jsp:include>
+	                        <span style="color: red;">*</span>
                         </td>
                     </tr>
                     <tr class="<unireg:nextRowClass/>" >

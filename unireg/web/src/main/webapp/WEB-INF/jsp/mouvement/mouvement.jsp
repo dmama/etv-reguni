@@ -27,6 +27,7 @@
 			<td width="50%" colspan="2">
 				<div id="utilisateursEnvoi" <c:if test="${param.depuisTache == 'true'}">style="display:none;"</c:if> >
 					<form:input path="utilisateurEnvoi" id="utilisateurEnvoi" />
+					<span style="color: red;">*</span>
 					<form:errors path="utilisateurEnvoi" cssClass="error"/>
 					<form:hidden path="numeroUtilisateurEnvoi" id="numeroUtilisateurEnvoi"  />
 					<script>
@@ -53,6 +54,7 @@
 			<td width="50%" colspan="2">
 				<div id="collectivites" <c:if test="${param.depuisTache != 'true'}">style="display:none;"</c:if> >
 					<form:input path="collAdmDestinataireEnvoi" id="collAdmDestinataireEnvoi" />
+					<span style="color: red;">*</span>
 					<form:errors path="utilisateurEnvoi" cssClass="error"/>
 					<form:hidden path="noCollAdmDestinataireEnvoi" id="noCollAdmDestinataireEnvoi"  />
 					<script>
@@ -83,6 +85,7 @@
 			<td width="50%" colspan="2">
 				<div id="utilisateursReception">
 					<form:input path="utilisateurReception" id="utilisateurReception" />
+					<span style="color: red;">*</span>
 					<form:errors path="utilisateurReception" cssClass="error"/>
 					<form:hidden path="numeroUtilisateurReception" id="numeroUtilisateurReception"  />
 					<script>

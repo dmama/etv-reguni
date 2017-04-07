@@ -54,6 +54,7 @@
 						</c:when>
 						<c:otherwise>
 							<form:select path="usage" items="${typeAdresseFiscaleTiers}" />
+							<span style="color: red;">*</span>
 							<form:errors path="usage" cssClass="error"/>
 						</c:otherwise>
 				</c:choose>
@@ -71,6 +72,7 @@
 								<jsp:param  name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
+							<span style="color: red;">*</span>
 						</c:otherwise>
 					</c:choose>
 				</td>

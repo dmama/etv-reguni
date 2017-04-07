@@ -78,6 +78,7 @@
 									<td>
 										<%--@elvariable id="modesImposition" type="java.util.Map<ModeImposition, String>"--%>
 										<form:select path="modeImposition" items="${modesImposition}" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
+										<span style="color: red;">*</span>
 										<form:errors path="modeImposition" cssClass="error"/>
 									</td>
 
@@ -95,6 +96,7 @@
 												<jsp:param name="onChange" value="updateSyncActions"/>
 												<jsp:param name="onkeyup" value="updateSyncActions"/>
 											</jsp:include>
+											<span style="color: red;">*</span>
 										</div>
 									</td>
 								</tr>
@@ -108,6 +110,7 @@
 											<form:option value="PERMIS_C_SUISSE"><fmt:message key="option.motif.ouverture.PERMIS_C_SUISSE"/></form:option>
 											<form:option value="CHGT_MODE_IMPOSITION"><fmt:message key="option.motif.ouverture.CHGT_MODE_IMPOSITION"/></form:option>
 										</form:select>
+										<span style="color: red;">*</span>
 									</td>
 								</tr>
 

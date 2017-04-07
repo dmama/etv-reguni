@@ -17,7 +17,8 @@
 			<form:select path="erreurMessage">								
 						<form:options items="${erreursMessage}" />
 			</form:select>
-		</td>			
+			<span style="color: red;">*</span>
+		</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>

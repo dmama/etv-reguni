@@ -29,6 +29,7 @@
 								<jsp:param name="path" value="delaiAccorde" />
 								<jsp:param name="id" value="delaiAccorde" />
 							</jsp:include>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 				</table>

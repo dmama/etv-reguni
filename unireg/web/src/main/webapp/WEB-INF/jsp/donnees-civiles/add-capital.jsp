@@ -28,11 +28,13 @@
 						<td width="20%"><fmt:message key="label.capital"/>&nbsp;:</td>
 						<td width="30%">
 							<form:input path="montant" size="25"/>
+							<span style="color: red;">*</span>
 							<form:errors path="montant" cssClass="error" />
 						</td>
 						<td width="20%"><fmt:message key="label.capital.monnaie"/>&nbsp;:</td>
 						<td width="30%">
 							<form:input path="monnaie" size="3" maxlength="${lengthmonnaie}"/>
+							<span style="color: red;">*</span>
 							<form:errors path="monnaie" cssClass="error" />
 						</td>
 					</tr>
@@ -43,6 +45,7 @@
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
+							<span style="color: red;">*</span>
 						</td>
 						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 						<td>

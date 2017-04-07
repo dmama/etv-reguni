@@ -167,6 +167,7 @@
 						</td>
 						<td>
 							<input id="autoriteFiscale" size="25" value="${actionCommand.nomAutoriteFiscale}"/>
+							<span style="color: red;">*</span>
 							<form:errors path="noAutoriteFiscale" cssClass="error" />
 							<form:hidden path="noAutoriteFiscale" />
 							<form:hidden path="nomAutoriteFiscale" />

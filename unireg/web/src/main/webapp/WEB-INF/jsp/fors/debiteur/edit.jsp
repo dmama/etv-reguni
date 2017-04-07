@@ -28,6 +28,7 @@
 									<jsp:param name="path" value="dateDebut"/>
 									<jsp:param name="id" value="dateDebut"/>
 								</jsp:include>
+								<span style="color: red;">*</span>
 							</c:if>
 							<c:if test="${!command.ouvertureEditable}">
 								<unireg:regdate regdate="${command.dateDebut}"/>
@@ -50,6 +51,7 @@
 							<c:if test="${command.ouvertureEditable}">
 								<form:select path="motifDebut" cssStyle="width:40ex" />
 								<form:errors path="motifDebut" cssClass="error" />
+								<span style="color: red;">*</span>
 							</c:if>
 							<c:if test="${!command.ouvertureEditable && command.motifDebut != null}">
 								<fmt:message key="option.motif.ouverture.${command.motifDebut}"/>

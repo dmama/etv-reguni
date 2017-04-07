@@ -25,6 +25,7 @@
 			<td><fmt:message key="label.forme.juridique" />&nbsp;:</td>
 			<td>
 				<form:select path="tiers.formeJuridique" items="${formesJuridiques}" />
+				<span style="color: red;">*</span>
 			</td>
 		</tr>
 	</table>

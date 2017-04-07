@@ -33,6 +33,7 @@
 								<jsp:param name="path" value="dateRetour"/>
 								<jsp:param name="id" value="dateRetour"/>
 							</jsp:include>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 				</table>

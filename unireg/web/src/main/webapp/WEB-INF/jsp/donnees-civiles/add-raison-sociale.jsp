@@ -25,6 +25,7 @@
 						<td width="20%"><fmt:message key="label.raison.sociale"/>&nbsp;:</td>
 						<td>
 							<form:input path="raisonSociale" size="80"/>
+							<span style="color: red;">*</span>
 							<form:errors path="raisonSociale" cssClass="error" />
 						</td>
 					</tr>
@@ -35,6 +36,7 @@
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 				</table>

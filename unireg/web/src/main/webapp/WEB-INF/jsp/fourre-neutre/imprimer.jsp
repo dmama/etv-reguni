@@ -27,7 +27,8 @@
                                 <form:select path="periodeFiscale">
                                     <form:option value="null" ><fmt:message key="option.selectionner" /></form:option>
                                     <form:options items="${periodes}" />
-                                </form:select><span style="color: red;">*</span>
+                                </form:select>
+                                <span style="color: red;">*</span>
                                 <form:errors path="periodeFiscale" cssClass="error"/>
                             <td width="25%"></td>
                             <td width="25%"></td>

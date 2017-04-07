@@ -70,6 +70,7 @@
 								<jsp:param name="id" value="dateDebut" />
 								<jsp:param name="onChange" value="dateOuverture_OnChange"/>
 							</jsp:include>
+							<span style="color: red;">*</span>
 
 							<span class="error" style="display:none" id="dateDebut_warning">
 								<fmt:message key="warning.for.debiteur.ouvert.avant.date">
@@ -89,6 +90,7 @@
 						<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 						<td>
 							<form:select path="motifDebut" cssStyle="width:40ex" />
+							<span style="color: red;">*</span>
 							<form:errors path="motifDebut" cssClass="error" />
 						</td>
 						<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
@@ -116,6 +118,7 @@
 						</td>
 						<td>
 							<input id="autoriteFiscale" size="25" />
+							<span style="color: red;">*</span>
 							<form:errors path="noAutoriteFiscale" cssClass="error" />
 							<form:hidden path="noAutoriteFiscale" />
 						</td>

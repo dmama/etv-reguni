@@ -54,6 +54,7 @@
 						<td>
 							<%--@elvariable id="rattachements" type="java.util.Map<MotifRattachement, String>"--%>
 							<form:select path="motifRattachement" items="${rattachements}" id="rattachement" onchange="updateMotifsFors();"/>
+							<span style="color: red;">*</span>
 							<form:errors path="motifRattachement" cssClass="error"/>
 						</td>
 					</tr>
@@ -64,6 +65,7 @@
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
+							<span style="color: red;">*</span>
 						</td>
 						<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 						<td>
@@ -92,6 +94,7 @@
 						<td><label for="autoriteFiscale"><fmt:message key="label.commune.fraction"/>&nbsp;:</label></td>
 						<td>
 							<input id="autoriteFiscale" size="25" />
+							<span style="color: red;">*</span>
 							<form:errors path="noAutoriteFiscale" cssClass="error" />
 							<form:hidden path="noAutoriteFiscale" />
 						</td>

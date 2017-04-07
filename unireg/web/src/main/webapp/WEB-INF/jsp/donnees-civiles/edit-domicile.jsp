@@ -141,6 +141,7 @@
 							</td>
 							<td>
 								<input id="autoriteFiscale" size="25" />
+								<span style="color: red;">*</span>
 								<form:errors path="noAutoriteFiscale" cssClass="error" />
 								<form:hidden path="noAutoriteFiscale" />
 								<form:hidden path="nomAutoriteFiscale" />

@@ -23,6 +23,7 @@
 						    <form:select path="erreurMessage">
 							    <form:options items="${erreursMessage}" />
 						    </form:select>
+						    <span style="color: red;">*</span>
 						    <form:errors cssClass="error" path="erreurMessage"/>
 					    </td>
 				    </tr>

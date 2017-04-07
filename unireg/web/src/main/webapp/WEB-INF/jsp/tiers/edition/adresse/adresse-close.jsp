@@ -75,6 +75,7 @@
 						   <jsp:param  name="path" value="dateFin" />
 						   <jsp:param name="id" value="dateFin" />
 					   </jsp:include>
+						<span style="color: red;">*</span>
 					</td>
 				</tr>
 			</table>

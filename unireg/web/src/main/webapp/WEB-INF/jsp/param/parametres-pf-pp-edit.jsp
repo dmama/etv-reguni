@@ -44,6 +44,7 @@
 				<span id="montantEmolumentSpan" style="display: none; margin-left: 50px;">
 					<form:input path="montantEmolumentSommationDI" maxlength="8" cssStyle="width: 8ex;"/>
 					&nbsp;<fmt:message key="label.chf"/>
+					<span style="color: red;">*</span>
 					<form:errors path="montantEmolumentSommationDI" cssClass="error" cssStyle="margin-left: 20px;"/>
 				</span>
 			</div>
@@ -64,30 +65,35 @@
 						<jsp:param name="path" value="sommationReglementaireVaud" />
 						<jsp:param name="id" value="sommationReglementaireVaud" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationReglementaireHorsCanton" />
 						<jsp:param name="id" value="sommationReglementaireHorsCanton" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationReglementaireHorsSuisse" />
 						<jsp:param name="id" value="sommationReglementaireHorsSuisse" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationReglementaireDepense" />
 						<jsp:param name="id" value="sommationReglementaireDepense" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationReglementaireDiplomate" />
 						<jsp:param name="id" value="sommationReglementaireDiplomate" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				
 			</tr>
@@ -98,30 +104,35 @@
 						<jsp:param name="path" value="sommationEffectiveVaud" />
 						<jsp:param name="id" value="sommationEffectiveVaud" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationEffectiveHorsCanton" />
 						<jsp:param name="id" value="sommationEffectiveHorsCanton" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationEffectiveHorsSuisse" />
 						<jsp:param name="id" value="sommationEffectiveHorsSuisse" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationEffectiveDepense" />
 						<jsp:param name="id" value="sommationEffectiveDepense" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationEffectiveDiplomate" />
 						<jsp:param name="id" value="sommationEffectiveDiplomate" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 			</tr>
 			<tr>
@@ -131,30 +142,35 @@
 						<jsp:param name="path" value="finEnvoiMasseDIVaud" />
 						<jsp:param name="id" value="finEnvoiMasseDIVaud" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="finEnvoiMasseDIHorsCanton" />
 						<jsp:param name="id" value="finEnvoiMasseDIHorsCanton" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="finEnvoiMasseDIHorsSuisse" />
 						<jsp:param name="id" value="finEnvoiMasseDIHorsSuisse" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="finEnvoiMasseDIDepense" />
 						<jsp:param name="id" value="finEnvoiMasseDIDepense" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="finEnvoiMasseDIDiplomate" />
 						<jsp:param name="id" value="finEnvoiMasseDIDiplomate" />
 					</jsp:include>
+					<span style="color: red;">*</span>
 				</td>
 			</tr>
 		</table>

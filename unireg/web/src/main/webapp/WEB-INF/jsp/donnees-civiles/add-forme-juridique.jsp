@@ -28,6 +28,7 @@
 								<form:option value="" />
 								<form:options items="${formesJuridiquesEntrepriseEnum}"/>
 							</form:select>
+							<span style="color: red;">*</span>
 							<form:errors path="formeJuridique" cssClass="error" />
 						</td>
 					</tr>
@@ -38,6 +39,7 @@
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 							</jsp:include>
+							<span style="color: red;">*</span>
 						</td>
 					</tr>
 				</table>
