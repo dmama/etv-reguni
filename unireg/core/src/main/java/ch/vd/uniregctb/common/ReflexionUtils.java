@@ -8,16 +8,18 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.utils.ObjectGetterHelper;
 
@@ -27,13 +29,14 @@ public abstract class ReflexionUtils {
 	 * @param clazz une classe quelconque
 	 * @return la liste de toutes les annotations de cette classe (en incluant les annotations héritées), chaque annotation étant associée à la classe qui la porte effectivement
 	 */
-	public static List<Pair<Annotation, Class>> getAllAnnotations(Class clazz) {
-		List<Pair<Annotation, Class>> list = new ArrayList<>();
+	@NotNull
+	public static List<Pair<Annotation, Class<?>>> getAllAnnotations(Class<?> clazz) {
+		final List<Pair<Annotation, Class<?>>> list = new ArrayList<>();
 		while (clazz != null) {
 			final Annotation[] as = clazz.getAnnotations();
 			if (as != null) {
-				for (int i = 0 ; i < as.length ; ++ i) {
-					list.add(Pair.of(as[i], clazz));
+				for (final Annotation a : as) {
+					list.add(Pair.of(a, clazz));
 				}
 			}
 			clazz = clazz.getSuperclass();
@@ -48,17 +51,12 @@ public abstract class ReflexionUtils {
 	 * @return la map <i>nom de propriété</i> => <i>descripteur</i> des propriétés trouvées sur la classe.
 	 * @throws IntrospectionException en cas d'exception lors de l'introspection
 	 */
+	@NotNull
 	public static Map<String, PropertyDescriptor> getPropertyDescriptors(Class<?> clazz) throws IntrospectionException {
-
-		BeanInfo info = Introspector.getBeanInfo(clazz);
-		PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
-		HashMap<String, PropertyDescriptor> pds = new HashMap<>();
-
-		for (PropertyDescriptor descriptor : descriptors) {
-			pds.put(descriptor.getName(), descriptor);
-		}
-
-		return pds;
+		final BeanInfo info = Introspector.getBeanInfo(clazz);
+		final PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
+		return Arrays.stream(descriptors)
+				.collect(Collectors.toMap(PropertyDescriptor::getName, Function.identity()));
 	}
 
 	/**
@@ -103,19 +101,13 @@ public abstract class ReflexionUtils {
 		try {
 			final Map<String, PropertyDescriptor> descriptors = getPropertyDescriptors(o.getClass());
 			final List<PropertyDescriptor> list = new ArrayList<>(descriptors.values());
-			Collections.sort(list, new Comparator<PropertyDescriptor>() {
-				@Override
-				public int compare(PropertyDescriptor o1, PropertyDescriptor o2) {
-					return o1.getName().compareTo(o2.getName());
-				}
-			});
+			list.sort(Comparator.comparing(PropertyDescriptor::getName));
 
 			final StringBuilder s = new StringBuilder();
 			s.append(o.getClass().getSimpleName()).append('{');
 
 			boolean first = true;
-			for (int i = 0, listSize = list.size(); i < listSize; i++) {
-				final PropertyDescriptor descriptor = list.get(i);
+			for (final PropertyDescriptor descriptor : list) {
 				if ("class".equals(descriptor.getName())) {
 					continue;
 				}
@@ -195,8 +187,7 @@ public abstract class ReflexionUtils {
 		FAILS_SILENTLY
 	}
 
-	public static void setPathValue(Object object, String path, Object value, SetPathBehavior behavior) throws IntrospectionException, IllegalAccessException, InvocationTargetException,
-			InstantiationException {
+	public static void setPathValue(Object object, String path, Object value, SetPathBehavior behavior) throws IntrospectionException, IllegalAccessException, InvocationTargetException, InstantiationException {
 
 		if (path.contains(".")) {
 			// première phase, on va jusqu'au dernier objet
@@ -242,8 +233,8 @@ public abstract class ReflexionUtils {
 	}
 
 	private static void setValue(Object object, String name, Object value) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
-		PropertyDescriptor descr = new PropertyDescriptor(name, object.getClass());
-		Method setter = descr.getWriteMethod();
+		final PropertyDescriptor descr = new PropertyDescriptor(name, object.getClass());
+		final Method setter = descr.getWriteMethod();
 		setter.invoke(object, value);
 	}
 }
