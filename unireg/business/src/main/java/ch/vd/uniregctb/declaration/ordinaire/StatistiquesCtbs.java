@@ -50,7 +50,8 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 		VAUDOIS_DEPENSE("à la dépense"),
 		HORS_CANTON("hors canton"),
 		HORS_SUISSE("hors Suisse"),
-		SOURCIER_PUR("sourcier");
+		SOURCIER_PUR("sourcier"),
+		UTILITE_PUBLIQUE("utilité publique");
 
 		private final String description;
 
