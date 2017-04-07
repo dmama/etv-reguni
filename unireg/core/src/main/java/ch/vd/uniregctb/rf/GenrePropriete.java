@@ -20,7 +20,7 @@ public enum GenrePropriete {
 	 */
 	PPE,
 	/**
-	 * Régime propriété utilisé dans le cas où <b>un immeuble</b> possède un ou plusieurs autres immeubles.
+	 * Régime de propriété utilisé dans le cas d'<b>un immeuble</b> qui possède un ou plusieurs autres immeubles (hors PPE).
 	 */
 	FONDS_DOMINANT
 }

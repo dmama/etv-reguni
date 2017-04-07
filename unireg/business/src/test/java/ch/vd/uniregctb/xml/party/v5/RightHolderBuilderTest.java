@@ -9,8 +9,10 @@ import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
@@ -27,7 +29,7 @@ public class RightHolderBuilderTest {
 			fail();
 		}
 		catch (IllegalArgumentException e) {
-			assertEquals("On ne devrait pas recevoir de communauté", e.getMessage());
+			assertEquals("Type d'ayant-droit illégal=[CommunauteRF]", e.getMessage());
 		}
 	}
 
@@ -42,6 +44,7 @@ public class RightHolderBuilderTest {
 		final RightHolder owner = RightHolderBuilder.getRightHolder(new PersonnePhysiqueRF(), t -> ctbId);
 		assertNotNull(owner);
 		assertEquals(Integer.valueOf((int) ctbId), owner.getTaxPayerNumber());
+		assertNull(owner.getImmovablePropertyId());
 		assertNull(owner.getIdentity());
 	}
 
@@ -56,6 +59,7 @@ public class RightHolderBuilderTest {
 		final RightHolder owner = RightHolderBuilder.getRightHolder(pp, t -> null);
 		assertNotNull(owner);
 		assertNull(owner.getTaxPayerNumber());
+		assertNull(owner.getImmovablePropertyId());
 		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
 		assertEquals("Camille", identity.getFirstName());
 		assertEquals("Bjoook", identity.getLastName());
@@ -72,6 +76,7 @@ public class RightHolderBuilderTest {
 		final RightHolder owner = RightHolderBuilder.getRightHolder(pm, t -> null);
 		assertNotNull(owner);
 		assertNull(owner.getTaxPayerNumber());
+		assertNull(owner.getImmovablePropertyId());
 		final CorporationIdentity identity = (CorporationIdentity) owner.getIdentity();
 		assertEquals("Papiers fins", identity.getName());
 		assertEquals("CH3384838", identity.getCommercialRegisterNumber());
@@ -86,7 +91,28 @@ public class RightHolderBuilderTest {
 		final RightHolder owner = RightHolderBuilder.getRightHolder(coll, t -> null);
 		assertNotNull(owner);
 		assertNull(owner.getTaxPayerNumber());
+		assertNull(owner.getImmovablePropertyId());
 		final AdministrativeAuthorityIdentity identity = (AdministrativeAuthorityIdentity) owner.getIdentity();
 		assertEquals("Club de dés", identity.getName());
+	}
+
+	@Test
+	public void testGetRightHolderImmovableProperty() throws Exception {
+
+		final Long dominantId = 2928282L;
+
+		final ProprieteParEtageRF dominant = new ProprieteParEtageRF();
+		dominant.setIdRF("a8388e8e83");
+		dominant.setId(dominantId);
+
+		final ImmeubleBeneficiaireRF beneficiaire = new ImmeubleBeneficiaireRF();
+		beneficiaire.setIdRF(dominant.getIdRF());
+		beneficiaire.setImmeuble(dominant);
+
+		final RightHolder owner = RightHolderBuilder.getRightHolder(beneficiaire, t -> null);
+		assertNotNull(owner);
+		assertNull(owner.getTaxPayerNumber());
+		assertNull(owner.getIdentity());
+		assertEquals(dominantId ,owner.getImmovablePropertyId());
 	}
 }

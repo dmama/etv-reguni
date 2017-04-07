@@ -76,7 +76,7 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>L'id technique Unireg de l'immeuble correspondant.
+							<jxb:javadoc>L'id technique Unireg de l'immeuble servant (c'est-à-dire l'immeuble sur lequel s'exerce le droit).
 								Note : pour des raisons historique, l'id de l'immeuble est exposé dans la classe de base des droits, mais cette situation n'est correcte
 								que dans le cas des droits de propriété : dans le cas des servitudes, il peut en effet y a voir plusieurs immeubles concernés.
 								Si le droit est une servitude, il ne faut pas utiliser cet élément mais l'élément 'immovablePropertyIds' de la structure 'easementRightType'.</jxb:javadoc>
@@ -330,11 +330,20 @@
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="immovablePropertyId" type="xs:long">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>L'id technique Unireg de l'immeuble dominant (c'est-à-dire de l'immeuble qui possède le droit).</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
 				<xs:element name="identity" type="land:rightHolderIdentityType">
 					<xs:annotation>
 						<xs:appinfo>
 							<jxb:property>
-								<jxb:javadoc>Les informations d'identité de l'ayant-droit. Renseigné si l'ayant-droit du registre foncier n'a pas été rapproché avec un tiers Unireg.</jxb:javadoc>
+								<jxb:javadoc>Les informations d'identité de l'ayant-droit. Renseigné si l'ayant-droit du registre foncier n'est pas un immeuble et n'a pas été rapproché avec un tiers Unireg.</jxb:javadoc>
 							</jxb:property>
 						</xs:appinfo>
 					</xs:annotation>
@@ -640,6 +649,16 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="CONDOMINIUM_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Régime de propriété utilisé pour les droits entre un immeuble PPE et son immeuble de base.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DOMINANT_OWNERSHIP">
+				<xs:annotation>
+					<xs:documentation>Régime de propriété utilisé dans le cas d'un immeuble qui possède un ou plusieurs autres immeubles.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -719,7 +738,16 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>L'historique des droits sur cet immeuble</jxb:javadoc>
+							<jxb:javadoc>L'historique des droits qui pointent vers l'immeuble (c'est-à-dire les droits où l'immeuble courant est l'immeuble servant, celui qui est possédé par les ayants-droits correspondants).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="landRightsFrom" type="land:landRightType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'historique des droits de partent de cet immeuble (c'est-à-dire les droits où l'immeuble courant est l'immeuble dominant, celui qui possède les autres immeubles pointés par ces droits).</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>

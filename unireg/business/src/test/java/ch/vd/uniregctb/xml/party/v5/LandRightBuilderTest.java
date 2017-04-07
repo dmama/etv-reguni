@@ -20,13 +20,16 @@ import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
@@ -133,6 +136,58 @@ public class LandRightBuilderTest {
 		assertNotNull(reasons);
 		assertEquals(1, reasons.size());
 		assertAcquisitionReason(RegDate.get(2016, 9, 22), "Achat", 21, "2016/322/3", reasons.get(0));
+	}
+
+	@Test
+	public void testNewLandOwnershipRightImmovableProperty() throws Exception {
+
+		final Long dominantId = 2928282L;
+		final long servantId = 4222L;
+
+		final ProprieteParEtageRF dominant = new ProprieteParEtageRF();
+		dominant.setIdRF("a8388e8e83");
+		dominant.setId(dominantId);
+
+		final ImmeubleBeneficiaireRF beneficiaire = new ImmeubleBeneficiaireRF();
+		beneficiaire.setIdRF(dominant.getIdRF());
+		beneficiaire.setImmeuble(dominant);
+
+		final BienFondRF servant = new BienFondRF();
+		servant.setIdRF("42432234");
+		servant.setId(servantId);
+
+		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
+		droit.setDateDebut(RegDate.get(2016, 11, 3));
+		droit.setDateFin(RegDate.get(2017, 9, 22));
+		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit.setRegime(GenrePropriete.FONDS_DOMINANT);
+		droit.setPart(new Fraction(3, 5));
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Constitution de PPE", new IdentifiantAffaireRF(21, 2016, 322, 3)));
+		droit.setAyantDroit(beneficiaire);
+		droit.setImmeuble(servant);
+		droit.calculateDateEtMotifDebut();
+
+		final LandRight landRight = LandRightBuilder.newLandRight(droit, t -> null);
+		assertNotNull(landRight);
+		assertTrue(landRight instanceof LandOwnershipRight);
+
+		final LandOwnershipRight landOwnershipRight = (LandOwnershipRight) landRight;
+		assertNotNull(landOwnershipRight);
+		assertEquals(OwnershipType.DOMINANT_OWNERSHIP, landOwnershipRight.getType());
+		assertShare(3, 5, landOwnershipRight.getShare());
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(landOwnershipRight.getDateTo()));
+		assertEquals("Constitution de PPE", landOwnershipRight.getStartReason());
+		assertNull(landOwnershipRight.getEndReason());
+		assertCaseIdentifier(21, "2016/322/3", landOwnershipRight.getCaseIdentifier());
+		assertEquals(dominantId, landOwnershipRight.getRightHolder().getImmovablePropertyId());
+		assertEquals(servantId, landOwnershipRight.getImmovablePropertyId());
+		assertNull(landOwnershipRight.getCommunityId());
+
+		final List<AcquisitionReason> reasons = landOwnershipRight.getAcquisitionReasons();
+		assertNotNull(reasons);
+		assertEquals(1, reasons.size());
+		assertAcquisitionReason(RegDate.get(2016, 9, 22), "Constitution de PPE", 21, "2016/322/3", reasons.get(0));
 	}
 
 	@Test

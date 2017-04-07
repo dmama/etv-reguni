@@ -29,9 +29,11 @@ import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
@@ -419,6 +421,75 @@ public class ImmovablePropertyBuilderTest {
 		assertLandOwnershipRight(null, "Ramon", null, 1, 1, OwnershipType.SOLE_OWNERSHIP, (LandOwnershipRight) landRights.get(0));
 	}
 
+	/**
+	 * [SIFISC-23985] Vérifie que les droits de propriété de l'immeuble sur d'autres immeubles sont bien exposés.
+	 */
+	@Test
+	public void testImmeubleAvecDroitSurUnAutreImmeuble() throws Exception {
+
+		final RegDate dateAchat = RegDate.get(2003, 4, 2);
+		final RegDate dateConstruction = dateAchat.addMonths(9);
+
+		// données core
+		final SituationRF situation = newSituationRF(dateAchat, BUSSIGNY, 12280, 13);
+
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setNom("Ramon");
+
+		final BienFondRF bienFond = new BienFondRF();
+		bienFond.setId(723721L);
+
+		final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
+		ppe.setId(48383L);
+		ppe.setIdRF("7d7e7a7f7");
+		ppe.setEgrid("rhoooo");
+		ppe.setUrlIntercapi(null);
+		ppe.addSituation(situation);
+		ppe.setSurfacesTotales(Collections.emptySet());
+		ppe.setSurfacesAuSol(Collections.emptySet());
+		ppe.setEstimations(Collections.emptySet());
+		ppe.setImplantations(Collections.emptySet());
+		ppe.setDateRadiation(null);
+		ppe.setQuotePart(new Fraction(1, 23));
+
+		final ImmeubleBeneficiaireRF beneficiaire = new ImmeubleBeneficiaireRF();
+		beneficiaire.setIdRF(ppe.getIdRF());
+		beneficiaire.setImmeuble(ppe);
+		ppe.setEquivalentBeneficiaire(beneficiaire);
+
+		// la PPE possède une part du bien-fonds
+		final DroitProprieteImmeubleRF droit0 = newDroitProprieteImm("0293929", new Fraction(1,30), GenrePropriete.PPE, RegDate.get(1993,5,13), "Consitution de PPE", beneficiaire, bienFond);
+		beneficiaire.setDroitsPropriete(Collections.singleton(droit0));
+		beneficiaire.setServitudes(Collections.emptySet());
+		bienFond.setDroitsPropriete(Collections.singleton(droit0));
+		bienFond.setServitudes(Collections.emptySet());
+
+		// la personne physique possède la PPE
+		final DroitProprietePersonnePhysiqueRF droit1 = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
+		pp.setDroitsPropriete(Collections.singleton(droit1));
+		pp.setServitudes(Collections.emptySet());
+		ppe.setDroitsPropriete(Collections.singleton(droit1));
+		ppe.setServitudes(Collections.emptySet());
+
+		// conversion core -> ws
+		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
+		assertEquals(48383L, condo.getId());
+		assertEquals("rhoooo", condo.getEgrid());
+		assertEquals("http://capitastra/48383", condo.getUrlIntercapi());
+		assertNull(condo.getCancellationDate());
+		assertShare(1, 23, condo.getShare());
+
+		// le droit entre la personne physique et la PPE
+		final List<LandRight> landRights = condo.getLandRights();
+		assertEquals(1, landRights.size());
+		assertLandOwnershipRight(null, "Ramon", null, 1, 1, OwnershipType.SOLE_OWNERSHIP, (LandOwnershipRight) landRights.get(0));
+
+		// le droit entre la PPE (dominant) et le bien-fonds (servant)
+		final List<LandRight> landRightsFrom = condo.getLandRightsFrom();
+		assertEquals(1, landRightsFrom.size());
+		assertLandOwnershipRight(48383L, 723721L, RegDate.get(1993, 5, 13), 1, 30, OwnershipType.CONDOMINIUM_OWNERSHIP, (LandOwnershipRight) landRightsFrom.get(0));
+	}
+
 	private static void assertShare(int numerator, int denominator, Share share) {
 		assertNotNull(share);
 		assertEquals(numerator, share.getNumerator());
@@ -536,10 +607,36 @@ public class ImmovablePropertyBuilderTest {
 		assertEquals(RegDate.get(2000, 1, 1), DataHelper.xmlToCore(landRight.getDateFrom()));
 	}
 
+	private static void assertLandOwnershipRight(long immeubleDominantId, long immeubleServantId, RegDate dateFrom, int numerator, int denominator, OwnershipType type, LandOwnershipRight landRight) {
+		assertNotNull(landRight);
+		assertEquals(type, landRight.getType());
+		assertEquals(Long.valueOf(immeubleDominantId), landRight.getRightHolder().getImmovablePropertyId());
+		assertEquals(immeubleServantId, landRight.getImmovablePropertyId());
+		assertNull(landRight.getRightHolder().getIdentity());
+		assertShare(numerator, denominator, landRight.getShare());
+		assertEquals(dateFrom, DataHelper.xmlToCore(landRight.getDateFrom()));
+		assertNull(DataHelper.xmlToCore(landRight.getDateTo()));
+	}
+
 	@NotNull
 	private static DroitProprietePersonnePhysiqueRF newDroitProprietePP(String masterIdRF, Fraction part, GenrePropriete regime, RegDate dateDebut, String motifDebut, PersonnePhysiqueRF pp, ImmeubleRF immeuble) {
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
 		droit.setAyantDroit(pp);
+		droit.setPart(part);
+		droit.setRegime(regime);
+		droit.setImmeuble(immeuble);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setDateDebut(dateDebut);
+		droit.setDateDebutMetier(dateDebut);
+		droit.setMotifDebut(motifDebut);
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebut, motifDebut, null));
+		return droit;
+	}
+
+	@NotNull
+	private static DroitProprieteImmeubleRF newDroitProprieteImm(String masterIdRF, Fraction part, GenrePropriete regime, RegDate dateDebut, String motifDebut, ImmeubleBeneficiaireRF beneficiaire, ImmeubleRF immeuble) {
+		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
+		droit.setAyantDroit(beneficiaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
 		droit.setImmeuble(immeuble);

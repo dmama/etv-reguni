@@ -6,6 +6,7 @@ Cleanup à faire pour une éventuelle version 8 du web-service
 - transformer l'élément 'taxEstimateType::amout' en long et supprimer le binding correspondant
 - déplacer l'élément 'caseIdentifier' de 'landRightType' à 'easementRightType'
 - descendre les éléments 'rightHolder' et 'immovablePropertyId' de 'landRightType' à 'landOwnershipRightType'.
+- renommer l'élément 'landRights' en 'landRightsTo' sur le type 'immovablePropertyType'.
 
 Reprise du contenu du cleanup précédent
 ------------------------------------------------------------

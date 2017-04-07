@@ -23,6 +23,7 @@ import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
@@ -52,6 +53,7 @@ public abstract class LandRightBuilder {
 		strategies.put(DroitProprieteCommunauteRF.class, (d, p) -> newLandOwnershipRight((DroitProprieteCommunauteRF) d));
 		strategies.put(DroitProprietePersonneMoraleRF.class, (d, p) -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d, p));
 		strategies.put(DroitProprietePersonnePhysiqueRF.class, (d, p) -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d, p));
+		strategies.put(DroitProprieteImmeubleRF.class, (d, p) -> newLandOwnershipRight((DroitProprieteImmeubleRF) d, p));
 		strategies.put(UsufruitRF.class, (d, p) -> newUsufructRight((UsufruitRF) d, p));
 		strategies.put(DroitHabitationRF.class, (d, p) -> newHousingRight((DroitHabitationRF) d, p));
 	}
@@ -76,12 +78,24 @@ public abstract class LandRightBuilder {
 	@NotNull
 	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprietePersonneRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
 		final LandOwnershipRight right = new LandOwnershipRight();
+		fillLandOwnershipRight(droitRF, ctbIdProvider, right);
+		right.setCommunityId(getCommunityId(droitRF.getCommunaute()));
+		return right;
+	}
+
+	@NotNull
+	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprieteImmeubleRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+		final LandOwnershipRight right = new LandOwnershipRight();
+		fillLandOwnershipRight(droitRF, ctbIdProvider, right);
+		return right;
+	}
+
+	private static void fillLandOwnershipRight(@NotNull DroitProprieteRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, LandOwnershipRight right) {
 		right.setDateFrom(DataHelper.coreToXMLv2(droitRF.getDateDebutMetier()));
 		right.setDateTo(DataHelper.coreToXMLv2(droitRF.getDateFinMetier()));
 		right.setType(EnumHelper.coreToXMLv5(droitRF.getRegime()));
 		right.setStartReason(droitRF.getMotifDebut());
 		right.setEndReason(droitRF.getMotifFin());
-		right.setCommunityId(getCommunityId(droitRF.getCommunaute()));
 		right.setShare(getShare(droitRF.getPart()));
 		right.setCaseIdentifier(getFirstCaseIdentifier(droitRF));
 		right.setRightHolder(RightHolderBuilder.getRightHolder(droitRF.getAyantDroit(), ctbIdProvider));
@@ -90,7 +104,6 @@ public abstract class LandRightBuilder {
 				                                     .sorted()
 				                                     .map(AcquisitionReasonBuilder::get)
 				                                     .collect(Collectors.toList()));
-		return right;
 	}
 
 	@NotNull

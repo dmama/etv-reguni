@@ -4263,6 +4263,10 @@ public abstract class EnumHelper {
 			return OwnershipType.SIMPLE_CO_OWNERSHIP;
 		case INDIVIDUELLE:
 			return OwnershipType.SOLE_OWNERSHIP;
+		case PPE:
+			return OwnershipType.CONDOMINIUM_OWNERSHIP;
+		case FONDS_DOMINANT:
+			return OwnershipType.DOMINANT_OWNERSHIP;
 		default:
 			throw new IllegalArgumentException("Genre de proriété inconnu = [" + regime + "]");
 		}

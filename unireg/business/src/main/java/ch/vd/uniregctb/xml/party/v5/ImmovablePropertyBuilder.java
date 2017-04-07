@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.xml.party.v5;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
 import ch.vd.unireg.xml.party.landregistry.v1.DistinctAndPermanentRight;
 import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.Location;
 import ch.vd.unireg.xml.party.landregistry.v1.Mine;
 import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
@@ -22,8 +24,10 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
@@ -143,13 +147,22 @@ public abstract class ImmovablePropertyBuilder {
 				                                      .sorted()
 				                                      .map(BuildingBuilder::newBuildSetting)
 				                                      .collect(Collectors.toList()));
-		property.getLandRights().addAll(Stream.concat(immeuble.getDroitsPropriete().stream(), immeuble.getServitudes().stream())
-				                                .filter(AnnulableHelper::nonAnnule)
-				                                // on n'expose pas les droits des communautés (c'est les droits des personnes membres des communautés qui portent l'information)
-				                                .filter(d -> !(d instanceof DroitProprieteCommunauteRF))
-				                                .sorted(new DroitRFRangeMetierComparator())
-				                                .map(d -> LandRightBuilder.newLandRight(d, contribuableIdProvider))
-				                                .collect(Collectors.toList()));
+		property.getLandRights().addAll(buildLandRights(Stream.concat(immeuble.getDroitsPropriete().stream(), immeuble.getServitudes().stream()), contribuableIdProvider));
+
+		final ImmeubleBeneficiaireRF beneficiaire = immeuble.getEquivalentBeneficiaire();
+		if (beneficiaire != null) {
+			property.getLandRightsFrom().addAll(buildLandRights(beneficiaire.getDroitsPropriete().stream(), contribuableIdProvider));
+		}
+	}
+
+	private static List<LandRight> buildLandRights(Stream<? extends DroitRF> droits, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
+		return droits
+				.filter(AnnulableHelper::nonAnnule)
+				// on n'expose pas les droits des communautés (c'est les droits des personnes membres des communautés qui portent l'information)
+				.filter(d -> !(d instanceof DroitProprieteCommunauteRF))
+				.sorted(new DroitRFRangeMetierComparator())
+				.map(d -> LandRightBuilder.newLandRight(d, contribuableIdProvider))
+				.collect(Collectors.toList());
 	}
 
 	@NotNull

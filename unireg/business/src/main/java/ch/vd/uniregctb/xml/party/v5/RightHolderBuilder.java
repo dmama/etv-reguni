@@ -11,7 +11,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolderIdentity;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
@@ -24,12 +24,19 @@ public abstract class RightHolderBuilder {
 	public interface ContribuableIdProvider extends Function<TiersRF, Long> {
 
 	}
+
 	public static RightHolder getRightHolder(@NotNull AyantDroitRF ayantDroit, @NotNull ContribuableIdProvider ctbIdProvider) {
-		if (ayantDroit instanceof CommunauteRF) {
-			throw new IllegalArgumentException("On ne devrait pas recevoir de communauté");
+		if (ayantDroit instanceof TiersRF) {
+			final TiersRF tiersRF = (TiersRF) ayantDroit;
+			return getRightHolder(tiersRF, ctbIdProvider);
 		}
-		final TiersRF tiersRF = (TiersRF) ayantDroit;
-		return getRightHolder(tiersRF, ctbIdProvider);
+		else if (ayantDroit instanceof ImmeubleBeneficiaireRF) {
+			final ImmeubleBeneficiaireRF beneficiaire = (ImmeubleBeneficiaireRF) ayantDroit;
+			return new RightHolder(null, beneficiaire.getImmeuble().getId(), null, 0, null);
+		}
+		else {
+			throw new IllegalArgumentException("Type d'ayant-droit illégal=[" + ayantDroit.getClass().getSimpleName() + "]");
+		}
 	}
 
 	@NotNull
@@ -37,10 +44,10 @@ public abstract class RightHolderBuilder {
 		final Long ctbId = ctbIdProvider.apply(tiersRF);
 		if (ctbId == null) {
 			// le tiers n'est pas rapproché
-			return new RightHolder(null, buildRightHolderIdentity(tiersRF), 0, null);
+			return new RightHolder(null, null, buildRightHolderIdentity(tiersRF), 0, null);
 		}
 		else {
-			return new RightHolder(ctbId.intValue(), null, 0, null);
+			return new RightHolder(ctbId.intValue(), null, null, 0, null);
 		}
 	}
 

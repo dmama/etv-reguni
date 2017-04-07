@@ -130,11 +130,11 @@ public class JsonLandRightHelperTest extends WithoutSpringTest {
 	private static RightHolder generateRandomRightHolder() {
 		final boolean hasTaxpayer = generateRandomBoolean();
 		if (hasTaxpayer) {
-			return new RightHolder(RND.nextInt(Integer.MAX_VALUE), null, 0, null);
+			return new RightHolder(RND.nextInt(Integer.MAX_VALUE), null, null, 0, null);
 		}
 		else {
 			final NaturalPersonIdentity identity = new NaturalPersonIdentity(RND.nextInt(Integer.MAX_VALUE), "Turlututu", "Tarlatata", null, 0, null);
-			return new RightHolder(null, identity, 0, null);
+			return new RightHolder(null, null, identity, 0, null);
 		}
 	}
 
