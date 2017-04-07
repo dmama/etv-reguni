@@ -703,7 +703,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		}
 
 		// Détermine la classe de base des entités
-		Class primaryKeyType;
+		Class<?> primaryKeyType;
 		Property primaryKey = null;
 		try {
 			PropertyDescriptor collDescr = new PropertyDescriptor(collName, entity.getClass());

@@ -25,6 +25,7 @@ import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -126,10 +127,9 @@ public class MetaEntity {
 	 *
 	 * @param clazz la classe d'une entité hibernate
 	 * @return une nouvelle instance de la classe 'MetaEntity' avec les méta-informations trouvées
-	 * @throws Exception en cas d'erreur inattendue
+	 * @throws MetaException en cas d'erreur inattendue
 	 */
-	@SuppressWarnings({"unchecked"})
-	public static MetaEntity determine(Class clazz) throws MetaException {
+	public static MetaEntity determine(Class<?> clazz) throws MetaException {
 
 		boolean entityFound = false;
 		boolean isEmbeddable = false;
@@ -138,8 +138,8 @@ public class MetaEntity {
 		String discriminatorColumn = null;
 		final List<Property> properties = new ArrayList<>();
 
-		final List<Pair<Annotation, Class>> annotations = ReflexionUtils.getAllAnnotations(clazz);
-		for (Pair<Annotation, Class> pair : annotations) {
+		final List<Pair<Annotation, Class<?>>> annotations = ReflexionUtils.getAllAnnotations(clazz);
+		for (Pair<Annotation, Class<?>> pair : annotations) {
 			final Annotation a = pair.getLeft();
 			if (a instanceof Entity) {
 				entityFound = true;
@@ -217,8 +217,8 @@ public class MetaEntity {
 		return entity;
 	}
 
-	private static List<Property> determineProps(Class clazz, MetaEntity entity, PropertyDescriptor descriptor) throws IntrospectionException, ClassNotFoundException, InstantiationException,
-			IllegalAccessException, MetaException {
+	private static List<Property> determineProps(Class clazz, MetaEntity entity, PropertyDescriptor descriptor) throws IntrospectionException, ClassNotFoundException, InstantiationException, IllegalAccessException, MetaException {
+
 		if (descriptor.getName().equals("class")) {
 			return null;
 		}
@@ -239,6 +239,28 @@ public class MetaEntity {
 			return null;
 		}
 
+		// parfois, on a des getters transients qui ne font que rendre plus spécifique le type de retour
+		// d'une variable persistée sous un type plus général dans une classe de base...
+		final Annotation[] fieldAnnotations = readMethod.getAnnotations();
+		if (Arrays.stream(fieldAnnotations).anyMatch(a -> a instanceof Transient) && Arrays.stream(fieldAnnotations).noneMatch(a -> a instanceof Embedded)) {
+
+			final Class<?> writeMethodClass = writeMethod.getDeclaringClass();
+			final Class<?> readMethodClass = readMethod.getDeclaringClass();
+			if (writeMethodClass != readMethodClass) {
+				try {
+					//noinspection unused
+					final Method readMethodOnWriteClass = writeMethodClass.getMethod(readMethod.getName(), readMethod.getParameterTypes());
+
+					// la méthode existe bien, et c'est là qu'il faut aller chercher les vériables annotations de persistance
+					final PropertyDescriptor newDescriptor = ReflexionUtils.getPropertyDescriptors(writeMethodClass).get(descriptor.getName());
+					return determineProps(writeMethodClass, entity, newDescriptor);
+				}
+				catch (NoSuchMethodException e) {
+					// ce n'est rien, il fallait essayer...
+				}
+			}
+		}
+
 		boolean estTransient = false;
 		boolean estColonne = false;
 		boolean estCollection = false;
@@ -252,7 +274,6 @@ public class MetaEntity {
 		String sequenceName = null;
 		String generatorClassname = null;
 
-		final Annotation[] fieldAnnotations = readMethod.getAnnotations();
 		for (Annotation a : fieldAnnotations) {
 			if (a instanceof javax.persistence.Column) {
 				final javax.persistence.Column c = (javax.persistence.Column) a;

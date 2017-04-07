@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.supergra.EntityKey;
@@ -41,7 +43,7 @@ public class AddSubEntity extends Delta {
 	/**
 	 * La classe de la sous-entité à ajouter
 	 */
-	private final Class subClass;
+	private final Class<? extends HibernateEntity> subClass;
 
 	/**
 	 * L'id de la sous-entité à ajouter
@@ -53,7 +55,7 @@ public class AddSubEntity extends Delta {
 	 */
 	private final EntityKey subKey;
 
-	public AddSubEntity(EntityKey key, String collName, Class subClass, Long id) {
+	public AddSubEntity(EntityKey key, String collName, Class<? extends HibernateEntity> subClass, Long id) {
 		this.key = key;
 		this.collName = collName;
 		this.subClass = subClass;
@@ -84,7 +86,7 @@ public class AddSubEntity extends Delta {
 	/**
 	 * @return La classe de la sous-entité à ajouter
 	 */
-	public Class getSubClass() {
+	public Class<? extends HibernateEntity> getSubClass() {
 		return subClass;
 	}
 
@@ -141,15 +143,20 @@ public class AddSubEntity extends Delta {
 			final HibernateEntity subEntity = context.newEntity(subKey, subClass);
 			Assert.notNull(subEntity);
 
+			// recupération de tous les descripteurs des propriétés
+			final Map<String, PropertyDescriptor> descriptors = ReflexionUtils.getPropertyDescriptors(subClass);
+
 			// Renseigne l'id
-			final PropertyDescriptor idDescr = new PropertyDescriptor(idProp, subClass);
+			final PropertyDescriptor idDescr = descriptors.get(idProp);
+			Assert.notNull(idDescr);
 			final Method idSetter = idDescr.getWriteMethod();
 			idSetter.invoke(subEntity, id);
 
 			boolean isRapport = false;
 			if (parentProp != null) {
 				// on renseigne le parent
-				final PropertyDescriptor parentDescr = new PropertyDescriptor(parentProp.getName(), subClass);
+				final PropertyDescriptor parentDescr = descriptors.get(parentProp.getName());
+				Assert.notNull(parentDescr);
 				final Method parentSetter = parentDescr.getWriteMethod();
 				parentSetter.invoke(subEntity, entity);
 			}
@@ -168,7 +175,8 @@ public class AddSubEntity extends Delta {
 				// on renseigne le lien vers le non-parent
 				for (Property keyProp : foreignKeyProps) {
 					if (isSettableWith(keyProp, entity)) {
-						final PropertyDescriptor parentDescr = new PropertyDescriptor(keyProp.getName(), subClass);
+						final PropertyDescriptor parentDescr = descriptors.get(keyProp.getName());
+						Assert.notNull(parentDescr);
 						final Method parentSetter = parentDescr.getWriteMethod();
 						parentSetter.invoke(subEntity, entity);
 					}
