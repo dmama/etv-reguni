@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 
 import org.hibernate.FlushMode;
@@ -10,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -30,16 +33,22 @@ import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierMixte;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Produit des statistiques sur les contribuables assujettis pour la période fiscale spécifiée.
@@ -58,14 +67,16 @@ public class ProduireStatsCtbsProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final AssujettissementService assujettissementService;
 	private final AdresseService adresseService;
+	private final PeriodeImpositionService periodeImpositionService;
 
 	public ProduireStatsCtbsProcessor(HibernateTemplate hibernateTemplate, ServiceInfrastructureService infraService, TiersService tiersService, PlatformTransactionManager transactionManager,
-	                                  AssujettissementService assujettissementService, AdresseService adresseService) {
+	                                  AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
 		this.tiersService = tiersService;
 		this.transactionManager = transactionManager;
 		this.assujettissementService = assujettissementService;
+		this.periodeImpositionService = periodeImpositionService;
 		this.adresseService = adresseService;
 	}
 
@@ -139,31 +150,67 @@ public class ProduireStatsCtbsProcessor {
 		try {
 			ctb = hibernateTemplate.get(Contribuable.class, id);
 
-			final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, rapport.annee);
-			if (assujettissements == null || assujettissements.isEmpty()) {
-				// le contribuable n'est pas assujetti -> c'est possible car la requête SQL ne peut pas effectuer ce filtrage en amont
-				return;
-			}
-
-			// Dans tous les cas, on prend l'assujettissement le plus récent
-			final Assujettissement assujet = assujettissements.get(assujettissements.size() - 1);
-			final StatistiquesCtbs.TypeContribuable typeCtb = determineType(assujet);
 			final Commune commune;
 			final Integer oid;
-			if (typeCtb == StatistiquesCtbs.TypeContribuable.SOURCIER_PUR || ctb instanceof Entreprise) {
-				commune = getCommuneDepuisFor(ctb, rapport.annee);
-				oid = ctb instanceof Entreprise ? ServiceInfrastructureService.noOIPM : getOID(commune);
+			final StatistiquesCtbs.TypeContribuable typeCtb;
+
+			if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
+				final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, rapport.annee);
+				if (assujettissements == null || assujettissements.isEmpty()) {
+					// le contribuable n'est pas assujetti -> c'est possible car la requête SQL ne peut pas effectuer ce filtrage en amont
+					return;
+				}
+
+				// Dans tous les cas, on prend l'assujettissement le plus récent
+				final Assujettissement assujet = assujettissements.get(assujettissements.size() - 1);
+				typeCtb = determineType(assujet);
+				if (typeCtb == StatistiquesCtbs.TypeContribuable.SOURCIER_PUR) {
+					commune = getCommuneDepuisFors(ctb, RegDate.get(rapport.annee, 12, 31));
+					oid = getOID(commune);
+				}
+				else {
+					commune = getCommuneGestion(ctb, rapport.annee);
+					oid = getOID(commune);
+				}
+			}
+			else if (ctb instanceof Entreprise) {
+				final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(ctb);
+				if (periodesImposition == null || periodesImposition.isEmpty()) {
+					// pas assujetti du tout, on oublie
+					return;
+				}
+
+				// [SIFISC-24052] on cherche la dernière PI de l'année
+				final PeriodeImposition lastPI = periodesImposition.stream()
+						.filter(pi -> pi.getPeriodeFiscale() == rapport.annee)
+						.max(Comparator.comparing(PeriodeImposition::getDateDebut))
+						.orElse(null);
+				if (lastPI == null) {
+					// pas de bouclement dans l'année recherchée, donc pas listée
+					return;
+				}
+
+				commune = getCommuneDepuisFors(ctb, lastPI.getDateFin());
+				oid = ServiceInfrastructureService.noOIPM;
+				typeCtb = extractTypeContribuable(lastPI);
+			}
+			else if (ctb != null) {
+				throw new IllegalArgumentException("Mauvais type de contribuable (" + ctb.getClass().getName() + ") pour l'identifiant " + id);
 			}
 			else {
-				commune = getCommuneGestion(ctb, rapport.annee);
-				oid = getOID(commune);
+				throw new IllegalArgumentException("Aucun contribuable connu pour l'identifiant " + id);
 			}
 
 			rapport.addStats(oid, commune, typeCtb);
 			rapport.nbCtbsTotal++;
 		}
 		catch (Exception e) {
-			rapport.addErrorException(ctb, e);
+			if (ctb == null) {
+				rapport.addErrorException(id, e);
+			}
+			else {
+				rapport.addErrorException(ctb, e);
+			}
 			LOGGER.error(String.format("La production des statistiques pour le contribuable [%d] a échoué.", id), e);
 		}
 	}
@@ -198,13 +245,31 @@ public class ProduireStatsCtbsProcessor {
 		return commune;
 	}
 
-	private Commune getCommuneDepuisFor(Contribuable ctb, int annee) throws ServiceInfrastructureException {
-		final ForFiscalPrincipal ffp = ctb.getDernierForFiscalPrincipalVaudoisAvant(RegDate.get(annee, 12, 31));
-		Commune commune = null;
-		if (ffp != null) {
-			commune = infraService.getCommuneByNumeroOfs(ffp.getNumeroOfsAutoriteFiscale(), ffp.getDateFin());
-		}
-		return commune;
+	/**
+	 * On prend les fors vaudois principaux ou secondaires non-annulés qui commencent avant la date maximale,
+	 * et dans ceux-là on prend "le dernier", qui est définit par
+	 * <ul>
+	 *     <li>le for principal valide à la date max, ou, en absence d'un tel for,</li>
+	 *     <li>le for secondaire le plus ancien valide à la date max, ou, en absence d'un tel for,</li>
+	 *     <li>le dernier for fiscal principal ou secondaire, fermé avant la date max (priorité au for principal ou au for secondaire le plus ancien en cas d'égalité de dates)</li>
+	 * </ul>
+	 * @param ctb un contribuable
+	 * @param max la date seuil avant laquelle tout se passe
+	 * @return la commune du for trouvé, ou <code>null</code> s'il n'y en a pas
+	 * @throws ServiceInfrastructureException en cas de souci retourné par le service infrastructure
+	 */
+	private Commune getCommuneDepuisFors(Contribuable ctb, RegDate max) throws ServiceInfrastructureException {
+		final Function<ForFiscal, RegDate> dateFinExtractor = ff -> ff.getDateFin() == null || ff.getDateFin().isAfter(max) ? null : ff.getDateFin();
+		return ctb.getForsFiscauxNonAnnules(false).stream()
+				.filter(ff -> ff.getDateDebut().isBeforeOrEqual(max))
+				.filter(ff -> ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+				.filter(ff -> ff instanceof ForFiscalPrincipal || ff instanceof ForFiscalSecondaire)
+				.max(Comparator.comparing(dateFinExtractor, NullDateBehavior.LATEST::compare)                       // date de fin maximale
+						     .thenComparing(ForFiscal::isPrincipal)                                                 // principal après secondaire
+						     .thenComparing(ForFiscal::getDateDebut, Comparator.reverseOrder())                     // du plus jeune au plus ancien
+						     .thenComparing(ForFiscal::getId, Comparator.reverseOrder()))                           // par identifiant décroissant
+				.map(ff -> infraService.getCommuneByNumeroOfs(ff.getNumeroOfsAutoriteFiscale(), ff.getDateFin()))
+				.orElse(null);
 	}
 
 	/**
@@ -266,6 +331,21 @@ public class ProduireStatsCtbsProcessor {
 		}
 
 		return type;
+	}
+
+	private static StatistiquesCtbs.TypeContribuable extractTypeContribuable(PeriodeImposition pi) {
+		switch (pi.getTypeContribuable()) {
+		case HORS_CANTON:
+			return StatistiquesCtbs.TypeContribuable.HORS_CANTON;
+		case HORS_SUISSE:
+			return StatistiquesCtbs.TypeContribuable.HORS_SUISSE;
+		case UTILITE_PUBLIQUE:
+			return StatistiquesCtbs.TypeContribuable.UTILITE_PUBLIQUE;
+		case VAUDOIS_ORDINAIRE:
+			return StatistiquesCtbs.TypeContribuable.VAUDOIS_ORDINAIRE;
+		default:
+			throw new IllegalArgumentException("Type de contribuable innatendu : " + pi.getTypeContribuable());
+		}
 	}
 
 	private static final String queryCtbsPP = // --------------------------------------------------

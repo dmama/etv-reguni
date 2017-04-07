@@ -311,13 +311,13 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public StatistiquesCtbs produireStatsCtbsPP(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
-		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, adresseService);
+		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService);
 		return processor.runPP(anneePeriode, dateTraitement, status);
 	}
 
 	@Override
 	public StatistiquesCtbs produireStatsCtbsPM(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
-		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, adresseService);
+		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService);
 		return processor.runPM(anneePeriode, dateTraitement, status);
 	}
 
