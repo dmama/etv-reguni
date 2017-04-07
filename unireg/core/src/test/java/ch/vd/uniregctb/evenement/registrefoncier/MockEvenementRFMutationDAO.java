@@ -133,11 +133,12 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Nullable
 	@Override
-	public EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull String idImmeubleRF) {
+	public EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull TypeMutationRF typeMutation, @NotNull String idRF) {
 		return db.stream()
 				.filter(mut -> mut.getParentImport().getId().equals(importId))
 				.filter(mut -> mut.getTypeEntite() == typeEntite)
-				.filter(mut -> Objects.equals(mut.getIdRF(), idImmeubleRF))
+				.filter(mut -> mut.getTypeMutation() == typeMutation)
+				.filter(mut -> Objects.equals(mut.getIdRF(), idRF))
 				.findFirst()
 				.orElse(null);
 	}

@@ -51,11 +51,11 @@ public interface EvenementRFMutationDAO extends GenericDAO<EvenementRFMutation, 
 	 *
 	 * @param importId     l'id de l'import considéré
 	 * @param typeEntite   filtre sur les types de mutations
-	 * @param idImmeubleRF l'id RF de l'immeuble considéré
-	 * @return zéro ou une mutation.
+	 * @param typeMutation le type de mutation considéré
+	 * @param idRF         l'id RF de l'immeuble considéré  @return zéro ou une mutation.
 	 */
 	@Nullable
-	EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull String idImmeubleRF);
+	EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull TypeMutationRF typeMutation, @NotNull String idRF);
 
 	/**
 	 * Passe la mutation spécifiée à l'état FORCE.

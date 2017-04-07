@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.common.Rechteinhaber;
+import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -114,12 +116,22 @@ public class AyantDroitRFDetector {
 
 	public void processAyantDroit(EvenementRFImport parentImport, Rechteinhaber rechteinhaber) {
 
+		final boolean isImmeuble = (rechteinhaber instanceof Grundstueck);
 		final AyantDroitRFKey key = AyantDroitRFHelper.newAyantDroitKey(rechteinhaber);
 		final AyantDroitRF ayantDroitRF = ayantDroitRFDAO.find(key, FlushMode.MANUAL);
 
 		// on détermine ce qu'il faut faire
 		final TypeMutationRF typeMutation;
 		if (ayantDroitRF == null) {
+			if (isImmeuble && existsMutationCreation(key, parentImport)) {
+				// les immeubles bénéficiaires sont créés à la volée lors de l'import des droits entre immeubles :
+				// il peut arriver qu'on détecte plusieurs fois le même immeuble qui n'existe pas encore dans
+				// la DB. Il faut bien évidemment le créer qu'une seule fois : on évite donc de créer plusieurs
+				// mutations de création pour les immeubles (le problème ne se pose pas pour les autres types
+				// d'ayants-droits, c'est pour ça qu'on ne teste que les immeubles).
+				return;
+			}
+
 			typeMutation = TypeMutationRF.CREATION;
 		}
 		else if (!AyantDroitRFHelper.dataEquals(ayantDroitRF, rechteinhaber)) {
@@ -142,5 +154,9 @@ public class AyantDroitRFDetector {
 		mutation.setXmlContent(ayantDroitAsXml);
 
 		evenementRFMutationDAO.save(mutation);
+	}
+
+	private boolean existsMutationCreation(@NotNull AyantDroitRFKey key, @NotNull EvenementRFImport parentImport) {
+		return evenementRFMutationDAO.find(parentImport.getId(), TypeEntiteRF.AYANT_DROIT, TypeMutationRF.CREATION, key.getIdRF()) != null;
 	}
 }

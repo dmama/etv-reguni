@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.detector;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.FlushMode;
@@ -13,10 +14,12 @@ import org.junit.runner.RunWith;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.capitastra.grundstueck.GeburtsDatum;
+import ch.vd.capitastra.grundstueck.Grundstueck;
 import ch.vd.capitastra.grundstueck.JuristischePersonUnterart;
 import ch.vd.capitastra.grundstueck.JuristischePersonstamm;
 import ch.vd.capitastra.grundstueck.NatuerlichePersonstamm;
 import ch.vd.capitastra.grundstueck.Personstamm;
+import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.UniregJUnit4Runner;
@@ -157,6 +160,79 @@ public class AyantDroitRFDetectorTest {
 				             "</JuristischePersonstamm>\n", mut2.getXmlContent());
 	}
 
+	/**
+	 * Ce test vérifie qu'une seule mutation de type CREATION est bien créés pour chaque immeuble bénéficiaire qui n'existe pas dans la DB.
+	 */
+	@Test
+	public void testNouveauxAyantsDroitsCasImmeublesBeneficiaires() throws Exception {
+
+		// un mock de DAO qui simule une base vide
+		final AyantDroitRFDAO ayantDroitRFDAO = new MockAyantDroitRFDAO() {
+			@Nullable
+			@Override
+			public AyantDroitRF find(@NotNull AyantDroitRFKey key, @Nullable FlushMode flushModeOverride) {
+				return null;
+			}
+		};
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+		final AyantDroitRFDetector detector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final Grundstueck immeuble = newImmeubleBeneficiaire("028292011101");
+
+		// on envoie une première fois l'immeuble
+		{
+			detector.processAyantDroits(IMPORT_ID, 2, Collections.singletonList(immeuble).iterator(), null);
+
+			// on devrait avoir un événement de mutation de type CREATION à l'état A_TRAITER dans la base
+			final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+			assertEquals(1, mutations.size());
+
+			final EvenementRFMutation mut0 = mutations.get(0);
+			assertEquals(IMPORT_ID, mut0.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
+			assertEquals("028292011101", mut0.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<UnbekanntesGrundstueck xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+					             "    <GrundstueckID>028292011101</GrundstueckID>\n" +
+					             "    <IstKopie>false</IstKopie>\n" +
+					             "</UnbekanntesGrundstueck>\n", mut0.getXmlContent());
+		}
+
+		// on envoie une deuxième fois le même immeuble
+		{
+			detector.processAyantDroits(IMPORT_ID, 2, Collections.singletonList(immeuble).iterator(), null);
+
+			// on devrait toujours avoir un événement (et non pas deux) de mutation de type CREATION à l'état A_TRAITER dans la base
+			final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+			assertEquals(1, mutations.size());
+
+			final EvenementRFMutation mut0 = mutations.get(0);
+			assertEquals(IMPORT_ID, mut0.getParentImport().getId());
+			assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+			assertEquals(TypeEntiteRF.AYANT_DROIT, mut0.getTypeEntite());
+			assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
+			assertEquals("028292011101", mut0.getIdRF());
+			assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+					             "<UnbekanntesGrundstueck xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+					             "    <GrundstueckID>028292011101</GrundstueckID>\n" +
+					             "    <IstKopie>false</IstKopie>\n" +
+					             "</UnbekanntesGrundstueck>\n", mut0.getXmlContent());
+		}
+	}
+
 	@NotNull
 	public static JuristischePersonstamm newCollectivitePublique(String idRF, long noRF, long noACI, String raisonSociale) {
 		final JuristischePersonstamm collectivite = new JuristischePersonstamm();
@@ -189,6 +265,13 @@ public class AyantDroitRFDetectorTest {
 		natuerliche.setVorname(prenom);
 		natuerliche.setGeburtsdatum(new GeburtsDatum(dateNaissance.day(), dateNaissance.month(), dateNaissance.year()));
 		return natuerliche;
+	}
+
+	@NotNull
+	public static Grundstueck newImmeubleBeneficiaire(String idRF) {
+		final Grundstueck grundstueck = new UnbekanntesGrundstueck();
+		grundstueck.setGrundstueckID(idRF);
+		return grundstueck;
 	}
 
 	/**

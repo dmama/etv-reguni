@@ -63,11 +63,12 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 
 	@Nullable
 	@Override
-	public EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull String idImmeubleRF) {
-		final Query query = getCurrentSession().createQuery("from EvenementRFMutation where typeEntite = :typeEntite and parentImport.id = :importId and idImmeubleRF = :idImmeubleRF");
+	public EvenementRFMutation find(long importId, @NotNull TypeEntiteRF typeEntite, @NotNull TypeMutationRF typeMutation, @NotNull String idRF) {
+		final Query query = getCurrentSession().createQuery("from EvenementRFMutation where typeEntite = :typeEntite and typeMutation = :typeMutation and parentImport.id = :importId and idRF = :idRF");
 		query.setParameter("importId", importId);
 		query.setParameter("typeEntite", typeEntite);
-		query.setParameter("idImmeubleRF", idImmeubleRF);
+		query.setParameter("typeMutation", typeMutation);
+		query.setParameter("idRF", idRF);
 		//noinspection unchecked
 		return (EvenementRFMutation) query.uniqueResult();
 	}
