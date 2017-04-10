@@ -1,12 +1,14 @@
 package ch.vd.uniregctb.evenement.retourdi.pm;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -42,6 +44,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.BouclementHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -1031,6 +1034,22 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			                                      pf, noSequence,
 			                                      adresseFournie.toDisplayString(infraService, adresseService, dateReference),
 			                                      e.getMessage()));
+			return;
+		}
+
+		// si une surcharge d'adresse courrier existe déjà, mais commence à une date ultérieure, on arrête tout
+		final Optional<AdresseTiers> surchargeUlterieure = entreprise.getAdressesTiersSorted(TypeAdresseTiers.COURRIER).stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(a -> a.getDateDebut().isAfter(dateReferenceExistant))
+				.min(Comparator.comparing(AdresseTiers::getDateDebut));
+		if (surchargeUlterieure.isPresent()) {
+			// on a le choix : ou bien on ne traite pas cette nouvelle adresse, ou bien
+			// on s'arrange pour que celle-ci se ferme à la veille de la nouvelle surcharge...
+			tacheService.genereTacheControleDossier(entreprise, Motifs.ADRESSE_NON_TRAITEE);
+			addRemarque(entreprise, String.format("L'adresse récupérée dans la DI %d/%d (%s) n'a pas été traitée en raison de la présence d'une surcharge d'adresse courrier existante à partir du %s.",
+			                                      pf, noSequence,
+			                                      adresseFournie.toDisplayString(infraService, adresseService, dateReference),
+			                                      RegDateHelper.dateToDisplayString(surchargeUlterieure.get().getDateDebut())));
 			return;
 		}
 

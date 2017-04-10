@@ -7632,4 +7632,85 @@ public class RetourDIPMServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testSurchargeAdresseExistantePosterieureADateReference() throws Exception {
+
+		final RegDate dateDebut = date(2016, 4, 27);
+
+		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(dateDebut.year());
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
+				addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
+
+				// on ajoute une adresse dont la date de début de validité est postérieure à la date de quittance de la DI
+				addAdresseSuisse(entreprise, TypeAdresseTiers.COURRIER, date(dateDebut.year() + 1, 2, 14), null, MockRue.Echallens.RouteDeMoudon);
+
+				return entreprise.getNumero();
+			}
+		});
+
+        final AdresseRaisonSociale adresseCourrier = new AdresseRaisonSociale.Brutte("Ma grande entreprise", "Avenue du 14 avril 12", null, null, null, null, "1020", "Renens VD");
+		final InformationsEntreprise infoEntreprise = new InformationsEntreprise(date(dateDebut.year(), 9, 30), adresseCourrier, null, null, null, null, null);
+		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, infoEntreprise, null);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.emptyMap());
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+				Assert.assertNotNull(entreprise);
+
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+				final Remarque remarque = remarques.iterator().next();
+				Assert.assertNotNull(remarque);
+				Assert.assertFalse(remarque.isAnnule());
+				Assert.assertEquals(String.format("L'adresse récupérée dans la DI %d/1 (Ma grande entreprise / Avenue du 14 avril 12 / 1020 / Renens VD) n'a pas été traitée en raison de la présence d'une surcharge d'adresse courrier existante à partir du 14.02.%d.",
+				                                  dateDebut.year(), dateDebut.year() + 1),
+				                    remarque.getTexte());
+
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(tachesControle);
+				Assert.assertEquals(1, tachesControle.size());
+				{
+					final Tache tache = tachesControle.get(0);
+					Assert.assertNotNull(tache);
+					Assert.assertFalse(tache.isAnnule());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertEquals("Retour DI - Adresse non-traitée", tache.getCommentaire());
+				}
+
+				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+				Assert.assertNotNull(surcharges);
+				Assert.assertEquals(1, surcharges.size());
+				final AdresseTiers surcharge = surcharges.get(0);
+				Assert.assertNotNull(surcharge);
+				Assert.assertFalse(surcharge.isAnnule());
+			}
+		});
+	}
 }
