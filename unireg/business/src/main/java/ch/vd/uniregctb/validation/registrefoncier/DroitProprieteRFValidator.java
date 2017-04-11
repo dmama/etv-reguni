@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.validation.registrefoncier;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -8,11 +10,20 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.uniregctb.registrefoncier.TiersRF;
+import ch.vd.uniregctb.rf.GenrePropriete;
 
 @SuppressWarnings("Duplicates")
 public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF> {
+
+	private static final HashSet<GenrePropriete> GENRE_PROPRIETES_TIERS = new HashSet<>(Arrays.asList(GenrePropriete.INDIVIDUELLE, GenrePropriete.COPROPRIETE, GenrePropriete.COMMUNE));
+	private static final HashSet<GenrePropriete> GENRE_PROPRIETES_IMMEUBLES = new HashSet<>(Arrays.asList(GenrePropriete.COPROPRIETE, GenrePropriete.FONDS_DOMINANT, GenrePropriete.PPE));
+
 	@Override
 	protected Class<DroitProprieteRF> getValidatedClass() {
 		return DroitProprieteRF.class;
@@ -69,6 +80,23 @@ public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF
 					                               premiereRaison.getMotifAcquisition()));
 				}
 			}
+		}
+
+		// [SIFISC-23895] les régimes de propriété dépendent du type de propriétaire
+		final AyantDroitRF ayantDroit = entity.getAyantDroit();
+		final HashSet<GenrePropriete> genreProprietesAutorises;
+		if (ayantDroit instanceof TiersRF || ayantDroit instanceof CommunauteRF) {
+			genreProprietesAutorises = GENRE_PROPRIETES_TIERS;
+		}
+		else if (ayantDroit instanceof ImmeubleBeneficiaireRF) {
+			genreProprietesAutorises = GENRE_PROPRIETES_IMMEUBLES;
+		}
+		else {
+			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + ayantDroit.getClass().getSimpleName() + "]");
+		}
+		if (!genreProprietesAutorises.contains(entity.getRegime())) {
+			results.addError("Le droit masterIdRF=[" + entity.getMasterIdRF() + "] sur le tiers RF (" + ayantDroit.getClass().getSimpleName() +
+					                 ") idRF=[" + ayantDroit.getIdRF() + "] possède un régime de propriété [" + entity.getRegime() + "] invalide");
 		}
 
 		return results;

@@ -6,9 +6,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.uniregctb.registrefoncier.TiersRF;
+import ch.vd.uniregctb.rf.GenrePropriete;
 
 import static ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidatorTest.assertErrors;
 import static ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidatorTest.assertValide;
@@ -28,6 +37,8 @@ public class DroitProprieteRFValidatorTest {
 		// un droit sans date de début ni motif
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setAyantDroit(new PersonnePhysiqueRF());
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(null);
 			droit.setMotifDebut(null);
 			droit.setRaisonsAcquisition(Collections.emptySet());
@@ -37,6 +48,8 @@ public class DroitProprieteRFValidatorTest {
 		// un droit avec une date de début
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setAyantDroit(new PersonnePhysiqueRF());
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(RegDate.get(2000, 1, 1));
 			droit.setMotifDebut(null);
 			droit.setRaisonsAcquisition(Collections.emptySet());
@@ -47,6 +60,8 @@ public class DroitProprieteRFValidatorTest {
 		// un droit avec un motif de début
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setAyantDroit(new PersonnePhysiqueRF());
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(null);
 			droit.setMotifDebut("Trouvé dans la rue");
 			droit.setRaisonsAcquisition(Collections.emptySet());
@@ -61,6 +76,8 @@ public class DroitProprieteRFValidatorTest {
 		// un droit avec date de début et motif
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setAyantDroit(new PersonnePhysiqueRF());
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(RegDate.get(1990, 1, 1));
 			droit.setMotifDebut("Succession");
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1990, 1, 1), "Succession", null));
@@ -71,6 +88,8 @@ public class DroitProprieteRFValidatorTest {
 		// un droit avec date de début et motif nuls (cas spécial de la raison d'acquisition incomplète)
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setAyantDroit(new PersonnePhysiqueRF());
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(null);
 			droit.setMotifDebut(null);
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(null, null, null));
@@ -81,6 +100,8 @@ public class DroitProprieteRFValidatorTest {
 		// un droit sans une date de début
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setAyantDroit(new PersonnePhysiqueRF());
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(null);
 			droit.setMotifDebut("Succession");
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1990, 1, 1), "Succession", null));
@@ -92,6 +113,8 @@ public class DroitProprieteRFValidatorTest {
 		// un droit sans motif de début
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setAyantDroit(new PersonnePhysiqueRF());
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(RegDate.get(1990, 1, 1));
 			droit.setMotifDebut(null);
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1990, 1, 1), "Succession", null));
@@ -109,6 +132,8 @@ public class DroitProprieteRFValidatorTest {
 
 		// un droit avec plusieurs raisons d'acquisition à la même date => les raisons d'acquisition sont triées par date puis par identifiant d'affaire et c'est la première qui doit être utilisée
 		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setAyantDroit(new PersonnePhysiqueRF());
+		droit.setRegime(GenrePropriete.INDIVIDUELLE);
 		droit.setDateDebutMetier(RegDate.get(2005, 9, 30));
 		droit.setMotifDebut("Achat");
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 9, 30), "Achat", new IdentifiantAffaireRF(3, "2005/1462/0")));
@@ -116,4 +141,83 @@ public class DroitProprieteRFValidatorTest {
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 10, 20), "Changement de régime", new IdentifiantAffaireRF(3, "2005/1555/0")));
 		assertValide(validator.validate(droit));
 	}
+
+	/**
+	 * [SIFISC-23895] Vérifie que les régimes de propriété sont bien validés en fonction du type d'ayant-droit.
+	 */
+	@Test
+	public void testDroitsImmeubleRegimePropriete() throws Exception {
+
+		final ImmeubleBeneficiaireRF beneficiaire = new ImmeubleBeneficiaireRF();
+		beneficiaire.setIdRF("38383838");
+		final ImmeubleRF servant = new BienFondRF();
+
+		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
+		droit.setAyantDroit(beneficiaire);
+		droit.setMasterIdRF("438934978348934");
+		droit.setDateDebut(RegDate.get(2000, 1, 1));
+		droit.setPart(new Fraction(1, 1));
+		droit.setMotifDebut("Achat");
+		droit.setImmeuble(servant);
+
+		// droits de type COPROPRIETE, PPE ou FONDS_DOMINANT -> OK
+		{
+			droit.setRegime(GenrePropriete.COPROPRIETE);
+			assertValide(validator.validate(droit));
+			droit.setRegime(GenrePropriete.PPE);
+			assertValide(validator.validate(droit));
+			droit.setRegime(GenrePropriete.FONDS_DOMINANT);
+			assertValide(validator.validate(droit));
+		}
+
+		// droits de type INDIVIDUELLE, COMMUNE -> KO
+		{
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
+			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] sur le tiers RF (ImmeubleBeneficiaireRF) " +
+					                                       "idRF=[38383838] possède un régime de propriété [INDIVIDUELLE] invalide"), validator.validate(droit));
+			droit.setRegime(GenrePropriete.COMMUNE);
+			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] sur le tiers RF (ImmeubleBeneficiaireRF) " +
+					                                       "idRF=[38383838] possède un régime de propriété [COMMUNE] invalide"), validator.validate(droit));
+		}
+	}
+
+	/**
+	 * [SIFISC-23895] Vérifie que les régimes de propriété sont bien validés en fonction du type d'ayant-droit.
+	 */
+	@Test
+	public void testDroitsTiersRegimePropriete() throws Exception {
+
+		final TiersRF tiers = new PersonneMoraleRF();
+		tiers.setIdRF("38383838");
+		final ImmeubleRF servant = new BienFondRF();
+
+		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
+		droit.setAyantDroit(tiers);
+		droit.setMasterIdRF("438934978348934");
+		droit.setDateDebut(RegDate.get(2000, 1, 1));
+		droit.setPart(new Fraction(1, 1));
+		droit.setMotifDebut("Achat");
+		droit.setImmeuble(servant);
+
+		// droits de type COPROPRIETE, INDIVIDUELLE ou COMMUNE -> OK
+		{
+			droit.setRegime(GenrePropriete.COPROPRIETE);
+			assertValide(validator.validate(droit));
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
+			assertValide(validator.validate(droit));
+			droit.setRegime(GenrePropriete.COMMUNE);
+			assertValide(validator.validate(droit));
+		}
+
+		// droits de type PPE, FONDS_DOMINANT -> KO
+		{
+			droit.setRegime(GenrePropriete.PPE);
+			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] sur le tiers RF (PersonneMoraleRF) " +
+					                                       "idRF=[38383838] possède un régime de propriété [PPE] invalide"), validator.validate(droit));
+			droit.setRegime(GenrePropriete.FONDS_DOMINANT);
+			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] sur le tiers RF (PersonneMoraleRF) " +
+					                                       "idRF=[38383838] possède un régime de propriété [FONDS_DOMINANT] invalide"), validator.validate(droit));
+		}
+	}
+
 }
