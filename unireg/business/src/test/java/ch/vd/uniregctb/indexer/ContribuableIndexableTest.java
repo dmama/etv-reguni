@@ -44,6 +44,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscalImpl;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
@@ -88,6 +89,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	private ServiceInfrastructureService serviceInfra;
 	private MockTiersDAO tiersDAO;
 	private LocaliteInvalideMatcherService localiteInvalideMatcherService;
+	private ServiceRegimeFiscalImpl serviceRegimeFiscal;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -138,8 +140,12 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assujettissementService.setValidationService(new ValidationServiceImpl());
 		assujettissementService.afterPropertiesSet();
 
-		tiersService = new TiersServiceImpl();
 		serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
+
+		serviceRegimeFiscal = new ServiceRegimeFiscalImpl();
+		serviceRegimeFiscal.setServiceInfra(serviceInfra);
+
+		tiersService = new TiersServiceImpl();
 		tiersService.setServiceInfra(serviceInfra);
 		tiersService.setServiceCivilService(serviceCivil);
 		tiersService.setServiceCivilCacheWarmer(warmer);
@@ -147,6 +153,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiersService.setServiceOrganisationService(serviceOrganisation);
 		tiersService.setValidationService(null);
 		tiersService.setAssujettissementService(assujettissementService);
+		tiersService.setServiceRegimeFiscal(serviceRegimeFiscal);
 
 		avatarService = new AvatarServiceImpl();
 		avatarService.setTiersService(tiersService);

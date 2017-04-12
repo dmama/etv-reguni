@@ -10,6 +10,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
@@ -212,6 +213,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
 				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(periode);
@@ -270,6 +273,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
 				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
 				{
@@ -358,6 +363,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
 				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
 				{
@@ -446,6 +453,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
 				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
 				{
@@ -528,6 +537,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
 				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
 				{

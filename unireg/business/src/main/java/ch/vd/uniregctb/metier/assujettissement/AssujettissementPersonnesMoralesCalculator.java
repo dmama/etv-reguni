@@ -23,6 +23,8 @@ import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.Fractionnements;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -39,9 +41,11 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class AssujettissementPersonnesMoralesCalculator implements AssujettissementCalculator<Entreprise> {
 
 	private final TiersService tiersService;
+	private final ServiceRegimeFiscal serviceRegimeFiscal;
 
-	public AssujettissementPersonnesMoralesCalculator(TiersService tiersService) {
+	public AssujettissementPersonnesMoralesCalculator(TiersService tiersService, ServiceRegimeFiscal serviceRegimeFiscal) {
 		this.tiersService = tiersService;
+		this.serviceRegimeFiscal = serviceRegimeFiscal;
 	}
 
 	/**
@@ -157,8 +161,55 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		// fusion des deux
 		final List<Data> fusion = fusionnerAssujettissementsSiegesEtEconomiques(sieges, economiques);
 
+		// Appliquer les exonérations totales
+		final List<RegimeFiscalConsolide> regimesFiscaux = serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
+		final List<Data> fusionAdaptee = appliquerExonerations(fusion, exercices, regimesFiscaux);
+
 		// et transcription en assujettissements officiels
-		return DateRangeHelper.collate(instanciate(entreprise, fusion));
+		final List<Assujettissement> result = DateRangeHelper.collate(instanciate(entreprise, fusionAdaptee));
+		return result.isEmpty() ? null : result;
+	}
+
+	/**
+	 * Appliquer les exonérations, c'est à dire retirer de l'assujettissement les plages correspondant aux exercices exonérés, c'est à dire les exercices
+	 * qui pour leur dernier jour sont porteurs d'un régime fiscal VD présentant une exonération totale IBC pour la période.
+	 *
+	 * @param data les plages d'assujettissement à ajuster
+	 * @param exercices les exercices commerciaux
+	 * @param regimesFiscauxVDNonAnnulesTrie les régimes fiscaux
+	 * @return les plages d'assujettissement épurées des périodes d'exonération
+	 */
+	private static List<Data> appliquerExonerations(List<Data> data, List<ExerciceCommercial> exercices, List<RegimeFiscalConsolide> regimesFiscauxVDNonAnnulesTrie) {
+		if (data.isEmpty()) {
+			return data;
+		}
+
+		// Déterminer la liste des exercices à exonérer
+		final List<DateRange> periodesAExclure = new ArrayList<>();
+		RegDate dateDebutExerciceInfini = data.get(0).getDateDebut();
+		for (final ExerciceCommercial exe : exercices) {
+			final List<RegimeFiscalConsolide> regimeFiscalConsolides = DateRangeHelper.rangesAt(regimesFiscauxVDNonAnnulesTrie, exe.getDateFin());
+			if (!regimeFiscalConsolides.isEmpty() && regimeFiscalConsolides.get(0).isExonerationIBC(exe.getDateFin().year())) {
+				periodesAExclure.add(exe);
+			}
+			dateDebutExerciceInfini = exe.getDateFin().getOneDayAfter();
+		}
+		final List<RegimeFiscalConsolide> regimeFiscalConsolides = DateRangeHelper.rangesAt(regimesFiscauxVDNonAnnulesTrie, dateDebutExerciceInfini);
+		if (!regimeFiscalConsolides.isEmpty() && regimeFiscalConsolides.get(0).isExonerationIBC(dateDebutExerciceInfini.year())) {
+			periodesAExclure.add(new DateRangeHelper.Range(dateDebutExerciceInfini, null));
+		}
+
+		// Masquer les ranges d'assujettissement d'après la liste
+		return DateRangeHelper.subtract(data, periodesAExclure, new DateRangeHelper.AdapterCallback<Data>() {
+			@Override
+			public Data adapt(Data range, RegDate debut, RegDate fin) {
+				return new Data(debut != null ? debut : range.getDateDebut(),
+				                fin != null ? fin : range.getDateFin(),
+				                range.type,
+				                debut != null ? MotifFor.INDETERMINE : range.motifDebut, fin != null ? MotifFor.INDETERMINE : range.motifFin,
+				                range.typeAutoriteFiscale);
+			}
+		});
 	}
 
 	/**

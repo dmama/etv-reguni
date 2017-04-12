@@ -273,6 +273,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
 				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
 				return e.getNumero();
@@ -566,6 +568,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
 				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
 				return e.getNumero();
@@ -885,6 +889,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
 				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
 				return e.getNumero();
@@ -1146,6 +1152,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
 				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
 				return e.getNumero();
@@ -1430,6 +1438,8 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
 				addRaisonSociale(e, dateDebutExploitation, null, "Megatrucs");
 				addFormeJuridique(e, dateDebutExploitation, null, FormeJuridiqueEntreprise.SC);
+				addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addBouclement(e, dateDebutExploitation, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, dateFinExploitation, MotifFor.FIN_EXPLOITATION, MockCommune.Bex.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
 

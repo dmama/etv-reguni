@@ -12,8 +12,6 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 
 /**
@@ -22,19 +20,9 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 
 	private ServiceInfrastructureService serviceInfra;
-	private TiersService tiersService;
-	private TiersDAO tiersDAO;
 
 	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
 		this.serviceInfra = serviceInfra;
-	}
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
-
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
 	}
 
 	@Override

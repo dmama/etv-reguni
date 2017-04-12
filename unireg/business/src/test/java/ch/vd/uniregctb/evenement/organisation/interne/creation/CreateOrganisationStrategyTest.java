@@ -75,7 +75,6 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		};
 
 		final ServiceRegimeFiscalImpl serviceRegimeFiscal = new ServiceRegimeFiscalImpl();
-		serviceRegimeFiscal.setTiersDAO(tiersDAO);
 		serviceRegimeFiscal.setServiceInfra(serviceInfra);
 		context = new EvenementOrganisationContext(this.serviceOrganisation, serviceInfra, serviceRegimeFiscal, tiersDAO);
 

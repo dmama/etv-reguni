@@ -30,6 +30,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 		service.setAssujettissementService(as);
 		service.setTiersService(tiersService);
 		service.setParametreAppService(pas);
+		service.setServiceRegimeFiscal(serviceRegimeFiscal);
 		service.afterPropertiesSet();
 	}
 

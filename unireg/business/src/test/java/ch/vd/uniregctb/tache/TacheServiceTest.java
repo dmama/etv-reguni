@@ -5729,8 +5729,8 @@ public class TacheServiceTest extends BusinessTest {
 					final Entreprise pm = addEntrepriseInconnueAuCivil();
 					addRaisonSociale(pm, dateDebutActivite, null, "Ma petite dépé-apéhèm");
 					addFormeJuridique(pm, dateDebutActivite, null, FormeJuridiqueEntreprise.CORP_DP_ADM);
-					addRegimeFiscalVD(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
-					addRegimeFiscalCH(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+					addRegimeFiscalVD(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ART90A);
+					addRegimeFiscalCH(pm, dateDebutActivite, null, MockTypeRegimeFiscal.ART90A);
 					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
 					addForSecondaire(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
 					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);

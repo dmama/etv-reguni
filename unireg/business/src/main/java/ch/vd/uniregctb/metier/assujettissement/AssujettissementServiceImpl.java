@@ -12,6 +12,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -30,6 +31,7 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 
 	private ValidationService validationService;
 	private TiersService tiersService;
+	private ServiceRegimeFiscal serviceRegimeFiscal;
 
 	public void setValidationService(ValidationService validationService) {
 		this.validationService = validationService;
@@ -39,6 +41,9 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 		this.tiersService = tiersService;
 	}
 
+	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
+		this.serviceRegimeFiscal = serviceRegimeFiscal;
+	}
 	/**
 	 * Map des calculateurs d'assujettissement disponibles, indexée par la classe (concrète) de contribuable à laquelle ils se rapportent
 	 */
@@ -81,7 +86,7 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 		// les entreprises sont assujetties selon le régime des personnes morales
 		//
 
-		final AssujettissementPersonnesMoralesCalculator pmCalculator = new AssujettissementPersonnesMoralesCalculator(tiersService);
+		final AssujettissementPersonnesMoralesCalculator pmCalculator = new AssujettissementPersonnesMoralesCalculator(tiersService, serviceRegimeFiscal);
 		addAssujettissementCalculator(map, Entreprise.class, pmCalculator);
 
 		return map;

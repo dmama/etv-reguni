@@ -8,6 +8,7 @@ import ch.vd.uniregctb.evenement.ide.AnnonceIDEService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
 public abstract class BusinessTest extends AbstractBusinessTest {
@@ -18,6 +19,7 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 	protected ProxyServiceOrganisation serviceOrganisation;
 	protected ProxyServiceInfrastructureService serviceInfra;
 	protected AnnonceIDEService annonceIDEService;
+	protected ServiceRegimeFiscal serviceRegimeFiscal;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -25,6 +27,7 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 		serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
 		serviceOrganisation = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
 		serviceInfra = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
+		serviceRegimeFiscal = getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal");
 		serviceInfra.setUpDefault();
 
 		super.runOnSetUp();

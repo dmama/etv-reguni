@@ -170,6 +170,8 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				return entreprise.getNumero();
 			}
@@ -247,6 +249,8 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				final TacheEnvoiQuestionnaireSNC tache = addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement), RegDate.get(pf, 4, 1), RegDate.get(pf, 4, 12), CategorieEntreprise.SP, entreprise, oipm);
 				tache.setAnnule(true);
@@ -351,6 +355,8 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.TRAITE, Tache.getDefaultEcheance(dateTraitement), RegDate.get(pf, 4, 1), RegDate.get(pf, 4, 12), CategorieEntreprise.SP, entreprise, oipm);
 				return entreprise.getNumero();
@@ -456,6 +462,8 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				addQuestionnaireSNC(entreprise, pf2013);
 				addQuestionnaireSNC(entreprise, pf2015);
@@ -758,6 +766,8 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
 				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf2014);        // celui-ci ne devrait pas exister, en fait...
@@ -827,6 +837,8 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				addQuestionnaireSNC(entreprise, pf2013);
 				addQuestionnaireSNC(entreprise, pf2014);
@@ -895,6 +907,8 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf2014);
 				addTacheAnnulationQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement), questionnaire, entreprise, oipm);       // cette tâche est en trop !
@@ -964,6 +978,8 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
 				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+				addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+				addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.SOCIETE_PERS);
 				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement), RegDate.get(pf, 3, 12), RegDate.get(pf, 12, 3), CategorieEntreprise.SP, entreprise, oipm);
 				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement), RegDate.get(pf, 1, 5), RegDate.get(pf, 2, 3), CategorieEntreprise.SP, entreprise, oipm);     // une autre tâche bidon

@@ -29,7 +29,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		calculator = new AssujettissementPersonnesMoralesCalculator(tiersService);
+		calculator = new AssujettissementPersonnesMoralesCalculator(tiersService, serviceRegimeFiscal);
 	}
 
 	@Nullable
@@ -930,4 +930,284 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		Assert.assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreation, null, MotifFor.DEBUT_EXPLOITATION, null, assujettissements.get(0));
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationVaudoisExercicesEtForsCalesSurAnneeCivile() throws Exception {
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, date(2013, 1, 1), null, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, date(2013, 1, 1), null, MockTypeRegimeFiscal.EXO_90C);
+		addForPrincipal(e, date(2013, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
+		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNull(assujettissements);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationVaudoisExercicesCalesSurAnneeCivileMaisPasPremierFor() throws Exception {
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, date(2013, 4, 21), null, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, date(2013, 4, 21), null, MockTypeRegimeFiscal.EXO_90C);
+		addForPrincipal(e, date(2013, 4, 21), MotifFor.INDETERMINE, MockCommune.Aigle);
+		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNull(assujettissements);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationVaudoisExercicesNonCalesSurAnneeCivile() throws Exception {
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.EXO_90C);
+		addForPrincipal(e, date(2013, 1, 15), MotifFor.INDETERMINE, MockCommune.Aigle);
+		addBouclement(e, date(2013, 1, 1), DayMonth.get(6, 30), 12);    // bouclements tous les 30.06 depuis le 31.03.2013
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNull(assujettissements);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationVaudoisModificationDureeExcercicesCommerciauxDebutAnneeCivile() throws Exception {
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.EXO_90C);
+		addForPrincipal(e, date(2013, 1, 15), MotifFor.INDETERMINE, MockCommune.Aigle);
+		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);    // bouclements tous les 31.12 depuis le 31.12.2013
+		addBouclement(e, date(2014, 3, 31), DayMonth.get(3, 31), 12);    // bouclements tous les 31.03 depuis le 31.03.2014
+		addBouclement(e, date(2014, 4, 1), DayMonth.get(12, 31), 12);    // bouclements tous les 31.12 depuis le 31.12.2014
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNull(assujettissements);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationVaudoisModificationDureeExcercicesCommerciauxEnCoursAnneeCivile() throws Exception {
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, date(2013, 1, 15), null, MockTypeRegimeFiscal.EXO_90C);
+		addForPrincipal(e, date(2013, 1, 15), MotifFor.INDETERMINE, MockCommune.Aigle);
+		addBouclement(e, date(2013, 3, 31), DayMonth.get(3, 31), 12);   // bouclements tous les 31.03 depuis le 31.03.2013
+		addBouclement(e, date(2014, 4, 1), DayMonth.get(6, 30), 12);    // bouclements tous les 30.06 depuis le 30.06.2014
+		addBouclement(e, date(2014, 7, 1), DayMonth.get(3, 31), 12);    // bouclements tous les 31.03 depuis le 31.03.2015
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNull(assujettissements);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationHorsSuisseActiviteNonSynchroneAvecExercice() throws Exception {
+
+		final RegDate dateDebutExploitation = date(2013, 4, 1);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.EXO_90C);
+		addForPrincipal(e, dateDebutExploitation, null, MockPays.RoyaumeUni);
+		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
+		addBouclement(e, date(2012, 12, 31), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2012
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNull(assujettissements);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationHorsCantonActiviteTransfertSiegeVersVaud() throws Exception {
+
+		final RegDate dateDebutExploitation = date(2013, 4, 15);
+		final RegDate dateArriveeSiege = date(2014, 5, 21);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, dateDebutExploitation, null, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, dateDebutExploitation, null, MockTypeRegimeFiscal.EXO_90C);
+		addForPrincipal(e, dateDebutExploitation, null, dateArriveeSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bale);
+		addForPrincipal(e, dateArriveeSiege, MotifFor.ARRIVEE_HC, MockCommune.Morges);
+		addForSecondaire(e, dateDebutExploitation, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
+		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNull(assujettissements);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationVaudoisActiviteTransfertSiegeVersHorsCanton() throws Exception {
+
+		final RegDate dateCreationEntreprise = date(2013, 2, 1);
+		final RegDate dateDebutActivite = date(2013, 4, 15);
+		final RegDate dateDepartSiege = date(2014, 5, 21);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, dateCreationEntreprise, null, MockTypeRegimeFiscal.EXO_90C);
+		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.Echallens);
+		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Geneve);
+		addForSecondaire(e, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE, GenreImpot.BENEFICE_CAPITAL);
+		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
+		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNull(assujettissements);
+	}
+
+	/**
+	 * Entreprise vaudoise qui transfère son siège temporairement hors canton (le départ et le retour se font
+	 * sur le même excercice commercial) en absence de for secondaire
+	 * -> pas de coupure dans l'assujettissement
+	 *
+	 * Pas d'exonération pour une éxonération qui n'est plus en vigueur au dernier jour de l'exercice, et qui ne l'était pas déjà à la fin du précédent.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationNonEffectiveVaudoisTransfertSiegeHorsCantonEtRetourSansForSecondaireMemeExerciceCommercial() throws Exception {
+
+		final RegDate dateCreationEntreprise = date(2013, 1, 1);
+		final RegDate dateDepartSiege = date(2014, 4, 12);
+		final RegDate dateRetourSiege = date(2014, 7, 22);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, dateCreationEntreprise, dateDepartSiege.getOneDayBefore(), MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, dateDepartSiege.getOneDayBefore(), MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalVD(e, dateDepartSiege, dateRetourSiege.getOneDayBefore(), MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, dateDepartSiege, dateRetourSiege.getOneDayBefore(), MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalVD(e, dateRetourSiege, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateRetourSiege, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.CheseauxSurLausanne);
+		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
+		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+		addBouclement(e, date(2014, 1, 1), DayMonth.get(3, 31), 12);        // bouclements tous les 31.03 depuis le 31.03.2014
+		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);         // bouclements tous les 30.09 mois depuis le 30.09.2014
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNotNull(assujettissements);
+		Assert.assertEquals(1, assujettissements.size());
+		assertOrdinaire(dateCreationEntreprise, null, MotifFor.INDETERMINE, null, assujettissements.get(0));
+	}
+
+	/**
+	 * Entreprise vaudoise qui transfère son siège temporairement hors canton (le départ et le retour se font
+	 * sur le même excercice commercial) en absence de for secondaire
+	 * -> pas de coupure dans l'assujettissement
+	 *
+	 * Exonération portant sur l'exercice qui va du 31.3.2014 au 30.9.2014.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationPartielleVaudoisTransfertSiegeHorsCantonEtRetourSansForSecondaireMemeExerciceCommercial() throws Exception {
+
+		final RegDate dateCreationEntreprise = date(2013, 1, 1);
+		final RegDate dateDepartSiege = date(2014, 4, 12);
+		final RegDate dateRetourSiege = date(2014, 7, 22);
+		final RegDate dateFinRegime = date(2015, 3, 21);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, dateCreationEntreprise, dateDepartSiege.getOneDayBefore(), MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateCreationEntreprise, dateDepartSiege.getOneDayBefore(), MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalVD(e, dateDepartSiege, dateFinRegime, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, dateDepartSiege, dateFinRegime, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalVD(e, dateFinRegime.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, dateFinRegime.getOneDayAfter(), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.CheseauxSurLausanne);
+		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, dateRetourSiege.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
+		addForPrincipal(e, dateRetourSiege, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+		addBouclement(e, date(2014, 1, 1), DayMonth.get(3, 31), 12);        // bouclements tous les 31.03 depuis le 31.03.2014
+		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);         // bouclements tous les 30.09 mois depuis le 30.09.2014
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNotNull(assujettissements);
+		Assert.assertEquals(2, assujettissements.size());
+		assertOrdinaire(dateCreationEntreprise, date(2014, 3, 31), MotifFor.INDETERMINE, MotifFor.INDETERMINE, assujettissements.get(0));
+		assertOrdinaire(date(2014, 10, 1), null, MotifFor.INDETERMINE, null, assujettissements.get(1));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationAuDebutChangementTropTotVaudois() throws Exception {
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, date(2013, 4, 21), date(2013, 12, 30), MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, date(2013, 4, 21), date(2013, 12, 30), MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalVD(e, date(2013, 12, 31), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2013, 12, 31), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addForPrincipal(e, date(2013, 4, 21), MotifFor.INDETERMINE, MockCommune.Aigle);
+		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNotNull(assujettissements);
+		Assert.assertEquals(1, assujettissements.size());
+		assertOrdinaire(date(2013, 4, 21), null, MotifFor.INDETERMINE, null, assujettissements.get(0));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationAuDebutChangementAuBouclementVaudois() throws Exception {
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, date(2013, 4, 21), date(2013, 12, 31), MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, date(2013, 4, 21), date(2013, 12, 31), MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalVD(e, date(2014, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2014, 1, 1), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addForPrincipal(e, date(2013, 4, 21), MotifFor.INDETERMINE, MockCommune.Aigle);
+		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNotNull(assujettissements);
+		Assert.assertEquals(1, assujettissements.size());
+		assertOrdinaire(date(2014, 1, 1), null, MotifFor.INDETERMINE, null, assujettissements.get(0));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationAuDebutChangementPlusTardifVaudois() throws Exception {
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, date(2013, 4, 21), date(2014, 1, 15), MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, date(2013, 4, 21), date(2014, 1, 15), MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalVD(e, date(2014, 1, 16), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2014, 1, 16), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addForPrincipal(e, date(2013, 4, 21), MotifFor.INDETERMINE, MockCommune.Aigle);
+		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNotNull(assujettissements);
+		Assert.assertEquals(1, assujettissements.size());
+		assertOrdinaire(date(2014, 1, 1), null, MotifFor.INDETERMINE, null, assujettissements.get(0));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationApresChangementFormeJuridiqueVaudois() throws Exception {
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, date(2013, 4, 21), date(2013, 12, 31), MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2013, 4, 21), date(2013, 12, 31), MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalVD(e, date(2014, 1, 1), null, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, date(2014, 1, 1), null, MockTypeRegimeFiscal.EXO_90C);
+		addForPrincipal(e, date(2013, 4, 21), MotifFor.INDETERMINE, MockCommune.Aigle);
+		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNotNull(assujettissements);
+		Assert.assertEquals(1, assujettissements.size());
+		assertOrdinaire(date(2013, 4, 21), date(2013, 12, 31), MotifFor.INDETERMINE, MotifFor.INDETERMINE, assujettissements.get(0));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testExonerationChangementFormeJuridiqueVaudoisIntervientTropTot() throws Exception {
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addRegimeFiscalVD(e, date(2013, 4, 21), date(2013, 12, 30), MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalCH(e, date(2013, 4, 21), date(2013, 12, 30), MockTypeRegimeFiscal.ORDINAIRE_PM);
+		addRegimeFiscalVD(e, date(2013, 12, 31), null, MockTypeRegimeFiscal.EXO_90C);
+		addRegimeFiscalCH(e, date(2013, 12, 31), null, MockTypeRegimeFiscal.EXO_90C);
+		addForPrincipal(e, date(2013, 4, 21), MotifFor.INDETERMINE, MockCommune.Aigle);
+		addBouclement(e, date(2013, 1, 1), DayMonth.get(12, 31), 12);       // bouclements tous les 31.12 depuis le 31.12.2013
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNull(assujettissements);
+	}
+
 }

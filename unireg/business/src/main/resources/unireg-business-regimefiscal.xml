@@ -6,8 +6,6 @@
 
 	<bean id="serviceRegimeFiscal" class="ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscalImpl">
 		<property name="serviceInfra" ref="serviceInfrastructureService"/>
-		<property name="tiersService" ref="tiersService"/>
-		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
 </beans>

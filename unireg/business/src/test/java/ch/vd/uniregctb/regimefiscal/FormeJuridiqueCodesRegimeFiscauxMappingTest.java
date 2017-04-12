@@ -15,12 +15,12 @@ public class FormeJuridiqueCodesRegimeFiscauxMappingTest extends WithoutSpringTe
 	@Test
 	public void testGetDefaultCodePourFormeJuridique() throws Exception {
 
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(null));
+		assertEquals("00", getDefaultCodePourFormeJuridique(null));
 
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(EI));
+		assertEquals("00", getDefaultCodePourFormeJuridique(EI));
 
-		assertEquals("SP", getDefaultCodePourFormeJuridique(SNC));
-		assertEquals("SP", getDefaultCodePourFormeJuridique(SC));
+		assertEquals("80", getDefaultCodePourFormeJuridique(SNC));
+		assertEquals("80", getDefaultCodePourFormeJuridique(SC));
 
 		assertEquals("01", getDefaultCodePourFormeJuridique(SCA));
 		assertEquals("01", getDefaultCodePourFormeJuridique(SA));
@@ -30,34 +30,34 @@ public class FormeJuridiqueCodesRegimeFiscauxMappingTest extends WithoutSpringTe
 		assertEquals("70", getDefaultCodePourFormeJuridique(ASSOCIATION));
 		assertEquals("70", getDefaultCodePourFormeJuridique(FONDATION));
 
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(FILIALE_HS_RC));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(PARTICULIER));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(SCPC));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(SICAV));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(SICAF));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(IDP));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(PNC));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(INDIVISION));
+		assertEquals("00", getDefaultCodePourFormeJuridique(FILIALE_HS_RC));
+		assertEquals("00", getDefaultCodePourFormeJuridique(PARTICULIER));
+		assertEquals("00", getDefaultCodePourFormeJuridique(SCPC));
+		assertEquals("00", getDefaultCodePourFormeJuridique(SICAV));
+		assertEquals("00", getDefaultCodePourFormeJuridique(SICAF));
+		assertEquals("00", getDefaultCodePourFormeJuridique(IDP));
+		assertEquals("00", getDefaultCodePourFormeJuridique(PNC));
+		assertEquals("00", getDefaultCodePourFormeJuridique(INDIVISION));
 
 		assertEquals("01", getDefaultCodePourFormeJuridique(FILIALE_CH_RC));
 
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ADM_CH));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ADM_CT));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ADM_DI));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ADM_CO));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(CORP_DP_ADM));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ENT_CH));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ENT_CT));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ENT_DI));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ENT_CO));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(CORP_DP_ENT));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(SS));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ADM_CH));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ADM_CT));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ADM_DI));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ADM_CO));
+		assertEquals("00", getDefaultCodePourFormeJuridique(CORP_DP_ADM));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ENT_CH));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ENT_CT));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ENT_DI));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ENT_CO));
+		assertEquals("00", getDefaultCodePourFormeJuridique(CORP_DP_ENT));
+		assertEquals("00", getDefaultCodePourFormeJuridique(SS));
 
 		assertEquals("01", getDefaultCodePourFormeJuridique(FILIALE_HS_NIRC));
 
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ENT_PUBLIQUE_HS));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ADM_PUBLIQUE_HS));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ORG_INTERNAT));
-		assertEquals("INDET", getDefaultCodePourFormeJuridique(ENT_HS));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ENT_PUBLIQUE_HS));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ADM_PUBLIQUE_HS));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ORG_INTERNAT));
+		assertEquals("00", getDefaultCodePourFormeJuridique(ENT_HS));
 	}
 }
