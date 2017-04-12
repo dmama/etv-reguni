@@ -383,51 +383,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 	}
 
 	@Test(timeout = 10000)
-	public void testControlesPreliminairesSurAcquereurMineur() throws Exception {
-
-		final RegDate dateActe = RegDate.get().getOneDayBefore();
-
-		// mise en place d'un acquéreur de 15 ans
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Francis"), null, dateActe, "56754K");
-				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
-				final PartiePrenante pp = addPartiePrenante(ut, "Petit", "Bonhomme");
-				pp.setDateNaissance(dateActe.addYears(-15));
-
-				final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Donation", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Cossonay.getNoOFS());
-				addRole(pp, ti, TypeRole.ACQUEREUR);
-
-				return ut.getId();
-			}
-		});
-
-		// traitement de l'unité
-		traiteUniteTraitement(id);
-
-		// vérification des erreurs
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final UniteTraitement ut = uniteTraitementDAO.get(id);
-				Assert.assertNotNull(ut);
-				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
-				Assert.assertNotNull(ut.getDateTraitement());
-
-				final Set<ErreurTraitement> erreurs = ut.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
-
-				final ErreurTraitement erreur = erreurs.iterator().next();
-				Assert.assertNotNull(erreur);
-				Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
-				Assert.assertEquals("Acquéreur mineur à la date de l'acte.", erreur.getMessage());
-			}
-		});
-	}
-
-	@Test(timeout = 10000)
 	public void testControlesPreliminairesSurLiensMatrimoniauxUnidirectionel() throws Exception {
 
 		final RegDate dateActe = RegDate.get().getOneDayBefore();
@@ -8086,6 +8041,269 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertNotNull(allPps);
 				Assert.assertEquals(1, allPps.size());
 				Assert.assertEquals((Long) ids.ppId, allPps.get(0));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-20431][SIFISC-24322] Acquisition de propriété par une personne mineure
+	 */
+	@Test(timeout = 10000)
+	public void testAcquereurMineurCreationPure() throws Exception {
+
+		final RegDate dateActe = RegDate.get().getOneDayBefore();
+
+		// mise en place d'un acquéreur de 15 ans
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Francis"), null, dateActe, "56754K");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Petit", "Bonhomme");
+				pp.setDateNaissance(dateActe.addYears(-15));
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+
+				final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Donation", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Cossonay.getNoOFS());
+				addRole(pp, ti, TypeRole.ACQUEREUR);
+
+				return ut.getId();
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(id);
+
+		// vérification des erreurs
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+
+				final Set<ErreurTraitement> erreurs = ut.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(0, erreurs.size());
+
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(1, allPps.size());
+				final Long ppId = allPps.get(0);
+				Assert.assertNotNull(ppId);
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+
+				// aucun for ne doit avoir été créé, le contribuable est mineur
+				final Set<ForFiscal> ffs = pp.getForsFiscaux();
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(0, ffs.size());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-20431][SIFISC-24322] Acquisition de propriété par une personne mineure
+	 */
+	@Test(timeout = 10000)
+	public void testAcquereurMineurSourceCivile() throws Exception {
+
+		final RegDate dateActe = RegDate.get().getOneDayBefore();
+
+		// mise en place d'un acquéreur de 15 ans
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Francis"), null, dateActe, "56754K");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Petit", "Bonhomme");
+				pp.setDateNaissance(dateActe.addYears(-15));
+				pp.setSourceCivile(true);
+
+				pp.setRue("Rue du petit pont de bois");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setNumeroOrdrePostal(MockLocalite.Leysin.getNoOrdre());
+				pp.setOfsCommune(MockCommune.Leysin.getNoOFS());
+
+				final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Donation", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Cossonay.getNoOFS());
+				addRole(pp, ti, TypeRole.ACQUEREUR);
+
+				return ut.getId();
+			}
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(id);
+
+		// vérification des erreurs
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(id);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+
+				final Set<ErreurTraitement> erreurs = ut.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(0, erreurs.size());
+
+				// pas de contribuable créé car source civile...
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(0, allPps.size());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-20431][SIFISC-24322] Acquisition de propriété par une personne mineure
+	 */
+	@Test(timeout = 10000)
+	public void testAcquereurMineurSansForSourceFiscale() throws Exception {
+
+		final RegDate dateActe = RegDate.get().getOneDayBefore();
+		final RegDate dateNaissance = dateActe.addYears(-15);
+
+		// mise en place fiscale
+		final long idContribuable = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Bonhomme", "Petit", dateNaissance, Sexe.MASCULIN);
+			return pp.getNumero();
+		});
+
+		// mise en place d'un acquéreur de 15 ans
+		final long idUniteTraitement = doInNewTransactionAndSession(status -> {
+			final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Francis"), null, dateActe, "56754K");
+			final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+			final PartiePrenante pp = addPartiePrenante(ut, "Petit", "Bonhomme");
+			pp.setDateNaissance(dateNaissance);
+			pp.setNumeroContribuable(idContribuable);
+
+			pp.setRue("Kleinholzbrueckstrasse");
+			pp.setNumeroMaison("7");
+			pp.setOfsPays(MockPays.Suisse.getNoOFS());
+			pp.setNumeroOrdrePostal(MockLocalite.Zurich.getNoOrdre());
+			pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+			final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Donation", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Cossonay.getNoOFS());
+			addRole(pp, ti, TypeRole.ACQUEREUR);
+
+			return ut.getId();
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(idUniteTraitement);
+
+		// vérification des erreurs
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(idUniteTraitement);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+
+				final Set<ErreurTraitement> erreurs = ut.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(0, erreurs.size());
+
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(Collections.singletonList(idContribuable), allPps);
+
+				// pas de for sur le contribuable, car il est mineur
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idContribuable);
+				Assert.assertNotNull(pp);
+				final Set<ForFiscal> ffs = pp.getForsFiscaux();
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(0, ffs.size());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-20431][SIFISC-24322] Acquisition de propriété par une personne mineure
+	 */
+	@Test(timeout = 10000)
+	public void testAcquereurMineurAvecForSourceFiscale() throws Exception {
+
+		final RegDate dateActe = RegDate.get().getOneDayBefore();
+		final RegDate dateNaissance = dateActe.addYears(-15);
+
+		// mise en place fiscale (avec un for principal source sur le mineur... il ne doit pas être touché)
+		final long idContribuable = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Bonhomme", "Petit", dateNaissance, Sexe.MASCULIN);
+			addForPrincipal(pp, dateActe.addDays(-30), null, MockCommune.Zurich, ModeImposition.SOURCE);
+			return pp.getNumero();
+		});
+
+		// mise en place d'un acquéreur de 15 ans
+		final long idUniteTraitement = doInNewTransactionAndSession(status -> {
+			final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Francis"), null, dateActe, "56754K");
+			final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+			final PartiePrenante pp = addPartiePrenante(ut, "Petit", "Bonhomme");
+			pp.setDateNaissance(dateNaissance);
+			pp.setNumeroContribuable(idContribuable);
+
+			pp.setRue("Kleinholzbrueckstrasse");
+			pp.setNumeroMaison("7");
+			pp.setOfsPays(MockPays.Suisse.getNoOFS());
+			pp.setNumeroOrdrePostal(MockLocalite.Zurich.getNoOrdre());
+			pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
+
+			final TransactionImmobiliere ti = addTransactionImmobiliere(evt, "Donation", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Cossonay.getNoOFS());
+			addRole(pp, ti, TypeRole.ACQUEREUR);
+
+			return ut.getId();
+		});
+
+		// traitement de l'unité
+		traiteUniteTraitement(idUniteTraitement);
+
+		// vérification des erreurs
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(idUniteTraitement);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertNotNull(ut.getDateTraitement());
+
+				final Set<ErreurTraitement> erreurs = ut.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(0, erreurs.size());
+
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(Collections.singletonList(idContribuable), allPps);
+
+				// le for n'a pas été modifié sur le contribuable, car il est mineur
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idContribuable);
+				Assert.assertNotNull(pp);
+				final Set<ForFiscal> ffs = pp.getForsFiscaux();
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(1, ffs.size());
+				final ForFiscal ff = ffs.iterator().next();
+				Assert.assertNotNull(ff);
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertTrue(ff instanceof ForFiscalPrincipalPP);
+				final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) ff;
+				Assert.assertEquals(dateActe.addDays(-30), ffp.getDateDebut());
+				Assert.assertNull(ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Zurich.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+				Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ffp.getGenreImpot());
+				Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
 			}
 		});
 	}

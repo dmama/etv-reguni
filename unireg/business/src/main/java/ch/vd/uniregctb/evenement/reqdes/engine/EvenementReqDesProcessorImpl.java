@@ -609,12 +609,6 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				checkCommune(ofsCommuneImmeuble, dateActe, commune, errorCollector, isRoleAcquereurPropriete(role) && !pp.isSourceCivile());
 			}
 
-			// [SIFISC-20431] si l'un des acquéreurs est mineur, il faut tout arrêter
-			if (isMineure(pp, dateActe) && hasRoleAcquereurPropriete(pp)) {
-				errorCollector.addNewMessage("Acquéreur mineur à la date de l'acte.");
-			}
-
-
 			final EtatCivil etatCivil = pp.getEtatCivil();
 			if (etatsCivilsSansConjoint.contains(etatCivil)) {
 
@@ -746,6 +740,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				}
 				final ForsParTypeAt forsAt = assujetti.getForsParTypeAt(dateActe, false);
 				final boolean hasRoleAcquereurPropriete = hasRoleAcquereurPropriete(partiePrenante);
+				final boolean isMineur = isMineure(partiePrenante, dateActe);
 
 				// [SIFISC-13333] si la partie prenante est indiquée comme décédée, on doit gérer le décès à la date de décès annoncée (sauf si on le sait déjà...)
 				if (partiePrenante.getDateDeces() != null) {
@@ -770,7 +765,8 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 				// s'il y a un rôle acquéreur de propriété, on doit placer le for principal correctement
 				// (même dans les autres cas de rôles, il peut être nécessaire d'ajuster le for principal)
-				else if (hasRoleAcquereurPropriete || forsAt.principal != null) {
+				// [SIFISC-24322] on ne touche pas aux fors d'un contribuable mineur
+				else if ((hasRoleAcquereurPropriete || forsAt.principal != null) && !isMineur) {
 
 					//
 					// d'abord on se préoccupe du for principal
@@ -835,7 +831,8 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				}
 
 				// les fors secondaires ne sont créés que sur les acquéreurs de propriété
-				if (hasRoleAcquereurPropriete) {
+				// [SIFISC-24322] on ne touche pas aux fors d'un contribuable mineur
+				if (hasRoleAcquereurPropriete && !isMineur) {
 
 					// fors fiscaux existants
 					final List<ForFiscalSecondaire> forsSecondaires = forsAt.secondaires;
@@ -1252,7 +1249,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	 * @throws EvenementReqDesException en cas de problème
 	 */
 	private AdresseSupplementaire buildAdresseCourrier(PartiePrenante pp, RegDate dateDebut) throws EvenementReqDesException {
-		if (pp.getOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
+		if (pp.getOfsPays() == null || pp.getOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
 			final AdresseSuisse a = new AdresseSuisse();
 			a.setComplement(pp.getTitre());
 			a.setDateDebut(dateDebut);
