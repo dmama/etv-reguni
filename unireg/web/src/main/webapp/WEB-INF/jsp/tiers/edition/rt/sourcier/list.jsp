@@ -13,8 +13,7 @@
 		<unireg:nextRowClass reset="1"/>
 
 	    <jsp:include page="../../../../general/debiteur.jsp" >
-			<jsp:param name="page" value="rt" />
-			<jsp:param name="path" value="debiteur" />
+		    <jsp:param name="idDebiteur" value="${command.debiteur.numero}" />
 		</jsp:include>
 	    
 	    <form:form method="post" id="formRechercheTiers">

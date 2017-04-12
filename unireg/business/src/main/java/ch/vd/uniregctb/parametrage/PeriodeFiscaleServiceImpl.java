@@ -93,6 +93,11 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 	}
 
 	@Override
+	public PeriodeFiscale get(int annee) {
+		return dao.getPeriodeFiscaleByYear(annee);
+	}
+
+	@Override
 	public void copyModelesDocuments(PeriodeFiscale source, PeriodeFiscale destination) {
 		// rien à faire
 		if (source == destination) {

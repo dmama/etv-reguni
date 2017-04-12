@@ -39,7 +39,7 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 	 * @return
 	 */
 	@Override
-	public List<DeclarationImpotSource> find(final ListeRecapCriteria criterion, @Nullable final ParamPagination paramPagination) {
+	public List<DeclarationImpotSource> find(final ListeRecapitulativeCriteria criterion, @Nullable final ParamPagination paramPagination) {
 
 		final Session session = getCurrentSession();
 		final Map<String, Object> paramsWhereClause = new HashMap<>();
@@ -67,10 +67,10 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 	}
 
 	/**
-	 * @see ch.vd.uniregctb.declaration.ListeRecapitulativeDAO#count(ch.vd.uniregctb.declaration.ListeRecapCriteria)
+	 * @see ch.vd.uniregctb.declaration.ListeRecapitulativeDAO#count(ListeRecapitulativeCriteria)
 	 */
 	@Override
-	public int count(ListeRecapCriteria criterion) {
+	public int count(ListeRecapitulativeCriteria criterion) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of ListeRecapitulativeDAO : count");
 		}
@@ -89,7 +89,7 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 	 * @param parameters
 	 * @return " and ... and ... "
 	 */
-    private String buildWhereClauseFromCriteria(ListeRecapCriteria criterion, Map<String, Object> parameters) {
+    private String buildWhereClauseFromCriteria(ListeRecapitulativeCriteria criterion, Map<String, Object> parameters) {
 
     	final StringBuilder builder = new StringBuilder();
 

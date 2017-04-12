@@ -96,11 +96,6 @@
 				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
 				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />
 
-				<!-- LR -->
-				<entry key="/lr/list.do" value-ref="lrListController" />
-				<entry key="/lr/edit.do" value-ref="lrEditController" />
-				<entry key="/lr/edit-debiteur.do" value-ref="lrEditDebiteurController" />
-				<entry key="/lr/delai.do" value-ref="lrEditDelaiController" />
 				<!-- Rapport Prestation -->
 				<entry key="/rt/list-debiteur.do" value-ref="debiteurListController" />
 				<entry key="/rt/list-sourcier.do" value-ref="sourcierListController" />
@@ -165,11 +160,9 @@
 		<property name="exceptionMappings">
 			<map>
 				<!-- En cas de problème de connexion, on renvoie vers la JSP jdbcConnection.jsp -->
-				<entry key="weblogic.common.resourcepool.ResourceLimitException" value="errors/jdbcConnection" />
 				<entry key="org.springframework.jdbc.UncategorizedSQLException" value="errors/jdbcConnection" />
 				<entry key="ch.vd.unireg.interfaces.civil.ServiceCivilException" value="errors/errorServiceCivil" />
 				<entry key="ch.vd.unireg.interfaces.organisation.ServiceOrganisationException" value="errors/errorServiceOrganisation" />
-				<entry key="ch.vd.unireg.interfaces.organisation.SiteOrganisationNotFoundException" value="errors/errorServiceOrganisation" />
 				<entry key="ch.vd.uniregctb.type.TypePermisInvalideException" value="errors/permisInvalide" />
 				<entry key="ch.vd.unireg.interfaces.infra.ServiceInfrastructureException" value="errors/errorServiceInfrastructure" />
 				<entry key="ch.vd.uniregctb.interfaces.service.ServiceSecuriteException" value="errors/errorServiceSecurite" />
@@ -177,7 +170,7 @@
 				<!-- En cas d'exception inattendue, on renvoie vers la JSP error.jsp -->
 				<entry key="java.lang.Exception" value="errors/error" />
 				<entry key="ch.vd.uniregctb.security.AccessDeniedException" value="errors/accessDeniedIHM" />
-				<entry key="ch.vd.uniregctb.common.NotImplementedException" value="errors/notImplemented" />
+				<entry key="ch.vd.registre.base.utils.NotImplementedException" value="errors/notImplemented" />
 				<entry key="ch.vd.uniregctb.common.EditiqueCommunicationException" value="errors/editique" />
 				<entry key="ch.vd.uniregctb.common.ObjectNotFoundException" value="errors/objectNotFound" />
 				<entry key="ch.vd.uniregctb.adresse.AdressesResolutionException" value="errors/adressesResolution" />

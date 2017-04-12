@@ -23,4 +23,10 @@ public interface PeriodeFiscaleService {
 	 * @param destination période fiscale destination de la recopie
 	 */
 	void copyModelesDocuments(PeriodeFiscale source, PeriodeFiscale destination);
+
+	/**
+	 * @param annee une année
+	 * @return la période fiscale correspondant à cette année-là
+	 */
+	PeriodeFiscale get(int annee);
 }

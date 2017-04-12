@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.declaration.ListeRecapCriteria;
-import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
+import ch.vd.uniregctb.declaration.ListeRecapitulativeCriteria;
+import ch.vd.uniregctb.lr.view.ListeRecapitulativeSearchResult;
 
 /**
  * Definition de services utiles pour la recherche de LR
@@ -26,7 +26,7 @@ public interface ListeRecapListManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	List<ListeRecapDetailView> find(ListeRecapCriteria lrCriteria, ParamPagination paramPagination) throws AdresseException;
+	List<ListeRecapitulativeSearchResult> find(ListeRecapitulativeCriteria lrCriteria, ParamPagination paramPagination) throws AdresseException;
 
 	/**
 	 * Renvoie le nombre de listes récapitulatives correspondant aux critères donnés
@@ -34,6 +34,6 @@ public interface ListeRecapListManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	int count(ListeRecapCriteria lrCriteria);
+	int count(ListeRecapitulativeCriteria lrCriteria);
 
 }

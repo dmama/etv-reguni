@@ -2,7 +2,7 @@ package ch.vd.uniregctb.tiers.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
+import ch.vd.uniregctb.lr.view.ListeRecapitulativeDetailView;
 
 /**
  * Service qui fournit les methodes pour visualiser une liste recapitulative
@@ -19,6 +19,6 @@ public interface ListeRecapVisuManager {
 	 * @return un objet ListeRecapDetailView
 	 */
 	@Transactional(readOnly = true)
-	public ListeRecapDetailView get(Long numero) ;
+	public ListeRecapitulativeDetailView get(Long numero) ;
 
 }

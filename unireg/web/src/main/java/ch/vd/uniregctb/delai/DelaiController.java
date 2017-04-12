@@ -110,6 +110,6 @@ public class DelaiController {
 			Flash.message("Le délai était déjà annulé.");
 		}
 
-		return (declaration instanceof DeclarationImpotOrdinaire ? "redirect:/di/editer.do?id=" : "redirect:/lr/edit.do?id=") + declaration.getId();
+		return (declaration instanceof DeclarationImpotOrdinaire ? "redirect:/di/editer.do?id=" : "redirect:/lr/edit-lr.do?id=") + declaration.getId();
 	}
 }

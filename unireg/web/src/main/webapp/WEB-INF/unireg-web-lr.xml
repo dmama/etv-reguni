@@ -2,76 +2,24 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="abstractListeRecapController" parent="abstractSimpleFormEditiqueAwareController" abstract="true" class="ch.vd.uniregctb.lr.AbstractListeRecapController">
-		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="securityProvider" ref="securityProviderInterface" />
-	</bean>
-
-	<bean id="lrListController" class="ch.vd.uniregctb.lr.ListeRecapListController" parent="abstractListeRecapController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.declaration.ListeRecapCriteria" />
-		<property name="commandName" value="command" />
-		<property name="lrListManager" ref="lrListManager" />
-		<property name="formView" value="lr/recherche/list" />
-		<property name="successView" value="list.do" />
-	</bean>
-	
-	<bean id="lrListManager" class="ch.vd.uniregctb.lr.manager.ListeRecapListManagerImpl">
-		<property name="lrDAO" ref="lrDAO" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="adresseService" ref="adresseService" />
-	</bean>
-
-	<bean id="lrEditController" class="ch.vd.uniregctb.lr.ListeRecapEditController" parent="abstractListeRecapController" >
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.lr.view.ListeRecapDetailView" />
-		<property name="commandName" value="command" />
-		<property name="lrEditManager" ref="lrEditManager" />
-		<property name="formView" value="lr/edit/edit" />
-		<property name="successView" value="redirect:/lr/list.do" />
+	<bean id="lrController" class="ch.vd.uniregctb.lr.ListeRecapitulativeController">
+		<property name="lrListManager" ref="lrListManager"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="messageSource" ref="messageSource"/>
+		<property name="retourEditiqueHelper" ref="retourEditiqueControllerHelper"/>
+		<property name="editiqueCompositionService" ref="editiqueCompositionService"/>
+		<property name="lrService" ref="lrService"/>
+		<property name="delaisService" ref="delaisService"/>
+		<property name="periodeFiscaleService" ref="periodeFiscaleService"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="ticketService" ref="ticketService"/>
 	</bean>
-	
-	<bean id="listeRecapEditDebiteurValidator" class="ch.vd.uniregctb.lr.validator.ListeRecapEditDebiteurValidator" >
-		<property name="tiersDAO" ref="tiersDAO" />
-	</bean>
-	
-	<bean id="lrEditDebiteurController" class="ch.vd.uniregctb.lr.ListeRecapEditDebiteurController" parent="abstractListeRecapController" >
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.lr.view.ListeRecapListView" />
-		<property name="commandName" value="command" />
-		<property name="lrEditManager" ref="lrEditManager" />
-		<property name="formView" value="lr/edit/edit-debiteur" />
-		<property name="validator" ref="listeRecapEditDebiteurValidator" />
-		<property name="successView" value="redirect:/lr/list.do" />
-	</bean>
-	
-	<bean id="lrEditManager" class="ch.vd.uniregctb.lr.manager.ListeRecapEditManagerImpl" >
+
+	<bean id="lrListManager" class="ch.vd.uniregctb.lr.manager.ListeRecapListManagerImpl">
 		<property name="lrDAO" ref="lrDAO" />
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
-		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="lrService" ref="lrService" />
-		<property name="evenementFiscalService" ref="evenementFiscalService" />
-		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
-		<property name="delaisService" ref="delaisService" />
-		<property name="securityProvider" ref="securityProviderInterface" />
-		<property name="infraService" ref="serviceInfrastructureService"/>
-	</bean>
-
-	<bean id="lrEditDelaiController" class="ch.vd.uniregctb.lr.ListeRecapEditDelaiController" parent="abstractListeRecapController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.declaration.view.DelaiDeclarationView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="lr/edit/delai" />
-		<property name="successView" value="common/refresh-parent" />
-		<property name="lrEditManager" ref="lrEditManager" />
-		<property name="validator" ref="lrEditDelaiValidator" />
-	</bean>
-
-	<bean id="lrEditDelaiValidator" class="ch.vd.uniregctb.lr.validator.ListeRecapEditDelaiValidator">
-		<property name="lrDAO" ref="lrDAO"/>
+		<property name="adresseService" ref="adresseService" />
 	</bean>
 
 </beans>

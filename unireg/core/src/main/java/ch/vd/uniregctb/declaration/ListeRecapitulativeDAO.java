@@ -20,7 +20,7 @@ public interface ListeRecapitulativeDAO extends DeclarationDAO<DeclarationImpotS
 	 * @param criterion
 	 * @return
 	 */
-	List<DeclarationImpotSource> find(ListeRecapCriteria criterion, @Nullable ParamPagination paramPagination) ;
+	List<DeclarationImpotSource> find(ListeRecapitulativeCriteria criterion, @Nullable ParamPagination paramPagination) ;
 
 	/**
 	 * Recherche toutes les LR en fonction du numero de debiteur
@@ -43,7 +43,7 @@ public interface ListeRecapitulativeDAO extends DeclarationDAO<DeclarationImpotS
 	 * @param criterion
 	 * @return
 	 */
-	int count(ListeRecapCriteria criterion);
+	int count(ListeRecapitulativeCriteria criterion);
 
 	/**
 	 * Retourne une liste de date ranges représentant des LR qui intersectent

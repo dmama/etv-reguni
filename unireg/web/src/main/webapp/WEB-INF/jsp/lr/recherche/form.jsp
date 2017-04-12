@@ -14,7 +14,8 @@
 			<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 				<jsp:param name="path" value="periode" />
 				<jsp:param name="id" value="periode" />
-			</jsp:include></td>
+			</jsp:include>
+		</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.categorie.impot.source" />&nbsp;:</td>
@@ -49,17 +50,17 @@
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
+			<!-- Comme ça, quand on soumet réellement le formulaire, on le sait et on peut interdire de récupérer les critères en session... -->
+			<input type="hidden" name="realSearch" value="true"/>
 			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>"/></div>
 		</td>
 		<td width="25%">
-			<div class="navigation-action"><input type="button" value="<fmt:message key="label.bouton.effacer" />" name="effacer" onClick="effacerCriteresLR();" /></div>
+			<div class="navigation-action">
+				<c:set var="effacerName"><fmt:message key="label.bouton.effacer"/></c:set>
+				<unireg:buttonTo name="${effacerName}" action="/lr/list.do?effacer=true" method="get"/>
+			</div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>
 </table>
-<script type="text/javascript">
-	function effacerCriteresLR() {
-  		top.location.replace('list.do?action=effacer');
-	}
-</script>
 <!-- Fin Boutons -->

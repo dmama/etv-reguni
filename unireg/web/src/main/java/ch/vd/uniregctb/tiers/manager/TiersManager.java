@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,9 +54,6 @@ import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.decision.aci.DecisionAciViewComparator;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.view.QuestionnaireSNCView;
@@ -79,8 +75,8 @@ import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
-import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
+import ch.vd.uniregctb.lr.view.ListeRecapitulativeView;
+import ch.vd.uniregctb.lr.view.ListesRecapitulativesView;
 import ch.vd.uniregctb.mandataire.MandataireCourrierView;
 import ch.vd.uniregctb.mandataire.MandatairePerceptionView;
 import ch.vd.uniregctb.mandataire.MandataireViewHelper;
@@ -538,38 +534,9 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Alimente Set&lt;ListeRecapitulativeView&gt;
 	 */
-	private List<ListeRecapDetailView> getListesRecapitulatives(DebiteurPrestationImposable dpi) {
-
-		final List<ListeRecapDetailView> lrsView = new ArrayList<>();
-		final List<DeclarationImpotSource> declarations = dpi.getDeclarationsTriees(DeclarationImpotSource.class, true);
-		for (DeclarationImpotSource lr : declarations) {
-			final ListeRecapDetailView lrView = new ListeRecapDetailView();
-			lrView.setId(lr.getId());
-			final EtatDeclaration dernierEtat = lr.getDernierEtat();
-			lrView.setEtat(dernierEtat == null ? null : dernierEtat.getEtat());
-			lrView.setDateDebutPeriode(lr.getDateDebut());
-			lrView.setDateFinPeriode(lr.getDateFin());
-			lrView.setDateRetour(lr.getDateRetour());
-			lrView.setAnnule(lr.isAnnule());
-			final Set<DelaiDeclaration> echeances = lr.getDelais();
-			final Iterator<DelaiDeclaration> itEcheance = echeances.iterator();
-			RegDate delai;
-			RegDate delaiMax = null;
-			while (itEcheance.hasNext()) {
-				DelaiDeclaration echeance = itEcheance.next();
-				delai = echeance.getDelaiAccordeAu();
-				if (delaiMax == null) {
-					delaiMax = delai;
-				}
-				if (delai.isAfter(delaiMax)) {
-					delaiMax = delai;
-				}
-			}
-			lrView.setDelaiAccorde(delaiMax);
-			lrsView.add(lrView);
-		}
-		Collections.sort(lrsView, new ListeRecapDetailComparator());
-		return lrsView;
+	private List<ListeRecapitulativeView> getListesRecapitulatives(DebiteurPrestationImposable dpi) {
+		final ListesRecapitulativesView globalView = new ListesRecapitulativesView(dpi);
+		return globalView.getLrs();
 	}
 
 	/**

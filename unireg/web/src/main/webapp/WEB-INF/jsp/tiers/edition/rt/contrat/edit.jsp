@@ -17,8 +17,7 @@
 			<td id="td_tiers_gauche">
 				<!-- Caracteristiques debiteur -->
 				<jsp:include page="../../../../general/debiteur.jsp" >
-					<jsp:param name="page" value="rt" />
-					<jsp:param name="path" value="debiteur" />
+					<jsp:param name="idDebiteur" value="${command.debiteur.numero}" />
 				</jsp:include>
 			</td>
 			<td>

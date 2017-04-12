@@ -325,12 +325,12 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'édition d'une LR
 	@Test
 	public void testLrEdit() throws Exception {
-		assertPage("/lr/edit.do?id=1", "Edition d'une liste récapitulative");
+		assertPage("/lr/edit-lr.do?id=1", "Edition d'une liste récapitulative");
 	}
 
 	@Test
 	public void testLrEditInexistante() throws Exception {
-		assertPage("/lr/edit.do?id=12345678", "Page d'erreur", "La LR spécifiée n'existe pas");
+		assertPage("/lr/edit-lr.do?id=12345678", "Page d'erreur", "La LR spécifiée n'existe pas");
 	}
 
 	// Page d'édition des LR d'un débiteur
@@ -341,18 +341,18 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testLrEditDebiteurInexistant() throws Exception {
-		assertPage("/lr/edit-debiteur.do?numero=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
+		assertPage("/lr/edit-debiteur.do?numero=12345678", "Page d'erreur", "Le débiteur de prestation imposable n°123.456.78 n'existe pas");
 	}
 
 	// Page d'édition d'un délai d'une LR
 	@Test
 	public void testLrDelai() throws Exception {
-		assertPage("/lr/delai.do?idLR=1", "Ajout d'un délai sur la liste récapitulative 2004 (01.01.2008 - 31.03.2008) du débiteur 16.784.32");
+		assertPage("/lr/add-delai.do?idListe=1", "Ajout d'un délai sur la liste récapitulative 2004 (01.01.2008 - 31.03.2008) du débiteur 16.784.32");
 	}
 
 	@Test
 	public void testLrDelaiInexistante() throws Exception {
-		assertPage("/lr/delai.do?idLR=12345678", "Page d'erreur", "La LR spécifiée n'existe pas");
+		assertPage("/lr/add-delai.do?idListe=12345678", "Page d'erreur", "La LR spécifiée n'existe pas");
 	}
 
 	/*----------------------

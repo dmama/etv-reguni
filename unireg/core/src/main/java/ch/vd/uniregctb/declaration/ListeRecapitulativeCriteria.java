@@ -10,18 +10,14 @@ import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class ListeRecapCriteria implements Serializable {
+public class ListeRecapitulativeCriteria implements Serializable {
 
-	private static final long serialVersionUID = -6003619288262554985L;
+	private static final long serialVersionUID = 4707213373784221710L;
 
 	private PeriodiciteDecompte periodicite;
-
 	private RegDate periode;
-
 	private CategorieImpotSource categorie;
-
 	private TypeEtatDeclaration etat;
-
 	private ModeCommunication modeCommunication;
 
 	@Nullable

@@ -19,7 +19,7 @@ import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.entreprise.EtablissementView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.individu.IndividuView;
-import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
+import ch.vd.uniregctb.lr.view.ListeRecapitulativeView;
 import ch.vd.uniregctb.mandataire.MandataireCourrierView;
 import ch.vd.uniregctb.mandataire.MandatairePerceptionView;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
@@ -90,7 +90,7 @@ public class TiersView {
 
 	private List<RapportView> contribuablesAssocies;
 
-	private List<ListeRecapDetailView> lrs;
+	private List<ListeRecapitulativeView> lrs;
 	private List<DeclarationImpotView> dis;
 	private List<QuestionnaireSNCView> questionnairesSNC;
 
@@ -314,11 +314,11 @@ public class TiersView {
 		this.rapportsPrestationHisto = rapportsPrestationHisto;
 	}
 
-	public List<ListeRecapDetailView> getLrs() {
+	public List<ListeRecapitulativeView> getLrs() {
 		return lrs;
 	}
 
-	public void setLrs(List<ListeRecapDetailView> lrs) {
+	public void setLrs(List<ListeRecapitulativeView> lrs) {
 		this.lrs = lrs;
 	}
 

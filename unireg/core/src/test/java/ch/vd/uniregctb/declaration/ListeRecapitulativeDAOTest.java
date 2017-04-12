@@ -53,7 +53,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testFind() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
-		final ListeRecapCriteria criterion = new ListeRecapCriteria();
+		final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
 		criterion.setPeriodicite(PeriodiciteDecompte.MENSUEL);
         final RegDate dateDebutPeriode = RegDate.get(2008, 1, 1);
 		criterion.setPeriode(dateDebutPeriode);
@@ -198,7 +198,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final ListeRecapCriteria criterion = new ListeRecapCriteria();
+				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
 				criterion.setEtat(TypeEtatDeclaration.RETOURNEE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
@@ -323,7 +323,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final ListeRecapCriteria criterion = new ListeRecapCriteria();
+				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
 				criterion.setEtat(TypeEtatDeclaration.EMISE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
@@ -436,7 +436,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final ListeRecapCriteria criterion = new ListeRecapCriteria();
+				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
 				criterion.setEtat(TypeEtatDeclaration.SOMMEE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
@@ -549,7 +549,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final ListeRecapCriteria criterion = new ListeRecapCriteria();
+				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
 				criterion.setEtat(TypeEtatDeclaration.ECHUE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
