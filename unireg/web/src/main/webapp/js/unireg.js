@@ -3090,23 +3090,27 @@ var Search = {
 				table += '<td>';
 				if (!e.annule) {
 					if (!Search.urlRetour) {
-						var isPP = (e.tiersType === 'habitant' || e.tiersType === 'nonhabitant' || e.tiersType === 'menagecommun');
+						const isPersonnePhysique = (e.tiersType === 'habitant' || e.tiersType === 'nonhabitant');
+						const isContribuablePP = (isPersonnePhysique || e.tiersType === 'menagecommun');
 
-						table += '<select name="AppSelect" onchange="App.gotoExternalApp(this);">';
+						table += '<select name="AppSelect" style="width: 10em;" onchange="App.gotoExternalApp(this);">';
 						table += '<option value="">---</option>';
-						if (!e.debiteurInactif || isPP) {
+						if (!e.debiteurInactif || isContribuablePP) {
 							table += '<option value="' + App.curl('/redirect/TAO_PP.do?id=' + e.numero) + '">TAO-PP</option>';
 						}
-						if ((!e.debiteurInactif || isPP) && e.tiersType != 'entreprise') {
+						if ((!e.debiteurInactif || isContribuablePP) && e.tiersType != 'entreprise') {
 							table += '<option value="' + App.curl('/redirect/TAO_BA.do?id=' + e.numero) + '">TAO-BA</option>';
 							var urlTaoIs = e.tiersType==='debiteurprestationimposable' ? '/redirect/TAO_IS_DEBITEUR.do?id=':'/redirect/TAO_IS.do?id=';
 							table += '<option value="' + App.curl(urlTaoIs + e.numero) + '">TAO-IS</option>';
 						}
 						if (e.tiersType === 'entreprise') {
-							table += '<option value="' + App.curl('/redirect/TAOPM.do?id=' + e.numero) + '">TAO-PM</option>';
+							table += '<option value="' + App.curl('/redirect/TAO_PM.do?id=' + e.numero) + '">TAO-PM</option>';
+						}
+						if (e.tiersType === 'entreprise' || isPersonnePhysique) {
+							table += '<option value="' + App.curl('/redirect/TAO_ICI_IFONC.do?id=' + e.numero) + '">TAO-ICI/IFONC</option>';
 						}
 						table += '<option value="' + App.curl('/redirect/SIPF.do?id=' + e.numero) + '">SIPF</option>';
-						if (isPP) {
+						if (isContribuablePP) {
 							table += '<option value="' + App.curl('/redirect/DPERM.do?id=' + e.numero) + '">DPERM</option>';
 						}
 						if (e.tiersType != 'entreprise') {

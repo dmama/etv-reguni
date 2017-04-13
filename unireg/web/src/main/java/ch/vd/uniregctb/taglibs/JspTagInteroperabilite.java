@@ -111,7 +111,7 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 	public static String buildHtml(String contextPath, NatureTiers natureTiers, long noTiers, boolean debiteurInactif) {
 		final StringBuilder b = new StringBuilder();
 
-		b.append("<select name=\"AppSelect\" onchange=\"App.gotoExternalApp(this);\">\n");
+		b.append("<select name=\"AppSelect\" style=\"width: 10em;\" onchange=\"App.gotoExternalApp(this);\">\n");
 		b.append("\t<option disabled selected>&mdash;&mdash;</option>\n");
 
 		final Set<ApplicationFiscale> apps = getApplicationsFiscalesAutorisees(natureTiers, debiteurInactif);
@@ -126,15 +126,18 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 	}
 
 	public static Set<ApplicationFiscale> getApplicationsFiscalesAutorisees(NatureTiers natureTiers, boolean debiteurInactif) {
-		final Set<NatureTiers> naturesTiersPP = EnumSet.of(NatureTiers.Habitant, NatureTiers.NonHabitant, NatureTiers.MenageCommun);
+		final Set<NatureTiers> naturesTiersPersonnePhysique = EnumSet.of(NatureTiers.Habitant, NatureTiers.NonHabitant);
+		final Set<NatureTiers> naturesTiersContribuablePP = EnumSet.of(NatureTiers.Habitant, NatureTiers.NonHabitant, NatureTiers.MenageCommun);
 		final boolean isEntreprise = natureTiers == NatureTiers.Entreprise;
-		final boolean isPP = naturesTiersPP.contains(natureTiers);
-		final boolean showTAOPP = !debiteurInactif || isPP;
-		final boolean showTAOBA = !isEntreprise && (!debiteurInactif || isPP);
-		final boolean showTAOIS = !isEntreprise && (!debiteurInactif || isPP);
+		final boolean isPersonnePhysique = naturesTiersPersonnePhysique.contains(natureTiers);
+		final boolean isContribuablePP = naturesTiersContribuablePP.contains(natureTiers);
+		final boolean showTAOPP = !debiteurInactif || isContribuablePP;
+		final boolean showTAOBA = !isEntreprise && (!debiteurInactif || isContribuablePP);
+		final boolean showTAOIS = !isEntreprise && (!debiteurInactif || isContribuablePP);
 		final boolean showTAOPM = isEntreprise;
+		final boolean showTAOICIIFONC = isEntreprise || isPersonnePhysique;
 		final boolean showSIPF = true;
-		final boolean showDPERM = isPP;
+		final boolean showDPERM = isContribuablePP;
 
 		//
 		// voir également le fichier unireg.js, fonction Search._build_html_simple_results()
@@ -157,6 +160,9 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 		}
 		if (showTAOPM) {
 			apps.add(ApplicationFiscale.TAO_PM);
+		}
+		if (showTAOICIIFONC) {
+			apps.add(ApplicationFiscale.TAO_ICI_IFONC);
 		}
 		if (showSIPF) {
 			apps.add(ApplicationFiscale.SIPF);
