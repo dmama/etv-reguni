@@ -24,7 +24,7 @@
                     	<td>
 							<c:if test="${job.interrupted}">&nbsp;</c:if>
 							<c:if test="${!job.interrupted}">
-								<a href='#' onclick="javascript:stopJobEnAttente('${job.uuid}');" class="stop iepngfix">&nbsp;</a>
+								<a href='#' onclick="stopJobEnAttente('${job.uuid}');" class="stop iepngfix">&nbsp;</a>
 							</c:if>
 						</td>
 						<td><fmt:formatDate value="${job.creationDate}" pattern="dd.MM.yyyy HH:mm:ss"/></td>

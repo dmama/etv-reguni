@@ -145,7 +145,7 @@ public class UrlEncodedQueryString {
 	 * be passed to <code>toString</code> and <code>apply</code> when outputting query strings.
 	 */
 
-	public static enum Separator {
+	public enum Separator {
 		/**
 		 * An ampersand <code>&amp;</code> - the separator recommended by <a
 		 * href="http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1">HTML 4.01

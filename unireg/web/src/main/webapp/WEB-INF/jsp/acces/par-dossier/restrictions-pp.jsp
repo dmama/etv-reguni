@@ -4,7 +4,7 @@
 	<tiles:put name="title"><fmt:message key="title.droits.acces.dossier" /></tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
-		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-dossier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/acces-par-dossier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	    </li>
 	</tiles:put>
 	<tiles:put name="body">
@@ -74,7 +74,7 @@
 			</fieldset>
 		<!-- Fin Liste des restrictions -->
 		<!-- Debut Bouton -->
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='../par-dossier.do';" />
+		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../par-dossier.do';" />
 		<!-- Fin Bouton -->
 		&nbsp;
 	</tiles:put>

@@ -9,6 +9,6 @@ public interface UtilisateurManager {
 	 * @param noIndividuOperateur
 	 * @return
 	 */
-	public UtilisateurView get(long noIndividuOperateur);
+	UtilisateurView get(long noIndividuOperateur);
 
 }

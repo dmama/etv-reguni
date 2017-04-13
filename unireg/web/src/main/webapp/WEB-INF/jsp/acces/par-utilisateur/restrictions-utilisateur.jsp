@@ -4,7 +4,7 @@
 	<tiles:put name="title"><fmt:message key="title.droits.acces.utilisateur" /></tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
-		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	    </li>
 	</tiles:put>
 	<tiles:put name="body">
@@ -144,7 +144,7 @@
 				<display:column sortable ="false" title="<input type='checkbox'  class='master' onclick='javascript:onClickMaster(this);' />">
 				<authz:authorize ifAnyGranted="ROLE_SEC_DOS_ECR">
 					<c:if test="${!restriction.annule}">
-						<input type="checkbox" class="slave" name="aAnnuler" value="${restriction.id}" onclick="javascript:onClickSlave();"/>
+						<input type="checkbox" class="slave" name="aAnnuler" value="${restriction.id}" onclick="onClickSlave();"/>
 					</c:if>
 				</authz:authorize>
 				</display:column>
@@ -193,7 +193,7 @@
 		<!-- Debut Bouton -->
 		</form:form>
 		<form:form action="exporter-restrictions.do" method="post" id="formExporter"  name="formExporter">
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='../par-utilisateur.do';" />
+		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../par-utilisateur.do';" />
 		<c:if test="${not empty command.restrictions && command.nbDroitsNonAnnules > 0}">
 			<input type="hidden" value="${command.utilisateur.numeroIndividu}" name="noIndividuOperateur"/>
 			<input type="submit" value="<fmt:message key="label.bouton.exporter"/>" name="exporter"/>

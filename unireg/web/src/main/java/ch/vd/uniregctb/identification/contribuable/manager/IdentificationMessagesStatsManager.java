@@ -17,13 +17,13 @@ public interface IdentificationMessagesStatsManager {
 	 *
 	 * @return
 	 */
-	public IdentificationMessagesStatsCriteriaView getView() ;
+	IdentificationMessagesStatsCriteriaView getView() ;
 
 
 	/**
 	 * Calcule le nombre de tache selon les critères choisies
 	 */
 	@Transactional(readOnly = true)
-	public List<IdentificationMessagesStatsResultView> calculerStats(IdentificationContribuableCriteria bean);
+	List<IdentificationMessagesStatsResultView> calculerStats(IdentificationContribuableCriteria bean);
 
 }

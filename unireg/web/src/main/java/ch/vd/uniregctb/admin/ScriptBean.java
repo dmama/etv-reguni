@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public class ScriptBean {
 
-	public static enum DBUnitMode { CLEAN_INSERT, DELETE_ALL, INSERT_APPEND }
+	public enum DBUnitMode { CLEAN_INSERT, DELETE_ALL, INSERT_APPEND }
 
 	private DBUnitMode mode = DBUnitMode.CLEAN_INSERT;
 	private MultipartFile scriptData = null;

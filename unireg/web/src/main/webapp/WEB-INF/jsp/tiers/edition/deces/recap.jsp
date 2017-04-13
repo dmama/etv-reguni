@@ -7,7 +7,7 @@
   	</tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
-		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/creation-deces.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/creation-deces.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	    </li>
 	</tiles:put>
   	<tiles:put name="body">
@@ -62,7 +62,7 @@
 
 			<!-- Boutons -->
 			<unireg:RetourButton link="list.do" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
-			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_sauverDeces(event || window.event);" />	
+			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="return Page_sauverDeces(event || window.event);" />
 		</form:form>
 
 		<script type="text/javascript" language="Javascript">

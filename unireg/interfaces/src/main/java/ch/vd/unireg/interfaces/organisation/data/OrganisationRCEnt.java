@@ -27,8 +27,6 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 */
 	private final long numeroOrganisation;
 
-	private final List<DateRanged<String>> numeroIDE;
-
 	@NotNull
 	private final Map<Long, List<DateRanged<Long>>> sites;
 
@@ -40,7 +38,6 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	                         @NotNull Map<Long, List<DateRanged<Long>>> sites,
 	                         @NotNull Map<Long, SiteOrganisation> donneesSites) {
 		this.numeroOrganisation = numeroOrganisation;
-		this.numeroIDE = OrganisationHelper.extractIdentifiant(identifiants, OrganisationConstants.CLE_IDE);
 		this.sites = sites;
 		this.donneesSites = donneesSites;
 	}

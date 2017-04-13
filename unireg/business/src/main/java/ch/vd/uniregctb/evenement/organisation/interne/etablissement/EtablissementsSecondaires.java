@@ -38,8 +38,6 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
 
-	private List<Etablissement> etablissementsPresentsEtPasses;
-
 	private List<Etablissement> etablissementsAFermer;
 	private List<SiteOrganisation> sitesACreer;
 
@@ -55,8 +53,6 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
-
-		this.etablissementsPresentsEtPasses = context.getTiersService().getEtablissementsSecondairesEntrepriseSansRange(entreprise);
 
 		this.etablissementsAFermer = etablissementsAFermer;
 		this.sitesACreer = sitesACreer;

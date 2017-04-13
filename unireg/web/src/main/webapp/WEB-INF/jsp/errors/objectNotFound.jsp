@@ -12,6 +12,6 @@
 
 		<pre><font color="red"><c:out value="${exception.message}" /></font><br></pre>
 		<br>
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:history.go(-1);" />
+		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="history.go(-1);" />
 	</tiles:put>
 </tiles:insert>

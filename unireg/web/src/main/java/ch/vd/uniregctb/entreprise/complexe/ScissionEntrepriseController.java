@@ -160,7 +160,7 @@ public class ScissionEntrepriseController extends AbstractProcessusComplexeContr
 		}
 
 		// on conserve les données de la scission en session
-		final ScissionEntrepriseSessionData newSessionData = new ScissionEntrepriseSessionData(view.getIdEntrepriseScindee(), view.getDateContratScission());;
+		final ScissionEntrepriseSessionData newSessionData = new ScissionEntrepriseSessionData(view.getIdEntrepriseScindee(), view.getDateContratScission());
 		final ScissionEntrepriseSessionData oldSessionData = getSessionData(session);
 		if (oldSessionData != null && newSessionData.getIdEntrepriseScindee() == oldSessionData.getIdEntrepriseScindee()) {
 			for (ScissionEntrepriseSessionData.EntrepriseResultante oldResultante : oldSessionData.getEntreprisesResultantes()) {

@@ -8,7 +8,6 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="entrepriseService" ref="entrepriseService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
-		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 

@@ -26,7 +26,7 @@
 		<c:if test="${command.natureTiers == 'NonHabitant'}">
 			<tiles:put name="fichierAide">
 				<li>
-					<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/creation-inconnuCdH.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+					<a href="#" onClick="ouvrirAide('<c:url value='/docs/creation-inconnuCdH.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 				</li>
 			</tiles:put>
 		</c:if>

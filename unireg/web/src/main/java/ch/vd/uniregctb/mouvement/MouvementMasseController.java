@@ -206,7 +206,7 @@ public class MouvementMasseController {
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, true));
 	}
 
-	public static enum Action {
+	public enum Action {
 		EFFACER,
 		EXPORTER
 	}

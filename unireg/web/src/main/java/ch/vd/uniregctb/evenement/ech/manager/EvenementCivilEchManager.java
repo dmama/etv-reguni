@@ -26,7 +26,7 @@ public interface EvenementCivilEchManager {
 	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
 	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException ...
 	 */
-	public EvenementCivilEchDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
+	EvenementCivilEchDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
 
 	/**
 	 * Recycle l'evenement civil designe par l'id
@@ -38,14 +38,14 @@ public interface EvenementCivilEchManager {
 	 * @return true si l'evenement a été recyclé avant la sortie de la méthode (le traitement est asynchrone)
 	 * false si l'evenement est toujours en attente de traitement une fois sortie de la méthode
 	 */
-	public boolean recycleEvenementCivil(Long id) throws EvenementCivilException;
+	boolean recycleEvenementCivil(Long id) throws EvenementCivilException;
 
 	/**
 	 * Force l'etat de l'evenement à TRAITE
 	 *
 	 * @param id id de l'evt à forcer
 	 */
-	public void forceEvenement(Long id);
+	void forceEvenement(Long id);
 
 	/**
 	 * Recherche des événements correspondant aux critères
@@ -55,7 +55,7 @@ public interface EvenementCivilEchManager {
 	 * @return une liste d'evenement pret à afficher
 	 * @throws ch.vd.uniregctb.adresse.AdressesResolutionException ...
 	 */
-	public List<EvenementCivilEchElementListeRechercheView> find(EvenementCivilEchCriteriaView bean, ParamPagination pagination) throws AdresseException;
+	List<EvenementCivilEchElementListeRechercheView> find(EvenementCivilEchCriteriaView bean, ParamPagination pagination) throws AdresseException;
 
 	/**
 	 * Compte le nombre d'evenements correspondant aux criteres
@@ -63,5 +63,5 @@ public interface EvenementCivilEchManager {
 	 * @param bean les critères en question
 	 * @return le nombre d'évenements correspondant aux critères
 	 */
-	public int count(EvenementCivilEchCriteriaView bean);
+	int count(EvenementCivilEchCriteriaView bean);
 }

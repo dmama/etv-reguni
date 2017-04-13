@@ -43,7 +43,7 @@ public class UniregCacheManagerImpl implements UniregCacheManager, DynamicMBean 
 	@Override
 	public void register(UniregCacheInterface cache) {
 		if (map.containsKey(cache.getName())) {
-			throw new IllegalArgumentException(String.format("Cache " + cache.getName() + " déjà enregistré"));
+			throw new IllegalArgumentException("Cache " + cache.getName() + " déjà enregistré");
 		}
 		map.put(cache.getName(), cache);
 	}

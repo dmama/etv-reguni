@@ -68,11 +68,11 @@ function submit(url, methodType, delegateName){
 			</a>
 			<br/>
 			<br/>
-		    <input type="button" value="<fmt:message key="label.bouton.exporter"/>" onclick="javascript:submit('${contextPath}/admin/dbdump/dump.do');"/>
+		    <input type="button" value="<fmt:message key="label.bouton.exporter"/>" onclick="submit('${contextPath}/admin/dbdump/dump.do');"/>
 		    <span class="error"><fmt:message key="label.export.DBUnit.export.remark"/></span>
 		    <br/>
 			<br/>
-		    <input type="button" value="<fmt:message key="label.bouton.exporter.filesystem"/>" onclick="javascript:submit('${contextPath}/admin/dbdump/dump2fs.do');"/>
+		    <input type="button" value="<fmt:message key="label.bouton.exporter.filesystem"/>" onclick="submit('${contextPath}/admin/dbdump/dump2fs.do');"/>
 		    <span class="error"><fmt:message key="label.export.DBUnit.exportfs.remark"/></span>
 		    <br/>
 			<br/>

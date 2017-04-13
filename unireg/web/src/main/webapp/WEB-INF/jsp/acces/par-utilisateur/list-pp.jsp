@@ -8,7 +8,7 @@
   	</tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
-		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	    </li>
 	</tiles:put>
   	<tiles:put name="body">
@@ -55,7 +55,7 @@
 		<!-- Debut Bouton -->
 		<table border="0">
 		<tr><td>
-			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='restrictions.do?noIndividuOperateur=${command.utilisateurView.numeroIndividu}';" />
+			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='restrictions.do?noIndividuOperateur=${command.utilisateurView.numeroIndividu}';" />
 		</td></tr>
 		</table>
 		<!-- Fin Bouton -->

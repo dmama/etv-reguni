@@ -31,7 +31,7 @@ public class ExtractionSimpa {
 	private final String bicSwift;
 	private final String institutionFinanciere;
 
-	private static final Pattern PATTERN = Pattern.compile("(\\d+);([^;]*);(\\d+);([^;]*);(IND|ENT|ETA);(T|G);(\\d{1,2}[/.]\\d{1,2}[/.]\\d{4});((?:\\d{1,2}[/.]\\d{1,2}[/.]\\d{4})?);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*)(;.*)?");
+	private static final Pattern PATTERN = Pattern.compile("(\\d+);([^;]*);(\\d+);([^;]*);(IND|ENT|ETA);([TG]);(\\d{1,2}[/.]\\d{1,2}[/.]\\d{4});((?:\\d{1,2}[/.]\\d{1,2}[/.]\\d{4})?);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*)(;.*)?");
 
 	public static ExtractionSimpa of(String line) throws ParseException {
 		final Matcher matcher = PATTERN.matcher(line);

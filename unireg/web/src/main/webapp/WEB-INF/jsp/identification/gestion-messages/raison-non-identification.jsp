@@ -33,7 +33,7 @@
 </c:set>
 <unireg:buttonTo name="${retourButtonName}" action="/identification/gestion-messages/edit.do" confirm="Voulez-vous vraiment quitter cette page sans sauver ?" method="get"/>
 &nbsp;
-<input type="button" name="nonIdentifier" value="<fmt:message key="label.bouton.identification.valider" />" onClick="javascript:IdentificationCtb.confirmerImpossibleAIdentifier(${command.demandeIdentificationView.id});" />
+<input type="button" name="nonIdentifier" value="<fmt:message key="label.bouton.identification.valider" />" onClick="IdentificationCtb.confirmerImpossibleAIdentifier(${command.demandeIdentificationView.id});" />
 
 	
 

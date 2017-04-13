@@ -197,9 +197,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 						aEnlever.add(erreur);
 					}
 				}
-				for (Pair<String, String> erreur : aEnlever) {
-					erreurs.remove(erreur);
-				}
+				erreurs.removeAll(aEnlever);
 			}
 		}
 	}

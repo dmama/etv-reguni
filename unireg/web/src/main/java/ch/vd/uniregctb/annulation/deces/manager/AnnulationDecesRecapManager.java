@@ -11,11 +11,11 @@ public interface AnnulationDecesRecapManager {
 	 * Alimente la vue AnnulationDecesRecapView
 	 */
 	@Transactional(readOnly = true)
-	public AnnulationDecesRecapView get(Long numero);
+	AnnulationDecesRecapView get(Long numero);
 
 	/**
 	 * Persiste le rapport
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(AnnulationDecesRecapView annulationDecesRecapView) throws MetierServiceException;
+	void save(AnnulationDecesRecapView annulationDecesRecapView) throws MetierServiceException;
 }

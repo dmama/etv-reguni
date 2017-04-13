@@ -213,10 +213,7 @@ public class ImmeubleRFDetector {
 
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
-				communes.entrySet().forEach(e -> {
-
-					final Integer noRf = e.getKey();
-					final String nom = e.getValue();
+				communes.forEach((noRf, nom) -> {
 
 					final CommuneRF communeRF = communeRFDAO.findActive(new CommuneRFKey(noRf));
 

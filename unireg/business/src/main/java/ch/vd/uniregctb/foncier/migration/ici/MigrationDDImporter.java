@@ -50,7 +50,6 @@ import ch.vd.uniregctb.foncier.migration.DonneesFusionsCommunes;
 import ch.vd.uniregctb.foncier.migration.MigrationImporter;
 import ch.vd.uniregctb.foncier.migration.MigrationKey;
 import ch.vd.uniregctb.foncier.migration.ParsingHelper;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -68,7 +67,6 @@ public class MigrationDDImporter extends MigrationImporter {
 	private static final int BATCH_SIZE = 100;
 
 	private final TiersDAO tiersDAO;
-	private final HibernateTemplate hibernateTemplate;
 	private final ServiceInfrastructureService infraService;
 	private final GlobalTiersIndexer tiersIndexer;
 	private final ValidationInterceptor validationInterceptor;
@@ -76,7 +74,6 @@ public class MigrationDDImporter extends MigrationImporter {
 	private final PlatformTransactionManager transactionManager;
 
 	public MigrationDDImporter(TiersDAO tiersDAO,
-	                           HibernateTemplate hibernateTemplate,
 	                           ServiceInfrastructureService infraService,
 	                           ImmeubleRFDAO immeubleRFDAO,
 	                           GlobalTiersIndexer tiersIndexer,
@@ -85,7 +82,6 @@ public class MigrationDDImporter extends MigrationImporter {
 	                           PlatformTransactionManager transactionManager) {
 		super(immeubleRFDAO);
 		this.tiersDAO = tiersDAO;
-		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
 		this.tiersIndexer = tiersIndexer;
 		this.validationInterceptor = validationInterceptor;

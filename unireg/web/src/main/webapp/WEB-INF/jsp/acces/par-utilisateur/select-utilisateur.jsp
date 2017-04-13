@@ -4,7 +4,7 @@
 	<tiles:put name="title"><fmt:message key="title.acces.utilisateur.recherche.utilisateur" /></tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
-		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	    </li>
 	</tiles:put>
 	<tiles:put name="body">

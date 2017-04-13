@@ -6,7 +6,7 @@
   	<tiles:put name="title"><fmt:message key="label.recapitulatif.fusion" /></tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
-		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/fusion.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/fusion.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	    </li>
 	</tiles:put>
   	<tiles:put name="body">
@@ -81,8 +81,8 @@
 			</table>
 		</fieldset>
 		<!-- Debut Boutons -->
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:retourRecapFusion(${command.nonHabitant.numero});" />
-		<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_sauverFusion(event || window.event);" />	
+		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="retourRecapFusion(${command.nonHabitant.numero});" />
+		<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="return Page_sauverFusion(event || window.event);" />
 		<!-- Fin Boutons -->
 		</form:form>
 		<script type="text/javascript" language="Javascript1.3">

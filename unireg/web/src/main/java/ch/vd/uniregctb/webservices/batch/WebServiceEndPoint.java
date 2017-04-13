@@ -400,7 +400,7 @@ public class WebServiceEndPoint implements WebService {
 						try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 							IOUtils.copy(is, bos);
 							bos.flush();
-							content.setValue(bos.toByteArray());;
+							content.setValue(bos.toByteArray());
 						}
 					}
 				});

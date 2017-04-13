@@ -15,7 +15,7 @@ public interface HttpDocumentFetcher {
 	 * Document renvoyé par la méthode {@link #fetch}<br/>
 	 * <b>Ne pas oublier d'appeler la méthode {@link #close} après utilisation</b>
 	 */
-	static final class HttpDocument implements AutoCloseable {
+	final class HttpDocument implements AutoCloseable {
 
 		/**
 		 * Type du contenu
@@ -79,7 +79,7 @@ public interface HttpDocumentFetcher {
 	/**
 	 * Exception qui encapsule une erreur transmise par la réponse HTTP de l'appel
 	 */
-	static class HttpDocumentException extends Exception {
+	class HttpDocumentException extends Exception {
 		private final int errorCode;
 		private final String errorMessage;
 
@@ -105,7 +105,7 @@ public interface HttpDocumentFetcher {
 	/**
 	 * Exception lancée pour les erreurs 4xx
 	 */
-	static class HttpDocumentClientException extends HttpDocumentException {
+	class HttpDocumentClientException extends HttpDocumentException {
 		public HttpDocumentClientException(int errorCode, String errorMessage) {
 			super(errorCode, errorMessage);
 		}
@@ -114,7 +114,7 @@ public interface HttpDocumentFetcher {
 	/**
 	 * Exception lancée pour les erreurs 5xx
 	 */
-	static class HttpDocumentServerException extends HttpDocumentException {
+	class HttpDocumentServerException extends HttpDocumentException {
 		public HttpDocumentServerException(int errorCode, String errorMessage) {
 			super(errorCode, errorMessage);
 		}

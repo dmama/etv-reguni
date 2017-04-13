@@ -11,7 +11,7 @@
 
 	<tiles:put name="fichierAide">
 		<li>
-			<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-dossier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+			<a href="#" onClick="ouvrirAide('<c:url value='/docs/acces-par-dossier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 		</li>
 	</tiles:put>
 	<tiles:put name="body">
@@ -62,7 +62,7 @@
 		<tr>
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
-				<input type="button" id="ajouter" value="<fmt:message key="label.bouton.ajouter" />" onclick="javascript:ajouterRestriction();">
+				<input type="button" id="ajouter" value="<fmt:message key="label.bouton.ajouter" />" onclick="ajouterRestriction();">
 			</td>
 			<td width="25%">
 				<c:choose>

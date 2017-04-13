@@ -114,11 +114,7 @@ public class BaseComparator<T> implements Comparator<T> {
     protected final Object getProperty(Object bean, String prop) {
         try {
             return PropertyUtils.getProperty(bean, prop);
-        } catch (IllegalAccessException e) {
-            return null;
-        } catch (InvocationTargetException e) {
-            return null;
-        } catch (NoSuchMethodException e) {
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             return null;
         }
     }

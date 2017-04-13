@@ -285,9 +285,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 		for (NomPrenom nomPrenom : nomsPrenoms) {
 			list.add(nomPrenom.getNomPrenom());
 		}
-		for (String raison : raisonsSociales) {
-			list.add(raison);
-		}
+		list.addAll(raisonsSociales);
 		return list;
 	}
 

@@ -4,7 +4,7 @@
 	<tiles:put name="title"><fmt:message key="title.creation.droit.acces" /></tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
-		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	    </li>
 	</tiles:put>
 	<tiles:put name="body">
@@ -22,7 +22,7 @@
 			<jsp:param name="path" value="dossier" />
 		</jsp:include>
 		<jsp:include page="restriction.jsp" />
-		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='ajouter-restriction.do?noIndividuOperateur=${command.utilisateur.numeroIndividu}';" />
+		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='ajouter-restriction.do?noIndividuOperateur=${command.utilisateur.numeroIndividu}';" />
 		<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver" />" />
 	</form:form>
 	</tiles:put>

@@ -22,7 +22,7 @@ public enum TypeUnion {
 	
 	private final String description;
 	
-	private TypeUnion(int id, String description) {
+	TypeUnion(int id, String description) {
 		this.id = id;
 		this.description = description;
 	}

@@ -19,6 +19,6 @@ public interface RapportListManager {
 	 * @return une vue RapportListView
 	 */
 	@Transactional(readOnly = true)
-	public RapportListView get(Long numero) ;
+	RapportListView get(Long numero) ;
 
 }

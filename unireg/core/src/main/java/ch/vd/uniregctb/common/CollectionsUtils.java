@@ -309,7 +309,7 @@ public abstract class CollectionsUtils {
 					// les deux éléments sont équivalents, on les supprime donc des deux listes et on les insère dans la liste commune
 					liter.remove();
 					riter.remove();
-					common.add(new Pair<T, T>(l, r));
+					common.add(new Pair<>(l, r));
 					break;
 				}
 			}

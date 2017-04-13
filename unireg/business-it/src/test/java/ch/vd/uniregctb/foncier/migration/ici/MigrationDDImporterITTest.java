@@ -41,7 +41,7 @@ public class MigrationDDImporterITTest extends BusinessItTest {
 		final ImmeubleRFDAO immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
 		final GlobalTiersIndexer tiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
 		final TacheSynchronizerInterceptor tacheSynchronizerInterceptor = getBean(TacheSynchronizerInterceptor.class, "tacheSynchronizerInterceptor");
-		importer = new MigrationDDImporter(tiersDAO, hibernateTemplate, infraService, immeubleRFDAO, tiersIndexer, validationInterceptor, tacheSynchronizerInterceptor, transactionManager);
+		importer = new MigrationDDImporter(tiersDAO, infraService, immeubleRFDAO, tiersIndexer, validationInterceptor, tacheSynchronizerInterceptor, transactionManager);
 	}
 
 	@Test

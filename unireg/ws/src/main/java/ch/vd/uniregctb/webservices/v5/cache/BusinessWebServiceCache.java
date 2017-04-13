@@ -38,7 +38,6 @@ import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.avatar.ImageData;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
-import ch.vd.uniregctb.cache.CompletePartsCallbackWithException;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.KeyDumpableCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;

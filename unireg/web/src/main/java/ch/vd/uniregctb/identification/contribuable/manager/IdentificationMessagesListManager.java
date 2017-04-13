@@ -20,39 +20,39 @@ public interface IdentificationMessagesListManager {
 	 * Recherche des identifications correspondant aux critères
 	 */
 	@Transactional(readOnly = true)
-	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination,
-	                                                   IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande)
+	List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination,
+	                                            IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande)
 			throws AdressesResolutionException, ServiceInfrastructureException;
 
 	/**
 	 * Cherche et compte les identifications correspondant aux criteres
 	 */
 	@Transactional(readOnly = true)
-	public int count(IdentificationContribuableCriteria criterion, IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
+	int count(IdentificationContribuableCriteria criterion, IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
 
 
 	/**
 	 * Suspendre l'identification des messages
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void suspendreIdentificationMessages(IdentificationContribuableListCriteria identificationContribuableListCriteria);
+	void suspendreIdentificationMessages(IdentificationContribuableListCriteria identificationContribuableListCriteria);
 
 	/**
 	 * Soumettre l'identification des messages
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void soumettreIdentificationMessages(IdentificationContribuableListCriteria identificationContribuableListCriteria);
+	void soumettreIdentificationMessages(IdentificationContribuableListCriteria identificationContribuableListCriteria);
 
 	/**
 	 * Alimente la vue
 	 */
-	public IdentificationContribuableListCriteria getView(String parametreTypeMessage, Integer parametrePeriode, IdentificationContribuable.Etat parametreEtat);
+	IdentificationContribuableListCriteria getView(String parametreTypeMessage, Integer parametrePeriode, IdentificationContribuable.Etat parametreEtat);
 
 	/**
 	 * Recherche des identifications correspondant seulement à l'état en cours
 	 */
 	@Transactional(readOnly = true)
-	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination, TypeDemande... typeDemande)
+	List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination, TypeDemande... typeDemande)
 			throws AdressesResolutionException, ServiceInfrastructureException;
 
 
@@ -60,13 +60,13 @@ public interface IdentificationMessagesListManager {
 	 * Cherche et compte les identifications correspondant à l'etat en cours
 	 */
 	@Transactional(readOnly = true)
-	public int countEnCoursSeul(IdentificationContribuableCriteria criterion, TypeDemande... typeDemande);
+	int countEnCoursSeul(IdentificationContribuableCriteria criterion, TypeDemande... typeDemande);
 
 
 	/**
 	 * Re soumettre l'identification des messages qui sont remis "dans le circuit" afin d'être identifié manuellement ou expèrtisé
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void reSoumettreIdentificationMessages(IdentificationContribuableListCriteria bean);
+	void reSoumettreIdentificationMessages(IdentificationContribuableListCriteria bean);
 
 }

@@ -3,8 +3,6 @@ package ch.vd.uniregctb.evenement.organisation.interne.retour.annonce;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -48,13 +46,10 @@ import ch.vd.uniregctb.utils.RangeUtil;
  */
 public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RetourAnnonceIDE.class);
-
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
 
 	private final AnnonceIDEEnvoyee annonceIDE;
-	private final ReferenceAnnonceIDE referenceAnnonceIDE;
 
 	private final SiteOrganisation sitePrincipal;
 
@@ -70,7 +65,7 @@ public class RetourAnnonceIDE extends EvenementOrganisationInterneDeTraitement {
 		dateAvant = dateApres.getOneDayBefore();
 
 		this.annonceIDE = annonceIDE;
-		this.referenceAnnonceIDE = evenement.getReferenceAnnonceIDE();
+		final ReferenceAnnonceIDE referenceAnnonceIDE = evenement.getReferenceAnnonceIDE();
 
 		sitePrincipal = organisation.getSitePrincipal(dateApres).getPayload();
 		etablissementPrincipal = referenceAnnonceIDE.getEtablissement();

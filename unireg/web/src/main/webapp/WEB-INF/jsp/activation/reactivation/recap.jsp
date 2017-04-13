@@ -16,7 +16,7 @@
 			<jsp:include page="rapport.jsp" />
 			<!-- Debut Boutons -->
 			<unireg:RetourButton link="list.do?mode=REACTIVATION&population=${population}" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
-			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_SauverReactivation(event || window.event);" />	
+			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="return Page_SauverReactivation(event || window.event);" />
 			<!-- Fin Boutons -->
 		</form:form>
 		<script type="text/javascript" language="Javascript">

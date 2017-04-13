@@ -395,7 +395,6 @@
 
 	<bean id="migrationDDCsvLoader" class="ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporter">
 		<constructor-arg ref="tiersDAO"/>
-		<constructor-arg ref="hibernateTemplate"/>
 		<constructor-arg ref="serviceInfrastructureService"/>
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="globalTiersIndexer"/>

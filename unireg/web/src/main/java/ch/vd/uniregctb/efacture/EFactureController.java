@@ -225,14 +225,14 @@ public class EFactureController implements MessageSourceAware {
 		this.validator = validator;
 	}
 
-	public static enum AddCommentActionType {
+	public enum AddCommentActionType {
 		SUSPEND("/efacture/suspend.do", "label.efacture.bouton.suspendre"),
 		ACTIVATE("/efacture/activate.do", "label.efacture.bouton.activer");
 
 		private final String url;
 		private final String labelKey;
 
-		private AddCommentActionType(String url, String labelKey) {
+		AddCommentActionType(String url, String labelKey) {
 			this.url = url;
 			this.labelKey = labelKey;
 		}

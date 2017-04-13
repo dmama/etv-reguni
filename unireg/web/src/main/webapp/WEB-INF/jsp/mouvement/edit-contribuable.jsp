@@ -4,7 +4,7 @@
 	<tiles:put name="title"><fmt:message key="title.edition.mouvement.contribuable" /></tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
-		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/maj-mouvement.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/maj-mouvement.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	    </li>
 	</tiles:put>
 	<tiles:put name="body">
@@ -19,7 +19,7 @@
 	<jsp:include page="mouvements-contribuable.jsp"/>
 	<!-- Fin Liste de DIs -->
 	<!-- Debut Bouton -->
-	<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:retourVisuFromMvt(${command.contribuable.numero});" />
+	<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="retourVisuFromMvt(${command.contribuable.numero});" />
 	<!-- Fin Bouton -->
 	&nbsp;
 	<script type="text/javascript" language="Javascript" src="<c:url value="/js/mouvement.js"/>"></script>

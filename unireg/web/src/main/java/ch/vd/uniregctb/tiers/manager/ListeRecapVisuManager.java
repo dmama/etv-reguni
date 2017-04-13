@@ -19,6 +19,6 @@ public interface ListeRecapVisuManager {
 	 * @return un objet ListeRecapDetailView
 	 */
 	@Transactional(readOnly = true)
-	public ListeRecapitulativeDetailView get(Long numero) ;
+	ListeRecapitulativeDetailView get(Long numero) ;
 
 }

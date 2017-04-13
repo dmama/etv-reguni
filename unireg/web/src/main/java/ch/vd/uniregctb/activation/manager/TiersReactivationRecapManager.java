@@ -11,13 +11,13 @@ public interface TiersReactivationRecapManager {
 	 * @param numeroTiers
 	 * @return
 	 */
-	public TiersReactivationRecapView get(Long numeroTiers);
+	TiersReactivationRecapView get(Long numeroTiers);
 
 	/**
 	 * Persiste le tiers
 	 *
 	 * @param tiersReactivationRecapView
 	 */
-	public void save(TiersReactivationRecapView tiersReactivationRecapView) throws ActivationServiceException;
+	void save(TiersReactivationRecapView tiersReactivationRecapView) throws ActivationServiceException;
 
 }

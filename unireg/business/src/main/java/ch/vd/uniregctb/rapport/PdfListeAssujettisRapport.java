@@ -4,7 +4,6 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 

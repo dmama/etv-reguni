@@ -11,7 +11,7 @@
 
 	<tiles:put name="fichierAide">
 		<li>
-			<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/maj-dossier-apparente.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+			<a href="#" onClick="ouvrirAide('<c:url value='/docs/maj-dossier-apparente.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 		</li>
 	</tiles:put>
 

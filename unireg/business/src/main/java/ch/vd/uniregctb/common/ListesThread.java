@@ -56,9 +56,9 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 	/**
 	 * Ensemble des parties à récupérer des tiers : les tiers eux-mêmes et les rapports entre tiers
 	 */
-    protected static final Set<Parts> PARTS_FISCALES = Collections.unmodifiableSet(EnumSet.of(Parts.RAPPORTS_ENTRE_TIERS));;
+    protected static final Set<Parts> PARTS_FISCALES = Collections.unmodifiableSet(EnumSet.of(Parts.RAPPORTS_ENTRE_TIERS));
 
-    public ListesThread(BlockingQueue<List<Long>> queue, StatusManager status, AtomicInteger compteur,
+	public ListesThread(BlockingQueue<List<Long>> queue, StatusManager status, AtomicInteger compteur,
                         ServiceCivilCacheWarmer serviceCivilCacheWarmer,
                         PlatformTransactionManager transactionManager,
                         TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, T results) {

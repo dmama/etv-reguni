@@ -17,5 +17,5 @@ public interface ForFiscalManager {
 	 * @return un objet TiersView
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException;
+	TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException;
 }

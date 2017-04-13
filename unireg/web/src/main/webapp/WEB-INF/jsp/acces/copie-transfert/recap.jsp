@@ -24,7 +24,7 @@
 	<tiles:put name="title">${titre}</tiles:put>
 	<tiles:put name="fichierAide">
 		<li>
-			<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-copier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+			<a href="#" onClick="ouvrirAide('<c:url value='/docs/acces-copier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 		</li>
 	</tiles:put>
 	<tiles:put name="body">
@@ -49,7 +49,7 @@
 	<form:form action="${action}" commandName="validationData" method="post">
 		<input type="hidden" name="noOperateurReference" value="${noOperateurReference}"/>
 		<input type="hidden" name="noOperateurDestination" value="${noOperateurDestination}"/>
-		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='../copie-transfert.do';" />
+		<input type="button" name="retourRecherche" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../copie-transfert.do';" />
 		<input type="submit" name="valider" value="${labelBouton}"/>
 	</form:form>
 	</tiles:put>

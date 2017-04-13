@@ -163,15 +163,15 @@
 	                                <input type="hidden" name="source" value="${mySource}"/>
                                     <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
                                         <c:if test="${messageEnCours}">
-                                            <input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:IdentificationCtb.confirmeSuspensionMessage();"/>&nbsp;
+                                            <input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="IdentificationCtb.confirmeSuspensionMessage();"/>&nbsp;
                                         </c:if>
                                         <c:if test="${messageSuspendu}">
-                                            <input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="javascript:IdentificationCtb.confirmeSoumissionMessage();"/>&nbsp;
+                                            <input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="IdentificationCtb.confirmeSoumissionMessage();"/>&nbsp;
                                         </c:if>
                                     </authz:authorize>
-                                    <input type="button" name="debloquer" value="<fmt:message key="label.bouton.debloquer"/>" onClick="javascript:IdentificationCtb.confirmeDeblocageMessage();"/>&nbsp;
+                                    <input type="button" name="debloquer" value="<fmt:message key="label.bouton.debloquer"/>" onClick="IdentificationCtb.confirmeDeblocageMessage();"/>&nbsp;
                                     <unireg:testMode>
-                                        <input type="button" name="bloquer" value="Bloquer" onClick="javascript:IdentificationCtb.confirmeBlocageMessage();"/>
+                                        <input type="button" name="bloquer" value="Bloquer" onClick="IdentificationCtb.confirmeBlocageMessage();"/>
                                     </unireg:testMode>
                                 </div>
                             </td>

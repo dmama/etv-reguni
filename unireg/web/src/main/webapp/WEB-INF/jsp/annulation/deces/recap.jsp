@@ -15,7 +15,7 @@
   	</tiles:put>
   	<tiles:put name="fichierAide">
 	    <li>
-		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/annulation-deces.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/annulation-deces.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	    </li>
 	</tiles:put>
   	<tiles:put name="body">
@@ -73,10 +73,10 @@
 			<unireg:RetourButton link="list.do" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
 			<c:choose>
 				<c:when test="${command.marieSeulAndVeuf}">
-					<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_sauverAnnulDeces(event || window.event,false);" />
+					<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="return Page_sauverAnnulDeces(event || window.event,false);" />
 				</c:when>
 				<c:otherwise>
-					<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_sauverAnnulDeces(event || window.event,true);" />
+					<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="return Page_sauverAnnulDeces(event || window.event,true);" />
 				</c:otherwise>
 			</c:choose>
 

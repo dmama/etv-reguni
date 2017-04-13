@@ -87,7 +87,7 @@
 	    <!-- Debut Bouton -->
 	    <table border="0">
 		    <tr><td>
-			    <input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:document.location.href='../dossiers-apparentes/edit.do?id=${numeroTiers}';" />
+			    <input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../dossiers-apparentes/edit.do?id=${numeroTiers}';" />
 		    </td></tr>
 	    </table>
 	    <!-- Fin Bouton -->

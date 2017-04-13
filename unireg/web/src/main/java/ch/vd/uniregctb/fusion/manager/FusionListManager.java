@@ -19,6 +19,6 @@ public interface FusionListManager {
 	 * @return une vue FusionListView
 	 */
 	@Transactional(readOnly = true)
-	public FusionListView get(Long numeroNonHab) ;
+	FusionListView get(Long numeroNonHab) ;
 
 }

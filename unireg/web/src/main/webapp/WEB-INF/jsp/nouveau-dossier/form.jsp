@@ -46,7 +46,7 @@
 	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
-			<div class="navigation-action"><input type="button" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher" onClick="javascript:recherche();" /></div>
+			<div class="navigation-action"><input type="button" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher" onClick="recherche();" /></div>
 		</td>
 		<td width="25%">
 			<c:set var="labelEffacer">

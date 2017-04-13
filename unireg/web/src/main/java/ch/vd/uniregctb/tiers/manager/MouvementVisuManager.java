@@ -20,6 +20,6 @@ public interface MouvementVisuManager extends AbstractMouvementManager {
 	 * @return un objet MouvementDetailView
 	 */
 	@Transactional(readOnly = true)
-	public MouvementDetailView get(Long numero) throws ServiceInfrastructureException;
+	MouvementDetailView get(Long numero) throws ServiceInfrastructureException;
 
 }

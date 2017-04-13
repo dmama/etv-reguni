@@ -20,7 +20,7 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	 * @return une vue MouvementListView
 	 */
 	@Transactional(readOnly = true)
-	public abstract MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws ServiceInfrastructureException;
+	MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws ServiceInfrastructureException;
 
 	/**
 	 * Creer une vue pour le mvt de dossier
@@ -29,7 +29,7 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public MouvementDetailView creerMvt(Long numero) ;
+	MouvementDetailView creerMvt(Long numero) ;
 
 	/**
 	 * Creer une vue pour le mvt de dossier depuis la tache transmission de dossier
@@ -39,7 +39,7 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public MouvementDetailView creerMvtForTacheTransmissionDossier(Long numero, Long idTache) throws ServiceInfrastructureException ;
+	MouvementDetailView creerMvtForTacheTransmissionDossier(Long numero, Long idTache) throws ServiceInfrastructureException ;
 
 	/**
 	 * Persiste en base le nouveau mvt de dossier
@@ -48,7 +48,7 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	 * @throws Exception
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(MouvementDetailView mvtDetailView) throws Exception ;
+	void save(MouvementDetailView mvtDetailView) throws Exception ;
 
 	/**
 	 * Annule un mouvement
@@ -56,7 +56,7 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	 * @param idMvt
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void annulerMvt(long idMvt);
+	void annulerMvt(long idMvt);
 
 	/**
 	 * Retouve le numero du contribuable associé à un mouvement

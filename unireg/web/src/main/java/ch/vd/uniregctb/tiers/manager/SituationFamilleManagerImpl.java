@@ -18,7 +18,6 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.tiers.SituationFamilleDAO;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
@@ -34,8 +33,6 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 	private static final String SITUATION_FAMILLE = "SituationFamille";
 
 	private static final String SITUATION_FAMILLE_MENAGE_COMMUN = "SituationFamilleMenageCommun";
-
-	private SituationFamilleDAO situationFamilleDAO;
 
 	private EvenementFiscalService evenementFiscalService;
 
@@ -135,10 +132,6 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 
 		tiersDAO.addAndSave(contribuable, situationFamille);
 		evenementFiscalService.publierEvenementFiscalChangementSituationFamille(dateDebut, contribuable);
-	}
-
-	public void setSituationFamilleDAO(SituationFamilleDAO situationFamilleDAO) {
-		this.situationFamilleDAO = situationFamilleDAO;
 	}
 
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {

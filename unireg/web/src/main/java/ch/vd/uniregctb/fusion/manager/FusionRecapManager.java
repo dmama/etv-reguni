@@ -20,12 +20,12 @@ public interface FusionRecapManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public FusionRecapView get (Long numeroNonHabitant, Long numeroHabitant) ;
+	FusionRecapView get(Long numeroNonHabitant, Long numeroHabitant) ;
 
 	/**
 	 * Persiste le rapport de travail
 	 * @param rapportView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(FusionRecapView fusionRecapView) ;
+	void save(FusionRecapView fusionRecapView) ;
 }

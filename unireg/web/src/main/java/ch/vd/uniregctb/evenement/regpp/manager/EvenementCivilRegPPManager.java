@@ -27,21 +27,21 @@ public interface EvenementCivilRegPPManager {
 	 * @throws AdressesResolutionException ...
 	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException ...
 	 */
-	public EvenementCivilRegPPDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
+	EvenementCivilRegPPDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
 
 	/**
 	 * Traite un evenement civil designe par l'id
 	 *
 	 * @param id de l'evt à traiter
 	 */
-	public void traiteEvenementCivil(Long id);
+	void traiteEvenementCivil(Long id);
 
 	/**
 	 * Force l'etat de l'evenement à TRAITE
 	 *
 	 * @param id id de l'evt à forcer
 	 */
-	public void forceEtatTraite(Long id);
+	void forceEtatTraite(Long id);
 
 	/**
 	 * Recherche des événements correspondant aux critères
@@ -51,7 +51,7 @@ public interface EvenementCivilRegPPManager {
 	 * @return une liste d'evenement pret à afficher
 	 * @throws AdressesResolutionException ...
 	 */
-	public List<EvenementCivilRegPPElementListeView> find(EvenementCivilRegPPCriteriaView bean, ParamPagination pagination) throws AdresseException;
+	List<EvenementCivilRegPPElementListeView> find(EvenementCivilRegPPCriteriaView bean, ParamPagination pagination) throws AdresseException;
 
 	/**
 	 * Compte le nombre d'evenements correspondant aux criteres
@@ -59,6 +59,6 @@ public interface EvenementCivilRegPPManager {
 	 * @param criterion les critères en question
 	 * @return le nombre d'évenements correspondant aux critères
 	 */
-	public int count(EvenementCivilCriteria criterion);
+	int count(EvenementCivilCriteria criterion);
 
 }

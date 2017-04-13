@@ -189,7 +189,7 @@
 			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/></div>
 		</td>
 		<td width="25%">
-            <div class="navigation-action"><input type="button" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" onClick="javascript:IdentificationCtb.effacerFormulaire('${mySource}');"/></div>
+            <div class="navigation-action"><input type="button" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" onClick="IdentificationCtb.effacerFormulaire('${mySource}');"/></div>
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>

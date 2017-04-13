@@ -73,9 +73,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<Declara
 		final List<DeclarationImpotOrdinaire> listRtr = new ArrayList<>();
 
 		if (criterion.getEtat() == null || criterion.getEtat().equals(TOUS)) {
-			for (DeclarationImpotOrdinaire di : list) {
-				listRtr.add(di);
-			}
+			listRtr.addAll(list);
 		}
 		else {
 			final TypeEtatDeclaration etat = TypeEtatDeclaration.valueOf(criterion.getEtat());

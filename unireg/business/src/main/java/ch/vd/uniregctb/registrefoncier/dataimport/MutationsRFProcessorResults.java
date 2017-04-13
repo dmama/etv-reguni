@@ -172,9 +172,9 @@ public class MutationsRFProcessorResults extends JobResults<Long, MutationsRFPro
 
 	@Override
 	public void addAll(MutationsRFProcessorResults right) {
-		right.processed.entrySet().forEach(e -> {
-			final MutableLong count = processed.computeIfAbsent(e.getKey(), k -> new MutableLong(0));
-			count.add(e.getValue().getValue());
+		right.processed.forEach((key, value) -> {
+			final MutableLong count = processed.computeIfAbsent(key, k -> new MutableLong(0));
+			count.add(value.getValue());
 		});
 		erreurs.addAll(right.erreurs);
 	}

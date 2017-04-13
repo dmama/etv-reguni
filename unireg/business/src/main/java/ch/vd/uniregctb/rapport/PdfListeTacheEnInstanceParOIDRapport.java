@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;

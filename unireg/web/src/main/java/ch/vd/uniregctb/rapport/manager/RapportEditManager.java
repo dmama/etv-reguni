@@ -27,7 +27,7 @@ public interface RapportEditManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public RapportView get (Long numeroTiers, Long numeroTiersLie) throws AdressesResolutionException;
+	RapportView get(Long numeroTiers, Long numeroTiersLie) throws AdressesResolutionException;
 
 	/**
 	 * Construit la vue qui permet d'éditer un rapport.
@@ -38,7 +38,7 @@ public interface RapportEditManager {
 	 * @throws AdresseException s'il y a un problème dans la construction de l'adresse
 	 */
 	@Transactional(readOnly = true)
-	public RapportView get(Long idRapport, SensRapportEntreTiers editingFrom) throws AdresseException;
+	RapportView get(Long idRapport, SensRapportEntreTiers editingFrom) throws AdresseException;
 
 
 	/**
@@ -46,7 +46,7 @@ public interface RapportEditManager {
 	 * @param rapportView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(RapportView rapportView) ;
+	void save(RapportView rapportView) ;
 
 	/**
 	 * Annule le rapport
@@ -54,7 +54,7 @@ public interface RapportEditManager {
 	 * @param idRapport
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void annulerRapport(Long idRapport) ;
+	void annulerRapport(Long idRapport) ;
 
 	/**
 	 * Charge les informations dans TiersView
@@ -65,7 +65,7 @@ public interface RapportEditManager {
 	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException;
+	TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException;
 
 	/**
 	 * Charge les informations dans TiersView
@@ -78,6 +78,6 @@ public interface RapportEditManager {
 	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, ServiceInfrastructureException;
+	TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, ServiceInfrastructureException;
 
 }

@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.webservices.securite;
 
-import java.util.Set;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
+import java.util.Set;
 
 import ch.vd.uniregctb.webservices.common.WebServiceException;
 
@@ -33,7 +32,7 @@ public interface SecuriteWebService {
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security")
-	public NiveauAutorisation getAutorisationSurDossier(
+	NiveauAutorisation getAutorisationSurDossier(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security", partName = "params", name = "GetAutorisationSurDossier") GetAutorisationSurDossier params)
 			throws WebServiceException;
 
@@ -55,7 +54,7 @@ public interface SecuriteWebService {
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security")
-	public Set<Long> getDossiersControles(
+	Set<Long> getDossiersControles(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security", partName = "params", name = "GetDossiersControles") GetDossiersControles params)
 			throws WebServiceException;
 }

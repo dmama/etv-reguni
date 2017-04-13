@@ -23,7 +23,6 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -47,7 +46,6 @@ public class EtatEntrepriseEditController {
 	private TiersMapHelper tiersMapHelper;
 	private TiersService tiersService;
 	private HibernateTemplate hibernateTemplate;
-	private SecurityProviderInterface securityProvider;
 	private AutorisationManager autorisationManager;
 	private EntrepriseService entrepriseService;
 
@@ -69,10 +67,6 @@ public class EtatEntrepriseEditController {
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
-	}
-
-	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
-		this.securityProvider = securityProvider;
 	}
 
 	public void setAutorisationManager(AutorisationManager autorisationManager) {

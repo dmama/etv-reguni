@@ -225,7 +225,7 @@ public class InitialisationIFoncProcessor {
 
 			final Map<Long, List<InfoDroit>> mapDroits = mapDroitsParImmeuble(session.createQuery(hqlDroits));
 			final Map<Long, List<InfoDroit>> mapServitudes = mapDroitsParImmeuble(session.createQuery(hqlServitudes));
-			mapServitudes.entrySet().forEach(e -> mapDroits.merge(e.getKey(), e.getValue(), ListUtils::union));
+			mapServitudes.forEach((key, value) -> mapDroits.merge(key, value, ListUtils::union));
 
 			return mapDroits;
 		}));

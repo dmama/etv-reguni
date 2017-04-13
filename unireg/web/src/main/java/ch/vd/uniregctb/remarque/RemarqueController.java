@@ -24,7 +24,6 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 
@@ -34,18 +33,12 @@ public class RemarqueController {
 
 	private TiersService tiersService;
 
-	private TiersDAO tiersDAO;
 	private RemarqueDAO remarqueDAO;
 	private ControllerUtils controllerUtils;
 	private SecurityProviderInterface securityProvider;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
