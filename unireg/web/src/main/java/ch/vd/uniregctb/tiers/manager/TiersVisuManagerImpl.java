@@ -190,29 +190,29 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 			if (tiers instanceof MenageCommun) {
 				assignHistoriqueAddressesCiviles(tiersVisuView.getTiersPrincipal(),
-				                                 pp -> getAdressesHistoriquesCiviles(pp, true),
+				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCiviles,
 				                                 tiersVisuView::setExceptionAdresseCiviles);
 				assignHistoriqueAddressesCiviles(tiersVisuView.getTiersConjoint(),
-				                                 pp -> getAdressesHistoriquesCiviles(pp, true),
+				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCivilesConjoint,
 				                                 tiersVisuView::setExceptionAdresseCivilesConjoint);
 			}
 			else if (tiers instanceof PersonnePhysique) {
 				assignHistoriqueAddressesCiviles((PersonnePhysique) tiers,
-				                                 pp -> getAdressesHistoriquesCiviles(pp, true),
+				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCiviles,
 				                                 tiersVisuView::setExceptionAdresseCiviles);
 			}
 			else if (tiers instanceof Etablissement) {
 				assignHistoriqueAddressesCiviles((Etablissement) tiers,
-				                                 etb -> getAdressesHistoriquesCiviles(etb, true),
+				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCiviles,
 				                                 tiersVisuView::setExceptionAdresseCiviles);
 			}
 			else if (tiers instanceof Entreprise) {
 				assignHistoriqueAddressesCiviles((Entreprise) tiers,
-				                                 entreprise -> getAdressesHistoriquesCiviles(entreprise, true),
+				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCiviles,
 				                                 tiersVisuView::setExceptionAdresseCiviles);
 			}
@@ -256,7 +256,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				final DecisionAciView dView = new DecisionAciView(decision);
 				decisionsView.add(dView);
 			}
-			Collections.sort(decisionsView,new DecisionAciViewComparator());
+			decisionsView.sort(new DecisionAciViewComparator());
 		}
 		tiersView.setDecisionsAci(decisionsView);
 		tiersView.setDecisionRecente(tiersService.isSousInfluenceDecisions(contribuable));

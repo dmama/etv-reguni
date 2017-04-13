@@ -16,7 +16,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +69,6 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.individu.WebCivilService;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -103,7 +101,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DecisionAciView;
-import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -135,7 +132,6 @@ import ch.vd.uniregctb.tiers.view.AllegementFiscalView;
 import ch.vd.uniregctb.tiers.view.CommuneView;
 import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
-import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
 import ch.vd.uniregctb.tiers.view.EtiquetteTiersView;
 import ch.vd.uniregctb.tiers.view.FlagEntrepriseView;
 import ch.vd.uniregctb.tiers.view.ForDebiteurViewComparator;
@@ -282,7 +278,7 @@ public class TiersManager implements MessageSourceAware {
 				final DecisionAciView dView = new DecisionAciView(decision);
 				decisionsView.add(dView);
 			}
-			Collections.sort(decisionsView,new DecisionAciViewComparator());
+			decisionsView.sort(new DecisionAciViewComparator());
 			tiersView.setDecisionsAci(decisionsView);
 			tiersView.setDecisionRecente(tiersService.isSousInfluenceDecisions(contribuable));
 		}
@@ -409,10 +405,7 @@ public class TiersManager implements MessageSourceAware {
 				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
 				rapportView.setToolTipMessage(toolTipMessage);
 
-				if (rapportEntreTiers instanceof RapportPrestationImposable) {
-					final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
-				}
-				else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
+				if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 					final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
 					final Boolean b = repres.getExtensionExecutionForcee();
 					rapportView.setExtensionExecutionForcee(b != null && b);
@@ -620,8 +613,8 @@ public class TiersManager implements MessageSourceAware {
 			}
 
 			final Comparator<RegimeFiscalView> comparator = new AnnulableHelper.AnnulableDateRangeComparator<>(true);
-			Collections.sort(vd, comparator);
-			Collections.sort(ch, comparator);
+			vd.sort(comparator);
+			ch.sort(comparator);
 
 			tiersView.setRegimesFiscauxVD(vd);
 			tiersView.setRegimesFiscauxCH(ch);
@@ -636,7 +629,7 @@ public class TiersManager implements MessageSourceAware {
 				views.add(afView);
 			}
 
-			Collections.sort(views, AllegementFiscalView.DEFAULT_COMPARATOR);
+			views.sort(AllegementFiscalView.DEFAULT_COMPARATOR);
 			tiersView.setAllegementsFiscaux(views);
 		}
 
@@ -653,7 +646,7 @@ public class TiersManager implements MessageSourceAware {
 				views.add(view);
 			}
 
-			Collections.sort(views, new AnnulableHelper.AnnulableDateRangeComparator<>(true));
+			views.sort(new AnnulableHelper.AnnulableDateRangeComparator<>(true));
 			tiersView.setFlags(views);
 		}
 
@@ -664,12 +657,7 @@ public class TiersManager implements MessageSourceAware {
 			for (QuestionnaireSNC q : qsnc) {
 				views.add(new QuestionnaireSNCView(q, serviceInfrastructureService, messageSource));
 			}
-			Collections.sort(views, new Comparator<QuestionnaireSNCView>() {
-				@Override
-				public int compare(QuestionnaireSNCView o1, QuestionnaireSNCView o2) {
-					return -NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-				}
-			});
+			views.sort(Comparator.comparing(QuestionnaireSNCView::getDateDebut, NullDateBehavior.EARLIEST::compare).reversed());
 			tiersView.setQuestionnairesSNC(views);
 		}
 
@@ -680,7 +668,7 @@ public class TiersManager implements MessageSourceAware {
 			final List<AutreDocumentFiscalView> sansSuiviViews = new ArrayList<>(autresDocuments.size());
 			for (AutreDocumentFiscal document : autresDocuments) {
 
-				// TODO pour le moment, on n'affiche pas les demandes de dégrèvement... on verra ça en 17R2
+				// les demandes de dégrèvements ne sont pas affichées ici, mais dans un onglet spécifique
 				if (document instanceof DemandeDegrevementICI) {
 					continue;
 				}
@@ -694,18 +682,11 @@ public class TiersManager implements MessageSourceAware {
 				}
 			}
 
-			final Comparator<AutreDocumentFiscalView> comparator = new Comparator<AutreDocumentFiscalView>() {
-				@Override
-				public int compare(AutreDocumentFiscalView o1, AutreDocumentFiscalView o2) {
-					int compare = -NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());
-					if (compare == 0) {
-						compare = -Long.compare(o1.getId(), o2.getId());
-					}
-					return compare;
-				}
-			};
-			Collections.sort(avecSuiviViews, comparator);
-			Collections.sort(sansSuiviViews, comparator);
+			final Comparator<AutreDocumentFiscalView> comparator = Comparator.comparing(AutreDocumentFiscalView::getDateEnvoi, NullDateBehavior.EARLIEST::compare)
+					.thenComparing(AutreDocumentFiscalView::getId)
+					.reversed();
+			avecSuiviViews.sort(comparator);
+			sansSuiviViews.sort(comparator);
 
 			tiersView.setAutresDocumentsFiscauxSuivis(avecSuiviViews);
 			tiersView.setAutresDocumentsFiscauxNonSuivis(sansSuiviViews);
@@ -742,13 +723,12 @@ public class TiersManager implements MessageSourceAware {
 		}
 
 		// tri et transfert dans la vue globale
-		Collections.sort(mandatairesCourrier, MandataireViewHelper.COURRIER_COMPARATOR);
-		Collections.sort(mandatairesPerception, MandataireViewHelper.BASIC_COMPARATOR);
+		mandatairesCourrier.sort(MandataireViewHelper.COURRIER_COMPARATOR);
+		mandatairesPerception.sort(MandataireViewHelper.BASIC_COMPARATOR);
 		tiersView.setMandatairesCourrier(mandatairesCourrier);
 		tiersView.setMandatairesPerception(mandatairesPerception);
 
 		// L'ACI est-elle actuellement maîtresse des données civiles pour cette entreprise?
-		final Etablissement etablissementPrincipalActuel = tiersService.getEtablissementPrincipal(entreprise, null);
 		try {
 			tiersView.setEntreprise(getEntrepriseService().getEntreprise(entreprise)); // OrganisationView
 
@@ -845,22 +825,6 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * Mise à jour en fonction des données de l'établissement, sans setter le tiers, boudiou.
-	 */
-	protected void setJusteEtablissement(TiersView tiersView, Etablissement etb) {
-		tiersView.setEtablissement(entrepriseService.getEtablissement(etb));
-	}
-
-	private List<DomicileEtablissementView> getDomicilesEtablissement(List<DomicileHisto> domiciles) {
-		final List<DomicileEtablissementView> domicilesViews = new ArrayList<>(domiciles.size());
-		for (DomicileHisto domicile : domiciles) {
-			domicilesViews.add(new DomicileEtablissementView(domicile));
-		}
-		Collections.sort(domicilesViews, new ReverseComparator<>(new DateRangeComparator<>()));
-		return domicilesViews;
-	}
-
-	/**
 	 * Met a jour la vue en fonction du debiteur prestation imposable
 	 */
 	protected void setDebiteurPrestationImposable(TiersView tiersView, DebiteurPrestationImposable dpi, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws
@@ -901,7 +865,7 @@ public class TiersManager implements MessageSourceAware {
 
 				forsFiscauxView.add(forFiscalView);
 			}
-			Collections.sort(forsFiscauxView, new ForFiscalViewComparator());
+			forsFiscauxView.sort(new ForFiscalViewComparator());
 			tiersView.setForsPrincipalActif(forPrincipalViewActif);
 			tiersView.setForsFiscaux(forsFiscauxView);
 		}
@@ -919,7 +883,7 @@ public class TiersManager implements MessageSourceAware {
 				final ForFiscalView forFiscalView = new ForFiscalView(forFiscal, false, dernierFor);
 				forsFiscauxView.add(forFiscalView);
 			}
-			Collections.sort(forsFiscauxView, new ForDebiteurViewComparator());
+			forsFiscauxView.sort(new ForDebiteurViewComparator());
 			tiersView.setForsFiscaux(forsFiscauxView);
 		}
 	}
@@ -935,7 +899,7 @@ public class TiersManager implements MessageSourceAware {
 				PeriodiciteView periodiciteView = readFromPeriodicite(periodicite);
 				listePeriodicitesView.add(periodiciteView);
 			}
-			Collections.sort(listePeriodicitesView, new PeriodiciteViewComparator());
+			listePeriodicitesView.sort(new PeriodiciteViewComparator());
 			tiersView.setPeriodicites(listePeriodicitesView);
 
 		}
@@ -1103,77 +1067,45 @@ public class TiersManager implements MessageSourceAware {
 	 * recuperation des adresses civiles historiques
 	 *
 	 * @param pp                une personne physique
-	 * @param adressesHistoCiviles <b>vrai</b> si l'on vient l'historique complet des adresses; <b>faux</b> si l'on s'intéresse uniquement aux adresses actives aujourd'hui
 	 * @return une liste d'adresses
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          si une adresse possède des données incohérentes (date de fin avant date de début, par exemple)
 	 */
-	public List<AdresseCivilView> getAdressesHistoriquesCiviles(PersonnePhysique pp, boolean adressesHistoCiviles) throws DonneesCivilesException {
+	public List<AdresseCivilView> getAdressesHistoriquesCiviles(PersonnePhysique pp) throws DonneesCivilesException {
 		final Long noIndividu = pp.getNumeroIndividu();
 		final List<AdresseCivilView> adresses = new ArrayList<>();
 		if (noIndividu != null) {
-			if (adressesHistoCiviles) {
-				final AdressesCivilesHistoriques adressesCivilesHisto = serviceCivilService.getAdressesHisto(noIndividu, false);
-				if (adressesCivilesHisto != null) {
-					// rempli tous les types d'adresse
-					for (TypeAdresseCivil type : TYPES_ADRESSES_CIVILES) {
-						fillAdressesHistoCivilesView(adresses, adressesCivilesHisto, type);
-					}
-				}
-			}
-			else {
-				final AdressesCivilesActives adressesCiviles = serviceCivilService.getAdresses(noIndividu, RegDate.get(), false);
-				if (adressesCiviles != null) {
-					// rempli tous les types d'adresse
-					for (TypeAdresseCivil type : TYPES_ADRESSES_CIVILES) {
-						fillAdressesCivilesView(adresses, adressesCiviles, type);
-					}
-				}
-			}
+			final AdressesCivilesHistoriques adressesCivilesHisto = serviceCivilService.getAdressesHisto(noIndividu, false);
+			fillAdressesCivilesViews(adresses, adressesCivilesHisto);
 		}
-
-		adresses.sort(new AdresseCivilViewComparator());
 		return adresses;
 	}
 
-	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Entreprise entreprise, boolean addressesHistoCiviles) throws DonneesCivilesException {
+	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Entreprise entreprise) throws DonneesCivilesException {
 		final List<AdresseCivilView> adresses = new ArrayList<>();
 		if (entreprise.isConnueAuCivil()) {
 			final AdressesCivilesHistoriques histo = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
-			fillAdressesCivilesViews(adresses, histo, addressesHistoCiviles);
-			Collections.sort(adresses, new AdresseCivilViewComparator());
+			fillAdressesCivilesViews(adresses, histo);
 		}
 		return adresses;
 	}
 
-	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Etablissement etb, boolean addressesHistoCiviles) throws DonneesCivilesException {
+	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Etablissement etb) throws DonneesCivilesException {
 		final List<AdresseCivilView> adresses = new ArrayList<>();
 		if (etb.isConnuAuCivil()) {
 			final AdressesCivilesHistoriques histo = serviceOrganisationService.getAdressesSiteOrganisationHisto(etb.getNumeroEtablissement());
-			fillAdressesCivilesViews(adresses, histo, addressesHistoCiviles);
-			Collections.sort(adresses, new AdresseCivilViewComparator());
+			fillAdressesCivilesViews(adresses, histo);
 		}
 		return adresses;
 	}
 
-	private void fillAdressesCivilesViews(List<AdresseCivilView> dest, AdressesCivilesHistoriques histo, boolean withHisto) throws DonneesCivilesException {
+	private void fillAdressesCivilesViews(List<AdresseCivilView> dest, AdressesCivilesHistoriques histo) throws DonneesCivilesException {
 		if (histo != null) {
 			// on remplit tous les types d'adresse
 			for (TypeAdresseCivil type : TYPES_ADRESSES_CIVILES) {
-				if (withHisto) {
-					fillAdressesHistoCivilesView(dest, histo, type);
-				}
-				else {
-					final List<Adresse> typed = histo.ofType(type);
-					if (typed != null && !typed.isEmpty()) {
-						for (Adresse a : typed) {
-							if (a.isValidAt(RegDate.get())) {
-								dest.add(new AdresseCivilView(a, type));
-							}
-						}
-					}
-				}
+				fillAdressesHistoCivilesView(dest, histo, type);
 			}
+			dest.sort(new AdresseCivilViewComparator());
 		}
 	}
 	/**
@@ -1193,7 +1125,7 @@ public class TiersManager implements MessageSourceAware {
 				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
 					fillAdressesView(adresses, adressesFiscalesHisto, type);
 				}
-				Collections.sort(adresses, new AdresseViewComparator());
+				adresses.sort(new AdresseViewComparator());
 			}
 
 			callback.setAdressesView(adresses);
@@ -1299,33 +1231,6 @@ public class TiersManager implements MessageSourceAware {
 		}
 
 		for (Adresse adresse : adresses) {
-			adressesView.add(new AdresseCivilView(adresse, type));
-		}
-	}
-
-	/**
-	 * Remplir la collection des adressesView avec l'adresse civile du type spécifié.
-	 */
-	protected void fillAdressesCivilesView(List<AdresseCivilView> adressesView, final AdressesCivilesActives adressesCiviles, TypeAdresseCivil type) throws DonneesCivilesException {
-
-		if (TypeAdresseCivil.SECONDAIRE == type) {
-			List<Adresse> addressesSecondaires = adressesCiviles.secondaires;
-			if (addressesSecondaires == null) {
-				// rien à faire
-				return;
-			}
-			for (Adresse addressesSecondaire : addressesSecondaires) {
-				adressesView.add(new AdresseCivilView(addressesSecondaire, type));
-			}
-
-		}
-		else {
-			Adresse adresse = adressesCiviles.ofType(type);
-			if (adresse == null) {
-				// rien à faire
-				return;
-			}
-
 			adressesView.add(new AdresseCivilView(adresse, type));
 		}
 	}
