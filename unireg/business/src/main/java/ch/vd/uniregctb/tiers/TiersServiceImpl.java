@@ -87,6 +87,7 @@ import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.GentilComparator;
 import ch.vd.uniregctb.common.GentilDateRangeExtendedAdapterCallback;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -1286,70 +1287,18 @@ public class TiersServiceImpl implements TiersService {
     @Override
     public PersonnePhysique getPrincipal(PersonnePhysique tiers1, PersonnePhysique tiers2) {
 
-        if (tiers1 == null && tiers2 == null) {
-            return null;
-        }
+	    // Pour le cas spécial où le sexe d'un des deux tiers est inconnu: on part du principe que c'est un couple "normal" (non-pacsé)
+	    final Comparator<Sexe> sexeComparator = new GentilComparator<>(Arrays.asList(Sexe.MASCULIN, null, Sexe.FEMININ));
+	    final Comparator<String> nomPrenomComparator = Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER);
 
-        if (tiers1 == null) {
-            return tiers2;
-        }
-
-        if (tiers2 == null) {
-            return tiers1;
-        }
-
-        /*
-		 * Détermination du sexe et du nom du premier tiers
-		 */
-        final Sexe tiers1Sexe = getSexe(tiers1);
-        final Sexe tiers2Sexe = getSexe(tiers2);
-
-        /*
-		 * Cas spécial où le sexe d'un des deux tiers est inconnu: on part du principe que c'est un couple normal (non-pacsé)
-		 */
-        if (tiers1Sexe == null && tiers2Sexe != null) {
-            if (Sexe.MASCULIN == tiers2Sexe) {
-                return tiers2;
-            } else {
-                return tiers1;
-            }
-        } else if (tiers2Sexe == null && tiers1Sexe != null) {
-            if (Sexe.MASCULIN == tiers1Sexe) {
-                return tiers1;
-            } else {
-                return tiers2;
-            }
-        }
-
-        // Cas général
-        final boolean tiers1Masculin = Sexe.MASCULIN == tiers1Sexe;
-        final boolean tiers2Masculin = Sexe.MASCULIN == tiers2Sexe;
-
-        /*
-		 * Les 2 personnes sont du même sexe
-		 */
-        if (tiers1Masculin == tiers2Masculin) {
-
-            final String nom1 = getNom(tiers1);
-            final String nom2 = getNom(tiers2);
-
-            if (nom1 != null && nom1.compareTo(nom2) < 0) {
-                return tiers1;
-            } else {
-                return tiers2;
-            }
-        }
-
-        /*
-		 * Les 2 personnes sont de sexe différents
-		 */
-        else {
-            if (tiers1Masculin) {
-                return tiers1;
-            } else {
-                return tiers2;
-            }
-        }
+    	return Stream.of(tiers1, tiers2)
+			    .filter(Objects::nonNull)
+			    .min(Comparator.<PersonnePhysique, Sexe>comparing(this::getSexe, sexeComparator)        // Monsieur avant Madame
+					         .thenComparing(this::getNom, nomPrenomComparator)                          // à sexes identiques, par ordre alphabétique du nom de famille
+					         .thenComparing(this::getPrenoms, nomPrenomComparator)                      // à sexes et noms de famille identiques, par ordre alphabétique des prénoms
+					         .thenComparing(this::getDateNaissance, NullDateBehavior.LATEST::compare)   // à sexes, noms et prénoms identiques, par ordre chronologique des dates de naissance
+					         .thenComparing(PersonnePhysique::getNumero))                               // à sexes, noms, prénoms et dates de naissance identiques, par ordre croissant du numéro de contribuable
+			    .orElse(null);
     }
 
     /**
@@ -3815,6 +3764,11 @@ public class TiersServiceImpl implements TiersService {
     private String getNom(PersonnePhysique personne) {
         final NomPrenom nomPrenom = getDecompositionNomPrenom(personne, false);
         return nomPrenom.getNom();
+    }
+
+    private String getPrenoms(PersonnePhysique personne) {
+		final NomPrenom nomPrenom = getDecompositionNomPrenom(personne, true);
+		return nomPrenom.getPrenom();
     }
 
     /**

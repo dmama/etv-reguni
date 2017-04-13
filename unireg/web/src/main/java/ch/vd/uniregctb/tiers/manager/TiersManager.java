@@ -100,7 +100,6 @@ import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DecisionAciView;
@@ -1103,15 +1102,14 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * recuperation des adresses civiles historiques
 	 *
-	 * @param tiers                un tiers PP
+	 * @param pp                une personne physique
 	 * @param adressesHistoCiviles <b>vrai</b> si l'on vient l'historique complet des adresses; <b>faux</b> si l'on s'intéresse uniquement aux adresses actives aujourd'hui
 	 * @return une liste d'adresses
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          si une adresse possède des données incohérentes (date de fin avant date de début, par exemple)
 	 */
-	public List<AdresseCivilView> getAdressesHistoriquesCiviles(ContribuableImpositionPersonnesPhysiques tiers, boolean adressesHistoCiviles) throws DonneesCivilesException {
-
-		final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(tiers);
+	public List<AdresseCivilView> getAdressesHistoriquesCiviles(PersonnePhysique pp, boolean adressesHistoCiviles) throws DonneesCivilesException {
+		final Long noIndividu = pp.getNumeroIndividu();
 		final List<AdresseCivilView> adresses = new ArrayList<>();
 		if (noIndividu != null) {
 			if (adressesHistoCiviles) {
@@ -1134,7 +1132,7 @@ public class TiersManager implements MessageSourceAware {
 			}
 		}
 
-		Collections.sort(adresses, new AdresseCivilViewComparator());
+		adresses.sort(new AdresseCivilViewComparator());
 		return adresses;
 	}
 

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
@@ -19,7 +20,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
@@ -40,7 +40,6 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DecisionAciView;
@@ -51,6 +50,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.view.AdresseCivilView;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
 import ch.vd.uniregctb.tiers.view.TiersView;
@@ -188,38 +188,33 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				}
 			});
 
-			if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-				try {
-					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles((ContribuableImpositionPersonnesPhysiques) tiers, true));
-				}
-				catch (DonneesCivilesException e) {
-					tiersVisuView.setExceptionAdresseCiviles(e.getMessage());
-				}
-				final PersonnePhysique conjoint = tiersVisuView.getTiersConjoint();
-				if (conjoint != null) {
-					try {
-						tiersVisuView.setHistoriqueAdressesCivilesConjoint(getAdressesHistoriquesCiviles(conjoint, true));
-					}
-					catch (DonneesCivilesException e) {
-						tiersVisuView.setExceptionAdresseCivilesConjoint(e.getMessage());
-					}
-				}
+			if (tiers instanceof MenageCommun) {
+				assignHistoriqueAddressesCiviles(tiersVisuView.getTiersPrincipal(),
+				                                 pp -> getAdressesHistoriquesCiviles(pp, true),
+				                                 tiersVisuView::setHistoriqueAdressesCiviles,
+				                                 tiersVisuView::setExceptionAdresseCiviles);
+				assignHistoriqueAddressesCiviles(tiersVisuView.getTiersConjoint(),
+				                                 pp -> getAdressesHistoriquesCiviles(pp, true),
+				                                 tiersVisuView::setHistoriqueAdressesCivilesConjoint,
+				                                 tiersVisuView::setExceptionAdresseCivilesConjoint);
+			}
+			else if (tiers instanceof PersonnePhysique) {
+				assignHistoriqueAddressesCiviles((PersonnePhysique) tiers,
+				                                 pp -> getAdressesHistoriquesCiviles(pp, true),
+				                                 tiersVisuView::setHistoriqueAdressesCiviles,
+				                                 tiersVisuView::setExceptionAdresseCiviles);
 			}
 			else if (tiers instanceof Etablissement) {
-				try {
-					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles((Etablissement) tiers, true));
-				}
-				catch (ServiceOrganisationException e) {
-					tiersVisuView.setExceptionAdresseCiviles(e.getMessage());
-				}
+				assignHistoriqueAddressesCiviles((Etablissement) tiers,
+				                                 etb -> getAdressesHistoriquesCiviles(etb, true),
+				                                 tiersVisuView::setHistoriqueAdressesCiviles,
+				                                 tiersVisuView::setExceptionAdresseCiviles);
 			}
 			else if (tiers instanceof Entreprise) {
-				try {
-					tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles((Entreprise) tiers, true));
-				}
-				catch (ServiceOrganisationException e) {
-					tiersVisuView.setExceptionAdresseCiviles(e.getMessage());
-				}
+				assignHistoriqueAddressesCiviles((Entreprise) tiers,
+				                                 entreprise -> getAdressesHistoriquesCiviles(entreprise, true),
+				                                 tiersVisuView::setHistoriqueAdressesCiviles,
+				                                 tiersVisuView::setExceptionAdresseCiviles);
 			}
 		}
 
@@ -228,6 +223,29 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		tiersVisuView.setForsSecondairesPagines(forsSecondairesPagines && !modeImpression);
 		tiersVisuView.setAutresForsPagines(autresForsPagines && !modeImpression);
 		return tiersVisuView;
+	}
+
+	@FunctionalInterface
+	private interface HistoriqueAdressesCivilesCalculator<T extends Contribuable> {
+		List<AdresseCivilView> get(T ctb) throws Exception;
+	}
+
+	private static <T extends Contribuable> void assignHistoriqueAddressesCiviles(T ctb,
+	                                                                              HistoriqueAdressesCivilesCalculator<? super T> adressesCivilesGetter,
+	                                                                              Consumer<List<AdresseCivilView>> viewSetter,
+	                                                                              Consumer<String> exceptionSetter) {
+		if (ctb != null) {
+			try {
+				final List<AdresseCivilView> views = adressesCivilesGetter.get(ctb);
+				viewSetter.accept(views);
+			}
+			catch (Exception e) {
+				exceptionSetter.accept(e.getMessage());
+			}
+		}
+		else {
+			viewSetter.accept(null);
+		}
 	}
 
 	protected void setDecisionAciView(TiersView tiersView,Contribuable contribuable){
