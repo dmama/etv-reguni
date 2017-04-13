@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.ListUtils;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,17 +39,33 @@ public class DroitRFDAOImpl extends BaseDAOImpl<DroitRF, Long> implements DroitR
 	@NotNull
 	@Override
 	public List<DroitRF> findForAyantDroit(long ayantDroitId, boolean fetchSituationsImmeuble) {
-		final StringBuilder b = new StringBuilder();
-		b.append("SELECT dt FROM DroitRF dt");
-		if (fetchSituationsImmeuble) {
-			b.append(" INNER JOIN FETCH dt.immeuble AS imm");
-			b.append(" LEFT OUTER JOIN FETCH imm.situations");
-		}
-		b.append(" WHERE dt.ayantDroit.id = :ayantDroitId");
 
-		final Query query = getCurrentSession().createQuery(b.toString());
-		query.setParameter("ayantDroitId", ayantDroitId);
-		return query.list();
+		// les droits de propriété
+		final StringBuilder sqlProp = new StringBuilder();
+		sqlProp.append("SELECT DISTINCT dp FROM DroitProprieteRF dp");
+		if (fetchSituationsImmeuble) {
+			sqlProp.append(" INNER JOIN FETCH dp.immeuble AS imm");
+			sqlProp.append(" LEFT OUTER JOIN FETCH imm.situations");
+		}
+		sqlProp.append(" WHERE dp.ayantDroit.id = :ayantDroitId");
+
+		final Query queryProp = getCurrentSession().createQuery(sqlProp.toString());
+		queryProp.setParameter("ayantDroitId", ayantDroitId);
+
+		// les servitudes
+		final StringBuilder sqlServ = new StringBuilder();
+		sqlServ.append("SELECT DISTINCT serv FROM ServitudeRF serv");
+		sqlServ.append(" INNER JOIN serv.ayantDroits ayantDroit");
+		if (fetchSituationsImmeuble) {
+			sqlServ.append(" INNER JOIN FETCH serv.immeubles AS imm");
+			sqlServ.append(" LEFT OUTER JOIN FETCH imm.situations");
+		}
+		sqlServ.append(" WHERE ayantDroit.id = :ayantDroitId");
+
+		final Query queryServ = getCurrentSession().createQuery(sqlServ.toString());
+		queryServ.setParameter("ayantDroitId", ayantDroitId);
+
+		return ListUtils.union(queryProp.list(), queryServ.list());
 	}
 
 	@NotNull

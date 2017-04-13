@@ -1682,6 +1682,24 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	@NotNull
+	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF,
+	                                   IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF, List<? extends TiersRF> tiersRF, List<? extends ImmeubleRF> immeubles) {
+		final UsufruitRF droit = new UsufruitRF();
+		immeubles.forEach(droit::addImmeuble);
+		tiersRF.forEach(droit::addAyantDroit);
+		droit.setDateDebut(dateDebut);
+		droit.setDateDebutMetier(dateDebutMetier);
+		droit.setDateFin(dateFin);
+		droit.setDateFinMetier(dateFinMetier);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setNumeroAffaire(numeroAffaire);
+		droit.setIdentifiantDroit(identifiantDroitRF);
+		return merge(droit);
+	}
+
+	@NotNull
 	protected DroitHabitationRF addDroitHabitationRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
 	                                                 TiersRF tiersRF, BienFondRF immeuble) {
 		final DroitHabitationRF droit = new DroitHabitationRF();
