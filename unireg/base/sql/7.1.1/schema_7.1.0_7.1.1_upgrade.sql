@@ -41,13 +41,15 @@ drop table EVENEMENT_RF_IMPORT cascade constraints;
 drop table EVENEMENT_RF_MUTATION cascade constraints;
 
 -- l'existence d'une situation est obligatoire pour chaque immeuble -> on efface juste l'historique
-DELETE FROM RF_SITUATION to_delete  -- efface toutes les situations sauf la première de chaque immeuble
+-- (efface toutes les situations sauf la première de chaque immeuble)
+DELETE FROM RF_SITUATION to_delete
 WHERE EXISTS(SELECT NULL
              FROM RF_SITUATION to_keep
              WHERE to_delete.IMMEUBLE_ID = to_keep.IMMEUBLE_ID
                    AND to_delete.ID != to_keep.ID
                    AND (to_keep.DATE_DEBUT IS NULL OR to_keep.DATE_DEBUT < to_delete.DATE_DEBUT));
-UPDATE RF_SITUATION set DATE_FIN = null WHERE DATE_FIN is not null;    -- reset la date de fin si nécessaire
+-- reset la date de fin si nécessaire
+UPDATE RF_SITUATION set DATE_FIN = null WHERE DATE_FIN is not null;
 
 CREATE TABLE EVENEMENT_RF_IMPORT
 (
