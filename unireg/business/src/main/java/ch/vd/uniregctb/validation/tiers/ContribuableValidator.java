@@ -354,12 +354,12 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 
 		private final AllegementFoncier.TypeImpot typeImpot;
 		private final ImmeubleRF immeuble;
-		private final long idImmeuble;
+		private final Long idImmeuble;
 
 		public AllegementFoncierGroupKey(AllegementFoncier af) {
 			this.typeImpot = af.getTypeImpot();
 			this.immeuble = af.getImmeuble();
-			this.idImmeuble = this.immeuble.getId();
+			this.idImmeuble = this.immeuble != null ? this.immeuble.getId() : null;
 		}
 
 		@Override
@@ -368,13 +368,13 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 			if (o == null || getClass() != o.getClass()) return false;
 
 			final AllegementFoncierGroupKey that = (AllegementFoncierGroupKey) o;
-			return idImmeuble == that.idImmeuble && typeImpot == that.typeImpot;
+			return typeImpot == that.typeImpot && (idImmeuble != null ? idImmeuble.equals(that.idImmeuble) : that.idImmeuble == null);
 		}
 
 		@Override
 		public int hashCode() {
-			int result = typeImpot.hashCode();
-			result = 31 * result + (int) (idImmeuble ^ (idImmeuble >>> 32));
+			int result = typeImpot != null ? typeImpot.hashCode() : 0;
+			result = 31 * result + (idImmeuble != null ? idImmeuble.hashCode() : 0);
 			return result;
 		}
 	}

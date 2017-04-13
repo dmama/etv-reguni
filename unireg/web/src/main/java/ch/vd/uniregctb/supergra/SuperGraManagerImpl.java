@@ -5,11 +5,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -158,8 +158,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	/**
 	 * Les propriétés qui ne doivent pas être changées, même en mode SuperGra.
 	 */
-	private static final Set<String> readonlyProps = new HashSet<>();
-	static {
+	private static final Set<String> readonlyProps = buildReadOnlyPropSet();
+
+	private static Set<String> buildReadOnlyPropSet() {
+		final Set<String> readonlyProps = new HashSet<>();
+
 		// général
 		readonlyProps.add("annulationDate");
 		readonlyProps.add("annulationUser");
@@ -171,26 +174,34 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		// déclaration
 		readonlyProps.add("modeleDocument");
 		readonlyProps.add("periode");
+
+		return readonlyProps;
 	}
 
 	/**
 	 * Les propriétés qui représentent des données techniques, non-métier et pas indispensables à afficher en mode condensé.
 	 */
-	private static final Set<String> detailsProps = new HashSet<>();
-	static {
+	private static final Set<String> detailsProps = buildDetailsPropSet();
+
+	private static Set<String> buildDetailsPropSet() {
+		final Set<String> detailsProps = new HashSet<>();
 		detailsProps.add("annulationDate");
 		detailsProps.add("annulationUser");
 		detailsProps.add("logCreationDate");
 		detailsProps.add("logCreationUser");
 		detailsProps.add("logModifDate");
 		detailsProps.add("logModifUser");
+		return detailsProps;
 	}
 
 	/**
 	 * Les relations enfant->parent connues.
 	 */
-	private static Map<Class<? extends HibernateEntity>, Class<? extends HibernateEntity>> childToParentRelationships = new HashMap<>();
-	static {
+	private static final Map<Class<? extends HibernateEntity>, Class<? extends HibernateEntity>> childToParentRelationships = buildChildToParentRelationshipMap();
+
+	private static Map<Class<? extends HibernateEntity>, Class<? extends HibernateEntity>> buildChildToParentRelationshipMap() {
+		final Map<Class<? extends HibernateEntity>, Class<? extends HibernateEntity>> childToParentRelationships = new HashMap<>();
+
 		// à compléter...
 		childToParentRelationships.put(AdresseTiers.class, Tiers.class);
 		childToParentRelationships.put(Declaration.class, Tiers.class);
@@ -230,6 +241,44 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		childToParentRelationships.put(EstimationRF.class, ImmeubleRF.class);
 		childToParentRelationships.put(RolePartiePrenante.class, PartiePrenante.class);
 		childToParentRelationships.put(ErreurTraitement.class, UniteTraitement.class);
+
+		return childToParentRelationships;
+	}
+
+	/**
+	 * Les propriétés qui ne doivent pas apparaître du tout
+	 */
+	private static final Map<Class<? extends HibernateEntity>, Set<String>> invisibleProps = buildInvisiblePropMap();
+
+	private static Map<Class<? extends HibernateEntity>, Set<String>> buildInvisiblePropMap() {
+		final Map<Class<? extends HibernateEntity>, Set<String>> invisibleProps = new HashMap<>();
+		addInvisibleProperty(invisibleProps, Tiers.class, "droitsAccesAppliques");
+		return invisibleProps;
+	}
+
+	private static void addInvisibleProperty(Map<Class<? extends HibernateEntity>, Set<String>> map,
+	                                         Class<? extends HibernateEntity> clazz, String propName) {
+		final Set<String> set = map.computeIfAbsent(clazz, c -> new HashSet<>());
+		set.add(propName);
+	}
+
+	/**
+	 * @param clazz une classe (concrete ou pas) d'objet persistent
+	 * @return la liste aggrégée des attributs qui ne doivent pas apparaître dans la liste des attributs d'une instance de la classe donnée
+	 * parce qu'ils ont été indiqués comme invisible soit sur la classe elle-même, soit sur une de ses classes parentes
+	 */
+	private static Set<String> getInvisibleProperties(Class<? extends HibernateEntity> clazz) {
+		final Set<String> set = new HashSet<>();
+		Class<?> cursor = clazz;
+		while (HibernateEntity.class.isAssignableFrom(cursor)) {
+			//noinspection unchecked,SuspiciousMethodCalls
+			final Set<String> locallyInvisible = invisibleProps.get(cursor);
+			if (locallyInvisible != null) {
+				set.addAll(locallyInvisible);
+			}
+			cursor = cursor.getSuperclass();
+		}
+		return set.isEmpty() ? Collections.emptySet() : Collections.unmodifiableSet(set);
 	}
 
 	/**
@@ -423,7 +472,12 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	/**
 	 * Les types principaux d'entités sur lesquelles on va déclencher une validation
 	 */
-	private static List<EntityType> TOP_ENTITY_TYPES = Arrays.asList(EntityType.Tiers, EntityType.AyantDroitRF, EntityType.DroitRF, EntityType.ImmeubleRF, EntityType.BatimentRF, EntityType.RapprochementRF);
+	private static final Set<EntityType> TOP_ENTITY_TYPES = EnumSet.of(EntityType.Tiers,
+	                                                                   EntityType.AyantDroitRF,
+	                                                                   EntityType.DroitRF,
+	                                                                   EntityType.ImmeubleRF,
+	                                                                   EntityType.BatimentRF,
+	                                                                   EntityType.RapprochementRF);
 
 	/**
 	 * Met-à-jour l'état des entités modifiées dans une session SuperGra.
@@ -476,7 +530,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		}
 	}
 
-	private boolean isAnyInstanceOf(HibernateEntity entity, List<EntityType> topEntityTypes) {
+	private static boolean isAnyInstanceOf(HibernateEntity entity, Set<EntityType> topEntityTypes) {
 		if (entity != null) {
 			for (EntityType entityType : topEntityTypes) {
 				if (entityType.getHibernateClass().isAssignableFrom(entity.getClass())) {
@@ -516,8 +570,13 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		try {
 			final MetaEntity meta = MetaEntity.determine(entity.getClass());
 			final List<Property> props = meta.getProperties();
+			final Set<String> invisibleProperties = getInvisibleProperties(entity.getClass());
 			for (int i = 0, propsSize = props.size(); i < propsSize; i++) {
 				final Property p = props.get(i);
+				if (invisibleProperties.contains(p.getName())) {
+					continue;
+				}
+
 				final AttributeView attributeView;
 				if (p.isDiscriminator()) {
 					attributeView = new AttributeView(DISCRIMINATOR_ATTNAME, p.getType().getJavaType(), p.getDiscriminatorValue(), false, false, true);

@@ -5,7 +5,9 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
 
@@ -28,9 +30,23 @@ public abstract class AllegementFoncierValidator<T extends AllegementFoncier> ex
 	}
 
 	@Override
+	public ValidationResults validate(T entity) {
+		final ValidationResults vr = super.validate(entity);
+		if (entity.getImmeuble() == null) {
+			vr.addError("immeuble", "L'immeuble est une donnée obligatoire.");
+		}
+		return vr;
+	}
+
+	@Override
 	protected String getEntityDisplayString(@NotNull T entity) {
+		final Optional<ImmeubleRF> immeuble = Optional.ofNullable(entity.getImmeuble());
 		return String.format("sur l'immeuble %s de la commune %s",
-		                     StringUtils.defaultIfBlank(registreFoncierService.getNumeroParcelleComplet(entity.getImmeuble(), entity.getDateFin()), "?"),
-		                     Optional.ofNullable(registreFoncierService.getCommune(entity.getImmeuble(), entity.getDateFin())).map(Commune::getNomOfficiel).orElse("?"));
+		                     immeuble.map(i -> registreFoncierService.getNumeroParcelleComplet(i, entity.getDateFin()))
+				                     .filter(StringUtils::isNotBlank)
+				                     .orElse("?"),
+		                     immeuble.map(i -> registreFoncierService.getCommune(i, entity.getDateFin()))
+				                     .map(Commune::getNomOfficiel)
+				                     .orElse("?"));
 	}
 }
