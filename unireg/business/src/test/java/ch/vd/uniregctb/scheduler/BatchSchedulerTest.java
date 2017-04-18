@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class BatchSchedulerTest extends JobTest {
 	public void testDoubleStart() throws Exception {
 		LOGGER.debug("Begin testDoubleStart method.");
 
-		final HashMap<String, Object> map = new HashMap<>();
+		final Map<String, Object> map = new HashMap<>();
 		map.put(LoggingJob.I_DELAY, 2000); // assez long pour qu'il tourne encore lors du deuxième démarrage et de l'interruption 
 		final Date startTime = new Date();
 		final JobDefinition job = batchScheduler.startJob(LoggingJob.NAME, map);
@@ -109,7 +110,7 @@ public class BatchSchedulerTest extends JobTest {
 
 		LOGGER.debug("Begin testStartStopStart method.");
 
-		HashMap<String, Object> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		map.put(LoggingJob.I_DELAY, 200);
 
 		{
@@ -181,7 +182,7 @@ public class BatchSchedulerTest extends JobTest {
 		JobDefinition job1 = batchScheduler.startJob(ExceptionThrowingJob.NAME, null);
 
 		// Job2 : Logging
-		HashMap<String, Object> loggingParams = new HashMap<>();
+		Map<String, Object> loggingParams = new HashMap<>();
 		loggingParams.put(LoggingJob.I_DELAY, 200); // 200ms de delay
 		JobDefinition job2 = batchScheduler.startJob(LoggingJob.NAME, loggingParams);
 
@@ -235,7 +236,7 @@ public class BatchSchedulerTest extends JobTest {
 	@Test
 	public void testStartAndInterruptJob() throws Exception {
 
-		HashMap<String, Object> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		map.put(LoggingJob.I_DELAY, 500); // 10 * 0.5 seconde
 		map.put(LoggingJob.I_INT_DELAY, 2000); // 2 secondes
 

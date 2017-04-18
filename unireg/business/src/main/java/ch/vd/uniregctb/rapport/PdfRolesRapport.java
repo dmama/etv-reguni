@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -441,7 +442,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 			}
 		}
 
-		final Map<InfoContribuable.TypeContribuable, Integer> map = new HashMap<>(nbTypesContribuables);
+		final Map<InfoContribuable.TypeContribuable, Integer> map = new EnumMap<>(InfoContribuable.TypeContribuable.class);
 		for (int i = 0 ; i < nbTypesContribuables ; ++ i) {
 			if (nombreParType[i] > 0) {
 				map.put(InfoContribuable.TypeContribuable.values()[i], nombreParType[i]);

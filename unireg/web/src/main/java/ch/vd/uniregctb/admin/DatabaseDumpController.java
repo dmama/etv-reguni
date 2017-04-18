@@ -5,6 +5,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -147,7 +148,7 @@ public class DatabaseDumpController {
 			return "redirect:/admin/tiersImport/list.do";
 		}
 
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(LoadDatabaseJob.DOC_ID, doc.getId());
 		batchScheduler.startJob(LoadDatabaseJob.NAME, params);
 		return "redirect:/admin/batch.do";
@@ -161,7 +162,7 @@ public class DatabaseDumpController {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(DumpTiersListJob.PARAM_TIERS_LIST, tiersList);
 		params.put(DumpTiersListJob.INCLUDE_DECLARATION, true);
 		params.put(DumpTiersListJob.INCLUDE_RET, true);

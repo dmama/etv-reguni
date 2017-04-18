@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -93,7 +94,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -128,7 +129,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -168,7 +169,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -203,7 +204,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.UPDATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -236,7 +237,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -273,7 +274,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -309,7 +310,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.DELETE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -337,7 +338,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		final HashMap<String, String> customAttributes = new HashMap<>();
+		final Map<String, String> customAttributes = new HashMap<>();
 		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.UPDATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 

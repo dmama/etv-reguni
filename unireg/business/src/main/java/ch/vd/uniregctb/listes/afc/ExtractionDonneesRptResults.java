@@ -2,7 +2,7 @@ package ch.vd.uniregctb.listes.afc;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -348,7 +348,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		}
 
 		// on constuit maintenant la map à renvoyer
-		final Map<ModeImposition, Integer> map = new HashMap<>(ModeImposition.values().length + 1);
+		final Map<ModeImposition, Integer> map = new EnumMap<>(ModeImposition.class);
 		for (ModeImposition modeImposition : ModeImposition.values()) {
 			final int index = modeImposition.ordinal();
 			if (array[index] > 0) {

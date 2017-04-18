@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.hibernate.CallbackException;
@@ -201,7 +202,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor i
 	 */
 	public void updateOfficeID(List<Long> list) {
 
-		final HashMap<Long, Integer> todo = new HashMap<>();
+		final Map<Long, Integer> todo = new HashMap<>();
 
 		for (Long id : list) {
 			final Tiers tiers = tiersDAO.get(id);

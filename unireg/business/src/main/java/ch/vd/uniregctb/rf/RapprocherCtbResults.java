@@ -2,7 +2,7 @@ package ch.vd.uniregctb.rf;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +109,7 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 		for (ProprietaireRapproche p : listeRapproche) {
 			++ tableau[p.getResultat().ordinal()];
 		}
-		final Map<ProprietaireRapproche.CodeRetour, Integer> map = new HashMap<>(tableau.length);
+		final Map<ProprietaireRapproche.CodeRetour, Integer> map = new EnumMap<>(ProprietaireRapproche.CodeRetour.class);
 		for (ProprietaireRapproche.CodeRetour code : ProprietaireRapproche.CodeRetour.values()) {
 			final int index = code.ordinal();
 			map.put(code, tableau[index]);

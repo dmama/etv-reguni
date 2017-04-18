@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -143,7 +144,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 		assertNotNull(importId);
 
 		// on déclenche le démarrage du job
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(TraiterMutationsRFJob.ID, importId);
 		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
 		params.put(TraiterMutationsRFJob.CONTINUE_WITH_DATES_FIN_JOB, Boolean.FALSE);
@@ -337,7 +338,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 		assertNotNull(importId);
 
 		// on déclenche le démarrage du job
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(TraiterMutationsRFJob.ID, importId);
 		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
 		params.put(TraiterMutationsRFJob.CONTINUE_WITH_DATES_FIN_JOB, Boolean.FALSE);
@@ -509,7 +510,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 		assertNotNull(importId);
 
 		// on déclenche le démarrage du job
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(TraiterMutationsRFJob.ID, importId);
 		params.put(TraiterMutationsRFJob.NB_THREADS, 2);
 		params.put(TraiterMutationsRFJob.CONTINUE_WITH_DATES_FIN_JOB, Boolean.FALSE);

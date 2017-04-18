@@ -102,7 +102,7 @@ public class BatchController {
 			}
 
 			// Converti les strings des paramètres en objets
-			final HashMap<String, Object> params = parseParams(startParams, job);
+			final Map<String, Object> params = parseParams(startParams, job);
 
 			// Démarre le batch
 			batchScheduler.startJob(jobName, params);
@@ -113,9 +113,9 @@ public class BatchController {
 		}
 	}
 
-	private HashMap<String, Object> parseParams(BatchStartParams startParams, JobDefinition job) {
+	private Map<String, Object> parseParams(BatchStartParams startParams, JobDefinition job) {
 
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 
 		final Map<String, Object> sp = startParams.getStartParams();
 		if (sp != null) {

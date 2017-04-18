@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -97,7 +98,7 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 		query.setParameter("importId", importId);
 		final List<?> list = query.list();
 
-		final Map<EtatEvenementRF, Integer> res = new HashMap<>();
+		final Map<EtatEvenementRF, Integer> res = new EnumMap<>(EtatEvenementRF.class);
 		list.forEach(o -> {
 			Object[] row = (Object[]) o;
 			final EtatEvenementRF key = (EtatEvenementRF) row[0];

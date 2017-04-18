@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -91,7 +92,7 @@ public class ImportRFDroitsEntreImmeublesJobTest extends ImportRFTestClass {
 		assertNotNull(importId);
 
 		// on déclenche le démarrage du job de détection des mutations
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(TraiterImportRFJob.ID, importId);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
 		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
@@ -293,7 +294,7 @@ public class ImportRFDroitsEntreImmeublesJobTest extends ImportRFTestClass {
 		});
 
 		// on déclenche le démarrage du job de traitement des mutations
-		final HashMap<String, Object> params2 = new HashMap<>();
+		final Map<String, Object> params2 = new HashMap<>();
 		params2.put(TraiterMutationsRFJob.ID, importId);
 		params2.put(TraiterMutationsRFJob.NB_THREADS, 2);
 		params2.put(TraiterMutationsRFJob.CONTINUE_WITH_DATES_FIN_JOB, Boolean.FALSE);

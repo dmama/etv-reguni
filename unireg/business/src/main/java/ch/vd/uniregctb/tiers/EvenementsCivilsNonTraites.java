@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,7 +23,7 @@ public final class EvenementsCivilsNonTraites {
 		}
 	}
 
-	private final Map<Source, Set<Long>> nosIndividus = new HashMap<>(Source.values().length);
+	private final Map<Source, Set<Long>> nosIndividus = new EnumMap<>(Source.class);
 
 	public void addAll(Source src, Collection<Long> individus) {
 		if (individus != null && individus.size() > 0) {

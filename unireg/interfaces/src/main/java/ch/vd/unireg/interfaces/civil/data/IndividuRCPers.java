@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -576,7 +577,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	private static Map<TypeAdresseCivil, List<Residence>> splitParType(List<Residence> residence) {
-		final Map<TypeAdresseCivil, List<Residence>> map = new HashMap<>(TypeAdresseCivil.values().length);
+		final Map<TypeAdresseCivil, List<Residence>> map = new EnumMap<>(TypeAdresseCivil.class);
 		for (Residence r : residence) {
 			final TypeAdresseCivil type = AdresseRCPers.getTypeAdresseResidence(r);
 			final List<Residence> list = map.computeIfAbsent(type, k -> new ArrayList<>());

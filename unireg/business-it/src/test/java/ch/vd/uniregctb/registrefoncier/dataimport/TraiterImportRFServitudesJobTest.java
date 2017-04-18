@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -96,7 +97,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		assertNotNull(importId);
 
 		// on déclenche le démarrage du job
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(TraiterImportRFJob.ID, importId);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
 		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
@@ -453,7 +454,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		});
 
 		// on déclenche le démarrage du job
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(TraiterImportRFJob.ID, importId);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
 		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
@@ -552,7 +553,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		});
 
 		// on déclenche le démarrage du job
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(TraiterImportRFJob.ID, importId);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
 		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
@@ -781,7 +782,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		});
 
 		// on déclenche le démarrage du job
-		final HashMap<String, Object> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put(TraiterImportRFJob.ID, importId);
 		params.put(TraiterImportRFJob.NB_THREADS, 2);
 		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);

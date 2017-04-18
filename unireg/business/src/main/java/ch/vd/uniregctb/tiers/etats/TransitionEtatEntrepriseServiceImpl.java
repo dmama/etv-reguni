@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.tiers.etats;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -46,7 +46,7 @@ public class TransitionEtatEntrepriseServiceImpl implements TransitionEtatEntrep
 	/*
 	Liste des transitions disponibles vers l'état visé
 	 */
-	private final Map<TypeEtatEntreprise, TransitionEtatEntrepriseFactory> transitionFactoryMap = new HashMap<>();
+	private final Map<TypeEtatEntreprise, TransitionEtatEntrepriseFactory> transitionFactoryMap = new EnumMap<>(TypeEtatEntreprise.class);
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -61,7 +61,7 @@ public class TransitionEtatEntrepriseServiceImpl implements TransitionEtatEntrep
 
 	@Override
 	public Map<TypeEtatEntreprise, TransitionEtatEntreprise> getTransitionsDisponibles(Entreprise entreprise, RegDate date, TypeGenerationEtatEntreprise generation) {
-		Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = new HashMap<>();
+		final Map<TypeEtatEntreprise, TransitionEtatEntreprise> disponibles = new EnumMap<>(TypeEtatEntreprise.class);
 		for (Map.Entry<TypeEtatEntreprise, TransitionEtatEntrepriseFactory> entry : transitionFactoryMap.entrySet()) {
 			final TransitionEtatEntreprise transition = entry.getValue().create(entreprise, date, generation);
 			if (transition != null) {

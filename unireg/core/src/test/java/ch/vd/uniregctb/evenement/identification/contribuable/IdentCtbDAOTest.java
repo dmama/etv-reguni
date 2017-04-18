@@ -225,7 +225,7 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 		final long id = doInNewTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final HashMap<String, String> metadata = new HashMap<>();
+				final Map<String, String> metadata = new HashMap<>();
 				metadata.put("MyKey", "MyValue");
 				return hibernateTemplate.merge(buildDummyIdentificationContribuable(metadata)).getId();
 			}
@@ -256,7 +256,7 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 		final long id = doInNewTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final HashMap<String, String> metadata = new HashMap<>();
+				final Map<String, String> metadata = new HashMap<>();
 				metadata.put("MyKey", "{}#,,");
 				metadata.put("YourKey{,", "YourValue");
 				metadata.put("HerKey\"{,", "HerValue\"{{");

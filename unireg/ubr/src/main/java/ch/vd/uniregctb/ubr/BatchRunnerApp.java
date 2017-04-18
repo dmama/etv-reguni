@@ -355,7 +355,7 @@ public class BatchRunnerApp {
 	 * cas de paramètre de type fichiers, évidemment).
 	 */
 	private static Map<String, Object> array2map(final String[] params) {
-		final HashMap<String, Object> map = new HashMap<>();
+		final Map<String, Object> map = new HashMap<>();
 		if (params != null) {
 			for (String param : params) {
 				// on splitte les paramètres "key:value" à la main, pour gérer correctement le cas où la valeur est "file://qqch"

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -116,7 +117,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 
 		// on déclenche le démarrage du job
 		{
-			final HashMap<String, Object> params = new HashMap<>();
+			final Map<String, Object> params = new HashMap<>();
 			params.put(TraiterImportRFJob.ID, importId);
 			params.put(TraiterImportRFJob.NB_THREADS, 2);
 			params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
@@ -336,7 +337,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 
 		// on déclenche le démarrage du job de traitement
 		{
-			final HashMap<String, Object> params = new HashMap<>();
+			final Map<String, Object> params = new HashMap<>();
 			params.put(TraiterMutationsRFJob.ID, importId);
 			params.put(TraiterMutationsRFJob.NB_THREADS, 2);
 			params.put(TraiterMutationsRFJob.CONTINUE_WITH_DATES_FIN_JOB, Boolean.FALSE);
@@ -522,7 +523,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 
 		// on déclenche le démarrage du job
 		{
-			final HashMap<String, Object> params = new HashMap<>();
+			final Map<String, Object> params = new HashMap<>();
 			params.put(TraiterImportRFJob.ID, importIdInitial);
 			params.put(TraiterImportRFJob.NB_THREADS, 2);
 			params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
@@ -547,7 +548,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 
 		// on déclenche le démarrage du job de traitement
 		{
-			final HashMap<String, Object> params = new HashMap<>();
+			final Map<String, Object> params = new HashMap<>();
 			params.put(TraiterMutationsRFJob.ID, importIdInitial);
 			params.put(TraiterMutationsRFJob.NB_THREADS, 2);
 			params.put(TraiterMutationsRFJob.CONTINUE_WITH_DATES_FIN_JOB, Boolean.FALSE);
@@ -605,7 +606,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 
 		// on déclenche le démarrage du job
 		{
-			final HashMap<String, Object> params = new HashMap<>();
+			final Map<String, Object> params = new HashMap<>();
 			params.put(TraiterImportRFJob.ID, secondImportId);
 			params.put(TraiterImportRFJob.NB_THREADS, 2);
 			params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
@@ -630,7 +631,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 
 		// on déclenche le démarrage du job de traitement
 		{
-			final HashMap<String, Object> params = new HashMap<>();
+			final Map<String, Object> params = new HashMap<>();
 			params.put(TraiterMutationsRFJob.ID, secondImportId);
 			params.put(TraiterMutationsRFJob.NB_THREADS, 2);
 			params.put(TraiterMutationsRFJob.CONTINUE_WITH_DATES_FIN_JOB, Boolean.FALSE);

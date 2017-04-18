@@ -696,7 +696,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	public Map<Long, String> getAllLibellesLogiciels() {
 		try {
 			final List<Logiciel> listeLogiciels = infraService.getLogicielsCertifiesPour(LogicielMetier.EMPACI);
-			final HashMap<Long, String> map = new HashMap<>();
+			final Map<Long, String> map = new HashMap<>();
 			if (listeLogiciels != null && !listeLogiciels.isEmpty()) {
 				for (Logiciel logiciel : listeLogiciels) {
 					map.put(logiciel.getId(), logiciel.getLibelleComplet());

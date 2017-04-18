@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.registrefoncier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +155,7 @@ public class MockEvenementRFMutationDAO implements EvenementRFMutationDAO {
 
 	@Override
 	public Map<EtatEvenementRF, Integer> countByState(long importId) {
-		final Map<EtatEvenementRF, Integer> map = new HashMap<>();
+		final Map<EtatEvenementRF, Integer> map = new EnumMap<>(EtatEvenementRF.class);
 		db.stream()
 				.filter(mut -> mut.getParentImport().getId().equals(importId))
 				.forEach(mut -> map.compute(mut.getEtat(), (k, v) -> v == null ? 1 : v + 1));
