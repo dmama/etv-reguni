@@ -19,11 +19,11 @@ import ch.vd.uniregctb.tiers.TiersService;
 public class ListeAssujettisThreads extends ListesThread<ListeAssujettisResults> {
 
     public ListeAssujettisThreads(BlockingQueue<List<Long>> queue, StatusManager status, AtomicInteger compteur, RegDate dateTraitement, int nbThreads, int anneeFiscale,
-                                  boolean avecSourciersPurs, boolean seulementAssujettisFinAnnee, ServiceCivilCacheWarmer serviceCivilCacheWarmer, TiersService tiersService,
+                                  boolean avecSourciersPurs, boolean seulementAssujettisFinAnnee, boolean withForcedCtbs, ServiceCivilCacheWarmer serviceCivilCacheWarmer, TiersService tiersService,
                                   PlatformTransactionManager transactionManager, TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, AssujettissementService assujettissementService,
                                   AdresseService adresseService) {
 
 		super(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
-		      new ListeAssujettisResults(dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee, tiersService, assujettissementService, adresseService));
+		      new ListeAssujettisResults(dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee, withForcedCtbs, tiersService, assujettissementService, adresseService));
 	}
 }

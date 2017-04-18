@@ -3,6 +3,11 @@ package ch.vd.uniregctb.listes.assujettis;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -14,6 +19,9 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
@@ -30,6 +38,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 	private final List<InfoCtbAssujetti> assujettis = new LinkedList<>();
 	private final List<InfoCtbIgnore> ignores = new LinkedList<>();
 	private int nbCtbAssujettis = 0;
+	private final boolean withForcedCtbs;
 	private final AssujettissementService assujettissementService;
 
 	public abstract static class InfoCtb<T extends InfoCtb> implements Comparable<T> {
@@ -84,7 +93,8 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 	public enum CauseIgnorance {
 		SOURCIER_PUR("Sourcier pur"),
 		NON_ASSUJETTI_FIN_PERIODE("Non assujetti en fin de période fiscale"),
-		NON_ASSUJETTI("Non assujetti");
+		NON_ASSUJETTI("Non assujetti"),
+		NON_ASSUJETTI_MAIS_MENAGE_ASSUJETTI("Non assujetti avec ménage assujetti");
 
 		public final String description;
 
@@ -102,21 +112,58 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 		}
 	}
 
-	public ListeAssujettisResults(RegDate dateTraitement, int nombreThreads, int anneeFiscale, boolean avecSourciersPurs, boolean seulementAssujettisFinAnnee, TiersService tiersService,
+	public ListeAssujettisResults(RegDate dateTraitement, int nombreThreads, int anneeFiscale, boolean avecSourciersPurs, boolean seulementAssujettisFinAnnee,
+	                              boolean withForcedCtbs, TiersService tiersService,
 	                              AssujettissementService assujettissementService, AdresseService adresseService) {
 		super(dateTraitement, nombreThreads, tiersService, adresseService);
 		this.anneeFiscale = anneeFiscale;
 		this.avecSourciersPurs = avecSourciersPurs;
 		this.seulementAssujettisFinAnnee = seulementAssujettisFinAnnee;
+		this.withForcedCtbs = withForcedCtbs;
 		this.assujettissementService = assujettissementService;
 	}
 
 	@Override
 	public void addContribuable(Contribuable ctb) throws AssujettissementException {
 
-		CauseIgnorance causeIgnorance = null;
-
 		final List<Assujettissement> assujettissements = assujettissementService.determine(ctb, anneeFiscale);
+		final CauseIgnorance causeIgnorance = determineCauseIgnorance(assujettissements);
+
+		if (causeIgnorance != null) {
+			// si on a donné une liste de contribuables en entrée, on cherche éventuellement
+			// un ménage assujetti selon les mêmes conditions associé à la personne physique ignorée
+			CauseIgnorance causeIgnoranceEffective = causeIgnorance;
+			if (ctb instanceof PersonnePhysique && withForcedCtbs) {
+				final PersonnePhysique pp = (PersonnePhysique) ctb;
+				final List<EnsembleTiersCouple> couples = tiersService.getEnsembleTiersCouple(pp, anneeFiscale);
+				if (couples != null && !couples.isEmpty()) {
+					final Map<Long, MenageCommun> menages = couples.stream()
+							.map(EnsembleTiersCouple::getMenage)
+							.collect(Collectors.toMap(MenageCommun::getNumero, Function.identity(), (m1, m2) -> m1));
+					for (MenageCommun menage : menages.values()) {
+						final List<Assujettissement> assujMenage = assujettissementService.determine(menage, anneeFiscale);
+						final CauseIgnorance causeIgnoranceMenage = determineCauseIgnorance(assujMenage);
+						if (causeIgnoranceMenage == null) {
+							causeIgnoranceEffective = CauseIgnorance.NON_ASSUJETTI_MAIS_MENAGE_ASSUJETTI;
+							break;
+						}
+					}
+				}
+			}
+
+			ignores.add(new InfoCtbIgnore(ctb.getNumero(), causeIgnoranceEffective));
+		}
+		else {
+			++ nbCtbAssujettis;
+			for (Assujettissement a : assujettissements) {
+				assujettis.add(new InfoCtbAssujetti(ctb.getNumero(), a.getType(), a.getDateDebut(), a.getDateFin(), a.getMotifFractDebut(), a.getMotifFractFin()));
+			}
+		}
+	}
+
+	@Nullable
+	private CauseIgnorance determineCauseIgnorance(List<Assujettissement> assujettissements) {
+		CauseIgnorance causeIgnorance = null;
 		if (assujettissements == null || assujettissements.isEmpty()) {
 			causeIgnorance = CauseIgnorance.NON_ASSUJETTI;
 		}
@@ -142,16 +189,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 				}
 			}
 		}
-
-		if (causeIgnorance != null) {
-			ignores.add(new InfoCtbIgnore(ctb.getNumero(), causeIgnorance));
-		}
-		else {
-			++ nbCtbAssujettis;
-			for (Assujettissement a : assujettissements) {
-				assujettis.add(new InfoCtbAssujetti(ctb.getNumero(), a.getType(), a.getDateDebut(), a.getDateFin(), a.getMotifFractDebut(), a.getMotifFractFin()));
-			}
-		}
+		return causeIgnorance;
 	}
 
 	@Override

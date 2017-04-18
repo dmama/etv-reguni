@@ -1,5 +1,11 @@
 package ch.vd.uniregctb.scheduler;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -7,6 +13,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,6 +21,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -786,24 +794,29 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	 *            le contenu d'un fichier CSV
 	 * @return une liste d'ids
 	 */
-	protected static List<Long> extractIdsFromCSV(byte[] csv) {
+	protected static List<Long> extractIdsFromCSV(byte[] csv) throws IOException {
 
-		if (csv == null) {
+		if (csv == null || csv.length == 0) {
 			return Collections.emptyList();
 		}
 
-		final String s = new String(csv);
-		final String[] lines = s.split("[;,\n]");
+		final List<Long> ids = new LinkedList<>();
+		try (InputStream is = new ByteArrayInputStream(csv);
+		     Reader r = new InputStreamReader(is);
+		     BufferedReader br = new BufferedReader(r)) {
 
-		final List<Long> ids = new ArrayList<>(lines.length);
-		for (String l : lines) {
-			final String idAsString = l.replaceAll("[^0-9]", ""); // supprime tous les caractères non-numériques
-			if (idAsString.length() > 0) {
-				final Long id = Long.valueOf(idAsString);
-				ids.add(id);
+			String s;
+			while ((s = br.readLine()) != null) {
+				final String[] lines = s.split("[;,]");
+				for (String l : lines) {
+					final String idAsString = l.replaceAll("[^0-9]", StringUtils.EMPTY); // supprime tous les caractères non-numériques
+					if (idAsString.length() > 0) {
+						final Long id = Long.valueOf(idAsString);
+						ids.add(id);
+					}
+				}
 			}
 		}
-
 		return ids;
 	}
 

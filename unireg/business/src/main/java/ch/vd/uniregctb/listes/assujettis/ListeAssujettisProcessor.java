@@ -46,25 +46,26 @@ public class ListeAssujettisProcessor extends ListesProcessor<ListeAssujettisRes
 	}
 
 	public ListeAssujettisResults run(RegDate dateTraitement, final int nbThreads, final int anneeFiscale, final boolean avecSourciersPurs,
-	                                  final boolean seulementAssujettisFinAnnee, StatusManager s) {
+	                                  final boolean seulementAssujettisFinAnnee, final List<Long> listeCtbs, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final boolean withForcedCtbList = listeCtbs != null && !listeCtbs.isEmpty();
 
 		return doRun(dateTraitement, nbThreads, status, hibernateTemplate, new Customizer<ListeAssujettisResults, ListeAssujettisThreads>() {
 
 			@Override
 			public Iterator<Long> getIdIterator(Session session) {
-				return getIteratorOnCtbs(session, anneeFiscale);
+				return withForcedCtbList ? listeCtbs.iterator() : getIteratorOnCtbs(session, anneeFiscale);
 			}
 
 			@Override
 			public ListeAssujettisResults createResults(RegDate dateTraitement) {
-				return new ListeAssujettisResults(dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee, tiersService, assujettissementService, adresseService);
+				return new ListeAssujettisResults(dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee, withForcedCtbList, tiersService, assujettissementService, adresseService);
 			}
 
 			@Override
 			public ListeAssujettisThreads createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
-				return new ListeAssujettisThreads(queue, status, compteur, dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee,
+				return new ListeAssujettisThreads(queue, status, compteur, dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee, withForcedCtbList,
 				                                  serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate, assujettissementService, adresseService);
 			}
 		});

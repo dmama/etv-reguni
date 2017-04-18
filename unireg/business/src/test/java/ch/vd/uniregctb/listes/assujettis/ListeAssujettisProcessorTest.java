@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.listes.assujettis;
 
+import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -57,7 +59,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null);
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
 		Assert.assertEquals(1, results.getNbCtbAssujettis());
@@ -97,7 +99,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null);
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
 		Assert.assertEquals(0, results.getNbCtbAssujettis());
@@ -146,7 +148,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null);
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(2, results.getNbContribuablesInspectes());
 		Assert.assertEquals(1, results.getNbCtbAssujettis());
@@ -192,7 +194,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null);
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
 		Assert.assertEquals(1, results.getNbCtbAssujettis());
@@ -233,7 +235,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null);
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
 		Assert.assertEquals(1, results.getNbCtbAssujettis());
@@ -275,7 +277,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null);
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
 		Assert.assertEquals(1, results.getNbCtbAssujettis());
@@ -323,7 +325,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null);
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
 		Assert.assertEquals(1, results.getNbCtbAssujettis());
@@ -362,7 +364,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, false, false, null);
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, false, false, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
 		Assert.assertEquals(0, results.getNbCtbAssujettis());
@@ -398,7 +400,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null);
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
 		Assert.assertEquals(1, results.getNbCtbAssujettis());
@@ -438,7 +440,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, true, null);
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, true, null, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
 		Assert.assertEquals(0, results.getNbCtbAssujettis());
@@ -450,5 +452,76 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertNotNull(i);
 		Assert.assertEquals(ppId, i.noCtb);
 		Assert.assertEquals(ListeAssujettisResults.CauseIgnorance.NON_ASSUJETTI_FIN_PERIODE, i.cause);
+	}
+
+	@Test
+	public void testVaudoisOrdinaireDansListeExplicite() throws Exception {
+
+		final long noIndividu = 1235435L;
+
+		// service civil
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
+				return pp.getNumero();
+			}
+		});
+
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, Collections.singletonList(ppId), null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNbContribuablesInspectes());
+		Assert.assertEquals(1, results.getNbCtbAssujettis());
+		Assert.assertEquals(1, results.getNbAssujettissements());
+		Assert.assertEquals(0, results.getNbCtbIgnores());
+		Assert.assertEquals(0, results.getListeErreurs().size());
+
+		final ListeAssujettisResults.InfoCtbAssujetti a = results.getAssujettis().get(0);
+		Assert.assertNotNull(a);
+		Assert.assertEquals(ppId, a.noCtb);
+		Assert.assertEquals(date(2010, 1, 1), a.debutAssujettissement);
+		Assert.assertEquals(date(2010, 12, 31), a.finAssujettissement);
+		Assert.assertEquals(TypeAssujettissement.VAUDOIS_ORDINAIRE, a.typeAssujettissement);
+		Assert.assertNull(a.motifDebut);
+		Assert.assertNull(a.motifFin);
+	}
+
+	@Test
+	public void testVaudoisOrdinaireHorsListeExplicite() throws Exception {
+
+		final long noIndividu = 1235435L;
+
+		// service civil
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, date(1964, 5, 30), "Parker", "Camilla", false);
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.INDETERMINE, MockCommune.Aigle);
+				return pp.getNumero();
+			}
+		});
+
+		final ListeAssujettisResults results = processor.run(RegDate.get(), 1, 2010, true, false, Collections.singletonList(ppId + 1), null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(0, results.getNbContribuablesInspectes());
+		Assert.assertEquals(0, results.getNbCtbAssujettis());
+		Assert.assertEquals(0, results.getNbAssujettissements());
+		Assert.assertEquals(0, results.getNbCtbIgnores());
+		Assert.assertEquals(0, results.getListeErreurs().size());
 	}
 }

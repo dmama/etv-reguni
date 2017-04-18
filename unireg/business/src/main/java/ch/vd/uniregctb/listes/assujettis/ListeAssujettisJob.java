@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.listes.assujettis;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -19,6 +18,7 @@ import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
+import ch.vd.uniregctb.scheduler.JobParamFile;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -32,6 +32,7 @@ public class ListeAssujettisJob extends JobDefinition {
 	private static final String NB_THREADS = "NB_THREADS";
 	private static final String SOURCIERS_PURS = "SOURCIERS_PURS";
 	private static final String FIN_ANNEE_SEULEMENT = "FIN_ANNEE_SEULEMENT";
+	private static final String LISTE_CTBS = "LISTE_CTBS";
 
 	private HibernateTemplate hibernateTemplate;
 	private TiersService tiersService;
@@ -78,6 +79,14 @@ public class ListeAssujettisJob extends JobDefinition {
 			param.setType(new JobParamBoolean());
 			addParameterDefinition(param, false);
 		}
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Liste des contribuables à inspecter");
+			param.setName(LISTE_CTBS);
+			param.setMandatory(false);
+			param.setType(new JobParamFile());
+			addParameterDefinition(param, null);
+		}
 	}
 
 	@Override
@@ -87,22 +96,17 @@ public class ListeAssujettisJob extends JobDefinition {
 		final int nbThreads = getIntegerValue(params, NB_THREADS);
 		final boolean avecSrcPurs = getBooleanValue(params, SOURCIERS_PURS);
 		final boolean seultAssujettisFinAnnee = getBooleanValue(params, FIN_ANNEE_SEULEMENT);
+		final List<Long> ctbs = extractIdsFromCSV(getFileContent(params, LISTE_CTBS));
 		final RegDate dateTraitement = getDateTraitement(params);
 		final StatusManager statusManager = getStatusManager();
 
-		final ListeAssujettisProcessor proc = new ListeAssujettisProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService,
-				adresseService);
-		final ListeAssujettisResults results = proc.run(dateTraitement, nbThreads, pf, avecSrcPurs, seultAssujettisFinAnnee, statusManager);
+		final ListeAssujettisProcessor proc = new ListeAssujettisProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService, adresseService);
+		final ListeAssujettisResults results = proc.run(dateTraitement, nbThreads, pf, avecSrcPurs, seultAssujettisFinAnnee, ctbs, statusManager);
 
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
-		final ListeAssujettisRapport rapport = template.execute(new TransactionCallback<ListeAssujettisRapport>() {
-			@Override
-			public ListeAssujettisRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(results, statusManager);
-			}
-		});
+		final ListeAssujettisRapport rapport = template.execute(status -> rapportService.generateRapport(results, statusManager));
 
 		setLastRunReport(rapport);
 		Audit.success("La production de la liste des assujettis " + pf + " est terminée.", rapport);
