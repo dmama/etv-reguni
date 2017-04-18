@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
+import java.util.function.Function;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,13 +13,13 @@ public class EnumTestHelperTest {
 
 	@Test
 	public void testSuccessfullyTestAllConversions() {
-		Converter<TestEnum, TestEnumConverted> converter = new TestEnumConverter();
+		Function<TestEnum, TestEnumConverted> converter = new TestEnumConverter();
 		EnumTestHelper.testAllValues(TestEnum.class, converter);
 	}
 
 	@Test
 	public void testProperlyFailsWhenValueMissing() {
-		Converter<TestEnum, TestEnumConverted> converter = new TestEnumConverterBad();
+		Function<TestEnum, TestEnumConverted> converter = new TestEnumConverterBad();
 
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage("La valeur [VALUE3] de l'énumération [TestEnum] n'est pas supportée.");
@@ -31,7 +33,7 @@ public class EnumTestHelperTest {
 	 */
 	@Test
 	public void testDetectFaultyConverter() {
-		Converter<TestEnum, TestEnumConvertedBad> converter = new BadTestEnumConverter();
+		Function<TestEnum, TestEnumConvertedBad> converter = new BadTestEnumConverter();
 
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage("La conversion de la valeur [VALUE3] a renvoyé une valeur nulle. Contrôler l'implémentation de convert()");

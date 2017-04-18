@@ -1,6 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
-import org.apache.commons.collections4.Predicate;
+import java.util.function.Predicate;
 
 import ch.vd.evd0022.v3.Capital;
 
@@ -9,7 +9,7 @@ import ch.vd.evd0022.v3.Capital;
  */
 public class CapitalPredicate implements Predicate<Capital> {
 	@Override
-	public boolean evaluate(Capital capital) {
+	public boolean test(Capital capital) {
 		return capital.getCashedInAmount() != null;
 	}
 }

@@ -1,12 +1,14 @@
 package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
+import java.util.function.Function;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.SwissGazetteOfCommercePublication;
 import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
 
-public class BusinessPublicationConverter implements Converter<BusinessPublication, PublicationBusiness> {
+public class BusinessPublicationConverter implements Function<BusinessPublication, PublicationBusiness> {
 
 	private static final TypeOfBusinessPublicationConverter TYPE_OF_BUSINESS_PUBLICATION_CONVERTER = new TypeOfBusinessPublicationConverter();
 	private static final TypeOfFusionConverter TYPE_OF_FUSION_CONVERTER = new TypeOfFusionConverter();

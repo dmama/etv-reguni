@@ -4,14 +4,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
-import org.apache.commons.collections4.Predicate;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.rcent.converters.Converter;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -20,12 +19,7 @@ import static org.junit.Assert.assertThat;
 
 public class RCEntHelperTest extends WithoutSpringTest {
 
-	private static final Converter<String, String> converter = new Converter<String, String>() {
-		@Override
-		public String apply(String s) {
-			return s + "_CONVERTED";
-		}
-	};
+	private static final Function<String, String> converter = s -> s + "_CONVERTED";
 
 	@Test
 	public void testConvert() throws Exception {
@@ -265,12 +259,7 @@ public class RCEntHelperTest extends WithoutSpringTest {
 				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA4")
 		);
 
-		List<FlatMapResultTestData> rangesResult = RCEntHelper.convertAndDerange(ranges, new Converter<DateRangeHelper.Ranged<String>, FlatMapResultTestData>() {
-			@Override
-			public FlatMapResultTestData apply(DateRangeHelper.Ranged<String> stringRanged) {
-				return new FlatMapResultTestData(stringRanged.getDateDebut(), stringRanged.getDateFin(), converter.apply(stringRanged.getPayload()));
-			}
-		});
+		List<FlatMapResultTestData> rangesResult = RCEntHelper.convertAndDerange(ranges, stringRanged -> new FlatMapResultTestData(stringRanged.getDateDebut(), stringRanged.getDateFin(), converter.apply(stringRanged.getPayload())));
 
 		{
 			assertThat(rangesResult.get(0).getDateDebut(), equalTo(RegDate.get(2015, 5, 25)));
@@ -309,12 +298,7 @@ public class RCEntHelperTest extends WithoutSpringTest {
 		rangeMap.put(date(2015, 5, 25), ranges1);
 		rangeMap.put(date(2015, 5, 27), ranges2);
 
-		Map<RegDate, List<FlatMapResultTestData>> mapResult = RCEntHelper.convertAndMapDerange(rangeMap, new Converter<DateRangeHelper.Ranged<String>, FlatMapResultTestData>() {
-			@Override
-			public FlatMapResultTestData apply(DateRangeHelper.Ranged<String> stringRanged) {
-				return new FlatMapResultTestData(stringRanged.getDateDebut(), stringRanged.getDateFin(), converter.apply(stringRanged.getPayload()));
-			}
-		});
+		Map<RegDate, List<FlatMapResultTestData>> mapResult = RCEntHelper.convertAndMapDerange(rangeMap, stringRanged -> new FlatMapResultTestData(stringRanged.getDateDebut(), stringRanged.getDateFin(), converter.apply(stringRanged.getPayload())));
 
 		{
 			List<FlatMapResultTestData> rangeResult = mapResult.get(date(2015, 5, 25));
@@ -355,19 +339,9 @@ public class RCEntHelperTest extends WithoutSpringTest {
 		);
 
 		List<FlatMapResultTestData> rangesResult = RCEntHelper.convertAndDerange(ranges,
-		                                                                         new Converter<DateRangeHelper.Ranged<String>, FlatMapResultTestData>() {
-			                                                                         @Override
-			                                                                         public FlatMapResultTestData apply(DateRangeHelper.Ranged<String> stringRanged) {
-				                                                                         return new FlatMapResultTestData(stringRanged.getDateDebut(), stringRanged.getDateFin(),
-				                                                                                                          converter.apply(stringRanged.getPayload()));
-			                                                                         }
-		                                                                         },
-		                                                                         new Predicate<String>() {
-			                                                                         @Override
-			                                                                         public boolean evaluate(String s) {
-				                                                                         return ! "DATA3".equals(s);
-			                                                                         }
-		                                                                         }
+		                                                                         stringRanged -> new FlatMapResultTestData(stringRanged.getDateDebut(), stringRanged.getDateFin(),
+		                                                                                                          converter.apply(stringRanged.getPayload())),
+		                                                                         s -> ! "DATA3".equals(s)
 		);
 
 		{

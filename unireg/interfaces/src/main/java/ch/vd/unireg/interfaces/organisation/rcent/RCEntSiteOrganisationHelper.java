@@ -1,6 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.rcent;
 
-import org.apache.commons.collections4.Predicate;
+import java.util.function.Predicate;
 
 import ch.vd.evd0022.v3.Capital;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;

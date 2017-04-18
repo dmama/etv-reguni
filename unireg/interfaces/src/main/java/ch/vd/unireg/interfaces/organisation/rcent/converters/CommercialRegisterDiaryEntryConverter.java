@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
+import java.util.function.Function;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v3.CommercialRegisterDiaryEntry;
@@ -7,7 +9,7 @@ import ch.vd.evd0022.v3.SwissGazetteOfCommercePublication;
 import ch.vd.unireg.interfaces.organisation.data.EntreeJournalRC;
 import ch.vd.unireg.interfaces.organisation.data.PublicationFOSC;
 
-public class CommercialRegisterDiaryEntryConverter implements Converter<CommercialRegisterDiaryEntry, EntreeJournalRC> {
+public class CommercialRegisterDiaryEntryConverter implements Function<CommercialRegisterDiaryEntry, EntreeJournalRC> {
 
 	private static final DiaryKindOfEntryConverter DIARY_KIND_OF_ENTRY_CONVERTER = new DiaryKindOfEntryConverter();
 

@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
+import java.util.function.Function;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> La valeur entrante
  * @param <R> La valeur sortante
  */
-public abstract class BaseConverter<T, R> implements Converter<T, R> {
+public abstract class BaseConverter<T, R> implements Function<T, R> {
 
 	/**
 	 * Applique la fonction de conversion. Si la valeur en entrée est null,

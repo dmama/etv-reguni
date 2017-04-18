@@ -5,14 +5,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections4.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.rcent.converters.Converter;
 
 public class RCEntHelper {
 
@@ -75,7 +75,7 @@ public class RCEntHelper {
 	 * @return
 	 */
 	public static <R, U> DateRanged<R> convertAndMap(DateRangeHelper.Ranged<U> rcEntDr,
-	                                                 Converter<? super U, ? extends R> mapper) {
+	                                                 Function<? super U, ? extends R> mapper) {
 		if (rcEntDr == null) {
 			return null;
 		}
@@ -92,15 +92,13 @@ public class RCEntHelper {
 	 * @return Une nouvelle liste de DateRanged Unireg, avec les données transformées.
 	 */
 	public static <U, R> List<DateRanged<R>> convertAndMap(List<DateRangeHelper.Ranged<U>> rcEntDrList,
-	                                                       Converter<? super U, ? extends R> mapper) {
+	                                                       Function<? super U, ? extends R> mapper) {
 		if (rcEntDrList == null) {
 			return null;
 		}
 		final List<DateRanged<R>> drList = new ArrayList<>(rcEntDrList.size());
 		for (DateRangeHelper.Ranged<U> dr : rcEntDrList) {
-			drList.add(
-					convertAndMap(dr, mapper)
-			);
+			drList.add(convertAndMap(dr, mapper));
 		}
 		return drList;
 	}
@@ -116,7 +114,7 @@ public class RCEntHelper {
 	 * @return Une nouvelle Map de listes de DateRanged Unireg, avec les données.
 	 */
 	public static <K, U, R> Map<K, List<DateRanged<R>>> convertAndMap(Map<K, List<DateRangeHelper.Ranged<U>>> rcEntDrListMap,
-	                                                                  Converter<? super U, ? extends R> mapper) {
+	                                                                  Function<? super U, ? extends R> mapper) {
 		if (rcEntDrListMap == null) {
 			return null;
 		}
@@ -138,8 +136,8 @@ public class RCEntHelper {
 	 * @return Une nouvelle liste contenant les données transformées.
 	 */
 	public static <S, D extends DateRange> List<D> convertAndDerange(List<? extends DateRangeHelper.Ranged<S>> source,
-	                                                                 Converter<? super DateRangeHelper.Ranged<S>, ? extends D> flatMapper,
-	                                                                 @Nullable Predicate<S> filterPredicate) {
+	                                                                 Function<? super DateRangeHelper.Ranged<S>, ? extends D> flatMapper,
+	                                                                 @Nullable Predicate<? super S> filterPredicate) {
 		if (source == null) {
 			return null;
 		}
@@ -159,12 +157,12 @@ public class RCEntHelper {
 		return resultat;
 	}
 
-	private static <S> boolean shouldMap(@Nullable Predicate<S> filterPredicate, DateRangeHelper.Ranged<S> src) {
-		return filterPredicate == null || filterPredicate.evaluate(src.getPayload());
+	private static <S> boolean shouldMap(@Nullable Predicate<? super S> filterPredicate, DateRangeHelper.Ranged<S> src) {
+		return filterPredicate == null || filterPredicate.test(src.getPayload());
 	}
 
 	public static <S, D extends DateRange> List<D> convertAndDerange(List<? extends DateRangeHelper.Ranged<S>> source,
-	                                                                 Converter<? super DateRangeHelper.Ranged<S>, ? extends D> flatMapper) {
+	                                                                 Function<? super DateRangeHelper.Ranged<S>, ? extends D> flatMapper) {
 		return convertAndDerange(source, flatMapper, null);
 	}
 
@@ -180,7 +178,7 @@ public class RCEntHelper {
 	 * @return Une nouvelle Map de listes de données Unireg.
 	 */
 	public static <K, U, R extends DateRange> Map<K, List<R>>  convertAndMapDerange(Map<K, List<DateRangeHelper.Ranged<U>>> rcEntDrListMap,
-	                                                                                Converter<? super DateRangeHelper.Ranged<U>, ? extends R> flatMapper) {
+	                                                                                Function<? super DateRangeHelper.Ranged<U>, ? extends R> flatMapper) {
 		if (rcEntDrListMap == null) {
 			return null;
 		}
@@ -191,11 +189,11 @@ public class RCEntHelper {
 		return map;
 	}
 
-	public static <S, D> List<D> convert(List<S> entityList, Converter<? super S, ? extends D> mapper) {
+	public static <S, D> List<D> convert(List<S> entityList, Function<? super S, ? extends D> mapper) {
 		if (entityList == null) {
 			return null;
 		}
-		final List<D> resultat = new ArrayList<>();
+		final List<D> resultat = new ArrayList<>(entityList.size());
 		for (S element : entityList) {
 			final D converted = mapper.apply(element);
 			if (converted != null) {
