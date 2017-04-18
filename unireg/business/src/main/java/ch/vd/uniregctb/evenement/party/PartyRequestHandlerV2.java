@@ -171,7 +171,7 @@ public class PartyRequestHandlerV2 implements RequestHandlerV1<PartyRequest> {
 		response.setPartyNumber(request.getPartyNumber());
 		try {
 			final Party data;
-			final Set<PartyPart> parts = DataHelper.toSet(request.getParts());
+			final Set<PartyPart> parts = DataHelper.toSet(PartyPart.class, request.getParts());
 			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
 				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
 				BusinessHelper.warmIndividusV2(personne, parts, context);

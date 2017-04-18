@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.security;
 
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,7 +73,7 @@ public class IfoSecServiceImpl implements IfoSecService {
 	@Override
 	public Set<Role> getBypass(String visa) {
 
-		Set<Role> roles = new HashSet<>();
+		final Set<Role> roles = EnumSet.noneOf(Role.class);
 
 		if (globalBypass != null) {
 			 roles.addAll(globalBypass.getProcedures());

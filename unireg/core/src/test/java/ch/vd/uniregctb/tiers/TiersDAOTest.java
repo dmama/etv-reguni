@@ -1579,8 +1579,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		});
 
 		// charge le débiteur
-		final Set<Parts> parts = new HashSet<>();
-		parts.add(Parts.RAPPORTS_ENTRE_TIERS);
+		final Set<Parts> parts = EnumSet.of(Parts.RAPPORTS_ENTRE_TIERS);
 		final List<Tiers> tiers = dao.getBatch(Collections.singletonList(id), parts);
 		assertEquals(1, tiers.size());
 

@@ -2,7 +2,7 @@ package ch.vd.uniregctb.declaration;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -25,8 +25,8 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 
 	private final List<T> list;
-	private final Set<MotifRattachement> rattachements = new HashSet<>();
-	private final Set<TypeAutoriteFiscale> typesAutoritesFiscales = new HashSet<>();
+	private final Set<MotifRattachement> rattachements = EnumSet.noneOf(MotifRattachement.class);
+	private final Set<TypeAutoriteFiscale> typesAutoritesFiscales = EnumSet.noneOf(TypeAutoriteFiscale.class);
 	private RegDate minDateDebut = RegDateHelper.getLateDate();
 	private RegDate maxDateFin = RegDateHelper.getEarlyDate();
 

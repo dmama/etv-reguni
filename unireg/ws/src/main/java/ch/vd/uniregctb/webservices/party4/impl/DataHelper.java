@@ -2,6 +2,7 @@ package ch.vd.uniregctb.webservices.party4.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -90,7 +91,7 @@ public class DataHelper {
 	}
 
 	public static Set<TiersCriteria.TypeTiers> webToCore(List<PartyType> typeTiers) {
-		Set<TiersCriteria.TypeTiers> set = new HashSet<>();
+		final Set<TiersCriteria.TypeTiers> set = EnumSet.noneOf(TiersCriteria.TypeTiers.class);
 		for (PartyType t : typeTiers) {
 			set.add(EnumHelper.webToCore(t));
 		}
@@ -183,7 +184,7 @@ public class DataHelper {
 	}
 
 	public static Set<ch.vd.unireg.xml.party.v2.PartyPart> webToXML(Collection<PartyPart> parts) {
-		final HashSet<ch.vd.unireg.xml.party.v2.PartyPart> set = new HashSet<>();
+		final Set<ch.vd.unireg.xml.party.v2.PartyPart> set = EnumSet.noneOf(ch.vd.unireg.xml.party.v2.PartyPart.class);
 		for (PartyPart part : parts) {
 			set.add(webToXML(part));
 		}

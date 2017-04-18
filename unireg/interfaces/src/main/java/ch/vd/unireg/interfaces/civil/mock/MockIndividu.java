@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,7 +51,7 @@ public class MockIndividu implements Individu {
 	private PermisList permis;
 	private Sexe sexe;
 	private RegDate dateArriveeVD;
-	private final Set<AttributeIndividu> availableParts = new HashSet<>();
+	private final Set<AttributeIndividu> availableParts = EnumSet.noneOf(AttributeIndividu.class);
 	private boolean nonHabitantNonRenvoye = false;
 	private NomPrenom nomOfficielMere;
 	private NomPrenom nomOfficielPere;

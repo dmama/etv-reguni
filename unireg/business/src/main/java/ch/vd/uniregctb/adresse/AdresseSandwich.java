@@ -2,7 +2,7 @@ package ch.vd.uniregctb.adresse;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public class AdresseSandwich {
 
 	private final List<Couche> couches = new ArrayList<>();
-	private final Set<AdresseCouche> types = new HashSet<>();
+	private final Set<AdresseCouche> types = EnumSet.noneOf(AdresseCouche.class);
 
 	/**
 	 * Cache de l'emballage

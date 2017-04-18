@@ -1,8 +1,7 @@
 package ch.vd.uniregctb.validation.registrefoncier;
 
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,8 +20,8 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 @SuppressWarnings("Duplicates")
 public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF> {
 
-	private static final HashSet<GenrePropriete> GENRE_PROPRIETES_TIERS = new HashSet<>(Arrays.asList(GenrePropriete.INDIVIDUELLE, GenrePropriete.COPROPRIETE, GenrePropriete.COMMUNE));
-	private static final HashSet<GenrePropriete> GENRE_PROPRIETES_IMMEUBLES = new HashSet<>(Arrays.asList(GenrePropriete.COPROPRIETE, GenrePropriete.FONDS_DOMINANT, GenrePropriete.PPE));
+	private static final Set<GenrePropriete> GENRE_PROPRIETES_TIERS = EnumSet.of(GenrePropriete.INDIVIDUELLE, GenrePropriete.COPROPRIETE, GenrePropriete.COMMUNE);
+	private static final Set<GenrePropriete> GENRE_PROPRIETES_IMMEUBLES = EnumSet.of(GenrePropriete.COPROPRIETE, GenrePropriete.FONDS_DOMINANT, GenrePropriete.PPE);
 
 	@Override
 	protected Class<DroitProprieteRF> getValidatedClass() {
@@ -84,7 +83,7 @@ public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF
 
 		// [SIFISC-23895] les régimes de propriété dépendent du type de propriétaire
 		final AyantDroitRF ayantDroit = entity.getAyantDroit();
-		final HashSet<GenrePropriete> genreProprietesAutorises;
+		final Set<GenrePropriete> genreProprietesAutorises;
 		if (ayantDroit instanceof TiersRF || ayantDroit instanceof CommunauteRF) {
 			genreProprietesAutorises = GENRE_PROPRIETES_TIERS;
 		}

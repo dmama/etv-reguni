@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -642,7 +645,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 				parts = Collections.emptySet();
 			}
 			else {
-				parts = new HashSet<>(Arrays.asList(parties));
+				parts = Arrays.stream(parties).filter(Objects::nonNull).collect(Collectors.toCollection(() -> EnumSet.noneOf(AttributeIndividu.class)));
 			}
 			return new MockIndividu(individu, parts);
 		}

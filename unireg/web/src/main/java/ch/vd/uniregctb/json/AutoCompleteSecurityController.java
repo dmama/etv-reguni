@@ -2,7 +2,7 @@ package ch.vd.uniregctb.json;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -121,7 +121,7 @@ public class AutoCompleteSecurityController {
 	}
 
 	private static Set<Category> parseCategories(String category) {
-		final Set<Category> categories = new HashSet<>();
+		final Set<Category> categories = EnumSet.noneOf(Category.class);
 		if ("user".equalsIgnoreCase(category)) {
 			categories.add(Category.USER);
 		}

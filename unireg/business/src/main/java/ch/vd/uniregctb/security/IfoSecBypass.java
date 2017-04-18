@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.security;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -14,7 +14,7 @@ public class IfoSecBypass {
 	private final String user;
 	private final int oid;
 	private final String oidSigle;
-	private final Set<Role> procedures = new HashSet<>();
+	private final Set<Role> procedures = EnumSet.noneOf(Role.class);
 
 	public IfoSecBypass(int oid, String oidSigle, String procedures) {
 		this.user = null;

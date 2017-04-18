@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.webservices.party3.cache;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
@@ -126,7 +129,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 		final Party party;
 
 		final GetPartyKey key = new GetPartyKey(params.getPartyNumber());
-		final HashSet<PartyPart> parts = (params.getParts() == null ? null : new HashSet<>(params.getParts()));
+		final Set<PartyPart> parts = (params.getParts() == null ? null : params.getParts().stream().filter(Objects::nonNull).collect(Collectors.toCollection(() -> EnumSet.noneOf(PartyPart.class))));
 
 		try {
 			final Element element = cache.get(key);
@@ -210,7 +213,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 	 * @param params les paramètres demandés correspondant aux données spécifiées.
 	 */
 	private void cacheBatchPartyEntries(BatchParty batch, GetBatchPartyRequest params) {
-		final Set<PartyPart> parts = (params.getParts() == null ? null : new HashSet<>(params.getParts()));
+		final Set<PartyPart> parts = (params.getParts() == null ? null : params.getParts().stream().filter(Objects::nonNull).collect(Collectors.toCollection(() -> EnumSet.noneOf(PartyPart.class))));
 		for (BatchPartyEntry entry : batch.getEntries()) {
 			if (entry.getExceptionInfo() != null) {   // [UNIREG-3288] on ignore les tiers qui ont levé une exception
 				continue;
@@ -265,7 +268,7 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 
 		List<BatchPartyEntry> cachedEntries = null;
 
-		final Set<PartyPart> parts = (params.getParts() == null ? null : new HashSet<>(params.getParts()));
+		final Set<PartyPart> parts = (params.getParts() == null ? null : params.getParts().stream().filter(Objects::nonNull).collect(Collectors.toCollection(() -> EnumSet.noneOf(PartyPart.class))));
 
 		for (Integer id : params.getPartyNumbers()) {
 			final GetPartyKey key = new GetPartyKey(id);

@@ -1,7 +1,7 @@
 package ch.vd.unireg.interfaces.infra.cache;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -255,7 +255,8 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Set<TypeCollectivite> types;
 
 		public KeyGetCollectivitesAdministrativesByTypes(List<TypeCollectivite> types) {
-			this.types = new HashSet<>(types);
+			this.types = EnumSet.noneOf(TypeCollectivite.class);
+			this.types.addAll(types);
 		}
 
 		@Override

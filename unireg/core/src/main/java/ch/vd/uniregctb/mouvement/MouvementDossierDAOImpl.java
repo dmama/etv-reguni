@@ -3,6 +3,7 @@ package ch.vd.uniregctb.mouvement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -204,7 +205,7 @@ public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long>
 		if (criteria.isSeulementDerniersMouvements()) {
 			// si on doit filtrer sur les derniers mouvements seulement, seuls les mouvements traités doivent revenir
 			if (criteria.getEtatsMouvement() != null && !criteria.getEtatsMouvement().isEmpty()) {
-				final Set<EtatMouvementDossier> temp = new HashSet<>(criteria.getEtatsMouvement().size());
+				final Set<EtatMouvementDossier> temp = EnumSet.noneOf(EtatMouvementDossier.class);
 				for (EtatMouvementDossier etat : criteria.getEtatsMouvement()) {
 					if (etat.isTraite()) {
 						temp.add(etat);

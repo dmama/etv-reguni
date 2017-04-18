@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
@@ -351,7 +354,9 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 			return null;
 		}
 
-		return new HashSet<>(Arrays.asList(parties));
+		return Arrays.stream(parties)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toCollection(() -> EnumSet.noneOf(AttributeIndividu.class)));
 	}
 
 	@Override

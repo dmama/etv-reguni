@@ -3,11 +3,14 @@ package ch.vd.unireg.interfaces.civil.cache;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -304,7 +307,9 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 			return null;
 		}
 
-		return new HashSet<>(Arrays.asList(parties));
+		return Arrays.stream(parties)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toCollection(() -> EnumSet.noneOf(AttributeIndividu.class)));
 	}
 
 	@Override

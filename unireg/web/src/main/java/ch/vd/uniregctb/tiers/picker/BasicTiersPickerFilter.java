@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.tiers.picker;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,8 +30,7 @@ public class BasicTiersPickerFilter implements SearchTiersFilter {
 		value = params.get("typeTiers");
 		if (value != null) {
 			final TiersCriteria.TypeTiers t = TiersCriteria.TypeTiers.valueOf(value);
-			this.typeTiers = new HashSet<>();
-			this.typeTiers.add(t);
+			this.typeTiers = EnumSet.of(t);
 		}
 		value = params.get("inclureI107");
 		if (value != null) {

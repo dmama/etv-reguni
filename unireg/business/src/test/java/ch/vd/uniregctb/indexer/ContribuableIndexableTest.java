@@ -203,7 +203,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		a.setDateDebut(RegDate.get(2002, 2, 23));
 		a.setNumeroOrdrePoste(283);
 		a.setUsage(TypeAdresseTiers.COURRIER);
-		HashSet<AdresseTiers> adresses = new HashSet<>();
+		Set<AdresseTiers> adresses = new HashSet<>();
 		adresses.add(a);
 		nonHab.setAdressesTiers(adresses);
 

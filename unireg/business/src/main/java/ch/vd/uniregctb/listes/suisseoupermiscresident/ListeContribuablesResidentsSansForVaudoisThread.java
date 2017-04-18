@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.listes.suisseoupermiscresident;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -39,7 +39,7 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 	private static final Set<TiersDAO.Parts> PARTS_FISCALES;
 
 	static {
-		final Set<TiersDAO.Parts> parts = new HashSet<>(ListesThread.PARTS_FISCALES.size() + 1);
+		final Set<TiersDAO.Parts> parts = EnumSet.noneOf(TiersDAO.Parts.class);
 		parts.addAll(ListesThread.PARTS_FISCALES);
 		parts.add(TiersDAO.Parts.ADRESSES);
 

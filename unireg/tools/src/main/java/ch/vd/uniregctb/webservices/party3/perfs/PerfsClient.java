@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -121,7 +121,7 @@ public class PerfsClient {
 				}
 
 				if (partsAsString != null) {
-					final Set<PartyPart> parts = new HashSet<>();
+					final Set<PartyPart> parts = EnumSet.noneOf(PartyPart.class);
 					for (String s : partsAsString) {
 						if (s.equals("ALL")) {
 							Collections.addAll(parts, PartyPart.values());

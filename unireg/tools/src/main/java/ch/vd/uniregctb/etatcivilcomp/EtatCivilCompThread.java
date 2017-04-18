@@ -3,7 +3,7 @@ package ch.vd.uniregctb.etatcivilcomp;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -108,11 +108,8 @@ public class EtatCivilCompThread extends Thread {
 
 		public CompareQuery(String operateur, int oid, FileWriter outputFilename) {
 			super(operateur, oid, outputFilename);
-
-			final Set<PartyPart> parts = new HashSet<>();
-			parts.add(PartyPart.RELATIONS_BETWEEN_PARTIES);
-			parts.add(PartyPart.FAMILY_STATUSES);
-			setParts(parts);
+			setParts(EnumSet.of(PartyPart.RELATIONS_BETWEEN_PARTIES,
+			                    PartyPart.FAMILY_STATUSES));
 		}
 
 		@Override

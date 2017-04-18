@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -1219,8 +1219,10 @@ public abstract class DataHelper {
 		return coreToXMLv1(RegDateHelper.dashStringToDate(s));
 	}
 
-	public static <T extends Enum<T>> Set<T> toSet(List<T> parts) {
-		return new HashSet<>(parts);
+	public static <T extends Enum<T>> Set<T> toSet(Class<T> clazz, List<T> parts) {
+		return parts.stream()
+				.filter(Objects::nonNull)
+				.collect(Collectors.toCollection(() -> EnumSet.noneOf(clazz)));
 	}
 
 	public static String salutations2MrMrs(String salutations) {

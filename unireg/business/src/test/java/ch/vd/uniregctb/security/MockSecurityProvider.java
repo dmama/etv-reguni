@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.type.Niveau;
@@ -20,7 +23,7 @@ public class MockSecurityProvider implements SecurityProviderInterface {
 	private Set<Long> dossiersProteges;
 
 	public MockSecurityProvider(Collection<Role> roles) {
-		this.roles = new HashSet<>(roles);
+		this.roles = roles.stream().filter(Objects::nonNull).collect(Collectors.toCollection(() -> EnumSet.noneOf(Role.class)));
 		this.dossiersProteges = Collections.emptySet();
 	}
 

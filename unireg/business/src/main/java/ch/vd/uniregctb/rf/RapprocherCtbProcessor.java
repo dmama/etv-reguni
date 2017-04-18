@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.rf;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -104,9 +104,8 @@ public class RapprocherCtbProcessor {
 			}
 		}
 
-		final Set<TiersDAO.Parts> parts = new HashSet<>();
-		parts.add(TiersDAO.Parts.ADRESSES);
-		parts.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+		final Set<TiersDAO.Parts> parts = EnumSet.of(TiersDAO.Parts.ADRESSES,
+		                                             TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 
 		final List<Tiers> tierz = tiersDAO.getBatch(idCtbs, parts);
 		preloadIndividus(tierz, RegDate.get().year());

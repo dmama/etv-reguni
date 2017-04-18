@@ -385,8 +385,8 @@ public class PartyWebServiceImpl implements PartyWebService {
 		}
 	}
 
-	private static HashSet<Long> toLongSet(List<Integer> partyNumbers) {
-		final HashSet<Long> numbers = new HashSet<>(partyNumbers.size());
+	private static Set<Long> toLongSet(List<Integer> partyNumbers) {
+		final Set<Long> numbers = new HashSet<>(partyNumbers.size());
 		for (Integer n : partyNumbers) {
 			if (n != null) {
 				numbers.add(n.longValue());
@@ -521,7 +521,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 */
 	private static Set<Long> trim(Set<Long> input) {
 		if (input.contains(null)) {
-			HashSet<Long> trimmed = new HashSet<>(input);
+			final Set<Long> trimmed = new HashSet<>(input);
 			trimmed.remove(null);
 			return trimmed;
 		}

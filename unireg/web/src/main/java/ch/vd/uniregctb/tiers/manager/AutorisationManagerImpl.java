@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.tiers.manager;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -293,7 +293,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				// - pour tous les autres, tous les modes sont admis (donc y compris pour ceux dont on ne connait ni la nationalité ni le permis de séjour)
 				// - [SIFISC-4528] exception pour les non-habitants étrangers, on ne contrôle pas leur permis pour pouvoir eventuellement leur ajouter un for source
 				//   antérieur à leur obtention du permis C,
-				final Set<ModeImposition> autorises = new HashSet<>();
+				final Set<ModeImposition> autorises = EnumSet.noneOf(ModeImposition.class);
 
 				// nationalité suisse ou étrangère ?
 				Boolean isSuisse;

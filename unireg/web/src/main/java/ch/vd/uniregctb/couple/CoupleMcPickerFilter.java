@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.couple;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,10 +37,8 @@ public class CoupleMcPickerFilter implements SearchTiersFilterWithPostFiltering 
 
 	@Override
 	public Set<TiersCriteria.TypeTiers> getTypesTiers() {
-		final Set<TiersCriteria.TypeTiers> set = new HashSet<>();
-		set.add(TiersCriteria.TypeTiers.NON_HABITANT);
-		set.add(TiersCriteria.TypeTiers.MENAGE_COMMUN);
-		return set;
+		return EnumSet.of(TiersCriteria.TypeTiers.NON_HABITANT,
+		                  TiersCriteria.TypeTiers.MENAGE_COMMUN);
 	}
 
 	@Override

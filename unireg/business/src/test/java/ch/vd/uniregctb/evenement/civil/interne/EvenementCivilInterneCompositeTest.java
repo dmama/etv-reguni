@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -330,7 +330,7 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 		//
 		// - Chaque événements possède une part differente le composite devrait en possède 3
 
-		final Set<AttributeIndividu> attrs = new HashSet<>();
+		final Set<AttributeIndividu> attrs = EnumSet.noneOf(AttributeIndividu.class);
 
 		mockEvenementsComposants = new EvenementCivilInterne[] {
 				new EvenementCivilInterneMock(){
