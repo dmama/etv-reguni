@@ -32,6 +32,8 @@ import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.technical.esb.store.EsbStore;
+import ch.vd.uniregctb.common.DefaultThreadFactory;
+import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -208,7 +210,8 @@ public class MutationsRFDetector implements InitializingBean {
 
 			// on parse le fichier (dans un thread séparé)
 			final Future<?> future;
-			final ExecutorService executor = Executors.newFixedThreadPool(1);
+			final ExecutorService executor = Executors.newFixedThreadPool(1,
+			                                                              new DefaultThreadFactory(new DefaultThreadNameGenerator(String.format("%s-feed", Thread.currentThread().getName()))));
 			try {
 				future = executor.submit(() -> {
 					fichierImmeubleParser.processFile(is, adapter);    // <-- émetteur des données
