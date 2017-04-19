@@ -30,7 +30,10 @@ public class ImmeubleRFController {
 	@RequestMapping(value = "graph.do", method = RequestMethod.GET, produces = "text/plain")
 	@ResponseBody
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String graph(@RequestParam(required = false) String idRF, @RequestParam(required = false) String egrid, @RequestParam(required = false) Long id) {
+	public String graph(@RequestParam(required = false) String idRF,
+	                    @RequestParam(required = false) String egrid,
+	                    @RequestParam(required = false) Long id,
+	                    @RequestParam(required = false, defaultValue = "false") boolean showEstimations) {
 
 		final ImmeubleRF immeuble;
 		if (id != null) {
@@ -53,8 +56,6 @@ public class ImmeubleRFController {
 		final ImmeubleGraph graph = new ImmeubleGraph();
 		graph.process(immeuble);
 
-		return graph.toString();
+		return graph.toDot(showEstimations);
 	}
-
-
 }

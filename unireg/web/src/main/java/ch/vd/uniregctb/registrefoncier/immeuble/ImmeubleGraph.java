@@ -75,7 +75,7 @@ public class ImmeubleGraph {
 			else {
 				throw new IllegalArgumentException();
 			}
-			this.type = type;;
+			this.type = type;
 
 			String label = situation.getCommune().getNomRf() + " / " + situation.getNoParcelle();
 			if (situation.getIndex1() != null) {
@@ -98,10 +98,9 @@ public class ImmeubleGraph {
 					.orElse(null);
 		}
 
-		@Override
-		public String toString() {
+		public String toDot(boolean showEstimationFiscales) {
 			String s = name + " [shape=record, label=\"" + type + "|" + label;
-			if (StringUtils.isNotBlank(estimationFiscale)) {
+			if (showEstimationFiscales && StringUtils.isNotBlank(estimationFiscale)) {
 				s += "|" + estimationFiscale;
 			}
 			s += "\", style=filled, color=sienna2]";
@@ -120,8 +119,7 @@ public class ImmeubleGraph {
 			this.label = label;
 		}
 
-		@Override
-		public String toString() {
+		public String toDot() {
 			return name + " [shape=oval, label=\"" + type + "\n" + label + "\", style=filled, color=lightblue1]";
 		}
 	}
@@ -151,14 +149,13 @@ public class ImmeubleGraph {
 			}
 		}
 
-		@Override
-		public String toString() {
+		public String toDot() {
 			final StringBuilder s = new StringBuilder();
 			s.append("subgraph ").append(name).append(" {\n")
 					.append("    node [style=filled];\n")
 					.append("    color=lightblue4;\n");
-			s.append("    ").append(super.toString());
-			membres.values().forEach(obj -> s.append("    ").append(obj).append("\n"));
+			s.append("    ").append(super.toDot());
+			membres.values().forEach(obj -> s.append("    ").append(obj.toDot()).append("\n"));
 			s.append("}");
 			return s.toString();
 		}
@@ -197,8 +194,7 @@ public class ImmeubleGraph {
 			this.style = style;
 		}
 
-		@Override
-		public String toString() {
+		public String toDot() {
 			return source + " -> " + destination + " [label=\"" + label + "\", color=" + color + ", style=" + style + "]";
 		}
 	}
@@ -369,15 +365,14 @@ public class ImmeubleGraph {
 		return egrid == null ? immeuble.getIdRF() : egrid;
 	}
 
-	@Override
-	public String toString() {
+	public String toDot(boolean showEstimationFiscales) {
 		StringBuilder s = new StringBuilder();
 		s.append("digraph {\n");
 		s.append("rankdir=LR;\n");
-		immeubles.values().forEach(obj -> s.append(obj).append("\n"));
-		ayantDroits.values().forEach(obj -> s.append(obj).append("\n"));
+		immeubles.values().forEach(obj -> s.append(obj.toDot(showEstimationFiscales)).append("\n"));
+		ayantDroits.values().forEach(obj -> s.append(obj.toDot()).append("\n"));
 		s.append("\n");
-		droits.forEach(obj -> s.append(obj).append("\n"));
+		droits.forEach(obj -> s.append(obj.toDot()).append("\n"));
 		s.append("}\n");
 		return s.toString();
 	}
