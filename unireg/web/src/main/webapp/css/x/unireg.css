@@ -499,12 +499,15 @@ table.degrevement th.valeur {
 }
 table.degrevement input.nombre {
 	width: 15ex;
+	text-align: right;
 }
-table.degrevement td.valeur span.computed {
+table.degrevement td.valeur div.computed {
 	padding: 0 0 0 1em;
 	font-style: italic;
 	font-weight: bold;
 	color: darkslateblue;
+	width: 5em;
+	text-align: right;
 }
 table.degrevement_list th.separator, table.degrevement_list td.separator {
 	width: 1px;

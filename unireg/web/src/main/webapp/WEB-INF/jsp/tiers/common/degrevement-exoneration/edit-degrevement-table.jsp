@@ -122,7 +122,7 @@
 							<form:errors path="propreUsage.revenu" cssClass="error"/>
 						</td>
 						<td class="valeur">
-							<span class="computed" id="percentRevenu">&nbsp;</span>
+							<div class="computed" id="percentRevenu">&nbsp;</div>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
@@ -132,7 +132,7 @@
 							<form:errors path="propreUsage.volume" cssClass="error"/>
 						</td>
 						<td class="valeur">
-							<span class="computed" id="percentVolume">&nbsp;</span>
+							<div class="computed" id="percentVolume">&nbsp;</div>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
@@ -142,7 +142,7 @@
 							<form:errors path="propreUsage.surface" cssClass="error"/>
 						</td>
 						<td class="valeur">
-							<span class="computed" id="percentSurface">&nbsp;</span>
+							<div class="computed" id="percentSurface">&nbsp;</div>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
@@ -246,10 +246,10 @@
 		initValeursArretees: function() {
 			const location = this._extractDecimal(this._extractInputFieldValue('locationPourcentageArrete'));
 			const propreUsage = this._extractDecimal(this._extractInputFieldValue('propreUsagePourcentageArrete'));
-			if (location != null && propreUsage == null) {
+			if (location !== null && propreUsage === null) {
 				this.resetValeurArreteePropreUsage();
 			}
-			else if (location == null && propreUsage != null) {
+			else if (location === null && propreUsage !== null) {
 				this.resetValeurArreteeLocative();
 			}
 		},
@@ -258,7 +258,7 @@
 			const location = this._extractInteger(this._extractInputFieldValue(idInputLocation));
 			const propreUsage = this._extractInteger(this._extractInputFieldValue(idInputPropreUsage));
 			const spanResult = $('#' + idSpanResult);
-			if (location != null && propreUsage != null) {
+			if (location !== null && propreUsage !== null) {
 				const denominateur = 1.0 * location + 1.0 * propreUsage;
 				if (denominateur > 0) {
 					const percent = (propreUsage * 100.0) / denominateur;
@@ -272,7 +272,7 @@
 		_resetValeurArretee: function(idInputSource, idInputDestination) {
 			const src = this._extractDecimal(this._extractInputFieldValue(idInputSource));
 			const inputDest = $('#' + idInputDestination)[0];
-			if (src != null) {
+			if (src !== null) {
 				const srcPercent = 1.0 * src;
 				if (srcPercent >= 0.0 && srcPercent <= 100.0) {
 					const destPercent = 100.0 - srcPercent;
@@ -291,12 +291,12 @@
 
 		_extractInteger: function(text) {
 			const match = /^\s*([0-9]+)\s*$/g.exec(text);
-			return match == null ? null : match[1];
+			return match === null ? null : match[1];
 		},
 
 		_extractDecimal: function(text) {
 			const match = /^\s*([0-9]+(?:\.[0-9]*)?)\s*/g.exec(text);
-			return match == null ? null : match[1];
+			return match === null ? null : match[1];
 		}
 
 	};

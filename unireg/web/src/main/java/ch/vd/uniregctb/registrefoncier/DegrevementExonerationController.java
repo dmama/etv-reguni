@@ -3,6 +3,7 @@ package ch.vd.uniregctb.registrefoncier;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,6 +73,8 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.ChoixImmeubleView;
 import ch.vd.uniregctb.tiers.view.ImmeubleView;
+import ch.vd.uniregctb.utils.DecimalNumberEditor;
+import ch.vd.uniregctb.utils.IntegerEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -597,10 +600,21 @@ public class DegrevementExonerationController {
 		return "redirect:/degrevement-exoneration/edit-degrevements.do?idContribuable=" + contribuable.getNumero() + "&idImmeuble=" + degrevement.getImmeuble().getId();
 	}
 
-	@InitBinder(value = "addDegrevementCommand")
+	@InitBinder(value = {"addDegrevementCommand", "editDegrevementCommand"})
 	public void initAddDegrevementCommandBinder(WebDataBinder binder) {
 		binder.setValidator(new AbstractEditDegrevementViewValidator());
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(Integer.class, "location.revenu", new IntegerEditor(true));
+		binder.registerCustomEditor(Integer.class, "location.volume", new IntegerEditor(true));
+		binder.registerCustomEditor(Integer.class, "location.surface", new IntegerEditor(true));
+		binder.registerCustomEditor(Integer.class, "propreUsage.revenu", new IntegerEditor(true));
+		binder.registerCustomEditor(Integer.class, "propreUsage.volume", new IntegerEditor(true));
+		binder.registerCustomEditor(Integer.class, "propreUsage.surface", new IntegerEditor(true));
+		binder.registerCustomEditor(BigDecimal.class, "location.pourcentage", new DecimalNumberEditor(2));
+		binder.registerCustomEditor(BigDecimal.class, "location.pourcentageArrete", new DecimalNumberEditor(2));
+		binder.registerCustomEditor(BigDecimal.class, "propreUsage.pourcentage", new DecimalNumberEditor(2));
+		binder.registerCustomEditor(BigDecimal.class, "propreUsage.pourcentageArrete", new DecimalNumberEditor(2));
+		binder.registerCustomEditor(BigDecimal.class, "loiLogement.pourcentageCaractereSocial", new DecimalNumberEditor(2));
 	}
 
 	@RequestMapping(value = "/add-degrevement.do", method = RequestMethod.GET)
@@ -677,12 +691,6 @@ public class DegrevementExonerationController {
 		else {
 			return source;
 		}
-	}
-
-	@InitBinder(value = "editDegrevementCommand")
-	public void initEditDegrevementCommandBinder(WebDataBinder binder) {
-		binder.setValidator(new AbstractEditDegrevementViewValidator());
-		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
 	@RequestMapping(value = "/edit-degrevement.do", method = RequestMethod.GET)
