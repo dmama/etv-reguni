@@ -74,6 +74,17 @@ public class AbstractEditDegrevementViewValidator implements Validator {
 				errors.rejectValue("location.pourcentageArrete", "error.degexo.champ.recalcule");
 			}
 		}
+
+		// [SIFISC-24404] si les deux sont vides, on ne peut pas recalculer quoi que ce soit, donc on bloque
+		if (view.getLocation().getPourcentageArrete() == null && view.getPropreUsage().getPourcentageArrete() == null) {
+			if (!errors.hasFieldErrors("location.pourcentageArrete")) {
+				errors.rejectValue("location.pourcentageArrete", "error.champ.obligatoire");
+			}
+			if (!errors.hasFieldErrors("propreUsage.pourcentageArrete")) {
+				errors.rejectValue("propreUsage.pourcentageArrete", "error.champ.obligatoire");
+			}
+		}
+
 		if (view.getLoiLogement().getPourcentageCaractereSocial() != null) {
 			final BigDecimal value = view.getLoiLogement().getPourcentageCaractereSocial();
 			if (value.compareTo(CENT) > 0 || value.compareTo(BigDecimal.ZERO) < 0) {
