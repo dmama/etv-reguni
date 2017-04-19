@@ -1,10 +1,15 @@
 package ch.vd.uniregctb.registrefoncier.immeuble;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +22,7 @@ import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
@@ -31,20 +37,75 @@ import ch.vd.uniregctb.registrefoncier.SituationRF;
  */
 public class ImmeubleGraph {
 
+	private static final DecimalFormat MONTANT_FORMAT = new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(new Locale("fr", "CH")));
+
 	private static class Immeuble {
+
 		private final String name;
 		private final String type;
 		private final String label;
+		private final String estimationFiscale;
 
-		public Immeuble(String name, String type, String label) {
-			this.name = name;
-			this.type = type;
+		public Immeuble(@NotNull ImmeubleRF immeuble) {
+
+			final RegDate today = RegDate.get();
+
+			this.name = getName(immeuble);
+			final SituationRF situation = immeuble.getSituations().stream()
+					.filter(s -> s.isValidAt(today))
+					.findFirst()
+					.orElseThrow(IllegalArgumentException::new);
+
+			final String type;
+			if (immeuble instanceof BienFondRF) {
+				type = "BF";
+			}
+			else if (immeuble instanceof DroitDistinctEtPermanentRF) {
+				type = "DDP";
+			}
+			else if (immeuble instanceof MineRF) {
+				type = "Mine";
+			}
+			else if (immeuble instanceof PartCoproprieteRF) {
+				type = "PC";
+			}
+			else if (immeuble instanceof ProprieteParEtageRF) {
+				type = "PPE";
+			}
+			else {
+				throw new IllegalArgumentException();
+			}
+			this.type = type;;
+
+			String label = situation.getCommune().getNomRf() + " / " + situation.getNoParcelle();
+			if (situation.getIndex1() != null) {
+				label += "-" + situation.getIndex1();
+			}
+			if (situation.getIndex2() != null) {
+				label += "-" + situation.getIndex2();
+			}
+			if (situation.getIndex3() != null) {
+				label += "-" + situation.getIndex3();
+			}
 			this.label = label;
+
+			estimationFiscale = immeuble.getEstimations().stream()
+					.filter(e -> e.isValidAt(today))
+					.findFirst()
+					.map(EstimationRF::getMontant)
+					.filter(Objects::nonNull)
+					.map(montant -> MONTANT_FORMAT.format(montant) + " CHF")
+					.orElse(null);
 		}
 
 		@Override
 		public String toString() {
-			return name + " [shape=record, label=\"" + type + "|" + label + "\", style=filled, color=sienna2]";
+			String s = name + " [shape=record, label=\"" + type + "|" + label;
+			if (StringUtils.isNotBlank(estimationFiscale)) {
+				s += "|" + estimationFiscale;
+			}
+			s += "\", style=filled, color=sienna2]";
+			return s;
 		}
 	}
 
@@ -187,45 +248,8 @@ public class ImmeubleGraph {
 	}
 
 	private void addProcessed(@NotNull ImmeubleRF immeuble) {
-
-		final String name = getName(immeuble);
-		final SituationRF situation = immeuble.getSituations().stream()
-				.filter(s -> s.isValidAt(RegDate.get()))
-				.findFirst()
-				.orElseThrow(IllegalArgumentException::new);
-
-		final String type;
-		if (immeuble instanceof BienFondRF) {
-			type = "BF";
-		}
-		else if (immeuble instanceof DroitDistinctEtPermanentRF) {
-			type = "DDP";
-		}
-		else if (immeuble instanceof MineRF) {
-			type = "Mine";
-		}
-		else if (immeuble instanceof PartCoproprieteRF) {
-			type = "PC";
-		}
-		else if (immeuble instanceof ProprieteParEtageRF) {
-			type = "PPE";
-		}
-		else {
-			throw new IllegalArgumentException();
-		}
-
-		String label = situation.getCommune().getNomRf() + " / " + situation.getNoParcelle();
-		if (situation.getIndex1() != null) {
-			label += "-" + situation.getIndex1();
-		}
-		if (situation.getIndex2() != null) {
-			label += "-" + situation.getIndex2();
-		}
-		if (situation.getIndex3() != null) {
-			label += "-" + situation.getIndex3();
-		}
-
-		immeubles.put(name, new Immeuble(name, type, label));
+		final Immeuble i = new Immeuble(immeuble);
+		immeubles.put(i.name, i);
 	}
 
 	private void addDroitPropriete(DroitProprieteRF droit) {

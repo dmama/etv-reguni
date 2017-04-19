@@ -26,7 +26,7 @@ public class ImmeubleRFController {
 		this.immeubleRFDAO = immeubleRFDAO;
 	}
 
-	@SecurityCheck(rolesToCheck = {Role.VISU_IMMEUBLES}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.VISU_ALL}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "graph.do", method = RequestMethod.GET, produces = "text/plain")
 	@ResponseBody
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
