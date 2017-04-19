@@ -85,11 +85,6 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 	private Sexe sexe;
 
 	/**
-	 * @deprecated remplacé dès 14R4 par le champ {@link #origine}
-	 */
-	private String libelleCommuneOrigine;
-
-	/**
 	 * Origine du non-habitant
 	 */
 	private OriginePersonnePhysique origine;
@@ -337,17 +332,6 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 
 	public void setNumeroOfsNationalite(@Nullable Integer theNumeroOfsNationalite) {
 		numeroOfsNationalite = theNumeroOfsNationalite;
-	}
-
-	@Deprecated
-	@Column(name = "NH_LIBELLE_COMMUNE_ORIGINE", length = LengthConstants.TIERS_LIB_ORIGINE)
-	public String getLibelleCommuneOrigine() {
-		return libelleCommuneOrigine;
-	}
-
-	@Deprecated
-	public void setLibelleCommuneOrigine(String libelleCommuneOrigine) {
-		this.libelleCommuneOrigine = libelleCommuneOrigine;
 	}
 
 	@Embedded

@@ -137,12 +137,8 @@ import ch.vd.uniregctb.tiers.Contribuable.FirstForsList;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.tiers.etats.TransitionEtatEntrepriseService;
 import ch.vd.uniregctb.tiers.etats.transition.TransitionEtatEntreprise;
-import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsProcessor;
-import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
-import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsProcessor;
-import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
@@ -533,7 +529,6 @@ public class TiersServiceImpl implements TiersService {
 		nonHabitant.setPrenomsPere(null);
 		nonHabitant.setNomMere(null);
 		nonHabitant.setPrenomsMere(null);
-		nonHabitant.setLibelleCommuneOrigine(null);
 		nonHabitant.setOrigine(null);
 
 		// si on a donné une date de référence, on s'attaque aux situations de famille et aux adresses surchargées non-permanentes
@@ -939,7 +934,6 @@ public class TiersServiceImpl implements TiersService {
 			                                   "NH_DATE_NAISSANCE = null," +
 			                                   "NH_SEXE = null," +
 			                                   "NH_NO_OFS_NATIONALITE = null," +
-			                                   "NH_LIBELLE_COMMUNE_ORIGINE = null," +
 			                                   "NH_LIBELLE_ORIGINE = null," +
 			                                   "NH_CANTON_ORIGINE = null," +
 			                                   "NH_CAT_ETRANGER = null," +
@@ -4642,18 +4636,6 @@ public class TiersServiceImpl implements TiersService {
         final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, this, transactionManager, statusManager, adresseService);
         return processor.corrigeFlagSurPersonnesPhysiques(nbThreads);
     }
-
-	@Override
-	public RecuperationDonneesAnciensHabitantsResults recupereDonneesSurAnciensHabitants(int nbThreads, boolean forceEcrasement, boolean parents, boolean prenoms, boolean nomNaissance, StatusManager statusManager) {
-		final RecuperationDonneesAnciensHabitantsProcessor processor = new RecuperationDonneesAnciensHabitantsProcessor(hibernateTemplate, transactionManager, tiersDAO, serviceCivilService);
-		return processor.run(nbThreads, forceEcrasement, parents, prenoms, nomNaissance, statusManager);
-	}
-
-	@Override
-	public RecuperationOriginesNonHabitantsResults recupereOriginesNonHabitants(int nbThreads, boolean dryRun, StatusManager statusManager) {
-		final RecuperationOriginesNonHabitantsProcessor processor = new RecuperationOriginesNonHabitantsProcessor(hibernateTemplate, transactionManager, serviceCivilService, serviceInfra);
-		return processor.run(nbThreads, dryRun, statusManager);
-	}
 
 	@Override
     public boolean isSourcierGris(Contribuable ctb, RegDate date) {

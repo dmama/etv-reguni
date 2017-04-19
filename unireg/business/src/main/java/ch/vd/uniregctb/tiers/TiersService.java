@@ -29,9 +29,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
-import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
-import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -1405,31 +1403,6 @@ public interface TiersService {
      * @param statusManager status manager
      */
     CorrectionFlagHabitantResults corrigeFlagHabitantSurPersonnesPhysiques(int nbThreads, StatusManager statusManager);
-
-	/**
-	 * Lance le job de récupération des données des anciens habitants depuis le registre civil
-	 * @param nbThreads nombre de threads du traitement
-	 * @param forceEcrasement <code>true</code> si les valeurs existantes trouvées peuvent être écrasées, <code>false</code> si on ne se permet de changer que les valeurs vides
-	 * @param parents <code>true</code> si les noms/prénoms des parents doivent être récupérés
-	 * @param prenoms <code>true</code> si la liste complète des prénoms de l'individu doit être récupérée
-	 * @param nomNaissance <code>true</code> si le nom de naissance de l'individu doit être récupéré
-	 * @param statusManager status manager
-	 * @return le rapport du traitement
-	 */
-	RecuperationDonneesAnciensHabitantsResults recupereDonneesSurAnciensHabitants(int nbThreads, boolean forceEcrasement, boolean parents, boolean prenoms, boolean nomNaissance, StatusManager statusManager);
-
-	/**
-	 * Lance le job de récupération des données d'origine des non-habitants
-	 * <ul>
-	 *     <li>pour les anciens habitants, depuis les données du registre civil</li>
-	 *     <li>pour les non-habitants <i>purs</i>, en tentant de retrouver une commune suisse à partir du libellé enregistré en base</li>
-	 * </ul>
-	 * @param nbThreads nombre de threads du traitement
-	 * @param dryRun <code>true</code> s'il ne s'agit que de faire un état des lieux des choses à changer
-	 * @param statusManager status manager
-	 * @return le rapport du traitement
-	 */
-	RecuperationOriginesNonHabitantsResults recupereOriginesNonHabitants(int nbThreads, boolean dryRun, StatusManager statusManager);
 
     /**
      * Renvoie <code>true</code> si la personne physique est un sourcier gris à la date donnée

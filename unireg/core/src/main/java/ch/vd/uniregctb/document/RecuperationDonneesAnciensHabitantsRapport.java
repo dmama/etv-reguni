@@ -8,6 +8,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("RecupDonneesAnciensHabitantsRapport")
+@Deprecated
 public class RecuperationDonneesAnciensHabitantsRapport extends Document {
 
 	public RecuperationDonneesAnciensHabitantsRapport() {

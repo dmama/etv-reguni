@@ -717,22 +717,8 @@
 		</property>
 	</bean>
 
-	<bean id="recupDonneesAnciensHabitantsJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsJob">
-		<constructor-arg value="711"/>
-		<constructor-arg value="Récupérer les données des anciens habitants depuis le registre civil"/>
-		<property name="tiersService" ref="tiersService"/>
-		<property name="rapportService" ref="rapportService"/>
-	</bean>
-
-	<bean id="recupOriginesNonHabitantsJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsJob">
-		<constructor-arg value="712"/>
-		<constructor-arg value="Migration des données d'origine des non-habitants 14R3 -> 14R4"/>
-		<property name="tiersService" ref="tiersService"/>
-		<property name="rapportService" ref="rapportService"/>
-	</bean>
-
 	<bean id="apparierEtablissementsSecondairesJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementEtablissementsSecondairesJob">
-		<constructor-arg value="713"/>
+		<constructor-arg value="711"/>
 		<constructor-arg value="Appariement des établissements secondaires non-appariés des entreprises appariées"/>
 		<property name="appariementService" ref="appariementService"/>
 		<property name="dbDialect" ref="hibernateDialect"/>
@@ -743,14 +729,14 @@
 	</bean>
 
 	<bean id="migrationDDLoadCsvJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.migration.ici.MigrationDDJob">
-		<constructor-arg value="714"/>
+		<constructor-arg value="712"/>
 		<constructor-arg value="Importer le fichier CSV des données de dégrèvement de SIMPA-PM"/>
 		<property name="loader" ref="migrationDDCsvLoader"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
 	<bean id="migrationExonerationsIFONCJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCJob">
-		<constructor-arg value="715"/>
+		<constructor-arg value="713"/>
 		<constructor-arg value="Importer le fichier CSV des exonérations IFONC de SIMPA-PM"/>
 		<property name="loader" ref="migrationExoIFONCCsvLoader"/>
 		<property name="rapportService" ref="rapportService"/>

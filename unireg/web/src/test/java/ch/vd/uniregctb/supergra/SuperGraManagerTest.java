@@ -65,7 +65,6 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 				pp.setAncienNumeroSourcier(4444L);
 				pp.setNumeroAssureSocial("WWWW");
 				pp.setNumeroOfsNationalite(333);
-				pp.setLibelleCommuneOrigine("eeee");
 				pp.setOrigine(new OriginePersonnePhysique(MockCommune.Neuchatel.getNomOfficiel(), MockCommune.Neuchatel.getSigleCanton()));
 				pp.setCategorieEtranger(CategorieEtranger._12_FONCT_INTER_SANS_IMMUNITE);
 				pp.setDateDebutValiditeAutorisation(RegDate.get(2000, 1, 1));
@@ -112,7 +111,7 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 					@Override
 					public Object doInHibernate(Session session) throws HibernateException, SQLException {
 						final SQLQuery query = session.createSQLQuery("select NUMERO_INDIVIDU, ANCIEN_NUMERO_SOURCIER, NH_NUMERO_ASSURE_SOCIAL, NH_NOM, NH_PRENOM, NH_DATE_NAISSANCE, NH_SEXE, " +
-								                                              "NH_NO_OFS_NATIONALITE, NH_LIBELLE_COMMUNE_ORIGINE, NH_CAT_ETRANGER, " +
+								                                              "NH_NO_OFS_NATIONALITE, NH_CAT_ETRANGER, " +
 								                                              "NH_DATE_DEBUT_VALID_AUTORIS, DATE_DECES, MAJORITE_TRAITEE, NH_LIBELLE_ORIGINE, NH_CANTON_ORIGINE, NH_NOM_NAISSANCE from TIERS where NUMERO = ?");
 						query.setParameter(0, id);
 						final List list = query.list();

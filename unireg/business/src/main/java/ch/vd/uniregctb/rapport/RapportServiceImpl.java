@@ -96,8 +96,6 @@ import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
-import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
-import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
 import ch.vd.uniregctb.document.RolePMCommunesRapport;
@@ -165,11 +163,9 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsNotairesResults;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
-import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementEtablissementsSecondairesResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
-import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
 /**
@@ -1456,50 +1452,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 				@Override
 				public void writeDoc(DumpPeriodesImpositionImpotSourceRapport doc, OutputStream os) throws Exception {
 					final PdfDumpPeriodesImpositionImpotSourceRapport document = new PdfDumpPeriodesImpositionImpotSourceRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public RecuperationDonneesAnciensHabitantsRapport generateRapport(final RecuperationDonneesAnciensHabitantsResults results, StatusManager s) {
-		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-
-		final String nom = "RapportRecuperationNomsParentsAnciensHabitants";
-		final String description = "Rapport d'exécution du job de récupération des noms/prénoms des anciens habitants depuis les données civiles";
-		final Date dateGeneration = DateHelper.getCurrentDate();
-
-		try {
-			return docService.newDoc(RecuperationDonneesAnciensHabitantsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RecuperationDonneesAnciensHabitantsRapport>() {
-				@Override
-				public void writeDoc(RecuperationDonneesAnciensHabitantsRapport doc, OutputStream os) throws Exception {
-					final PdfRecuperationDonneesAnciensHabitantsRapport document = new PdfRecuperationDonneesAnciensHabitantsRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public RecuperationOriginesNonHabitantsRapport generateRapport(final RecuperationOriginesNonHabitantsResults results, StatusManager s) {
-		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-
-		final String nom = "RapportRecuperationOriginesNonHabitants";
-		final String description = "Rapport d'exécution du job de récupération des origines des non-habitants";
-		final Date dateGeneration = DateHelper.getCurrentDate();
-
-		try {
-			return docService.newDoc(RecuperationOriginesNonHabitantsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RecuperationOriginesNonHabitantsRapport>() {
-				@Override
-				public void writeDoc(RecuperationOriginesNonHabitantsRapport doc, OutputStream os) throws Exception {
-					final PdfRecuperationOriginesNonHabitantsRapport document = new PdfRecuperationOriginesNonHabitantsRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

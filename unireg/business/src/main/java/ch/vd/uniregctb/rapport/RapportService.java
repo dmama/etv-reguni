@@ -83,8 +83,6 @@ import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
-import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
-import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
 import ch.vd.uniregctb.document.RolePMCommunesRapport;
@@ -151,11 +149,9 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsNotairesResults;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
-import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementEtablissementsSecondairesResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
-import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
 /**
@@ -611,22 +607,6 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	DumpPeriodesImpositionImpotSourceRapport generateRapport(DumpPeriodesImpositionImpotSourceResults results, StatusManager status);
-
-	/**
-	 * Génère le rapport d'exécution du batch de récupération des noms des parents sur les anciens habitants
-	 * @param results le résultat du batch
-	 * @param status le status manager
-	 * @return le rapport
-	 */
-	RecuperationDonneesAnciensHabitantsRapport generateRapport(RecuperationDonneesAnciensHabitantsResults results, StatusManager status);
-
-	/**
-	 * Génère le rapport d'exécution du batch de récupération origines sur les non-habitants
-	 * @param results le résultat du batch
-	 * @param status le status manager
-	 * @return le rapport
-	 */
-	RecuperationOriginesNonHabitantsRapport generateRapport(RecuperationOriginesNonHabitantsResults results, StatusManager status);
 
 	/**
 	 * Génère le rapport d'exécution du batch qui liste les assujettissements par substitution
