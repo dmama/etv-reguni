@@ -55,7 +55,7 @@
 			<td style="text-align: right;">
 				<c:choose>
 					<c:when test="${degrevement.location != null && degrevement.location.revenu != null}">
-						<c:out value="${degrevement.location.revenu}"/>&nbsp;<fmt:message key="label.chf"/>
+						<fmt:formatNumber value="${degrevement.location.revenu}"/>&nbsp;<fmt:message key="label.chf"/>
 					</c:when>
 					<c:otherwise>
 						&nbsp;
@@ -65,7 +65,7 @@
 			<td style="text-align: right;">
 				<c:choose>
 					<c:when test="${degrevement.location != null && degrevement.location.volume != null}">
-						<c:out value="${degrevement.location.volume}"/>&nbsp;m&sup3;
+						<fmt:formatNumber value="${degrevement.location.volume}"/>&nbsp;m&sup3;
 					</c:when>
 					<c:otherwise>
 						&nbsp;
@@ -75,7 +75,7 @@
 			<td style="text-align: right;">
 				<c:choose>
 					<c:when test="${degrevement.location != null && degrevement.location.surface != null}">
-						<c:out value="${degrevement.location.surface}"/>&nbsp;m&sup2;
+						<fmt:formatNumber value="${degrevement.location.surface}"/>&nbsp;m&sup2;
 					</c:when>
 					<c:otherwise>
 						&nbsp;
@@ -106,7 +106,7 @@
 			<td style="text-align: right;">
 				<c:choose>
 					<c:when test="${degrevement.propreUsage != null && degrevement.propreUsage.revenu != null}">
-						<c:out value="${degrevement.propreUsage.revenu}"/>&nbsp;<fmt:message key="label.chf"/>
+						<fmt:formatNumber value="${degrevement.propreUsage.revenu}"/>&nbsp;<fmt:message key="label.chf"/>
 					</c:when>
 					<c:otherwise>
 						&nbsp;
@@ -116,7 +116,7 @@
 			<td style="text-align: right;">
 				<c:choose>
 					<c:when test="${degrevement.propreUsage != null && degrevement.propreUsage.volume != null}">
-						<c:out value="${degrevement.propreUsage.volume}"/>&nbsp;m&sup3;
+						<fmt:formatNumber value="${degrevement.propreUsage.volume}"/>&nbsp;m&sup3;
 					</c:when>
 					<c:otherwise>
 						&nbsp;
@@ -126,7 +126,7 @@
 			<td style="text-align: right;">
 				<c:choose>
 					<c:when test="${degrevement.propreUsage != null && degrevement.propreUsage.surface != null}">
-						<c:out value="${degrevement.propreUsage.surface}"/>&nbsp;m&sup2;
+						<fmt:formatNumber value="${degrevement.propreUsage.surface}"/>&nbsp;m&sup2;
 					</c:when>
 					<c:otherwise>
 						&nbsp;

@@ -128,7 +128,7 @@
 								html += '<td style="width: 10%;">' + RegDate.format(immeuble.dateFinDroit) + '</td>';
 								html += '<td>' + StringUtils.escapeHTML(immeuble.nature) + '</td>';
 								html += '<td style="width: 10%;">' + StringUtils.escapeHTML(immeuble.referenceEstimationFiscale) + '</td>';
-								html += '<td style="text-align: right; width: 10%;">' + (immeuble.estimationFiscale == null ? '' : immeuble.estimationFiscale) + '</td>';
+								html += '<td style="text-align: right; width: 10%;">' + (immeuble.estimationFiscale == null ? '' : NumberFormat.toString(immeuble.estimationFiscale, "'", '.')) + '</td>';
 								html += '</tr>';
 							}
 							html += '</table>';

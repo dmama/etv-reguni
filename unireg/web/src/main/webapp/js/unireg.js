@@ -3292,6 +3292,16 @@ var NumeroIDE = {
 
 //===================================================
 
+var NumberFormat = {
+	toString: function(number, thousandSeparator, decimalSeparator) {
+		const str = number.toString();
+		const parts = str.split('.');
+		return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator) + (parts[1] ? decimalSeparator + parts[1] : '');
+	}
+};
+
+//===================================================
+
 var VisuExterneDoc = {
 
 	/**
