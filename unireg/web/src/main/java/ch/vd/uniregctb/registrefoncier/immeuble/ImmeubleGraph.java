@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
@@ -14,6 +15,7 @@ import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -47,9 +49,9 @@ public class ImmeubleGraph {
 	}
 
 	private static class AyantDroit {
-		private final String type;
-		private final String name;
-		private final String label;
+		protected final String type;
+		protected final String name;
+		protected final String label;
 
 		public AyantDroit(String type, String name, String label) {
 			this.type = type;
@@ -63,22 +65,80 @@ public class ImmeubleGraph {
 		}
 	}
 
-	private static class Droit {
-		private final String color;
-		private final String source;
-		private final String destination;
-		private final String label;
+	private static class Communaute extends AyantDroit {
 
-		public Droit(String source, String destination, String label, String color) {
-			this.color = color;
-			this.source = source;
-			this.destination = destination;
-			this.label = label;
+		private final Map<String, AyantDroit> membres = new HashMap<>();
+
+		public Communaute(String name, String label) {
+			super("COM", name, label);
+		}
+
+		public AyantDroit addMembre(AyantDroitRF m) {
+			final String collName = name;
+			if (m instanceof PersonnePhysiqueRF) {
+				final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) m;
+				final String ppName = "PP" + pp.getId() + collName;
+				return membres.computeIfAbsent(ppName, n -> new PersonnePhysique(ppName, pp.getPrenom() + " " + pp.getNom()));
+			}
+			else if (m instanceof PersonneMoraleRF) {
+				final PersonneMoraleRF pm = (PersonneMoraleRF) m;
+				final String ppName = "PM" + pm.getId() + collName;
+				return membres.computeIfAbsent(ppName, n -> new PersonneMorale(ppName, pm.getRaisonSociale()));
+			}
+			else {
+				throw new IllegalArgumentException("Type de membre de communauté non-supporté = [" + m.getClass().getSimpleName() + "]");
+			}
 		}
 
 		@Override
 		public String toString() {
-			return source + " -> " + destination + " [label=\"" + label + "\", color=" + color + "]";
+			final StringBuilder s = new StringBuilder();
+			s.append("subgraph ").append(name).append(" {\n")
+					.append("    node [style=filled];\n")
+					.append("    color=lightblue4;\n");
+			s.append("    ").append(super.toString());
+			membres.values().forEach(obj -> s.append("    ").append(obj).append("\n"));
+			s.append("}");
+			return s.toString();
+		}
+	}
+
+	private static class PersonnePhysique extends AyantDroit {
+		public PersonnePhysique(String name, String label) {
+			super("PP", name, label);
+		}
+	}
+
+	private static class PersonneMorale extends AyantDroit {
+		public PersonneMorale(String name, String label) {
+			super("PM", name, label);
+		}
+	}
+
+	private static class Collectivite extends AyantDroit {
+		public Collectivite(String name, String label) {
+			super("COLL", name, label);
+		}
+	}
+
+	private static class Droit {
+		private final String color;
+		private final String style;
+		private final String source;
+		private final String destination;
+		private final String label;
+
+		public Droit(String source, String destination, String label, String color, String style) {
+			this.color = color;
+			this.source = source;
+			this.destination = destination;
+			this.label = label;
+			this.style = style;
+		}
+
+		@Override
+		public String toString() {
+			return source + " -> " + destination + " [label=\"" + label + "\", color=" + color + ", style=" + style + "]";
 		}
 	}
 
@@ -169,9 +229,42 @@ public class ImmeubleGraph {
 	}
 
 	private void addDroitPropriete(DroitProprieteRF droit) {
-
 		final String label = droit.getRegime().name() + " (" + droit.getPart() + ")";
+		final String color = getDroitColor(droit);
 
+		final CommunauteRF communaute = getCommunaute(droit);
+		if (communaute == null) {
+			// un droit normal
+			final String source = getName(droit.getAyantDroit());
+			final String destination = getName(droit.getImmeuble());
+
+			addAyantDroit(ayantDroits, droit.getAyantDroit());
+			droits.add(new Droit(source, destination, label, color, "solid"));
+		}
+		else {
+			// en cas de communauté, on crée une copie de l'ayant-droit pour l'associer à la communauté
+			final Communaute comm = (Communaute) addAyantDroit(ayantDroits, communaute);
+			final AyantDroit membre = comm.addMembre(droit.getAyantDroit());
+			final String source = membre.name;
+			final String destination = getName(droit.getImmeuble());
+			droits.add(new Droit(source, destination, label, color, "dashed"));
+		}
+	}
+
+	@Nullable
+	private static CommunauteRF getCommunaute(DroitProprieteRF droit) {
+		final CommunauteRF communaute;
+		if (droit instanceof DroitProprietePersonneRF) {
+			final DroitProprietePersonneRF dpp = (DroitProprietePersonneRF) droit;
+			communaute = dpp.getCommunaute();
+		}
+		else {
+			communaute = null;
+		}
+		return communaute;
+	}
+
+	private static String getDroitColor(DroitProprieteRF droit) {
 		final String color;
 		switch (droit.getRegime()) {
 		case INDIVIDUELLE:
@@ -192,19 +285,13 @@ public class ImmeubleGraph {
 		default:
 			throw new IllegalArgumentException();
 		}
-
-		final String source = getName(droit.getAyantDroit());
-		final String destination = getName(droit.getImmeuble());
-
-		droits.add(new Droit(source, destination, label, color));
+		return color;
 	}
 
-	private String getName(@NotNull AyantDroitRF ayantDroit) {
+	private static String getName(@NotNull AyantDroitRF ayantDroit) {
 		if (ayantDroit instanceof CommunauteRF) {
 			final CommunauteRF communaute = (CommunauteRF) ayantDroit;
-			final String name = "Comm" + communaute.getId();
-			ayantDroits.computeIfAbsent(name, n -> new AyantDroit("COM", name, "Communauté #" + communaute.getId()));
-			return name;
+			return "clusterComm" + communaute.getId();
 		}
 		else if (ayantDroit instanceof ImmeubleBeneficiaireRF) {
 			final ImmeubleBeneficiaireRF beneficiaire = (ImmeubleBeneficiaireRF) ayantDroit;
@@ -212,28 +299,48 @@ public class ImmeubleGraph {
 		}
 		else if (ayantDroit instanceof PersonnePhysiqueRF) {
 			final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroit;
-			final String name = "PP" + pp.getId();
-			ayantDroits.computeIfAbsent(name, n -> new AyantDroit("PP", name, pp.getPrenom() + " " + pp.getNom()));
-			return name;
+			return "PP" + pp.getId();
 		}
 		else if (ayantDroit instanceof PersonneMoraleRF) {
 			final PersonneMoraleRF pm = (PersonneMoraleRF) ayantDroit;
-			final String name = "PM" + pm.getId();
-			ayantDroits.computeIfAbsent(name, n -> new AyantDroit("PM", name, pm.getRaisonSociale()));
-			return name;
+			return "PM" + pm.getId();
 		}
 		else if (ayantDroit instanceof CollectivitePubliqueRF) {
 			final CollectivitePubliqueRF cp = (CollectivitePubliqueRF) ayantDroit;
-			final String name = "COLL" + cp.getId();
-			ayantDroits.computeIfAbsent(name, n -> new AyantDroit("COLL", name, cp.getRaisonSociale()));
-			return name;
+			return "COLL" + cp.getId();
 		}
 		else {
 			throw new IllegalArgumentException();
 		}
 	}
 
-	private String getName(@NotNull ImmeubleRF immeuble) {
+	private static AyantDroit addAyantDroit(@NotNull Map<String, AyantDroit> ayantDroits, @NotNull AyantDroitRF ayantDroit) {
+		final String name = getName(ayantDroit);
+		if (ayantDroit instanceof CommunauteRF) {
+			final CommunauteRF communaute = (CommunauteRF) ayantDroit;
+			return ayantDroits.computeIfAbsent(name, n -> new Communaute(name, "Communauté #" + communaute.getId()));
+		}
+		else if (ayantDroit instanceof ImmeubleBeneficiaireRF) {
+			return null;
+		}
+		else if (ayantDroit instanceof PersonnePhysiqueRF) {
+			final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroit;
+			return ayantDroits.computeIfAbsent(name, n -> new PersonnePhysique(name, pp.getPrenom() + " " + pp.getNom()));
+		}
+		else if (ayantDroit instanceof PersonneMoraleRF) {
+			final PersonneMoraleRF pm = (PersonneMoraleRF) ayantDroit;
+			return ayantDroits.computeIfAbsent(name, n -> new PersonneMorale(name, pm.getRaisonSociale()));
+		}
+		else if (ayantDroit instanceof CollectivitePubliqueRF) {
+			final CollectivitePubliqueRF cp = (CollectivitePubliqueRF) ayantDroit;
+			return ayantDroits.computeIfAbsent(name, n -> new Collectivite(name, cp.getRaisonSociale()));
+		}
+		else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	private static String getName(@NotNull ImmeubleRF immeuble) {
 		final String egrid = immeuble.getEgrid();
 		return egrid == null ? immeuble.getIdRF() : egrid;
 	}
