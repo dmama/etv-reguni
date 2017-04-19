@@ -6,6 +6,7 @@
 <span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 <fieldset class="information">
 	<legend><span><fmt:message key="label.resume.immeuble"/></span></legend>
+	<fmt:setLocale value="fr_CH" scope="session"/>
 	<table border="0" class="display_table">
 		<unireg:nextRowClass reset="1"/>
 		<tr class="<unireg:nextRowClass/>">
