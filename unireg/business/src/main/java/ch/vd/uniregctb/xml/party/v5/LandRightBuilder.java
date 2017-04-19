@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +18,6 @@ import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -44,30 +42,32 @@ public abstract class LandRightBuilder {
 	/**
 	 * Stratégie de création d'un droit web à part d'un droit core.
 	 */
-	public interface Strategy<L extends LandRight> extends BiFunction<DroitRF, RightHolderBuilder.ContribuableIdProvider, L> {
+	public interface Strategy<L extends LandRight> {
+		L apply(@NotNull DroitRF droitRF,
+		        @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
+		        @NotNull EasementRightHolderComparator rightHolderComparator);
 	}
 
 	private static final Map<Class, Strategy<?>> strategies = new HashMap<>();
 
 	static {
-		strategies.put(DroitProprieteCommunauteRF.class, (d, p) -> newLandOwnershipRight((DroitProprieteCommunauteRF) d));
-		strategies.put(DroitProprietePersonneMoraleRF.class, (d, p) -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d, p));
-		strategies.put(DroitProprietePersonnePhysiqueRF.class, (d, p) -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d, p));
-		strategies.put(DroitProprieteImmeubleRF.class, (d, p) -> newLandOwnershipRight((DroitProprieteImmeubleRF) d, p));
-		strategies.put(UsufruitRF.class, (d, p) -> newUsufructRight((UsufruitRF) d, p));
-		strategies.put(DroitHabitationRF.class, (d, p) -> newHousingRight((DroitHabitationRF) d, p));
+		strategies.put(DroitProprieteCommunauteRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteCommunauteRF) d));
+		strategies.put(DroitProprietePersonneMoraleRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d, p));
+		strategies.put(DroitProprietePersonnePhysiqueRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d, p));
+		strategies.put(DroitProprieteImmeubleRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteImmeubleRF) d, p));
+		strategies.put(UsufruitRF.class, (d, p, c) -> newUsufructRight((UsufruitRF) d, p, c));
+		strategies.put(DroitHabitationRF.class, (d, p, c) -> newHousingRight((DroitHabitationRF) d, p, c));
 	}
 
 	private LandRightBuilder() {
 	}
 
-	@NotNull
-	public static LandRight newLandRight(@NotNull DroitRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+	public static LandRight newLandRight(@NotNull DroitRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final Strategy<?> strategy = strategies.get(droitRF.getClass());
 		if (strategy == null) {
 			throw new IllegalArgumentException("Le type de droit [" + droitRF.getClass() + "] est inconnu");
 		}
-		return strategy.apply(droitRF, ctbIdProvider);
+		return strategy.apply(droitRF, ctbIdProvider, rightHolderComparator);
 	}
 
 	@NotNull
@@ -106,21 +106,19 @@ public abstract class LandRightBuilder {
 				                                     .collect(Collectors.toList()));
 	}
 
-	@NotNull
-	public static UsufructRight newUsufructRight(@NotNull UsufruitRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+	public static UsufructRight newUsufructRight(@NotNull UsufruitRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final UsufructRight right = new UsufructRight();
-		fillEasementRight(usufruitRF, right, ctbIdProvider);
+		fillEasementRight(usufruitRF, right, ctbIdProvider, rightHolderComparator);
 		return right;
 	}
 
-	@NotNull
-	public static HousingRight newHousingRight(@NotNull DroitHabitationRF droitHabitationRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+	public static HousingRight newHousingRight(@NotNull DroitHabitationRF droitHabitationRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final HousingRight right = new HousingRight();
-		fillEasementRight(droitHabitationRF, right, ctbIdProvider);
+		fillEasementRight(droitHabitationRF, right, ctbIdProvider, rightHolderComparator);
 		return right;
 	}
 
-	private static void fillEasementRight(@NotNull ServitudeRF servitude, EasementRight right, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+	private static void fillEasementRight(@NotNull ServitudeRF servitude, EasementRight right, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 
 		right.setDateFrom(DataHelper.coreToXMLv2(servitude.getDateDebutMetier()));
 		right.setDateTo(DataHelper.coreToXMLv2(servitude.getDateFinMetier()));
@@ -129,8 +127,8 @@ public abstract class LandRightBuilder {
 		right.setCaseIdentifier(getCaseIdentifier(servitude.getNumeroAffaire()));
 
 		final List<RightHolder> rightHolders = servitude.getAyantDroits().stream()
-				.sorted(Comparator.comparing(AyantDroitRF::getId))
 				.map(r -> RightHolderBuilder.getRightHolder(r, ctbIdProvider))
+				.sorted(rightHolderComparator)
 				.collect(Collectors.toList());
 		right.getRightHolders().addAll(rightHolders);
 

@@ -56,67 +56,71 @@ public abstract class ImmovablePropertyBuilder {
 		/**
 		 * Stratégie de création d'un immeuble web à part d'un immeuble core.
 		 */
-		I apply(ImmeubleRF i, @NotNull CapitastraURLProvider capitastraURLProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider);
+		I apply(@NotNull ImmeubleRF i,
+		        @NotNull CapitastraURLProvider capitastraURLProvider,
+		        @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
+		        @NotNull EasementRightHolderComparator rightHolderComparator);
 	}
 
 	private static final Map<Class, Strategy<?>> strategies = new HashMap<>();
 
 	static {
-		strategies.put(ProprieteParEtageRF.class, (i, p, c) -> newCondominiumOwnership((ProprieteParEtageRF) i, p, c));
-		strategies.put(PartCoproprieteRF.class, (i, p, c) -> newCoOwnershipShare((PartCoproprieteRF) i, p, c));
-		strategies.put(DroitDistinctEtPermanentRF.class, (i, p, c) -> newDistinctAndPermanentRight((DroitDistinctEtPermanentRF) i, p, c));
-		strategies.put(MineRF.class, (i, p, c) -> newMine((MineRF) i, p, c));
-		strategies.put(BienFondRF.class, (i, p, c) -> newRealEstate((BienFondRF) i, p, c));
+		strategies.put(ProprieteParEtageRF.class, (i, u, p, c) -> newCondominiumOwnership((ProprieteParEtageRF) i, u, p, c));
+		strategies.put(PartCoproprieteRF.class, (i, u, p, c) -> newCoOwnershipShare((PartCoproprieteRF) i, u, p, c));
+		strategies.put(DroitDistinctEtPermanentRF.class, (i, u, p, c) -> newDistinctAndPermanentRight((DroitDistinctEtPermanentRF) i, u, p, c));
+		strategies.put(MineRF.class, (i, u, p, c) -> newMine((MineRF) i, u, p, c));
+		strategies.put(BienFondRF.class, (i, u, p, c) -> newRealEstate((BienFondRF) i, u, p, c));
 	}
 
-	@NotNull
-	public static ImmovableProperty newImmovableProperty(@NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider, RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
+	public static ImmovableProperty newImmovableProperty(@NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider, RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
+	                                                     @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final Strategy<?> strategy = strategies.get(immeuble.getClass());
 		if (strategy == null) {
 			throw new IllegalArgumentException("Le type d'immeuble [" + immeuble.getClass() + "] est inconnu");
 		}
-		return strategy.apply(immeuble, capitastraUrlProvider, contribuableIdProvider);
+		return strategy.apply(immeuble, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
 	}
 
-	@NotNull
-	private static CondominiumOwnership newCondominiumOwnership(@NotNull ProprieteParEtageRF ppe, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static CondominiumOwnership newCondominiumOwnership(@NotNull ProprieteParEtageRF ppe, @NotNull CapitastraURLProvider capitastraUrlProvider, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
+	                                                            @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final CondominiumOwnership condo = new CondominiumOwnership();
-		fillBase(condo, ppe, capitastraUrlProvider, contribuableIdProvider);
+		fillBase(condo, ppe, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
 		condo.setShare(LandRightBuilder.getShare(ppe.getQuotePart()));
 		return condo;
 	}
 
-	@NotNull
-	private static CoOwnershipShare newCoOwnershipShare(@NotNull PartCoproprieteRF part, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static CoOwnershipShare newCoOwnershipShare(@NotNull PartCoproprieteRF part, @NotNull CapitastraURLProvider capitastraUrlProvider, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
+	                                                    @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final CoOwnershipShare coown = new CoOwnershipShare();
-		fillBase(coown, part, capitastraUrlProvider, contribuableIdProvider);
+		fillBase(coown, part, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
 		coown.setShare(LandRightBuilder.getShare(part.getQuotePart()));
 		return coown;
 	}
 
-	@NotNull
-	private static DistinctAndPermanentRight newDistinctAndPermanentRight(@NotNull DroitDistinctEtPermanentRF ddp, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static DistinctAndPermanentRight newDistinctAndPermanentRight(@NotNull DroitDistinctEtPermanentRF ddp, @NotNull CapitastraURLProvider capitastraUrlProvider, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
+	                                                                      @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final DistinctAndPermanentRight dpr = new DistinctAndPermanentRight();
-		fillBase(dpr, ddp, capitastraUrlProvider, contribuableIdProvider);
+		fillBase(dpr, ddp, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
 		return dpr;
 	}
 
-	@NotNull
-	private static Mine newMine(@NotNull MineRF mine, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static Mine newMine(@NotNull MineRF mine, @NotNull CapitastraURLProvider capitastraUrlProvider, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
+	                            @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final Mine m = new Mine();
-		fillBase(m, mine, capitastraUrlProvider, contribuableIdProvider);
+		fillBase(m, mine, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
 		return m;
 	}
 
-	@NotNull
-	private static RealEstate newRealEstate(@NotNull BienFondRF bienFond, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static RealEstate newRealEstate(@NotNull BienFondRF bienFond, @NotNull CapitastraURLProvider capitastraUrlProvider, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
+	                                        @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final RealEstate estate = new RealEstate();
-		fillBase(estate, bienFond, capitastraUrlProvider, contribuableIdProvider);
+		fillBase(estate, bienFond, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
 		estate.setCfa(bienFond.isCfa());
 		return estate;
 	}
 
-	private static void fillBase(ImmovableProperty property, @NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider,  @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static void fillBase(ImmovableProperty property, @NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
+	                             @NotNull EasementRightHolderComparator rightHolderComparator) {
 		property.setId(immeuble.getId());
 		property.setEgrid(immeuble.getEgrid());
 		property.setUrlIntercapi(capitastraUrlProvider.apply(immeuble.getId()));
@@ -147,21 +151,21 @@ public abstract class ImmovablePropertyBuilder {
 				                                      .sorted()
 				                                      .map(BuildingBuilder::newBuildSetting)
 				                                      .collect(Collectors.toList()));
-		property.getLandRights().addAll(buildLandRights(Stream.concat(immeuble.getDroitsPropriete().stream(), immeuble.getServitudes().stream()), contribuableIdProvider));
+		property.getLandRights().addAll(buildLandRights(Stream.concat(immeuble.getDroitsPropriete().stream(), immeuble.getServitudes().stream()), contribuableIdProvider, rightHolderComparator));
 
 		final ImmeubleBeneficiaireRF beneficiaire = immeuble.getEquivalentBeneficiaire();
 		if (beneficiaire != null) {
-			property.getLandRightsFrom().addAll(buildLandRights(beneficiaire.getDroitsPropriete().stream(), contribuableIdProvider));
+			property.getLandRightsFrom().addAll(buildLandRights(beneficiaire.getDroitsPropriete().stream(), contribuableIdProvider, rightHolderComparator));
 		}
 	}
 
-	private static List<LandRight> buildLandRights(Stream<? extends DroitRF> droits, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider) {
+	private static List<LandRight> buildLandRights(Stream<? extends DroitRF> droits, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		return droits
 				.filter(AnnulableHelper::nonAnnule)
 				// on n'expose pas les droits des communautés (c'est les droits des personnes membres des communautés qui portent l'information)
 				.filter(d -> !(d instanceof DroitProprieteCommunauteRF))
 				.sorted(new DroitRFRangeMetierComparator())
-				.map(d -> LandRightBuilder.newLandRight(d, contribuableIdProvider))
+				.map(d -> LandRightBuilder.newLandRight(d, contribuableIdProvider, rightHolderComparator))
 				.collect(Collectors.toList());
 	}
 

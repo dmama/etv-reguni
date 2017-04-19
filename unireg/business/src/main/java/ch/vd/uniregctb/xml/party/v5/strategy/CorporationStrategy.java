@@ -54,6 +54,7 @@ import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.v5.BusinessYearBuilder;
 import ch.vd.uniregctb.xml.party.v5.CorporationFlagBuilder;
+import ch.vd.uniregctb.xml.party.v5.EasementRightHolderComparator;
 import ch.vd.uniregctb.xml.party.v5.LandRightBuilder;
 import ch.vd.uniregctb.xml.party.v5.LandTaxLighteningBuilder;
 import ch.vd.uniregctb.xml.party.v5.TaxLighteningBuilder;
@@ -322,7 +323,9 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
 				.sorted(new DroitRFRangeMetierComparator())
-				.map((droitRF) -> LandRightBuilder.newLandRight(droitRF, context.registreFoncierService::getContribuableIdFor))
+				.map((droitRF) -> LandRightBuilder.newLandRight(droitRF,
+				                                                context.registreFoncierService::getContribuableIdFor,
+				                                                new EasementRightHolderComparator(context.tiersService)))
 				.forEach(landRights::add);
 	}
 

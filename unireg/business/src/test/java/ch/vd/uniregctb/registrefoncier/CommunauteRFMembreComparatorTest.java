@@ -197,11 +197,11 @@ public class CommunauteRFMembreComparatorTest {
 		assertAfter(comparator.compare(2L, 1L));  // "Zoltan" après "Arnold"
 	}
 
-	private static void assertBefore(int compare) {
+	public static void assertBefore(int compare) {
 		assertTrue(compare < 0);
 	}
 
-	private static void assertAfter(int compare) {
+	public static void assertAfter(int compare) {
 		assertTrue(compare > 0);
 	}
 }

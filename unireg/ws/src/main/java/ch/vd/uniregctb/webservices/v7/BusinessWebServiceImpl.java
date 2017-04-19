@@ -142,6 +142,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.infra.v1.TaxOfficesBuilder;
 import ch.vd.uniregctb.xml.party.v5.BuildingBuilder;
 import ch.vd.uniregctb.xml.party.v5.CommunityOfOwnersBuilder;
+import ch.vd.uniregctb.xml.party.v5.EasementRightHolderComparator;
 import ch.vd.uniregctb.xml.party.v5.ImmovablePropertyBuilder;
 import ch.vd.uniregctb.xml.party.v5.PartyBuilder;
 
@@ -1036,7 +1037,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getImmeuble(immId))
-						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble, context.registreFoncierService::getCapitastraURL, context.registreFoncierService::getContribuableIdFor))
+						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble,
+						                                                                 context.registreFoncierService::getCapitastraURL,
+						                                                                 context.registreFoncierService::getContribuableIdFor,
+						                                                                 new EasementRightHolderComparator(context.tiersService)))
 						.orElse(null));
 	}
 

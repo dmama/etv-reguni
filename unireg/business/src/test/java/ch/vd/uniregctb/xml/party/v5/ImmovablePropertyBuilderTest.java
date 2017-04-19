@@ -6,9 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
 import ch.vd.unireg.xml.party.landregistry.v1.CoOwnershipShare;
@@ -22,6 +24,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.Mine;
 import ch.vd.unireg.xml.party.landregistry.v1.NaturalPersonIdentity;
 import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
+import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
 import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
@@ -57,12 +60,26 @@ public class ImmovablePropertyBuilderTest {
 
 	public static final CommuneRF BUSSIGNY = new CommuneRF(33, "Bussigny", MockCommune.Bussigny.getNoOFS());
 
+	private EasementRightHolderComparator dummyRightHolderComparator;
+
 	private static String getCapitastraUrl(Long immeubleId) {
 		return "http://capitastra/" + immeubleId;
 	}
 
 	private static Long getCtbId(TiersRF tiers) {
 		return null;    // on considère que le tiers RF n'est pas rapproché
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		dummyRightHolderComparator = new EasementRightHolderComparator(id -> null,
+		                                                          pp -> null,
+		                                                          tiers -> null) {
+			@Override
+			public int compare(RightHolder o1, RightHolder o2) {
+				throw new NotImplementedException();
+			}
+		};
 	}
 
 	@Test
@@ -107,7 +124,7 @@ public class ImmovablePropertyBuilderTest {
 		ppe.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
-		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
+		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
 		assertEquals(48383L, condo.getId());
 		assertEquals("rhoooo", condo.getEgrid());
 		assertEquals("http://capitastra/48383", condo.getUrlIntercapi());
@@ -179,7 +196,7 @@ public class ImmovablePropertyBuilderTest {
 		pcp.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
-		final CoOwnershipShare coos = (CoOwnershipShare) ImmovablePropertyBuilder.newImmovableProperty(pcp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
+		final CoOwnershipShare coos = (CoOwnershipShare) ImmovablePropertyBuilder.newImmovableProperty(pcp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
 		assertEquals(480302L, coos.getId());
 		assertEquals("raoul t'es là ?", coos.getEgrid());
 		assertEquals("http://capitastra/480302", coos.getUrlIntercapi());
@@ -248,7 +265,7 @@ public class ImmovablePropertyBuilderTest {
 		ddp.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
-		final DistinctAndPermanentRight dpr = (DistinctAndPermanentRight) ImmovablePropertyBuilder.newImmovableProperty(ddp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
+		final DistinctAndPermanentRight dpr = (DistinctAndPermanentRight) ImmovablePropertyBuilder.newImmovableProperty(ddp, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
 		assertEquals(480302L, dpr.getId());
 		assertEquals("raoul t'es là ?", dpr.getEgrid());
 		assertEquals("http://capitastra/480302", dpr.getUrlIntercapi());
@@ -316,7 +333,7 @@ public class ImmovablePropertyBuilderTest {
 		m.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
-		final Mine mine = (Mine) ImmovablePropertyBuilder.newImmovableProperty(m, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
+		final Mine mine = (Mine) ImmovablePropertyBuilder.newImmovableProperty(m, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
 		assertEquals(480302L, mine.getId());
 		assertEquals("la fuite vibrante du câble", mine.getEgrid());
 		assertEquals("http://capitastra/480302", mine.getUrlIntercapi());
@@ -388,7 +405,7 @@ public class ImmovablePropertyBuilderTest {
 		bienFond.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
-		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFond, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
+		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFond, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
 		assertEquals(48383L, realEstate.getId());
 		assertEquals("rhoooo", realEstate.getEgrid());
 		assertEquals("http://capitastra/48383", realEstate.getUrlIntercapi());
@@ -472,7 +489,7 @@ public class ImmovablePropertyBuilderTest {
 		ppe.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
-		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId);
+		final CondominiumOwnership condo = (CondominiumOwnership) ImmovablePropertyBuilder.newImmovableProperty(ppe, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
 		assertEquals(48383L, condo.getId());
 		assertEquals("rhoooo", condo.getEgrid());
 		assertEquals("http://capitastra/48383", condo.getUrlIntercapi());
