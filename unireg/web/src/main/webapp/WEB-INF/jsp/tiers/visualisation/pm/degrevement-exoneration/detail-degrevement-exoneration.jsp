@@ -17,6 +17,7 @@
 
 <fieldset>
 	<legend><span><fmt:message key="label.demandes.degrevement.ici"/></span></legend>
+	<fmt:setLocale value="fr_CH" scope="session"/>
 	<c:if test="${autorisations.demandesDegrevementIci}">
 		<table border="0">
 			<tr><td>

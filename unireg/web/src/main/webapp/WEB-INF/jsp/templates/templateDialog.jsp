@@ -16,6 +16,8 @@
 	</head>
 	<body>
 
+		<fmt:setLocale value="fr_CH" scope="session"/>
+
 		<script type="text/javascript">
 			App.init('<c:url value="/"/>');
 		</script>

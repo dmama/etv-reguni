@@ -11,6 +11,8 @@
 	<div class="flash-warning"><fmt:message key="label.degrevement.non.integrable.fulltext"/></div>
 </c:if>
 
+<fmt:setLocale value="fr_CH" scope="session"/>
+
 <table border="0">
 	<tr class="even">
 		<td style="width: 15%;"><fmt:message key="label.periode.fiscale.debut"/>&nbsp;:</td>

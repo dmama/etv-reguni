@@ -19,7 +19,7 @@
 		<tiles:getAsString name='head' ignore='true'/>
 	</head>
 	<body>
-
+			<fmt:setLocale value="fr_CH" scope="session"/>
 			<div id="sommaire">
 				<div style="position:absolute; top:5px; left:5px;">
 					<div id="loadingImage" style="display:none;"><img src="<c:url value="/images/loading.gif"/>"  alt="loading..."/></div>
