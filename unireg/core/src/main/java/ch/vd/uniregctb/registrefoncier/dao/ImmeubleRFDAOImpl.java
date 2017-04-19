@@ -28,6 +28,14 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 		return findUnique("from ImmeubleRF where idRF = :idRF", buildNamedParameters(Pair.of("idRF", key.getIdRF())), flushModeOverride);
 	}
 
+	@Override
+	public @Nullable ImmeubleRF findByEgrid(@NotNull String egrid) {
+		final Query query = getCurrentSession().createQuery("from ImmeubleRF where egrid = :egrid");
+		query.setParameter("egrid", egrid);
+		//noinspection unchecked
+		return (ImmeubleRF) query.uniqueResult();
+	}
+
 	@NotNull
 	@Override
 	public Set<String> findWithActiveSurfacesAuSol() {

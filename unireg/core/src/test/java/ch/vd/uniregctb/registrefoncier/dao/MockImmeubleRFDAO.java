@@ -37,6 +37,11 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 				.orElse(null);
 	}
 
+	@Override
+	public @Nullable ImmeubleRF findByEgrid(@NotNull String egrid) {
+		throw new NotImplementedException();
+	}
+
 	@NotNull
 	@Override
 	public Set<String> findWithActiveSurfacesAuSol() {

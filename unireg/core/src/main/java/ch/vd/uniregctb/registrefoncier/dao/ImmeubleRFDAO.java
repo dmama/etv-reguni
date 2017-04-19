@@ -17,6 +17,9 @@ public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
 	@Nullable
 	ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride);
 
+	@Nullable
+	ImmeubleRF findByEgrid(@NotNull String egrid);
+
 	/**
 	 * @return les ids RF des immeubles qui possèdent des surfaces au sol actives.
 	 */
