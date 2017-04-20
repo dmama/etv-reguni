@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.CategorieEntrepriseFidor;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrate
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 
 /**
@@ -115,13 +115,13 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 				/*
 					A-t-on fonctionné en mode automatique lors du réglage du précédent régime. Ca ne compte pas si on est resté en type indéterminé. On doit avoir un vrai régime.
 				 */
-				final boolean wasAuto = ComparisonHelper.areEqual(typeRegimeFiscalVDAvant.getCode(), typeRegimeFiscalParDefautAvant.getCode()) && typeRegimeFiscalParDefautAvant.getCategorie() != CategorieEntrepriseFidor.INDET;
+				final boolean wasAuto = ComparisonHelper.areEqual(typeRegimeFiscalVDAvant.getCode(), typeRegimeFiscalParDefautAvant.getCode()) && typeRegimeFiscalParDefautAvant.getCategorie() != CategorieEntreprise.INDET;
 
 				/*
 					Le régime fiscal avait été attribué automatiquement. Si c'est bon une fois, c'est bon deux fois, avec au bout du chemin un type indéterminé si la nouvelle forme juridique devait être exotique.
 					Ca va aussi si le type par défaut du futur régime est indéterminé, car cela provoquera l'intervention d'un opérateur.
 				 */
-				if (wasAuto || typeRegimeFiscalParDefautApres.getCategorie() == CategorieEntrepriseFidor.INDET) {
+				if (wasAuto || typeRegimeFiscalParDefautApres.getCategorie() == CategorieEntreprise.INDET) {
 					final String message = String.format("La forme juridique passe de %s à %s. Le régime fiscal VD passe de %s à %s.",
 					                                     formeLegaleAvant, formeLegaleApres, typeRegimeFiscalVDAvant.getLibelleAvecCode(), typeRegimeFiscalParDefautApres.getLibelleAvecCode());
 					LOGGER.info(message);

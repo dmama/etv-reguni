@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.type.CategorieEntreprise;
+
 public interface TypeRegimeFiscal {
 
 	/**
@@ -45,7 +47,7 @@ public interface TypeRegimeFiscal {
 	/**
 	 * @return la catégorie d'entreprise déterminée par ce type de régime
 	 */
-	CategorieEntrepriseFidor getCategorie();
+	CategorieEntreprise getCategorie();
 
 	/**
 	 * @return <code>true</code> si le régime est applicable aux PM

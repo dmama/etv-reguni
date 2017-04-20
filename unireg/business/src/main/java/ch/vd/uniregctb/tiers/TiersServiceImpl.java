@@ -6440,7 +6440,7 @@ public class TiersServiceImpl implements TiersService {
 			La catégorie est portée par le type de régime fiscal en vigueur.
 		 */
 		if (currentTypeRegimeFiscal != null) {
-			return CategorieEntrepriseHelper.convert(currentTypeRegimeFiscal.getCategorie());
+			return currentTypeRegimeFiscal.getCategorie();
 		}
 		/*
 			On considère l'absence de régime fiscal de manière analogue à un régime fiscal "A déterminer/Indéterminé", et on retourne la catégorie correspondante.

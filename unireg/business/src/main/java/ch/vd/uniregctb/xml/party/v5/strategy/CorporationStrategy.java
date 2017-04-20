@@ -40,7 +40,6 @@ import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CapitalHisto;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
@@ -175,7 +174,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			lf.setType(EnumHelper.coreToXMLv5(fl.getFormeLegale()));
 			lf.setLabel(fl.getFormeLegale().getLibelle());
 			final TypeRegimeFiscal typeRegimeFiscalVD = context.serviceRegimeFiscal.getTypeRegimeFiscalVD(entreprise, fl.getDateDebut());
-			lf.setLegalFormCategory(EnumHelper.coreToXMLv5(CategorieEntrepriseHelper.convert(typeRegimeFiscalVD.getCategorie())));
+			lf.setLegalFormCategory(EnumHelper.coreToXMLv5(typeRegimeFiscalVD.getCategorie()));
 			liste.add(lf);
 		}
 		return liste;

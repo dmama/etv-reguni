@@ -293,7 +293,7 @@ public class TiersCreateController {
 		tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscalParDefaut, dateOuvertureFiscale, null);
 		tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscalParDefaut, dateOuvertureFiscale, null);
 
-		final CategorieEntreprise categorieEntreprise = CategorieEntrepriseHelper.convert(typeRegimeFiscalParDefaut.getCategorie());
+		final CategorieEntreprise categorieEntreprise = typeRegimeFiscalParDefaut.getCategorie();
 
 		final Set<CategorieEntreprise> isPMOrIndet = EnumSet.of(CategorieEntreprise.PM, CategorieEntreprise.APM, CategorieEntreprise.INDET);
 		if (isPMOrIndet.contains(categorieEntreprise)) {

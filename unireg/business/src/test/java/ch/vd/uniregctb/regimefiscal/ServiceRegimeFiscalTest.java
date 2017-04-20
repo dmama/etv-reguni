@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import ch.vd.unireg.interfaces.infra.data.CategorieEntrepriseFidor;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
@@ -49,7 +48,7 @@ public class ServiceRegimeFiscalTest extends BusinessTest {
 		final TypeRegimeFiscal typeRegimeFiscal = serviceRegimeFiscal.getTypeRegimeFiscal("01");
 		assertEquals("01", typeRegimeFiscal.getCode());
 		assertEquals("Ordinaire", typeRegimeFiscal.getLibelle());
-		assertEquals(CategorieEntrepriseFidor.PM, typeRegimeFiscal.getCategorie());
+		assertEquals(CategorieEntreprise.PM, typeRegimeFiscal.getCategorie());
 	}
 
 	@Test

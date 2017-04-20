@@ -6,21 +6,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.vd.unireg.interfaces.infra.data.CategorieEntrepriseFidor;
 import ch.vd.unireg.interfaces.infra.data.GenreImpot;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscales;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalFidor;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 
-import static ch.vd.unireg.interfaces.infra.data.CategorieEntrepriseFidor.APM;
-import static ch.vd.unireg.interfaces.infra.data.CategorieEntrepriseFidor.INDET;
-import static ch.vd.unireg.interfaces.infra.data.CategorieEntrepriseFidor.PM;
-import static ch.vd.unireg.interfaces.infra.data.CategorieEntrepriseFidor.SP;
 import static ch.vd.unireg.interfaces.infra.data.GenreImpot.IBC;
 import static ch.vd.unireg.interfaces.infra.data.GenreImpot.ICI;
 import static ch.vd.unireg.interfaces.infra.data.GenreImpot.IFONC;
 import static ch.vd.unireg.interfaces.infra.data.ModeExoneration.DE_FAIT;
 import static ch.vd.unireg.interfaces.infra.data.ModeExoneration.TOTALE;
+import static ch.vd.uniregctb.type.CategorieEntreprise.APM;
+import static ch.vd.uniregctb.type.CategorieEntreprise.INDET;
+import static ch.vd.uniregctb.type.CategorieEntreprise.PM;
+import static ch.vd.uniregctb.type.CategorieEntreprise.SP;
 
 public class MockTypeRegimeFiscal extends TypeRegimeFiscalFidor {
 
@@ -34,8 +34,6 @@ public class MockTypeRegimeFiscal extends TypeRegimeFiscalFidor {
 	public static final MockTypeRegimeFiscal PARTICIPATIONS = new MockTypeRegimeFiscal                      ("11", 1994, null, "Société de participations",                         true, false, PM);
 	public static final MockTypeRegimeFiscal PARTICIPATIONS_PART_IMPOSABLE = new MockTypeRegimeFiscal       ("12", 2001, null, "Société de participations avec immeuble(s)",        true, false, PM);
 	public static final MockTypeRegimeFiscal COMMUNAUTE_PERSONNES_ETRANGERES_PM = new MockTypeRegimeFiscal  ("13", 2016, null, "Communauté de pers. étrangères - PM (Art. 84 LI)",  true, true, PM);
-	// Supplanté, à supprimer
-	public static final MockTypeRegimeFiscal EXO_90CEFH = new MockTypeRegimeFiscal                          ("190", 2003, null, "PM avec exonération (Art. 90cefh LI)",             true, true, PM, createExo(2003, IBC, TOTALE), createExo(2003, ICI, TOTALE), createExo(2003, IFONC, TOTALE));
 	public static final MockTypeRegimeFiscal EXO_90E = new MockTypeRegimeFiscal                             ("190-1", 2003, null, "PM Institutions de prévoyance (Art. 90e LI)",    true, true, PM, createExo(2003, IBC, DE_FAIT));
 	public static final MockTypeRegimeFiscal EXO_90F = new MockTypeRegimeFiscal                             ("190-2", 2003, null, "PM Caisses assurances sociales (Art. 90f LI)",   true, true, PM, createExo(2003, IBC, DE_FAIT));
 	public static final MockTypeRegimeFiscal EXO_90H = new MockTypeRegimeFiscal                             ("190-3", 2003, null, "PM Buts culturels (Art. 90h LI)",                true, true, PM, createExo(2003, IBC, DE_FAIT), createExo(2003, IFONC, DE_FAIT));
@@ -53,8 +51,6 @@ public class MockTypeRegimeFiscal extends TypeRegimeFiscalFidor {
 	public static final MockTypeRegimeFiscal ART90H = new MockTypeRegimeFiscal                              ("719", 1994, null, "APM Buts cultuels (Art. 90h LI)",                  true, true, APM, createExo(1994, IBC, DE_FAIT), createExo(1994, IFONC, DE_FAIT));
 	public static final MockTypeRegimeFiscal ART90E = new MockTypeRegimeFiscal                              ("729", 1994, null, "APM Institutions de prévoyance (Art. 90e LI)",     true, true, APM, createExo(1994, IBC, DE_FAIT));
 	public static final MockTypeRegimeFiscal ART90F = new MockTypeRegimeFiscal                              ("739", 2001, null, "APM Caisses assurances sociales (Art. 90f LI)",    true, true, APM, createExo(2001, IBC, DE_FAIT));
-	// Supplanté, à supprimer
-	public static final MockTypeRegimeFiscal ART90AI = new MockTypeRegimeFiscal                             ("749", 2001, null, "Confédération + Etats étrangers 90a et i",         true, true, APM, createExo(2001, IBC, TOTALE), createExo(2001, ICI, TOTALE), createExo(2001, IFONC, TOTALE));
 	public static final MockTypeRegimeFiscal ART90A = new MockTypeRegimeFiscal                              ("749-1", 2016, null, "Confédération (Art. 90a LI)",                    true, true, APM, createExo(2001, IBC, TOTALE), createExo(2001, ICI, TOTALE), createExo(2001, IFONC, TOTALE));
 	public static final MockTypeRegimeFiscal ART90I = new MockTypeRegimeFiscal                              ("749-2", 2016, null, "Etats étrangers (Art. 90i LI)",                  true, true, APM, createExo(2001, IBC, TOTALE), createExo(2001, ICI, TOTALE));
 	public static final MockTypeRegimeFiscal ART90I_ACTIVITE = new MockTypeRegimeFiscal                     ("749-3", 2016, null, "Etats étrangers (Art. 90i LI), avec activité",    true, true, APM);
@@ -88,7 +84,7 @@ public class MockTypeRegimeFiscal extends TypeRegimeFiscalFidor {
 		return mocks.toArray(new MockTypeRegimeFiscal[mocks.size()]);
 	}
 
-	private MockTypeRegimeFiscal(String code, Integer premierePF, Integer dernierePF, String libelle, boolean cantonal, boolean federal, CategorieEntrepriseFidor categorie, PlageExonerationFiscales... exonerations) {
+	private MockTypeRegimeFiscal(String code, Integer premierePF, Integer dernierePF, String libelle, boolean cantonal, boolean federal, CategorieEntreprise categorie, PlageExonerationFiscales... exonerations) {
 		super(code, premierePF, dernierePF, libelle, cantonal, federal, categorie, Arrays.asList(exonerations));
 	}
 

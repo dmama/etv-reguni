@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscales;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 
@@ -83,7 +82,7 @@ public class RegimeFiscalConsolide implements DateRange, Annulable {
 	}
 
 	public CategorieEntreprise getCategorie() {
-		return CategorieEntrepriseHelper.convert(typeRegimeFiscal.getCategorie());
+		return typeRegimeFiscal.getCategorie();
 	}
 
 	public boolean isExoneration(int periodeFiscale) {

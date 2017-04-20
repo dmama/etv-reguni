@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.fidor.xml.regimefiscal.v2.Exoneration;
 import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 
 public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 
@@ -21,7 +23,7 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	private final String libelle;
 	private final boolean cantonal;
 	private final boolean federal;
-	private final CategorieEntrepriseFidor categorie;
+	private final CategorieEntreprise categorie;
 	private final Integer premierePeriodeFiscaleValidite;
 	private final Integer dernierePeriodeFiscaleValidite;
 	private final List<PlageExonerationFiscales> exonerationsIBC;
@@ -32,7 +34,7 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 		if (regime == null) {
 			return null;
 		}
-		List<PlageExonerationFiscales> exos;
+		final List<PlageExonerationFiscales> exos;
 		final List<Exoneration> exonerations = regime.getExoneration();
 		if (exonerations != null && !exonerations.isEmpty()) {
 			exos = new ArrayList<>(exonerations.size());
@@ -45,11 +47,11 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 			exos = Collections.emptyList();
 		}
 		return new TypeRegimeFiscalFidor(regime.getCode(), regime.getPeriodeFiscaleDebutValidite(), regime.getPeriodeFiscaleFinValidite(), regime.getLibelle(), regime.isCantonal(), regime.isFederal(),
-		                                 CategorieEntrepriseFidor.fromCode(regime.getCategorieEntreprise().getCode()), exos);
+		                                 categorieFromCode(regime.getCategorieEntreprise().getCode()), exos);
 	}
 
 	protected TypeRegimeFiscalFidor(String code, Integer premierePeriodeFiscaleValidite, Integer dernierePeriodeFiscaleValidite, String libelle, boolean cantonal, boolean federal,
-	                                CategorieEntrepriseFidor categorie, List<PlageExonerationFiscales> exonerations) {
+	                                CategorieEntreprise categorie, List<PlageExonerationFiscales> exonerations) {
 		this.code = code;
 		this.libelle = libelle;
 		this.cantonal = cantonal;
@@ -86,6 +88,22 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 		}
 	}
 
+	@NotNull
+	private static CategorieEntreprise categorieFromCode(String code) {
+		switch (code) {
+		case "PM":
+			return CategorieEntreprise.PM;
+		case "APM":
+			return CategorieEntreprise.APM;
+		case "SP":
+			return CategorieEntreprise.SP;
+		case "EN_ATTENTE_DETERMINATION":
+			return CategorieEntreprise.INDET;
+		default:
+			return CategorieEntreprise.AUTRE;
+		}
+	}
+
 	@Override
 	public String getCode() {
 		return code;
@@ -112,18 +130,18 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	}
 
 	@Override
-	public CategorieEntrepriseFidor getCategorie() {
+	public CategorieEntreprise getCategorie() {
 		return categorie;
 	}
 
 	@Override
 	public boolean isPourPM() {
-		return this.categorie == CategorieEntrepriseFidor.PM;
+		return this.categorie == CategorieEntreprise.PM;
 	}
 
 	@Override
 	public boolean isPourAPM() {
-		return this.categorie == CategorieEntrepriseFidor.APM;
+		return this.categorie == CategorieEntreprise.APM;
 	}
 
 	@Override
