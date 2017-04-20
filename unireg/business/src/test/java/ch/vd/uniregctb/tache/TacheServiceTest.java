@@ -5696,10 +5696,189 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [SIFISC-17721] Les DI des DP/APM doivent rester optionnelles
+	 * Avec un régime 190-2 et 739 vaudois, les DI sont optionnelles
 	 */
 	@Test
-	public void testTacheAutomatiqueEnvoiPMsurEntrepriseDPAPM() throws Exception {
+	public void testTacheAutomatiqueEnvoiPMsurEntrepriseDIOptionnelleVD() throws Exception {
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
+			}
+		});
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// là non plus, rien...
+			}
+		});
+
+		final int thisYear = RegDate.get().year();
+		final RegDate dateDebutActivite = date(thisYear - 2, 6, 15);
+
+		final int oldPremierePeriodeDIPM = paramAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(thisYear - 2);
+		final long pmId;
+		try {
+			// mise en place fiscale
+			pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final Entreprise pm = addEntrepriseInconnueAuCivil();
+					addRaisonSociale(pm, dateDebutActivite, null, "Ma petite PM Caisse assurance sociale");
+					addFormeJuridique(pm, dateDebutActivite, null, FormeJuridiqueEntreprise.SA);
+					addRegimeFiscalVD(pm, dateDebutActivite, null, MockTypeRegimeFiscal.EXO_90F);
+					addRegimeFiscalCH(pm, dateDebutActivite, null, MockTypeRegimeFiscal.EXO_90F);
+					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+					addForSecondaire(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
+					return pm.getNumero();
+				}
+			});
+
+			// vérification des tâches d'envoi (aucune car optionnel)
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+					assertNotNull(pm);
+
+					final TacheCriteria criteria = new TacheCriteria();
+					criteria.setContribuable(pm);
+					criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
+					final List<Tache> taches = tacheDAO.find(criteria);
+					assertNotNull(taches);
+					assertEquals(0, taches.size());
+					return null;
+				}
+			});
+
+			// maintenant, on rajoute la DI de la première année
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+					assertNotNull(pm);
+					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
+					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+					addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+					return null;
+				}
+			});
+		}
+		finally {
+			paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremierePeriodeDIPM);
+		}
+
+		// et on vérifie les tâches résultantes (toujours aucune tâche)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+				assertNotNull(pm);
+
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setContribuable(pm);
+				criteria.setEtatTache(TypeEtatTache.EN_INSTANCE);
+				criteria.setInclureTachesAnnulees(false);
+				final List<Tache> taches = tacheDAO.find(criteria);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Mais avec un régime 190-2 et 739 hors canton, les DI ne sont pas optionnelles
+	 */
+	@Test
+	public void testTacheAutomatiqueEnvoiPMsurEntrepriseDIOptionnelleVDHorsVD() throws Exception {
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
+			}
+		});
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// là non plus, rien...
+			}
+		});
+
+		final int thisYear = RegDate.get().year();
+		final RegDate dateDebutActivite = date(thisYear - 2, 6, 15);
+
+		final int oldPremierePeriodeDIPM = paramAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(thisYear - 2);
+		final long pmId;
+		try {
+			// mise en place fiscale
+			pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final Entreprise pm = addEntrepriseInconnueAuCivil();
+					addRaisonSociale(pm, dateDebutActivite, null, "Ma petite PM Caisse assurance sociale");
+					addFormeJuridique(pm, dateDebutActivite, null, FormeJuridiqueEntreprise.SA);
+					addRegimeFiscalVD(pm, dateDebutActivite, null, MockTypeRegimeFiscal.EXO_90F);
+					addRegimeFiscalCH(pm, dateDebutActivite, null, MockTypeRegimeFiscal.EXO_90F);
+					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Zurich);
+					addForSecondaire(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE, GenreImpot.BENEFICE_CAPITAL);
+					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
+					return pm.getNumero();
+				}
+			});
+
+			// vérification des tâches d'envoi (aucune car optionnel)
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+					assertNotNull(pm);
+
+					final TacheCriteria criteria = new TacheCriteria();
+					criteria.setContribuable(pm);
+					criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
+					final List<Tache> taches = tacheDAO.find(criteria);
+					assertNotNull(taches);
+					assertEquals(2, taches.size());
+
+					{
+						final Tache tache = taches.get(0);
+						Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+						final TacheEnvoiDeclarationImpot tacheEnvoiDI = (TacheEnvoiDeclarationImpot) tache;
+						Assert.assertEquals(TypeContribuable.HORS_CANTON, tacheEnvoiDI.getTypeContribuable());
+					}
+					{
+						final Tache tache = taches.get(1);
+						Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+						final TacheEnvoiDeclarationImpot tacheEnvoiDI = (TacheEnvoiDeclarationImpot) tache;
+						Assert.assertEquals(TypeContribuable.HORS_CANTON, tacheEnvoiDI.getTypeContribuable());
+					}
+					return null;
+				}
+			});
+		}
+		finally {
+			paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremierePeriodeDIPM);
+		}
+	}
+
+	/**
+	 * OBSOLETE: [SIFISC-17721] Les DI des DP/APM doivent rester optionnelles
+	 * A présent, les ex-DP/APM (0117 INSTITUT_DE_DROIT_PUBLIC, 0220 ADMINISTRATION_CONFEDERATION, 0221 ADMINISTRATION_CANTON, 0222 ADMINISTRATION_DISTRICT,
+	 * 0223 ADMINISTRATION_COMMUNE, 0224 CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION) sont traitées conformément à leur régime fiscal.
+	 *
+	 * Un cas d'exonération totale est testé ici.
+	 */
+	@Test
+	public void testTacheAutomatiqueEnvoiPMsurEntrepriseExoneree() throws Exception {
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -5754,42 +5933,10 @@ public class TacheServiceTest extends BusinessTest {
 					return null;
 				}
 			});
-
-			// maintenant, on rajoute la DI de la première année
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
-					assertNotNull(pm);
-					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
-					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM_BATCH, pf);
-					addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-					return null;
-				}
-			});
 		}
 		finally {
 			paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremierePeriodeDIPM);
 		}
-
-		// et on vérifie les tâches résultantes (toujours aucune tâche)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
-				assertNotNull(pm);
-
-				final TacheCriteria criteria = new TacheCriteria();
-				criteria.setContribuable(pm);
-				criteria.setEtatTache(TypeEtatTache.EN_INSTANCE);
-				criteria.setInclureTachesAnnulees(false);
-				final List<Tache> taches = tacheDAO.find(criteria);
-				assertNotNull(taches);
-				assertEquals(0, taches.size());
-				return null;
-			}
-		});
 	}
 
 	@Test

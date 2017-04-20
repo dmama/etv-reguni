@@ -94,8 +94,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					final TypeDocument typeDocument = computeTypeDocument(entreprise, intersection.getDateFin());
 					final CategorieEntreprise categorieEntreprise = getLastKnownCategorieEntrepriseAtOrBefore(entreprise, intersection.getDateFin());
 
-
-					// OBSOLETE (supprimé) - [SIFISC-17721] sur les DP/APM, les déclarations sont optionnelles --> pris en charge par les régimes
+					// OBSOLETE (supprimé) - [SIFISC-17721] sur les DP/APM, les déclarations sont optionnelles --> selon régime fiscal, voir ci-dessous.
 
 					// Cas des 190-2 et 739 vaudois qui doivent être optionels
 					// TODO: charger les valeurs depuis la configuration Unireg.
