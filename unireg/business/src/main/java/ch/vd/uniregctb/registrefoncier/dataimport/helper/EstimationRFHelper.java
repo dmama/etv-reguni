@@ -95,8 +95,8 @@ public abstract class EstimationRFHelper {
 	}
 
 	/**
-	 * Détermine les dates de fin métier d'une collection d'estimations fiscales. Les estimations fiscales spécifiées
-	 * doivent appartenir au même immeuble et leur périodes de validité ne pas se chevaucher.
+	 * Détermine les dates de fin métier d'une collection d'estimations fiscales. Les estimations fiscales spécifiées doivent appartenir au même immeuble.
+	 * En cas de chevauchement, les estimations fiscales les plus anciennes sont adaptées ou annulées pour que l'ensemble de la liste reste valide.
 	 *
 	 * @param estimations une collection d'estimations fiscales à mettre-à-jour
 	 */
@@ -105,22 +105,49 @@ public abstract class EstimationRFHelper {
 		final List<EstimationRF> list = new ArrayList<>(estimations);
 		list.sort(new DateRangeComparator<>(DateRangeComparator.CompareOrder.ASCENDING));
 
-		// algorithme naïf : la date de début métier de l'estimation fiscale suivante est utilisée pour déduire la date de fin métier précédante.
-		EstimationRF previous = null;
-		for (EstimationRF current : list) {
-			if (current.isAnnule()) {
+		// Note : on n'utilise pas la méthode DateRangeHelper.override() ici parce que :
+		//  - les estimations fiscales sont reçues selon un certain ordre (= l'ordre des dates techniques) qui peut être différent de l'ordre métier (= l'ordre des dates métier) ;
+		//  - il faut respecter l'ordre donné par les dates techniques dans l'application des surcharges mais utiliser les dates métiers ;
+		//  - on travaille sur des entités Hibernate qui sont liées à la session courante.
+
+		// principe de base : la date de début métier de l'estimation fiscale suivante est utilisée pour déduire la date de fin métier précédante.
+		// [SIFISC-24311] chaque nouvelle estimation fiscale peut surcharger une ou plusieurs estimations fiscales précédentes (la date de début métier est
+		// déduite du code de l'estimation fiscale qui est une valeur en saisie libre), il faut donc le cas échéant adapter ou annuler les estimations fiscales concernées.
+		final List<EstimationRF> actives = new ArrayList<>(estimations.size());
+		for (final EstimationRF newEstimation : list) {
+			if (newEstimation.isAnnule()) {
 				continue;
 			}
-			final RegDate dateDebutMetier = current.getDateDebutMetier();
-			if (previous != null && dateDebutMetier != null) {
-				previous.setDateFinMetier(dateDebutMetier.getOneDayBefore());
+			final RegDate newDebut = newEstimation.getDateDebutMetier();
+
+			for (int j = actives.size() - 1; j >= 0; j--) {
+				final EstimationRF currentActive = actives.get(j);
+				final RegDate activeDebut = currentActive.getDateDebutMetier();
+				final RegDate activeFin = currentActive.getDateFinMetier();
+
+				if (newDebut == null || (activeDebut != null && activeDebut.isAfterOrEqual(newDebut))) {
+					// la nouvelle estimation surcharge *complétement* l'estimation active courante : on l'annule et la retire de la liste des actives
+					currentActive.setAnnule(true);
+					actives.remove(j);
+				}
+				else if (activeFin == null || activeFin.isAfterOrEqual(newDebut)) {
+					// la nouvelle estimation surcharge *partiellement* l'estimation active courante : on met-à-jour la date de fin
+					currentActive.setDateFinMetier(newDebut.getOneDayBefore());
+				}
+				else {
+					// rien à faire
+				}
 			}
-			previous = current;
+			actives.add(newEstimation);
 		}
 
-		// si la dernière estimation fiscale est fermée, on met aussi une date de fin métier
-		if (previous != null && previous.getDateFin() != null) {
-			previous.setDateFinMetier(previous.getDateFin());
+		// si la dernière estimation fiscale est fermée (parce que - par exemple - dans le nouvel import,
+		// l'immeuble ne possède plus d'estimation fiscale), on met aussi une date de fin métier
+		if (!actives.isEmpty()) {
+			final EstimationRF last = actives.get(actives.size() - 1);
+			if (last != null && last.getDateFin() != null) {
+				last.setDateFinMetier(last.getDateFin());
+			}
 		}
 	}
 

@@ -661,7 +661,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(Integer.valueOf(2015), estimation0.getAnneeReference());
 				assertNull(estimation0.getDateInscription());
 				assertEquals(RegDate.get(2015, 1, 1), estimation0.getDateDebutMetier());
-				assertEquals(RegDate.get(1992, 12, 31), estimation0.getDateFinMetier());
+				assertNull(estimation0.getDateFinMetier());
 				assertTrue(estimation0.isEnRevision());
 				assertTrue(estimation0.isAnnule());
 

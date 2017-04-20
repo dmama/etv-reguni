@@ -254,11 +254,88 @@ public class EstimationRFHelperTest {
 		assertNull(e3.getDateFinMetier());
 	}
 
+	/**
+	 * [SIFISC-24311] Vérifie qu'estimation fiscale complétement surchargée par une plus récente est bien annulée automatiquement.
+	 */
+	@Test
+	public void testDetermineDatesFinMetierAvecEstimationQuiSuchargeCompletementUneAutre() throws Exception {
+
+		final EstimationRF e1 = newEstimationRF(RegDate.get(2016, 12, 31), RegDate.get(2016, 1, 1));
+		final EstimationRF e2 = newEstimationRF(RegDate.get(2017, 1, 14), RegDate.get(2000, 1, 1));
+		final List<EstimationRF> estimations = Arrays.asList(e1, e2);
+
+		EstimationRFHelper.determineDatesFinMetier(estimations);
+		assertEstimation(RegDate.get(2016, 1, 1), null, true, e1);
+		assertEquals(RegDate.get(2000, 1, 1), e2.getDateDebutMetier());
+		assertNull(e2.getDateFinMetier());
+		assertFalse(e2.isAnnule());
+	}
+
+	/**
+	 * [SIFISC-24311] Vérifie que plsuieurs estimations fiscales complétement surchargées par une plus récente sont bien annulées automatiquement.
+	 */
+	@Test
+	public void testDetermineDatesFinMetierAvecEstimationQuiSuchargeCompletementPlusieursAutres() throws Exception {
+
+		final EstimationRF e1 = newEstimationRF(RegDate.get(2016, 12, 31), RegDate.get(2005, 1, 1));
+		final EstimationRF e2 = newEstimationRF(RegDate.get(2017, 1, 7), RegDate.get(2010, 1, 1));
+		final EstimationRF e3 = newEstimationRF(RegDate.get(2017, 1, 14), RegDate.get(2015, 1, 1));
+		final EstimationRF e4 = newEstimationRF(RegDate.get(2017, 1, 21), RegDate.get(2000, 1, 1));
+		final List<EstimationRF> estimations = Arrays.asList(e1, e2, e3, e4);
+
+		EstimationRFHelper.determineDatesFinMetier(estimations);
+		assertEstimation(RegDate.get(2005, 1, 1), RegDate.get(2009, 12, 31), true, e1);
+		assertEstimation(RegDate.get(2010, 1, 1), RegDate.get(2014, 12, 31), true, e2);
+		assertEstimation(RegDate.get(2015, 1, 1), null, true, e3);
+		assertEstimation(RegDate.get(2000, 1, 1), null, false, e4);
+	}
+
+	/**
+	 * [SIFISC-24311] Vérifie que les estimations fiscales complétement partiellement par une plus récentes voient bien leurs dates de fin métier adaptées automatiquement.
+	 */
+	@Test
+	public void testDetermineDatesFinMetierAvecEstimationQuiSuchargePartiellementUneAutre() throws Exception {
+
+		final EstimationRF e1 = newEstimationRF(RegDate.get(2016, 12, 31),  // date début
+		                                        RegDate.get(2017, 1, 6),    // date fin
+		                                        RegDate.get(1990, 1, 1),    // date début métier
+		                                        RegDate.get(2009, 12, 31)); // date fin métier
+
+		final EstimationRF e2 = newEstimationRF(RegDate.get(2017, 1, 14),   // date début
+		                                        RegDate.get(2000, 1, 1));   // date début métier
+		final List<EstimationRF> estimations = Arrays.asList(e1, e2);
+
+		EstimationRFHelper.determineDatesFinMetier(estimations);
+		assertEquals(RegDate.get(1990, 1, 1), e1.getDateDebutMetier());
+		assertEquals(RegDate.get(1999, 12, 31), e1.getDateFinMetier());
+		assertFalse(e1.isAnnule());
+		assertEquals(RegDate.get(2000, 1, 1), e2.getDateDebutMetier());
+		assertNull(e2.getDateFinMetier());
+		assertFalse(e2.isAnnule());
+	}
+
 	@NotNull
 	private static EstimationRF newEstimationRF(RegDate dateDebutMetier) {
 		final EstimationRF e1 = new EstimationRF();
 		e1.setDateDebut(dateDebutMetier);
 		e1.setDateDebutMetier(dateDebutMetier);
+		return e1;
+	}
+
+	@NotNull
+	private static EstimationRF newEstimationRF(RegDate dateDebut, RegDate dateDebutMetier) {
+		final EstimationRF e1 = new EstimationRF();
+		e1.setDateDebut(dateDebut);
+		e1.setDateDebutMetier(dateDebutMetier);
+		return e1;
+	}
+
+	private static EstimationRF newEstimationRF(RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier, RegDate dateFinMetier) {
+		final EstimationRF e1 = new EstimationRF();
+		e1.setDateDebut(dateDebut);
+		e1.setDateFinMetier(dateFin);
+		e1.setDateDebutMetier(dateDebutMetier);
+		e1.setDateFinMetier(dateFinMetier);
 		return e1;
 	}
 
@@ -328,5 +405,11 @@ public class EstimationRFHelperTest {
 		// cas de la valeur de référence inutilisable
 		assertEquals(Integer.valueOf(2017), EstimationRFHelper.getAnneeReference(null, RegDate.get(2017, 2, 3)).orElse(null));
 		assertEquals(Integer.valueOf(2017), EstimationRFHelper.getAnneeReference("blablabla", RegDate.get(2017, 2, 3)).orElse(null));
+	}
+
+	private static void assertEstimation(RegDate dateDebutMetier, RegDate dateFinMetier, boolean annule, EstimationRF e) {
+		assertEquals(dateDebutMetier, e.getDateDebutMetier());
+		assertEquals(dateFinMetier, e.getDateFinMetier());
+		assertEquals(annule, e.isAnnule());
 	}
 }

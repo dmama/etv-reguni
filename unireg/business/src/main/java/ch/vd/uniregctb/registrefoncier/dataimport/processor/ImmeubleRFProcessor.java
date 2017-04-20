@@ -215,21 +215,6 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				}
 			}
 			EstimationRFHelper.determineDatesFinMetier(persisted.getEstimations()); // SIFISC-22995
-
-			// [SIFISC-22995] on annule automatiquement toutes les estimations fiscales en révision avec des intervalles métier négatifs
-			persisted.getEstimations().stream()
-					.filter(AnnulableHelper::nonAnnule)
-					.filter(EstimationRF::isEnRevision)
-					.forEach(e -> {
-						final RegDate dateDebutMetier = e.getDateDebutMetier();
-						final RegDate dateFinMetier = e.getDateFinMetier();
-						if (dateDebutMetier != null && dateFinMetier != null && dateDebutMetier.isAfter(dateFinMetier)) {
-							// l'estimation fiscale possède un intervalle négatif, il va tomber en erreur et cela va bloquer
-							// l'import alors qu'il s'agit d'une estimation en révision : inutile de bloquer tout ça pour rien,
-							// on annule immédiatement l'estimation fiscale.
-							e.setAnnule(true);
-						}
-					});
 		}
 
 		// est-ce que la surface totale changé ?
