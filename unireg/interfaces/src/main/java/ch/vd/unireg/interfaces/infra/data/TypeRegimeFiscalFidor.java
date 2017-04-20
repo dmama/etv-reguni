@@ -135,16 +135,6 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	}
 
 	@Override
-	public boolean isPourPM() {
-		return this.categorie == CategorieEntreprise.PM;
-	}
-
-	@Override
-	public boolean isPourAPM() {
-		return this.categorie == CategorieEntreprise.APM;
-	}
-
-	@Override
 	public boolean isExoneration(int periodeFiscale) {
 		return exonerationsIBC.stream()
 				.anyMatch(exo -> exo.isDansPlage(periodeFiscale));

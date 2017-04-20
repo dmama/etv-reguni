@@ -24,8 +24,6 @@ public class TypeRegimeFiscalTest {
 		Assert.assertEquals("7487 - Test", type.getLibelleAvecCode());
 		Assert.assertTrue(type.isCantonal());
 		Assert.assertFalse(type.isFederal());
-		Assert.assertTrue(type.isPourPM());
-		Assert.assertFalse(type.isPourAPM());
 		Assert.assertEquals((Integer) 2015, type.getPremierePeriodeFiscaleValidite());
 		Assert.assertNull(type.getDernierePeriodeFiscaleValidite());
 		for (int pf = 1990 ; pf < 2100 ; ++ pf) {
@@ -43,8 +41,6 @@ public class TypeRegimeFiscalTest {
 		Assert.assertEquals("7487 - Test", type.getLibelleAvecCode());
 		Assert.assertTrue(type.isCantonal());
 		Assert.assertTrue(type.isFederal());
-		Assert.assertFalse(type.isPourPM());
-		Assert.assertTrue(type.isPourAPM());
 		Assert.assertEquals((Integer) 1995, type.getPremierePeriodeFiscaleValidite());
 		Assert.assertNull(type.getDernierePeriodeFiscaleValidite());
 		for (int pf = 1990 ; pf < 2100 ; ++ pf) {

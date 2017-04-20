@@ -50,18 +50,6 @@ public interface TypeRegimeFiscal {
 	CategorieEntreprise getCategorie();
 
 	/**
-	 * @return <code>true</code> si le régime est applicable aux PM
-	 */
-	@Deprecated
-	boolean isPourPM();
-
-	/**
-	 * @return <code>true</code> si le régime est applicable aux APM
-	 */
-	@Deprecated
-	boolean isPourAPM();
-
-	/**
 	 * @param periodeFiscale une période fiscale
 	 * @return <code>true</code> si le régime fiscal correspond à une exonération fiscale pour la période fiscale donnée
 	 */

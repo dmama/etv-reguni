@@ -49,7 +49,6 @@ import ch.vd.uniregctb.tiers.view.EditFlagEntrepriseView;
 import ch.vd.uniregctb.tiers.view.EditRegimeFiscalView;
 import ch.vd.uniregctb.tiers.view.FlagEntrepriseView;
 import ch.vd.uniregctb.tiers.view.RegimeFiscalListEditView;
-import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
@@ -250,26 +249,6 @@ public class SpecificiteFiscaleController {
 				}
 				if (rf.getPremierePeriodeFiscaleValidite() != null && date.year() < rf.getPremierePeriodeFiscaleValidite()) {
 					return new StringHolder("Ce régime fiscal n'est valide qu'à partir de la période " + rf.getPremierePeriodeFiscaleValidite() + '.');
-				}
-
-				final CategorieEntreprise categorie = tiersService.getCategorieEntreprise(entreprise, date);
-				if (categorie != null) {
-					switch (categorie) {
-					case DPAPM:
-					case APM:
-						if (!rf.isPourAPM()) {
-							return new StringHolder("Ce régime fiscal n'est en principe pas utilisé pour les entreprises de catégorie APM.");
-						}
-						break;
-					case PM:
-					case DPPM:
-						if (!rf.isPourPM()) {
-							return new StringHolder("Ce régime fiscal n'est en principe par utilisé pour les entreprises de catégorie PM.");
-						}
-						break;
-					default:
-						break;
-					}
 				}
 			}
 		}
