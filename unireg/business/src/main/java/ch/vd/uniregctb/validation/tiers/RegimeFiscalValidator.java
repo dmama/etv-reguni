@@ -38,20 +38,21 @@ public class RegimeFiscalValidator extends DateRangeEntityValidator<RegimeFiscal
 			if (StringUtils.isBlank(rf.getCode())) {
 				vr.addError("Le code d'un régime fiscal est un attribut obligatoire.");
 			}
-		}
-		/*
-			Contrôle de cohérence: le type de régime fiscal doit être valide durant toute la période de validité du régime fiscal.
-		 */
-		final TypeRegimeFiscal typeRF = serviceRegimeFiscal.getTypeRegimeFiscal(rf.getCode());
-		final RegDate dateDebutValiditeDuType = RegDate.get(typeRF.getPremierePeriodeFiscaleValidite(), 1, 1);
-		final RegDate dateFinValiditeDuType = typeRF.getDernierePeriodeFiscaleValidite() == null ? null : RegDate.get(typeRF.getDernierePeriodeFiscaleValidite(), 12, 31);
 
-		if (RegDateHelper.isBefore(rf.getDateDebut(), dateDebutValiditeDuType, NullDateBehavior.EARLIEST) ||
-				RegDateHelper.isAfter(rf.getDateFin(), dateFinValiditeDuType, NullDateBehavior.LATEST)) {
-			vr.addWarning(String.format("Le régime fiscal (%s - %s) déborde de la plage de validié du type %s (%d - %d).",
-			                          RegDateHelper.dateToDisplayString(rf.getDateDebut()), RegDateHelper.dateToDisplayString(rf.getDateFin()),
-			                          typeRF.getLibelleAvecCode(),
-			                          typeRF.getPremierePeriodeFiscaleValidite(), typeRF.getDernierePeriodeFiscaleValidite()));
+			// Contrôle de cohérence: le type de régime fiscal doit être valide durant toute la période de validité du régime fiscal.
+			final TypeRegimeFiscal typeRF = rf.getCode() != null ? serviceRegimeFiscal.getTypeRegimeFiscal(rf.getCode()) : null;
+			if (typeRF != null) {
+				final RegDate dateDebutValiditeDuType = RegDate.get(typeRF.getPremierePeriodeFiscaleValidite(), 1, 1);
+				final RegDate dateFinValiditeDuType = typeRF.getDernierePeriodeFiscaleValidite() == null ? null : RegDate.get(typeRF.getDernierePeriodeFiscaleValidite(), 12, 31);
+
+				if (RegDateHelper.isBefore(rf.getDateDebut(), dateDebutValiditeDuType, NullDateBehavior.EARLIEST) ||
+						RegDateHelper.isAfter(rf.getDateFin(), dateFinValiditeDuType, NullDateBehavior.LATEST)) {
+					vr.addWarning(String.format("Le régime fiscal (%s - %s) déborde de la plage de validié du type %s (%d - %d).",
+					                            RegDateHelper.dateToDisplayString(rf.getDateDebut()), RegDateHelper.dateToDisplayString(rf.getDateFin()),
+					                            typeRF.getLibelleAvecCode(),
+					                            typeRF.getPremierePeriodeFiscaleValidite(), typeRF.getDernierePeriodeFiscaleValidite()));
+				}
+			}
 		}
 		return vr;
 	}
