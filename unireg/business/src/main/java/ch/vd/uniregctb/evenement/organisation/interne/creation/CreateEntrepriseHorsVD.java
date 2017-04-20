@@ -19,6 +19,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarning
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifRattachement;
 
@@ -116,9 +117,10 @@ public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraite
 			appliqueDonneesCivilesSurPeriode(etablissementSecondaire, surchargeCorrectiveRange, getDateEvt(), warnings, suivis);
 		}
 
-		final boolean isSocieteDePersonnes = getOrganisation().isSocieteDePersonnes(getDateEvt());
-
 		openRegimesFiscauxParDefautCHVD(getEntreprise(), getOrganisation(), dateDeCreation, suivis);
+
+		final CategorieEntreprise categorieEntreprise = getContext().getTiersService().getCategorieEntreprise(getEntreprise(), getDateEvt());
+		final boolean isSocieteDePersonnes = categorieEntreprise == CategorieEntreprise.SP;
 
 		// Rechercher le régime fiscal pour savoir si SP FIXME
 		openForFiscalPrincipal(dateDeCreation,
