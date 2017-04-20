@@ -5,6 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -49,4 +50,12 @@ public interface ServiceRegimeFiscal {
 	 */
 	@NotNull
 	List<RegimeFiscalConsolide> getRegimesFiscauxVDNonAnnulesTrie(Entreprise entreprise);
+
+	/**
+	 * @param entreprise entreprise à considérer
+	 * @param genreImpot le genre d'impôt qui nous intéresse
+	 * @return les périodes d'exonération avec les types d'éxonération concernés
+	 */
+	@NotNull
+	List<ModeExonerationHisto> getExonerations(Entreprise entreprise, GenreImpotExoneration genreImpot);
 }

@@ -2,10 +2,12 @@ package ch.vd.uniregctb.regimefiscal;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.common.Annulable;
@@ -100,17 +102,9 @@ public class RegimeFiscalConsolide implements DateRange, Annulable {
 		return typeRegimeFiscal.getExonerationIBC(periode);
 	}
 
-	public List<PlageExonerationFiscale> getExonerationsIBC() {
-		return typeRegimeFiscal.getExonerationsIBC();
-	}
-
 	@Nullable
 	public PlageExonerationFiscale getExonerationICI(int periode) {
 		return typeRegimeFiscal.getExonerationICI(periode);
-	}
-
-	public List<PlageExonerationFiscale> getExonerationsICI() {
-		return typeRegimeFiscal.getExonerationsICI();
 	}
 
 	@Nullable
@@ -118,7 +112,12 @@ public class RegimeFiscalConsolide implements DateRange, Annulable {
 		return typeRegimeFiscal.getExonerationIFONC(periode);
 	}
 
-	public List<PlageExonerationFiscale> getExonerationsIFONC() {
-		return typeRegimeFiscal.getExonerationsIFONC();
+	/**
+	 * @param genreImpot genre d'impôt qui nous intéresse
+	 * @return une liste des plages d'exonération fiscales du régime fiscal
+	 */
+	@NotNull
+	public List<PlageExonerationFiscale> getExonerations(GenreImpotExoneration genreImpot) {
+		return typeRegimeFiscal.getExonerations(genreImpot);
 	}
 }

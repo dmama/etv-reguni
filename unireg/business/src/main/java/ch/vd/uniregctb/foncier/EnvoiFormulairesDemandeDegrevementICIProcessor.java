@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +34,7 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.uniregctb.common.AnnulableHelper;
@@ -43,6 +45,7 @@ import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.regimefiscal.ModeExonerationHisto;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
 import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
@@ -252,21 +255,41 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			}
 
 			// calcul de la période fiscale pour envoi du document
-			final Integer periodeFiscale = Stream.of(anneeSuivantDebutDroit, anneeDebutPriseEnCompteDerniereEstimationFiscale)
+			final Integer periodeFiscaleCandidate = Stream.of(anneeSuivantDebutDroit, anneeDebutPriseEnCompteDerniereEstimationFiscale)
 					.filter(Optional::isPresent)
 					.map(Optional::get)
 					.max(Comparator.naturalOrder())
 					.orElse(null);
-			if (periodeFiscale == null) {
+			if (periodeFiscaleCandidate == null) {
 				rapport.addErreurPeriodeFiscaleNonDeterminable(entreprise, immeuble);
 				continue;
 			}
 
-			// [SIFISC-22867] c'est seulement ici, une fois la PF connue, que l'on peut contrôler l'exonération totale du contribuable
-			if (isExonereTotalement(entreprise, periodeFiscale)) {
-				rapport.addContribuableTotalementExonere(entreprise, immeuble, periodeFiscale);
+			// [SIFISC-22867][SIFISC-23884] c'est seulement ici, une fois la PF connue, que l'on peut contrôler l'exonération totale du contribuable
+			final MutableInt periodeFiscaleConfirmee = new MutableInt(periodeFiscaleCandidate);
+			try {
+				if (isExonereTotalement(entreprise, periodeFiscaleCandidate)) {
+
+					// [SIFISC-23884] s'il est exonéré totalement pour la période fiscale donnée, mais que son exonération
+					// est interrompue plus tard, il faut prévoir l'envoi d'une demande pour la PF qui suit l'année de la dernière
+					// validité de l'exonération
+					final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.ICI);
+					final ModeExonerationHisto exonerationValide = DateRangeHelper.rangeAt(exonerations, RegDate.get(periodeFiscaleCandidate, 1, 1));
+					if (exonerationValide != null && exonerationValide.getDateFin() != null && exonerationValide.getDateFin().year() < rapport.dateTraitement.year() + 1) {
+						// on propose une nouvelle date (au plus tard l'année suivant l'année de la date de traitement)
+						periodeFiscaleConfirmee.setValue(exonerationValide.getDateFin().year() + 1);
+					}
+					else {
+						rapport.addContribuableTotalementExonere(entreprise, immeuble, periodeFiscaleCandidate);
+						continue;
+					}
+				}
+			}
+			catch (RegimeFiscalIndetermineException e) {
+				rapport.addContribuableAvecRegimeFiscalIndetermine(entreprise, immeuble, periodeFiscaleCandidate);
 				continue;
 			}
+			final int periodeFiscale = periodeFiscaleConfirmee.intValue();
 
 			// [SIFISC-23163] s'il y a un formulaire de demande qui a déjà été envoyé pour une PF entre les années suivant le début de droit et suivant la dernière estimation fiscale et l'année
 			// prochaine (= année de la date de traitement + 1), alors on n'en renvoie pas de nouvelle, ça ne sert à rien
@@ -342,12 +365,18 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 		return estimationCandidate;
 	}
 
-	private boolean isExonereTotalement(Entreprise entreprise, int periodeFiscale) {
+	private static class RegimeFiscalIndetermineException extends Exception {
+	}
+
+	private boolean isExonereTotalement(Entreprise entreprise, int periodeFiscale) throws RegimeFiscalIndetermineException {
 		final RegDate dateReference = RegDate.get(periodeFiscale, 1, 1);        // premier janvier de la période fiscale considérée, car il me semble que c'est la date charnière pour l'ICI
 		final RegimeFiscalConsolide rf = DateRangeHelper.rangeAt(regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie(entreprise), dateReference);
 		if (rf == null) {
 			// pas de régime fiscal... pas d'exonération
 			return false;
+		}
+		if (rf.isIndetermine()) {
+			throw new RegimeFiscalIndetermineException();
 		}
 
 		final PlageExonerationFiscale exoneration = rf.getExonerationICI(periodeFiscale);

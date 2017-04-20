@@ -160,19 +160,9 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	}
 
 	@Override
-	public List<PlageExonerationFiscale> getExonerationsIBC() {
-		return getExonerationsPourGenreImpot(GenreImpotExoneration.IBC);
-	}
-
-	@Override
 	@Nullable
 	public PlageExonerationFiscale getExonerationICI(int periode) {
 		return getExonerationFiscalePourPeriodeEtGenreImpot(GenreImpotExoneration.ICI, periode);
-	}
-
-	@Override
-	public List<PlageExonerationFiscale> getExonerationsICI() {
-		return getExonerationsPourGenreImpot(GenreImpotExoneration.ICI);
 	}
 
 	@Override
@@ -182,13 +172,9 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	}
 
 	@Override
-	public List<PlageExonerationFiscale> getExonerationsIFONC() {
-		return getExonerationsPourGenreImpot(GenreImpotExoneration.IFONC);
-	}
-
 	@NotNull
-	private List<PlageExonerationFiscale> getExonerationsPourGenreImpot(@NotNull GenreImpotExoneration genreImpot) {
-		return Optional.of(genreImpot)
+	public List<PlageExonerationFiscale> getExonerations(GenreImpotExoneration genreImpot) {
+		return Optional.ofNullable(genreImpot)
 				.map(exonerations::get)
 				.map(Collections::unmodifiableList)
 				.orElseGet(Collections::emptyList);
@@ -196,7 +182,7 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 
 	@Nullable
 	private PlageExonerationFiscale getExonerationFiscalePourPeriodeEtGenreImpot(@NotNull GenreImpotExoneration genreImpot, int periode) {
-		final List<PlageExonerationFiscale> plages = getExonerationsPourGenreImpot(genreImpot);
+		final List<PlageExonerationFiscale> plages = getExonerations(genreImpot);
 		return plages.stream()
 				.filter(plage -> plage.isDansPlage(periode))
 				.findFirst()

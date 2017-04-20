@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.type.CategorieEntreprise;
@@ -76,17 +77,8 @@ public interface TypeRegimeFiscal {
 	PlageExonerationFiscale getExonerationIFONC(int periode);
 
 	/**
-	 * @return les plages d'exonération IBC
+	 * @return les plages d'exonération selon le genre d'impôt
 	 */
-	List<PlageExonerationFiscale> getExonerationsIBC();
-
-	/**
-	 * @return les plages d'exonération ICI
-	 */
-	List<PlageExonerationFiscale> getExonerationsICI();
-
-	/**
-	 * @return les plages d'exonération IFONC
-	 */
-	List<PlageExonerationFiscale> getExonerationsIFONC();
+	@NotNull
+	List<PlageExonerationFiscale> getExonerations(GenreImpotExoneration genreImpot);
 }

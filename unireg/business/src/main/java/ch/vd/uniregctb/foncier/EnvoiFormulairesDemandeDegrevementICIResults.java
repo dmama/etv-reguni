@@ -261,6 +261,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 
 	public enum RaisonIgnorance {
 		CONTRIBUABLE_TOTALEMENT_EXONERE("Contribuable totalement exonéré"),
+		REGIME_FISCAL_INDETERMINE("Contribuable avec régime fiscal en attente de détermination"),
 		DEGREVEMENT_DEJA_ACTIF_ANNEE_SUIVANT_DEBUT_DROIT("Dégrèvement déjà présent pour l'année suivant la date de début du droit"),
 		DEGREVEMENT_ULTERIEUR_DEJA_PRESENT("Dégrèvement déjà présent pour une période postérieure à la période visée"),
 		DEMANDE_DEGREVEMENT_DEJA_PRESENTE_POUR_ANNEE_SUIVANT_DEBUT_DROIT("Demande de dégrèvement déjà présente pour l'année suivant la date de début de droit"),
@@ -357,6 +358,16 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		                                                  dateTraitement,
 		                                                  RaisonIgnorance.CONTRIBUABLE_TOTALEMENT_EXONERE,
 		                                                  String.format("Exonération totale ICI valable sur la période %d", periodeFiscale)));
+		++ this.nbDroitsInspectes;
+		++ this.nbDroitsIgnores;
+	}
+
+	public void addContribuableAvecRegimeFiscalIndetermine(Entreprise entreprise, ImmeubleRF immeuble, int periodeFiscale) {
+		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
+		                                                  immeuble,
+		                                                  dateTraitement,
+		                                                  RaisonIgnorance.REGIME_FISCAL_INDETERMINE,
+		                                                  String.format("Nécessaire pour la période %d", periodeFiscale)));
 		++ this.nbDroitsInspectes;
 		++ this.nbDroitsIgnores;
 	}

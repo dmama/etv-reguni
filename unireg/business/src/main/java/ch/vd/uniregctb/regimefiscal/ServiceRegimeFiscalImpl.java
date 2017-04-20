@@ -1,13 +1,18 @@
 package ch.vd.uniregctb.regimefiscal;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
+import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -76,24 +81,40 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 
 	@Override
 	public TypeRegimeFiscal getTypeRegimeFiscalVD(Entreprise entreprise, RegDate date) {
-		final List<RegimeFiscal> regimesFiscauxNonAnnulesTries = entreprise.getRegimesFiscauxNonAnnulesTries();
-		final List<RegimeFiscal> regimesFiscaux = DateRangeHelper.rangesAt(regimesFiscauxNonAnnulesTries, date);
-		// Il ne peut y en avoir qu'un
-		for (final RegimeFiscal regime : regimesFiscaux) {
-			if (regime.getPortee() == RegimeFiscal.Portee.VD) {
-				return getTypeRegimeFiscal(regime.getCode());
-			}
-		}
-		return null;
+		final List<RegimeFiscal> regimesFiscauxNonAnnulesTries = entreprise.getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee.VD);
+		final RegimeFiscal rf = DateRangeHelper.rangeAt(regimesFiscauxNonAnnulesTries, date);
+		return rf != null ? getTypeRegimeFiscal(rf.getCode()) : null;
 	}
 
 	@Override
 	@NotNull
 	public List<RegimeFiscalConsolide> getRegimesFiscauxVDNonAnnulesTrie(Entreprise entreprise) {
-		return entreprise.getRegimesFiscauxNonAnnulesTries()
-				.stream()
-				.filter(r -> r.getPortee() == RegimeFiscal.Portee.VD)
+		return entreprise.getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee.VD).stream()
 				.map(r -> new RegimeFiscalConsolide(r, getTypeRegimeFiscal(r.getCode())))
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * @param entreprise entreprise à considérer
+	 * @param genreImpot le genre d'impôt qui nous intéresse
+	 * @return les périodes d'exonération avec les types d'éxonération concernés
+	 */
+	@NotNull
+	@Override
+	public List<ModeExonerationHisto> getExonerations(Entreprise entreprise, GenreImpotExoneration genreImpot) {
+		final List<RegimeFiscalConsolide> regimes = getRegimesFiscauxVDNonAnnulesTrie(entreprise);
+		final List<ModeExonerationHisto> histo = new LinkedList<>();
+		for (RegimeFiscalConsolide rf : regimes) {
+			final List<PlageExonerationFiscale> exonerations = rf.getExonerations(genreImpot);
+			for (PlageExonerationFiscale exoneration : exonerations) {
+				final DateRange rangeExoneration = new DateRangeHelper.Range(RegDate.get(exoneration.getPeriodeDebut(), 1, 1),
+				                                                             Optional.ofNullable(exoneration.getPeriodeFin()).map(pf -> RegDate.get(pf, 12, 31)).orElse(null));
+				final DateRange intersection = DateRangeHelper.intersection(rf, rangeExoneration);
+				if (intersection != null) {
+					histo.add(new ModeExonerationHisto(intersection.getDateDebut(), intersection.getDateFin(), exoneration.getMode()));
+				}
+			}
+		}
+		return DateRangeHelper.collate(histo);
 	}
 }
