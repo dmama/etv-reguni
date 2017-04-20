@@ -3,9 +3,14 @@ package ch.vd.unireg.interfaces.infra.data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +23,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 
 public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 
-	private static final long serialVersionUID = -2647310110657651201L;
+	private static final long serialVersionUID = 8591533375608068440L;
 
 	private final String code;
 	private final String libelle;
@@ -27,9 +32,7 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	private final CategorieEntreprise categorie;
 	private final Integer premierePeriodeFiscaleValidite;
 	private final Integer dernierePeriodeFiscaleValidite;
-	private final List<PlageExonerationFiscale> exonerationsIBC;
-	private final List<PlageExonerationFiscale> exonerationsICI;
-	private final List<PlageExonerationFiscale> exonerationsIFONC;
+	private final Map<GenreImpotExoneration, List<PlageExonerationFiscale>> exonerations;
 
 	public static TypeRegimeFiscal get(RegimeFiscal regime) {
 		if (regime == null) {
@@ -60,31 +63,16 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 		this.premierePeriodeFiscaleValidite = premierePeriodeFiscaleValidite;
 		this.dernierePeriodeFiscaleValidite = dernierePeriodeFiscaleValidite;
 
-		if (exonerations == null || exonerations.size() == 0) {
-			exonerationsIBC = Collections.emptyList();
-			exonerationsICI = Collections.emptyList();
-			exonerationsIFONC = Collections.emptyList();
+		if (exonerations != null && !exonerations.isEmpty()) {
+			this.exonerations = exonerations.stream()
+					.filter(Objects::nonNull)
+					.collect(Collectors.toMap(PlageExonerationFiscale::getGenreImpot,
+					                          Collections::singletonList,
+					                          ListUtils::union,
+					                          () -> new EnumMap<>(GenreImpotExoneration.class)));
 		}
 		else {
-			exonerationsIBC = new ArrayList<>();
-			exonerationsICI = new ArrayList<>();
-			exonerationsIFONC = new ArrayList<>();
-			exonerations.stream()
-					.filter(Objects::nonNull)
-					.forEach(plage -> {
-						switch (plage.getGenreImpot()) {
-						case IBC:
-							exonerationsIBC.add(plage);
-							break;
-						case ICI:
-							exonerationsICI.add(plage);
-							break;
-						case IFONC:
-							exonerationsIFONC.add(plage);
-							break;
-						case AUTRE:
-							break;
-						}});
+			this.exonerations = Collections.emptyMap();
 		}
 	}
 
@@ -168,43 +156,51 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	@Override
 	@Nullable
 	public PlageExonerationFiscale getExonerationIBC(int periode) {
-		return exonerationsIBC.stream()
-				.filter(exo -> exo.isDansPlage(periode))
-				.findFirst()
-				.orElse(null);
+		return getExonerationFiscalePourPeriodeEtGenreImpot(GenreImpotExoneration.IBC, periode);
 	}
 
 	@Override
 	public List<PlageExonerationFiscale> getExonerationsIBC() {
-		return Collections.unmodifiableList(exonerationsIBC);
+		return getExonerationsPourGenreImpot(GenreImpotExoneration.IBC);
 	}
 
 	@Override
 	@Nullable
 	public PlageExonerationFiscale getExonerationICI(int periode) {
-		return exonerationsICI.stream()
-				.filter(exo -> exo.isDansPlage(periode))
-				.findFirst()
-				.orElse(null);
+		return getExonerationFiscalePourPeriodeEtGenreImpot(GenreImpotExoneration.ICI, periode);
 	}
 
 	@Override
 	public List<PlageExonerationFiscale> getExonerationsICI() {
-		return Collections.unmodifiableList(exonerationsICI);
+		return getExonerationsPourGenreImpot(GenreImpotExoneration.ICI);
 	}
 
 	@Override
 	@Nullable
 	public PlageExonerationFiscale getExonerationIFONC(int periode) {
-		return exonerationsIFONC.stream()
-				.filter(exo -> exo.isDansPlage(periode))
-				.findFirst()
-				.orElse(null);
+		return getExonerationFiscalePourPeriodeEtGenreImpot(GenreImpotExoneration.IFONC, periode);
 	}
 
 	@Override
 	public List<PlageExonerationFiscale> getExonerationsIFONC() {
-		return Collections.unmodifiableList(exonerationsIFONC);
+		return getExonerationsPourGenreImpot(GenreImpotExoneration.IFONC);
+	}
+
+	@NotNull
+	private List<PlageExonerationFiscale> getExonerationsPourGenreImpot(@NotNull GenreImpotExoneration genreImpot) {
+		return Optional.of(genreImpot)
+				.map(exonerations::get)
+				.map(Collections::unmodifiableList)
+				.orElseGet(Collections::emptyList);
+	}
+
+	@Nullable
+	private PlageExonerationFiscale getExonerationFiscalePourPeriodeEtGenreImpot(@NotNull GenreImpotExoneration genreImpot, int periode) {
+		final List<PlageExonerationFiscale> plages = getExonerationsPourGenreImpot(genreImpot);
+		return plages.stream()
+				.filter(plage -> plage.isDansPlage(periode))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -234,9 +230,9 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 				", catégorie=" + categorie +
 				", premierePeriodeFiscaleValidite=" + premierePeriodeFiscaleValidite +
 				", dernierePeriodeFiscaleValidite=" + dernierePeriodeFiscaleValidite +
-				", exonerationsIBC=[" + CollectionsUtils.toString(exonerationsIBC, plageRenderer, ", ", StringUtils.EMPTY) + "]" +
-				", exonerationsICI=[" + CollectionsUtils.toString(exonerationsICI, plageRenderer, ", ", StringUtils.EMPTY) + "]" +
-				", exonerationsIFONC=[" + CollectionsUtils.toString(exonerationsIFONC, plageRenderer, ", ", StringUtils.EMPTY) + "]" +
+				", exonerationsIBC=[" + CollectionsUtils.toString(exonerations.get(GenreImpotExoneration.IBC), plageRenderer, ", ", StringUtils.EMPTY) + "]" +
+				", exonerationsICI=[" + CollectionsUtils.toString(exonerations.get(GenreImpotExoneration.ICI), plageRenderer, ", ", StringUtils.EMPTY) + "]" +
+				", exonerationsIFONC=[" + CollectionsUtils.toString(exonerations.get(GenreImpotExoneration.IFONC), plageRenderer, ", ", StringUtils.EMPTY) + "]" +
 				'}';
 	}
 }
