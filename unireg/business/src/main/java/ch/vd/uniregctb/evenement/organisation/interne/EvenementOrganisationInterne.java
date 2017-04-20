@@ -498,8 +498,7 @@ public abstract class EvenementOrganisationInterne {
 	 * Règle les régimes fiscaux VD et CH de type indéterminé et programme une tâche de détermination du régime fiscal
 	 */
 	protected void openRegimesFiscauxIndetermineCHVD(Entreprise entreprise, Organisation organisation, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
-		final FormeJuridiqueEntreprise formeJuridique = FormeJuridiqueEntreprise.fromCode(organisation.getFormeLegale(getDateEvt()).getCode());
-		final TypeRegimeFiscal typeRegimeFiscal = context.getServiceRegimeFiscal().getTypeRegimeFiscal("00");
+		final TypeRegimeFiscal typeRegimeFiscal = context.getServiceRegimeFiscal().getTypeRegimeFiscalIndetermine();
 		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateDebut);
 		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
 		suivis.addSuivi(String.format("Régimes fiscaux de type indéterminé [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)",

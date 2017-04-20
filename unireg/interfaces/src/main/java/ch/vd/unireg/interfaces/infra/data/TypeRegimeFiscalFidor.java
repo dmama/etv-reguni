@@ -17,7 +17,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 
 public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 
-	private static final long serialVersionUID = 5014295791840093818L;
+	private static final long serialVersionUID = -7161144696098610744L;
 
 	private final String code;
 	private final String libelle;
@@ -135,6 +135,11 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	}
 
 	@Override
+	public boolean isIndetermine() {
+		return categorie == CategorieEntreprise.INDET;
+	}
+
+	@Override
 	public boolean isExoneration(int periodeFiscale) {
 		return exonerationsIBC.stream()
 				.anyMatch(exo -> exo.isDansPlage(periodeFiscale));
@@ -186,7 +191,7 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 
 	@Override
 	public String toString() {
-		return "TypeRegimeFiscalImpl{" +
+		return "TypeRegimeFiscalFidor{" +
 				"code='" + code + '\'' +
 				", libelle='" + libelle + '\'' +
 				", cantonal=" + cantonal +

@@ -44,6 +44,22 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 
 	@Override
 	@NotNull
+	public TypeRegimeFiscal getTypeRegimeFiscalIndetermine() {
+		final List<TypeRegimeFiscal> typesRegimesFiscaux = serviceInfra.getRegimesFiscaux();
+		final List<TypeRegimeFiscal> indetermines = typesRegimesFiscaux.stream()
+				.filter(TypeRegimeFiscal::isIndetermine)
+				.collect(Collectors.toList());
+		if (indetermines.isEmpty()) {
+			throw new ServiceRegimeFiscalException("Aucun régime fiscal indéterminé trouvé.");
+		}
+		if (indetermines.size() > 1) {
+			throw new ServiceRegimeFiscalException("Plus d'un régime fiscal indéterminé trouvé.");
+		}
+		return indetermines.get(0);
+	}
+
+	@Override
+	@NotNull
 	public TypeRegimeFiscal getTypeRegimeFiscalParDefaut(@NotNull FormeJuridiqueEntreprise formeJuridique) throws ServiceRegimeFiscalException {
 
 		final String codeRegime = FormeJuridiqueCodesRegimeFiscauxMapping.getDefaultCodePourFormeJuridique(formeJuridique);

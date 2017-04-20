@@ -22,9 +22,7 @@ public class RegimeFiscalConsolide implements DateRange, Annulable {
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private boolean annule;
-
 	private RegimeFiscal.Portee portee;
-
 	private TypeRegimeFiscal typeRegimeFiscal;
 
 	RegimeFiscalConsolide(RegimeFiscal regimeFiscal, TypeRegimeFiscal typeRegimeFiscal) {
@@ -41,7 +39,6 @@ public class RegimeFiscalConsolide implements DateRange, Annulable {
 		this.dateDebut = regimeFiscal.getDateDebut();
 		this.dateFin = regimeFiscal.getDateFin();
 		this.annule = regimeFiscal.getAnnulationDate() != null;
-
 		this.portee = regimeFiscal.getPortee();
 
 		this.typeRegimeFiscal = typeRegimeFiscal;
@@ -65,54 +62,6 @@ public class RegimeFiscalConsolide implements DateRange, Annulable {
 		return portee;
 	}
 
-	private TypeRegimeFiscal getTypeRegimeFiscal() {
-		return typeRegimeFiscal;
-	}
-
-	public String getCode() {
-		return typeRegimeFiscal.getCode();
-	}
-
-	public String getLibelle() {
-		return typeRegimeFiscal.getLibelleAvecCode();
-	}
-
-	public String getLibelleAvecCode() {
-		return getTypeRegimeFiscal().getLibelleAvecCode();
-	}
-
-	public CategorieEntreprise getCategorie() {
-		return typeRegimeFiscal.getCategorie();
-	}
-
-	public boolean isExoneration(int periodeFiscale) {
-		return typeRegimeFiscal.isExoneration(periodeFiscale);
-	}
-
-	public boolean isExonerationIBC(int periodeFiscale) {
-		return getTypeRegimeFiscal().isExonerationIBC(periodeFiscale);
-	}
-
-	public boolean isExonerationICI(int periodeFiscale) {
-		return getTypeRegimeFiscal().isExonerationICI(periodeFiscale);
-	}
-
-	public boolean isExonerationIFONC(int periodeFiscale) {
-		return getTypeRegimeFiscal().isExonerationIFONC(periodeFiscale);
-	}
-
-	public List<PlageExonerationFiscales> getExonerationsIBC() {
-		return getTypeRegimeFiscal().getExonerationsIBC();
-	}
-
-	public List<PlageExonerationFiscales> getExonerationsICI() {
-		return getTypeRegimeFiscal().getExonerationsICI();
-	}
-
-	public List<PlageExonerationFiscales> getExonerationsIFONC() {
-		return getTypeRegimeFiscal().getExonerationsIFONC();
-	}
-
 	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
@@ -123,4 +72,52 @@ public class RegimeFiscalConsolide implements DateRange, Annulable {
 		return dateFin;
 	}
 
+
+	public String getCode() {
+		return typeRegimeFiscal.getCode();
+	}
+
+	public String getLibelle() {
+		return typeRegimeFiscal.getLibelle();
+	}
+
+	public String getLibelleAvecCode() {
+		return typeRegimeFiscal.getLibelleAvecCode();
+	}
+
+	public CategorieEntreprise getCategorie() {
+		return typeRegimeFiscal.getCategorie();
+	}
+
+	public boolean isIndetermine() {
+		return typeRegimeFiscal.isIndetermine();
+	}
+
+	public boolean isExoneration(int periodeFiscale) {
+		return typeRegimeFiscal.isExoneration(periodeFiscale);
+	}
+
+	public boolean isExonerationIBC(int periodeFiscale) {
+		return typeRegimeFiscal.isExonerationIBC(periodeFiscale);
+	}
+
+	public boolean isExonerationICI(int periodeFiscale) {
+		return typeRegimeFiscal.isExonerationICI(periodeFiscale);
+	}
+
+	public boolean isExonerationIFONC(int periodeFiscale) {
+		return typeRegimeFiscal.isExonerationIFONC(periodeFiscale);
+	}
+
+	public List<PlageExonerationFiscales> getExonerationsIBC() {
+		return typeRegimeFiscal.getExonerationsIBC();
+	}
+
+	public List<PlageExonerationFiscales> getExonerationsICI() {
+		return typeRegimeFiscal.getExonerationsICI();
+	}
+
+	public List<PlageExonerationFiscales> getExonerationsIFONC() {
+		return typeRegimeFiscal.getExonerationsIFONC();
+	}
 }

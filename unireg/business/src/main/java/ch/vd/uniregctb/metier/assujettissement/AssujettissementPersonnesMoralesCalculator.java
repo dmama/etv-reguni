@@ -188,14 +188,14 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		final List<DateRange> periodesAExclure = new ArrayList<>();
 		RegDate dateDebutExerciceInfini = data.get(0).getDateDebut();
 		for (final ExerciceCommercial exe : exercices) {
-			final List<RegimeFiscalConsolide> regimeFiscalConsolides = DateRangeHelper.rangesAt(regimesFiscauxVDNonAnnulesTrie, exe.getDateFin());
-			if (!regimeFiscalConsolides.isEmpty() && regimeFiscalConsolides.get(0).isExonerationIBC(exe.getDateFin().year())) {
+			final RegimeFiscalConsolide regimeFiscalConsolide = DateRangeHelper.rangeAt(regimesFiscauxVDNonAnnulesTrie, exe.getDateFin());
+			if (regimeFiscalConsolide != null && (regimeFiscalConsolide.isIndetermine() || regimeFiscalConsolide.isExonerationIBC(exe.getDateFin().year()))) {
 				periodesAExclure.add(exe);
 			}
 			dateDebutExerciceInfini = exe.getDateFin().getOneDayAfter();
 		}
-		final List<RegimeFiscalConsolide> regimeFiscalConsolides = DateRangeHelper.rangesAt(regimesFiscauxVDNonAnnulesTrie, dateDebutExerciceInfini);
-		if (!regimeFiscalConsolides.isEmpty() && regimeFiscalConsolides.get(0).isExonerationIBC(dateDebutExerciceInfini.year())) {
+		final RegimeFiscalConsolide regimeFiscalConsolide = DateRangeHelper.rangeAt(regimesFiscauxVDNonAnnulesTrie, dateDebutExerciceInfini);
+		if (regimeFiscalConsolide != null && (regimeFiscalConsolide.isIndetermine() || regimeFiscalConsolide.isExonerationIBC(dateDebutExerciceInfini.year()))) {
 			periodesAExclure.add(new DateRangeHelper.Range(dateDebutExerciceInfini, null));
 		}
 
@@ -206,7 +206,8 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 				return new Data(debut != null ? debut : range.getDateDebut(),
 				                fin != null ? fin : range.getDateFin(),
 				                range.type,
-				                debut != null ? MotifFor.INDETERMINE : range.motifDebut, fin != null ? MotifFor.INDETERMINE : range.motifFin,
+				                debut != null ? MotifFor.INDETERMINE : range.motifDebut,        // TODO il faudra peut-être introduire un nouveau motif, seulement pour les assujettissements (= fin exonération)
+				                fin != null ? MotifFor.INDETERMINE : range.motifFin,            // TODO il faudra peut-être introduire un nouveau motif, seulement pour les assujettissements (= début exonération)
 				                range.typeAutoriteFiscale);
 			}
 		});

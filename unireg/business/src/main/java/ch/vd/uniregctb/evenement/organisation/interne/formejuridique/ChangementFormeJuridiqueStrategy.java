@@ -121,7 +121,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 					Le régime fiscal avait été attribué automatiquement. Si c'est bon une fois, c'est bon deux fois, avec au bout du chemin un type indéterminé si la nouvelle forme juridique devait être exotique.
 					Ca va aussi si le type par défaut du futur régime est indéterminé, car cela provoquera l'intervention d'un opérateur.
 				 */
-				if (wasAuto || typeRegimeFiscalParDefautApres.getCategorie() == CategorieEntreprise.INDET) {
+				if (wasAuto || typeRegimeFiscalParDefautApres.isIndetermine()) {
 					final String message = String.format("La forme juridique passe de %s à %s. Le régime fiscal VD passe de %s à %s.",
 					                                     formeLegaleAvant, formeLegaleApres, typeRegimeFiscalVDAvant.getLibelleAvecCode(), typeRegimeFiscalParDefautApres.getLibelleAvecCode());
 					LOGGER.info(message);

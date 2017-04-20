@@ -18,7 +18,14 @@ public interface ServiceRegimeFiscal {
 	 * @param code le code représentant le type de régime fiscal
 	 * @return le type de régime fiscal correspondant au code, ou null si le code ne correspond à rien.
 	 */
+	@NotNull
 	TypeRegimeFiscal getTypeRegimeFiscal(@NotNull String code);
+
+	/**
+	 * @return le type de régime fiscal indéterminé
+	 */
+	@NotNull
+	TypeRegimeFiscal getTypeRegimeFiscalIndetermine();
 
 	/**
 	 * @param formeJuridique la forme juridique
