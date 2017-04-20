@@ -55,31 +55,38 @@ public interface TypeRegimeFiscal {
 	boolean isIndetermine();
 
 	/**
-	 * @param periodeFiscale une période fiscale
-	 * @return <code>true</code> si le régime fiscal correspond à une exonération fiscale pour la période fiscale donnée
+	 * @param periode période fiscale
+	 * @return la plage d'exonération fiscale IBC qui touche la période donnée
 	 */
-	boolean isExoneration(int periodeFiscale);
+	@Nullable
+	PlageExonerationFiscale getExonerationIBC(int periode);
+
 	/**
-	 * @param periodeFiscale une période fiscale
-	 * @return <code>true</code> si le régime fiscal correspond à une exonération fiscale pour la période fiscale donnée
+	 * @param periode période fiscale
+	 * @return la plage d'exonération fiscale ICI qui touche la période donnée
 	 */
-	boolean isExonerationIBC(int periodeFiscale);
+	@Nullable
+	PlageExonerationFiscale getExonerationICI(int periode);
+
 	/**
-	 * @param periodeFiscale une période fiscale
-	 * @return <code>true</code> si le régime fiscal correspond à une exonération fiscale pour la période fiscale donnée
+	 * @param periode période fiscale
+	 * @return la plage d'exonération fiscale IFONC qui touche la période donnée
 	 */
-	boolean isExonerationICI(int periodeFiscale);
+	@Nullable
+	PlageExonerationFiscale getExonerationIFONC(int periode);
+
 	/**
-	 * @param periodeFiscale une période fiscale
-	 * @return <code>true</code> si le régime fiscal correspond à une exonération fiscale pour la période fiscale donnée
+	 * @return les plages d'exonération IBC
 	 */
-	boolean isExonerationIFONC(int periodeFiscale);
+	List<PlageExonerationFiscale> getExonerationsIBC();
 
-	List<PlageExonerationFiscales> getExonerationsIBC();
+	/**
+	 * @return les plages d'exonération ICI
+	 */
+	List<PlageExonerationFiscale> getExonerationsICI();
 
-	List<PlageExonerationFiscales> getExonerationsICI();
-
-	List<PlageExonerationFiscales> getExonerationsIFONC();
-
-
+	/**
+	 * @return les plages d'exonération IFONC
+	 */
+	List<PlageExonerationFiscale> getExonerationsIFONC();
 }

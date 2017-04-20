@@ -5,18 +5,18 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author Raphaël Marmier, 2017-03-10, <raphael.marmier@vd.ch>
  */
-public class PlageExonerationFiscales extends PlagePeriodesFiscales {
+public class PlageExonerationFiscale extends PlagePeriodesFiscales {
 
-	private GenreImpot genreImpot;
+	private GenreImpotExoneration genreImpot;
 	private ModeExoneration mode;
 
-	public PlageExonerationFiscales(int periodeDebut, @Nullable Integer periodeFin, GenreImpot genreImpot, ModeExoneration mode) {
+	public PlageExonerationFiscale(int periodeDebut, @Nullable Integer periodeFin, GenreImpotExoneration genreImpot, ModeExoneration mode) {
 		super(periodeDebut, periodeFin);
 		this.genreImpot = genreImpot;
 		this.mode = mode;
 	}
 
-	public GenreImpot getGenreImpot() {
+	public GenreImpotExoneration getGenreImpot() {
 		return genreImpot;
 	}
 

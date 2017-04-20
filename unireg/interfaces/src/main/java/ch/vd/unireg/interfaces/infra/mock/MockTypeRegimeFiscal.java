@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.vd.unireg.interfaces.infra.data.GenreImpot;
+import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
-import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscales;
+import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalFidor;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 
-import static ch.vd.unireg.interfaces.infra.data.GenreImpot.IBC;
-import static ch.vd.unireg.interfaces.infra.data.GenreImpot.ICI;
-import static ch.vd.unireg.interfaces.infra.data.GenreImpot.IFONC;
+import static ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration.IBC;
+import static ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration.ICI;
+import static ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration.IFONC;
 import static ch.vd.unireg.interfaces.infra.data.ModeExoneration.DE_FAIT;
 import static ch.vd.unireg.interfaces.infra.data.ModeExoneration.TOTALE;
 import static ch.vd.uniregctb.type.CategorieEntreprise.APM;
@@ -84,11 +84,11 @@ public class MockTypeRegimeFiscal extends TypeRegimeFiscalFidor {
 		return mocks.toArray(new MockTypeRegimeFiscal[mocks.size()]);
 	}
 
-	private MockTypeRegimeFiscal(String code, Integer premierePF, Integer dernierePF, String libelle, boolean cantonal, boolean federal, CategorieEntreprise categorie, PlageExonerationFiscales... exonerations) {
+	private MockTypeRegimeFiscal(String code, Integer premierePF, Integer dernierePF, String libelle, boolean cantonal, boolean federal, CategorieEntreprise categorie, PlageExonerationFiscale... exonerations) {
 		super(code, premierePF, dernierePF, libelle, cantonal, federal, categorie, Arrays.asList(exonerations));
 	}
 
-	private static PlageExonerationFiscales createExo(int periodeDebut, GenreImpot genreImpot, ModeExoneration mode) {
-		return new PlageExonerationFiscales(periodeDebut, null, genreImpot, mode);
+	private static PlageExonerationFiscale createExo(int periodeDebut, GenreImpotExoneration genreImpot, ModeExoneration mode) {
+		return new PlageExonerationFiscale(periodeDebut, null, genreImpot, mode);
 	}
 }

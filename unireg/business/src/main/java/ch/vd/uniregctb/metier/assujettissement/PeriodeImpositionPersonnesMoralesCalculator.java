@@ -3,7 +3,7 @@ package ch.vd.uniregctb.metier.assujettissement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -99,7 +99,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 
 					// Cas des 190-2 et 739 vaudois qui doivent être optionels
 					// TODO: charger les valeurs depuis la configuration Unireg.
-					Set<String> assujOptionnelsVD = new LinkedHashSet<>(Arrays.asList("190-2", "739"));
+					final Set<String> assujOptionnelsVD = new HashSet<>(Arrays.asList("190-2", "739"));
 					final TypeRegimeFiscal typeRegimeFiscalVD = serviceRegimeFiscal.getTypeRegimeFiscalVD(entreprise, exercice.getDateFin());
 					final boolean isOptionnelle = typeContribuable == TypeContribuable.VAUDOIS_ORDINAIRE && assujOptionnelsVD.contains(typeRegimeFiscalVD.getCode());
 

@@ -13,11 +13,12 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.fidor.xml.regimefiscal.v2.Exoneration;
 import ch.vd.fidor.xml.regimefiscal.v2.RegimeFiscal;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 
 public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 
-	private static final long serialVersionUID = -7161144696098610744L;
+	private static final long serialVersionUID = -2647310110657651201L;
 
 	private final String code;
 	private final String libelle;
@@ -26,21 +27,20 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	private final CategorieEntreprise categorie;
 	private final Integer premierePeriodeFiscaleValidite;
 	private final Integer dernierePeriodeFiscaleValidite;
-	private final List<PlageExonerationFiscales> exonerationsIBC;
-	private final List<PlageExonerationFiscales> exonerationsICI;
-	private final List<PlageExonerationFiscales> exonerationsIFONC;
+	private final List<PlageExonerationFiscale> exonerationsIBC;
+	private final List<PlageExonerationFiscale> exonerationsICI;
+	private final List<PlageExonerationFiscale> exonerationsIFONC;
 
 	public static TypeRegimeFiscal get(RegimeFiscal regime) {
 		if (regime == null) {
 			return null;
 		}
-		final List<PlageExonerationFiscales> exos;
+		final List<PlageExonerationFiscale> exos;
 		final List<Exoneration> exonerations = regime.getExoneration();
 		if (exonerations != null && !exonerations.isEmpty()) {
 			exos = new ArrayList<>(exonerations.size());
 			for (final Exoneration exo : exonerations) {
-				exos.add(new PlageExonerationFiscales(exo.getPeriodeFiscaleDebutValidite(), exo.getPeriodeFiscaleFinValidite(), GenreImpot.fromCode(exo.getGenreImpot().getCode()),
-				                                      ModeExoneration.fromCode(exo.getMode().value())));
+				exos.add(new PlageExonerationFiscale(exo.getPeriodeFiscaleDebutValidite(), exo.getPeriodeFiscaleFinValidite(), genreImpotFromCode(exo.getGenreImpot().getCode()), modeExonerationFromCode(exo.getMode().value())));
 			}
 		}
 		else {
@@ -51,7 +51,7 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	}
 
 	protected TypeRegimeFiscalFidor(String code, Integer premierePeriodeFiscaleValidite, Integer dernierePeriodeFiscaleValidite, String libelle, boolean cantonal, boolean federal,
-	                                CategorieEntreprise categorie, List<PlageExonerationFiscales> exonerations) {
+	                                CategorieEntreprise categorie, List<PlageExonerationFiscale> exonerations) {
 		this.code = code;
 		this.libelle = libelle;
 		this.cantonal = cantonal;
@@ -104,6 +104,32 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 		}
 	}
 
+	@NotNull
+	private static ModeExoneration modeExonerationFromCode(String code) {
+		switch (code) {
+		case "EXONERATION_TOTALE":
+			return ModeExoneration.TOTALE;
+		case "EXONERATION_DE_FAIT":
+			return ModeExoneration.DE_FAIT;
+		default:
+			return ModeExoneration.AUTRE;
+		}
+	}
+
+	@NotNull
+	private static GenreImpotExoneration genreImpotFromCode(String code) {
+		switch (code) {
+		case "IBC":
+			return GenreImpotExoneration.IBC;
+		case "ICI":
+			return GenreImpotExoneration.ICI;
+		case "IFONC":
+			return GenreImpotExoneration.IFONC;
+		default:
+			return GenreImpotExoneration.AUTRE;
+		}
+	}
+
 	@Override
 	public String getCode() {
 		return code;
@@ -140,41 +166,44 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	}
 
 	@Override
-	public boolean isExoneration(int periodeFiscale) {
+	@Nullable
+	public PlageExonerationFiscale getExonerationIBC(int periode) {
 		return exonerationsIBC.stream()
-				.anyMatch(exo -> exo.isDansPlage(periodeFiscale));
+				.filter(exo -> exo.isDansPlage(periode))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override
-	public boolean isExonerationIBC(int periodeFiscale) {
-		return exonerationsIBC.stream()
-				.anyMatch(exo -> exo.isDansPlage(periodeFiscale));
-	}
-
-	@Override
-	public boolean isExonerationICI(int periodeFiscale) {
-		return exonerationsICI.stream()
-				.anyMatch(exo -> exo.isDansPlage(periodeFiscale));
-	}
-
-	@Override
-	public boolean isExonerationIFONC(int periodeFiscale) {
-		return exonerationsIFONC.stream()
-				.anyMatch(exo -> exo.isDansPlage(periodeFiscale));
-	}
-
-	@Override
-	public List<PlageExonerationFiscales> getExonerationsIBC() {
+	public List<PlageExonerationFiscale> getExonerationsIBC() {
 		return Collections.unmodifiableList(exonerationsIBC);
 	}
 
 	@Override
-	public List<PlageExonerationFiscales> getExonerationsICI() {
+	@Nullable
+	public PlageExonerationFiscale getExonerationICI(int periode) {
+		return exonerationsICI.stream()
+				.filter(exo -> exo.isDansPlage(periode))
+				.findFirst()
+				.orElse(null);
+	}
+
+	@Override
+	public List<PlageExonerationFiscale> getExonerationsICI() {
 		return Collections.unmodifiableList(exonerationsICI);
 	}
 
 	@Override
-	public List<PlageExonerationFiscales> getExonerationsIFONC() {
+	@Nullable
+	public PlageExonerationFiscale getExonerationIFONC(int periode) {
+		return exonerationsIFONC.stream()
+				.filter(exo -> exo.isDansPlage(periode))
+				.findFirst()
+				.orElse(null);
+	}
+
+	@Override
+	public List<PlageExonerationFiscale> getExonerationsIFONC() {
 		return Collections.unmodifiableList(exonerationsIFONC);
 	}
 
@@ -191,6 +220,12 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 
 	@Override
 	public String toString() {
+		final StringRenderer<PlageExonerationFiscale> plageRenderer =
+				plage -> String.format("%d-%s (%s)",
+				                       plage.getPeriodeDebut(),
+				                       plage.getPeriodeFin() != null ? plage.getPeriodeFin() : "?",
+				                       plage.getMode());
+
 		return "TypeRegimeFiscalFidor{" +
 				"code='" + code + '\'' +
 				", libelle='" + libelle + '\'' +
@@ -199,18 +234,9 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 				", catégorie=" + categorie +
 				", premierePeriodeFiscaleValidite=" + premierePeriodeFiscaleValidite +
 				", dernierePeriodeFiscaleValidite=" + dernierePeriodeFiscaleValidite +
-				", exonerationsIBC=[" + CollectionsUtils.toString(exonerationsIBC,
-				                                               exo -> String.format("%d-%s", exo.getPeriodeDebut(), exo.getPeriodeFin() == null ? "?" : exo.getPeriodeFin()),
-				                                               ", ",
-				                                               StringUtils.EMPTY) + "]" +
-				", exonerationsICI=[" + CollectionsUtils.toString(exonerationsICI,
-				                                               exo -> String.format("%d-%s", exo.getPeriodeDebut(), exo.getPeriodeFin() == null ? "?" : exo.getPeriodeFin()),
-				                                               ", ",
-				                                               StringUtils.EMPTY) + "]" +
-				", exonerationsIFONC=[" + CollectionsUtils.toString(exonerationsIFONC,
-				                                               exo -> String.format("%d-%s", exo.getPeriodeDebut(), exo.getPeriodeFin() == null ? "?" : exo.getPeriodeFin()),
-				                                               ", ",
-				                                               StringUtils.EMPTY) + "]" +
+				", exonerationsIBC=[" + CollectionsUtils.toString(exonerationsIBC, plageRenderer, ", ", StringUtils.EMPTY) + "]" +
+				", exonerationsICI=[" + CollectionsUtils.toString(exonerationsICI, plageRenderer, ", ", StringUtils.EMPTY) + "]" +
+				", exonerationsIFONC=[" + CollectionsUtils.toString(exonerationsIFONC, plageRenderer, ", ", StringUtils.EMPTY) + "]" +
 				'}';
 	}
 }

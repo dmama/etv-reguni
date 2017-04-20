@@ -27,7 +27,9 @@ public class TypeRegimeFiscalTest {
 		Assert.assertEquals((Integer) 2015, type.getPremierePeriodeFiscaleValidite());
 		Assert.assertNull(type.getDernierePeriodeFiscaleValidite());
 		for (int pf = 1990 ; pf < 2100 ; ++ pf) {
-			Assert.assertFalse(String.valueOf(pf), type.isExoneration(pf));
+			Assert.assertNull(String.valueOf(pf), type.getExonerationIBC(pf));
+			Assert.assertNull(type.getExonerationICI(pf));
+			Assert.assertNull(type.getExonerationIFONC(pf));
 		}
 	}
 
@@ -44,7 +46,14 @@ public class TypeRegimeFiscalTest {
 		Assert.assertEquals((Integer) 1995, type.getPremierePeriodeFiscaleValidite());
 		Assert.assertNull(type.getDernierePeriodeFiscaleValidite());
 		for (int pf = 1990 ; pf < 2100 ; ++ pf) {
-			Assert.assertEquals(String.valueOf(pf), (pf >= 1995 && pf <= 2000) || pf >= 2004, type.isExoneration(pf));
+			if ((pf >= 1995 && pf <= 2000) || pf >= 2004) {
+				Assert.assertNotNull(String.valueOf(pf), type.getExonerationIBC(pf));
+			}
+			else {
+				Assert.assertNull(String.valueOf(pf), type.getExonerationIBC(pf));
+			}
+			Assert.assertNull(type.getExonerationICI(pf));
+			Assert.assertNull(type.getExonerationIFONC(pf));
 		}
 	}
 }

@@ -2,9 +2,11 @@ package ch.vd.uniregctb.regimefiscal;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscales;
+import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -93,31 +95,30 @@ public class RegimeFiscalConsolide implements DateRange, Annulable {
 		return typeRegimeFiscal.isIndetermine();
 	}
 
-	public boolean isExoneration(int periodeFiscale) {
-		return typeRegimeFiscal.isExoneration(periodeFiscale);
+	@Nullable
+	public PlageExonerationFiscale getExonerationIBC(int periode) {
+		return typeRegimeFiscal.getExonerationIBC(periode);
 	}
 
-	public boolean isExonerationIBC(int periodeFiscale) {
-		return typeRegimeFiscal.isExonerationIBC(periodeFiscale);
-	}
-
-	public boolean isExonerationICI(int periodeFiscale) {
-		return typeRegimeFiscal.isExonerationICI(periodeFiscale);
-	}
-
-	public boolean isExonerationIFONC(int periodeFiscale) {
-		return typeRegimeFiscal.isExonerationIFONC(periodeFiscale);
-	}
-
-	public List<PlageExonerationFiscales> getExonerationsIBC() {
+	public List<PlageExonerationFiscale> getExonerationsIBC() {
 		return typeRegimeFiscal.getExonerationsIBC();
 	}
 
-	public List<PlageExonerationFiscales> getExonerationsICI() {
+	@Nullable
+	public PlageExonerationFiscale getExonerationICI(int periode) {
+		return typeRegimeFiscal.getExonerationICI(periode);
+	}
+
+	public List<PlageExonerationFiscale> getExonerationsICI() {
 		return typeRegimeFiscal.getExonerationsICI();
 	}
 
-	public List<PlageExonerationFiscales> getExonerationsIFONC() {
+	@Nullable
+	public PlageExonerationFiscale getExonerationIFONC(int periode) {
+		return typeRegimeFiscal.getExonerationIFONC(periode);
+	}
+
+	public List<PlageExonerationFiscale> getExonerationsIFONC() {
 		return typeRegimeFiscal.getExonerationsIFONC();
 	}
 }

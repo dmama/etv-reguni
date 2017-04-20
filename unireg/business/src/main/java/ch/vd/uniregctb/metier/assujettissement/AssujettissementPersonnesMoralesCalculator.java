@@ -16,6 +16,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
+import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.MovingWindow;
@@ -189,13 +191,13 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		RegDate dateDebutExerciceInfini = data.get(0).getDateDebut();
 		for (final ExerciceCommercial exe : exercices) {
 			final RegimeFiscalConsolide regimeFiscalConsolide = DateRangeHelper.rangeAt(regimesFiscauxVDNonAnnulesTrie, exe.getDateFin());
-			if (regimeFiscalConsolide != null && (regimeFiscalConsolide.isIndetermine() || regimeFiscalConsolide.isExonerationIBC(exe.getDateFin().year()))) {
+			if (regimeFiscalConsolide != null && (regimeFiscalConsolide.isIndetermine() || isExonerationTotaleIBC(regimeFiscalConsolide, exe.getDateFin().year()))) {
 				periodesAExclure.add(exe);
 			}
 			dateDebutExerciceInfini = exe.getDateFin().getOneDayAfter();
 		}
 		final RegimeFiscalConsolide regimeFiscalConsolide = DateRangeHelper.rangeAt(regimesFiscauxVDNonAnnulesTrie, dateDebutExerciceInfini);
-		if (regimeFiscalConsolide != null && (regimeFiscalConsolide.isIndetermine() || regimeFiscalConsolide.isExonerationIBC(dateDebutExerciceInfini.year()))) {
+		if (regimeFiscalConsolide != null && (regimeFiscalConsolide.isIndetermine() || isExonerationTotaleIBC(regimeFiscalConsolide, dateDebutExerciceInfini.year()))) {
 			periodesAExclure.add(new DateRangeHelper.Range(dateDebutExerciceInfini, null));
 		}
 
@@ -211,6 +213,11 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 				                range.typeAutoriteFiscale);
 			}
 		});
+	}
+
+	private static boolean isExonerationTotaleIBC(RegimeFiscalConsolide rf, int periode) {
+		final PlageExonerationFiscale exoneration = rf.getExonerationIBC(periode);
+		return exoneration != null && exoneration.getMode() == ModeExoneration.TOTALE;
 	}
 
 	/**
