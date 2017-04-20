@@ -44,6 +44,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
 	</bean>
 
 	<bean id="wsThreadPoolParty3" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
@@ -89,6 +90,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
 	</bean>
 
 	<bean id="wsThreadPoolParty4" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
@@ -157,6 +159,7 @@
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
 	</bean>
 
 	<!-- Beans du web-service v6 mais sans le end-point jaxrs -->
@@ -209,6 +212,7 @@
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
+		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
 	</bean>
 
 	<!-- Beans du web-service v7 mais sans le end-point jaxrs -->
@@ -262,6 +266,7 @@
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
+		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
 	</bean>
 
 </beans>
