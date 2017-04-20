@@ -302,6 +302,7 @@
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="evtDeclarationPMSender" ref="evenementDeclarationPMSender"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
+		<property name="regimeFiscalService" ref="serviceRegimeFiscal"/>
 	</bean>
 
 	<bean id="entityValidator" class="ch.vd.uniregctb.validation.EntityValidatorImpl" abstract="true">

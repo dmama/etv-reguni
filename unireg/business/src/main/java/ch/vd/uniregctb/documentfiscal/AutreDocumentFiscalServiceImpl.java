@@ -36,6 +36,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -63,6 +64,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	private EvenementFiscalService evenementFiscalService;
 	private EvenementDeclarationPMSender evtDeclarationPMSender;
 	private RegistreFoncierService registreFoncierService;
+	private ServiceRegimeFiscal regimeFiscalService;
 
 	private final Map<Class<? extends AutreDocumentFiscal>, TypeDocumentEditique> typesDocumentEnvoiInitial = buildTypesDocumentEnvoiInitial();
 	private final Map<Class<? extends AutreDocumentFiscalAvecSuivi>, TypeDocumentEditique> typesDocumentEnvoiRappel = buildTypesDocumentEnvoiRappel();
@@ -128,6 +130,10 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		this.registreFoncierService = registreFoncierService;
 	}
 
+	public void setRegimeFiscalService(ServiceRegimeFiscal regimeFiscalService) {
+		this.regimeFiscalService = regimeFiscalService;
+	}
+
 	@Override
 	public EnvoiLettresBienvenueResults envoyerLettresBienvenueEnMasse(RegDate dateTraitement, int delaiCarence, StatusManager statusManager) {
 		final EnvoiLettresBienvenueProcessor processor = new EnvoiLettresBienvenueProcessor(parametreAppService, hibernateTemplate, transactionManager, tiersService, assujettissementService, this);
@@ -142,7 +148,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 	@Override
 	public EnvoiFormulairesDemandeDegrevementICIResults envoyerFormulairesDemandeDegrevementICIEnMasse(RegDate dateTraitement, int nbThreads, @Nullable Integer nbMaxEnvois, StatusManager statusManager) {
-		final EnvoiFormulairesDemandeDegrevementICIProcessor processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(parametreAppService, transactionManager, this, hibernateTemplate, tiersService, registreFoncierService);
+		final EnvoiFormulairesDemandeDegrevementICIProcessor processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(parametreAppService, transactionManager, this, hibernateTemplate, registreFoncierService, regimeFiscalService);
 		return processor.run(nbThreads, nbMaxEnvois, dateTraitement, statusManager);
 	}
 

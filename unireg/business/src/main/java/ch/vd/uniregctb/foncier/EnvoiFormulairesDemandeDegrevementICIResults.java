@@ -351,16 +351,14 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		this.nbDroitsIgnores += autre.nbDroitsIgnores;
 	}
 
-	public void addContribuableTotalementExonere(Entreprise entreprise, List<DroitImmeuble> idsDroitsImmeubles) {
+	public void addContribuableTotalementExonere(Entreprise entreprise, ImmeubleRF immeuble, int periodeFiscale) {
 		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
-		                                                  (ImmeubleRF) null,
+		                                                  immeuble,
 		                                                  dateTraitement,
 		                                                  RaisonIgnorance.CONTRIBUABLE_TOTALEMENT_EXONERE,
-		                                                  String.format("%d droit(s) concernés pour %d immeuble(s)",
-		                                                                idsDroitsImmeubles.size(),
-		                                                                idsDroitsImmeubles.stream().map(DroitImmeuble::getIdImmeuble).distinct().count())));
-		this.nbDroitsInspectes += idsDroitsImmeubles.size();
-		this.nbDroitsIgnores += idsDroitsImmeubles.size();
+		                                                  String.format("Exonération totale ICI valable sur la période %d", periodeFiscale)));
+		++ this.nbDroitsInspectes;
+		++ this.nbDroitsIgnores;
 	}
 
 	public void addDegrevementActifAnneeSuivantDebutDroit(Entreprise entreprise, int anneeSuivantDebutDroit, ImmeubleRF immeuble) {

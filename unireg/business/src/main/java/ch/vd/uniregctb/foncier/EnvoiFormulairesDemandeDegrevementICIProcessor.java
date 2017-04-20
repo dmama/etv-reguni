@@ -1,11 +1,8 @@
 package ch.vd.uniregctb.foncier;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +10,6 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.Spliterators;
 import java.util.TreeMap;
@@ -37,7 +33,8 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
+import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -46,15 +43,14 @@ import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.FormeLegaleHisto;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class EnvoiFormulairesDemandeDegrevementICIProcessor {
@@ -65,19 +61,19 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final AutreDocumentFiscalService autreDocumentFiscalService;
 	private final HibernateTemplate hibernateTemplate;
-	private final TiersService tiersService;
 	private final ParametreAppService parametreAppService;
 	private final RegistreFoncierService registreFoncierService;
+	private final ServiceRegimeFiscal regimeFiscalService;
 
 	public EnvoiFormulairesDemandeDegrevementICIProcessor(ParametreAppService parametreAppService, PlatformTransactionManager transactionManager,
 	                                                      AutreDocumentFiscalService autreDocumentFiscalService, HibernateTemplate hibernateTemplate,
-	                                                      TiersService tiersService, RegistreFoncierService registreFoncierService) {
+	                                                      RegistreFoncierService registreFoncierService, ServiceRegimeFiscal regimeFiscalService) {
 		this.transactionManager = transactionManager;
 		this.autreDocumentFiscalService = autreDocumentFiscalService;
 		this.hibernateTemplate = hibernateTemplate;
-		this.tiersService = tiersService;
 		this.parametreAppService = parametreAppService;
 		this.registreFoncierService = registreFoncierService;
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	private RegDate getDateDebutPriseEnCompteMutationRF() {
@@ -141,12 +137,6 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 	                                 @Nullable Integer localMaxEnvois) throws AutreDocumentFiscalException {
 
 		final Entreprise entreprise = hibernateTemplate.get(Entreprise.class, noContribuable);
-
-		// si le contribuable est complètement exonéré (d'après le régime fiscal), on n'a rien à faire
-		if (isExonereTotalement(entreprise, rapport.dateTraitement)) {
-			rapport.addContribuableTotalementExonere(entreprise, idsDroitImmeuble);
-			return;
-		}
 
 		// dégrèvements actifs, chargés une fois pour toute, indexés par identifiant d'immeuble
 		final Map<Long, List<DegrevementICI>> degrevements = entreprise.getAllegementsFonciersNonAnnulesTries(DegrevementICI.class).stream()
@@ -272,6 +262,12 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 				continue;
 			}
 
+			// [SIFISC-22867] c'est seulement ici, une fois la PF connue, que l'on peut contrôler l'exonération totale du contribuable
+			if (isExonereTotalement(entreprise, periodeFiscale)) {
+				rapport.addContribuableTotalementExonere(entreprise, immeuble, periodeFiscale);
+				continue;
+			}
+
 			// [SIFISC-23163] s'il y a un formulaire de demande qui a déjà été envoyé pour une PF entre les années suivant le début de droit et suivant la dernière estimation fiscale et l'année
 			// prochaine (= année de la date de traitement + 1), alors on n'en renvoie pas de nouvelle, ça ne sert à rien
 			final Optional<DemandeDegrevementICI> demandePourPfDejaEnvoyeeSuffisante = demandesDejaEnvoyeesSurImmeuble.stream()
@@ -346,20 +342,16 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 		return estimationCandidate;
 	}
 
-	private boolean isExonereTotalement(Entreprise entreprise, RegDate dateReference) {
-		// TODO dans un premier temps, les régimes fiscaux concernés sont en dur... plus tard, c'est FiDoR qui fournira l'information
-
-		// exonération selon régimes fiscaux
-		final Set<String> regimesFiscauxExoneres = new HashSet<>(Arrays.asList("749", "759", "769"));
-		final RegimeFiscal rf = DateRangeHelper.rangeAt(entreprise.getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee.VD), dateReference);
-		if (rf != null && regimesFiscauxExoneres.contains(rf.getCode())) {
-			return true;
+	private boolean isExonereTotalement(Entreprise entreprise, int periodeFiscale) {
+		final RegDate dateReference = RegDate.get(periodeFiscale, 1, 1);        // premier janvier de la période fiscale considérée, car il me semble que c'est la date charnière pour l'ICI
+		final RegimeFiscalConsolide rf = DateRangeHelper.rangeAt(regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie(entreprise), dateReference);
+		if (rf == null) {
+			// pas de régime fiscal... pas d'exonération
+			return false;
 		}
 
-		// exonération selon forme juridique
-		final Set<FormeLegale> formesLegalesExonerees = EnumSet.of(FormeLegale.N_0104_SOCIETE_EN_COMMANDITE, FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF);
-		final FormeLegaleHisto flh = DateRangeHelper.rangeAt(tiersService.getFormesLegales(entreprise, false), dateReference);
-		return flh != null && formesLegalesExonerees.contains(flh.getFormeLegale());
+		final PlageExonerationFiscale exoneration = rf.getExonerationICI(periodeFiscale);
+		return exoneration != null && exoneration.getMode() == ModeExoneration.TOTALE;
 	}
 
 	/**
