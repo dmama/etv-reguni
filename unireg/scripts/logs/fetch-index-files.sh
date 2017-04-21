@@ -25,7 +25,7 @@ fi
 DEST_FILE=$(cd $(dirname "$DEST_FILE") && pwd)/$(basename "$DEST_FILE")
 
 # cleanup avant nouvelle récupération
-LUCENE_DIR=lucene
+LUCENE_DIR=lucene/tiers
 TMP_DIR=$(mktemp -d)
 
 MACHINE=logapp.etat-de-vaud.ch
