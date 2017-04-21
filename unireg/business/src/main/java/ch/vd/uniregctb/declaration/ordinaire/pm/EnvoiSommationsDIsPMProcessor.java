@@ -21,6 +21,7 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.AddAndSaveHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -114,7 +116,7 @@ public class EnvoiSommationsDIsPMProcessor {
 			}
 		}, null);
 
-		final String msg = String.format("Envoi des sommations pour les DI PP au %s (traitement terminé; %d sommées, %d en erreur)",
+		final String msg = String.format("Envoi des sommations pour les DI PM au %s (traitement terminé; %d sommées, %d en erreur)",
 		                                 RegDateHelper.dateToDisplayString(dateTraitement),
 		                                 rapportFinal.getTotalDisSommees(),
 		                                 rapportFinal.getTotalSommationsEnErreur());
@@ -218,13 +220,9 @@ public class EnvoiSommationsDIsPMProcessor {
 	}
 
 	private void sommerDI(final DeclarationImpotOrdinairePM di, final RegDate dateTraitement) throws DeclarationException {
-
 		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement);
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition, null);
-		etat.setDeclaration(di);
-		etat.setAnnule(false);
-		di.addEtat(etat);
-
+		AddAndSaveHelper.addAndSave(di, etat, declarationImpotOrdinaireDAO::save, new EtatDeclarationAddAndSaveAccessor<>());
 		diService.envoiSommationDIPMForBatch(di, dateTraitement, dateExpedition);
 	}
 

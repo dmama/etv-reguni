@@ -2,7 +2,6 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import javax.jms.JMSException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
@@ -29,11 +27,13 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.declaration.ordinaire.common.DelaiDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMAEmettreProcessor;
@@ -673,53 +673,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 	}
 
-	private static final AddAndSaveHelper.EntityAccessor<DeclarationImpotOrdinaire, DelaiDeclaration> DELAI_DECLARATION_ACCESSOR = new AddAndSaveHelper.EntityAccessor<DeclarationImpotOrdinaire, DelaiDeclaration>() {
-		@Override
-		public Collection<DelaiDeclaration> getEntities(DeclarationImpotOrdinaire declarationImpotOrdinaire) {
-			return declarationImpotOrdinaire.getDelais();
-		}
-
-		@Override
-		public void addEntity(DeclarationImpotOrdinaire declaration, DelaiDeclaration d) {
-			declaration.addDelai(d);
-		}
-
-		@Override
-		public void assertEquals(DelaiDeclaration d1, DelaiDeclaration d2) {
-			Assert.isSame(d1.getDelaiAccordeAu(), d2.getDelaiAccordeAu());
-			Assert.isSame(d1.getDateDemande(), d2.getDateDemande());
-			Assert.isSame(d1.getDateTraitement(), d2.getDateTraitement());
-		}
-	};
-
 	@Override
 	public DelaiDeclaration addAndSave(DeclarationImpotOrdinaire declaration, DelaiDeclaration delai) {
-		return AddAndSaveHelper.addAndSave(declaration, delai, hibernateTemplate::merge, DELAI_DECLARATION_ACCESSOR);
-	}
-
-	private static final class EtatDeclarationAccessor<E extends EtatDeclaration> implements AddAndSaveHelper.EntityAccessor<DeclarationImpotOrdinaire, E> {
-		@Override
-		public Collection<EtatDeclaration> getEntities(DeclarationImpotOrdinaire declaration) {
-			return declaration.getEtats();
-		}
-
-		@Override
-		public void addEntity(DeclarationImpotOrdinaire declaration, E entity) {
-			declaration.addEtat(entity);
-		}
-
-		@Override
-		public void assertEquals(E e1, E e2) {
-			Assert.isSame(e1.getClass(), e2.getClass());
-			Assert.isSame(e1.getDateDebut(), e2.getDateDebut());
-			Assert.isSame(e1.getDateObtention(), e2.getDateObtention());
-			Assert.isSame(e1.getEtat(), e2.getEtat());
-		}
+		return AddAndSaveHelper.addAndSave(declaration, delai, hibernateTemplate::merge, DelaiDeclarationAddAndSaveAccessor.INSTANCE);
 	}
 
 	@Override
 	public <T extends EtatDeclaration> T addAndSave(DeclarationImpotOrdinaire declaration, T etat) {
-		return AddAndSaveHelper.addAndSave(declaration, etat, hibernateTemplate::merge, new EtatDeclarationAccessor<>());
+		return AddAndSaveHelper.addAndSave(declaration, etat, hibernateTemplate::merge, new EtatDeclarationAddAndSaveAccessor<>());
 	}
 
 	@Override
