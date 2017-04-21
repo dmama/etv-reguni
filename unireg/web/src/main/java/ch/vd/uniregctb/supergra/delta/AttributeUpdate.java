@@ -97,8 +97,8 @@ public class AttributeUpdate extends Delta {
 		try {
 			if (entity instanceof RapportEntreTiers && (name.equals("sujetId") || name.equals("objetId") || name.equals("autoriteTutelaireId"))) {
 				// [UNIREG-3160] cas spécial du lien vers une entité gérée à la main (pour les rapport-entre-tiers, par exemple) : on doit travailler directement avec les ids.
-				PropertyDescriptor descr = new PropertyDescriptor(name, entity.getClass());
-				Method setter = descr.getWriteMethod();
+				final PropertyDescriptor descr = new PropertyDescriptor(name, entity.getClass());
+				final Method setter = descr.getWriteMethod();
 				applyRapportUpdate((RapportEntreTiers) entity, context, setter);
 			}
 			else {
@@ -126,7 +126,7 @@ public class AttributeUpdate extends Delta {
 
 	private void applyRapportUpdate(RapportEntreTiers rapport, SuperGraContext context, Method setter) throws IllegalAccessException, InvocationTargetException {
 
-		final Long id = ((EntityKey) newValue).getId();
+		final Long id = newValue != null ? ((EntityKey) newValue).getId() : null;
 
 		if (context.isForCommit() && context.isScheduledForSave(rapport)) {
 			// [UNIREG-3160] lorsqu'on ajoute un rapport-entre-tiers dans le but de le sauver pour la première fois dans la base (à la place de simplement les afficher),
