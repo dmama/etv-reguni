@@ -61,8 +61,8 @@ public class FidorClientImpl implements FidorClient {
 	private String postalLocalityPath = "postalLocality";
 	private String streetsByPostalLocalityPath = "streets/byPostalLocality";
 	private String streetsByEstridPath = "streets/byEstrid";
-	private String regimeFiscalPath = "regimeFiscal";
-	private String regimesFiscauxPath = "regimesFiscaux";
+	private String regimeFiscalPath = "regimeFiscalEtendu";
+	private String regimesFiscauxPath = "regimesFiscauxEtendus";
 	private String categorieEntreprisePath = "categorieEntreprise";
 	private String categoriesEntreprisePath = "categoriesEntreprise";
 	private String impotsSpeciauxPath = "impotsSpeciaux";
@@ -141,6 +141,14 @@ public class FidorClientImpl implements FidorClient {
 
 	public void setRegimesFiscauxPath(String regimesFiscauxPath) {
 		this.regimesFiscauxPath = regimesFiscauxPath;
+	}
+
+	public void setCategorieEntreprisePath(String categorieEntreprisePath) {
+		this.categorieEntreprisePath = categorieEntreprisePath;
+	}
+
+	public void setCategoriesEntreprisePath(String categoriesEntreprisePath) {
+		this.categoriesEntreprisePath = categoriesEntreprisePath;
 	}
 
 	public void setImpotsSpeciauxPath(String impotsSpeciauxPath) {
