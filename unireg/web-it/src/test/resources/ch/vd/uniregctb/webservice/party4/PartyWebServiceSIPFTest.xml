@@ -677,7 +677,7 @@
 			<value>BENEFICE_CAPITAL</value>
 			<value>5413</value>
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>CESSATION_ACTIVITE_FUSION_FAILLITE</value>
+			<value>FIN_EXPLOITATION</value>
 			<value>DEBUT_EXPLOITATION</value>
 			<value>DOMICILE</value>
 			<null/>
@@ -695,7 +695,7 @@
 			<value>BENEFICE_CAPITAL</value>
 			<value>5413</value>
 			<value>COMMUNE_OU_FRACTION_VD</value>
-			<value>CESSATION_ACTIVITE_FUSION_FAILLITE</value>
+			<value>FIN_EXPLOITATION</value>
 			<value>DEBUT_EXPLOITATION</value>
 			<value>ETABLISSEMENT_STABLE</value>
 			<null/>
