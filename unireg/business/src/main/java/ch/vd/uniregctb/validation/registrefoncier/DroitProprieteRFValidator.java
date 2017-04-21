@@ -94,8 +94,9 @@ public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF
 			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + ayantDroit.getClass().getSimpleName() + "]");
 		}
 		if (!genreProprietesAutorises.contains(entity.getRegime())) {
-			results.addError("Le droit masterIdRF=[" + entity.getMasterIdRF() + "] sur le tiers RF (" + ayantDroit.getClass().getSimpleName() +
-					                 ") idRF=[" + ayantDroit.getIdRF() + "] possède un régime de propriété [" + entity.getRegime() + "] invalide");
+			results.addError("Le droit masterIdRF=[" + entity.getMasterIdRF() + "] versionIdRF=[" + entity.getVersionIdRF()+ "] " +
+					                 "sur le tiers RF (" + ayantDroit.getClass().getSimpleName() + ") idRF=[" + ayantDroit.getIdRF() + "] " +
+					                 "possède un régime de propriété [" + entity.getRegime() + "] invalide");
 		}
 
 		return results;

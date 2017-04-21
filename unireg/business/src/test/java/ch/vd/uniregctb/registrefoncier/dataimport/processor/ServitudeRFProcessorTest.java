@@ -122,7 +122,7 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 		insertImmeuble("_1f109152381037590138103b6f6e3cfc");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, dateImport, TypeEntiteRF.SERVITUDE, TypeMutationRF.CREATION, "1f109152380ffd8901380ffed6694392");
+		final Long mutationId = insertMutation(xml, dateImport, TypeEntiteRF.SERVITUDE, TypeMutationRF.CREATION, "1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -252,7 +252,7 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.SERVITUDE, TypeMutationRF.MODIFICATION, idPPRF1);
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.SERVITUDE, TypeMutationRF.MODIFICATION, idPPRF1, null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -373,6 +373,7 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 
 				final UsufruitRF usu0 = new UsufruitRF();
 				usu0.setMasterIdRF("1f1091523810375901381044fa823515");
+				usu0.setVersionIdRF("1f1091523810375901381044fa823514");
 				usu0.setDateDebut(null);
 				usu0.setMotifDebut(null);
 				usu0.setDateDebutMetier(RegDate.get(2010, 3, 8));
@@ -389,7 +390,7 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 		});
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(null, dateSecondImport, TypeEntiteRF.SERVITUDE, TypeMutationRF.SUPPRESSION, "1f1091523810375901381044fa823515");
+		final Long mutationId = insertMutation(null, dateSecondImport, TypeEntiteRF.SERVITUDE, TypeMutationRF.SUPPRESSION, "1f1091523810375901381044fa823515", "1f1091523810375901381044fa823514");
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -416,6 +417,7 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 				final UsufruitRF usufruit0 = (UsufruitRF) servitudes.iterator().next();
 				assertNotNull(usufruit0);
 				assertEquals("1f1091523810375901381044fa823515", usufruit0.getMasterIdRF());
+				assertEquals("1f1091523810375901381044fa823514", usufruit0.getVersionIdRF());
 				assertNull(usufruit0.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), usufruit0.getDateFin());
 				assertNull(usufruit0.getMotifDebut());

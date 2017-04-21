@@ -23,8 +23,8 @@ public interface DroitRFDAO extends GenericDAO<DroitRF, Long> {
 	List<DroitRF> findForAyantDroit(long tiersRFId, boolean fetchSituationsImmeuble);
 
 	/**
-	 * @return les ids RF des servitudes actives
+	 * @return les clés RF des servitudes actives
 	 */
 	@NotNull
-	Set<String> findIdsServitudesActives();
+	Set<DroitRFKey> findIdsServitudesActives();
 }

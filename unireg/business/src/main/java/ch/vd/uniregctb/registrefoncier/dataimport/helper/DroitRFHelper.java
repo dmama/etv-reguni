@@ -113,9 +113,14 @@ public abstract class DroitRFHelper {
 		return c;
 	}
 
+	public static boolean masterIdAndVersionIdEquals(@NotNull DroitRF left, @NotNull DroitRF right) {
+		return Objects.equals(left.getMasterIdRF(), right.getMasterIdRF()) &&
+				Objects.equals(left.getVersionIdRF(), right.getVersionIdRF());
+	}
+
 	public static boolean dataEquals(@NotNull DroitProprieteRF left, @NotNull DroitProprieteRF right) {
 
-		if (!left.getMasterIdRF().equals(right.getMasterIdRF())) {
+		if (!masterIdAndVersionIdEquals(left, right)) {
 			return false;
 		}
 
@@ -291,6 +296,7 @@ public abstract class DroitRFHelper {
 
 				final DroitProprietePersonnePhysiqueRF d = new DroitProprietePersonnePhysiqueRF();
 				d.setMasterIdRF(pea.getMasterID());
+				d.setVersionIdRF(pea.getVersionID());
 				d.setAyantDroit(ayantDroitProvider.apply(natuerlichePerson.getPersonstammIDREF()));
 				d.setCommunaute(communauteProvider.apply(natuerlichePerson.getGemeinschatIDREF()));
 				d.setImmeuble(immeubleProvider.apply(pea.getBelastetesGrundstueckIDREF()));
@@ -304,6 +310,7 @@ public abstract class DroitRFHelper {
 
 				final DroitProprietePersonneMoraleRF d = new DroitProprietePersonneMoraleRF();
 				d.setMasterIdRF(pea.getMasterID());
+				d.setVersionIdRF(pea.getVersionID());
 				d.setAyantDroit(ayantDroitProvider.apply(juristischePerson.getPersonstammIDREF()));
 				d.setCommunaute(communauteProvider.apply(juristischePerson.getGemeinschatIDREF()));
 				d.setImmeuble(immeubleProvider.apply(pea.getBelastetesGrundstueckIDREF()));
@@ -317,6 +324,7 @@ public abstract class DroitRFHelper {
 
 				final DroitProprieteCommunauteRF d = new DroitProprieteCommunauteRF();
 				d.setMasterIdRF(pea.getMasterID());
+				d.setVersionIdRF(pea.getVersionID());
 				d.setAyantDroit(ayantDroitProvider.apply(gemeinschaft.getGemeinschatID()));
 				d.setImmeuble(immeubleProvider.apply(pea.getBelastetesGrundstueckIDREF()));
 				d.setPart(FractionHelper.get(pea.getQuote()));
@@ -334,6 +342,7 @@ public abstract class DroitRFHelper {
 
 			final DroitProprieteImmeubleRF d = new DroitProprieteImmeubleRF();
 			d.setMasterIdRF(gea.getMasterID());
+			d.setVersionIdRF(gea.getVersionID());
 			d.setAyantDroit(ayantDroitProvider.apply(gea.getBerechtigtesGrundstueckIDREF()));   // l'IDRef de l'immeuble est réutilisé pour le ImmeubleBeneficiaireRF.
 			d.setImmeuble(immeubleProvider.apply(gea.getBelastetesGrundstueckIDREF()));
 			d.setPart(FractionHelper.get(gea.getQuote()));

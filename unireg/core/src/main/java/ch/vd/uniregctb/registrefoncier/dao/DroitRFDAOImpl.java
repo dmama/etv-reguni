@@ -22,16 +22,18 @@ public class DroitRFDAOImpl extends BaseDAOImpl<DroitRF, Long> implements DroitR
 
 	@Override
 	public @Nullable DroitRF find(@NotNull DroitRFKey key) {
-		final Query query = getCurrentSession().createQuery("from DroitRF where masterIdRF = :masterIdRF");
+		final Query query = getCurrentSession().createQuery("from DroitRF where masterIdRF = :masterIdRF and versionIdRF = :versionIdRF");
 		query.setParameter("masterIdRF", key.getMasterIdRF());
+		query.setParameter("versionIdRF", key.getVersionIdRF());
 		return (DroitRF) query.uniqueResult();
 	}
 
 	@Nullable
 	@Override
 	public DroitRF findActive(@NotNull DroitRFKey key) {
-		final Query query = getCurrentSession().createQuery("from DroitRF where masterIdRF = :masterIdRF and dateFin is null");
+		final Query query = getCurrentSession().createQuery("from DroitRF where masterIdRF = :masterIdRF and versionIdRF = :versionIdRF and dateFin is null");
 		query.setParameter("masterIdRF", key.getMasterIdRF());
+		query.setParameter("versionIdRF", key.getVersionIdRF());
 		return (DroitRF) query.uniqueResult();
 	}
 
@@ -70,17 +72,27 @@ public class DroitRFDAOImpl extends BaseDAOImpl<DroitRF, Long> implements DroitR
 
 	@NotNull
 	@Override
-	public Set<String> findIdsServitudesActives() {
-		final Set<String> set = new HashSet<>();
+	public Set<DroitRFKey> findIdsServitudesActives() {
+		final Set<DroitRFKey> set = new HashSet<>();
 
 		// toutes les servitudes sans date de fin
-		final Query query1 = getCurrentSession().createQuery("select masterIdRF from ServitudeRF where annulationDate is null and dateFin is null");
-		set.addAll(query1.list());
+		final Query query1 = getCurrentSession().createQuery("select masterIdRF, versionIdRF from ServitudeRF where annulationDate is null and dateFin is null");
+
+		//noinspection unchecked
+		final List<Object[]> rows1 = query1.list();
+		for (Object[] row : rows1) {
+			set.add(new DroitRFKey((String) row[0], (String) row[1]));
+		}
 
 		// toutes les servitudes avec des dates de fin dans le futur
-		final Query query2 = getCurrentSession().createQuery("select masterIdRF from ServitudeRF where annulationDate is null and :today <= dateFin");
+		final Query query2 = getCurrentSession().createQuery("select masterIdRF, versionIdRF from ServitudeRF where annulationDate is null and :today <= dateFin");
 		query2.setParameter("today", RegDate.get());
-		set.addAll(query2.list());
+
+		//noinspection unchecked
+		final List<Object[]> rows2 = query2.list();
+		for (Object[] row : rows2) {
+			set.add(new DroitRFKey((String) row[0], (String) row[1]));
+		}
 
 		return set;
 	}

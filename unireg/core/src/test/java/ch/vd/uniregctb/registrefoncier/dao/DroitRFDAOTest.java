@@ -67,14 +67,14 @@ public class DroitRFDAOTest extends CoreDAOTest {
 			ids.immeuble2 = immeuble2.getId();
 
 			final IdentifiantAffaireRF affaireAchat = new IdentifiantAffaireRF(123, 1995, 23, 3);
-			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, null, "Achat", null, "47840038", affaireAchat,
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, null, "Achat", null, "47840038", "47840037", affaireAchat,
 			                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, bernard, immeuble1, null);
-			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, null, "Achat", null, "84893923", affaireAchat,
+			addDroitPersonnePhysiqueRF(dateAchat, dateAchat, null, null, "Achat", null, "84893923", "84893922", affaireAchat,
 			                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, bernard, immeuble2, null);
 
 			// on crée un usufruit en faveur d'Arnold et Evelyne sur les deux immeubles de Bernard
 			final IdentifiantAffaireRF affaireUsufruit = new IdentifiantAffaireRF(123, 1995, 23, 4);
-			addUsufruitRF(dateAchat, dateAchat, null, null, "Cadeau", null, "1717171", affaireUsufruit,
+			addUsufruitRF(dateAchat, dateAchat, null, null, "Cadeau", null, "1717171", "1717170", affaireUsufruit,
 			              new IdentifiantDroitRF(2, 1995, 2), Arrays.asList(arnold, evelyne), Arrays.asList(immeuble1, immeuble2));
 			return null;
 		});

@@ -13,9 +13,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import java.util.List;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +29,9 @@ import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 
 @Entity
-@Table(name = "RF_DROIT")
+@Table(name = "RF_DROIT", uniqueConstraints = {
+		@UniqueConstraint(name = "IDX_DROIT_MASTER_VERSION_ID_RF", columnNames = {"MASTER_ID_RF", "VERSION_ID_RF"}),
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 @AttributeOverrides({
@@ -44,9 +46,14 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	private Long id;
 
 	/**
-	 * Identifiant technique de l'immeuble au registre foncier.
+	 * Identifiant technique du droit au registre foncier.
 	 */
 	private String masterIdRF;
+
+	/**
+	 * Numéro de révision du droit au registre foncier.
+	 */
+	private String versionIdRF;
 
 	/**
 	 * La date de début du droit telle que renseignée dans le registre foncier (la date de début normale est une date technique qui correspond à la date d'import de la donnée).
@@ -79,6 +86,7 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 		super(right);
 		this.id = right.id;
 		this.masterIdRF = right.masterIdRF;
+		this.versionIdRF = right.versionIdRF;
 		this.dateDebutMetier = right.dateDebutMetier;
 		this.dateFinMetier = right.dateFinMetier;
 		this.motifDebut = right.motifDebut;
@@ -101,14 +109,22 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 		this.id = id;
 	}
 
-	@Index(name = "IDX_DROIT_MASTER_ID_RF")
-	@Column(name = "MASTER_ID_RF", nullable = false, unique = true, length = LengthConstants.RF_ID_RF)
+	@Column(name = "MASTER_ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
 	public String getMasterIdRF() {
 		return masterIdRF;
 	}
 
 	public void setMasterIdRF(String masterIdRF) {
 		this.masterIdRF = masterIdRF;
+	}
+
+	@Column(name = "VERSION_ID_RF", nullable = false, length = LengthConstants.RF_ID_RF)
+	public String getVersionIdRF() {
+		return versionIdRF;
+	}
+
+	public void setVersionIdRF(String versionIdRF) {
+		this.versionIdRF = versionIdRF;
 	}
 
 	@Nullable

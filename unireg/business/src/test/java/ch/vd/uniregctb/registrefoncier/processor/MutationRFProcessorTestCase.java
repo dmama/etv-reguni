@@ -117,7 +117,7 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 		});
 	}
 
-	protected Long insertMutation(final String xml, final RegDate dateEvenement, final TypeEntiteRF typeEntite, final TypeMutationRF typeMutation, @Nullable String idRF) throws Exception {
+	protected Long insertMutation(final String xml, final RegDate dateEvenement, final TypeEntiteRF typeEntite, final TypeMutationRF typeMutation, @Nullable String idRF, @Nullable String versionRF) throws Exception {
 		return doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
@@ -132,6 +132,7 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 				mutation.setTypeEntite(typeEntite);
 				mutation.setTypeMutation(typeMutation);
 				mutation.setIdRF(idRF);
+				mutation.setVersionRF(versionRF);
 				mutation.setEtat(EtatEvenementRF.A_TRAITER);
 				mutation.setParentImport(parentImport);
 				mutation.setXmlContent(xml);

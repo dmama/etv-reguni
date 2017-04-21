@@ -70,7 +70,7 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 
 		final RegDate dateValeur = mutation.getParentImport().getDateEvenement();
 		final TypeMutationRF typeMutation = mutation.getTypeMutation();
-		final String servitudeIdRF = mutation.getIdRF();
+		final DroitRFKey servitudeKey = new DroitRFKey(mutation.getIdRF(), mutation.getVersionRF());
 
 		if (typeMutation == TypeMutationRF.CREATION || typeMutation == TypeMutationRF.MODIFICATION) {
 
@@ -97,7 +97,7 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 			}
 		}
 		else if (typeMutation == TypeMutationRF.SUPPRESSION) {
-			processSuppression(dateValeur, servitudeIdRF);
+			processSuppression(dateValeur, servitudeKey);
 		}
 		else {
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + typeMutation + "]");
@@ -145,9 +145,9 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 	 */
 	private void processModification(@NotNull RegDate dateValeur, @NotNull ServitudeRF servitude) {
 
-		final DroitRF persisted = droitRFDAO.find(new DroitRFKey(servitude.getMasterIdRF()));
+		final DroitRF persisted = droitRFDAO.find(new DroitRFKey(servitude));
 		if (persisted == null) {
-			throw new IllegalArgumentException("La servitude idRF=[" + servitude.getMasterIdRF() + "] n'existe pas dans la DB.");
+			throw new IllegalArgumentException("La servitude idRF=[" + servitude.getMasterIdRF() + "] versionRF=[" + servitude.getVersionIdRF() + "] n'existe pas dans la DB.");
 		}
 
 		// FIXME (msi) que faire ?
@@ -157,10 +157,10 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 	/**
 	 * Traite la suppression (= fermeture) d'une servitude
 	 */
-	private void processSuppression(@NotNull RegDate dateValeur, String servitudeIdRF) {
-		final DroitRF persisted = droitRFDAO.find(new DroitRFKey(servitudeIdRF));
+	private void processSuppression(@NotNull RegDate dateValeur, @NotNull DroitRFKey servitudeKey) {
+		final DroitRF persisted = droitRFDAO.find(servitudeKey);
 		if (persisted == null) {
-			throw new IllegalArgumentException("La servitude idRF=[" + servitudeIdRF + "] n'existe pas dans la DB.");
+			throw new IllegalArgumentException("La servitude idRF=[" + servitudeKey.getMasterIdRF() + "] versionRF=[" + servitudeKey.getVersionIdRF() + "] n'existe pas dans la DB.");
 		}
 		// on ferme la servitude
 		persisted.setDateFin(dateValeur.getOneDayBefore());

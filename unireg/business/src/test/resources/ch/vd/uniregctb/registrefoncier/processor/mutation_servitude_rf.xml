@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <DienstbarkeitExtended xmlns="http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister">
-	<Dienstbarkeit MasterID="1f109152380ffd8901380ffed6694392">
+	<Dienstbarkeit VersionID="1f109152380ffd8901380ffed66943a2" MasterID="1f109152380ffd8901380ffed6694392">
 		<StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>
 		<RechtEintragJahrID>2005</RechtEintragJahrID>
 		<RechtEintragNummerID>699</RechtEintragNummerID>

@@ -53,15 +53,15 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			final PersonnePhysique proprio = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
 			final PersonnePhysiqueRF proprioRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
 			addRapprochementRF(proprio, proprioRF, null, null, TypeRapprochementRF.AUTO);
-			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COPROPRIETE, proprioRF, immeuble, null);
+			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COPROPRIETE, proprioRF, immeuble, null);
 
 			final PersonnePhysique habitant = addNonHabitant("Albertine", "Zorro", date(1979, 6, 1), Sexe.FEMININ);
 			final PersonnePhysiqueRF habitantRF = addPersonnePhysiqueRF("5w47tgtflbsfg", "Albertine", "Zorro", date(1979, 6, 1));
 			addRapprochementRF(habitant, habitantRF, null, null, TypeRapprochementRF.AUTO);
-			addDroitHabitationRF(null, date(2017, 3, 1), null, null, "Un motif, quoi...", null, "5378tgzufbs", null, null, habitantRF, immeuble);
+			addDroitHabitationRF(null, date(2017, 3, 1), null, null, "Un motif, quoi...", null, "5378tgzufbs", "5378tgzufbr", null, null, habitantRF, immeuble);
 
 			final PersonnePhysiqueRF usufruitier = addPersonnePhysiqueRF("236gzbfahécf", "Gérard", "Menfais", date(2000, 3, 1));
-			addUsufruitRF(null, date(2015, 6, 1), null, null, "Succession", null, "58gfhfba", null, null, usufruitier, immeuble);
+			addUsufruitRF(null, date(2015, 6, 1), null, null, "Succession", null, "58gfhfba", "58gfhfbb", null, null, usufruitier, immeuble);
 
 			final Ids res = new Ids();
 			res.idProprietaire = proprio.getNumero();
@@ -237,15 +237,15 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			final PersonnePhysiqueRF communisteRF1 = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
 			addRapprochementRF(communiste1, communisteRF1, null, null, TypeRapprochementRF.AUTO);
 
-			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, communisteRF1, immeuble, communaute);
+			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, communisteRF1, immeuble, communaute);
 
 			final PersonnePhysique communiste2 = addNonHabitant("Albertine", "Zorro", date(1979, 6, 1), Sexe.FEMININ);
 			final PersonnePhysiqueRF communisteRF2 = addPersonnePhysiqueRF("5w47tgtflbsfg", "Albertine", "Zorro", date(1979, 6, 1));
 			addRapprochementRF(communiste2, communisteRF2, null, null, TypeRapprochementRF.AUTO);
 
-			addDroitPersonnePhysiqueRF(null, date(2017, 3, 1), null, null, "Un motif, quoi...", null, "5378tgzufbs", new IdentifiantAffaireRF(213, "5823g"), new Fraction(3, 8), GenrePropriete.COMMUNE, communisteRF2, immeuble, communaute);
+			addDroitPersonnePhysiqueRF(null, date(2017, 3, 1), null, null, "Un motif, quoi...", null, "5378tgzufbs", "5378tgzufbr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(3, 8), GenrePropriete.COMMUNE, communisteRF2, immeuble, communaute);
 
-			addDroitCommunauteRF(null, date(2016, 1, 1), null, null, "Succession", null, "478tgsbFB", new IdentifiantAffaireRF(213, "5823g"), new Fraction(12, 50), GenrePropriete.INDIVIDUELLE, communaute, immeuble);
+			addDroitCommunauteRF(null, date(2016, 1, 1), null, null, "Succession", null, "478tgsbFB", "478tgsbFA", new IdentifiantAffaireRF(213, "5823g"), new Fraction(12, 50), GenrePropriete.INDIVIDUELLE, communaute, immeuble);
 
 			final Ids res = new Ids();
 			res.id1 = communiste1.getNumero();
@@ -357,7 +357,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			final PersonnePhysiqueRF proprioRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
 			addRapprochementRF(proprio, proprioRF, null, null, TypeRapprochementRF.AUTO);
 
-			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeuble, null);
+			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeuble, null);
 
 			final BienFondRF immeubleSansDroit = addBienFondRF("5378gwfbs", "Autre EGRID", commune, 471, 3, null, null);
 
@@ -442,10 +442,10 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			final PersonnePhysiqueRF proprioRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
 			addRapprochementRF(proprio, proprioRF, null, null, TypeRapprochementRF.AUTO);
 
-			addDroitPersonnePhysiqueRF(null, date(2015, 5, 2), null, null, "Achat", null, "3458wgfs", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeuble, null);
+			addDroitPersonnePhysiqueRF(null, date(2015, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeuble, null);
 
 			final BienFondRF immeubleSansDroit = addBienFondRF("5378gwfbs", "Autre EGRID", commune, 471, 3, null, null);
-			addDroitPersonnePhysiqueRF(null, date(2015, 1, 2), date(2017, 1,4), date(2016, 12, 21), "Achat", "Vente", "rqz7i3uf", new IdentifiantAffaireRF(213, "78rgfse"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeubleSansDroit, null);
+			addDroitPersonnePhysiqueRF(null, date(2015, 1, 2), date(2017, 1,4), date(2016, 12, 21), "Achat", "Vente", "rqz7i3uf", "rqz7i3ue", new IdentifiantAffaireRF(213, "78rgfse"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeubleSansDroit, null);
 
 			final Ids res = new Ids();
 			res.idProprietaire = proprio.getNumero();

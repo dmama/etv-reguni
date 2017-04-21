@@ -45,7 +45,7 @@
 		</Liegenschaft>
 	</GrundstueckList>
 	<EigentumList>
-		<PersonEigentumAnteil MasterID="9a9c9e94923">
+		<PersonEigentumAnteil VersionID="9a9c9e94922" MasterID="9a9c9e94923">
 			<Quote>
 				<AnteilZaehler>1</AnteilZaehler>
 				<AnteilNenner>2</AnteilNenner>
@@ -67,7 +67,7 @@
 			</NatuerlichePersonGb>
 			<PersonEigentumsForm>miteigentum</PersonEigentumsForm>
 		</PersonEigentumAnteil>
-		<PersonEigentumAnteil MasterID="45729cd9e20">
+		<PersonEigentumAnteil VersionID="45729cd9e19" MasterID="45729cd9e20">
 			<Quote>
 				<AnteilZaehler>1</AnteilZaehler>
 				<AnteilNenner>2</AnteilNenner>
@@ -89,7 +89,7 @@
 			</NatuerlichePersonGb>
 			<PersonEigentumsForm>miteigentum</PersonEigentumsForm>
 		</PersonEigentumAnteil>
-		<PersonEigentumAnteil MasterID="38458fa0ac3">
+		<PersonEigentumAnteil VersionID="38458fa0ac2" MasterID="38458fa0ac3">
 			<Quote>
 				<AnteilZaehler>1</AnteilZaehler>
 				<AnteilNenner>1</AnteilNenner>
