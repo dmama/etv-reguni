@@ -98,7 +98,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertSameDay(newDate(1992, 12, 31), ffp0.getDateFrom());
 		assertSameDay(newDate(2003, 12, 31), ffp0.getDateTo());
 		assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, ffp0.getStartReason());
-		assertEquals(LiabilityChangeReason.UNDETERMINED, ffp0.getEndReason());
+		assertEquals(LiabilityChangeReason.END_COMMERCIAL_EXPLOITATION, ffp0.getEndReason());
 		assertEquals(5413, ffp0.getTaxationAuthorityFSOId());
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffp0.getTaxationAuthorityType());
 		assertEquals(TaxType.PROFITS_CAPITAL, ffp0.getTaxType());
@@ -113,7 +113,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertSameDay(newDate(1992, 12, 31), ffs0.getDateFrom());
 		assertSameDay(newDate(2001, 9, 6), ffs0.getDateTo());
 		assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, ffs0.getStartReason());
-		assertEquals(LiabilityChangeReason.UNDETERMINED, ffs0.getEndReason());
+		assertEquals(LiabilityChangeReason.END_COMMERCIAL_EXPLOITATION, ffs0.getEndReason());
 		assertEquals(5413, ffs0.getTaxationAuthorityFSOId());
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffs0.getTaxationAuthorityType());
 		assertEquals(TaxType.PROFITS_CAPITAL, ffs0.getTaxType());
