@@ -161,6 +161,11 @@
 							              width: 1500,
 							              modal: true,
 							              resizable: false,
+							              position: {
+							              	  my: 'top',
+								              at: 'top',
+								              of: '#bandeauTiers'
+							              },
 							              buttons: {
 								              Ok: function() {
 									              dialog.dialog("close");

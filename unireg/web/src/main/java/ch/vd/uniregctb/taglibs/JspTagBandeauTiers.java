@@ -276,8 +276,12 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 					cssClass = "information";
 				}
 
-				StringBuilder s = new StringBuilder();
-				s.append("<fieldset class=\"").append(cssClass).append("\">\n");
+				final StringBuilder s = new StringBuilder();
+				s.append("<fieldset class=\"").append(cssClass).append("\"");
+				if (StringUtils.isNotBlank(id)) {
+					s.append(" id=\"").append(id).append("\"");
+				}
+				s.append(">\n");
 				s.append("<legend><span>").append(HtmlUtils.htmlEscape(titre)).append("</span></legend>\n");
 				s.append(buildDebugInfo(tiers));
 

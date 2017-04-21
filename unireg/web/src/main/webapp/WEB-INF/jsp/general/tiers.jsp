@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="page" value="${param.page}" />
 <c:set var="path" value="${param.path}" />
+<c:set var="idBandeau" value="${param.idBandeau}"/>
 <c:set var="commandName">
 	<c:choose>
 		<c:when test="${param.commandName == null || param.commandName == ''}">command</c:when>
@@ -23,5 +24,12 @@
 <c:set var="showLinks" value="${page == 'visu'}"/>
 
 <!-- Debut Caracteristiques generales -->
-<unireg:bandeauTiers numero="${tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="${showLinks}" urlRetour="${urlRetour}"/>
+<c:choose>
+	<c:when test="${fn:length(idBandeau) > 0}">
+		<unireg:bandeauTiers numero="${tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="${showLinks}" urlRetour="${urlRetour}" id="${idBandeau}"/>
+	</c:when>
+	<c:otherwise>
+		<unireg:bandeauTiers numero="${tiersGeneral.numero}" titre="${titre}" showValidation="true" showEvenementsCivils="true" showLinks="${showLinks}" urlRetour="${urlRetour}"/>
+	</c:otherwise>
+</c:choose>
 <!-- Fin Caracteristiques generales -->

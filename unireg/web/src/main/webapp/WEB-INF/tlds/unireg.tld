@@ -1521,6 +1521,12 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<description>l'identifiant html du fieldset du bandeau</description>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<description>affiche ou non les erreurs de validation (défaut=true)</description>
 			<name>showValidation</name>
 			<required>false</required>

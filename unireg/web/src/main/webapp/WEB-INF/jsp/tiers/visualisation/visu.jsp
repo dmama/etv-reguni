@@ -68,6 +68,7 @@
 			<jsp:include page="../../general/tiers.jsp">
 				<jsp:param name="page" value="visu" />
 				<jsp:param name="path" value="tiersGeneral" />
+				<jsp:param name="idBandeau" value="bandeauTiers" />
 			</jsp:include>
 			<!-- Fin Caracteristiques generales -->
 		</c:if>
