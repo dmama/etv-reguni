@@ -493,7 +493,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 					final PersonnePhysique pp = (PersonnePhysique) tiers;
 					if (pp.isHabitantVD()) {
 						final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null);
-						if (ind.getEtatsCivils() != null) {
+						if (ind != null && ind.getEtatsCivils() != null) {
 							for (EtatCivil etatCivil : ind.getEtatsCivils().asList()) {
 								if (etatCivil.getDateDebut() == null) {
 									civilOK = false;

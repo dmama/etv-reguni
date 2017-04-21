@@ -56,6 +56,7 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDocument;
 import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationCache;
+import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
@@ -250,7 +251,13 @@ public class TacheListManagerImpl implements TacheListManager {
 
 				tacheView.setAnnule(tache.isAnnule());
 				tacheView.setCommentaire(StringUtils.trimToNull(tache.getCommentaire()));
-				tacheView.setAuthDossier(autorisationCache.getAutorisations(contribuable.getNumero(), currentPrincipal, currentOID));
+				try {
+					tacheView.setAuthDossier(autorisationCache.getAutorisations(contribuable.getNumero(), currentPrincipal, currentOID));
+				}
+				catch (IndividuNotFoundException | OrganisationNotFoundException e) {
+					// erreur normalement déjà signalée... aucun droit de modification en tout état de cause...
+					tacheView.setAuthDossier(new Autorisations());
+				}
 				return tacheView;
 			});
 		}
