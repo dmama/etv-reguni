@@ -2977,7 +2977,8 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 				final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
 				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 15615151L, null);
-				addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble, null);
+				addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", "48390a0e043",
+				                           new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble, null);
 				addRapprochementRF(pp, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
 
 				final Ids ids = new Ids();
@@ -4787,9 +4788,9 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// Les deux tiers RF possèdent l'immeuble à travers une communauté de biens
 			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 2004, 202, 3);
-			addDroitPropriete(ericRF, immeuble, communauteRF, GenrePropriete.COMMUNE, new Fraction(1, 2), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "48390a0e044");
-			addDroitPropriete(attilaRF, immeuble, communauteRF, GenrePropriete.COMMUNE, new Fraction(1, 2), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "a88e883c73");
-			addDroitPropriete(communauteRF, immeuble, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "2890cc033a");
+			addDroitPropriete(ericRF, immeuble, communauteRF, GenrePropriete.COMMUNE, new Fraction(1, 2), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "48390a0e044", "48390a0e043");
+			addDroitPropriete(attilaRF, immeuble, communauteRF, GenrePropriete.COMMUNE, new Fraction(1, 2), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "a88e883c73", "a88e883c72");
+			addDroitPropriete(communauteRF, immeuble, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "2890cc033a", "2890cc033b");
 
 			// le tiers Unireg rapproché
 			final PersonnePhysique pp = addNonHabitant("Eric", "Bolomey", RegDate.get(1966, 3, 30), Sexe.MASCULIN);

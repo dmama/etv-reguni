@@ -154,7 +154,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		    final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             new IdentifiantAffaireRF(1234, "452"),
+		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
@@ -238,7 +238,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             new IdentifiantAffaireRF(1234, "452"),
+		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
@@ -375,7 +375,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             new IdentifiantAffaireRF(1234, "452"),
+		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
@@ -492,7 +492,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             new IdentifiantAffaireRF(1234, "452"),
+		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
@@ -621,7 +621,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             new IdentifiantAffaireRF(1234, "452"),
+		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
@@ -750,7 +750,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             new IdentifiantAffaireRF(1234, "452"),
+		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);
@@ -988,7 +988,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
 		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             new IdentifiantAffaireRF(1234, "452"),
+		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
 		                             GenrePropriete.INDIVIDUELLE,
 		                             tiersRF, immeuble, null);

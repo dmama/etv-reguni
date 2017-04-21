@@ -155,6 +155,7 @@ public class DroitProprieteRFValidatorTest {
 		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
 		droit.setAyantDroit(beneficiaire);
 		droit.setMasterIdRF("438934978348934");
+		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2000, 1, 1));
 		droit.setPart(new Fraction(1, 1));
 		droit.setMotifDebut("Achat");
@@ -173,10 +174,10 @@ public class DroitProprieteRFValidatorTest {
 		// droits de type INDIVIDUELLE, COMMUNE -> KO
 		{
 			droit.setRegime(GenrePropriete.INDIVIDUELLE);
-			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] sur le tiers RF (ImmeubleBeneficiaireRF) " +
+			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] versionIdRF=[1] sur le tiers RF (ImmeubleBeneficiaireRF) " +
 					                                       "idRF=[38383838] possède un régime de propriété [INDIVIDUELLE] invalide"), validator.validate(droit));
 			droit.setRegime(GenrePropriete.COMMUNE);
-			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] sur le tiers RF (ImmeubleBeneficiaireRF) " +
+			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] versionIdRF=[1] sur le tiers RF (ImmeubleBeneficiaireRF) " +
 					                                       "idRF=[38383838] possède un régime de propriété [COMMUNE] invalide"), validator.validate(droit));
 		}
 	}
@@ -194,6 +195,7 @@ public class DroitProprieteRFValidatorTest {
 		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
 		droit.setAyantDroit(tiers);
 		droit.setMasterIdRF("438934978348934");
+		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2000, 1, 1));
 		droit.setPart(new Fraction(1, 1));
 		droit.setMotifDebut("Achat");
@@ -212,10 +214,10 @@ public class DroitProprieteRFValidatorTest {
 		// droits de type PPE, FONDS_DOMINANT -> KO
 		{
 			droit.setRegime(GenrePropriete.PPE);
-			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] sur le tiers RF (PersonneMoraleRF) " +
+			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] versionIdRF=[1] sur le tiers RF (PersonneMoraleRF) " +
 					                                       "idRF=[38383838] possède un régime de propriété [PPE] invalide"), validator.validate(droit));
 			droit.setRegime(GenrePropriete.FONDS_DOMINANT);
-			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] sur le tiers RF (PersonneMoraleRF) " +
+			assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] versionIdRF=[1] sur le tiers RF (PersonneMoraleRF) " +
 					                                       "idRF=[38383838] possède un régime de propriété [FONDS_DOMINANT] invalide"), validator.validate(droit));
 		}
 	}

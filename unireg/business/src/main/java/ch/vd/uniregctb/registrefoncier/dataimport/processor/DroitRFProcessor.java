@@ -37,6 +37,8 @@ import ch.vd.uniregctb.registrefoncier.dataimport.helper.RaisonAcquisitionRFHelp
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
+import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.masterIdAndVersionIdEquals;
+
 /**
  * Processeur spécialisé pour traiter les mutations des droits de propriété.
  */
@@ -169,6 +171,13 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 	/**
 	 * Traite la modification des droits de propriété sur un ayant-droit qui existe déjà et - potentiellement - possède déjà des droits.
+	 * <p/>
+	 * L'expérience montre qu'il y a trois types de changements possibles sur les droits d'un ayant-droit :
+	 * <ol>
+	 *     <li><b>les droits changent complètement</b> (= vente ou achat) : les <i>masterIdRF</i> et les <i>versionIdRF</i> changent.</li>
+	 *     <li><b>les droits changent partiellement et de manière substentielle</b> (= modification de PPE, par exemple changement de la part ce co-propriété) : les <i>masterIdRF</i> restent les mêmes mais les <i>versionIdRF</i> changent.</li>
+	 *     <li><b>les droits changent partiellement mais de manière non-substentielle</b> (=  modification d'intitulé) . les <i>masterIdRF</i> et les <i>versionIdRF</i> ne changent pas.</li>
+	 * </ol>
 	 */
 	private void processModification(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<DroitProprieteRF> droits) {
 
@@ -180,8 +189,13 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// on détermine les changements
 		final List<DroitProprieteRF> toAddList = new LinkedList<>(droits);
 		final List<DroitProprieteRF> toCloseList = new LinkedList<>(persisted);
-		CollectionsUtils.removeCommonElements(toAddList, toCloseList, DroitRFHelper::dataEquals);   // on supprime les droits égaux
-		final List<Pair<DroitProprieteRF, DroitProprieteRF>> toUpdateList = CollectionsUtils.extractCommonElements(toAddList, toCloseList, (l, r) -> l.getMasterIdRF().equals(r.getMasterIdRF()));
+
+		// on supprime tous les droits qui n'ont pas changé
+		CollectionsUtils.removeCommonElements(toAddList, toCloseList, DroitRFHelper::dataEquals);
+
+		// on détermine les changements qui ne concernent que les raisons d'acquisition (= masterIdRF et versionIdRF égaux)
+		// (tous les autres droits doivent être fermés / ouverts normalement)
+		final List<Pair<DroitProprieteRF, DroitProprieteRF>> toUpdateList = CollectionsUtils.extractCommonElements(toAddList, toCloseList, DroitRFHelper::masterIdAndVersionIdEquals);
 
 		// on met-à-jour tous les droits qui changent (c'est-à-dire les changements dans les raisons d'acquisition)
 		toUpdateList.forEach(p -> processModification(p.getFirst(), p.getSecond()));
@@ -198,8 +212,9 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	private void processModification(@NotNull DroitProprieteRF droit, @NotNull DroitProprieteRF persisted) {
-		if (!droit.getMasterIdRF().equals(persisted.getMasterIdRF())) {
-			throw new IllegalArgumentException("Les mastersIdRF sont différents : [" + droit.getMasterIdRF() + "] et [" + persisted.getMasterIdRF() + "]");
+		if (!masterIdAndVersionIdEquals(droit, persisted)) {
+			throw new IllegalArgumentException("Les mastersIdRF/versionIdRF sont différents : [" + droit.getMasterIdRF() + "/" + droit.getVersionIdRF() + "] " +
+					                                   "et [" + persisted.getMasterIdRF() + "/" + persisted.getVersionIdRF() + "]");
 		}
 		if (!Objects.equals(droit.getPart(), persisted.getPart())) {
 			throw new IllegalArgumentException("Les parts ne sont pas égales entre l'ancien et le nouveau avec le masterIdRF=[" + droit.getMasterIdRF() + "]");

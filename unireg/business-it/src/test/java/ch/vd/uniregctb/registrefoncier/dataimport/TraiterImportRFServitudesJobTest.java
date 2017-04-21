@@ -444,9 +444,9 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
 				// les servitudes
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
 				                                new IdentifiantDroitRF(8, 2005, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
+				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
 				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
 				droitRFDAO.save(usu1);
 				droitRFDAO.save(usu2);
@@ -542,10 +542,10 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
 				// identifiant du droit différent
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
 				                                new IdentifiantDroitRF(8, 2002, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
 				// index non-renseigné
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30),
+				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30),
 				                                null, null, new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, null));
 				droitRFDAO.save(usu1);
 				droitRFDAO.save(usu2);
@@ -772,9 +772,9 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
 				// les servitudes
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
 				                                new IdentifiantDroitRF(8, 2005, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
+				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
 				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
 				droitRFDAO.save(usu1);
 				droitRFDAO.save(usu2);

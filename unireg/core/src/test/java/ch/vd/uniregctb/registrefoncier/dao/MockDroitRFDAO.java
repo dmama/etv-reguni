@@ -42,11 +42,11 @@ public class MockDroitRFDAO implements DroitRFDAO {
 
 	@NotNull
 	@Override
-	public Set<String> findIdsServitudesActives() {
+	public Set<DroitRFKey> findIdsServitudesActives() {
 		return db.stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(a -> a.isValidAt(RegDate.get()))
-				.map(DroitRF::getMasterIdRF)
+				.map(DroitRFKey::new)
 				.collect(Collectors.toSet());
 	}
 

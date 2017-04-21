@@ -1592,8 +1592,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return merge(communauteRF);
 	}
 
-	@NotNull
-	protected DroitProprietePersonnePhysiqueRF addDroitPersonnePhysiqueRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
+	protected DroitProprietePersonnePhysiqueRF addDroitPersonnePhysiqueRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
+	                                                                      IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
 	                                                                      PersonnePhysiqueRF ayantDroit,
 	                                                                      BienFondRF immeuble, CommunauteRF communaute) {
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
@@ -1607,6 +1607,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);
 		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
 		droit.setPart(part);
 		droit.setRegime(regime);
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
@@ -1618,8 +1619,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return saved;
 	}
 
-	@NotNull
-	protected DroitProprietePersonneMoraleRF addDroitPersonneMoraleRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
+	protected DroitProprietePersonneMoraleRF addDroitPersonneMoraleRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
+	                                                                  IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
 	                                                                  PersonneMoraleRF ayantDroit,
 	                                                                  BienFondRF immeuble, CommunauteRF communaute) {
 		final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
@@ -1633,6 +1634,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);
 		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
 		droit.setPart(part);
 		droit.setRegime(regime);
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
@@ -1644,8 +1646,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return saved;
 	}
 
-	@NotNull
-	protected DroitProprieteCommunauteRF addDroitCommunauteRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
+	protected DroitProprieteCommunauteRF addDroitCommunauteRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
+	                                                          IdentifiantAffaireRF numeroAffaire,
+	                                                          Fraction part, GenrePropriete regime,
 	                                                          CommunauteRF communauteRF, BienFondRF immeuble) {
 		final DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
 		droit.setImmeuble(immeuble);
@@ -1657,14 +1660,15 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);
 		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
 		droit.setPart(part);
 		droit.setRegime(regime);
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
 		return merge(droit);
 	}
 
-	@NotNull
-	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
+	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF, IdentifiantAffaireRF numeroAffaire,
+	                                   IdentifiantDroitRF identifiantDroitRF,
 	                                   TiersRF tiersRF, BienFondRF immeuble) {
 		final UsufruitRF droit = new UsufruitRF();
 		droit.addImmeuble(immeuble);
@@ -1676,14 +1680,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);
 		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
 		droit.setNumeroAffaire(numeroAffaire);
 		droit.setIdentifiantDroit(identifiantDroitRF);
 		return merge(droit);
 	}
 
-	@NotNull
 	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF,
-	                                   IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF, List<? extends TiersRF> tiersRF, List<? extends ImmeubleRF> immeubles) {
+	                                   String versionIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF, List<? extends TiersRF> tiersRF, List<? extends ImmeubleRF> immeubles) {
 		final UsufruitRF droit = new UsufruitRF();
 		immeubles.forEach(droit::addImmeuble);
 		tiersRF.forEach(droit::addAyantDroit);
@@ -1694,13 +1698,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);
 		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
 		droit.setNumeroAffaire(numeroAffaire);
 		droit.setIdentifiantDroit(identifiantDroitRF);
 		return merge(droit);
 	}
 
-	@NotNull
-	protected DroitHabitationRF addDroitHabitationRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
+	protected DroitHabitationRF addDroitHabitationRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
+	                                                 IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
 	                                                 TiersRF tiersRF, BienFondRF immeuble) {
 		final DroitHabitationRF droit = new DroitHabitationRF();
 		droit.addImmeuble(immeuble);
@@ -1712,6 +1717,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setMotifDebut(motifDebut);
 		droit.setMotifFin(motifFin);
 		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
 		droit.setNumeroAffaire(numeroAffaire);
 		droit.setIdentifiantDroit(identifiantDroitRF);
 		return merge(droit);

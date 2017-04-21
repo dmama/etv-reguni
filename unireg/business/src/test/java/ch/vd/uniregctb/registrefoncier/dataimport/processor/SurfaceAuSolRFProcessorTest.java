@@ -106,7 +106,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 
 		// on insère la mutation dans la base
 		final Long immeubleId = insertImmeuble("382929efa218");
-		final Long mutationId = insertMutation(xml, dateImport, TypeEntiteRF.SURFACE_AU_SOL, TypeMutationRF.CREATION, "382929efa218");
+		final Long mutationId = insertMutation(xml, dateImport, TypeEntiteRF.SURFACE_AU_SOL, TypeMutationRF.CREATION, "382929efa218", null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -192,7 +192,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.SURFACE_AU_SOL, TypeMutationRF.MODIFICATION, "382929efa218");
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.SURFACE_AU_SOL, TypeMutationRF.MODIFICATION, "382929efa218", null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -290,7 +290,7 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 		});
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(null, dateSecondImport, TypeEntiteRF.SURFACE_AU_SOL, TypeMutationRF.SUPPRESSION, "382929efa218");
+		final Long mutationId = insertMutation(null, dateSecondImport, TypeEntiteRF.SURFACE_AU_SOL, TypeMutationRF.SUPPRESSION, "382929efa218", null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {

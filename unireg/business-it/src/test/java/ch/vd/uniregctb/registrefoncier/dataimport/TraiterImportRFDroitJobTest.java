@@ -159,7 +159,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				assertEquals("029191d4fec44", mut1.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonEigentumAnteil MasterID=\"9a9c9e94923\">\n" +
+						             "    <PersonEigentumAnteil VersionID=\"9a9c9e94922\" MasterID=\"9a9c9e94923\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 						             "            <AnteilNenner>2</AnteilNenner>\n" +
@@ -191,7 +191,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				assertEquals("37838sc9d94de", mut2.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonEigentumAnteil MasterID=\"45729cd9e20\">\n" +
+						             "    <PersonEigentumAnteil VersionID=\"45729cd9e19\" MasterID=\"45729cd9e20\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 						             "            <AnteilNenner>2</AnteilNenner>\n" +
@@ -223,7 +223,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				assertEquals("72828ce8f830a", mut3.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonEigentumAnteil MasterID=\"38458fa0ac3\">\n" +
+						             "    <PersonEigentumAnteil VersionID=\"38458fa0ac2\" MasterID=\"38458fa0ac3\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 						             "            <AnteilNenner>1</AnteilNenner>\n" +
@@ -371,13 +371,13 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 
 				// quelques données historiques (qui doivent être ignorées)
 				final DroitProprietePersonnePhysiqueRF droit1_1 =
-						newDroitPP("328282782", pp1, bienFond, communaute, new Fraction(3, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("328282782", "328282781", pp1, bienFond, communaute, new Fraction(3, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", dateSecondImport.getOneDayBefore());
 				final DroitProprietePersonnePhysiqueRF droit2_1 =
-						newDroitPP("47237819", pp2, bienFond, communaute, new Fraction(4, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("47237819", "47237818", pp2, bienFond, communaute, new Fraction(4, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", dateSecondImport.getOneDayBefore());
 				final DroitProprieteCommunauteRF droit3_1 =
-						newDroitColl("3478382", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
+						newDroitColl("3478382", "3478381", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
 						             new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Vol à main armée", dateSecondImport.getOneDayBefore());
 				droitRFDAO.save(droit1_1);
 				droitRFDAO.save(droit2_1);
@@ -385,13 +385,13 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 
 				// les données courantes
 				final DroitProprietePersonnePhysiqueRF droit1_2 =
-						newDroitPP("9a9c9e94923", pp1, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("9a9c9e94923", "9a9c9e94922", pp1, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateSecondImport, "Héritage", null);
 				final DroitProprietePersonnePhysiqueRF droit2_2 =
-						newDroitPP("45729cd9e20", pp2, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("45729cd9e20", "45729cd9e19", pp2, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateSecondImport, "Héritage", null);
 				final DroitProprieteCommunauteRF droit3_2 =
-						newDroitColl("38458fa0ac3", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
+						newDroitColl("38458fa0ac3", "38458fa0ac2", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
 						             new IdentifiantAffaireRF(6, 2013, 33, 1), dateSecondImport, "Héritage", null);
 				droitRFDAO.save(droit1_2);
 				droitRFDAO.save(droit2_2);
@@ -488,15 +488,15 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 
 				// - part différente
 				final DroitProprietePersonnePhysiqueRF droit1_2 =
-						newDroitPP("9a9c9e94923", pp1, bienFond, communaute, new Fraction(3, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("9a9c9e94923", "9a9c9e94922", pp1, bienFond, communaute, new Fraction(3, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
 				// - part différente
 				final DroitProprietePersonnePhysiqueRF droit2_2 =
-						newDroitPP("45729cd9e20", pp2, bienFond, communaute, new Fraction(4, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("45729cd9e20", "45729cd9e19", pp2, bienFond, communaute, new Fraction(4, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
 				// - numéro d'affaire différent
 				final DroitProprieteCommunauteRF droit3_2 =
-						newDroitColl("38458fa0ac3", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
+						newDroitColl("38458fa0ac3", "38458fa0ac2", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
 						             new IdentifiantAffaireRF(6, 2013, 1, 14), dateImportInitial, "Vol à main armée", null);
 				droitRFDAO.save(droit1_2);
 				droitRFDAO.save(droit2_2);
@@ -543,7 +543,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				assertEquals("029191d4fec44", mut0.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonEigentumAnteil MasterID=\"9a9c9e94923\">\n" +
+						             "    <PersonEigentumAnteil VersionID=\"9a9c9e94922\" MasterID=\"9a9c9e94923\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 						             "            <AnteilNenner>2</AnteilNenner>\n" +
@@ -575,7 +575,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				assertEquals("37838sc9d94de", mut1.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonEigentumAnteil MasterID=\"45729cd9e20\">\n" +
+						             "    <PersonEigentumAnteil VersionID=\"45729cd9e19\" MasterID=\"45729cd9e20\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 						             "            <AnteilNenner>2</AnteilNenner>\n" +
@@ -607,7 +607,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				assertEquals("72828ce8f830a", mut2.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-						             "    <PersonEigentumAnteil MasterID=\"38458fa0ac3\">\n" +
+						             "    <PersonEigentumAnteil VersionID=\"38458fa0ac2\" MasterID=\"38458fa0ac3\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 						             "            <AnteilNenner>1</AnteilNenner>\n" +
@@ -690,13 +690,13 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 
 				// les données courantes
 				final DroitProprietePersonnePhysiqueRF droit1 =
-						newDroitPP("9a9c9e94923", pp1, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("9a9c9e94923", "9a9c9e94922", pp1, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
 				final DroitProprietePersonnePhysiqueRF droit2 =
-						newDroitPP("45729cd9e20", pp2, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("45729cd9e20", "45729cd9e19", pp2, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
 				final DroitProprieteCommunauteRF droit3 =
-						newDroitColl("38458fa0ac3", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
+						newDroitColl("38458fa0ac3", "38458fa0ac2", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
 						             new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
 				droitRFDAO.save(droit1);
 				droitRFDAO.save(droit2);

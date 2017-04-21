@@ -25,12 +25,13 @@ import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
 import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 
+import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.masterIdAndVersionIdEquals;
 import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.numeroAffaireEquals;
 
 public class ServitudesRFHelper {
 
 	public static DroitRFKey newServitudeRFKey(DienstbarkeitExtendedElement droit) {
-		return new DroitRFKey(droit.getDienstbarkeit().getMasterID());
+		return new DroitRFKey(droit.getDienstbarkeit().getMasterID(), droit.getDienstbarkeit().getVersionID());
 	}
 
 
@@ -99,7 +100,7 @@ public class ServitudesRFHelper {
 
 	public static boolean dataEquals(@NotNull ServitudeRF left, @NotNull ServitudeRF right) {
 
-		if (!left.getMasterIdRF().equals(right.getMasterIdRF())) {
+		if (!masterIdAndVersionIdEquals(left, right)) {
 			return false;
 		}
 
@@ -126,6 +127,7 @@ public class ServitudesRFHelper {
 		final Dienstbarkeit dienstbarkeit = dienstbarkeitExtended.getDienstbarkeit();
 		final LastRechtGruppe lastRechtGruppe = dienstbarkeitExtended.getLastRechtGruppe();
 		final String masterIdRF = dienstbarkeit.getMasterID();
+		final String versionIdRF = dienstbarkeit.getVersionID();
 
 		final String typeServitude = Optional.of(dienstbarkeit)
 				.map(StandardRecht::getStichwort)
@@ -151,10 +153,10 @@ public class ServitudesRFHelper {
 
 		lastRechtGruppe.getBelastetesGrundstueck().forEach(grundstueck -> {
 			servitude.addImmeuble(immeubleProvider.apply(grundstueck.getBelastetesGrundstueckIDREF()));
-
 		});
 
 		servitude.setMasterIdRF(masterIdRF);
+		servitude.setVersionIdRF(versionIdRF);
 		servitude.setIdentifiantDroit(getIdentifiantDroit(dienstbarkeit));
 		servitude.setNumeroAffaire(getAffaire(dienstbarkeit));
 		servitude.setDateDebutMetier(dienstbarkeit.getBeginDatum());

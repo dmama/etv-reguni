@@ -108,7 +108,7 @@ public class BatimentRFProcessorTest extends MutationRFProcessorTestCase {
 		insertImmeuble("_1f109152381026b501381028a73d1852");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.BATIMENT, TypeMutationRF.CREATION, "1f109152381026b50138102aa28557e0");
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.BATIMENT, TypeMutationRF.CREATION, "1f109152381026b50138102aa28557e0", null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -178,7 +178,7 @@ public class BatimentRFProcessorTest extends MutationRFProcessorTestCase {
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.BATIMENT, TypeMutationRF.MODIFICATION, "1f109152381026b50138102aa28557e0");
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.BATIMENT, TypeMutationRF.MODIFICATION, "1f109152381026b50138102aa28557e0", null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -257,7 +257,7 @@ public class BatimentRFProcessorTest extends MutationRFProcessorTestCase {
 		});
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(null, dateSecondImport, TypeEntiteRF.BATIMENT, TypeMutationRF.SUPPRESSION, "1f109152381026b50138102aa28557e0");
+		final Long mutationId = insertMutation(null, dateSecondImport, TypeEntiteRF.BATIMENT, TypeMutationRF.SUPPRESSION, "1f109152381026b50138102aa28557e0", null);
 
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {

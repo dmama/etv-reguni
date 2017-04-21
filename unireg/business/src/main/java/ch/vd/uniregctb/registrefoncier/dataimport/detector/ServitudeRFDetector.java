@@ -81,7 +81,7 @@ public class ServitudeRFDetector {
 			}
 		};
 
-		final Set<String> servitudesIdsRF = Collections.synchronizedSet(new HashSet<>());
+		final Set<DroitRFKey> servitudesIdsRF = Collections.synchronizedSet(new HashSet<>());
 		final AtomicInteger processed = new AtomicInteger();
 
 		// on détecte les mutations sur les immeubles
@@ -104,7 +104,8 @@ public class ServitudeRFDetector {
 				for (DienstbarkeitExtendedElement dienstbarkeit : batch) {
 
 					final String masterIDRF = dienstbarkeit.getDienstbarkeit().getMasterID();
-					servitudesIdsRF.add(masterIDRF);
+					final String versionIDRF = dienstbarkeit.getDienstbarkeit().getVersionID();
+					servitudesIdsRF.add(new DroitRFKey(masterIDRF, versionIDRF));
 
 					// SIFISC-23744 : on renseigne les servitudes vides dans le rapport
 					if (dienstbarkeit.getLastRechtGruppe().getBerechtigtePerson().isEmpty()) {
@@ -145,6 +146,7 @@ public class ServitudeRFDetector {
 					mutation.setTypeEntite(TypeEntiteRF.SERVITUDE);
 					mutation.setTypeMutation(typeMutation);
 					mutation.setIdRF(key.getMasterIdRF());
+					mutation.setVersionRF(key.getVersionIdRF());
 					mutation.setXmlContent(servitudeAsXml);
 
 					evenementRFMutationDAO.save(mutation);
@@ -179,21 +181,22 @@ public class ServitudeRFDetector {
 		t1.execute(s -> {
 			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
-			final Set<String> existingServitudes = droitRFDAO.findIdsServitudesActives();
+			final Set<DroitRFKey> existingServitudes = droitRFDAO.findIdsServitudesActives();
 			//noinspection UnnecessaryLocalVariable
-			final Set<String> nouvellesServitudes = servitudesIdsRF;
+			final Set<DroitRFKey> nouvellesServitudes = servitudesIdsRF;
 
 			// on ne garde que les servitudes existantes dans la DB qui n'existent pas dans le fichier XML
 			existingServitudes.removeAll(nouvellesServitudes);
 
 			// on crée des mutations de suppression pour tous ces servitudes
-			existingServitudes.forEach(idRF -> {
+			existingServitudes.forEach(key -> {
 				final EvenementRFMutation mutation = new EvenementRFMutation();
 				mutation.setParentImport(parentImport);
 				mutation.setEtat(EtatEvenementRF.A_TRAITER);
 				mutation.setTypeEntite(TypeEntiteRF.SERVITUDE);
 				mutation.setTypeMutation(TypeMutationRF.SUPPRESSION);
-				mutation.setIdRF(idRF); // idRF de la servitude
+				mutation.setIdRF(key.getMasterIdRF()); // idRF de la servitude
+				mutation.setVersionRF(key.getVersionIdRF());
 				mutation.setXmlContent(null);
 				evenementRFMutationDAO.save(mutation);
 			});

@@ -317,6 +317,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				// on droit différent de celui qui arrive dans le fichier XML
 				final DroitProprietePersonnePhysiqueRF droit1 = new DroitProprietePersonnePhysiqueRF();
 				droit1.setMasterIdRF("1f109152381009be0138100c87000000");
+				droit1.setVersionIdRF("1f109152381009be0138100c87000001");
 				droit1.setDateDebut(dateImportInitial);
 				droit1.setAyantDroit(pp1);
 				droit1.setImmeuble(immeuble1);
@@ -334,6 +335,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				// on droit identique à celui qui arrive dans le fichier XML
 				final DroitProprietePersonnePhysiqueRF droit2 = new DroitProprietePersonnePhysiqueRF();
 				droit2.setMasterIdRF("8af806fa4a4dd302014b16fc17266a0b");
+				droit2.setVersionIdRF("8af806fa4a4dd302014b16fc17256a06");
 				droit2.setDateDebut(dateImportInitial);
 				droit2.setAyantDroit(pp2);
 				droit2.setImmeuble(immeuble2);
@@ -581,6 +583,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 
 				final DroitProprietePersonnePhysiqueRF droit1 = new DroitProprietePersonnePhysiqueRF();
 				droit1.setMasterIdRF("1f109152381009be0138100c87000000");
+				droit1.setVersionIdRF("1f109152381009be0138100c87000001");
 				droit1.setDateDebut(dateImportInitial);
 				droit1.setAyantDroit(pp1);
 				droit1.setImmeuble(immeuble1);
@@ -596,6 +599,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 
 				final DroitProprietePersonnePhysiqueRF droit2 = new DroitProprietePersonnePhysiqueRF();
 				droit2.setMasterIdRF("8af806fa4a4dd302014b16fc17266a0b");
+				droit2.setVersionIdRF("8af806fa4a4dd302014b16fc17266a0a");
 				droit2.setDateDebut(dateImportInitial);
 				droit2.setAyantDroit(pp2);
 				droit2.setImmeuble(immeuble2);

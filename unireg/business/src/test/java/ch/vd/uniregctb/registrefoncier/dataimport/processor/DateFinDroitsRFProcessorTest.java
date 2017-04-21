@@ -58,10 +58,10 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
 			addDroitPropriete(jean, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), "Achat", "Vente",
-			                  new IdentifiantAffaireRF(8, 1990, 3, 0), "473839273923");
+			                  new IdentifiantAffaireRF(8, 1990, 3, 0), "473839273923", "473839273922");
 			addDroitPropriete(jacques, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null,
-			                  new IdentifiantAffaireRF(8, 2003, 21, 0), "45838923783");
+			                  new IdentifiantAffaireRF(8, 2003, 21, 0), "45838923783", "45838923782");
 			return bienFond.getId();
 		});
 
@@ -97,7 +97,7 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final BienFondRF bienFond = addBienFondRF("38383838", "CHE478391947", commune, 234);
 			final PersonnePhysiqueRF jean = addPersonnePhysiqueRF("02893039", "Jean", "Routourne", RegDate.get(1962, 9, 12));
 			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
-			addUsufruitRF(null, RegDate.get(1990, 3, 1), RegDate.get(2017,1,13), null, null, null, "32727817",
+			addUsufruitRF(null, RegDate.get(1990, 3, 1), RegDate.get(2017,1,13), null, null, null, "32727817", "1",
 			              new IdentifiantAffaireRF(8, 1990, 3, 0), new IdentifiantDroitRF(8, 1990, 3),
 			              Arrays.asList(jean, jacques), Collections.singletonList(bienFond));
 			return bienFond.getId();
@@ -141,10 +141,10 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
 			addDroitPropriete(jean, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), null, "Achat", null,
-			                  new IdentifiantAffaireRF(8, 1990, 3, 0), "473839273923");
+			                  new IdentifiantAffaireRF(8, 1990, 3, 0), "473839273923", "473839273922");
 			addDroitPropriete(jacques, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null,
-			                  new IdentifiantAffaireRF(8, 2003, 21, 0), "45838923783");
+			                  new IdentifiantAffaireRF(8, 2003, 21, 0), "45838923783", "45838923782");
 			return bienFond.getId();
 		});
 
@@ -195,20 +195,20 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			// import inital du 31.12.2016
 			addDroitPropriete(jean, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 			                  null, RegDate.get(2017, 1, 6), RegDate.get(1997, 4, 21), null, "Succession", null,
-			                  new IdentifiantAffaireRF(5, null, 151264, null), "473839273923");
+			                  new IdentifiantAffaireRF(5, null, 151264, null), "473839273923", "473839273922");
 			// second import du 07.02.2017
 			addDroitPropriete(jean, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 			                  RegDate.get(2017, 1, 7), null, RegDate.get(2001, 9, 4), null, "Succession", null,
-			                  new IdentifiantAffaireRF(5, 2001, 2174, 0), "2929181981818");
+			                  new IdentifiantAffaireRF(5, 2001, 2174, 0), "2929181981818", "2929181981817");
 
 			// import inital du 31.12.2016
 			addDroitPropriete(jacques, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 			                  null, RegDate.get(2017, 1, 6), RegDate.get(2012, 3, 6), null, "Succession", null,
-			                  new IdentifiantAffaireRF(5, 2012, 617, 0), "45838923783");
+			                  new IdentifiantAffaireRF(5, 2012, 617, 0), "45838923783", "45838923782");
 			// second import du 07.02.2017
 			addDroitPropriete(jacques, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 			                  RegDate.get(2017, 1, 7), null, RegDate.get(2013, 5, 31), null, "Succession", null,
-			                  new IdentifiantAffaireRF(5, 2012, 617, 0), "3838929217821");
+			                  new IdentifiantAffaireRF(5, 2012, 617, 0), "3838929217821", "3838929217820");
 
 			return null;
 		});
@@ -265,20 +265,20 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 				// import inital du 31.12.2016
 				addDroitPropriete(pp0, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 				                  null, RegDate.get(2016, 12, 31), RegDate.get(1961, 2, 4), null, "Succession", null,
-				                  new IdentifiantAffaireRF(11, null, 74634, null), "1f109152381026b5013810299b0b1905");
+				                  new IdentifiantAffaireRF(11, null, 74634, null), "1f109152381026b5013810299b0b1905", "1f109152381026b5013810299b0b1904");
 				// second import du 01.01.2017
 				addDroitPropriete(pp0, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 				                  RegDate.get(2017, 1, 1), null, RegDate.get(1980, 12, 29), null, "Changement de régime", null,
-				                  new IdentifiantAffaireRF(11, null, 95580, null), "21321321");
+				                  new IdentifiantAffaireRF(11, null, 95580, null), "21321321", "21321320");
 
 				// import inital du 31.12.2016
 				addDroitPropriete(pp1, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 				                  null, RegDate.get(2016, 12, 31), RegDate.get(1980, 12, 29), null, "Changement de régime", null,
-				                  new IdentifiantAffaireRF(11, null, 95580, null), "1f109152381026b5013810299b0b1908");
+				                  new IdentifiantAffaireRF(11, null, 95580, null), "1f109152381026b5013810299b0b1908", "1f109152381026b5013810299b0b1907");
 				// second import du 01.01.2017
 				addDroitPropriete(pp1, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 				                  RegDate.get(2017, 1, 1), null, RegDate.get(1998, 2, 11), null, "Succession", null,
-				                  new IdentifiantAffaireRF(11, null, 115039, null), "90392039");
+				                  new IdentifiantAffaireRF(11, null, 115039, null), "90392039", "90392038");
 
 				return immeuble.getId();
 			}
