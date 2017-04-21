@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,6 +61,7 @@ import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.DonneesLoiLogement;
+import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -96,6 +98,11 @@ public class DegrevementExonerationController {
 			.thenComparing(Comparator.comparing(ImmeubleView::getIndex1, Comparator.nullsFirst(Comparator.naturalOrder())))
 			.thenComparing(Comparator.comparing(ImmeubleView::getIndex2, Comparator.nullsFirst(Comparator.naturalOrder())))
 			.thenComparing(Comparator.comparing(ImmeubleView::getIndex3, Comparator.nullsFirst(Comparator.naturalOrder())));
+
+	private static final BiPredicate<Integer, Integer> INTEGER_EQUALATOR = Objects::equals;
+	private static final BiPredicate<RegDate, RegDate> DATE_EQUALATOR = Objects::equals;
+	private static final BiPredicate<Boolean, Boolean> BOOLEAN_EQUALATOR = Objects::equals;
+	private static final BiPredicate<BigDecimal, BigDecimal> BIGDECIMAL_EQUALATOR = (d1, d2) -> Objects.equals(d1, d2) || (d1 != null && d2 != null && d1.compareTo(d2) == 0);
 
 	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
 		this.registreFoncierService = registreFoncierService;
@@ -744,14 +751,84 @@ public class DegrevementExonerationController {
 		// mise en place par rapport aux autres
 		computeEditionInfluenceOnOthers(ctb, autres, degrevement, view);
 
-		degrevement.setDateDebut(view.getDateDebut());
-		degrevement.setDateFin(view.getDateFin());
-		degrevement.setLocation(view.getLocation());
-		degrevement.setPropreUsage(view.getPropreUsage());
-		degrevement.setLoiLogement(cleanupLoiLogement(view.getLoiLogement()));
-		degrevement.setNonIntegrable(Boolean.FALSE);        // ré-initialisation du flag dans tous les cas
+		// [SIFISC-24412] modification avec ou sans passage par une annulation ?
+		if (mayEditInPlace(degrevement, view)) {
+			copyData(degrevement, view);
+		}
+		else {
+			final DegrevementICI copy = degrevement.duplicate();
+			degrevement.setAnnule(true);
+			copyData(copy, view);
+			ctb.addAllegementFoncier(copy);
+		}
 
 		return "redirect:edit-degrevements.do?idContribuable=" + ctb.getNumero() + "&idImmeuble=" + degrevement.getImmeuble().getId();
+	}
+
+	private static void copyData(DegrevementICI destination, EditDegrevementView source) {
+		destination.setDateDebut(source.getDateDebut());
+		destination.setDateFin(source.getDateFin());
+		destination.setLocation(source.getLocation());
+		destination.setPropreUsage(source.getPropreUsage());
+		destination.setLoiLogement(cleanupLoiLogement(source.getLoiLogement()));
+		destination.setNonIntegrable(Boolean.FALSE);        // ré-initialisation du flag dans tous les cas
+	}
+
+	/**
+	 * [SIFISC-24412] on vérifie s'il faut annuler la précédente valeur du dégrèvement avant d'en générer une nouvelle
+	 * (l'alternative étant de modifier directement le dégrèvement <i>in-place</i>)
+	 * @param oldValue valeur stockée en base
+	 * @param newValue nouvelles valeurs à stocker
+	 * @return si oui ou non il faut passer par un cycle d'annulation / remplacement pour ces modifications
+	 */
+	private static boolean mayEditInPlace(DegrevementICI oldValue, EditDegrevementView newValue) {
+		// on devra faire passer par l'annulation si l'une au moins des conditions suivantes est remplie :
+		// - une valeur arrêtée préalablement définie (= non-vide) est modifiée
+		// - une autre valeur est modifiée, quelle que soit sa valeur précédente (vide ou pas)
+
+		// mais il ne faut pas oublier la date de début... si elle change, tout change !
+		if (!INTEGER_EQUALATOR.test(oldValue.getDateDebut().year(), newValue.getAnneeDebut())) {
+			return false;
+		}
+
+		// d'abord on regarde les données de location
+		final DonneesUtilisation oldLocation = oldValue.getLocation() != null ? oldValue.getLocation() : new DonneesUtilisation();
+		final DonneesUtilisation newLocation = newValue.getLocation();
+		if (oldLocation.getPourcentageArrete() != null && !BIGDECIMAL_EQUALATOR.test(oldLocation.getPourcentageArrete(), newLocation.getPourcentageArrete())) {
+			return false;
+		}
+		if (!INTEGER_EQUALATOR.test(oldLocation.getRevenu(), newLocation.getRevenu())
+				|| !INTEGER_EQUALATOR.test(oldLocation.getSurface(), newLocation.getSurface())
+				|| !INTEGER_EQUALATOR.test(oldLocation.getVolume(), newLocation.getVolume())
+				|| !BIGDECIMAL_EQUALATOR.test(oldLocation.getPourcentage(), newLocation.getPourcentage())) {
+			return false;
+		}
+
+		// puis les données de propre usage
+		final DonneesUtilisation oldPropreUsage = oldValue.getPropreUsage() != null ? oldValue.getPropreUsage() : new DonneesUtilisation();
+		final DonneesUtilisation newPropreUsage = newValue.getPropreUsage();
+		if (oldPropreUsage.getPourcentageArrete() != null && !BIGDECIMAL_EQUALATOR.test(oldPropreUsage.getPourcentageArrete(), newPropreUsage.getPourcentageArrete())) {
+			return false;
+		}
+		if (!INTEGER_EQUALATOR.test(oldPropreUsage.getRevenu(), newPropreUsage.getRevenu())
+				|| !INTEGER_EQUALATOR.test(oldPropreUsage.getSurface(), newPropreUsage.getSurface())
+				|| !INTEGER_EQUALATOR.test(oldPropreUsage.getVolume(), newPropreUsage.getVolume())
+				|| !BIGDECIMAL_EQUALATOR.test(oldPropreUsage.getPourcentage(), newPropreUsage.getPourcentage())) {
+			return false;
+		}
+
+		// puis enfin les données de la loi sur le logement
+		final DonneesLoiLogement oldLoiLogement = oldValue.getLoiLogement() != null ? oldValue.getLoiLogement() : new DonneesLoiLogement(Boolean.FALSE, null, null, null);
+		final DonneesLoiLogement newLoiLogement = cleanupLoiLogement(newValue.getLoiLogement());
+		if (!BOOLEAN_EQUALATOR.test(oldLoiLogement.getControleOfficeLogement(), newLoiLogement.getControleOfficeLogement())
+				|| !DATE_EQUALATOR.test(oldLoiLogement.getDateEcheance(), newLoiLogement.getDateEcheance())
+				|| !DATE_EQUALATOR.test(oldLoiLogement.getDateOctroi(), newLoiLogement.getDateOctroi())
+				|| !BIGDECIMAL_EQUALATOR.test(oldLoiLogement.getPourcentageCaractereSocial(), newLoiLogement.getPourcentageCaractereSocial())) {
+			return false;
+		}
+
+		// ok, tout est identique (ou les valeurs arrêtées on juste été ajoutées)
+		return true;
 	}
 
 	////////////////////////////////////
@@ -934,11 +1011,32 @@ public class DegrevementExonerationController {
 		// mise en place par rapport aux autres
 		computeEditionInfluenceOnOthers(ctb, autres, exoneration, view);
 
-		exoneration.setDateDebut(view.getDateDebut());
-		exoneration.setDateFin(view.getDateFin());
-		exoneration.setPourcentageExoneration(view.getPourcentageExoneration());
+		if (mayEditInPlace(exoneration, view)) {
+			copyData(exoneration, view);
+		}
+		else {
+			final ExonerationIFONC copy = exoneration.duplicate();
+			exoneration.setAnnule(true);
+			copyData(copy, view);
+			ctb.addAllegementFoncier(copy);
+		}
 
 		return "redirect:edit-exonerations.do?idContribuable=" + ctb.getNumero() + "&idImmeuble=" + exoneration.getImmeuble().getId();
+	}
+
+	private static void copyData(ExonerationIFONC destination, EditExonerationView source) {
+		destination.setDateDebut(source.getDateDebut());
+		destination.setDateFin(source.getDateFin());
+		destination.setPourcentageExoneration(source.getPourcentageExoneration());
+	}
+
+	/**
+	 * @param oldValue la valeur précédemment stockée en base
+	 * @param newValue la nouvelle valeur proposée par l'utilisateur
+	 * @return si oui ou non on peut se permettre de procéder à une mise à jour "in-place"
+	 */
+	private static boolean mayEditInPlace(ExonerationIFONC oldValue, EditExonerationView newValue) {
+		return INTEGER_EQUALATOR.test(oldValue.getDateDebut().year(), newValue.getAnneeDebut()) && BIGDECIMAL_EQUALATOR.test(oldValue.getPourcentageExoneration(), newValue.getPourcentageExoneration());
 	}
 
 	///////////////////////////////////////////////////////////
