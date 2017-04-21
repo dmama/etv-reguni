@@ -12,7 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -147,7 +149,7 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 		final List<ForFiscal> forsTries = dpi.getForsFiscauxNonAnnules(true);
 		final List<DateRange> fors = new ArrayList<>(forsTries.size());
 		for (ForFiscal ff : forsTries) {
-			if (ff.getDateDebut().isAfter(dateDebutFor)) {
+			if (RegDateHelper.isAfter(ff.getDateDebut(), dateDebutFor, NullDateBehavior.EARLIEST)) {
 				fors.add(ff);
 			}
 		}
