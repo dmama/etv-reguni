@@ -489,8 +489,6 @@ public abstract class EvenementOrganisationInterne {
 		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
 		suivis.addSuivi(String.format("Régimes fiscaux par défaut [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)",
 		                              typeRegimeFiscal.getLibelleAvecCode(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
-
-		// TODO: Envoyer tâche de détermination du régime fiscal si le régime est mis à INDET
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
@@ -503,8 +501,6 @@ public abstract class EvenementOrganisationInterne {
 		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
 		suivis.addSuivi(String.format("Régimes fiscaux de type indéterminé [%s] VD et CH ouverts pour l'entreprise n°%s (civil: %d)",
 		                              typeRegimeFiscal.getLibelleAvecCode(), FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
-
-		// TODO: Envoyer tâche de détermination du régime fiscal
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 

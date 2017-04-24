@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.tiers.view;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 
 public class EditRegimeFiscalView implements ValidableRegimeFiscalView {
@@ -11,17 +13,20 @@ public class EditRegimeFiscalView implements ValidableRegimeFiscalView {
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private String code;
+	private TypeRegimeFiscal type;
 
+	@SuppressWarnings("unused")
 	public EditRegimeFiscalView() {
 	}
 
-	public EditRegimeFiscalView(RegimeFiscal rf) {
+	public EditRegimeFiscalView(RegimeFiscal rf, ServiceRegimeFiscal regimeFiscalService) {
 		this.rfId = rf.getId();
 		this.pmId = rf.getEntreprise().getNumero();
 		this.portee = rf.getPortee();
 		this.dateDebut = rf.getDateDebut();
 		this.dateFin = rf.getDateFin();
 		this.code = rf.getCode();
+		this.type = regimeFiscalService.getTypeRegimeFiscal(rf.getCode());
 	}
 
 	public long getPmId() {
@@ -58,13 +63,8 @@ public class EditRegimeFiscalView implements ValidableRegimeFiscalView {
 		this.dateDebut = dateDebut;
 	}
 
-	@Override
 	public RegDate getDateFin() {
 		return dateFin;
-	}
-
-	public void setDateFin(RegDate dateFin) {
-		this.dateFin = dateFin;
 	}
 
 	@Override
@@ -74,5 +74,9 @@ public class EditRegimeFiscalView implements ValidableRegimeFiscalView {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public TypeRegimeFiscal getType() {
+		return type;
 	}
 }

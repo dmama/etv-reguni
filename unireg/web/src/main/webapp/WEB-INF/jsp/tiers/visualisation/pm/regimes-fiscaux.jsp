@@ -29,7 +29,19 @@
 				<unireg:regdate regdate="${regimesVD.dateFin}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">
-				<c:out value="${regimesVD.type.libelle}"/>
+				<c:out value="${regimesVD.type.libelleAvecCode}"/>
+				<c:if test="${regimesVD.type.indetermine && !regimesVD.annule}">
+					<div style="display: inline-block;" class="warning_icon" title="<fmt:message key='label.regime.a.determiner.VD'/>">&nbsp;</div>
+				</c:if>
+			</display:column>
+			<display:column titleKey="label.exoneration.IBC" style="width: 10%; text-align: center;">
+				<input type="checkbox" disabled="disabled" <c:if test="${regimesVD.exonerantIBC}">checked="checked"</c:if>/>
+			</display:column>
+			<display:column titleKey="label.exoneration.ICI" style="width: 10%; text-align: center;">
+				<input type="checkbox" disabled="disabled" <c:if test="${regimesVD.exonerantICI}">checked="checked"</c:if>/>
+			</display:column>
+			<display:column titleKey="label.exoneration.IFONC" style="width: 10%; text-align: center;">
+				<input type="checkbox" disabled="disabled" <c:if test="${regimesVD.exonerantIFONC}">checked="checked"</c:if>/>
 			</display:column>
 			<display:column class="action" style="width: 10%;">
 				<unireg:consulterLog entityNature="RegimeFiscal" entityId="${regimesVD.id}" />
@@ -66,7 +78,10 @@
 				<unireg:regdate regdate="${regimesCH.dateFin}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">
-				<c:out value="${regimesCH.type.libelle}"/>
+				<c:out value="${regimesCH.type.libelleAvecCode}"/>
+				<c:if test="${regimesCH.type.indetermine && !regimesCH.annule}">
+					<div style="display: inline-block;" class="warning_icon" title="<fmt:message key='label.regime.a.determiner.CH'/>">&nbsp;</div>
+				</c:if>
 			</display:column>
 			<display:column class="action" style="width: 10%;">
 				<unireg:consulterLog entityNature="RegimeFiscal" entityId="${regimesCH.id}"/>

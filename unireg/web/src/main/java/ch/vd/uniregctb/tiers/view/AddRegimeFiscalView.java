@@ -8,9 +8,9 @@ public class AddRegimeFiscalView implements ValidableRegimeFiscalView {
 	private long pmId;
 	private RegimeFiscal.Portee portee;
 	private RegDate dateDebut;
-	private RegDate dateFin;
 	private String code;
 
+	@SuppressWarnings("unused")
 	public AddRegimeFiscalView() {
 	}
 
@@ -43,15 +43,6 @@ public class AddRegimeFiscalView implements ValidableRegimeFiscalView {
 
 	public void setDateDebut(RegDate dateDebut) {
 		this.dateDebut = dateDebut;
-	}
-
-	@Override
-	public RegDate getDateFin() {
-		return dateFin;
-	}
-
-	public void setDateFin(RegDate dateFin) {
-		this.dateFin = dateFin;
 	}
 
 	@Override
