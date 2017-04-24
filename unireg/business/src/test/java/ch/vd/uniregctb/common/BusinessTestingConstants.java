@@ -9,7 +9,6 @@ public class BusinessTestingConstants {
 	public static final String UNIREG_BUSINESS_RF = "classpath:unireg-business-rf.xml";
 	public static final String UNIREG_BUSINESS_REGISTREFONCIER = "classpath:unireg-business-registrefoncier.xml";
 	public static final String UNIREG_BUSINESS_REGISTREFONCIER_IMPORT = "classpath:unireg-business-registrefoncier-import.xml";
-	public static final String UNIREG_BUSINESS_REGIMESFISCAUX = "classpath:unireg-business-regimefiscal.xml";
 	public static final String UNIREG_BUSINESS_EVT_CIVIL = "classpath:unireg-business-evtcivil.xml";
 	public static final String UNIREG_BUSINESS_EVT_ORGANISATION = "classpath:unireg-business-evtorganisation.xml";
 	public static final String UNIREG_BUSINESS_EVT_FISCAL= "classpath:unireg-business-evtfiscal.xml";
@@ -27,4 +26,5 @@ public class BusinessTestingConstants {
 	public static final String UNIREG_BUSINESS_UT_TACHES = "classpath:ut/unireg-businessut-taches.xml";
 	public static final String UNIREG_BUSINESS_UT_ADRESSES = "classpath:ut/unireg-businessut-adresses.xml";
 	public static final String UNIREG_BUSINESS_UT_REGISTREFONCIER_IMPORT = "classpath:ut/unireg-businessut-registrefoncier-import.xml";
+	public static final String UNIREG_BUSINESS_UT_REGIME_FISCAL = "classpath:ut/unireg-businessut-regimefiscal.xml";
 }

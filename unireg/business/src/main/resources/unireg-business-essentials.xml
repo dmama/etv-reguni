@@ -123,6 +123,11 @@
 		<property name="tacheService" ref="tacheService"/>
 	</bean>
 
+	<bean id="serviceRegimeFiscal" class="ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscalImpl">
+		<property name="serviceInfra" ref="serviceInfrastructureService"/>
+		<property name="configuration" ref="serviceRegimeFiscalConfiguration"/>
+	</bean>
+
 	<bean id="etiquetteService" class="ch.vd.uniregctb.etiquette.EtiquetteServiceImpl">
 		<property name="etiquetteDAO" ref="etiquetteDAO"/>
 		<property name="etiquetteTiersDAO" ref="etiquetteTiersDAO"/>
