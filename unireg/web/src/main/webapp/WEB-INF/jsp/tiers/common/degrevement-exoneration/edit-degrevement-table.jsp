@@ -299,13 +299,17 @@
 		},
 
 		_extractInteger: function(text) {
-			const match = /^\s*([0-9]+)\s*$/g.exec(text);
-			return match === null ? null : match[1];
+			const match = /^\s*(['0-9]+)\s*$/g.exec(text);
+			return match === null ? null : this._removeDisplayFormat(match[1]);
 		},
 
 		_extractDecimal: function(text) {
-			const match = /^\s*([0-9]+(?:\.[0-9]*)?)\s*$/g.exec(text);
-			return match === null ? null : match[1];
+			const match = /^\s*(['0-9]+(?:\.[0-9]*)?)\s*$/g.exec(text);
+			return match === null ? null : this._removeDisplayFormat(match[1]);
+		},
+
+		_removeDisplayFormat: function(text) {
+			return text === null ? null : text.replace(/[^0-9.]/g, '');
 		}
 
 	};
