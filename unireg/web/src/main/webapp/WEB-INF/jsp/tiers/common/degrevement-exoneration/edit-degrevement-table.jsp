@@ -173,9 +173,13 @@
 				</legend>
 				<unireg:nextRowClass reset="0"/>
 				<table class="degrevement">
+					<tr class="ctrl-office-logement">
+						<th colspan="2">&nbsp;</th>
+						<th class="valeur"><fmt:message key="label.valeur.arretee"/></th>
+					</tr>
 					<tr class="<unireg:nextRowClass/> ctrl-office-logement">
 						<td class="titre"><fmt:message key="label.date.octroi"/></td>
-						<td>
+						<td colspan="2">
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="loiLogement.dateOctroi"/>
 								<jsp:param name="id" value="dateOctroi"/>
@@ -184,7 +188,7 @@
 					</tr>
 					<tr class="<unireg:nextRowClass/> ctrl-office-logement">
 						<td class="titre"><fmt:message key="label.date.echeance.octroi"/></td>
-						<td>
+						<td colspan="2">
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="loiLogement.dateEcheance"/>
 								<jsp:param name="id" value="dateEcheance"/>
@@ -192,10 +196,13 @@
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/> ctrl-office-logement">
-						<td class="titre"><fmt:message key="label.pourcentage.caractere.social"/> (&percnt;)</td>
+						<td class="titre" colspan="2"><fmt:message key="label.pourcentage.caractere.social"/> (&percnt;)</td>
 						<td>
 							<form:input path="loiLogement.pourcentageCaractereSocial" cssClass="nombre"/>
-							<form:errors path="loiLogement.pourcentageCaractereSocial" cssClass="error"/>
+							<span style="color: red;">*</span>
+							<div style="display: inline-block; vertical-align: middle;">
+								<form:errors path="loiLogement.pourcentageCaractereSocial" cssClass="error"/>
+							</div>
 						</td>
 					</tr>
 				</table>
@@ -297,7 +304,7 @@
 		},
 
 		_extractDecimal: function(text) {
-			const match = /^\s*([0-9]+(?:\.[0-9]*)?)\s*/g.exec(text);
+			const match = /^\s*([0-9]+(?:\.[0-9]*)?)\s*$/g.exec(text);
 			return match === null ? null : match[1];
 		}
 
