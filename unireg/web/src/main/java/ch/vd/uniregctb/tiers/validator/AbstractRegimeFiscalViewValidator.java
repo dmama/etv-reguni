@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.validation.Errors;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.view.DateRangeViewValidator;
@@ -40,8 +42,10 @@ public abstract class AbstractRegimeFiscalViewValidator {
 
 	protected void doValidate(ValidableRegimeFiscalView view, Errors errors) {
 
+		final DateRange range = new DateRangeHelper.Range(view.getDateDebut(), null);
+
 		// validations de base sur le range lui-même
-		RANGE_VALIDATOR.validate(view, errors);
+		RANGE_VALIDATOR.validate(range, errors);
 
 		// la portée est obligatoire
 		if (view.getPortee() == null) {

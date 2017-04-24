@@ -23,7 +23,7 @@
 				<form:hidden path="rfId"/>
 				<form:hidden path="portee"/>
 				<form:hidden path="dateDebut"/>
-				<form:hidden path="code"/>
+				<form:hidden path="dateFin"/>
 
 				<unireg:nextRowClass reset="0"/>
 				<table border="0">
@@ -31,19 +31,16 @@
 						<td width="25%"><fmt:message key="label.date.debut"/>&nbsp;:</td>
 						<td width="25%"><unireg:regdate regdate="${command.dateDebut}"/></td>
 						<td width="25%"><fmt:message key="label.date.fin"/>&nbsp;:</td>
-						<td width="25%">
-							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-								<jsp:param name="path" value="dateFin" />
-								<jsp:param name="id" value="dateFin" />
-							</jsp:include>
-						</td>
+						<td width="25%"><unireg:regdate regdate="${command.dateFin}"/>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.regime.fiscal.type" />&nbsp;:</td>
 						<td>
-							<form:select path="code" disabled="true">
+							<form:select path="code">
 								<form:options items="${typesRegimeFiscal}"/>
 							</form:select>
+							<form:errors path="code" cssClass="error"/>
+							<span style="color: red;">*</span>
 						</td>
 						<td colspan="2">&nbsp;</td>
 					</tr>

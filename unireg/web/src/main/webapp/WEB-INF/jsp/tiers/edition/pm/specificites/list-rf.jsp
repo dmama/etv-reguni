@@ -29,14 +29,26 @@
 						<unireg:regdate regdate="${rf.dateFin}"/>
 					</display:column>
 					<display:column sortable="true" titleKey="label.type">
-						${rf.type.libelle}
+						${rf.type.libelleAvecCode}
+						<c:if test="${rf.type.indetermine && !rf.annule}">
+							<div style="display: inline-block;" class="warning_icon" title="<fmt:message key='label.regime.a.determiner.${portee}'/>">&nbsp;</div>
+						</c:if>
 					</display:column>
+					<c:if test="${portee == 'VD'}">
+						<display:column titleKey="label.exoneration.IBC" style="width: 10%; text-align: center;">
+							<input type="checkbox" disabled="disabled" <c:if test="${rf.exonerantIBC}">checked="checked"</c:if>/>
+						</display:column>
+						<display:column titleKey="label.exoneration.ICI" style="width: 10%; text-align: center;">
+							<input type="checkbox" disabled="disabled" <c:if test="${rf.exonerantICI}">checked="checked"</c:if>/>
+						</display:column>
+						<display:column titleKey="label.exoneration.IFONC" style="width: 10%; text-align: center;">
+							<input type="checkbox" disabled="disabled" <c:if test="${rf.exonerantIFONC}">checked="checked"</c:if>/>
+						</display:column>
+					</c:if>
 					<display:column class="action" style="width: 10%;">
 						<c:if test="${!rf.annule}">
-							<c:if test="${rf.dateFin == null}">
-								<unireg:linkTo name="" action="/regimefiscal/edit.do" method="GET" params="{rfId:${rf.id}}" link_class="edit" title="Fermeture de régime fiscal" />
-							</c:if>
-							<c:if test="${rf.last}">
+							<unireg:linkTo name="" action="/regimefiscal/edit.do" method="GET" params="{rfId:${rf.id}}" link_class="edit" title="Fermeture de régime fiscal" />
+							<c:if test="${rf.last && !rf.first}">
 								<unireg:linkTo name="" action="/regimefiscal/cancel.do" method="POST" params="{rfId:${rf.id}}" link_class="delete"
 								               title="Annulation de régime fiscal" confirm="Voulez-vous vraiment annuler ce régime fiscal ${portee} ?"/>
 							</c:if>

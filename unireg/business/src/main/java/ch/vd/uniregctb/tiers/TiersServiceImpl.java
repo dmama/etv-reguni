@@ -5940,10 +5940,21 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public RegimeFiscal addRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut, RegDate dateFin) {
-		final RegimeFiscal existing = getDernierRegimeFiscal(e, portee);
-		if (existing != null && existing.getDateFin() == null) {
-			if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
-				closeRegimeFiscal(existing, dateDebut.getOneDayBefore());
+		// s'il existe un régime fiscal déjà valide à la date de début demandée, il faut
+		// le fermer (simple fermeture ou annulation et remplacement, selon la valeur actuelle de la date de fin)
+		final List<RegimeFiscal> all = e.getRegimesFiscauxNonAnnulesTries(portee);
+		final RegimeFiscal toClose = DateRangeHelper.rangeAt(all, dateDebut);
+		if (toClose != null) {
+			// deux cas : date de fin nulle ou pas
+			if (toClose.getDateFin() == null) {
+				closeRegimeFiscal(toClose, dateDebut.getOneDayBefore());
+			}
+			else {
+				final RegimeFiscal copy = toClose.duplicate();
+				toClose.setAnnule(true);
+				copy.setDateFin(dateDebut.getOneDayBefore());
+				final RegimeFiscal savedCopy = tiersDAO.addAndSave(e, copy);
+				evenementFiscalService.publierEvenementFiscalFermetureRegimeFiscal(savedCopy);
 			}
 		}
 
@@ -5956,11 +5967,20 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
+	public RegimeFiscal replaceRegimeFiscal(RegimeFiscal oldValue, TypeRegimeFiscal type) {
+		oldValue.setAnnule(true);
+		evenementFiscalService.publierEvenementFiscalAnnulationRegimeFiscal(oldValue);
+		return addRegimeFiscal(oldValue.getEntreprise(), oldValue.getPortee(), type, oldValue.getDateDebut(), oldValue.getDateFin());
+	}
+
+	@Override
 	public RegimeFiscal openAndCloseRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut, RegDate dateFin) {
 		final RegimeFiscal rf = tiersDAO.addAndSave(e, new RegimeFiscal(dateDebut, dateFin, portee, type.getCode()));
 		evenementFiscalService.publierEvenementFiscalOuvertureRegimeFiscal(rf);
 		closeRegimeFiscal(rf, rf.getDateFin());
 		return rf;
+
+		// TODO si le type est indeterminé, il faudra envoyer une nouvelle tâche au DPerm
 	}
 
 	@Override
@@ -5968,6 +5988,8 @@ public class TiersServiceImpl implements TiersService {
 		final RegimeFiscal rf = tiersDAO.addAndSave(e, new RegimeFiscal(dateDebut, null, portee, type.getCode()));
 		evenementFiscalService.publierEvenementFiscalOuvertureRegimeFiscal(rf);
 		return rf;
+
+		// TODO si le type est indeterminé, il faudra envoyer une nouvelle tâche au DPerm
 	}
 
 	@Override

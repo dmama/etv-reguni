@@ -2064,6 +2064,14 @@ public interface TiersService {
      */
     RegimeFiscal addRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut, RegDate dateFin);
 
+	/**
+	 * Crée un régime fiscal qui remplace le régime fiscal donné en paramètre (qui, lui, sera annulé...)
+	 * @param oldValue le régime fiscal à remplacer
+	 * @param type le type du nouveau régime fiscal
+	 * @return le régime fiscal nouvellement créé
+	 */
+	RegimeFiscal replaceRegimeFiscal(RegimeFiscal oldValue, TypeRegimeFiscal type);
+
     /**
      * Crée un régime fiscal valide depuis la date donnée avec les informations fournies
      * @param e l'entreprise destinataire

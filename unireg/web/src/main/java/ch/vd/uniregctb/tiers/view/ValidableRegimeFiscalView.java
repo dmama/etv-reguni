@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.tiers.view;
 
-import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 
-public interface ValidableRegimeFiscalView extends DateRange {
+public interface ValidableRegimeFiscalView {
+
+	RegDate getDateDebut();
 
 	RegimeFiscal.Portee getPortee();
 

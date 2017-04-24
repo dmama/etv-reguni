@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -26,16 +26,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.DynamicDelegatingValidator;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -62,6 +66,7 @@ public class SpecificiteFiscaleController {
 	private HibernateTemplate hibernateTemplate;
 	private Validator validator;
 	private TiersMapHelper tiersMapHelper;
+	private ServiceRegimeFiscal regimeFiscalService;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -85,6 +90,10 @@ public class SpecificiteFiscaleController {
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
+	}
+
+	public void setRegimeFiscalService(ServiceRegimeFiscal regimeFiscalService) {
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	public void setValidators(Validator... validator) {
@@ -142,10 +151,16 @@ public class SpecificiteFiscaleController {
 					liste.add(new RegimeFiscalListEditView(regime.getId(), regime.isAnnule(), regime.getDateDebut(), regime.getDateFin(), mapRegimesParCode.get(regime.getCode())));
 				}
 			}
-			Collections.sort(liste, new AnnulableHelper.AnnulableDateRangeComparator<>(true));
+			liste.sort(new AnnulableHelper.AnnulableDateRangeComparator<>(true));
 			for (RegimeFiscalListEditView view : liste) {
 				if (!view.isAnnule()) {
 					view.setLast(true);
+					break;
+				}
+			}
+			for (RegimeFiscalListEditView view : CollectionsUtils.revertedOrder(liste)) {
+				if (!view.isAnnule()) {
+					view.setFirst(true);
 					break;
 				}
 			}
@@ -231,8 +246,7 @@ public class SpecificiteFiscaleController {
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/regimefiscal/warning-message.do", method = RequestMethod.GET)
 	@ResponseBody
-	public StringHolder getMessageWarningRegimeFiscal(@RequestParam("pmId") long pmId, @RequestParam("date") RegDate date, @RequestParam("portee") RegimeFiscal.Portee portee, @RequestParam("code") String code) {
-		final Entreprise entreprise = getEntreprise(pmId);
+	public StringHolder getMessageWarningRegimeFiscal(@RequestParam("date") RegDate date, @RequestParam("portee") RegimeFiscal.Portee portee, @RequestParam("code") String code) {
 		final Map<String, TypeRegimeFiscal> mapRegimes = getMapRegimesFiscauxParCode();
 		final TypeRegimeFiscal rf = mapRegimes.get(code);
 		if (rf != null) {
@@ -273,11 +287,30 @@ public class SpecificiteFiscaleController {
 		final Map<String, TypeRegimeFiscal> mapRegimes = getMapRegimesFiscauxParCode();
 		final TypeRegimeFiscal rf = mapRegimes.get(view.getCode());
 		if (rf == null) {
-			bindingResult.addError(new FieldError("command", "code", ""));
+			bindingResult.rejectValue("code", "error.type.regime.fiscal.invalide");
+			return showAddRegimeFiscal(view, model);
 		}
 
+		final List<RegimeFiscal> regimesFiscauxValides = entreprise.getRegimesFiscauxNonAnnulesTries(view.getPortee());
+
+		// vérification que la date de début n'est pas déjà utilisée pour un autre régime fiscal (auquel cas c'est plutôt une édition
+		// qu'il faudrait faire...)
+		final boolean sameDateDebutUsed = regimesFiscauxValides.stream().anyMatch(existing -> existing.getDateDebut() == view.getDateDebut());
+		if (sameDateDebutUsed) {
+			bindingResult.rejectValue("dateDebut", "error.date.debut.regime.fiscal.deja.utilisee");
+			return showAddRegimeFiscal(view, model);
+		}
+
+		// calcul de la date de fin (= la veille de la date de début du prochain)
+		final RegDate dateFin = regimesFiscauxValides.stream()
+				.filter(existing -> RegDateHelper.isAfter(existing.getDateDebut(), view.getDateDebut(), NullDateBehavior.EARLIEST))
+				.map(RegimeFiscal::getDateDebut)
+				.min(Comparator.naturalOrder())
+				.map(RegDate::getOneDayBefore)
+				.orElse(null);
+
 		// tout est bon, on fonce
-		tiersService.addRegimeFiscal(entreprise, view.getPortee(), rf, view.getDateDebut(), view.getDateFin());
+		tiersService.addRegimeFiscal(entreprise, view.getPortee(), rf, view.getDateDebut(), dateFin);
 		return "redirect:/regimefiscal/edit-list.do?pmId=" + entreprise.getNumero() + "&portee=" + view.getPortee();
 	}
 
@@ -295,12 +328,7 @@ public class SpecificiteFiscaleController {
 
 		// on va trier par ordre alphabétique des libellés
 		final List<Map.Entry<String, String>> flatMap = new ArrayList<>(map.entrySet());
-		Collections.sort(flatMap, new Comparator<Map.Entry<String, String>>() {
-			@Override
-			public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
-				return o1.getValue().compareTo(o2.getValue());      // ordre alphabétique des valeurs
-			}
-		});
+		flatMap.sort(Comparator.comparing(Map.Entry::getValue, Comparator.naturalOrder()));     // ordre alphabétique des valeurs
 		final Map<String, String> sortedMap = new LinkedHashMap<>(map.size());
 		for (Map.Entry<String, String> entry : flatMap) {
 			sortedMap.put(entry.getKey(), entry.getValue());
@@ -318,7 +346,6 @@ public class SpecificiteFiscaleController {
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/regimefiscal/edit.do", method = RequestMethod.GET)
 	public String showEditRegimeFiscal(@RequestParam("rfId") long rfId, Model model) throws ObjectNotFoundException, AccessDeniedException {
-
 		checkDroitModificationRegimesFiscaux();
 		final RegimeFiscal rf = hibernateTemplate.get(RegimeFiscal.class, rfId);
 		if (rf == null) {
@@ -326,7 +353,7 @@ public class SpecificiteFiscaleController {
 		}
 		checkDroitEcritureTiers(rf.getEntreprise());
 
-		return showEditRegimeFiscal(new EditRegimeFiscalView(rf), model);
+		return showEditRegimeFiscal(new EditRegimeFiscalView(rf, regimeFiscalService), model);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -346,15 +373,19 @@ public class SpecificiteFiscaleController {
 		}
 		checkDroitEcritureTiers(rf.getEntreprise());
 
-		// pour le moment, on ne peut juste que fermer le régime fiscal, il faut donc qu'il soit ouvert avant...
-		if (rf.getDateFin() != null) {
-			throw new ActionException("Le régime fiscal est déjà fermé.");
-		}
-		if (view.getDateFin() == null) {
+		// on peut changer : uniquement le type de régime fiscal
+
+		final boolean sameCode = Objects.equals(rf.getCode(), view.getCode());
+		if (sameCode) {
 			Flash.warning("Aucune modification effectuée.", 4000);
 		}
 		else {
-			tiersService.closeRegimeFiscal(rf, view.getDateFin());
+			final Map<String, TypeRegimeFiscal> mapRegimes = getMapRegimesFiscauxParCode();
+			final TypeRegimeFiscal nouveauTypeRegime = mapRegimes.get(view.getCode());
+			if (nouveauTypeRegime == null) {
+				throw new ActionException("Ce type de régime fiscal est inconnu.");
+			}
+			tiersService.replaceRegimeFiscal(rf, nouveauTypeRegime);
 		}
 
 		return "redirect:/regimefiscal/edit-list.do?pmId=" + rf.getEntreprise().getNumero() + "&portee=" + rf.getPortee();
