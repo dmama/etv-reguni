@@ -1,33 +1,52 @@
 package ch.vd.uniregctb.xml.party.v5.strategy;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
+import ch.vd.unireg.xml.party.corporation.v5.LegalForm;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
+import ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory;
+import ch.vd.unireg.xml.party.v5.PartyPart;
+import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
+import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-public class CorporationStrategyTest {
+public class CorporationStrategyTest extends BusinessTest {
 
 	private CorporationStrategy strategy;
+	private Context context;
 
 	@Before
 	public void setUp() throws Exception {
 		strategy = new CorporationStrategy();
+
+		context = new Context();
+		context.tiersService = getBean(TiersService.class, "tiersService");
+		context.serviceRegimeFiscal = getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal");
 	}
 
 	/**
@@ -144,5 +163,69 @@ public class CorporationStrategyTest {
 		exo0.setDateFin(dateFin);
 		exo0.setImmeuble(immeuble);
 		return exo0;
+	}
+
+	/**
+	 * [SIFISC-24467] porblème apparu pour les formes juridiques dont la date de début est très antérieure à la date
+	 * de début du premier régime fiscal vaudois... la catégorie d'entreprise, tirée du régime fiscal, n'était alors
+	 * pas déterminée et BOOM...
+	 */
+	@Test
+	public void testFormesLegalesEtCategoriesEntreprise() throws Exception {
+
+		final RegDate dateDebut = date(1974, 2, 5);
+		final RegDate dateDebutRegimeFiscal = date(1994, 1, 1);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// non, rien...
+			}
+		});
+
+		// mise en place fiscale
+		final long idpm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Les joyeux lurons");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.ASSOCIATION);
+			addRegimeFiscalCH(entreprise, dateDebutRegimeFiscal, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			addRegimeFiscalVD(entreprise, dateDebutRegimeFiscal, null, MockTypeRegimeFiscal.ORDINAIRE_APM);
+			return entreprise.getNumero();
+		});
+
+		// appel de la stratégie
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(idpm);
+				assertNotNull(entreprise);
+
+				final Corporation corp = new Corporation();
+				strategy.initBase(corp, entreprise, context);
+				strategy.initParts(corp, entreprise, EnumSet.of(PartyPart.LEGAL_FORMS), context);
+
+				// vérifions les formes légales
+				final List<LegalForm> legalForms = corp.getLegalForms();
+				assertNotNull(legalForms);
+				assertEquals(2, legalForms.size());
+				{
+					final LegalForm lf = legalForms.get(0);
+					assertNotNull(lf);
+					assertEquals(dateDebut, DataHelper.xmlToCore(lf.getDateFrom()));
+					assertEquals(dateDebutRegimeFiscal.getOneDayBefore(), DataHelper.xmlToCore(lf.getDateTo()));
+					assertEquals(LegalFormCategory.OTHER, lf.getLegalFormCategory());       // pas de catégorie définie -> AUTRE
+					assertEquals(ch.vd.unireg.xml.party.taxpayer.v5.LegalForm.ASSOCIATION, lf.getType());
+				}
+				{
+					final LegalForm lf = legalForms.get(1);
+					assertNotNull(lf);
+					assertEquals(dateDebutRegimeFiscal, DataHelper.xmlToCore(lf.getDateFrom()));
+					assertNull(lf.getDateTo());
+					assertEquals(LegalFormCategory.ASSOCIATION_FOUNDATION, lf.getLegalFormCategory());
+					assertEquals(ch.vd.unireg.xml.party.taxpayer.v5.LegalForm.ASSOCIATION, lf.getType());
+				}
+			}
+		});
 	}
 }
