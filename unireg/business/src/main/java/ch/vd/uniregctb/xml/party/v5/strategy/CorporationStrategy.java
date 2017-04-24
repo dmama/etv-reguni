@@ -4,16 +4,22 @@ package ch.vd.uniregctb.xml.party.v5.strategy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.CollatableDateRange;
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.xml.party.corporation.v5.Capital;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
@@ -48,6 +54,7 @@ import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
@@ -163,21 +170,109 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		return Collections.emptyList();
 	}
 
+	private static class DatedCategory implements DateRange {
+
+		private final RegDate dateDebut;
+		private final RegDate dateFin;
+		private final CategorieEntreprise categorie;
+
+		public DatedCategory(CategorieEntreprise categorie, DateRange range) {
+			this(categorie, range.getDateDebut(), range.getDateFin());
+		}
+
+		public DatedCategory(CategorieEntreprise categorie, RegDate dateDebut, RegDate dateFin) {
+			this.categorie = categorie;
+			this.dateDebut = dateDebut;
+			this.dateFin = dateFin;
+		}
+
+		public CategorieEntreprise getCategorie() {
+			return categorie;
+		}
+
+		@Override
+		public RegDate getDateDebut() {
+			return dateDebut;
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return dateFin;
+		}
+	}
+
+	private static class DatedLegalFormWithCategory extends DatedCategory implements CollatableDateRange {
+
+		private final FormeLegale formeLegale;
+
+		public DatedLegalFormWithCategory(DatedCategory categorie, FormeLegale formeLegale) {
+			super(categorie.getCategorie(), categorie);
+			this.formeLegale = formeLegale;
+		}
+
+		public DatedLegalFormWithCategory(CategorieEntreprise categorie, RegDate dateDebut, RegDate dateFin, FormeLegale formeLegale) {
+			super(categorie, dateDebut, dateFin);
+			this.formeLegale = formeLegale;
+		}
+
+		public FormeLegale getFormeLegale() {
+			return formeLegale;
+		}
+
+		@Override
+		public boolean isCollatable(DateRange next) {
+			return DateRangeHelper.isCollatable(this, next)
+					&& getCategorie() == ((DatedLegalFormWithCategory) next).getCategorie()
+					&& getFormeLegale() == ((DatedLegalFormWithCategory) next).getFormeLegale();
+		}
+
+		@Override
+		public DatedLegalFormWithCategory collate(DateRange next) {
+			Assert.isTrue(isCollatable(next));
+			return new DatedLegalFormWithCategory(getCategorie(), getDateDebut(), next.getDateFin(), getFormeLegale());
+		}
+
+		public LegalForm toLegalForm() {
+			final LegalForm lf = new LegalForm();
+			lf.setDateFrom(DataHelper.coreToXMLv2(getDateDebut()));
+			lf.setDateTo(DataHelper.coreToXMLv2(getDateFin()));
+			lf.setType(EnumHelper.coreToXMLv5(formeLegale));
+			lf.setLabel(formeLegale.getLibelle());
+			lf.setLegalFormCategory(EnumHelper.coreToXMLv5(getCategorie()));
+			return lf;
+		}
+	}
+
 	@NotNull
 	private List<LegalForm> extractFormesJuridiques(Entreprise entreprise, Context context) {
 		final List<FormeLegaleHisto> histo = context.tiersService.getFormesLegales(entreprise, false);
-		final List<LegalForm> liste = new ArrayList<>(histo.size());
+		final List<DatedCategory> regimesFiscaux = context.serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise).stream()
+				.map(rf -> new DatedCategory(rf.getCategorie(), rf))
+				.collect(Collectors.toList());
+		final DateRangeHelper.AdapterCallback<DatedCategory> adapter = new DateRangeHelper.AdapterCallback<DatedCategory>() {
+			@Override
+			public DatedCategory adapt(DatedCategory range, RegDate debut, RegDate fin) {
+				final RegDate dateDebut = debut != null ? debut : range.getDateDebut();
+				final RegDate dateFin = fin != null ? fin : range.getDateFin();
+				return new DatedCategory(range.getCategorie(), dateDebut, dateFin);
+			}
+		};
+
+		final List<DatedLegalFormWithCategory> resultatBrut = new LinkedList<>();
 		for (FormeLegaleHisto fl : histo) {
-			final LegalForm lf = new LegalForm();
-			lf.setDateFrom(DataHelper.coreToXMLv2(fl.getDateDebut()));
-			lf.setDateTo(DataHelper.coreToXMLv2(fl.getDateFin()));
-			lf.setType(EnumHelper.coreToXMLv5(fl.getFormeLegale()));
-			lf.setLabel(fl.getFormeLegale().getLibelle());
-			final TypeRegimeFiscal typeRegimeFiscalVD = context.serviceRegimeFiscal.getTypeRegimeFiscalVD(entreprise, fl.getDateDebut());
-			lf.setLegalFormCategory(EnumHelper.coreToXMLv5(typeRegimeFiscalVD.getCategorie()));
-			liste.add(lf);
+			final List<DatedCategory> regimesLocaux = DateRangeHelper.extract(regimesFiscaux, fl.getDateDebut(), fl.getDateFin(), adapter);
+			final List<DatedCategory> decoupage = DateRangeHelper.override(Collections.singletonList(new DatedCategory(CategorieEntreprise.AUTRE, fl)),
+			                                                               regimesLocaux,
+			                                                               adapter);
+			decoupage.stream()
+					.map(cat -> new DatedLegalFormWithCategory(cat, fl.getFormeLegale()))
+					.forEach(resultatBrut::add);
 		}
-		return liste;
+
+		final List<DatedLegalFormWithCategory> collated = DateRangeHelper.collate(resultatBrut);
+		return collated.stream()
+				.map(DatedLegalFormWithCategory::toLegalForm)
+				.collect(Collectors.toList());
 	}
 
 	@NotNull
