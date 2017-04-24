@@ -85,10 +85,19 @@ public class AbstractEditDegrevementViewValidator implements Validator {
 			}
 		}
 
-		if (view.getLoiLogement().getPourcentageCaractereSocial() != null) {
-			final BigDecimal value = view.getLoiLogement().getPourcentageCaractereSocial();
-			if (value.compareTo(CENT) > 0 || value.compareTo(BigDecimal.ZERO) < 0) {
-				errors.rejectValue("loiLogement.pourcentageCaractereSocial", "error.degexo.pourcentage.hors.limites");
+		// [SIFISC-24472] si la case "LL" est cochée, alors le pourcentage de caractère social est obligaroire
+		final Boolean controleOfficeLogement = view.getLoiLogement().getControleOfficeLogement();
+		if (controleOfficeLogement != null && controleOfficeLogement) {
+			if (!errors.hasFieldErrors("loiLogement.pourcentageCaractereSocial")) {
+				if (view.getLoiLogement().getPourcentageCaractereSocial() == null) {
+					errors.rejectValue("loiLogement.pourcentageCaractereSocial", "error.champ.obligatoire");
+				}
+				else {
+					final BigDecimal value = view.getLoiLogement().getPourcentageCaractereSocial();
+					if (value.compareTo(CENT) > 0 || value.compareTo(BigDecimal.ZERO) < 0) {
+						errors.rejectValue("loiLogement.pourcentageCaractereSocial", "error.degexo.pourcentage.hors.limites");
+					}
+				}
 			}
 		}
 	}
