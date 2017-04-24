@@ -1,12 +1,9 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -97,10 +94,8 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					// OBSOLETE (supprimé) - [SIFISC-17721] sur les DP/APM, les déclarations sont optionnelles --> selon régime fiscal, voir ci-dessous.
 
 					// Cas des 190-2 et 739 vaudois qui doivent être optionels
-					// TODO: charger les valeurs depuis la configuration Unireg.
-					final Set<String> assujOptionnelsVD = new HashSet<>(Arrays.asList("190-2", "739"));
 					final TypeRegimeFiscal typeRegimeFiscalVD = serviceRegimeFiscal.getTypeRegimeFiscalVD(entreprise, exercice.getDateFin());
-					final boolean isOptionnelle = typeContribuable == TypeContribuable.VAUDOIS_ORDINAIRE && assujOptionnelsVD.contains(typeRegimeFiscalVD.getCode());
+					final boolean isOptionnelle = typeContribuable == TypeContribuable.VAUDOIS_ORDINAIRE && serviceRegimeFiscal.isRegimeFiscalDiOptionnelleVd(typeRegimeFiscalVD);
 
 					// création de la structure pour la période d'imposition
 					resultat.add(new PeriodeImpositionPersonnesMorales(intersection.getDateDebut(),

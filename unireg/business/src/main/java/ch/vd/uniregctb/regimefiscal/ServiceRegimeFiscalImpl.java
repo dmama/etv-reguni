@@ -26,8 +26,14 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 
 	private ServiceInfrastructureService serviceInfra;
 
+	private ServiceRegimeFiscalConfiguration configuration;
+
 	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
 		this.serviceInfra = serviceInfra;
+	}
+
+	public void setConfiguration(ServiceRegimeFiscalConfiguration configuration) {
+		this.configuration = configuration;
 	}
 
 	@Override
@@ -83,8 +89,10 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 	@NotNull
 	public TypeRegimeFiscal getTypeRegimeFiscalParDefaut(@NotNull FormeJuridiqueEntreprise formeJuridique) throws ServiceRegimeFiscalException {
 
-		final String codeRegime = FormeJuridiqueCodesRegimeFiscauxMapping.getDefaultCodePourFormeJuridique(formeJuridique);
-
+		String codeRegime = configuration.getCodeTypeRegimeFiscal(formeJuridique);
+		if (codeRegime == null) {
+			codeRegime = getTypeRegimeFiscalIndetermine().getCode();
+		}
 		try {
 			return this.getTypeRegimeFiscal(codeRegime);
 		}
@@ -108,6 +116,11 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 		return entreprise.getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee.VD).stream()
 				.map(r -> new RegimeFiscalConsolide(r, getTypeRegimeFiscal(r.getCode())))
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean isRegimeFiscalDiOptionnelleVd(@NotNull TypeRegimeFiscal typeRegimeFiscal) {
+		return configuration.isRegimeFiscalDiOptionnelleVd(typeRegimeFiscal.getCode());
 	}
 
 	/**

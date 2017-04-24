@@ -19,8 +19,7 @@
 		<param-value>
 			classpath*:/unireg-core-dao.xml,
 			classpath*:/unireg-core-sf.xml,
-			classpath*:/unireg-business-essentials.xml;
-			classpath*:/unireg-business-regimefiscal.xml;
+			classpath*:/unireg-business-essentials.xml,
 			classpath*:/unireg-business-services.xml,
 			classpath*:/unireg-business-jobs.xml,
 			classpath*:/unireg-business-interfaces.xml,

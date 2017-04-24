@@ -57,6 +57,11 @@ public interface ServiceRegimeFiscal {
 	List<RegimeFiscalConsolide> getRegimesFiscauxVDNonAnnulesTrie(Entreprise entreprise);
 
 	/**
+	 * Détermine si le type de régime fiscal fait partie de ceux entrainant une DI optionnelle pour les entités vaudoise.
+	 */
+	boolean isRegimeFiscalDiOptionnelleVd(@NotNull TypeRegimeFiscal typeRegimeFiscal);
+
+	/**
 	 * @param entreprise entreprise à considérer
 	 * @param genreImpot le genre d'impôt qui nous intéresse
 	 * @return les périodes d'exonération avec les types d'éxonération concernés

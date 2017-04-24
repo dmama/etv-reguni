@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Configuration Service Régime Fiscal -->
+
+	<bean id="serviceRegimeFiscalConfiguration" class="ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscalConfigurationImpl">
+		<property name="configTableFormesJuridiquesDefauts" value="0103=80, 0104=80, 0105=01, 0106=01, 0107=01, 0108=01, 0109=70, 0110=70, 0111=01, 0151=01, 0312=01"/>
+		<property name="configRegimesDiOptionnelleVd" value="190-2,739"/>
+	</bean>
+
+</beans>
