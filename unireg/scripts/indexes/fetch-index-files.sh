@@ -34,14 +34,15 @@ DEST_FILE=$(cd $(dirname "$DEST_FILE") && pwd)/$(basename "$DEST_FILE")
 # cleanup avant nouvelle récupération
 LUCENE_DIR="lucene/$INDEX"
 TMP_DIR=$(mktemp -d)
+mkdir "$TMP_DIR/$INDEX"
 
 MACHINE=logapp.etat-de-vaud.ch
 URL="https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/$LUCENE_DIR/"
 wget --no-proxy --no-check-certificate "$URL" -O - | grep "<a href=" | grep -v "Parent Directory" | while IFS="<>" read DUMMY1 HREF DUMMY2; do
 	FILENAME=$(echo "$HREF" | sed -e 's/^.*href=.\(.*\).$/\1/')
-	(cd "$TMP_DIR" && wget --no-proxy --no-check-certificate "$URL$FILENAME")
+	(cd "$TMP_DIR/$INDEX" && wget --no-proxy --no-check-certificate "$URL$FILENAME")
 done
 
 echo "Génération du fichier d'archive $DEST_FILE..." >&2
-(cd "$TMP_DIR" && tar --create --use-compress-program /usr/bin/xz --verbose --file "$DEST_FILE" .)
+(cd "$TMP_DIR" && tar --create --use-compress-program /usr/bin/xz --verbose --file "$DEST_FILE" "$INDEX")
 rm -rf "$TMP_DIR"
