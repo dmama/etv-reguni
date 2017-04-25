@@ -1961,6 +1961,16 @@ var Form = {
 		var form = $(html);
 		form.appendTo('body');
 		form.submit();
+	},
+
+	/**
+	 * Soumet la form dont l'identifiant HTML est passé en paramètre après avoir désactivé l'élément bouton
+	 * @param button bouton à désactiver
+	 * @param idForm identifiant HTML de la form à soumettre
+	 */
+	disableButtonAndSubmitForm: function(button, idForm) {
+		button.disabled = true;
+		$('#' + idForm).submit();
 	}
 };
 

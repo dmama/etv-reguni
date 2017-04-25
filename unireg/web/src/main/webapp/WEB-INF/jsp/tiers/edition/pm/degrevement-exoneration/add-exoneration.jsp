@@ -20,7 +20,7 @@
 			</tr>
 		</table>
 
-		<form:form commandName="addExonerationCommand" action="add-exoneration.do">
+		<form:form commandName="addExonerationCommand" action="add-exoneration.do" id="addExonerationForm">
 
 			<form:hidden path="idContribuable"/>
 			<form:hidden path="idImmeuble"/>
@@ -36,7 +36,7 @@
 			<!-- Debut Bouton -->
 			<div style="padding: 0 25%;">
 				<div style="padding: 0 20%; display: inline">
-					<input type="submit" value="<fmt:message key='label.bouton.ajouter'/>"/>
+					<input type="button" value="<fmt:message key='label.bouton.ajouter'/>" onclick="Form.disableButtonAndSubmitForm(this, 'addExonerationForm')"/>
 				</div>
 				<div style="padding: 0 20%; display: inline">
 					<unireg:buttonTo name="Retour" action="/degrevement-exoneration/edit-exonerations.do" params="{idContribuable:${idContribuable},idImmeuble:${immeuble.idImmeuble}}" method="GET"/>

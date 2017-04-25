@@ -6,7 +6,7 @@
 <c:set var="commandName" value="${param.commandName}"/>
 <c:set var="allowPeriodeDebutEdit" value="${param.allowPeriodeDebutEdit}"/>
 
-<table border="0">
+<table border="0" class="exoneration">
 	<tr class="even">
 		<td style="width: 15%;"><fmt:message key="label.periode.fiscale.debut"/>&nbsp;:</td>
 		<td style="width: 35%;">
