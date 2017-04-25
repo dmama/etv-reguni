@@ -25,6 +25,7 @@ import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
@@ -218,6 +219,55 @@ public class LandRightBuilderTest {
 	}
 
 	@Test
+	public void testNewLandOwnershipRightCommunity() throws Exception {
+
+		final Long communityId = 234342L;
+		final long servantId = 4222L;
+
+		final CommunauteRF communaute = new CommunauteRF();
+		communaute.setId(communityId);
+		communaute.setIdRF("388289282");
+		communaute.setType(TypeCommunaute.INDIVISION);
+
+		final BienFondRF servant = new BienFondRF();
+		servant.setIdRF("42432234");
+		servant.setId(servantId);
+
+		final DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
+		droit.setDateDebut(RegDate.get(2016, 11, 3));
+		droit.setDateFin(RegDate.get(2017, 9, 22));
+		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit.setRegime(GenrePropriete.FONDS_DOMINANT);
+		droit.setPart(new Fraction(3, 5));
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
+		droit.setAyantDroit(communaute);
+		droit.setImmeuble(servant);
+		droit.calculateDateEtMotifDebut();
+
+		final LandRight landRight = LandRightBuilder.newLandRight(droit, t -> null, rightHolderComparator);
+		assertNotNull(landRight);
+		assertTrue(landRight instanceof LandOwnershipRight);
+
+		final LandOwnershipRight landOwnershipRight = (LandOwnershipRight) landRight;
+		assertNotNull(landOwnershipRight);
+		assertEquals(OwnershipType.DOMINANT_OWNERSHIP, landOwnershipRight.getType());
+		assertShare(3, 5, landOwnershipRight.getShare());
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(landOwnershipRight.getDateTo()));
+		assertEquals("Achat", landOwnershipRight.getStartReason());
+		assertNull(landOwnershipRight.getEndReason());
+		assertCaseIdentifier(21, "2016/322/3", landOwnershipRight.getCaseIdentifier());
+		assertEquals(communityId, landOwnershipRight.getRightHolder().getCommunityId());
+		assertEquals(servantId, landOwnershipRight.getImmovablePropertyId());
+		assertNull(landOwnershipRight.getCommunityId());
+
+		final List<AcquisitionReason> reasons = landOwnershipRight.getAcquisitionReasons();
+		assertNotNull(reasons);
+		assertEquals(1, reasons.size());
+		assertAcquisitionReason(RegDate.get(2016, 9, 22), "Achat", 21, "2016/322/3", reasons.get(0));
+	}
+
+	@Test
 	public void testNewUsufructRight() throws Exception {
 
 		final long ctbId1 = 2928282L;
@@ -373,13 +423,13 @@ public class LandRightBuilderTest {
 		assertEquals(Integer.valueOf((int) ctbId2), housingRight.getRightHolder().getTaxPayerNumber());
 	}
 
-	private void assertShare(int numerator, int denominator, Share share) {
+	public static void assertShare(int numerator, int denominator, Share share) {
 		assertNotNull(share);
 		assertEquals(numerator, share.getNumerator());
 		assertEquals(denominator, share.getDenominator());
 	}
 
-	private static void assertCaseIdentifier(int officeNumber, String caseNumber, CaseIdentifier caseIdentifier) {
+	public static void assertCaseIdentifier(int officeNumber, String caseNumber, CaseIdentifier caseIdentifier) {
 		assertNotNull(caseIdentifier);
 		assertEquals(officeNumber, caseIdentifier.getOfficeNumber());
 		assertEquals(caseNumber, caseIdentifier.getCaseNumberText());

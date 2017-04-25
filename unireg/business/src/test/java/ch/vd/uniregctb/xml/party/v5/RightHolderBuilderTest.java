@@ -13,24 +13,30 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 public class RightHolderBuilderTest {
 
 	@Test
 	public void testGetRightHolderOnCommunity() throws Exception {
-		try {
-			RightHolderBuilder.getRightHolder(new CommunauteRF(), t -> null);
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals("Type d'ayant-droit illégal=[CommunauteRF]", e.getMessage());
-		}
+
+		final long communityId = 234342L;
+
+		final CommunauteRF communaute = new CommunauteRF();
+		communaute.setId(communityId);
+		communaute.setIdRF("388289282");
+		communaute.setType(TypeCommunaute.INDIVISION);
+
+		final RightHolder owner = RightHolderBuilder.getRightHolder(communaute, t -> null);
+		assertNotNull(owner);
+		assertEquals(Long.valueOf(communityId), owner.getCommunityId());
+		assertNull(owner.getImmovablePropertyId());
+		assertNull(owner.getIdentity());
 	}
 
 	/**

@@ -23,7 +23,6 @@ import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -163,7 +162,8 @@ public abstract class ImmovablePropertyBuilder {
 		return droits
 				.filter(AnnulableHelper::nonAnnule)
 				// on n'expose pas les droits des communautés (c'est les droits des personnes membres des communautés qui portent l'information)
-				.filter(d -> !(d instanceof DroitProprieteCommunauteRF))
+				// [SIFISC-24457] on expose bien les droits sur les communautés dorénavant
+				// .filter(d -> !(d instanceof DroitProprieteCommunauteRF))
 				.sorted(new DroitRFRangeMetierComparator())
 				.map(d -> LandRightBuilder.newLandRight(d, contribuableIdProvider, rightHolderComparator))
 				.collect(Collectors.toList());

@@ -17,7 +17,6 @@ import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
-import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -51,7 +50,7 @@ public abstract class LandRightBuilder {
 	private static final Map<Class, Strategy<?>> strategies = new HashMap<>();
 
 	static {
-		strategies.put(DroitProprieteCommunauteRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteCommunauteRF) d));
+		strategies.put(DroitProprieteCommunauteRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteCommunauteRF) d, p));
 		strategies.put(DroitProprietePersonneMoraleRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d, p));
 		strategies.put(DroitProprietePersonnePhysiqueRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d, p));
 		strategies.put(DroitProprieteImmeubleRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteImmeubleRF) d, p));
@@ -71,8 +70,11 @@ public abstract class LandRightBuilder {
 	}
 
 	@NotNull
-	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprieteCommunauteRF droitRF) {
-		throw new ProgrammingException("Les droits sur les communautés ne doivent pas être exposés, par design.");
+	public static LandOwnershipRight newLandOwnershipRight(@NotNull DroitProprieteCommunauteRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider) {
+		final LandOwnershipRight right = new LandOwnershipRight();
+		fillLandOwnershipRight(droitRF, ctbIdProvider, right);
+		right.setCommunityId(null); // par définition, le droit de la communauté elle-même n'a pas cette valeur renseignée
+		return right;
 	}
 
 	@NotNull

@@ -117,17 +117,17 @@ public class EasementRightHolderComparatorTest {
 
 	@NotNull
 	private static RightHolder newCtb(int taxPayerNumber) {
-		return new RightHolder(taxPayerNumber, null, null, 1, null);
+		return new RightHolder(taxPayerNumber, null, null, null, 1, null);
 	}
 
 
 	@NotNull
 	private static RightHolder newImmeuble(long immovablePropertyId) {
-		return new RightHolder(null, immovablePropertyId, null, 0, null);
+		return new RightHolder(null, immovablePropertyId, null, null, 0, null);
 	}
 
 	@NotNull
 	private static RightHolder newNonRapproche(int id) {
-		return new RightHolder(null, null, new NaturalPersonIdentity(id, null, null, null, 0, null), 0, null);
+		return new RightHolder(null, null, null, new NaturalPersonIdentity(id, null, null, null, 0, null), 0, null);
 	}
 }
