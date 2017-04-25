@@ -37,6 +37,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -56,6 +57,7 @@ import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.utils.DayMonthEditor;
 import ch.vd.uniregctb.utils.EnumEditor;
 import ch.vd.uniregctb.utils.IdentifiantAffaireRFEditor;
+import ch.vd.uniregctb.utils.IdentifiantDroitRFEditor;
 import ch.vd.uniregctb.utils.IndividuNumberEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
 import ch.vd.uniregctb.utils.TiersNumberEditor;
@@ -110,6 +112,7 @@ public class SuperGraController {
 		binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
 		binder.registerCustomEditor(URL.class, new URLEditor());
 		binder.registerCustomEditor(IdentifiantAffaireRF.class, new IdentifiantAffaireRFEditor(true, false));
+		binder.registerCustomEditor(IdentifiantDroitRF.class, new IdentifiantDroitRFEditor(true, false));
 
 		final PropertyEditor partialDateEditor = new RegDateEditor(true, true, false);
 
