@@ -3,13 +3,20 @@
 # A utiliser pour lancer tard dans la nuit ou pendant que l'application ne tourne pas, afin d'avoir un état cohérent
 
 ENVIRONMENT=$1
-DEST_FILE=$2
+INDEX=$2
+DEST_FILE=$3
 if [ -z "$ENVIRONMENT" ]; then
-        echo "Syntaxe : $(basename "$0") <env> <dest-file>.tar.xz avec <env> l'un de PR, VA, PP, TE" >&2
+        echo "Syntaxe : $(basename "$0") <env> <tiers|message-identification> <dest-file>.tar.xz avec <env> l'un de PR, VA, PP, TE" >&2
         exit 1
 elif [[ ! "$ENVIRONMENT" =~ ^(PR|VA|PP|TE)$ ]]; then
         echo "Pour l'environnement, seuls PR, VA, PP et TE sont acceptés (trouvé : '$ENVIRONMENT')" >&2
         exit 1
+elif [ -z "$INDEX" ]; then
+	echo "L'index souhaité doit être donné en paramètre" >&2
+	exit 1
+elif [[ ! "$INDEX" =~ ^(tiers|message-identification)$ ]]; then
+	echo "Seuls les indexes 'tiers' et 'message-identification' sont reconnus (trouvé : '$INDEX')" >&2
+	exit 1
 elif [ -z "$DEST_FILE" ]; then
 	echo "Le fichier de destination doit être donné en paramètre" >&2
 	exit 1
@@ -25,7 +32,7 @@ fi
 DEST_FILE=$(cd $(dirname "$DEST_FILE") && pwd)/$(basename "$DEST_FILE")
 
 # cleanup avant nouvelle récupération
-LUCENE_DIR=lucene/tiers
+LUCENE_DIR="lucene/$INDEX"
 TMP_DIR=$(mktemp -d)
 
 MACHINE=logapp.etat-de-vaud.ch
