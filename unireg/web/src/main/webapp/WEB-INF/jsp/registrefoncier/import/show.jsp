@@ -109,10 +109,10 @@
 				</display:column>
 				<display:column titleKey="label.id.rf" sortable="true" sortName="idRF">
 					<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
-						<c:if test="${mutation.entityId != null}">
-							<unireg:linkTo name="${mutation.idRF}" action="/supergra/entity/show.do" params="{id:${mutation.entityId},class:'ImmeubleRF'}"/>
+						<c:if test="${mutation.entityKey != null}">
+							<unireg:linkTo name="${mutation.idRF}" action="/supergra/entity/show.do" params="{id:${mutation.entityKey.id},class:'${mutation.entityKey.type}'}"/>
 						</c:if>
-						<c:if test="${mutation.entityId == null}">
+						<c:if test="${mutation.entityKey == null}">
 							${mutation.idRF}
 						</c:if>
 					</authz:authorize>

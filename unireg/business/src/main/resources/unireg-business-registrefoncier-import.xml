@@ -7,6 +7,11 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO"/>
 		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO"/>
+		<property name="droitRFDAO" ref="droitRFDAO"/>
+		<property name="batimentRFDAO" ref="batimentRFDAO"/>
+		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
+		<property name="ayantDroitRFDAO" ref="ayantDroitRFDAO"/>
+		<property name="communeRFDAO" ref="communeRFDAO"/>
 		<property name="batchScheduler" ref="batchScheduler"/>
 	</bean>
 
