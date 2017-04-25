@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
@@ -62,6 +63,16 @@ public class TacheController {
 	private static final String TABLE_NOUVEAU_DOSSIER_ID = "nouveauDossier";
 
 	/**
+	 * Nom de l'attribut qui conserve en session les critères de recherche utilisés pour les tâches
+	 */
+	private static final String TACHE_CRITERIA = "tacheCriteria";
+
+	/**
+	 * Nom de l'attribut qui conserve en session le tri et la pagination sur l'écran des tâches
+	 */
+	private static final String TACHE_PAGINATION = "tachePagination";
+
+	/**
 	 * Le nom de l'attribut utilise pour la liste des offices d'impôt de l'utilisateur
 	 */
 	private static final String OFFICE_IMPOT_UTILISATEUR_MAP_NAME = "officesImpotUtilisateur";
@@ -89,6 +100,7 @@ public class TacheController {
 	private TacheMapHelper tacheMapHelper;
 	private TacheListManager tacheListManager;
 	private RetourEditiqueControllerHelper editiqueControllerHelper;
+	private ControllerUtils controllerUtils;
 
 	public void setTacheMapHelper(TacheMapHelper tacheMapHelper) {
 		this.tacheMapHelper = tacheMapHelper;
@@ -102,6 +114,10 @@ public class TacheController {
 		this.editiqueControllerHelper = editiqueControllerHelper;
 	}
 
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
+	}
+
 	@InitBinder
 	public void initBinder(HttpServletRequest request, WebDataBinder binder) {
 		final Locale locale = request.getLocale();
@@ -112,9 +128,19 @@ public class TacheController {
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
-	public String showTaches(@Valid @ModelAttribute(value = COMMAND_NAME) TacheCriteriaView criteria, BindingResult binding, Model model, HttpServletRequest request) throws Exception {
+	public String showTaches(@Valid @ModelAttribute(value = COMMAND_NAME) TacheCriteriaView criteria, BindingResult binding,
+	                         @RequestParam(value = "effacer", required = false, defaultValue = "false") boolean effacer,
+	                         @RequestParam(value = "realSearch", required = false, defaultValue = "false") boolean realSearch,
+	                         Model model, HttpServletRequest request) throws Exception {
 
 		initData(model);
+
+		final HttpSession session = request.getSession();
+		if (effacer) {
+			session.removeAttribute(TACHE_CRITERIA);
+			session.removeAttribute(TACHE_PAGINATION);
+			return "redirect:list.do";
+		}
 
 		if (binding.hasErrors()) {
 			model.addAttribute(TACHE_LIST_NAME, Collections.emptyList());
@@ -122,11 +148,57 @@ public class TacheController {
 			return "tache/list";
 		}
 
-		final WebParamPagination pagination = new WebParamPagination(request, TABLE_TACHE_ID, PAGE_SIZE, "id", false);
+		// retrouvons le bon critère
+		final TacheCriteriaView actualCriteria;
+		if (realSearch) {
+			actualCriteria = criteria;
+			session.setAttribute(TACHE_CRITERIA, criteria);
+			session.removeAttribute(TACHE_PAGINATION);
+		}
+		else {
+			final TacheCriteriaView inSessionCriteria = (TacheCriteriaView) session.getAttribute(TACHE_CRITERIA);
+			actualCriteria = inSessionCriteria != null ? inSessionCriteria : new TacheCriteriaView();
+		}
+		model.addAttribute(COMMAND_NAME, actualCriteria);
 
-		final List<TacheListView> tachesView = tacheListManager.find(criteria, pagination);
+		// nombre d'éléments trouvés
+		final int count = tacheListManager.count(actualCriteria);
+		final int numPageMax = Math.max(1, (count / PAGE_SIZE) + (count % PAGE_SIZE == 0 ? 0 : 1));
+
+		// retrouvons le bon tri et la bonne pagination
+		final WebParamPagination pagination;
+		final String inRequestPaginationData = controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_TACHE_ID);
+		if (inRequestPaginationData != null) {
+			// tri et pagination indiqués dans la requête, c'est ce que l'on utilise
+			pagination = new WebParamPagination(request, TABLE_TACHE_ID, PAGE_SIZE);
+		}
+		else {
+			// rien dans la requête... voyons voir dans la session
+			final WebParamPagination inSessionPagination = (WebParamPagination) session.getAttribute(TACHE_PAGINATION);
+			if (inSessionPagination != null) {
+				if (inSessionPagination.getNumeroPage() > numPageMax) {
+					// il y a moins de pages que la dernière fois, on dirait... on revient sur la dernière page
+					pagination = new WebParamPagination(numPageMax, PAGE_SIZE, inSessionPagination.getChamp(), inSessionPagination.isSensAscending());
+				}
+				else {
+					pagination = inSessionPagination;
+				}
+
+				// si le numéro de page est supérieur à un, il faut refaire passer ça dans la requête
+				if (pagination.getNumeroPage() > 1) {
+					return "redirect:list.do?" + controllerUtils.getDisplayTagRequestParametersForPagination(TABLE_TACHE_ID, pagination);
+				}
+			}
+			else {
+				// ok, page 1 avec éléments triés par ID descendant, alors...
+				pagination = new WebParamPagination(1, PAGE_SIZE, "id", false);
+			}
+		}
+		session.setAttribute(TACHE_PAGINATION, pagination);
+
+		final List<TacheListView> tachesView = tacheListManager.find(actualCriteria, pagination);
 		model.addAttribute(TACHE_LIST_NAME, tachesView);
-		model.addAttribute(RESULT_SIZE_NAME, tacheListManager.count(criteria));
+		model.addAttribute(RESULT_SIZE_NAME, count);
 
 		return "tache/list";
 	}
