@@ -11,6 +11,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolderIdentity;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
@@ -32,7 +33,11 @@ public abstract class RightHolderBuilder {
 		}
 		else if (ayantDroit instanceof ImmeubleBeneficiaireRF) {
 			final ImmeubleBeneficiaireRF beneficiaire = (ImmeubleBeneficiaireRF) ayantDroit;
-			return new RightHolder(null, beneficiaire.getImmeuble().getId(), null, 0, null);
+			return new RightHolder(null, beneficiaire.getImmeuble().getId(), null, null, 0, null);
+		}
+		else if (ayantDroit instanceof CommunauteRF) {
+			final CommunauteRF communaute = (CommunauteRF) ayantDroit;
+			return new RightHolder(null, null, communaute.getId(), null, 0, null);
 		}
 		else {
 			throw new IllegalArgumentException("Type d'ayant-droit illégal=[" + ayantDroit.getClass().getSimpleName() + "]");
@@ -44,10 +49,10 @@ public abstract class RightHolderBuilder {
 		final Long ctbId = ctbIdProvider.apply(tiersRF);
 		if (ctbId == null) {
 			// le tiers n'est pas rapproché
-			return new RightHolder(null, null, buildRightHolderIdentity(tiersRF), 0, null);
+			return new RightHolder(null, null, null, buildRightHolderIdentity(tiersRF), 0, null);
 		}
 		else {
-			return new RightHolder(ctbId.intValue(), null, null, 0, null);
+			return new RightHolder(ctbId.intValue(), null, null, null, 0, null);
 		}
 	}
 

@@ -1064,7 +1064,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
 		return doInTransaction(true, status ->
 				Optional.ofNullable(context.registreFoncierService.getCommunaute(communityId))
-						.map(c -> CommunityOfOwnersBuilder.newCommunity(c, context.registreFoncierService::getCommunauteMembreInfo))
+						.map(communaute -> CommunityOfOwnersBuilder.newCommunity(communaute,
+						                                                         context.registreFoncierService::getContribuableIdFor,
+						                                                         context.registreFoncierService::getCommunauteMembreInfo))
 						.orElse(null));
 	}
 }

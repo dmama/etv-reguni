@@ -657,7 +657,7 @@
 		<wsparty4.version>4.1</wsparty4.version>
 		<ws.v5.version>5.5.1</ws.v5.version>
 		<ws.v6.version>6.5.1</ws.v6.version>
-		<ws.v7.version>7.6</ws.v7.version>
+		<ws.v7.version>7.7-SNAPSHOT</ws.v7.version>
 		<unireg.jaxb2.version>6.5-SNAPSHOT</unireg.jaxb2.version>
 
 		<!-- Testing dependency versions -->

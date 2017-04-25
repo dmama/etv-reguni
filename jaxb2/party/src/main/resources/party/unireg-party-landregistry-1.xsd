@@ -307,6 +307,26 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="landRight" type="land:landOwnershipRightType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le droit de propriété vers l'immeuble possédé par la communauté (par définition, il n'y a qu'un seul droit sans historique sur une communauté :
+								si une personne décède dans une communauté, la communauté est fermée et une nouvelle communauté est créée). En règle générale, dès qu'une communauté existe,
+								ce droit devrait être renseigné ; mais il est techniquement possible que le droit de propriété soit annulé et pour cette raison il est nullable.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="padding2" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
@@ -335,6 +355,15 @@
 						<xs:appinfo>
 							<jxb:property>
 								<jxb:javadoc>L'id technique Unireg de l'immeuble dominant (c'est-à-dire de l'immeuble qui possède le droit).</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="communityId" type="xs:long">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>L'id technique de la communauté de propriétaires. Renseigné si l'ayant-droit est une communauté de propriétaires.</jxb:javadoc>
 							</jxb:property>
 						</xs:appinfo>
 					</xs:annotation>
