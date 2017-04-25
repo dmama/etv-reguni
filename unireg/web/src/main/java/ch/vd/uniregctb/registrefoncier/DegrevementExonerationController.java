@@ -959,6 +959,7 @@ public class DegrevementExonerationController {
 	@InitBinder(value = "editExonerationCommand")
 	public void initEditExonerationCommandBinder(WebDataBinder binder) {
 		binder.setValidator(new AbstractEditExonerationViewValidator());
+		binder.registerCustomEditor(BigDecimal.class, "pourcentageExoneration", new DecimalNumberEditor(2));
 	}
 
 	@RequestMapping(value = "/edit-exoneration.do", method = RequestMethod.GET)
