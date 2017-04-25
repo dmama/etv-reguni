@@ -10,7 +10,7 @@
 	<artifactId>unireg-wsclient-fidor</artifactId>
 	<packaging>jar</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>5.12-SNAPSHOT</version>
+	<version>5.12</version>
 	<!-- END_LVERSION -->
 
 	<name>Unireg - Client WS fidor</name>
@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-fidor</artifactId>
-			<version>6.3-SNAPSHOT</version>
+			<version>6.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
