@@ -39,8 +39,8 @@
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateDemande"/>
 								<jsp:param name="id" value="dateDemande"/>
+								<jsp:param name="mandatory" value="true" />
 							</jsp:include>
-							<span style="color:red;">*</span>
 						</td>
 						<td style="width: 25%;"><fmt:message key="label.date.ancien.delai"/>&nbsp;:</td>
 						<td style="width: 25%;"><unireg:date date="${command.ancienDelaiAccorde}"/></td>
@@ -77,8 +77,8 @@
 								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 									<jsp:param name="path" value="delaiAccordeAu"/>
 									<jsp:param name="id" value="delaiAccordeAu"/>
+									<jsp:param name="mandatory" value="true" />
 								</jsp:include>
-								<span style="color: red;">*</span>
 							</div>
 						</td>
 					</tr>

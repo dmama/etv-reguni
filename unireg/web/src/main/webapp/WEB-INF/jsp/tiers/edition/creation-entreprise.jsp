@@ -40,8 +40,8 @@
 										<jsp:param name="path" value="civil.dateOuverture" />
 										<jsp:param name="id" value="dateOuverture"  />
 										<jsp:param name="tabindex" value="1"/>
+										<jsp:param name="mandatory" value="true" />
 									</jsp:include>
-									<span style="color: red;">*</span>
 								</td>
 							</tr>
 
@@ -106,8 +106,8 @@
 											<jsp:param name="path" value="civil.dateDebutExerciceCommercial" />
 											<jsp:param name="id" value="dateDebutExerciceCommercial"  />
 											<jsp:param name="tabindex" value="8"/>
+											<jsp:param name="mandatory" value="true" />
 										</jsp:include>
-										<span style="color: red;">*</span>
 									</div>
 								</td>
 							</tr>
@@ -124,8 +124,8 @@
 											<jsp:param name="path" value="civil.dateFondation" />
 											<jsp:param name="id" value="dateFondation"  />
 											<jsp:param name="tabindex" value="11"/>
+											<jsp:param name="mandatory" value="true" />
 										</jsp:include>
-										<span style="color: red;">*</span>
 									</div>
 								</td>
 							</tr>

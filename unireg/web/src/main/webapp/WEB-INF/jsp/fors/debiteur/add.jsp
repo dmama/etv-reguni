@@ -69,8 +69,8 @@
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 								<jsp:param name="onChange" value="dateOuverture_OnChange"/>
+								<jsp:param name="mandatory" value="true" />
 							</jsp:include>
-							<span style="color: red;">*</span>
 
 							<span class="error" style="display:none" id="dateDebut_warning">
 								<fmt:message key="warning.for.debiteur.ouvert.avant.date">

@@ -79,8 +79,9 @@
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
+								<jsp:param name="mandatory" value="true" />
 							</jsp:include>
-							<font color="#FF0000">*</font><br/><br/>
+							<br/><br/>
 
 							<form:radiobutton path="nouveauMC" id="nouveauMC" value="true" onclick="refresh_panels();"/>
 							<label for="nouveauMC"><fmt:message key="label.couple.nouveau.contribuable" /></label><br/>

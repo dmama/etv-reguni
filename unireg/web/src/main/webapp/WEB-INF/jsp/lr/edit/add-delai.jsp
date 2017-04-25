@@ -36,16 +36,16 @@
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="dateDemande" />
 						<jsp:param name="id" value="dateDemande" />
+						<jsp:param name="mandatory" value="true" />
 					</jsp:include>
-					<span style="color: red;">*</span>
 				</td>
 				<td><fmt:message key="label.date.delai.accorde"/>&nbsp;:</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="delaiAccorde" />
 						<jsp:param name="id" value="delaiAccorde" />
+						<jsp:param name="mandatory" value="true" />
 					</jsp:include>
-					<span style="color: red;">*</span>
 				</td>
 			</tr>
 		</table>

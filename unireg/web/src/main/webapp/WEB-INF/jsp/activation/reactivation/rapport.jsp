@@ -10,8 +10,8 @@
 				<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 					<jsp:param name="path" value="dateReactivation" />
 					<jsp:param name="id" value="dateReactivation" />
+					<jsp:param name="mandatory" value="true" />
 				</jsp:include>
-				<span style="color: red;">*</span>
 			</td>
 		</tr>
 	</table>

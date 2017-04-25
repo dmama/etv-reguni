@@ -23,8 +23,8 @@
 				<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 					<jsp:param name="path" value="dateDebut" />
 					<jsp:param name="id" value="dateDebut" />
+					<jsp:param name="mandatory" value="true" />
 				</jsp:include>
-				<span style="color: red;">*</span>
 			</td>
 			<td style="width: 15%;"><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 			<td style="width: 35%;">

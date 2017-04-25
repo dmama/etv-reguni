@@ -30,8 +30,8 @@
 								<jsp:param name="path" value="dateDebut" />
 								<jsp:param name="id" value="dateDebut" />
 								<jsp:param name="onChange" value="AddRegimeFiscal.displayTypeWarning"/>
+								<jsp:param name="mandatory" value="true" />
 							</jsp:include>
-							<span style="color: red;">*</span>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >

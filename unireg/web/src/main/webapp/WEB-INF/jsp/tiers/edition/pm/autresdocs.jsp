@@ -44,8 +44,8 @@
 											<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 												<jsp:param name="path" value="dateReference" />
 												<jsp:param name="id" value="dateReferenceAutorisationRadiation" />
+												<jsp:param name="mandatory" value="true" />
 											</jsp:include>
-											<span style="color: red;">*</span>
 										</td>
 										<td>
 											<c:choose>
@@ -77,8 +77,8 @@
 											<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 												<jsp:param name="path" value="dateReference" />
 												<jsp:param name="id" value="dateReferenceBilanFinal" />
+												<jsp:param name="mandatory" value="true" />
 											</jsp:include>
-											<span style="color: red;">*</span>
 										</td>
 										<td rowspan="2">
 											<c:choose>

@@ -42,8 +42,8 @@
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="delaiRetour"/>
 						<jsp:param name="id" value="delaiRetour"/>
+						<jsp:param name="mandatory" value="true" />
 					</jsp:include>
-					<span style="color: red;">*</span>
 				</c:when>
 				<c:otherwise>
 					<form:hidden path="delaiRetour"/>
@@ -64,8 +64,8 @@
 						<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 							<jsp:param name="path" value="dateRetour"/>
 							<jsp:param name="id" value="dateRetour"/>
+							<jsp:param name="mandatory" value="true" />
 						</jsp:include>
-						<span style="color: red;">*</span>
 					</c:when>
 					<c:otherwise>
 						<form:hidden path="dateRetour"/>

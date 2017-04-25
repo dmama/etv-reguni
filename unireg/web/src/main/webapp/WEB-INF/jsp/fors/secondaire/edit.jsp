@@ -47,8 +47,8 @@
 									<jsp:param name="id" value="dateDebut" />
 									<jsp:param name="onChange" value="updateSyncActions" />
 									<jsp:param name="onkeyup" value="updateSyncActions" />
+									<jsp:param name="mandatory" value="true" />
 								</jsp:include>
-								<span style="color: red;">*</span>
 							</td>
 							<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 							<td>

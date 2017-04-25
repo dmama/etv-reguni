@@ -40,4 +40,8 @@
 	});
 </script>
 
+<c:if test="${param.mandatory != null && param.mandatory}">
+	<span style="color: red;">*</span>
+</c:if>
+
 <form:errors path="${path}" cssClass="error" delimiter=". "/>

@@ -79,8 +79,8 @@
 											<jsp:param name="id" value="dateDebut"/>
 											<jsp:param name="onChange" value="dateDebut_OnChange"/>
 											<jsp:param name="tabindex" value="3"/>
+											<jsp:param name="mandatory" value="true" />
 										</jsp:include>
-										<span style="color: red;">*</span>
 										<span style="margin-left: 2em;">
 											<form:errors path="civil.sDateDebut" cssClass="error" />
 										</span>

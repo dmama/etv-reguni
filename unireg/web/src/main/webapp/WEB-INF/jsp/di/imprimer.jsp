@@ -48,8 +48,8 @@
 								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 									<jsp:param name="path" value="dateDebutPeriodeImposition" />
 									<jsp:param name="id" value="dateDebutPeriodeImposition" />
+									<jsp:param name="mandatory" value="true" />
 								</jsp:include>
-								<span style="color: red;">*</span>
 							</c:if>
 						</td>
 						<td width="25%"><fmt:message key="label.date.fin.periode.imposition" />&nbsp;:</td>
@@ -62,8 +62,8 @@
 								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 									<jsp:param name="path" value="dateFinPeriodeImposition" />
 									<jsp:param name="id" value="dateFinPeriodeImposition" />
+									<jsp:param name="mandatory" value="true" />
 								</jsp:include>
-								<span style="color: red;">*</span>
 							</c:if>
 						</td>
 					</tr>
@@ -87,8 +87,8 @@
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="delaiAccorde" />
 								<jsp:param name="id" value="delaiAccorde" />
+								<jsp:param name="mandatory" value="true" />
 							</jsp:include>
-							<span style="color:red;">*</span>
 						</td>
 					</tr>
 					<c:if test="${command.typeContribuable == 'PP' || (command.allowedQuittancement && command.dateRetour != null && command.dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste)}">

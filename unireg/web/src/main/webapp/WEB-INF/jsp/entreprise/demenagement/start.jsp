@@ -140,8 +140,8 @@
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateDebutNouveauSiege" />
 								<jsp:param name="id" value="dateDebutNouveauSiege" />
+								<jsp:param name="mandatory" value="true" />
 							</jsp:include>
-							<span style="color: red;">*</span>
 						</td>
 					</tr>
 

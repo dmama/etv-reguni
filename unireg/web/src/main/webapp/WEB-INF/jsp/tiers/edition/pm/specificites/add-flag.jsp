@@ -27,8 +27,8 @@
 							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 								<jsp:param name="path" value="dateDebut"/>
 								<jsp:param name="id" value="dateDebut"/>
+								<jsp:param name="mandatory" value="true" />
 							</jsp:include>
-							<span style="color: red;">*</span>
 						</td>
 						<td width="25%"><fmt:message key="label.date.fin"/>&nbsp;:</td>
 						<td width="25%">

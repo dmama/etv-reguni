@@ -48,8 +48,8 @@
 								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 									<jsp:param name="path" value="delaiAccordeAu"/>
 									<jsp:param name="id" value="delaiAccordeAu"/>
+									<jsp:param name="mandatory" value="true" />
 								</jsp:include>
-								<span style="color: red;">*</span>
 							</div>
 						</td>
 					</tr>
