@@ -20,7 +20,7 @@
 			</tr>
 		</table>
 
-		<form:form commandName="editDemandeDegrevementCommand" action="edit-demande-degrevement.do">
+		<form:form commandName="editDemandeDegrevementCommand" action="edit-demande-degrevement.do" id="editDemandeDegrevementForm">
 
 			<form:hidden path="idDemandeDegrevement"/>
 
@@ -37,7 +37,7 @@
 			<!-- Debut Bouton -->
 			<div style="padding: 0 25%;">
 				<div style="padding: 0 20%; display: inline">
-					<input type="submit" value="<fmt:message key='label.bouton.sauver'/>"/>
+					<input type="button" value="<fmt:message key='label.bouton.sauver'/>" onclick="Form.disableButtonAndSubmitForm(this, 'editDemandeDegrevementForm');"/>
 				</div>
 				<div style="padding: 0 20%; display: inline">
 					<unireg:buttonTo name="Retour" action="/degrevement-exoneration/edit-demandes-degrevement.do" params="{idContribuable:${idContribuable},idImmeuble:${immeuble.idImmeuble}}" method="GET"/>

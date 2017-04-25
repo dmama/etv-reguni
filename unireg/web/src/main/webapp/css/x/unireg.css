@@ -497,7 +497,7 @@ table.degrevement td.valeur,th.valeur {
 table.degrevement th.valeur {
 	padding: 0 0 0 1em;
 }
-table.degrevement input.nombre {
+table.degrevement input.nombre, table.exoneration input.nombre {
 	width: 15ex;
 	text-align: right;
 }
