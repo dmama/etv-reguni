@@ -24,7 +24,6 @@
 		<property name="serviceImportRF" ref="serviceImportRF" />
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
 		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO" />
-		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
 	</bean>
 
 	<bean id="immeubleRFController" class="ch.vd.uniregctb.registrefoncier.immeuble.ImmeubleRFController">

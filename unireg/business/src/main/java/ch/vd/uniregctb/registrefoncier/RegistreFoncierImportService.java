@@ -1,8 +1,12 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 
 /**
@@ -55,4 +59,15 @@ public interface RegistreFoncierImportService {
 	 * @param importId l'id d'un import
 	 */
 	void forceAllMutations(long importId);
+
+	/**
+	 * Recherche l'entité RF qui correspond à la mutation spécifié.
+	 *
+	 * @param type        le type de la mutation.
+	 * @param idRF        l'id RF métier de l'entité
+	 * @param versionIdRF le versionId de l'entité (seulement nécessaire pour les servitudes)
+	 * @return l'entité correspondante, ou <b>null</b> si non trouvé
+	 */
+	@Nullable
+	HibernateEntity findEntityForMutation(@NotNull TypeEntiteRF type, @NotNull String idRF, @Nullable String versionIdRF);
 }

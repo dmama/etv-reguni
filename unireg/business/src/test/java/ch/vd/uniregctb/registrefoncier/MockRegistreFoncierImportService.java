@@ -3,10 +3,14 @@ package ch.vd.uniregctb.registrefoncier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 
 public class MockRegistreFoncierImportService implements RegistreFoncierImportService {
@@ -43,6 +47,12 @@ public class MockRegistreFoncierImportService implements RegistreFoncierImportSe
 
 	@Override
 	public void forceAllMutations(long importId) {
+		throw new NotImplementedException();
+	}
+
+	@Nullable
+	@Override
+	public HibernateEntity findEntityForMutation(@NotNull TypeEntiteRF type, @NotNull String idRF, @Nullable String versionIdRF) {
 		throw new NotImplementedException();
 	}
 
