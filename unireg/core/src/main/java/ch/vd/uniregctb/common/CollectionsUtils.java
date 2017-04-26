@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.RandomAccess;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -242,7 +242,7 @@ public abstract class CollectionsUtils {
 	 */
 	public static <T> void removeCommonElements(@NotNull Collection<? extends T> left,
 	                                            @NotNull Collection<? extends T> right,
-	                                            @Nullable BiFunction<T, T, Boolean> equalityFunctor) {
+	                                            @Nullable BiPredicate<T, T> equalityFunctor) {
 
 		if (left == right) {
 			// pas besoin de se casser la tête
@@ -262,7 +262,7 @@ public abstract class CollectionsUtils {
 			while (riter.hasNext()) {
 				final T r = riter.next();
 
-				if (equalityFunctor.apply(l, r)) {
+				if (equalityFunctor.test(l, r)) {
 					// les deux éléments sont équivalents, on les supprime donc des deux listes.
 					liter.remove();
 					riter.remove();
@@ -291,7 +291,7 @@ public abstract class CollectionsUtils {
 	 */
 	public static <T> List<Pair<T, T>> extractCommonElements(@NotNull Collection<? extends T> left,
 	                                                         @NotNull Collection<? extends T> right,
-	                                                         @Nullable BiFunction<T, T, Boolean> equalityFunctor) {
+	                                                         @Nullable BiPredicate<T, T> equalityFunctor) {
 
 		if (equalityFunctor == null) {
 			equalityFunctor = T::equals;
@@ -307,7 +307,7 @@ public abstract class CollectionsUtils {
 			while (riter.hasNext()) {
 				final T r = riter.next();
 
-				if (equalityFunctor.apply(l, r)) {
+				if (equalityFunctor.test(l, r)) {
 					// les deux éléments sont équivalents, on les supprime donc des deux listes et on les insère dans la liste commune
 					liter.remove();
 					riter.remove();
@@ -330,7 +330,7 @@ public abstract class CollectionsUtils {
 	 * @param nullMapValue  valeur à renvoyer si la map est <code>null</code>
 	 * @param <K>           type des clés de la map
 	 * @param <V>           type des valeurs de la map
-	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné (les nulls de la collection sont ignorés)
+	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné
 	 */
 	public static <K, V> String toString(Map<K, V> map,
 	                                     StringRenderer<? super K> keyRenderer,
