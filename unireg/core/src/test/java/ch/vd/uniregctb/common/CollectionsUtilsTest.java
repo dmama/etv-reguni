@@ -3,6 +3,8 @@ package ch.vd.uniregctb.common;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -70,9 +72,46 @@ public class CollectionsUtilsTest {
 
 	@SafeVarargs
 	@NotNull
-	private static <T> ArrayList<T> L(T... t) {
+	private static <T> List<T> L(T... t) {
 		final ArrayList<T> list = new ArrayList<T>(t.length);
-		Arrays.stream(t).forEach(list::add);
+		list.addAll(Arrays.asList(t));
 		return list;
+	}
+
+	@Test
+	public void testMerged() throws Exception {
+		final List<String> left = L("a", "b", "z");
+		final List<String> right = L("f", "r", "t");
+		final Iterable<String> merged = CollectionsUtils.merged(left, right);
+
+		// une première fois...
+		{
+			final List<String> collected = StreamSupport.stream(merged.spliterator(), false).collect(Collectors.toList());
+			assertEquals(L("a", "b", "z", "f", "r", "t"), collected);
+		}
+
+		// ... et une deuxième fois, pour vérifier que l'itérable est manipulable plusieurs fois
+		{
+			final List<String> collected = StreamSupport.stream(merged.spliterator(), false).collect(Collectors.toList());
+			assertEquals(L("a", "b", "z", "f", "r", "t"), collected);
+		}
+	}
+
+	@Test
+	public void testRevertedOrder() throws Exception {
+		final List<String> list = L("a", "b", "z");
+		final Iterable<String> reversed = CollectionsUtils.revertedOrder(list);
+
+		// une première fois...
+		{
+			final List<String> collected = StreamSupport.stream(reversed.spliterator(), false).collect(Collectors.toList());
+			assertEquals(L("z", "b", "a"), collected);
+		}
+
+		// ... et une deuxième fois, pour vérifier que l'itérable est manipulable plusieurs fois
+		{
+			final List<String> collected = StreamSupport.stream(reversed.spliterator(), false).collect(Collectors.toList());
+			assertEquals(L("z", "b", "a"), collected);
+		}
 	}
 }

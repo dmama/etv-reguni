@@ -103,19 +103,20 @@ public abstract class CollectionsUtils {
 	 * dans une construction for each...
 	 */
 	public static <T> Iterable<T> revertedOrder(List<T> list) {
-		final ListIterator<T> iter = list.listIterator(list.size());
-		final Iterator<T> revertedIterator = new Iterator<T>() {
-			@Override
-			public boolean hasNext() {
-				return iter.hasPrevious();
-			}
+		return () -> {
+			final ListIterator<T> iter = list.listIterator(list.size());
+			return new Iterator<T>() {
+				@Override
+				public boolean hasNext() {
+					return iter.hasPrevious();
+				}
 
-			@Override
-			public T next() {
-				return iter.previous();
-			}
+				@Override
+				public T next() {
+					return iter.previous();
+				}
+			};
 		};
-		return () -> revertedIterator;
 	}
 
 	/**
@@ -125,20 +126,21 @@ public abstract class CollectionsUtils {
 	 * @return itérable sur une liste virtuelle vue comme la composition des deux listes données
 	 */
 	public static <T> Iterable<T> merged(Iterable<T> first, Iterable<T> second) {
-		final Iterator<T> iterFirst = first.iterator();
-		final Iterator<T> iterSecond = second.iterator();
-		final Iterator<T> merged = new Iterator<T>() {
-			@Override
-			public boolean hasNext() {
-				return iterFirst.hasNext() || iterSecond.hasNext();
-			}
+		return () -> {
+			final Iterator<T> iterFirst = first.iterator();
+			final Iterator<T> iterSecond = second.iterator();
+			return new Iterator<T>() {
+				@Override
+				public boolean hasNext() {
+					return iterFirst.hasNext() || iterSecond.hasNext();
+				}
 
-			@Override
-			public T next() {
-				return iterFirst.hasNext() ? iterFirst.next() : iterSecond.next();
-			}
+				@Override
+				public T next() {
+					return iterFirst.hasNext() ? iterFirst.next() : iterSecond.next();
+				}
+			};
 		};
-		return () -> merged;
 	}
 
 	/**
