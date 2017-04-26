@@ -41,8 +41,8 @@
 								<form:option value=""/>
 								<form:options items="${typesRegimeFiscal}"/>
 							</form:select>
+							<span class="mandatory">*</span>
 							<form:errors path="code" cssClass="error"/>
-							<span style="color: red;">*</span>
 						</td>
 						<td colspan="2" ><span id="warnType" class="warn"></span></td>
 					</tr>

@@ -45,7 +45,7 @@
 							    <form:option value=""/>
 								<form:options items="${flagTypes}"/>
 							</form:select>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="value" cssClass="error"/>
 						</td>
 					</tr>

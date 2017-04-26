@@ -50,8 +50,8 @@
 						<td>
 							<c:if test="${command.ouvertureEditable}">
 								<form:select path="motifDebut" cssStyle="width:40ex" />
+								<span class="mandatory">*</span>
 								<form:errors path="motifDebut" cssClass="error" />
-								<span style="color: red;">*</span>
 							</c:if>
 							<c:if test="${!command.ouvertureEditable && command.motifDebut != null}">
 								<fmt:message key="option.motif.ouverture.${command.motifDebut}"/>

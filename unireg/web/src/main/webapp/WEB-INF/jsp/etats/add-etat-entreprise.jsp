@@ -69,7 +69,7 @@
 										<form:option value="" />
 										<form:options items="${transitionDisponibles}"/>
 									</form:select>
-									<span style="color: red;">*</span>
+									<span class="mandatory">*</span>
 									<form:errors path="type" cssClass="error" />
 								</c:otherwise>
 							</c:choose>

@@ -41,7 +41,7 @@
 </script>
 
 <c:if test="${param.mandatory != null && param.mandatory}">
-	<span style="color: red;">*</span>
+	<span class="mandatory">*</span>
 </c:if>
 
 <form:errors path="${path}" cssClass="error" delimiter=". "/>

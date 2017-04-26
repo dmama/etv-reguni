@@ -17,7 +17,7 @@
 					<td width="75%">
 						<div id="utilisateurs">
 							<form:input path="utilisateurReference" id="utilisateurReference" />
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="utilisateurReference" cssClass="error"/>
 							<form:hidden path="numeroUtilisateurReference" id="numeroUtilisateurReference"  />
 							<script>
@@ -41,7 +41,7 @@
 					<td width="75%">
 						<div id="utilisateurs">
 							<form:input path="utilisateurDestination" id="utilisateurDestination" />
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="utilisateurDestination" cssClass="error"/>
 							<form:hidden path="numeroUtilisateurDestination" id="numeroUtilisateurDestination"  />
 							<script>

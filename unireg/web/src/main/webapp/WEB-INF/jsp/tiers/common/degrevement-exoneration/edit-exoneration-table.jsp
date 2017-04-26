@@ -18,7 +18,7 @@
 							<form:option value="${periode.annee}" disabled="${periode.interdite}"/>
 						</c:forEach>
 					</form:select>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="anneeDebut" cssClass="error"/>
 				</c:when>
 				<c:otherwise>
@@ -43,7 +43,7 @@
 		<td><fmt:message key="label.pourcentage.exoneration"/>&nbsp;:</td>
 		<td>
 			<form:input path="pourcentageExoneration" cssClass="nombre"/>
-			<span style="color: red;">*</span>
+			<span class="mandatory">*</span>
 			<form:errors path="pourcentageExoneration" cssClass="error"/>
 		</td>
 		<td colspan="2">&nbsp;</td>

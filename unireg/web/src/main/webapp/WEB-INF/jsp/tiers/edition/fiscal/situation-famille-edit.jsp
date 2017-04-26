@@ -40,13 +40,13 @@
 							</form:select>
 						</c:otherwise>
 					</c:choose>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="etatCivil" cssClass="error"/>
 				</td>
 				<td width="25%"><fmt:message key="label.nombre.enfants" />&nbsp;:</td>
 				<td width="25%">
 					<form:input path="nombreEnfants" size="2" />
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="nombreEnfants" cssClass="error"/>
 				</td>
 			</tr>

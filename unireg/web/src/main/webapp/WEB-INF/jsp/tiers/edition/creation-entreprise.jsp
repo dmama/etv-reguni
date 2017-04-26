@@ -49,10 +49,9 @@
 							<tr class="<unireg:nextRowClass/>">
 								<td><fmt:message key="label.raison.sociale" />&nbsp;:</td>
 								<td colspan="3">
-									<form:input path="civil.raisonSociale" tabindex="2" id="raisonSociale"
-									            size="80" maxlength="${lengthRaisonSociale}" />
+									<form:input path="civil.raisonSociale" tabindex="2" id="raisonSociale" size="80" maxlength="${lengthRaisonSociale}"/>
+									<span class="mandatory">*</span>
 									<form:errors path="civil.raisonSociale" cssClass="error" />
-									<span style="color: red;">*</span>
 								</td>
 							</tr>
 
@@ -63,8 +62,8 @@
 										<form:option value=""/>
 										<form:options items="${formesJuridiquesEntreprise}"/>
 									</form:select>
+									<span class="mandatory">*</span>
 									<form:errors path="civil.formeJuridique" cssClass="error"/>
-									<span style="color: red;">*</span>
 								</td>
 							</tr>
 
@@ -87,8 +86,8 @@
 								</td>
 								<td>
 									<input tabindex="5" id="siege" size="25" value="${data.civil.nomSiege}" />
+									<span class="mandatory">*</span>
 									<form:errors path="civil.numeroOfsSiege" cssClass="error" />
-									<span style="color: red;">*</span>
 									<form:hidden path="civil.numeroOfsSiege" id="numeroOfsSiege" />
 									<form:hidden path="civil.nomSiege" id="nomSiege" />
 								</td>

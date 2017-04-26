@@ -37,7 +37,7 @@
 									</td>
 									<td>
 										<form:input id="raisonSociale" path="civil.raisonSociale" tabindex="1" size="65" maxlength="${length_raisonSociale}" />
-										<span style="color: red;">*</span>
+										<span class="mandatory">*</span>
 										<span style="margin-left: 2em;">
 											<form:errors path="civil.raisonSociale" cssClass="error" />
 										</span>

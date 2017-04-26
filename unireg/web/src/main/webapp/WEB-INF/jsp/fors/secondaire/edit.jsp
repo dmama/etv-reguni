@@ -64,7 +64,7 @@
 							<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 							<td>
 								<form:select path="motifDebut" cssStyle="width:30ex" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
-								<span style="color: red;">*</span>
+								<span class="mandatory">*</span>
 								<form:errors path="motifDebut" cssClass="error" />
 							</td>
 							<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
@@ -80,7 +80,7 @@
 							<td><label for="autoriteFiscale"><fmt:message key="label.commune.fraction"/>&nbsp;:</label></td>
 							<td>
 								<input id="autoriteFiscale" size="25" />
-								<span style="color: red;">*</span>
+								<span class="mandatory">*</span>
 								<form:errors path="noAutoriteFiscale" cssClass="error" />
 								<form:hidden path="noAutoriteFiscale" />
 							</td>

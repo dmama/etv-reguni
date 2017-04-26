@@ -55,8 +55,8 @@
 									<td>
 										<form:input path="idPrincipal" id="idPrincipal"/>
 										<button id="searchPrincipal">...</button>
-										<form:errors path="idPrincipal" cssClass="error" delimiter=". "/>
 										<span class="mandatory">*</span>
+										<form:errors path="idPrincipal" cssClass="error" delimiter=". "/>
 									</td>
 								</tr>
 								<tr>

@@ -44,7 +44,7 @@
 				<span id="montantEmolumentSpan" style="display: none; margin-left: 50px;">
 					<form:input path="montantEmolumentSommationDI" maxlength="8" cssStyle="width: 8ex;"/>
 					&nbsp;<fmt:message key="label.chf"/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="montantEmolumentSommationDI" cssClass="error" cssStyle="margin-left: 20px;"/>
 				</span>
 			</div>

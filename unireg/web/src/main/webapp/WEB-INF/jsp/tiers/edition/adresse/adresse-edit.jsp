@@ -54,7 +54,7 @@
 						</c:when>
 						<c:otherwise>
 							<form:select path="usage" items="${typeAdresseFiscaleTiers}" />
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="usage" cssClass="error"/>
 						</c:otherwise>
 				</c:choose>

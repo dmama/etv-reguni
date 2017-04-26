@@ -45,13 +45,13 @@
 						<td>
 								<%--@elvariable id="genresImpot" type="java.util.Map<GenreImpot, String>"--%>
 							<form:select path="genreImpot" items="${genresImpot}" id="genreImpot" onchange="updateMotifsFors();"/>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 						</td>
 						<td width="20%"><fmt:message key="label.rattachement"/>&nbsp;:</td>
 						<td>
 							<%--@elvariable id="rattachements" type="java.util.Map<MotifRattachement, String>"--%>
 							<form:select path="motifRattachement" items="${rattachements}" id="rattachement" onchange="updateMotifsFors();"/>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="motifRattachement" cssClass="error"/>
 						</td>
 					</tr>
@@ -76,7 +76,7 @@
 						<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 						<td>
 							<form:select path="motifDebut" cssStyle="width:30ex" />
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="motifDebut" cssClass="error" />
 						</td>
 						<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
@@ -92,7 +92,7 @@
 						<td><label for="autoriteFiscale"><fmt:message key="label.commune.fraction"/>&nbsp;:</label></td>
 						<td>
 							<input id="autoriteFiscale" size="25" />
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="noAutoriteFiscale" cssClass="error" />
 							<form:hidden path="noAutoriteFiscale" />
 						</td>

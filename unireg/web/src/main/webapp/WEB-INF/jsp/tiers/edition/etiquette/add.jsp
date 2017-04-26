@@ -48,7 +48,7 @@
 								<form:option value=""/>
 								<form:options items="${libelles}"/>
 							</form:select>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="codeEtiquette" cssClass="error"/>
 						</td>
 						<td colspan="2">&nbsp;</td>

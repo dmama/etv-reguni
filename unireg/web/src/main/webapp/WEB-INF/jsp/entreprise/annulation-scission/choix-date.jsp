@@ -30,7 +30,7 @@
 						<td width="75%">
 							<%--@elvariable id="datesContrat" type="java.util.Map<String, String>"--%>
 							<form:select path="dateContratScission" items="${datesContrat}"/>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 						</td>
 					</tr>
 				</table>

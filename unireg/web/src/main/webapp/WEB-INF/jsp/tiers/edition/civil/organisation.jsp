@@ -16,7 +16,7 @@
 			<td><fmt:message key="label.nom" />&nbsp;:</td>
 			<td>
 				<form:input path="tiers.nom" id="tiers_nom1" cssErrorClass="input-with-errors" size ="65" maxlength="${lengthnom}" />
-				<span style="color: red;">*</span>
+				<span class="mandatory">*</span>
 				<form:errors path="tiers.nom" cssClass="error"/>
 			</td>
 		</tr>
@@ -25,7 +25,7 @@
 			<td><fmt:message key="label.forme.juridique" />&nbsp;:</td>
 			<td>
 				<form:select path="tiers.formeJuridique" items="${formesJuridiques}" />
-				<span style="color: red;">*</span>
+				<span class="mandatory">*</span>
 			</td>
 		</tr>
 	</table>

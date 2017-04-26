@@ -51,7 +51,7 @@
 					<label for="pp1Id"><fmt:message key="label.couple.premiere.pp" /></label>
 					<form:input path="pp1Id" id="pp1Id"/>
 					<input type="button" id="button_pp1Id" onclick="return search_pp1();" value="..."/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="pp1Id" cssClass="error"/>
 				</div>
 			</td>

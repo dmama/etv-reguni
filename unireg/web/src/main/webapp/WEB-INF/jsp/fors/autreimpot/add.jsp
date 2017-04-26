@@ -44,8 +44,8 @@
 						<td colspan="3">
 							<%--@elvariable id="genresImpot" type="java.util.Map<GenreImpot, String>"--%>
 							<form:select path="genreImpot" items="${genresImpot}"/>
+							<span class="mandatory">*</span>
 							<form:errors path="genreImpot" cssClass="error"/>
-							<span style="color: red;">*</span>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>" >
@@ -64,7 +64,7 @@
 						<td><label for="autoriteFiscale"><fmt:message key="label.commune.fraction"/>&nbsp;:</label></td>
 						<td>
 							<input id="autoriteFiscale" size="25" />
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="noAutoriteFiscale" cssClass="error" />
 							<form:hidden path="noAutoriteFiscale" />
 						</td>

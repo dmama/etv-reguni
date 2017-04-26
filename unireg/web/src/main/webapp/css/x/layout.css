@@ -156,13 +156,6 @@ fieldset legend {
 	color: black;
 }
 
-.mandatory label {
-	font-weight: bold;
-	color: red;
-	clear: none;
-	display: inline;
-}
-
 .field-separator label {
 	font-weight: bold;
 	vertical-align: bottom;
@@ -343,16 +336,12 @@ input.numero-complement-npa,input.canton {
 .global-error {
 	color: red;
 	font-weight: bold;
-	padding: 0.5em;
-	padding-left: 2em;
+	padding: 0.5em 0.5em 0.5em 2em;
 }
 
 .mandatory {
-	padding-left: 5px;
+	padding-left: 2px;
 	color: red;
-	font-weight: bold;
-	font-size: larger;
-	cursor: default;
 }
 
 INPUT.readonly {

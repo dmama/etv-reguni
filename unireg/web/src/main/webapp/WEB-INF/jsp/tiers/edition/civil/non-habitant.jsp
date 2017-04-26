@@ -14,7 +14,7 @@
 			<form:input path="tiers.nom" tabindex="1" id="tiers_nom" cssErrorClass="input-with-errors"
 			            size="20" maxlength="${lengthnom}" />
 			<span class="jTip formInfo" title="<c:url value="/htm/nom.htm?width=375"/>" id="nom">?</span>
-			<span style="color: red;">*</span>
+			<span class="mandatory">*</span>
 			<form:errors path="tiers.nom" cssClass="error" />
 		</td>
 	</tr>

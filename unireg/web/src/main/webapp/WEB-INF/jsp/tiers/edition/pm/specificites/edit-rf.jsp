@@ -39,8 +39,8 @@
 							<form:select path="code">
 								<form:options items="${typesRegimeFiscal}"/>
 							</form:select>
+							<span class="mandatory">*</span>
 							<form:errors path="code" cssClass="error"/>
-							<span style="color: red;">*</span>
 						</td>
 						<td colspan="2">&nbsp;</td>
 					</tr>

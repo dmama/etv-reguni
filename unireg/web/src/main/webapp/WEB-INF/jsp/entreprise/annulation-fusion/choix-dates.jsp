@@ -27,14 +27,14 @@
 							<%--@elvariable id="datesBilan" type="java.util.Map<String, String>"--%>
 							<form:select path="dateBilanFusion" items="${datesBilan}"
 							             onchange="AnnulationFusion.selectDateBilanFusion(this.options[this.selectedIndex].value);" />
-							<span style="color: red">*</span>
+							<span class="mandatory">*</span>
 						</td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
 						<td width="25%"><fmt:message key="label.date.contrat.fusion" />&nbsp;:</td>
 						<td width="75%">
 							<form:select id="selectDateContrat" path="dateContratFusion"/>
-							<span style="color: red">*</span>
+							<span class="mandatory">*</span>
 						</td>
 					</tr>
 				</table>

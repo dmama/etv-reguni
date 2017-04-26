@@ -98,8 +98,8 @@
 										<td><fmt:message key="label.periode.fiscale"/>&nbsp;:</td>
 										<td>
 											<form:input path="periodeFiscale"/>
+											<span class="mandatory">*</span>
 											<form:errors cssClass="error" path="periodeFiscale"/>
-											<span style="color: red;">*</span>
 										</td>
 									</tr>
 								</table>

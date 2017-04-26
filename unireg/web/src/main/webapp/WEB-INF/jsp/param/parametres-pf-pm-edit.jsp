@@ -53,7 +53,7 @@
 				<td rowspan="2">
 					<form:input path="delaiImprimeMoisVaud" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.mois"/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="delaiImprimeMoisVaud" cssClass="error"/>
 				</td>
 				<td>
@@ -65,7 +65,7 @@
 				<td rowspan="2">
 					<form:input path="delaiImprimeMoisHorsCanton" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.mois"/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="delaiImprimeMoisHorsCanton" cssClass="error"/>
 				</td>
 				<td>
@@ -77,7 +77,7 @@
 				<td rowspan="2">
 					<form:input path="delaiImprimeMoisHorsSuisse" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.mois"/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="delaiImprimeMoisHorsSuisse" cssClass="error"/>
 				</td>
 				<td>
@@ -89,7 +89,7 @@
 				<td rowspan="2">
 					<form:input path="delaiImprimeMoisUtilitePublique" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.mois"/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="delaiImprimeMoisUtilitePublique" cssClass="error"/>
 				</td>
 				<td>
@@ -121,7 +121,7 @@
 				<td>
 					<form:input path="toleranceJoursVaud" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.jours"/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="toleranceJoursVaud" cssClass="error"/>
 				</td>
 				<td>
@@ -131,7 +131,7 @@
 				<td>
 					<form:input path="toleranceJoursHorsCanton" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.jours"/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="toleranceJoursHorsCanton" cssClass="error"/>
 				</td>
 				<td>
@@ -141,7 +141,7 @@
 				<td>
 					<form:input path="toleranceJoursHorsSuisse" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.jours"/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="toleranceJoursHorsSuisse" cssClass="error"/>
 				</td>
 				<td>
@@ -151,7 +151,7 @@
 				<td>
 					<form:input path="toleranceJoursUtilitePublique" cssClass="duree"/>
 					<fmt:message key="label.param.pm.delai.jours"/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="toleranceJoursUtilitePublique" cssClass="error"/>
 				</td>
 				<td>

@@ -5,11 +5,9 @@
 	
 }
 
-.mandatory label {
-	font-weight: bold;
+.mandatory {
 	color: red;
-	clear: none;
-	display: inline;
+	padding-left: 2px;
 }
 
 .field-separator label {

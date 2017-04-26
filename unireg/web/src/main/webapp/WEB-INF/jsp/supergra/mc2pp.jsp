@@ -35,8 +35,8 @@
 									<td>Numéro d'individu de la personne physique</td>
 									<td>
 										<form:input path="indNo" id="indNo"/>
-										<form:errors path="indNo" cssClass="error"/>
 										<span class="mandatory">*</span>
+										<form:errors path="indNo" cssClass="error"/>
 									</td>
 								</tr>
 								<tr>

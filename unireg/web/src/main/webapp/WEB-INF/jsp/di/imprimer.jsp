@@ -74,7 +74,7 @@
 								<c:when test="${command.typeContribuable == 'PP'}">
 									<%--@elvariable id="typesDeclarationImpot" type="java.util.Map<TypeDocument, String>"--%>
 									<form:select path="typeDocument" items="${typesDeclarationImpot}" />
-									<span style="color: red;">*</span>
+									<span class="mandatory">*</span>
 								</c:when>
 								<c:otherwise>
 									<c:if test="${command.typeDocument != null}"><fmt:message key="option.type.document.${command.typeDocument}"/></c:if>
@@ -99,7 +99,7 @@
 									<td width="25%">
 											<%--@elvariable id="typesAdresseRetour" type="java.util.Map<TypeAdresseRetour, String>"--%>
 										<form:select path="typeAdresseRetour" items="${typesAdresseRetour}" />
-										<span style="color: red;">*</span>
+										<span class="mandatory">*</span>
 									</td>
 								</c:when>
 								<c:otherwise>

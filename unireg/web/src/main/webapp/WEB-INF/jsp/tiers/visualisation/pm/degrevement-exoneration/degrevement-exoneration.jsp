@@ -24,7 +24,7 @@
 								<option value="${commune.noOfs}"><c:out value="${commune.nom}"/></option>
 							</c:forEach>
 						</select>
-						<span style="color: red;">*</span>
+						<span class="mandatory">*</span>
 					</td>
 					<td style="width: 35%; display: none;" class="withParcelle">
 						<fmt:message key="label.parcelle"/>&nbsp;:

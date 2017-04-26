@@ -24,7 +24,7 @@
 				<td width="75%" colspan="3">
 					<div id="utilisateurs">
 						<form:input path="utilisateur" id="utilisateur" />
-						<span style="color: red;">*</span>
+						<span class="mandatory">*</span>
 						<form:errors path="utilisateur" cssClass="error"/>
 						<form:hidden path="numeroUtilisateur" id="numeroUtilisateur"  />
 						<script>

@@ -45,7 +45,7 @@
 							    <form:option value=""/>
 								<form:options items="${typesImpot}"/>
 							</form:select>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="typeImpot" cssClass="error"/>
 						</td>
 						<td><fmt:message key="label.type.collectivite"/>&nbsp;</td>
@@ -55,7 +55,7 @@
 									<form:option value=""/>
 									<form:options items="${typesCollectivite}"/>
 								</form:select>
-								<span style="color: red;">*</span>
+								<span class="mandatory">*</span>
 								<form:errors path="typeCollectivite" cssClass="error"/>
 							</div>
 							<div style="display: none; float: left; margin-right: 2em;" id="collectiviteCommune">
@@ -80,7 +80,7 @@
 									<form:option value=""/>
 									<form:options items="${typesICC}"/>
 								</form:select>
-								<span style="color: red;">*</span>
+								<span class="mandatory">*</span>
 								<div style="float: left;">
 									<form:errors path="typeICC" cssClass="error"/>
 								</div>
@@ -90,7 +90,7 @@
 									<form:option value=""/>
 									<form:options items="${typesIFD}"/>
 								</form:select>
-								<span style="color: red;">*</span>
+								<span class="mandatory">*</span>
 								<div style="float: left;">
 									<form:errors path="typeIFD" cssClass="error"/>
 								</div>
@@ -105,7 +105,7 @@
 							</div>
 							<span style="width: 50%" id="valeurPourcentage">
 								<form:input path="pourcentageAllegement" size="10" style="margin-top: 0.5em;"/>&nbsp;%
-								<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 								<form:errors path="pourcentageAllegement" cssClass="error"/>
 							</span>
 						</td>

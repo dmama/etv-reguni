@@ -47,7 +47,7 @@
 			<td class="mdt-tiers"><fmt:message key="label.complement.numeroIBAN"/>&nbsp;:</td>
 			<td class="mdt-tiers">
 				<form:input path="iban" size="${lengthnumcompte}" maxlength="${lengthnumcompte}"/>
-				<span style="color: red;">*</span>
+				<span class="mandatory">*</span>
 				<span class="jTip formInfo" title="<c:url value="/htm/iban.htm?width=375"/>" id="tipIban">?</span>
 				<form:errors path="iban" cssClass="error"/>
 			</td>
@@ -67,7 +67,7 @@
 					<form:option value=""/>
 					<form:options items="${genresImpotAutorises}"/>
 				</form:select>
-				<span style="color: red;">*</span>
+				<span class="mandatory">*</span>
 				<form:errors path="codeGenreImpot" cssClass="error"/>
 			</td>
 			<td class="mdt-gen" colspan="2">&nbsp;</td>
@@ -83,7 +83,7 @@
 				<td style="width: 15%;"><fmt:message key="label.nom.raison"/>&nbsp;:</td>
 				<td colspan="5">
 					<form:input path="raisonSociale" size="40" maxlength="${lengthpersonne}"/>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="raisonSociale" cssClass="error"/>
 				</td>
 			</tr>

@@ -21,7 +21,7 @@
 							<form:option value="${periode.annee}" disabled="${periode.interdite}"/>
 						</c:forEach>
 					</form:select>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="periodeFiscale" cssClass="error"/>
 				</c:when>
 				<c:otherwise>

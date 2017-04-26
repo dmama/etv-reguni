@@ -25,7 +25,7 @@
 						<td width="20%"><fmt:message key="label.raison.sociale"/>&nbsp;:</td>
 						<td>
 							<form:input path="raisonSociale" size="80"/>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="raisonSociale" cssClass="error" />
 						</td>
 					</tr>

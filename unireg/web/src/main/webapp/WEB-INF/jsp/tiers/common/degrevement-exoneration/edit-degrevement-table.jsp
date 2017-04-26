@@ -25,7 +25,7 @@
 							<form:option value="${periode.annee}" disabled="${periode.interdite}"/>
 						</c:forEach>
 					</form:select>
-					<span style="color: red;">*</span>
+					<span class="mandatory">*</span>
 					<form:errors path="anneeDebut" cssClass="error"/>
 				</c:when>
 				<c:otherwise>
@@ -98,7 +98,7 @@
 						</td>
 						<td class="valeur">
 							<form:input path="location.pourcentageArrete" cssClass="nombre" id="locationPourcentageArrete" onchange="EditDegrevementDynamic.resetValeurArreteePropreUsage();"/>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<div style="display: inline-block; vertical-align: middle;">
 								<form:errors path="location.pourcentageArrete" cssClass="error"/>
 							</div>
@@ -155,7 +155,7 @@
 						</td>
 						<td class="valeur">
 							<form:input path="propreUsage.pourcentageArrete" cssClass="nombre" id="propreUsagePourcentageArrete" onchange="EditDegrevementDynamic.resetValeurArreteeLocative();"/>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<div style="display: inline-block; vertical-align: middle;">
 								<form:errors path="propreUsage.pourcentageArrete" cssClass="error"/>
 							</div>
@@ -199,7 +199,7 @@
 						<td class="titre" colspan="2"><fmt:message key="label.pourcentage.caractere.social"/> (&percnt;)</td>
 						<td>
 							<form:input path="loiLogement.pourcentageCaractereSocial" cssClass="nombre"/>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<div style="display: inline-block; vertical-align: middle;">
 								<form:errors path="loiLogement.pourcentageCaractereSocial" cssClass="error"/>
 							</div>

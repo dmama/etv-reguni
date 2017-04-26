@@ -27,7 +27,7 @@
 			<td width="25%"><fmt:message key="label.categorie.impot.source"/>&nbsp;:</td>
 			<td width="25%">
 				<form:select path="tiers.categorieImpotSource" items="${categoriesImpotSource}" />
-				<span style="color: red;">*</span>
+				<span class="mandatory">*</span>
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
@@ -35,7 +35,7 @@
 			<td width="25%">
 				<form:select id="periodiciteCourante" path="periodicite.periodiciteDecompte" items="${periodicitesDecompte}"
 				             onchange="CreateDebiteur.selectPeriodeDecompte(this.options[this.selectedIndex].value);"/>
-				<span style="color: red;">*</span>
+				<span class="mandatory">*</span>
 			</td>
 			<td width="25%">
 				<div id="div_periodeDecompte_label" style="display:none;" ><fmt:message key="label.periode.decompte"/>&nbsp;:</div>

@@ -11,7 +11,7 @@
 					<jsp:param name="path" value="dateAnnulation" />
 					<jsp:param name="id" value="dateAnnulation" />
 				</jsp:include>
-				<span style="color: red;">*</span>
+				<span class="mandatory">*</span>
 			</td>
 		</tr>
 	</table>

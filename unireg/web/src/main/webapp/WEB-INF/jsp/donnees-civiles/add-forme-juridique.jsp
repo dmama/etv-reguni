@@ -28,7 +28,7 @@
 								<form:option value="" />
 								<form:options items="${formesJuridiquesEntrepriseEnum}"/>
 							</form:select>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 							<form:errors path="formeJuridique" cssClass="error" />
 						</td>
 					</tr>

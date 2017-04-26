@@ -42,7 +42,7 @@
 							<td><fmt:message key="label.nom" />&nbsp;:</td>
 							<td>
 								<form:input path="nom" id="ac.nom" cssErrorClass="input-with-errors" size="65" maxlength="${length_nom}" tabindex="2"/>
-								<span style="color: red;">*</span>
+								<span class="mandatory">*</span>
 								<form:errors path="nom" cssClass="error"/>
 							</td>
 						</tr>
@@ -51,7 +51,7 @@
 							<td><fmt:message key="label.forme.juridique" />&nbsp;:</td>
 							<td>
 								<form:select path="formeJuridique" items="${formesJuridiques}" tabindex="3"/>
-								<span style="color: red;">*</span>
+								<span class="mandatory">*</span>
 							</td>
 						</tr>
 					</table>

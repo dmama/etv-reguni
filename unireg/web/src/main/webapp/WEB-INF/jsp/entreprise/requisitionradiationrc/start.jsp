@@ -39,7 +39,7 @@
 						<td width="25%" style="display: none;" class="avecBilanFinal">
 							<form:input path="periodeFiscale"/>
 							<form:errors cssClass="error" path="periodeFiscale"/>
-							<span style="color: red;">*</span>
+							<span class="mandatory">*</span>
 						</td>
 						<td width="50%" colspan="2" class="sansBilanFinal">&nbsp;</td>
 					</tr>
