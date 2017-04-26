@@ -749,7 +749,12 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<CategorieEntreprise, String> getMapCategoriesEntreprise() {
 		if (mapCategorieEntreprise == null) {
-			mapCategorieEntreprise = initMapEnum(ApplicationConfig.masterKeyCategorieEntreprise, CategorieEntreprise.class, CategorieEntreprise.PM);
+			final Map<CategorieEntreprise, String> bruttoMap = initMapEnum(ApplicationConfig.masterKeyCategorieEntreprise, CategorieEntreprise.class, CategorieEntreprise.AUTRE);
+			final Map<CategorieEntreprise, String> map = new LinkedHashMap<>(bruttoMap);
+			final String enAttente = map.remove(CategorieEntreprise.INDET);
+			map.put(null, "-----");                         // sera mappé comme un séparateur dans la liste déroulante (à cause de la clé "null", la valeur est ignorée...)
+			map.put(CategorieEntreprise.INDET, enAttente);  // "en attente de détermination" en fin de liste après un séparateur, donc
+			mapCategorieEntreprise = Collections.unmodifiableMap(map);
 		}
 		return mapCategorieEntreprise;
 	}

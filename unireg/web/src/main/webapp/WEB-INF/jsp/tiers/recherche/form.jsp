@@ -205,8 +205,17 @@
 			<td width="25%"><fmt:message key="label.categorie.entreprise" />&nbsp;:</td>
 			<td width="25%">
 				<form:select path="categorieEntreprise">
-					<form:option value="" />
-					<form:options items="${categoriesEntreprisesEnum}"/>
+					<form:option value=""/>
+					<c:forEach var="cat" items="${categoriesEntreprisesEnum}">
+						<c:choose>
+							<c:when test="${cat.key == null}">
+								<option disabled="disabled">&mdash;&mdash;</option>
+							</c:when>
+							<c:otherwise>
+								<form:option value="${cat.key}"><c:out value="${cat.value}"/></form:option>
+							</c:otherwise>
+						</c:choose>
+					</c:forEach>
 				</form:select>
 			</td>
 		</tr>
