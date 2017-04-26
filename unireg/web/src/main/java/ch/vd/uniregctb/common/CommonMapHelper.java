@@ -43,11 +43,10 @@ public class CommonMapHelper {
 	 */
 	@SafeVarargs
 	protected final <T extends Enum<T>> Map<T, String> initMapEnum(String keyPrefix, Class<T> clazz, T... ignored) {
-		final EnumSet<T> ignoredSet = EnumSet.noneOf(clazz);
+		final Set<T> values = EnumSet.allOf(clazz);
 		if (ignored != null && ignored.length > 0) {
-			ignoredSet.addAll(Arrays.asList(ignored));
+			values.removeAll(Arrays.asList(ignored));
 		}
-		final Set<T> values = EnumSet.complementOf(ignoredSet);
 		return getSpecificMapEnum(keyPrefix, values);
 	}
 
@@ -66,7 +65,7 @@ public class CommonMapHelper {
 				tmp.add(Pair.of(c, nom));
 			}
 		}
-    	Collections.sort(tmp, Comparator.comparing(Pair::getRight));
+    	tmp.sort(Comparator.comparing(Pair::getRight));
 
 		final Map<T, String> map = new LinkedHashMap<>();
 		for (Pair<T, String> pair : tmp) {
@@ -89,7 +88,7 @@ public class CommonMapHelper {
 			final String nom = this.getMessageSourceAccessor().getMessage(keyPrefix + c);
 			tmp.add(Pair.of(c, nom));
 		}
-		Collections.sort(tmp, Comparator.comparing(Pair::getRight));
+		tmp.sort(Comparator.comparing(Pair::getRight));
 
 		final Map<T, String> map = new LinkedHashMap<>();
 		for (Pair<T, String> pair : tmp) {
