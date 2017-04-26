@@ -56,6 +56,11 @@ public interface TypeRegimeFiscal {
 	boolean isIndetermine();
 
 	/**
+	 * @return <code>true</code> si le régime fiscal correspond à la catégorie "Société de personnes".
+	 */
+	boolean isSocieteDePersonnes();
+
+	/**
 	 * @param periode période fiscale
 	 * @return la plage d'exonération fiscale IBC qui touche la période donnée
 	 */

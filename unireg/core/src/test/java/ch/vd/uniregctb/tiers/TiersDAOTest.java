@@ -2169,4 +2169,101 @@ public class TiersDAOTest extends CoreDAOTest {
 			}
 		});
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetEntreprisesSansRegimeFiscal() throws Exception {
+
+		Set<Long> expectedIds = new HashSet<>();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// Entreprise ancienne sans régime fiscal -> doit être prise en compte
+				{
+					Etablissement etablissement = addEtablissement(null);
+					Entreprise entreprise = addEntrepriseInconnueAuCivil();
+					addActiviteEconomique(entreprise, etablissement, date(1902, 4, 24), null, true);
+					merge(entreprise);
+					expectedIds.add(entreprise.getNumero());
+				}
+
+				// Entreprise ancienne dotée d'un régime fiscal -> ignorée
+				{
+					Etablissement etablissement = addEtablissement(null);
+					Entreprise entreprise = addEntrepriseInconnueAuCivil();
+					addActiviteEconomique(entreprise, etablissement, date(2009, 1, 1), null, true);
+					final RegimeFiscal rf = new RegimeFiscal(date(2009, 1, 1), null, RegimeFiscal.Portee.VD, "01");
+					entreprise.addRegimeFiscal(rf);
+					merge(entreprise);
+				}
+
+				// Entreprise récente sans régime fiscal -> doit être prise en compte
+				{
+					Etablissement etablissement = addEtablissement(null);
+					Entreprise entreprise = addEntrepriseInconnueAuCivil();
+					addActiviteEconomique(entreprise, etablissement, date(2014, 11, 30), null, true);
+					merge(entreprise);
+					expectedIds.add(entreprise.getNumero());
+				}
+
+				// Entreprise débutant au seuil d'utilité des régimes fiscaux Unireg, dotée d'un régime fiscal -> ignorée
+				{
+					Etablissement etablissement = addEtablissement(null);
+					Entreprise entreprise = addEntrepriseInconnueAuCivil();
+					addActiviteEconomique(entreprise, etablissement, date(2009, 1, 1), null, true);
+					final RegimeFiscal rf = new RegimeFiscal(date(2009, 1, 1), null, RegimeFiscal.Portee.VD, "01");
+					entreprise.addRegimeFiscal(rf);
+					merge(entreprise);
+				}
+
+				// Entreprise annulée, avec un régime fiscal -> ignorée
+				{
+					Etablissement etablissement = addEtablissement(null);
+					Entreprise entreprise = addEntrepriseInconnueAuCivil();
+					addActiviteEconomique(entreprise, etablissement, date(2017, 1, 1), null, true);
+					final RegimeFiscal rf3 = new RegimeFiscal(date(2017, 1, 1), null, RegimeFiscal.Portee.VD, "01");
+					entreprise.addRegimeFiscal(rf3);
+					entreprise.setAnnulationDate(date(2017, 2, 28).asJavaDate());
+					entreprise.setAnnulationUser("testUser");
+					merge(entreprise);
+				}
+
+				// Entreprise avec un unique régime fiscal annulé -> doit être prise en compte
+				{
+					Etablissement etablissement = addEtablissement(null);
+					Entreprise entreprise = addEntrepriseInconnueAuCivil();
+					addActiviteEconomique(entreprise, etablissement, date(2017, 2, 28), null, true);
+					// Régime annulé == pas de régime
+					final RegimeFiscal rf = new RegimeFiscal(date(2017, 2, 28), null, RegimeFiscal.Portee.VD, "01");
+					rf.setAnnulationDate(date(2017, 2, 28).asJavaDate());
+					rf.setAnnulationUser("testUser");
+					entreprise.addRegimeFiscal(rf);
+					merge(entreprise);
+					expectedIds.add(entreprise.getNumero());
+				}
+
+				// Entreprise récente dotée d'un régime fiscal -> ignorée
+				{
+					Etablissement etablissement = addEtablissement(null);
+					Entreprise entreprise = addEntrepriseInconnueAuCivil();
+					addActiviteEconomique(entreprise, etablissement, date(2017, 4, 24), null, true);
+					final RegimeFiscal rf = new RegimeFiscal(date(2017, 4, 24), null, RegimeFiscal.Portee.VD, "01");
+					entreprise.addRegimeFiscal(rf);
+					merge(entreprise);
+				}
+
+				return null;
+			}
+		});
+
+		// les ids des entreprises possèdant un régime fiscal valide
+		{
+			final Set<Long> all = tiersDAO.getEntreprisesSansRegimeFiscal();
+			assertNotNull(all);
+			assertEquals(3, all.size());
+			assertTrue(all.containsAll(expectedIds));
+		}
+	}
 }

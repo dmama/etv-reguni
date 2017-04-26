@@ -154,6 +154,11 @@ public class TypeRegimeFiscalFidor implements TypeRegimeFiscal, Serializable {
 	}
 
 	@Override
+	public boolean isSocieteDePersonnes() {
+		return categorie == CategorieEntreprise.SP;
+	}
+
+	@Override
 	@Nullable
 	public PlageExonerationFiscale getExonerationIBC(int periode) {
 		return getExonerationFiscalePourPeriodeEtGenreImpot(GenreImpotExoneration.IBC, periode);
