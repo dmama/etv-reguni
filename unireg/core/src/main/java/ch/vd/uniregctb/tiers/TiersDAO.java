@@ -264,6 +264,12 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	Contribuable getContribuable(DebiteurPrestationImposable debiteur);
 
 	/**
+	 * @return la liste des identifiants des entreprises ne possèdant pas de régimes fiscals non annulés.
+	 */
+	@SuppressWarnings("unchecked")
+	Set<Long> getEntreprisesSansRegimeFiscal();
+
+	/**
 	 * Met-à-jour les oids assignés sur le tiers spécifiés.
 	 *
 	 * @param tiersOidsMapping le mapping numéro de tiers vers numéro d'oid.

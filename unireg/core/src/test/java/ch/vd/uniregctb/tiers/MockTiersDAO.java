@@ -247,6 +247,11 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public Set<Long> getEntreprisesSansRegimeFiscal() {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public void updateOids(Map<Long, Integer> tiersOidsMapping) {
 		throw new NotImplementedException();
 	}

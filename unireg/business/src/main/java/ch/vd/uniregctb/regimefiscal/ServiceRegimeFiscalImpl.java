@@ -49,6 +49,22 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 
 	@Override
 	@NotNull
+	public TypeRegimeFiscal getTypeRegimeFiscalSocieteDePersonnes() {
+		final List<TypeRegimeFiscal> typesRegimesFiscaux = serviceInfra.getRegimesFiscaux();
+		final List<TypeRegimeFiscal> typesSP = typesRegimesFiscaux.stream()
+				.filter(TypeRegimeFiscal::isSocieteDePersonnes)
+				.collect(Collectors.toList());
+		if (typesSP.isEmpty()) {
+			throw new ServiceRegimeFiscalException("Aucun régime fiscal pour 'Société de personnes' trouvé.");
+		}
+		if (typesSP.size() > 1) {
+			throw new ServiceRegimeFiscalException("Plus d'un régime fiscal pour 'Société de personnes' trouvé.");
+		}
+		return typesSP.get(0);
+	}
+
+	@Override
+	@NotNull
 	public TypeRegimeFiscal getTypeRegimeFiscalIndetermine() {
 		final List<TypeRegimeFiscal> typesRegimesFiscaux = serviceInfra.getRegimesFiscaux();
 		final List<TypeRegimeFiscal> indetermines = typesRegimesFiscaux.stream()

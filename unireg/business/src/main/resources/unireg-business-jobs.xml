@@ -159,6 +159,19 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
+	<!-- Job qui effectue le rattrapage des régimes fiscaux pour les entreprises qui n'en n'ont pas de non annulé. (SIFISC-23901) -->
+	<bean id="rattrapageRegimesFiscauxJob" parent="schedulerJob" class="ch.vd.uniregctb.regimefiscal.rattrapage.RattrapageRegimesFiscauxJob">
+		<constructor-arg value="131"/>
+		<constructor-arg value="Rattrapage des régimes fiscaux pour les entreprises qui n'en ont pas."/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="dialect" ref="hibernateDialect"/>
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
 	<!-- Job qui met-à-jour les statistiques des tâches -->
 	<bean id="updateTacheStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.UpdateTacheStatsJob">
 		<constructor-arg value="150"/>

@@ -1107,6 +1107,35 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return etablissement;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public Set<Long> getEntreprisesSansRegimeFiscal() {
+		final Session session = getCurrentSession();
+		final String q =
+				"select e.numero " +
+				"from tiers e " +
+				"where e.numero not in " +
+				"  (" +
+				"    select distinct regime.entreprise_id " +
+				"    from regime_fiscal regime  " +
+				"    where regime.annulation_date is null " +
+				"  ) " +
+				"and e.tiers_type = 'Entreprise' " +
+				"and annulation_date is null " +
+				"order by e.numero";
+		final SQLQuery query = session.createSQLQuery(q);
+		//noinspection unchecked
+		final List<? extends Number> list = query.list();
+		final Set<Long> set = new HashSet<>(list.size());
+		for (Number nr : list) {
+			if (nr != null) {
+				set.add(nr.longValue());
+			}
+		}
+		return set;
+	}
+
+
 	@Override
 	public void updateOids(final Map<Long, Integer> tiersOidsMapping) {
 

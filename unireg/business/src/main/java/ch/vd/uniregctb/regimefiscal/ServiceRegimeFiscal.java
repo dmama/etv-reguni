@@ -22,6 +22,8 @@ public interface ServiceRegimeFiscal {
 	@NotNull
 	TypeRegimeFiscal getTypeRegimeFiscal(@NotNull String code);
 
+	@NotNull TypeRegimeFiscal getTypeRegimeFiscalSocieteDePersonnes();
+
 	/**
 	 * @return le type de régime fiscal indéterminé
 	 */
