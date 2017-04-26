@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.xml.party.v5.strategy;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -221,6 +222,9 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 					left.getAgents().addAll(AgentBuilder.newAgents((Mandat) ret, context));
 				}
 			}
+
+			// il faudrait peut-être trier ces données, non ?
+			left.getAgents().sort(Comparator.comparing(Agent::getDateFrom));
 		}
 		catch (AdresseException e) {
 			LOGGER.error(e.getMessage(), e);
