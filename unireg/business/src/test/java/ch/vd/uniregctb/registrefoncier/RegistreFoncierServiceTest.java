@@ -20,6 +20,7 @@ import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureServic
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
@@ -33,11 +34,13 @@ import static org.junit.Assert.assertNull;
 
 public class RegistreFoncierServiceTest extends BusinessTest {
 
+	private AyantDroitRFDAO ayantDroitRFDAO;
 	private RegistreFoncierService serviceRF;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+		ayantDroitRFDAO = getBean(AyantDroitRFDAO.class, "ayantDroitRFDAO");
 		serviceRF = getBean(RegistreFoncierService.class, "serviceRF");
 
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
@@ -104,7 +107,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
 				assertNotNull(ctb);
 
-				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb);
+				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, false);
 				assertEquals(2, droits.size());
 
 				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
@@ -252,7 +255,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				// Droit F                                                                  2010-06-06 |------>
 				//
 
-				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb);
+				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, false);
 				assertEquals(4, droits.size());
 
 				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
@@ -303,6 +306,656 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals("c83839e", droit3.getMasterIdRF());
 				assertEquals("06faeee", droit3.getImmeuble().getIdRF());
 			}
+		});
+	}
+
+	/**
+	 * Vérifie que les droits virtuels sont bien calculés même s'il n'y a pas de droits entre immeubles.
+	 * <p/>
+	 * <b>Situation réelle</b>
+	 * <pre>
+	 *                        individuelle (1/1)   +------------+
+	 *     +----------+    +---------------------->| Immeuble 0 |
+	 *     |          |----+                       +------------+
+	 *     | Tiers RF |
+	 *     |          |----+  copropriété (1/3)    +------------+
+	 *     +----------+    +---------------------->| Immeuble 1 |
+	 *                                             +------------+
+	 * </pre>
+	 * <b>Situation avec droits virtuels (pas de différence)</b>
+	 * <pre>
+	 *                        individuelle (1/1)   +------------+
+	 *     +----------+    +---------------------->| Immeuble 0 |
+	 *     |          |----+                       +------------+
+	 *     | Tiers RF |
+	 *     |          |----+  copropriété (1/3)    +------------+
+	 *     +----------+    +---------------------->| Immeuble 1 |
+	 *                                             +------------+
+	 * </pre>
+	 */
+	@Test
+	public void testGetDroitsVirtuelsForTiersRFCasSansDroitEntreImmeuble() throws Exception {
+
+		// mise en place foncière
+		final Long tiersId = doInNewTransaction(status -> {
+
+			// un tiers RF avec deux immeubles
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", gland, 4298);
+
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
+
+			addDroitPropriete(tiersRF, immeuble0, null,
+			                  GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
+			                  RegDate.get(2004, 5, 21), null, RegDate.get(2004, 5, 21), null, "Achat", null,
+			                  new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044", "1");
+
+			addDroitPropriete(tiersRF, immeuble1, null,
+			                  GenrePropriete.COPROPRIETE, new Fraction(1, 3),
+			                  RegDate.get(2008, 3, 1), null, RegDate.get(2008, 3, 1), null, "Achat", null,
+			                  new IdentifiantAffaireRF(123, 2008, 2, 23), "4782389c8e", "1");
+			return tiersRF.getId();
+		});
+
+		// appel du service
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF tiersRF = (PersonnePhysiqueRF) ayantDroitRFDAO.get(tiersId);
+			assertNotNull(tiersRF);
+
+			// on demande les droits, y compris les droits virtuels. Comme il n'y a pas de droits entre immeubles, on ne devrait recevoir que les deux droits réels.
+			final List<DroitRF> droits = serviceRF.getDroitsForTiersRF(tiersRF, false, true);
+			assertNotNull(droits);
+			assertEquals(2, droits.size());
+
+			final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
+			assertNull(droit0.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
+			assertEquals(new Fraction(1, 1), droit0.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebutMetier());
+			assertEquals("Achat", droit0.getMotifDebut());
+			assertNull(droit0.getMotifFin());
+			assertEquals("48390a0e044", droit0.getMasterIdRF());
+			assertEquals("01faeee", droit0.getImmeuble().getIdRF());
+
+			final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
+			assertNull(droit1.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, droit1.getRegime());
+			assertEquals(new Fraction(1, 3), droit1.getPart());
+			assertEquals(RegDate.get(2008, 3, 1), droit1.getDateDebutMetier());
+			assertEquals("Achat", droit1.getMotifDebut());
+			assertNull(droit1.getMotifFin());
+			assertEquals("4782389c8e", droit1.getMasterIdRF());
+			assertEquals("02faeee", droit1.getImmeuble().getIdRF());
+
+			return null;
+		});
+	}
+
+	/**
+	 * Vérifie que les droits virtuels sont bien calculés dans le cas où il y a un droit entre deux immeubles.
+	 * <p/>
+	 * <b>Situation réelle</b>
+	 * <pre>
+	 *                        individuelle (1/1)   +------------+
+	 *                     +---------------------->| Immeuble 0 |
+	 *     +----------+    |                       +------------+
+	 *     |          |----+                             |
+	 *     | Tiers RF |                                  | fond dominant (20/100)
+	 *     |          |----+                             v
+	 *     +----------+    |  copropriété (1/3)    +------------+
+	 *                     +---------------------->| Immeuble 1 |
+	 *                                             +------------+
+	 * </pre>
+	 * <b>Situation avec droits virtuels</b>
+	 * <pre>
+	 *                        individuelle (1/1)   +------------+
+	 *                     +---------------------->| Immeuble 0 |
+	 *     +----------+    |                       +------------+
+	 *     |          |----+                             |
+	 *     | Tiers RF |                                  | fond dominant (20/100)
+	 *     |          |----+                             v
+	 *     +----------+    |  copropriété (1/3)    +------------+
+	 *           :         +---------------------->| Immeuble 1 |
+	 *           :                                 +------------+
+	 *           :                                       ^
+	 *           :      droit virtuel (1/1 * 20/100)     :
+	 *           +.......................................+
+	 * </pre>
+	 */
+	@Test
+	public void testGetDroitsVirtuelsForTiersRFCasAvecUnDroitEntreDeuxImmeubles() throws Exception {
+
+		class Ids {
+			Long tiers;
+			Long droit0;
+			Long droit1;
+			Long droit2;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// un tiers RF avec deux immeubles ayant un lien entre eux
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", gland, 4298);
+
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
+
+			final DroitProprietePersonnePhysiqueRF droit0 = addDroitPropriete(tiersRF, immeuble0, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
+			                                                                  RegDate.get(2004, 5, 21), null, RegDate.get(2004, 5, 21), null, "Achat", null,
+			                                                                  new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044", "1");
+
+			final DroitProprieteImmeubleRF droit1 = addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(20, 100),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Remaniement parcellaire", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 6, 1), "7686758448", "1");
+
+			final DroitProprietePersonnePhysiqueRF droit2 = addDroitPropriete(tiersRF, immeuble1, null, GenrePropriete.COPROPRIETE, new Fraction(1, 3),
+			                                                                  RegDate.get(2008, 3, 1), null, RegDate.get(2008, 3, 1), null, "Achat", null,
+			                                                                  new IdentifiantAffaireRF(123, 2008, 2, 23), "4782389c8e", "1");
+
+			ids.tiers = tiersRF.getId();
+			ids.droit0 = droit0.getId();
+			ids.droit1 = droit1.getId();
+			ids.droit2 = droit2.getId();
+			return null;
+		});
+
+		// appel du service
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF tiersRF = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.tiers);
+			assertNotNull(tiersRF);
+
+			// on demande les droits, y compris les droits virtuels.
+			// droit retournés :
+			//  - 2 droits réels
+			//  - 1 droit virtuel (Tiers RF -> Immeuble 0 -> Immeuble 1)
+			final List<DroitRF> droits = serviceRF.getDroitsForTiersRF(tiersRF, false, true);
+			droits.sort(new DroitRFRangeMetierComparator());
+			assertNotNull(droits);
+			assertEquals(3, droits.size());
+
+			final DroitProprietePersonnePhysiqueRF droitReel0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
+			assertNull(droitReel0.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droitReel0.getRegime());
+			assertEquals(new Fraction(1, 1), droitReel0.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droitReel0.getDateDebutMetier());
+			assertEquals("Achat", droitReel0.getMotifDebut());
+			assertNull(droitReel0.getMotifFin());
+			assertEquals("48390a0e044", droitReel0.getMasterIdRF());
+			assertEquals("01faeee", droitReel0.getImmeuble().getIdRF());
+
+			final DroitProprieteRFVirtuel droitVirtuel1 = (DroitProprieteRFVirtuel) droits.get(1);
+			assertNull(droitVirtuel1.getCommunaute());
+			assertNull(droitVirtuel1.getRegime());
+			assertNull(droitVirtuel1.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel1.getDateDebutMetier());   // date d'achat du droit0
+			assertEquals("Achat", droitVirtuel1.getMotifDebut());
+			assertNull(droitVirtuel1.getMotifFin());
+			assertNull(droitVirtuel1.getMasterIdRF());
+			assertEquals("78838e838ca92", droitVirtuel1.getAyantDroit().getIdRF());                // le tiers RF
+			assertEquals("02faeee", droitVirtuel1.getImmeuble().getIdRF());                        // l'immeuble1
+			final List<DroitProprieteRF> chemin = droitVirtuel1.getChemin();                                // tiers RF -> immeuble 0 -> immeuble 1
+			assertEquals(2, chemin.size());
+			assertEquals(ids.droit0, chemin.get(0).getId());
+			assertEquals(ids.droit1, chemin.get(1).getId());
+
+			final DroitProprietePersonnePhysiqueRF droitReel2 = (DroitProprietePersonnePhysiqueRF) droits.get(2);
+			assertNull(droitReel2.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, droitReel2.getRegime());
+			assertEquals(new Fraction(1, 3), droitReel2.getPart());
+			assertEquals(RegDate.get(2008, 3, 1), droitReel2.getDateDebutMetier());
+			assertEquals("Achat", droitReel2.getMotifDebut());
+			assertNull(droitReel2.getMotifFin());
+			assertEquals("4782389c8e", droitReel2.getMasterIdRF());
+			assertEquals("02faeee", droitReel2.getImmeuble().getIdRF());
+
+			return null;
+		});
+	}
+
+	/**
+	 * Vérifie que les droits virtuels sont bien calculés dans le cas où un tiers possède deux immeubles qui possèdent chacun un bout d'un troisième immeuble.
+	 * <p/>
+	 * <b>Situation réelle</b>
+	 * <pre>
+	 *                        individuelle (1/1)   +------------+   fond dominant (17/50)
+	 *                     +---------------------->| Immeuble 0 |---------------------------+
+	 *     +----------+    |                       +------------+                           |    +------------+
+	 *     |          |----+                                                                +--->|            |
+	 *     | Tiers RF |                                                                          | Immeuble 3 |
+	 *     |          |----+                                                                +--->|            |
+	 *     +----------+    |  copropriété (1/3)    +------------+   fond dominant (23/50)   |    +------------+
+	 *                     +---------------------->| Immeuble 1 |---------------------------+
+	 *                                             +------------+
+	 * </pre>
+	 * <b>Situation avec droits virtuels</b>
+	 * <pre>
+	 *                   droit virtuel (1/1 * 17/50)
+	 *           +....................................................................................+
+	 *           :                                                                                    :
+	 *           :            individuelle (1/1)   +------------+   fond dominant (17/50)             :
+	 *           :         +---------------------->| Immeuble 0 |---------------------------+         v
+	 *     +----------+    |                       +------------+                           |    +------------+
+	 *     |          |----+                                                                +--->|            |
+	 *     | Tiers RF |                                                                          | Immeuble 3 |
+	 *     |          |----+                                                                +--->|            |
+	 *     +----------+    |  copropriété (1/3)    +------------+   fond dominant (23/50)   |    +------------+
+	 *           :         +---------------------->| Immeuble 1 |---------------------------+         ^
+	 *           :                                 +------------+                                     :
+	 *           :                                                                                    :
+	 *           :       droit virtuel (1/3 * 23/50)                                                  :
+	 *           +....................................................................................+
+	 * </pre>
+	 */
+	@Test
+	public void testGetDroitsVirtuelsForTiersRFCasAvecImmeublePossedeParDeuxAutresImmeubles() throws Exception {
+
+		class Ids {
+			Long tiers;
+			Long droit0;
+			Long droit1;
+			Long droit2;
+			Long droit3;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// un tiers RF avec deux immeubles ayant un lien entre eux
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", laSarraz, 4298);
+			final BienFondRF immeuble2 = addBienFondRF("03faeee", "CHE2", laSarraz, 4299);
+
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
+
+			// tiers RF -> immeuble0
+			final DroitProprietePersonnePhysiqueRF droit0 = addDroitPropriete(tiersRF, immeuble0, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
+			                                                                  RegDate.get(2004, 5, 21), null, RegDate.get(2004, 5, 21), null, "Achat", null,
+			                                                                  new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044", "1");
+
+			// tiers RF -> immeuble1
+			final DroitProprietePersonnePhysiqueRF droit1 = addDroitPropriete(tiersRF, immeuble1, null, GenrePropriete.COPROPRIETE, new Fraction(1, 3),
+			                                                                  RegDate.get(2008, 3, 1), null, RegDate.get(2008, 3, 1), null, "Achat", null,
+			                                                                  new IdentifiantAffaireRF(123, 2008, 2, 23), "4782389c8e", "1");
+
+			// immeuble0 -> immeuble 2
+			final DroitProprieteImmeubleRF droit2 = addDroitPropriete(immeuble0, immeuble2, GenrePropriete.FONDS_DOMINANT, new Fraction(17, 50),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Remaniement parcellaire", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 6, 1), "7686758448", "1");
+
+			// immeuble1 -> immeuble 2
+			final DroitProprieteImmeubleRF droit3 = addDroitPropriete(immeuble1, immeuble2, GenrePropriete.FONDS_DOMINANT, new Fraction(23, 50),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Remaniement parcellaire", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 6, 1), "6680384444", "1");
+
+
+			ids.tiers = tiersRF.getId();
+			ids.droit0 = droit0.getId();
+			ids.droit1 = droit1.getId();
+			ids.droit2 = droit2.getId();
+			ids.droit3 = droit3.getId();
+			return null;
+		});
+
+		// appel du service
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF tiersRF = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.tiers);
+			assertNotNull(tiersRF);
+
+			// on demande les droits, y compris les droits virtuels.
+			// droit retournés :
+			//  - 2 droits réels
+			//  - 2 droits virtuels :
+			//       - Tiers RF -> Immeuble 0 -> Immeuble 2
+			//       - Tiers RF -> Immeuble 1 -> Immeuble 2
+			final List<DroitRF> droits = serviceRF.getDroitsForTiersRF(tiersRF, false, true);
+			droits.sort(new DroitRFRangeMetierComparator());
+			assertNotNull(droits);
+			assertEquals(4, droits.size());
+
+			final DroitProprietePersonnePhysiqueRF droitReel0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
+			assertNull(droitReel0.getCommunaute());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droitReel0.getRegime());
+			assertEquals(new Fraction(1, 1), droitReel0.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droitReel0.getDateDebutMetier());
+			assertEquals("Achat", droitReel0.getMotifDebut());
+			assertNull(droitReel0.getMotifFin());
+			assertEquals("48390a0e044", droitReel0.getMasterIdRF());
+			assertEquals("01faeee", droitReel0.getImmeuble().getIdRF());
+
+			final DroitProprieteRFVirtuel droitVirtuel1 = (DroitProprieteRFVirtuel) droits.get(1);
+			assertNull(droitVirtuel1.getCommunaute());
+			assertNull(droitVirtuel1.getRegime());
+			assertNull(droitVirtuel1.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel1.getDateDebutMetier());   // date d'achat du droit0
+			assertEquals("Achat", droitVirtuel1.getMotifDebut());
+			assertNull(droitVirtuel1.getMotifFin());
+			assertNull(droitVirtuel1.getMasterIdRF());
+			assertEquals("78838e838ca92", droitVirtuel1.getAyantDroit().getIdRF());                // le tiers RF
+			assertEquals("03faeee", droitVirtuel1.getImmeuble().getIdRF());                        // l'immeuble2
+			final List<DroitProprieteRF> chemin1 = droitVirtuel1.getChemin();
+			assertEquals(2, chemin1.size());
+			assertChemin(ids.droit0, 1, 1, chemin1.get(0));                         // tiers RF -> immeuble0
+			assertChemin(ids.droit2, 17, 50, chemin1.get(1));                       // immeuble0 -> immeuble 2
+
+			final DroitProprietePersonnePhysiqueRF droitReel2 = (DroitProprietePersonnePhysiqueRF) droits.get(2);
+			assertNull(droitReel2.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, droitReel2.getRegime());
+			assertEquals(new Fraction(1, 3), droitReel2.getPart());
+			assertEquals(RegDate.get(2008, 3, 1), droitReel2.getDateDebutMetier());
+			assertEquals("Achat", droitReel2.getMotifDebut());
+			assertNull(droitReel2.getMotifFin());
+			assertEquals("4782389c8e", droitReel2.getMasterIdRF());
+			assertEquals("02faeee", droitReel2.getImmeuble().getIdRF());
+
+			final DroitProprieteRFVirtuel droitVirtuel3 = (DroitProprieteRFVirtuel) droits.get(3);
+			assertNull(droitVirtuel3.getCommunaute());
+			assertNull(droitVirtuel3.getRegime());
+			assertNull(droitVirtuel3.getPart());
+			assertEquals(RegDate.get(2008, 3, 1), droitVirtuel3.getDateDebutMetier());   // date d'achat du droit1
+			assertEquals("Achat", droitVirtuel3.getMotifDebut());
+			assertNull(droitVirtuel3.getMotifFin());
+			assertNull(droitVirtuel3.getMasterIdRF());
+			assertEquals("78838e838ca92", droitVirtuel3.getAyantDroit().getIdRF());                // le tiers RF
+			assertEquals("03faeee", droitVirtuel3.getImmeuble().getIdRF());                        // l'immeuble2
+			final List<DroitProprieteRF> chemin3 = droitVirtuel3.getChemin();
+			assertEquals(2, chemin3.size());
+			assertChemin(ids.droit1, 1, 3, chemin3.get(0));                         // tiers RF -> immeuble1
+			assertChemin(ids.droit3, 23, 50, chemin3.get(1));                       // immeuble1 -> immeuble 2
+
+			return null;
+		});
+	}
+
+	/**
+	 * Vérifie que les droits virtuels sont bien calculés dans le cas où un tiers possède un immeuble qui possède un deuxième immeuble qui possède lui-même un troisième immeuble.
+	 * <p/>
+	 * <b>Situation réelle</b>
+	 * <pre>
+	 *     +----------+
+	 *     | Tiers RF |---------+
+	 *     +----------+         | copropriété (1/3)
+	 *                          v
+	 *                     +------------+
+	 *                     | Immeuble 0 |--------------+
+	 *                     +------------+              | fond dominant (1/5)
+	 *                                                 v
+	 *                                            +------------+
+	 *                                            | Immeuble 1 |---------+
+	 *                                            +------------+         | fond dominant (33/100)
+	 *                                                                   v
+	 *                                                              +------------+
+	 *                                                              | Immeuble 2 |
+	 *                                                              +------------+
+	 * </pre>
+	 * <b>Situation avec droits virtuels</b>
+	 * <pre>
+	 *     +----------+
+	 *     | Tiers RF |---------+
+	 *     +----------+         | copropriété (1/3)
+	 *        :    :            v
+	 *        :    :       +------------+
+	 *        :    :       | Immeuble 0 |--------------+
+	 *        :    :       +------------+              | fond dominant (1/5)
+	 *        :    :                                   v
+	 *        :    : droit virtuel (1/3 * 1/5)    +------------+
+	 *        :    +.............................>| Immeuble 1 |---------+
+	 *        :                                   +------------+         | fond dominant (33/100)
+	 *        :                                                          v
+	 *        :      droit virtuel (1/3 * 1/5 * 33/100)             +------------+
+	 *        +....................................................>| Immeuble 2 |
+	 *                                                              +------------+
+	 * </pre>
+	 */
+	@Test
+	public void testGetDroitsVirtuelsForTiersRFCasAvecTroisImmeublesQuiSePossedentEnCascade() throws Exception {
+
+		class Ids {
+			Long tiers;
+			Long droit0;
+			Long droit1;
+			Long droit2;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// un tiers RF avec deux immeubles ayant un lien entre eux
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", laSarraz, 4298);
+			final BienFondRF immeuble2 = addBienFondRF("03faeee", "CHE2", laSarraz, 4299);
+
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
+
+			// tiers RF -> immeuble0
+			final DroitProprietePersonnePhysiqueRF droit0 = addDroitPropriete(tiersRF, immeuble0, null, GenrePropriete.COPROPRIETE, new Fraction(1, 3),
+			                                                                  RegDate.get(2004, 5, 21), null, RegDate.get(2004, 5, 21), null, "Achat", null,
+			                                                                  new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044", "1");
+
+			// immeuble0 -> immeuble 1
+			final DroitProprieteImmeubleRF droit1 = addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(1, 5),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Remaniement parcellaire", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 6, 1), "7686758448", "1");
+
+			// immeuble1 -> immeuble 2
+			final DroitProprieteImmeubleRF droit2 = addDroitPropriete(immeuble1, immeuble2, GenrePropriete.FONDS_DOMINANT, new Fraction(33, 100),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Remaniement parcellaire", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 6, 1), "6680384444", "1");
+
+
+			ids.tiers = tiersRF.getId();
+			ids.droit0 = droit0.getId();
+			ids.droit1 = droit1.getId();
+			ids.droit2 = droit2.getId();
+			return null;
+		});
+
+		// appel du service
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF tiersRF = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.tiers);
+			assertNotNull(tiersRF);
+
+			// on demande les droits, y compris les droits virtuels.
+			// droit retournés :
+			//  - 1 droit réel
+			//  - 2 droits virtuels :
+			//       - Tiers RF -> Immeuble 0 -> Immeuble 1
+			//       - Tiers RF -> Immeuble 0 -> Immeuble 1 -> Immeuble 2
+			final List<DroitRF> droits = serviceRF.getDroitsForTiersRF(tiersRF, false, true);
+			droits.sort(new DroitRFRangeMetierComparator());
+			assertNotNull(droits);
+			assertEquals(3, droits.size());
+
+			final DroitProprietePersonnePhysiqueRF droitReel0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
+			assertNull(droitReel0.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, droitReel0.getRegime());
+			assertEquals(new Fraction(1, 3), droitReel0.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droitReel0.getDateDebutMetier());
+			assertEquals("Achat", droitReel0.getMotifDebut());
+			assertNull(droitReel0.getMotifFin());
+			assertEquals("48390a0e044", droitReel0.getMasterIdRF());
+			assertEquals("01faeee", droitReel0.getImmeuble().getIdRF());
+
+			final DroitProprieteRFVirtuel droitVirtuel1 = (DroitProprieteRFVirtuel) droits.get(1);
+			assertNull(droitVirtuel1.getCommunaute());
+			assertNull(droitVirtuel1.getRegime());
+			assertNull(droitVirtuel1.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel1.getDateDebutMetier());   // date d'achat du droit0
+			assertEquals("Achat", droitVirtuel1.getMotifDebut());
+			assertNull(droitVirtuel1.getMotifFin());
+			assertNull(droitVirtuel1.getMasterIdRF());
+			assertEquals("78838e838ca92", droitVirtuel1.getAyantDroit().getIdRF());                // le tiers RF
+			assertEquals("02faeee", droitVirtuel1.getImmeuble().getIdRF());                        // l'immeuble1
+			final List<DroitProprieteRF> chemin1 = droitVirtuel1.getChemin();
+			assertEquals(2, chemin1.size());
+			assertChemin(ids.droit0, 1, 3, chemin1.get(0));                         // tiers RF -> immeuble0
+			assertChemin(ids.droit1, 1, 5, chemin1.get(1));                         // immeuble0 -> immeuble1
+
+			final DroitProprieteRFVirtuel droitVirtuel2 = (DroitProprieteRFVirtuel) droits.get(2);
+			assertNull(droitVirtuel2.getCommunaute());
+			assertNull(droitVirtuel2.getRegime());
+			assertNull(droitVirtuel2.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel2.getDateDebutMetier());   // date d'achat du droit0
+			assertEquals("Achat", droitVirtuel2.getMotifDebut());
+			assertNull(droitVirtuel2.getMotifFin());
+			assertNull(droitVirtuel2.getMasterIdRF());
+			assertEquals("78838e838ca92", droitVirtuel2.getAyantDroit().getIdRF());                // le tiers RF
+			assertEquals("03faeee", droitVirtuel2.getImmeuble().getIdRF());                        // l'immeuble1
+			final List<DroitProprieteRF> chemin2 = droitVirtuel2.getChemin();
+			assertEquals(3, chemin2.size());
+			assertChemin(ids.droit0, 1, 3, chemin2.get(0));                         // tiers RF -> immeuble0
+			assertChemin(ids.droit1, 1, 5, chemin2.get(1));                         // immeuble0 -> immeuble1
+			assertChemin(ids.droit2, 33, 100, chemin2.get(2));                      // immeuble1 -> immeuble2
+
+			return null;
+		});
+	}
+
+	/**
+	 * Vérifie que les droits virtuels sont bien calculés dans le cas où un tiers possède un immeuble qui fait partie d'un cycle de possession avec un autre immeuble.
+	 * <p/>
+	 * <b>Situation réelle</b>
+	 * <pre>
+	 *     +----------+
+	 *     | Tiers RF |---------+
+	 *     +----------+         | copropriété (1/3)
+	 *                          v
+	 *                     +------------+
+	 *                     | Immeuble 0 |--------------------+
+	 *                     +------------+                    | ppe (1/5)
+	 *                          ^                            v
+	 *                          | fond dominant (4/7)   +------------+
+	 *                          +-----------------------| Immeuble 1 |
+	 *                                                  +------------+
+	 * </pre>
+	 * <b>Situation avec droits virtuels</b>
+	 * <pre>
+	 *     +----------+
+	 *     | Tiers RF |---------------------------------------+
+	 *     +----------+                                       | copropriété (1/3)
+	 *        :    :                                          v
+	 *        :    :  droit virtuel (1/3 * 1/5 * 4/7)    +------------+
+	 *        :    +....................................>| Immeuble 0 |--------------------+
+	 *        :                                          +------------+                    | ppe (1/5)
+	 *        :                                               ^                            v
+	 *        :                                               | fond dominant (4/7)   +------------+
+	 *        :                                               +-----------------------| Immeuble 1 |
+	 *        :                                                                       +------------+
+	 *        :                                                                            ^
+	 *        :  droit virtuel (1/3 * 1/5)                                                 |
+	 *        +............................................................................+
+	 * </pre>
+	 */
+	@Test
+	public void testGetDroitsVirtuelsForTiersRFCasAvecDeuxImmeublesEtCycle() throws Exception {
+
+		class Ids {
+			Long tiers;
+			Long droit0;
+			Long droit1;
+			Long droit2;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// un tiers RF avec un immeuble qui fait partie d'un cycle de possession avec un autre immeuble.
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", laSarraz, 4298);
+
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
+
+			// tiers RF -> immeuble0
+			final DroitProprietePersonnePhysiqueRF droit0 = addDroitPropriete(tiersRF, immeuble0, null, GenrePropriete.COPROPRIETE, new Fraction(1, 3),
+			                                                                  RegDate.get(2004, 5, 21), null, RegDate.get(2004, 5, 21), null, "Achat", null,
+			                                                                  new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044", "1");
+
+			// immeuble0 -> immeuble 1
+			final DroitProprieteImmeubleRF droit1 = addDroitPropriete(immeuble0, immeuble1, GenrePropriete.PPE, new Fraction(1, 5),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Constitution de PPE", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 6, 1), "7686758448", "1");
+
+			// immeuble1 -> immeuble 0
+			final DroitProprieteImmeubleRF droit2 = addDroitPropriete(immeuble1, immeuble0, GenrePropriete.FONDS_DOMINANT, new Fraction(4, 7),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Constitution de PPE", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 6, 1), "6680384444", "1");
+
+			ids.tiers = tiersRF.getId();
+			ids.droit0 = droit0.getId();
+			ids.droit1 = droit1.getId();
+			ids.droit2 = droit2.getId();
+			return null;
+		});
+
+		// appel du service
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF tiersRF = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.tiers);
+			assertNotNull(tiersRF);
+
+			// on demande les droits, y compris les droits virtuels.
+			// droit retournés :
+			//  - 1 droit réel
+			//  - 2 droits virtuels :
+			//       - Tiers RF -> Immeuble 0 -> Immeuble 1
+			//       - Tiers RF -> Immeuble 0 -> Immeuble 1 -> Immeuble 0
+			final List<DroitRF> droits = serviceRF.getDroitsForTiersRF(tiersRF, false, true);
+			droits.sort(new DroitRFRangeMetierComparator());
+			assertNotNull(droits);
+			assertEquals(3, droits.size());
+
+			final DroitProprietePersonnePhysiqueRF droitReel0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
+			assertNull(droitReel0.getCommunaute());
+			assertEquals(GenrePropriete.COPROPRIETE, droitReel0.getRegime());
+			assertEquals(new Fraction(1, 3), droitReel0.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droitReel0.getDateDebutMetier());
+			assertEquals("Achat", droitReel0.getMotifDebut());
+			assertNull(droitReel0.getMotifFin());
+			assertEquals("48390a0e044", droitReel0.getMasterIdRF());
+			assertEquals("01faeee", droitReel0.getImmeuble().getIdRF());
+
+			final DroitProprieteRFVirtuel droitVirtuel1 = (DroitProprieteRFVirtuel) droits.get(1);
+			assertNull(droitVirtuel1.getCommunaute());
+			assertNull(droitVirtuel1.getRegime());
+			assertNull(droitVirtuel1.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel1.getDateDebutMetier());   // date d'achat du droit0
+			assertEquals("Achat", droitVirtuel1.getMotifDebut());
+			assertNull(droitVirtuel1.getMotifFin());
+			assertNull(droitVirtuel1.getMasterIdRF());
+			assertEquals("78838e838ca92", droitVirtuel1.getAyantDroit().getIdRF());                // le tiers RF
+			assertEquals("01faeee", droitVirtuel1.getImmeuble().getIdRF());                        // l'immeuble0
+			final List<DroitProprieteRF> chemin2 = droitVirtuel1.getChemin();
+			assertEquals(3, chemin2.size());
+			assertChemin(ids.droit0, 1, 3, chemin2.get(0));                         // tiers RF -> immeuble0
+			assertChemin(ids.droit1, 1, 5, chemin2.get(1));                         // immeuble0 -> immeuble1
+			assertChemin(ids.droit2, 4, 7, chemin2.get(2));                         // immeuble1 -> immeuble0
+
+			final DroitProprieteRFVirtuel droitVirtuel2 = (DroitProprieteRFVirtuel) droits.get(2);
+			assertNull(droitVirtuel2.getCommunaute());
+			assertNull(droitVirtuel2.getRegime());
+			assertNull(droitVirtuel2.getPart());
+			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel2.getDateDebutMetier());   // date d'achat du droit0
+			assertEquals("Achat", droitVirtuel2.getMotifDebut());
+			assertNull(droitVirtuel2.getMotifFin());
+			assertNull(droitVirtuel2.getMasterIdRF());
+			assertEquals("78838e838ca92", droitVirtuel2.getAyantDroit().getIdRF());                // le tiers RF
+			assertEquals("02faeee", droitVirtuel2.getImmeuble().getIdRF());                        // l'immeuble1
+			final List<DroitProprieteRF> chemin1 = droitVirtuel2.getChemin();
+			assertEquals(2, chemin1.size());
+			assertChemin(ids.droit0, 1, 3, chemin1.get(0));                         // tiers RF -> immeuble0
+			assertChemin(ids.droit1, 1, 5, chemin1.get(1));                         // immeuble0 -> immeuble1
+
+			return null;
 		});
 	}
 
@@ -491,4 +1144,8 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 	}
 
+	private static void assertChemin(Long id, int numerateur, int denominateur, DroitProprieteRF chemin) {
+		assertEquals(id, chemin.getId());
+		assertEquals(new Fraction(numerateur, denominateur), chemin.getPart());
+	}
 }

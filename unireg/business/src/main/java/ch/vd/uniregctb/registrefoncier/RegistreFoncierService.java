@@ -18,20 +18,31 @@ public interface RegistreFoncierService {
 	/**
 	 * Détermine les droits sur des immeubles d'un contribuable Unireg.
 	 *
-	 * @param ctb un contribuable Unireg
+	 * @param ctb            un contribuable Unireg
+	 * @param includeVirtual vrai s'il faut inclure les droits virtuels du contribuable
 	 * @return une liste de droits.
 	 */
-	@NotNull
-	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb);
+	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean includeVirtual);
 
 	/**
 	 * Détermine les droits sur des immeubles d'un contribuable Unireg.
 	 *
-	 * @param ctb un contribuable Unireg
+	 * @param ctb                        un contribuable Unireg
+	 * @param prefetchSituationsImmeuble vrai si les situations et les immeubles doivent être chargés dans le cache de session Hibernate
+	 * @param includeVirtual             vrai s'il faut inclure les droits virtuels du contribuable
 	 * @return une liste de droits.
 	 */
-	@NotNull
-	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble);
+	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble, boolean includeVirtual);
+
+	/**
+	 * Détermine les droits sur des immeubles d'un tiers RF.
+	 *
+	 * @param ayantDroitRF               un ayant-droit RF
+	 * @param prefetchSituationsImmeuble vrai si les situations et les immeubles doivent être chargés dans le cache de session Hibernate
+	 * @param includeVirtual             vrai s'il faut inclure les droits virtuels du tiers RF
+	 * @return la liste des droits du tiers RF
+	 */
+	List<DroitRF> getDroitsForTiersRF(AyantDroitRF ayantDroitRF, boolean prefetchSituationsImmeuble, boolean includeVirtual);
 
 	/**
 	 * @param immeubleId l'id technique d'un immeuble
@@ -81,7 +92,7 @@ public interface RegistreFoncierService {
 	Long getContribuableIdFor(@NotNull TiersRF tiersRF);
 
 	/**
-	 * @param immeuble immeuble du RF
+	 * @param immeuble      immeuble du RF
 	 * @param dateReference date de référence
 	 * @return la commune de localisation de l'immeuble à la date de référence (peut être différent en fonction de la date en raison des fusions de communes)
 	 */
@@ -89,7 +100,7 @@ public interface RegistreFoncierService {
 	Commune getCommune(ImmeubleRF immeuble, RegDate dateReference);
 
 	/**
-	 * @param immeuble immeuble du RF
+	 * @param immeuble      immeuble du RF
 	 * @param dateReference date de référence
 	 * @return l'estimation fiscale valide à la date de référence
 	 */
@@ -97,7 +108,7 @@ public interface RegistreFoncierService {
 	EstimationRF getEstimationFiscale(ImmeubleRF immeuble, RegDate dateReference);
 
 	/**
-	 * @param immeuble immeuble du RF
+	 * @param immeuble      immeuble du RF
 	 * @param dateReference date de référence
 	 * @return le numéro de parcelle (avec indexes, séparés par des tirets)
 	 */
@@ -105,7 +116,7 @@ public interface RegistreFoncierService {
 	String getNumeroParcelleComplet(ImmeubleRF immeuble, RegDate dateReference);
 
 	/**
-	 * @param immeuble immeuble du RF
+	 * @param immeuble      immeuble du RF
 	 * @param dateReference date de référence
 	 * @return la situation valide à la date de référence ou, en l'absence d'une telle situation, la première situation valide après la date de référence
 	 */

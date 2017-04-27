@@ -68,10 +68,12 @@ import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
@@ -433,6 +435,34 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		droit0.setImmeuble(immeuble);
 		droit0.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
 		return hibernateTemplate.merge(droit0);
+	}
+
+	protected DroitProprieteImmeubleRF addDroitPropriete(ImmeubleRF fondDominant, ImmeubleRF fondServant, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin,
+	                                                     String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF, String versionIdRF) {
+
+		ImmeubleBeneficiaireRF beneficiaire = fondDominant.getEquivalentBeneficiaire();
+		if (beneficiaire == null) {
+			beneficiaire = new ImmeubleBeneficiaireRF();
+			beneficiaire.setIdRF(fondDominant.getIdRF());
+			beneficiaire.setImmeuble(fondDominant);
+			beneficiaire = hibernateTemplate.merge(beneficiaire);
+			fondDominant.setEquivalentBeneficiaire(beneficiaire);
+		}
+
+		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
+		droit.setRegime(regime);
+		droit.setPart(part);
+		droit.setDateDebut(dateDebut);
+		droit.setDateDebutMetier(dateDebutMetier);
+		droit.setDateFin(dateFin);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setAyantDroit(beneficiaire);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
+		droit.setImmeuble(fondServant);
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
+		return hibernateTemplate.merge(droit);
 	}
 
 	protected PersonnePhysiqueRF addPersonnePhysiqueRF(String idRF, String prenom, String nom, RegDate dateNaissance) {

@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +28,7 @@ import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -60,18 +65,16 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		this.infraService = infraService;
 	}
 
-	@NotNull
 	@Override
-	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb) {
-		return getDroitsForCtb(ctb, false);
+	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean includeVirtual) {
+		return getDroitsForCtb(ctb, false, false);
 	}
 
-	@NotNull
 	@Override
-	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble) {
+	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble, boolean includeVirtual) {
 		return ctb.getRapprochementsRF().stream()
 				.filter(AnnulableHelper::nonAnnule)                     // on ignore les rapprochements annulés
-				.flatMap(rapp -> getDroitsValides(rapp, prefetchSituationsImmeuble))  // on demande les droits valides pour le rapprochement
+				.flatMap(rapp -> getDroitsValides(rapp, prefetchSituationsImmeuble, includeVirtual))  // on demande les droits valides pour le rapprochement
 				.sorted()                             // on trie les droits pour garder un ordre constant entre chaque appel
 				.collect(Collectors.toList());
 	}
@@ -103,14 +106,88 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	 *                                  |-------F--------|
 	 * </pre>
 	 *
-	 * @param rapprochement un rapprochement entre un contribuable et un tiers RF
+	 * @param rapprochement   un rapprochement entre un contribuable et un tiers RF
 	 * @param fetchSituations <code>true</code> s'il faut que les immeubles des droits retournés aient déjà leurs situations récupérées (optim)
+	 * @param includeVirtual  vrai s'il faut inclure les droits virtuels du contribuable
 	 * @return les liste des droits valides pour le contribuable
 	 */
-	private Stream<DroitRF> getDroitsValides(RapprochementRF rapprochement, boolean fetchSituations) {
-		return droitRFDAO.findForAyantDroit(rapprochement.getTiersRF().getId(), fetchSituations).stream()
+	private Stream<DroitRF> getDroitsValides(RapprochementRF rapprochement, boolean fetchSituations, boolean includeVirtual) {
+		final List<DroitRF> droits = getDroitsForTiersRF(rapprochement.getTiersRF(), fetchSituations, includeVirtual);
+		return droits.stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(d -> DateRangeHelper.intersect(d, rapprochement));
+	}
+
+	@Override
+	public List<DroitRF> getDroitsForTiersRF(AyantDroitRF ayantDroitRF, boolean prefetchSituationsImmeuble, boolean includeVirtual) {
+		final List<DroitRF> droits = droitRFDAO.findForAyantDroit(ayantDroitRF.getId(), prefetchSituationsImmeuble);
+		if (includeVirtual) {
+			// on va parcourir les droits entre immeubles pour déterminer la liste des droits virtuels
+			final List<DroitProprieteRF> droitsVirtuels = droits.stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(DroitProprieteRF.class::isInstance)
+					.map(DroitProprieteRF.class::cast)
+					.map(this::determineDroitsVirtuels)   // détermine les droits virtuels
+					.flatMap(Collection::stream)
+					.collect(Collectors.toList());
+			droits.addAll(droitsVirtuels);
+		}
+		return droits;
+	}
+
+	private List<DroitProprieteRF> determineDroitsVirtuels(@NotNull DroitProprieteRF droitReel) {
+
+		if (droitReel instanceof DroitProprieteRFVirtuel) {
+			throw new IllegalArgumentException("Le droit doit être réel");
+		}
+
+		final List<DroitProprieteRF> chemin = new ArrayList<>();
+		chemin.add(droitReel);
+
+		final ImmeubleRF immeuble = droitReel.getImmeuble();
+		return determineDroitsVirtuels(droitReel, immeuble, chemin);
+	}
+
+	private List<DroitProprieteRF> determineDroitsVirtuels(@NotNull DroitProprieteRF parent, @NotNull ImmeubleRF immeuble, @NotNull List<DroitProprieteRF> chemin) {
+
+		final ImmeubleBeneficiaireRF beneficiaire = immeuble.getEquivalentBeneficiaire();
+		if (beneficiaire == null) {
+			// l'immeuble n'est pas propriétaire d'autres immeubles, on sort
+			return Collections.emptyList();
+		}
+
+		final List<DroitProprieteRF> virtuels = new ArrayList<>();
+
+		final Set<DroitProprieteRF> sousDroits = beneficiaire.getDroitsPropriete();
+		for (DroitProprieteRF sousDroit : sousDroits) {
+			if (sousDroit.isAnnule() || chemin.contains(sousDroit)) {
+				// le droit est annulé ou a déjà été traité, on l'ignore
+				continue;
+			}
+
+			final DroitRFHelper.DroitIntersection intersection = DroitRFHelper.intersection(parent, sousDroit);
+			if (intersection != null) { // le sous-droit intersecte avec le parent -> on le suit
+
+				final List<DroitProprieteRF> sousChemin = new ArrayList<>(chemin);
+				sousChemin.add(sousDroit);
+
+				// on crée le droit virtuel
+				final DroitProprieteRFVirtuel droitVirtuel = new DroitProprieteRFVirtuel();
+				droitVirtuel.setAyantDroit(parent.getAyantDroit());
+				droitVirtuel.setImmeuble(sousDroit.getImmeuble());
+				droitVirtuel.setDateDebutMetier(intersection.getDateDebut());
+				droitVirtuel.setDateFinMetier(intersection.getDateFin());
+				droitVirtuel.setMotifDebut(intersection.getMotifDebut());
+				droitVirtuel.setMotifFin(intersection.getMotifFin());
+				droitVirtuel.setChemin(new ArrayList<>(sousChemin)); // pas sûr que cette copie soit nécessaire
+				virtuels.add(droitVirtuel);
+
+				// on continue avec l'immeuble suivant
+				final ImmeubleRF sousImmeuble = sousDroit.getImmeuble();
+				virtuels.addAll(determineDroitsVirtuels(droitVirtuel, sousImmeuble, sousChemin));
+			}
+		}
+		return virtuels;
 	}
 
 	@Nullable

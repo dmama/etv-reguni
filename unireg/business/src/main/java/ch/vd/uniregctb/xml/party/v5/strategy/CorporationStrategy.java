@@ -414,7 +414,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 	private void initLandRights(Corporation to, Entreprise entreprise, Context context) {
 
-		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(entreprise);
+		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(entreprise, false);
 
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()

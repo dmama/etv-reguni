@@ -20,6 +20,10 @@ import ch.vd.capitastra.grundstueck.NatuerlichePersonGb;
 import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.PersonEigentumsform;
 import ch.vd.capitastra.grundstueck.Rechtsgrund;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -390,5 +394,81 @@ public abstract class DroitRFHelper {
 			return null;
 		}
 		return newDroitRF(eigentumAnteil, ayantDroitProvider, communauteProvider, immeubleProvider);
+	}
+
+	public static class DroitIntersection implements DateRange {
+		private final RegDate dateDebut;
+		private final RegDate dateFin;
+		private final String motifDebut;
+		private final String motifFin;
+
+		public DroitIntersection(RegDate dateDebut, RegDate dateFin, String motifDebut, String motifFin) {
+			this.dateDebut = dateDebut;
+			this.dateFin = dateFin;
+			this.motifDebut = motifDebut;
+			this.motifFin = motifFin;
+		}
+
+		public RegDate getDateDebut() {
+			return dateDebut;
+		}
+
+		public RegDate getDateFin() {
+			return dateFin;
+		}
+
+		public String getMotifDebut() {
+			return motifDebut;
+		}
+
+		public String getMotifFin() {
+			return motifFin;
+		}
+	}
+
+	/**
+	 * Calcul l'intersection de deux droits selon leurs dates <b>métier</b> et retourne le résultat. Les dates nulles sont évaluées comme :
+	 * <ul>
+	 * <li>pour les dates de début comme la nuit des temps (Big Bang)</li>
+	 * <li>pour les dates de fin comme la fin des temps (Big Crunch)</li>
+	 * </ul>
+	 *
+	 * @param d1 le premier droit
+	 * @param d2 le second droit
+	 * @return l'intersection des deux droits selon leurs dates <b>métier</b>, ou <b>null</b> si les deux ranges n'ont rien en commun.
+	 */
+	public static DroitIntersection intersection(@NotNull DroitRF d1, @NotNull DroitRF d2) {
+
+		final DateRange r1 = d1.getRangeMetier();
+		final DateRange r2 = d2.getRangeMetier();
+
+		if (DateRangeHelper.intersect(r1, r2)) {
+			// Il y a une intersection
+			final RegDate dateDebut;
+			final String motifDebut;
+			if (NullDateBehavior.EARLIEST.compare(r1.getDateDebut(), r2.getDateDebut()) >= 0) {
+				dateDebut = r1.getDateDebut();
+				motifDebut = d1.getMotifDebut();
+			}
+			else {
+				dateDebut = r2.getDateDebut();
+				motifDebut = d2.getMotifDebut();
+			}
+			final RegDate dateFin;
+			final String motifFin;
+			if (NullDateBehavior.LATEST.compare(r1.getDateFin(), r2.getDateFin()) <= 0) {
+				dateFin = r1.getDateFin();
+				motifFin = d1.getMotifFin();
+			}
+			else {
+				dateFin = r2.getDateFin();
+				motifFin = d2.getMotifFin();
+			}
+			return new DroitIntersection(dateDebut, dateFin, motifDebut, motifFin);
+		}
+		else {
+			// Pas d'intersection
+			return null;
+		}
 	}
 }

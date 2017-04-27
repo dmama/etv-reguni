@@ -313,7 +313,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 	private void initLandRights(NaturalPerson to, PersonnePhysique pp, Context context) {
 
-		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp);
+		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp, false);
 
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()

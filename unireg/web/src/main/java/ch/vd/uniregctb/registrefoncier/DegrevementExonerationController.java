@@ -155,7 +155,7 @@ public class DegrevementExonerationController {
 		final Map<Long, ImmeubleRF> immeublesParId = new HashMap<>();
 		final Map<Long, List<DateRange>> droitsParImmeuble = new HashMap<>();
 
-		final List<DroitRF> droits = registreFoncierService.getDroitsForCtb(ctb, true);
+		final List<DroitRF> droits = registreFoncierService.getDroitsForCtb(ctb, true, false);
 		for (DroitRF droit : droits) {
 			if (droit.isAnnule()) {
 				continue;
@@ -333,7 +333,7 @@ public class DegrevementExonerationController {
 	}
 
 	private List<DroitView> buildListeDroits(Entreprise entreprise, ImmeubleRF immeuble) {
-		return registreFoncierService.getDroitsForCtb(entreprise).stream()
+		return registreFoncierService.getDroitsForCtb(entreprise, false).stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(dt -> dt.getImmeubleList().contains(immeuble))
 				.sorted(Comparator.reverseOrder())
