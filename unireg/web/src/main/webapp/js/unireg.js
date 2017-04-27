@@ -968,7 +968,7 @@ var Tiers = {
 		html += '<span>Vers : </span>';
 
 		html += '<select name="AppSelect" onchange="App.gotoExternalApp(this);">';
-		html += '<option value="">---</option>';
+		html += '<option value="">&mdash;&mdash;</option>';
 		for (var i in tiers.urlsVers) {
 			//noinspection JSUnfilteredForInLoop
 			var uv = tiers.urlsVers[i];
@@ -3104,7 +3104,7 @@ var Search = {
 						const isContribuablePP = (isPersonnePhysique || e.tiersType === 'menagecommun');
 
 						table += '<select name="AppSelect" style="width: 10em;" onchange="App.gotoExternalApp(this);">';
-						table += '<option value="">---</option>';
+						table += '<option value="">&mdash;&mdash;</option>';
 						if (!e.debiteurInactif || isContribuablePP) {
 							table += '<option value="' + App.curl('/redirect/TAO_PP.do?id=' + e.numero) + '">TAO-PP</option>';
 						}

@@ -54,9 +54,11 @@
 						<label for="typeRapport"><fmt:message key="label.type.rapport.entre.tiers" />&nbsp;:</label>
 						<form:select id="typeRapport" path="typeRapportEntreTiers" onchange="onTypeChange(this);" onkeyup="onTypeChange(this);">
 							<form:option value="REPRESENTATION"><fmt:message key="option.rapport.entre.tiers.SUJET.REPRESENTATION" /></form:option>
+							<option disabled="disabled">&mdash;&mdash;</option>
 							<form:option value="CONSEIL_LEGAL"><fmt:message key="option.rapport.entre.tiers.SUJET.CONSEIL_LEGAL" /></form:option>
-							<form:option value="TUTELLE"><fmt:message key="option.rapport.entre.tiers.SUJET.TUTELLE" /></form:option>
 							<form:option value="CURATELLE"><fmt:message key="option.rapport.entre.tiers.SUJET.CURATELLE" /></form:option>
+							<form:option value="TUTELLE"><fmt:message key="option.rapport.entre.tiers.SUJET.TUTELLE" /></form:option>
+							<option disabled="disabled">&mdash;&mdash;</option>
                             <form:option value="ASSUJETTISSEMENT_PAR_SUBSTITUTION"><fmt:message key="option.rapport.entre.tiers.SUJET.ASSUJETTISSEMENT_PAR_SUBSTITUTION" /></form:option>
 						</form:select>
 					</p>

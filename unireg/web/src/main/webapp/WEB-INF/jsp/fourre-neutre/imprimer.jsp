@@ -25,7 +25,7 @@
                             <td width="25%"><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
                             <td width="25%">
                                 <form:select path="periodeFiscale">
-                                    <form:option value="null" ><fmt:message key="option.selectionner" /></form:option>
+                                    <option disabled="disabled" selected="selected"><fmt:message key="option.selectionner"/></option>
                                     <form:options items="${periodes}" />
                                 </form:select>
                                 <span class="mandatory">*</span>
