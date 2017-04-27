@@ -5,7 +5,6 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -17,11 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections4.Closure;
-import org.apache.commons.collections4.Predicate;
-import org.apache.commons.collections4.PredicateUtils;
-import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +30,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -159,28 +156,26 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.searchTiersComponent = new SearchTiersComponent(tiersService, messageSource, tiersMapHelper, "AddMandataireCriteria", "tiers/edition/mandataire/add", new SearchTiersComponent.TiersCriteriaFiller() {
-			@Override
-			public void fill(TiersCriteriaView criteria) {
-				criteria.setTypesTiersImperatifs(EnumSet.of(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE, TiersCriteria.TypeTiers.ENTREPRISE, TiersCriteria.TypeTiers.ETABLISSEMENT_SECONDAIRE));
-			}
-		});
+		final Set<TiersCriteria.TypeTiers> typesImperatifs = EnumSet.of(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE, TiersCriteria.TypeTiers.ENTREPRISE, TiersCriteria.TypeTiers.ETABLISSEMENT_SECONDAIRE);
+		this.searchTiersComponent = new SearchTiersComponent(tiersService, messageSource, tiersMapHelper,
+		                                                     "AddMandataireCriteria", "tiers/edition/mandataire/add",
+		                                                     criteria -> criteria.setTypesTiersImperatifs(typesImperatifs));
 	}
 
 	@InitBinder(value = SearchTiersComponent.COMMAND)
-	protected void initCommandBinder(WebDataBinder binder) {
+	public void initCommandBinder(WebDataBinder binder) {
 		binder.setValidator(new TiersCriteriaValidator());
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, true, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
 	@InitBinder(value = DONNEES_MANDAT)
-	protected void initDonneesMandatBinder(WebDataBinder binder) {
+	public void initDonneesMandatBinder(WebDataBinder binder) {
 		binder.setValidator(new AddMandatViewValidator(ibanValidator, buildSetOfCodesGenreImpot()));
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, true, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
 	@InitBinder(value = MANDAT_EDIT)
-	protected void initEditMandatBinder(WebDataBinder binder) {
+	public void initEditMandatBinder(WebDataBinder binder) {
 		binder.setValidator(new EditMandatViewValidator(ibanValidator));
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, true, false, RegDateHelper.StringFormat.DISPLAY));
 	}
@@ -270,33 +265,30 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	@RequestMapping(value = "/adresse-de-mandat.do", method = RequestMethod.GET)
 	@ResponseBody
 	public AdresseMandatView getAdresseMandat(@RequestParam("idMandat") final long idMandat) {
-		return transactionHelper.doInTransaction(true, new TransactionCallback<AdresseMandatView>() {
-			@Override
-			public AdresseMandatView doInTransaction(TransactionStatus status) {
-				final Mandat mandat = hibernateTemplate.get(Mandat.class, idMandat);
-				if (mandat == null || (mandat.getTypeMandat() != TypeMandat.GENERAL && mandat.getTypeMandat() != TypeMandat.SPECIAL)) {
-					return null;
-				}
+		return transactionHelper.doInTransaction(true, status -> {
+			final Mandat mandat = hibernateTemplate.get(Mandat.class, idMandat);
+			if (mandat == null || (mandat.getTypeMandat() != TypeMandat.GENERAL && mandat.getTypeMandat() != TypeMandat.SPECIAL)) {
+				return null;
+			}
 
-				final String nomPrenomContact = buildNomPrenomPersonneContact(mandat.getPrenomPersonneContact(), mandat.getNomPersonneContact());
-				final String noTelContact = mandat.getNoTelephoneContact();
+			final String nomPrenomContact = buildNomPrenomPersonneContact(mandat.getPrenomPersonneContact(), mandat.getNomPersonneContact());
+			final String noTelContact = mandat.getNoTelephoneContact();
 
-				final Tiers mandataire;
-				try {
-					mandataire = getMandataire(mandat);
-				}
-				catch (TiersNotFoundException e) {
-					return new AdresseMandatView(nomPrenomContact, noTelContact, (List<String>) null);
-				}
+			final Tiers mandataire;
+			try {
+				mandataire = getMandataire(mandat);
+			}
+			catch (TiersNotFoundException e) {
+				return new AdresseMandatView(nomPrenomContact, noTelContact, (List<String>) null);
+			}
 
-				try {
-					final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(mandataire, mandat.getDateFin(), TypeAdresseFiscale.REPRESENTATION, false);
-					return new AdresseMandatView(nomPrenomContact, noTelContact, Arrays.asList(adresse.getLignes()));
-				}
-				catch (AdresseException e) {
-					LOGGER.error("Problème à la détermination de l'adresse de représentation du tiers " + mandataire.getNumero(), e);
-					return new AdresseMandatView(nomPrenomContact, noTelContact, e.getMessage());
-				}
+			try {
+				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(mandataire, mandat.getDateFin(), TypeAdresseFiscale.REPRESENTATION, false);
+				return new AdresseMandatView(nomPrenomContact, noTelContact, Arrays.asList(adresse.getLignes()));
+			}
+			catch (AdresseException e) {
+				LOGGER.error("Problème à la détermination de l'adresse de représentation du tiers " + mandataire.getNumero(), e);
+				return new AdresseMandatView(nomPrenomContact, noTelContact, e.getMessage());
 			}
 		});
 	}
@@ -304,22 +296,19 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	@RequestMapping(value = "/adresse-representation.do", method = RequestMethod.GET)
 	@ResponseBody
 	public LignesAdressesView getAdresseRepresentationTiers(@RequestParam("idTiers") final long idTiers) {
-		return transactionHelper.doInTransaction(true, new TransactionCallback<LignesAdressesView>() {
-			@Override
-			public LignesAdressesView doInTransaction(TransactionStatus status) {
-				final Tiers tiers = hibernateTemplate.get(Tiers.class, idTiers);
-				if (tiers == null) {
-					return null;
-				}
+		return transactionHelper.doInTransaction(true, status -> {
+			final Tiers tiers = hibernateTemplate.get(Tiers.class, idTiers);
+			if (tiers == null) {
+				return null;
+			}
 
-				try {
-					final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.REPRESENTATION, false);
-					return new LignesAdressesView(Arrays.asList(adresse.getLignes()));
-				}
-				catch (AdresseException e) {
-					LOGGER.error("Problème à la détermination de l'adresse de représentation du tiers " + tiers.getNumero(), e);
-					return null;
-				}
+			try {
+				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.REPRESENTATION, false);
+				return new LignesAdressesView(Arrays.asList(adresse.getLignes()));
+			}
+			catch (AdresseException e) {
+				LOGGER.error("Problème à la détermination de l'adresse de représentation du tiers " + tiers.getNumero(), e);
+				return null;
 			}
 		});
 	}
@@ -327,138 +316,103 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	@RequestMapping(value = "/adresse-mandataire.do", method = RequestMethod.GET)
 	@ResponseBody
 	public AdresseMandatView getAdresseMandataire(@RequestParam("idAdresse") final long idAdresse) {
-		return transactionHelper.doInTransaction(true, new TransactionCallback<AdresseMandatView>() {
-			@Override
-			public AdresseMandatView doInTransaction(TransactionStatus status) {
-				final AdresseMandataire mandat = hibernateTemplate.get(AdresseMandataire.class, idAdresse);
-				if (mandat == null) {
-					return null;
-				}
+		return transactionHelper.doInTransaction(true, status -> {
+			final AdresseMandataire mandat = hibernateTemplate.get(AdresseMandataire.class, idAdresse);
+			if (mandat == null) {
+				return null;
+			}
 
-				final String nomPrenomContact = buildNomPrenomPersonneContact(mandat.getPrenomPersonneContact(), mandat.getNomPersonneContact());
-				final String noTelContact = mandat.getNoTelephoneContact();
+			final String nomPrenomContact = buildNomPrenomPersonneContact(mandat.getPrenomPersonneContact(), mandat.getNomPersonneContact());
+			final String noTelContact = mandat.getNoTelephoneContact();
 
-				try {
-					final AdresseMandataireAdapter adapter = new AdresseMandataireAdapter(mandat, infraService);
-					final AdresseEnvoiDetaillee adresse = adresseService.buildAdresseEnvoi(adapter.getSource().getTiers(), adapter, mandat.getDateFin());
-					return new AdresseMandatView(nomPrenomContact, noTelContact, Arrays.asList(adresse.getLignes()));
-				}
-				catch (AdresseException e) {
-					LOGGER.error("Problème à la construction de l'adresse mandataire " + mandat.getId(), e);
-					return new AdresseMandatView(nomPrenomContact, noTelContact, e.getMessage());
-				}
+			try {
+				final AdresseMandataireAdapter adapter = new AdresseMandataireAdapter(mandat, infraService);
+				final AdresseEnvoiDetaillee adresse = adresseService.buildAdresseEnvoi(adapter.getSource().getTiers(), adapter, mandat.getDateFin());
+				return new AdresseMandatView(nomPrenomContact, noTelContact, Arrays.asList(adresse.getLignes()));
+			}
+			catch (AdresseException e) {
+				LOGGER.error("Problème à la construction de l'adresse mandataire " + mandat.getId(), e);
+				return new AdresseMandatView(nomPrenomContact, noTelContact, e.getMessage());
 			}
 		});
 	}
 
 	private static <T, U> void forEach(@Nullable Collection<T> source,
-	                                   Transformer<? super T, ? extends U> mapper,
-	                                   Closure<? super U> job) {
-
+	                                   Predicate<? super T> filter,
+	                                   Function<? super T, ? extends U> mapper,
+	                                   Consumer<? super U> job) {
 		if (source != null && !source.isEmpty()) {
-			for (T elt : source) {
-				final U transformee = mapper.transform(elt);
-				if (transformee != null) {
-					job.execute(transformee);
-				}
-			}
+			source.stream()
+					.filter(filter)
+					.map(mapper)
+					.forEach(job);
 		}
 	}
 
-	private static <T> void forEach(@Nullable Collection<T> source, final Predicate<? super T> filter, Closure<? super T> job) {
-		forEach(source, new Transformer<T, T>() {
-			@Override
-			public T transform(T input) {
-				return filter.evaluate(input) ? input : null;
-			}
-		}, job);
-	}
-
-	private static void doForAllMandatsOfType(final Set<TypeMandat> targetTypes, Contribuable mandant, Closure<? super Mandat> job) {
+	private static void doForAllMandatsOfType(final Set<TypeMandat> targetTypes, Contribuable mandant, Consumer<? super Mandat> job) {
 		final Set<RapportEntreTiers> rets = mandant.getRapportsSujet();
 		if (rets != null && !rets.isEmpty()) {
-			final Transformer<RapportEntreTiers, Mandat> transf = new Transformer<RapportEntreTiers, Mandat>() {
-				@Override
-				public Mandat transform(RapportEntreTiers input) {
-					return input instanceof Mandat && targetTypes.contains(((Mandat) input).getTypeMandat()) ? (Mandat) input : null;
-				}
-			};
-			forEach(rets, transf, job);
+			forEach(rets,
+			        ret -> ret instanceof Mandat && targetTypes.contains(((Mandat) ret).getTypeMandat()),
+					ret -> (Mandat) ret,
+					job);
 		}
 	}
 
-	private static void doForAllAdressesMandataires(Contribuable mandant, Closure<? super AdresseMandataire> job) {
+	private static void doForAllAdressesMandataires(Contribuable mandant, Consumer<? super AdresseMandataire> job) {
 		final Set<AdresseMandataire> adresses = mandant.getAdressesMandataires();
-		if (adresses != null && !adresses.isEmpty()) {
-			forEach(adresses, PredicateUtils.<AdresseMandataire>truePredicate(), job);
-		}
+		forEach(adresses, x -> true, Function.identity(), job);
 	}
 
 	@RequestMapping(value = "/courrier/edit-list.do", method = RequestMethod.GET)
 	public String editMandatairesCourrier(final Model model, @RequestParam("ctbId") final long idMandant) {
 		checkDroitAccesMandatairesCourrier();
-		return transactionHelper.doInTransaction(true, new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				checkAccessDossierEnEcriture(idMandant);
+		return transactionHelper.doInTransaction(true, status -> {
+			checkAccessDossierEnEcriture(idMandant);
 
-				final Contribuable mandant = hibernateTemplate.get(Contribuable.class, idMandant);
-				if (mandant == null) {
-					throw new TiersNotFoundException(idMandant);
-				}
-
-				final Map<TypeMandat, Boolean> modifiableMap = buildModifiableMap();
-
-				final List<MandataireCourrierEditView> mandats = new LinkedList<>();
-				doForAllMandatsOfType(EnumSet.of(TypeMandat.GENERAL, TypeMandat.SPECIAL), mandant, new Closure<Mandat>() {
-					@Override
-					public void execute(Mandat mandat) {
-						mandats.add(new MandataireCourrierEditView(mandat, tiersService, infraService, modifiableMap.get(mandat.getTypeMandat())));
-					}
-				});
-				doForAllAdressesMandataires(mandant, new Closure<AdresseMandataire>() {
-					@Override
-					public void execute(AdresseMandataire adresse) {
-						mandats.add(new MandataireCourrierEditView(adresse, infraService, modifiableMap.get(adresse.getTypeMandat())));
-					}
-				});
-				Collections.sort(mandats, MandataireViewHelper.COURRIER_COMPARATOR);
-
-				model.addAttribute(MANDATS, mandats);
-				model.addAttribute(ID_MANDANT, idMandant);
-				return "tiers/edition/mandataire/courrier";
+			final Contribuable mandant = hibernateTemplate.get(Contribuable.class, idMandant);
+			if (mandant == null) {
+				throw new TiersNotFoundException(idMandant);
 			}
+
+			final Map<TypeMandat, Boolean> modifiableMap = buildModifiableMap();
+
+			final List<MandataireCourrierEditView> mandats = new LinkedList<>();
+			doForAllMandatsOfType(EnumSet.of(TypeMandat.GENERAL, TypeMandat.SPECIAL),
+			                      mandant,
+			                      mandat -> mandats.add(new MandataireCourrierEditView(mandat, tiersService, infraService, modifiableMap.get(mandat.getTypeMandat()))));
+			doForAllAdressesMandataires(mandant,
+			                            adresse -> mandats.add(new MandataireCourrierEditView(adresse, infraService, modifiableMap.get(adresse.getTypeMandat()))));
+			mandats.sort(MandataireViewHelper.COURRIER_COMPARATOR);
+
+			model.addAttribute(MANDATS, mandats);
+			model.addAttribute(ID_MANDANT, idMandant);
+			return "tiers/edition/mandataire/courrier";
 		});
 	}
 
 	@RequestMapping(value = "/perception/edit-list.do", method = RequestMethod.GET)
 	public String editMandatairesPerception(final Model model, @RequestParam("ctbId") final long idMandant) {
 		checkDroitAccesMandatairesPerception();
-		return transactionHelper.doInTransaction(true, new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				checkAccessDossierEnEcriture(idMandant);
+		return transactionHelper.doInTransaction(true, status -> {
+			checkAccessDossierEnEcriture(idMandant);
 
-				final Contribuable mandant = hibernateTemplate.get(Contribuable.class, idMandant);
-				if (mandant == null) {
-					throw new TiersNotFoundException(idMandant);
-				}
-
-				final Map<TypeMandat, Boolean> modifiableMap = buildModifiableMap();
-
-				final List<MandatairePerceptionEditView> mandats = new LinkedList<>();
-				doForAllMandatsOfType(EnumSet.of(TypeMandat.TIERS), mandant, new Closure<Mandat>() {
-					@Override
-					public void execute(Mandat mandat) {
-						mandats.add(new MandatairePerceptionEditView(mandat, tiersService, modifiableMap.get(mandat.getTypeMandat())));
-					}
-				});
-				Collections.sort(mandats, MandataireViewHelper.BASIC_COMPARATOR);
-
-				model.addAttribute(MANDATS, mandats);
-				model.addAttribute(ID_MANDANT, idMandant);
-				return "tiers/edition/mandataire/perception";
+			final Contribuable mandant = hibernateTemplate.get(Contribuable.class, idMandant);
+			if (mandant == null) {
+				throw new TiersNotFoundException(idMandant);
 			}
+
+			final Map<TypeMandat, Boolean> modifiableMap = buildModifiableMap();
+
+			final List<MandatairePerceptionEditView> mandats = new LinkedList<>();
+			doForAllMandatsOfType(EnumSet.of(TypeMandat.TIERS),
+			                      mandant,
+			                      mandat -> mandats.add(new MandatairePerceptionEditView(mandat, tiersService, modifiableMap.get(mandat.getTypeMandat()))));
+			mandats.sort(MandataireViewHelper.BASIC_COMPARATOR);
+
+			model.addAttribute(MANDATS, mandats);
+			model.addAttribute(ID_MANDANT, idMandant);
+			return "tiers/edition/mandataire/perception";
 		});
 	}
 
@@ -510,12 +464,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 		// on va trier par ordre alphabétique des libellés
 		final List<Map.Entry<String, String>> flatMap = new ArrayList<>(map.entrySet());
-		Collections.sort(flatMap, new Comparator<Map.Entry<String, String>>() {
-			@Override
-			public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
-				return o1.getValue().compareTo(o2.getValue());      // ordre alphabétique des valeurs
-			}
-		});
+		flatMap.sort(Comparator.comparing(Map.Entry::getValue));
 		final Map<String, String> sortedMap = new LinkedHashMap<>(map.size());
 		for (Map.Entry<String, String> entry : flatMap) {
 			sortedMap.put(entry.getKey(), entry.getValue());
@@ -731,82 +680,73 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 	@RequestMapping(value = "/annuler-mandat.do", method = RequestMethod.POST)
 	public String annulerMandat(@RequestParam("idMandat") final long idMandat) {
-		return transactionHelper.doInTransaction(false, new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final Mandat mandat = hibernateTemplate.get(Mandat.class, idMandat);
-				if (mandat == null) {
-					throw new ObjectNotFoundException("Aucun mandat ne correspond à l'identifiant " + idMandat);
-				}
+		return transactionHelper.doInTransaction(false, status -> {
+			final Mandat mandat = hibernateTemplate.get(Mandat.class, idMandat);
+			if (mandat == null) {
+				throw new ObjectNotFoundException("Aucun mandat ne correspond à l'identifiant " + idMandat);
+			}
 
-				// identifiant du mandant
-				final long idMandant = mandat.getSujetId();
+			// identifiant du mandant
+			final long idMandant = mandat.getSujetId();
 
-				// si mandat déjà annulé, on ne change rien
-				if (!mandat.isAnnule()) {
-					checkDroitAccesMandat(mandat.getTypeMandat());
-					checkAccessDossierEnEcriture(idMandant);
+			// si mandat déjà annulé, on ne change rien
+			if (!mandat.isAnnule()) {
+				checkDroitAccesMandat(mandat.getTypeMandat());
+				checkAccessDossierEnEcriture(idMandant);
 
-					// on annule le mandat...
-					mandat.setAnnule(true);
-				}
+				// on annule le mandat...
+				mandat.setAnnule(true);
+			}
 
-				if (mandat.getTypeMandat() == TypeMandat.TIERS) {
-					return "redirect:/mandataire/perception/edit-list.do?ctbId=" + idMandant;
-				}
-				else {
-					return "redirect:/mandataire/courrier/edit-list.do?ctbId=" + idMandant;
-				}
+			if (mandat.getTypeMandat() == TypeMandat.TIERS) {
+				return "redirect:/mandataire/perception/edit-list.do?ctbId=" + idMandant;
+			}
+			else {
+				return "redirect:/mandataire/courrier/edit-list.do?ctbId=" + idMandant;
 			}
 		});
 	}
 
 	@RequestMapping(value = "/annuler-adresse.do", method = RequestMethod.POST)
 	public String annulerAdresse(@RequestParam("idAdresse") final long idAdresse) {
-		return transactionHelper.doInTransaction(false, new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final AdresseMandataire mandat = hibernateTemplate.get(AdresseMandataire.class, idAdresse);
-				if (mandat == null) {
-					throw new ObjectNotFoundException("Aucune adresse mandataire ne correspond à l'identifiant " + idAdresse);
-				}
+		return transactionHelper.doInTransaction(false, status -> {
+			final AdresseMandataire mandat = hibernateTemplate.get(AdresseMandataire.class, idAdresse);
+			if (mandat == null) {
+				throw new ObjectNotFoundException("Aucune adresse mandataire ne correspond à l'identifiant " + idAdresse);
+			}
 
-				final Contribuable mandant = mandat.getMandant();
+			final Contribuable mandant = mandat.getMandant();
 
-				// si mandat déjà annulé, on ne change rien
-				if (!mandat.isAnnule()) {
-					checkDroitAccesMandat(mandat.getTypeMandat());
-					checkAccessDossierEnEcriture(mandant.getNumero());
+			// si mandat déjà annulé, on ne change rien
+			if (!mandat.isAnnule()) {
+				checkDroitAccesMandat(mandat.getTypeMandat());
+				checkAccessDossierEnEcriture(mandant.getNumero());
 
-					// on annule le mandat...
-					mandat.setAnnule(true);
-				}
+				// on annule le mandat...
+				mandat.setAnnule(true);
+			}
 
-				if (mandat.getTypeMandat() == TypeMandat.TIERS) {
-					return "redirect:/mandataire/perception/edit-list.do?ctbId=" + mandant.getNumero();
-				}
-				else {
-					return "redirect:/mandataire/courrier/edit-list.do?ctbId=" + mandant.getNumero();
-				}
+			if (mandat.getTypeMandat() == TypeMandat.TIERS) {
+				return "redirect:/mandataire/perception/edit-list.do?ctbId=" + mandant.getNumero();
+			}
+			else {
+				return "redirect:/mandataire/courrier/edit-list.do?ctbId=" + mandant.getNumero();
 			}
 		});
 	}
 
 	@RequestMapping(value = "/editer-mandat.do", method = RequestMethod.GET)
 	public String showEditerMandat(final Model model, @RequestParam("idMandat") final long idMandat) {
-		return transactionHelper.doInTransaction(true, new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final Mandat mandat = hibernateTemplate.get(Mandat.class, idMandat);
-				if (mandat == null) {
-					throw new ObjectNotFoundException("Aucun mandat trouvé avec l'identifiant " + idMandat);
-				}
-
-				checkDroitAccesMandat(mandat.getTypeMandat());
-				checkAccessDossierEnEcriture(mandat.getSujetId());
-
-				return showEditerMandat(model, mandat, null);
+		return transactionHelper.doInTransaction(true, status -> {
+			final Mandat mandat = hibernateTemplate.get(Mandat.class, idMandat);
+			if (mandat == null) {
+				throw new ObjectNotFoundException("Aucun mandat trouvé avec l'identifiant " + idMandat);
 			}
+
+			checkDroitAccesMandat(mandat.getTypeMandat());
+			checkAccessDossierEnEcriture(mandat.getSujetId());
+
+			return showEditerMandat(model, mandat, null);
 		});
 	}
 
@@ -821,95 +761,89 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 	@RequestMapping(value = "/editer-mandat.do", method = RequestMethod.POST)
 	public String doEditerMandat(@Valid @ModelAttribute(MANDAT_EDIT) final EditMandatView view, final BindingResult bindingResult, final Model model) {
-		return transactionHelper.doInTransaction(false, new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final Mandat mandat = hibernateTemplate.get(Mandat.class, view.getIdMandat());
-				if (mandat == null) {
-					throw new ObjectNotFoundException("Aucun mandat trouvé avec l'identifiant " + view.getIdMandat());
+		return transactionHelper.doInTransaction(false, status -> {
+			final Mandat mandat = hibernateTemplate.get(Mandat.class, view.getIdMandat());
+			if (mandat == null) {
+				throw new ObjectNotFoundException("Aucun mandat trouvé avec l'identifiant " + view.getIdMandat());
+			}
+
+			if (bindingResult.hasErrors()) {
+				return showEditerMandat(model, mandat, view);
+			}
+
+			checkDroitAccesMandat(mandat.getTypeMandat());
+			checkAccessDossierEnEcriture(mandat.getSujetId());
+
+			if (mandat.isAnnule()) {
+				throw new ActionException("Le mandat est annulé, il n'est plus modifiable.");
+			}
+
+			final Contribuable mandant = hibernateTemplate.get(Contribuable.class, mandat.getSujetId());
+			if (mandant == null) {
+				throw new TiersNotFoundException(mandat.getSujetId());
+			}
+
+			// y a-t-il un autre changement que l'apparition de la date de fin ?
+			final boolean dateFinApparue = mandat.getDateFin() == null && view.getDateFin() != null;
+			final boolean donneesModifiees;
+			if (mandat.getTypeMandat() == TypeMandat.TIERS) {
+				// seuls la date de fin et l'IBAN peuvent être modifiés
+				final String oldIban = mandat.getCoordonneesFinancieres() != null ? IbanHelper.normalize(mandat.getCoordonneesFinancieres().getIban()) : null;
+				final String newIban = IbanHelper.normalize(view.getIban());
+				donneesModifiees = !Objects.equals(oldIban, newIban);
+			}
+			else {
+				// la date de fin, les coordonnées de contact et le flag de copie des courriers peuvent être modifiés
+				final boolean copyFlagModifie = (mandat.getWithCopy() != null && mandat.getWithCopy()) != view.isWithCopy();
+				final boolean prenomContactModifie = !Objects.equals(mandat.getPrenomPersonneContact(), view.getPrenomPersonneContact());
+				final boolean nomContactModifie = !Objects.equals(mandat.getNomPersonneContact(), view.getNomPersonneContact());
+				final boolean noTelContactModifie = !Objects.equals(mandat.getNoTelephoneContact(), view.getNoTelContact());
+				donneesModifiees = copyFlagModifie || prenomContactModifie || nomContactModifie || noTelContactModifie;
+			}
+
+			// si les données ont été modifiées, on procède par annulation du mandat précedent et ré-ouverture d'un autre
+			if (donneesModifiees) {
+				final Mandat copy = (Mandat) mandat.duplicate();
+				mandat.setAnnule(true);
+				if (dateFinApparue) {
+					copy.setDateFin(view.getDateFin());
 				}
-
-				if (bindingResult.hasErrors()) {
-					return showEditerMandat(model, mandat, view);
-				}
-
-				checkDroitAccesMandat(mandat.getTypeMandat());
-				checkAccessDossierEnEcriture(mandat.getSujetId());
-
-				if (mandat.isAnnule()) {
-					throw new ActionException("Le mandat est annulé, il n'est plus modifiable.");
-				}
-
-				final Contribuable mandant = hibernateTemplate.get(Contribuable.class, mandat.getSujetId());
-				if (mandant == null) {
-					throw new TiersNotFoundException(mandat.getSujetId());
-				}
-
-				// y a-t-il un autre changement que l'apparition de la date de fin ?
-				final boolean dateFinApparue = mandat.getDateFin() == null && view.getDateFin() != null;
-				final boolean donneesModifiees;
-				if (mandat.getTypeMandat() == TypeMandat.TIERS) {
-					// seuls la date de fin et l'IBAN peuvent être modifiés
-					final String oldIban = mandat.getCoordonneesFinancieres() != null ? IbanHelper.normalize(mandat.getCoordonneesFinancieres().getIban()) : null;
-					final String newIban = IbanHelper.normalize(view.getIban());
-					donneesModifiees = !Objects.equals(oldIban, newIban);
+				if (copy.getTypeMandat() == TypeMandat.TIERS) {
+					copy.setCoordonneesFinancieres(new CoordonneesFinancieres(IbanHelper.normalize(view.getIban()), null));
 				}
 				else {
-					// la date de fin, les coordonnées de contact et le flag de copie des courriers peuvent être modifiés
-					final boolean copyFlagModifie = (mandat.getWithCopy() != null && mandat.getWithCopy()) != view.isWithCopy();
-					final boolean prenomContactModifie = !Objects.equals(mandat.getPrenomPersonneContact(), view.getPrenomPersonneContact());
-					final boolean nomContactModifie = !Objects.equals(mandat.getNomPersonneContact(), view.getNomPersonneContact());
-					final boolean noTelContactModifie = !Objects.equals(mandat.getNoTelephoneContact(), view.getNoTelContact());
-					donneesModifiees = copyFlagModifie || prenomContactModifie || nomContactModifie || noTelContactModifie;
+					copy.setWithCopy(view.isWithCopy());
+					copy.setNomPersonneContact(view.getNomPersonneContact());
+					copy.setPrenomPersonneContact(view.getPrenomPersonneContact());
+					copy.setNoTelephoneContact(view.getNoTelContact());
 				}
+				tiersService.addMandat(mandant, copy);
+			}
+			else if (dateFinApparue) {
+				mandat.setDateFin(view.getDateFin());
+			}
 
-				// si les données ont été modifiées, on procède par annulation du mandat précedent et ré-ouverture d'un autre
-				if (donneesModifiees) {
-					final Mandat copy = (Mandat) mandat.duplicate();
-					mandat.setAnnule(true);
-					if (dateFinApparue) {
-						copy.setDateFin(view.getDateFin());
-					}
-					if (copy.getTypeMandat() == TypeMandat.TIERS) {
-						copy.setCoordonneesFinancieres(new CoordonneesFinancieres(IbanHelper.normalize(view.getIban()), null));
-					}
-					else {
-						copy.setWithCopy(view.isWithCopy());
-						copy.setNomPersonneContact(view.getNomPersonneContact());
-						copy.setPrenomPersonneContact(view.getPrenomPersonneContact());
-						copy.setNoTelephoneContact(view.getNoTelContact());
-					}
-					tiersService.addMandat(mandant, copy);
-				}
-				else if (dateFinApparue) {
-					mandat.setDateFin(view.getDateFin());
-				}
-
-				if (mandat.getTypeMandat() == TypeMandat.TIERS) {
-					return "redirect:/mandataire/perception/edit-list.do?ctbId=" + mandant.getNumero();
-				}
-				else {
-					return "redirect:/mandataire/courrier/edit-list.do?ctbId=" + mandant.getNumero();
-				}
+			if (mandat.getTypeMandat() == TypeMandat.TIERS) {
+				return "redirect:/mandataire/perception/edit-list.do?ctbId=" + mandant.getNumero();
+			}
+			else {
+				return "redirect:/mandataire/courrier/edit-list.do?ctbId=" + mandant.getNumero();
 			}
 		});
 	}
 
 	@RequestMapping(value = "/editer-adresse.do", method = RequestMethod.GET)
 	public String showEditerAdresseMandataire(final Model model, @RequestParam("idAdresse") final long idAdresse) {
-		return transactionHelper.doInTransaction(true, new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final AdresseMandataire adresse = hibernateTemplate.get(AdresseMandataire.class, idAdresse);
-				if (adresse == null) {
-					throw new ObjectNotFoundException("Aucune adresse mandataire trouvée avec l'identifiant " + idAdresse);
-				}
-
-				checkDroitAccesMandat(adresse.getTypeMandat());
-				checkAccessDossierEnEcriture(adresse.getMandant().getNumero());
-
-				return showEditerAdresseMandataire(model, adresse, null);
+		return transactionHelper.doInTransaction(true, status -> {
+			final AdresseMandataire adresse = hibernateTemplate.get(AdresseMandataire.class, idAdresse);
+			if (adresse == null) {
+				throw new ObjectNotFoundException("Aucune adresse mandataire trouvée avec l'identifiant " + idAdresse);
 			}
+
+			checkDroitAccesMandat(adresse.getTypeMandat());
+			checkAccessDossierEnEcriture(adresse.getMandant().getNumero());
+
+			return showEditerAdresseMandataire(model, adresse, null);
 		});
 	}
 
@@ -924,55 +858,52 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 	@RequestMapping(value = "/editer-adresse.do", method = RequestMethod.POST)
 	public String doEditerAdresseMandataire(@Valid @ModelAttribute(MANDAT_EDIT) final EditMandatView view, final BindingResult bindingResult, final Model model) {
-		return transactionHelper.doInTransaction(false, new TransactionCallback<String>() {
-			@Override
-			public String doInTransaction(TransactionStatus status) {
-				final AdresseMandataire adresse = hibernateTemplate.get(AdresseMandataire.class, view.getIdAdresse());
-				if (adresse == null) {
-					throw new ObjectNotFoundException("Aucune adresse mandataire trouvée avec l'identifiant " + view.getIdAdresse());
-				}
-
-				if (bindingResult.hasErrors()) {
-					return showEditerAdresseMandataire(model, adresse, view);
-				}
-
-				final Contribuable mandant = adresse.getMandant();
-				checkDroitAccesMandat(adresse.getTypeMandat());
-				checkAccessDossierEnEcriture(mandant.getNumero());
-
-				if (adresse.isAnnule()) {
-					throw new ActionException("L'adresse mandataire est annulée, elle n'est plus modifiable.");
-				}
-
-				// y a-t-il un autre changement que l'apparition de la date de fin ?
-				final boolean dateFinApparue = adresse.getDateFin() == null && view.getDateFin() != null;
-
-				// la date de fin, les coordonnées de contact et le flag de copie des courriers peuvent être modifiés
-				final boolean copyFlagModifie = adresse.isWithCopy() != view.isWithCopy();
-				final boolean prenomContactModifie = !Objects.equals(adresse.getPrenomPersonneContact(), view.getPrenomPersonneContact());
-				final boolean nomContactModifie = !Objects.equals(adresse.getNomPersonneContact(), view.getNomPersonneContact());
-				final boolean noTelContactModifie = !Objects.equals(adresse.getNoTelephoneContact(), view.getNoTelContact());
-				final boolean donneesModifiees = copyFlagModifie || prenomContactModifie || nomContactModifie || noTelContactModifie;
-
-				// si les données ont été modifiées, on procède par annulation du mandat précedent et ré-ouverture d'un autre
-				if (donneesModifiees) {
-					final AdresseMandataire copy = adresse.duplicate();
-					adresse.setAnnule(true);
-					if (dateFinApparue) {
-						copy.setDateFin(view.getDateFin());
-					}
-					copy.setWithCopy(view.isWithCopy());
-					copy.setNomPersonneContact(view.getNomPersonneContact());
-					copy.setPrenomPersonneContact(view.getPrenomPersonneContact());
-					copy.setNoTelephoneContact(view.getNoTelContact());
-					tiersService.addMandat(mandant, copy);
-				}
-				else if (dateFinApparue) {
-					adresse.setDateFin(view.getDateFin());
-				}
-
-				return "redirect:/mandataire/courrier/edit-list.do?ctbId=" + mandant.getNumero();
+		return transactionHelper.doInTransaction(false, status -> {
+			final AdresseMandataire adresse = hibernateTemplate.get(AdresseMandataire.class, view.getIdAdresse());
+			if (adresse == null) {
+				throw new ObjectNotFoundException("Aucune adresse mandataire trouvée avec l'identifiant " + view.getIdAdresse());
 			}
+
+			if (bindingResult.hasErrors()) {
+				return showEditerAdresseMandataire(model, adresse, view);
+			}
+
+			final Contribuable mandant = adresse.getMandant();
+			checkDroitAccesMandat(adresse.getTypeMandat());
+			checkAccessDossierEnEcriture(mandant.getNumero());
+
+			if (adresse.isAnnule()) {
+				throw new ActionException("L'adresse mandataire est annulée, elle n'est plus modifiable.");
+			}
+
+			// y a-t-il un autre changement que l'apparition de la date de fin ?
+			final boolean dateFinApparue = adresse.getDateFin() == null && view.getDateFin() != null;
+
+			// la date de fin, les coordonnées de contact et le flag de copie des courriers peuvent être modifiés
+			final boolean copyFlagModifie = adresse.isWithCopy() != view.isWithCopy();
+			final boolean prenomContactModifie = !Objects.equals(adresse.getPrenomPersonneContact(), view.getPrenomPersonneContact());
+			final boolean nomContactModifie = !Objects.equals(adresse.getNomPersonneContact(), view.getNomPersonneContact());
+			final boolean noTelContactModifie = !Objects.equals(adresse.getNoTelephoneContact(), view.getNoTelContact());
+			final boolean donneesModifiees = copyFlagModifie || prenomContactModifie || nomContactModifie || noTelContactModifie;
+
+			// si les données ont été modifiées, on procède par annulation du mandat précedent et ré-ouverture d'un autre
+			if (donneesModifiees) {
+				final AdresseMandataire copy = adresse.duplicate();
+				adresse.setAnnule(true);
+				if (dateFinApparue) {
+					copy.setDateFin(view.getDateFin());
+				}
+				copy.setWithCopy(view.isWithCopy());
+				copy.setNomPersonneContact(view.getNomPersonneContact());
+				copy.setPrenomPersonneContact(view.getPrenomPersonneContact());
+				copy.setNoTelephoneContact(view.getNoTelContact());
+				tiersService.addMandat(mandant, copy);
+			}
+			else if (dateFinApparue) {
+				adresse.setDateFin(view.getDateFin());
+			}
+
+			return "redirect:/mandataire/courrier/edit-list.do?ctbId=" + mandant.getNumero();
 		});
 	}
 
