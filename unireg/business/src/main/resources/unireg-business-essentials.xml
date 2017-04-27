@@ -287,7 +287,6 @@
 
 	<bean id="exerciceCommercialHelper" class="ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper">
 		<constructor-arg ref="tiersService"/>
-		<constructor-arg ref="assujettissementService"/>
 	</bean>
 
 	<bean id="autreDocumentFiscalService" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalServiceImpl">
