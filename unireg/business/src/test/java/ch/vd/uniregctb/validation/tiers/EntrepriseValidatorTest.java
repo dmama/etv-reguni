@@ -78,7 +78,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		Assert.assertEquals(1, vr.errorsCount());
 
 		final List<String> errors = vr.getErrors();
-		Assert.assertEquals("Le régime fiscal RegimeFiscal VD (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
+		Assert.assertEquals("Le régime fiscal de portée VD (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
 	}
 
 	@Test

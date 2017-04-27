@@ -62,7 +62,7 @@ public class ServiceRegimeFiscalTest extends BusinessTest {
 			fail();
 		}
 		catch (ServiceRegimeFiscalException e) {
-			assertEquals("Aucun type de régime fiscal ne correspond au code fourni: 00001. Soit le code est erronné, soit il manque des données dans FiDoR.", e.getMessage());
+			assertEquals("Aucun type de régime fiscal ne correspond au code fourni '00001'. Soit le code est erroné, soit il manque des données dans FiDoR.", e.getMessage());
 			return;
 		}
 		fail();
