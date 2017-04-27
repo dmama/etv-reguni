@@ -427,6 +427,7 @@
 
 	<bean id="regimeFiscalValidator" class="ch.vd.uniregctb.validation.tiers.RegimeFiscalValidator" parent="dateRangeEntityValidator">
 		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
 	</bean>
 
 	<bean id="donneeCivileEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.DonneeCivileEntrepriseValidator" abstract="true" parent="dateRangeEntityValidator"/>

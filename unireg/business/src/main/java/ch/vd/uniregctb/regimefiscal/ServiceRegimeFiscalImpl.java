@@ -38,10 +38,10 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 		final List<TypeRegimeFiscal> typesRegimesFiscaux = serviceInfra.getRegimesFiscaux();
 		final List<TypeRegimeFiscal> typesRegimeFiscal = typesRegimesFiscaux.stream().filter(r -> codeRegime.equals(r.getCode())).collect(Collectors.toList());
 		if (typesRegimeFiscal.size() > 1) {
-			throw new ServiceRegimeFiscalException(String.format("Fatal: Deux ou plus types de régime fiscal partagent le même code: %s. Problème de configuration FiDor.", codeRegime));
+			throw new ServiceRegimeFiscalException(String.format("Fatal: Deux ou plus types de régime fiscal partagent le même code '%s'. Problème de configuration FiDoR.", codeRegime));
 		}
 		if (typesRegimeFiscal.size() == 0) {
-			throw new ServiceRegimeFiscalException(String.format("Aucun type de régime fiscal ne correspond au code fourni: %s. Soit le code est erronné, soit il manque des données dans FiDoR.",
+			throw new ServiceRegimeFiscalException(String.format("Aucun type de régime fiscal ne correspond au code fourni '%s'. Soit le code est erroné, soit il manque des données dans FiDoR.",
 			                                                     codeRegime));
 		}
 		return typesRegimeFiscal.get(0);
@@ -74,7 +74,7 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 		}
 		catch (ServiceRegimeFiscalException e) {
 			throw new ServiceRegimeFiscalException(
-					String.format("Impossible de récupérer un type de régime fiscal avec le code %s configuré pour la forme juridique \"%s\". Faites contrôler la configuration Unireg des types par défaut.",
+					String.format("Impossible de récupérer un type de régime fiscal avec le code '%s' configuré pour la forme juridique \"%s\". Faites contrôler la configuration Unireg des types par défaut.",
 					              codeRegime, formeJuridique.getLibelle()));
 		}
 	}
