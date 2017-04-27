@@ -51,8 +51,11 @@ public class CreateEntrepriseVD extends CreateEntreprise {
 		                       isSocieteDePersonnes ? GenreImpot.REVENU_FORTUNE : GenreImpot.BENEFICE_CAPITAL,
 		                       warnings, suivis);
 
-		// Réglages exercice commercial
-		if (!isSocieteDePersonnes) {
+		if (isSocieteDePersonnes) {
+			warnings.addWarning(String.format("Nouvelle société de personnes, date de début à contrôler%s.", getOrganisation().isInscriteAuRC(getDateEvt()) ? " (Publication FOSC)" : ""));
+		}
+		else {
+			// Réglages exercice commercial
 			createAddBouclement(getDateOuvertureFiscale(), isCreation(), suivis);
 		}
 
