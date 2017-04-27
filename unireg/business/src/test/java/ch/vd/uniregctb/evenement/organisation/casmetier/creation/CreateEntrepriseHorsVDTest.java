@@ -258,7 +258,7 @@ public class CreateEntrepriseHorsVDTest extends AbstractEvenementOrganisationPro
 
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
