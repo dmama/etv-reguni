@@ -91,12 +91,6 @@
 									<td style="min-width: 300px"><c:out value="${tableEvtsOrganisation.organisation.formeJuridique}"/></td>
 								</tr>
 								<tr class="<unireg:nextRowClass/>">
-									<td width="130px"><fmt:message key="label.categorie"/>&nbsp;:</td>
-									<c:if test="${tableEvtsOrganisation.organisation.formeJuridique != null}">
-										<td><c:out value="${tableEvtsOrganisation.organisation.categorie}"/> (<fmt:message key="option.categorie.entreprise.${tableEvtsOrganisation.organisation.categorie}"/>)</td>
-									</c:if>
-								</tr>
-								<tr class="<unireg:nextRowClass/>">
 									<td><fmt:message key="label.siege"/>&nbsp;:</td>
 									<c:choose>
 										<c:when test="${tableEvtsOrganisation.organisation.typeSiege == 'COMMUNE_OU_FRACTION_VD'}">
