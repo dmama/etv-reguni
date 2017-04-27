@@ -995,6 +995,15 @@
 					<xs:documentation>Les allégements fonciers du tiers sur des propriétés foncières (exonération IFONC ou dégrèvements ICI).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="VIRTUAL_LAND_RIGHTS">
+				<xs:annotation>
+					<xs:documentation>Les droits réels et virtuels du tiers sur des propriétés foncières. Un droit réel est un droit direct du tiers sur un immeuble.
+						Un droit de virtuel est un droit indirect du tiers sur un autre immeuble qui existe dans le cas où le tiers possède un droit sur un immeuble
+						qui possède lui-même un droit sur un autre immeuble : le droit virtuel est le droit équivalent à cette succession de droits réels et il s'établit
+						entre le tiers et l'autre immeuble. Il y a autant de droits virtuels retournés qu'il y a de chemins possibles pour atteindre tous les immeubles
+						depuis le tiers courant.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

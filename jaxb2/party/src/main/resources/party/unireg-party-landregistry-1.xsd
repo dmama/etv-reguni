@@ -149,6 +149,53 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="virtualLandOwnershipRightType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Représente un droit de propriété virtuel sur un immeuble. Un droit de propriété virtuel existe dans le cas où
+						un propriétaire possède un droit sur un immeuble qui possède lui-même un droit sur un autre immeuble : le droit virtuel est
+						le droit équivalent à cette succession de droits réels et il s'établit entre le propriétaire et cet autre immeuble.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="land:landRightType">
+				<xs:sequence>
+					<xs:element name="communityId" type="xs:long" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Si renseigné, l'id technique de la communauté de propriétaires qui possèdent véritablement l'immeuble. Si nul, il s'agit d'un droit de propriété normal.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="path" type="land:landOwnershipRightType" minOccurs="2" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le chemin des droits de propriété à travers le graphe des droits de propriété entre propriétaires et immeubles qui a déterminé le droit virtuel actuel.
+									Ces droits sont ordonnés selon l'ordre de parcours du graphe.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="easementRightType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
@@ -194,6 +241,44 @@
 		<xs:complexContent>
 			<xs:extension base="land:easementRightType">
 				<xs:sequence>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="virtualUsufructRightType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Représente un usufruit virtuel. Un droit de propriété virtuel existe dans le cas où
+						un bénéficiaire possède un usufruit réel sur un immeuble qui possède lui-même un droit sur un autre immeuble : l'usufruit virtuel est
+						le droit équivalent à cette succession d'usufruit et de droits réels et il s'établit entre le bénéficiaire et cet autre immeuble.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="land:easementRightType">
+				<xs:sequence>
+					<xs:element name="path" type="land:landRightType" minOccurs="2" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le chemin des droits de propriété à travers le graphe des droits de propriété (y compris le premier usufruit) entre bénéficiaire et immeubles qui a déterminé le droit virtuel actuel.
+										Ces droits sont ordonnés selon l'ordre de parcours du graphe.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="padding" type="xs:int">
 						<xs:annotation>
 							<xs:appinfo>
