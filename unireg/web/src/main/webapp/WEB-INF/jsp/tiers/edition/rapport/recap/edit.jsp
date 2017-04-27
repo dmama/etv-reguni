@@ -63,7 +63,7 @@
 					
 					<p>
 						<%-- Autorité tutélaire, uniquement pour tutelle --%>
-						<label id="autoriteTutelaireLabel"  for="autoriteTutelaire"><fmt:message key="label.autorite.tutelaire" />&nbsp;:</label>
+						<label id="autoriteTutelaireLabel"  for="nomAutoriteTutelaire"><fmt:message key="label.autorite.tutelaire" />&nbsp;:</label>
 						<form:input path="nomAutoriteTutelaire" id="nomAutoriteTutelaire" size ="65"/>
 						<form:hidden path="autoriteTutelaireId" id="autoriteTutelaireId" />
 						<script>
