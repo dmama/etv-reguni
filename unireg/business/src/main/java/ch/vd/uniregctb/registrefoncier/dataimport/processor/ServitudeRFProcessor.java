@@ -164,5 +164,12 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 		}
 		// on ferme la servitude
 		persisted.setDateFin(dateValeur.getOneDayBefore());
+		if (persisted.getDateFinMetier() == null) {
+			// on renseigne la date de fin métier à  la même valeur que la date technique, car :
+			// - il n'y a pas forcément une nouvelle servitude qui suivra et donc il n'est pas possible de déduire la date de fin métier
+			//   de la date de début métier de la servitude suivante (comme pour les droits de propriété)
+			// - il n'y a pas d'autre date disponible et il faut bien renseigner quelque chose.
+			persisted.setDateFinMetier(dateValeur.getOneDayBefore());
+		}
 	}
 }
