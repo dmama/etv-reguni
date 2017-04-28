@@ -266,8 +266,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	/**
 	 * @return la liste des identifiants des entreprises ne possèdant pas de régimes fiscals non annulés.
 	 */
-	@SuppressWarnings("unchecked")
-	Set<Long> getEntreprisesSansRegimeFiscal();
+	List<Long> getEntreprisesSansRegimeFiscal();
 
 	/**
 	 * Met-à-jour les oids assignés sur le tiers spécifiés.

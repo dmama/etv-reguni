@@ -247,7 +247,7 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
-	public Set<Long> getEntreprisesSansRegimeFiscal() {
+	public List<Long> getEntreprisesSansRegimeFiscal() {
 		throw new NotImplementedException();
 	}
 

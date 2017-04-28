@@ -164,12 +164,11 @@
 		<constructor-arg value="131"/>
 		<constructor-arg value="Rattrapage des régimes fiscaux pour les entreprises qui n'en ont pas."/>
 		<property name="transactionManager" ref="transactionManager"/>
-		<property name="dialect" ref="hibernateDialect"/>
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
-		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="rapportService" ref="rapportService"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
 	</bean>
 
 	<!-- Job qui met-à-jour les statistiques des tâches -->

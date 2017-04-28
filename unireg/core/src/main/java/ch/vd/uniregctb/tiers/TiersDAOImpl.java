@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Criteria;
@@ -1109,7 +1110,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Set<Long> getEntreprisesSansRegimeFiscal() {
+	public List<Long> getEntreprisesSansRegimeFiscal() {
 		final Session session = getCurrentSession();
 		final String q =
 				"select e.numero " +
@@ -1121,18 +1122,15 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 				"    where regime.annulation_date is null " +
 				"  ) " +
 				"and e.tiers_type = 'Entreprise' " +
-				"and annulation_date is null " +
+				"and e.annulation_date is null " +
 				"order by e.numero";
+
 		final SQLQuery query = session.createSQLQuery(q);
 		//noinspection unchecked
 		final List<? extends Number> list = query.list();
-		final Set<Long> set = new HashSet<>(list.size());
-		for (Number nr : list) {
-			if (nr != null) {
-				set.add(nr.longValue());
-			}
-		}
-		return set;
+		return list.stream()
+				.map(Number::longValue)
+				.collect(Collectors.toList());
 	}
 
 

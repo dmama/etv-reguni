@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.regimefiscal.rattrapage;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,15 +16,15 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
 import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
@@ -52,20 +50,19 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(RattrapageRegimesFiscauxJob.class);
 
-	public static final String NAME = "RattrapageRegimesFiscaux";
-
+	public static final String NAME = "RattrapageRegimesFiscauxJob";
 	public static final String SIMULATION = "SIMULATION";
-	private static final RegDate ASSUJ_EPOCH = RegDate.get(2009, 1, 1);
-	public static final EnumSet<TypeEtatEntreprise> TYPES_ETAT_ENTREPRISE_RADIEE_DISSOUTE = EnumSet.of(TypeEtatEntreprise.RADIEE_RC, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.ABSORBEE);
+
+	public static final Set<TypeEtatEntreprise> TYPES_ETAT_ENTREPRISE_RADIEE_DISSOUTE = EnumSet.of(TypeEtatEntreprise.RADIEE_RC,
+	                                                                                               TypeEtatEntreprise.DISSOUTE,
+	                                                                                               TypeEtatEntreprise.ABSORBEE);
 
 	private PlatformTransactionManager transactionManager;
-	private HibernateTemplate hibernateTemplate;
-	private Dialect dialect;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
 	private ServiceRegimeFiscal serviceRegimeFiscal;
 	private RapportService rapportService;
-
+	private ParametreAppService parametreAppService;
 
 	public RattrapageRegimesFiscauxJob(int sortOrder, String description) {
 		super(NAME, JobCategory.TIERS, sortOrder, description);
@@ -84,14 +81,6 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 		this.transactionManager = transactionManager;
 	}
 
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
-	}
-
-	public void setDialect(Dialect dialect) {
-		this.dialect = dialect;
-	}
-
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
@@ -108,53 +97,46 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 		this.rapportService = rapportService;
 	}
 
+	public void setParametreAppService(ParametreAppService parametreAppService) {
+		this.parametreAppService = parametreAppService;
+	}
+
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		final boolean simulation = getBooleanValue(params, SIMULATION);
 
-		List<Long> tiersSansRegime = new ArrayList<>(getTiersSansRegime());
-		tiersSansRegime.sort(Comparator.naturalOrder());
-
-		final RegDate aujourdhui = RegDate.get();
-
 		final RattrapageRegimesFiscauxJobResults results = new RattrapageRegimesFiscauxJobResults(simulation);
+		final List<Long> tiersSansRegime = getTiersSansRegime();
 
-		AuthenticationHelper.pushPrincipal(AuthenticationHelper.getCurrentPrincipal());
-		try {
-			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
-			for (final Long tiersId : tiersSansRegime) {
+		for (final Long tiersId : tiersSansRegime) {
 
-				// On traite chaque tiers dans une transaction séparée, pour éviter qu'un problème sur un tiers ne vienne interrompre le traitement.
-				final RattrapageRegimesFiscauxJobResults resultat = template.execute(new TransactionCallback<RattrapageRegimesFiscauxJobResults>() {
-					@Override
-					public RattrapageRegimesFiscauxJobResults doInTransaction(TransactionStatus status) {
-						if (simulation) {
-							status.setRollbackOnly();
-						}
-						try {
-							return traiteTiers(tiersId, aujourdhui, simulation);
-						}
-						catch (Exception e) {
-							// On doit faire le ménage si un problème est survenu pendant l'envoi afin d'éviter de croire qu'on a émis l'annonce alors que ce n'est pas le cas.
-							status.setRollbackOnly();
-							final RattrapageRegimesFiscauxJobResults resultatTiers = new RattrapageRegimesFiscauxJobResults(simulation);
-							resultatTiers.addErrorException(tiersId, e);
-							return resultatTiers;
-						}
+			// On traite chaque tiers dans une transaction séparée, pour éviter qu'un problème sur un tiers ne vienne interrompre le traitement.
+			final RattrapageRegimesFiscauxJobResults resultat = template.execute(new TransactionCallback<RattrapageRegimesFiscauxJobResults>() {
+				@Override
+				public RattrapageRegimesFiscauxJobResults doInTransaction(TransactionStatus status) {
+					if (simulation) {
+						status.setRollbackOnly();
 					}
-				});
-				if (resultat != null) {
-					results.addAll(resultat);
+					try {
+						return traiteTiers(tiersId, simulation);
+					}
+					catch (Exception e) {
+						status.setRollbackOnly();
+						final RattrapageRegimesFiscauxJobResults resultatTiers = new RattrapageRegimesFiscauxJobResults(simulation);
+						resultatTiers.addErrorException(tiersId, e);
+						return resultatTiers;
+					}
 				}
-				if (getStatusManager().interrupted()) {
-					break;
-				}
+			});
+			if (resultat != null) {
+				results.addAll(resultat);
 			}
-		}
-		finally {
-			AuthenticationHelper.popPrincipal();
+			if (getStatusManager().interrupted()) {
+				break;
+			}
 		}
 
 		final RattrapageRegimesFiscauxRapport rapport = rapportService.generateRapport(results, getStatusManager());
@@ -163,7 +145,7 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 	}
 
 
-	private RattrapageRegimesFiscauxJobResults traiteTiers(Long tiersId, RegDate date, boolean simulation) throws ServiceRegimeFiscalException {
+	private RattrapageRegimesFiscauxJobResults traiteTiers(Long tiersId, boolean simulation) throws ServiceRegimeFiscalException {
 		final Tiers tiers = tiersDAO.get(tiersId);
 		final RattrapageRegimesFiscauxJobResults resultatEntreprise = new RattrapageRegimesFiscauxJobResults(simulation);
 		if (tiers instanceof Entreprise) {
@@ -176,13 +158,12 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 					.map(FormeLegaleHisto::getFormeLegale)
 					.collect(Collectors.toSet());
 
-			List<RegimeFiscalConsolide> regimesFiscauxPrealables = serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
-
-			List<String> problemes = new ArrayList<>(2);
+			final List<RegimeFiscalConsolide> regimesFiscauxPrealables = serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
+			final List<String> problemes = new ArrayList<>();
 
 			// Si on a déjà un régime valide sur l'entreprise, on décline poliment.
 			if (regimesFiscauxPrealables.size() > 0) {
-				String libellesTypesRegimes = String.join(", ", regimesFiscauxPrealables.stream().map(RegimeFiscalConsolide::getLibelle).collect(Collectors.toSet()));
+				final String libellesTypesRegimes = regimesFiscauxPrealables.stream().map(RegimeFiscalConsolide::getLibelle).collect(Collectors.joining(", "));
 				problemes.add(String.format("Est déjà rattachée à au moins un régime fiscal de type(s): [%s]", libellesTypesRegimes));
 			}
 
@@ -210,9 +191,8 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 			}
 
 			// Déterminer le type de régime fiscal à appliquer
-			TypeRegimeFiscal typeRegimeFiscal;
+			final TypeRegimeFiscal typeRegimeFiscal;
 			final FormeLegale formeLegale = typesDeFormes.iterator().next();
-
 			if (formeLegale == FormeLegale.N_0104_SOCIETE_EN_COMMANDITE || formeLegale == FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF) {
 				typeRegimeFiscal = serviceRegimeFiscal.getTypeRegimeFiscalSocieteDePersonnes();
 			}
@@ -220,20 +200,15 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 				typeRegimeFiscal = serviceRegimeFiscal.getTypeRegimeFiscalIndetermine();
 			}
 
-			RegDate dateDeDebut;
-			if (dateCreationEntreprise != null && dateCreationEntreprise.isAfterOrEqual(ASSUJ_EPOCH)) {
-				dateDeDebut = dateCreationEntreprise;
-			}
-			else {
-				dateDeDebut = ASSUJ_EPOCH;
-			}
+			final RegDate assujEpoch = RegDate.get(parametreAppService.getPremierePeriodeFiscalePersonnesMorales(), 1, 1);
+			final RegDate dateDeDebut = RegDateHelper.maximum(dateCreationEntreprise, assujEpoch, NullDateBehavior.EARLIEST);
 
 			final EtatEntreprise etatActuel = entreprise.getEtatActuel();
 			if (etatActuel != null) {
 				final TypeEtatEntreprise typeEtatActuel = etatActuel.getType();
 				final RegDate dateEtatActuel = etatActuel.getDateObtention();
 
-				if (TYPES_ETAT_ENTREPRISE_RADIEE_DISSOUTE.contains(typeEtatActuel) && dateEtatActuel.isBefore(ASSUJ_EPOCH)) {
+				if (TYPES_ETAT_ENTREPRISE_RADIEE_DISSOUTE.contains(typeEtatActuel) && dateEtatActuel.isBefore(assujEpoch)) {
 					// Si l'entreprise est terminée de longue date, on ne crée pas de régime.
 					final String message = String.format("Pas de création de régime fiscal l'entreprise n°%s [%s], disparue en date du %s",
 					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), formeLegale.getLibelle(), RegDateHelper.dateToDisplayString(dateEtatActuel));
@@ -260,22 +235,14 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 
 	/**
 	 * Recherche les tiers qui n'ont pas au moins un régime fiscal
-	 * @return la liste des numéros de tiers concernés. Vide si aucun.
+	 * @return la liste triée par ordre croissant des numéros de tiers concernés. Vide si aucun.
 	 */
 	@NotNull
-	private Set<Long> getTiersSansRegime() {
-
+	private List<Long> getTiersSansRegime() {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-
-		return template.execute(new TransactionCallback<Set<Long>>() {
-			@Override
-			public Set<Long> doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.executeWithNewSession(session -> {
-					return tiersDAO.getEntreprisesSansRegimeFiscal();
-				});
-			}
-		});
+		template.setReadOnly(true);
+		return template.execute(status -> tiersDAO.getEntreprisesSansRegimeFiscal());
 	}
 
 }
