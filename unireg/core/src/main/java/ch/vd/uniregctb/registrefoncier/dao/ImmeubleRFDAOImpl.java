@@ -110,7 +110,9 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 	@NotNull
 	@Override
 	public List<Long> findImmeubleIdsAvecDatesDeFinDroitsACalculer() {
-		final Query query = getCurrentSession().createQuery("select distinct immeuble.id from DroitRF where dateFinMetier is null and dateFin is not null");
+		// [SIFISC-24558] On ignore les servitudes car leurs dates de fin ne peuvent pas être calculée
+		// (= une date limite est fixées à la conclusion de l'acte notariée ou la servitude s'éteint lors du décès du bénéficiaire).
+		final Query query = getCurrentSession().createQuery("select distinct immeuble.id from DroitProprieteRF where dateFinMetier is null and dateFin is not null");
 		final List<?> list = query.list();
 		return list.stream()
 				.map(n -> ((Number) n).longValue())

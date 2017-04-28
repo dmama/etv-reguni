@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -15,8 +18,10 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.TraitementFinsDeDroitRFResults;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestCase;
@@ -24,6 +29,7 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @SuppressWarnings("Duplicates")
 public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
@@ -75,6 +81,48 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			droits.sort(new DateRangeComparator<>());
 			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), "Achat", "Vente", droits.get(0));
 			assertDatesDroit(RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null, droits.get(1));
+			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-24558] Vérifie que le traitement ne crashe pas lorsqu'il rencontre des servitudes et qu'il les ignore.
+	 */
+	@Test
+	public void testProcessIgnoreLesServitudes() throws Exception {
+
+		// un immeuble avec juste une servitude
+		final Long id = doInNewTransaction(status -> {
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF bienFond = addBienFondRF("38383838", "CHE478391947", commune, 234);
+			final PersonnePhysiqueRF jean = addPersonnePhysiqueRF("02893039", "Jean", "Routourne", RegDate.get(1962, 9, 12));
+			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
+			addUsufruitRF(null, RegDate.get(1990, 3, 1), RegDate.get(2017,1,13), null, null, null, "32727817",
+			              new IdentifiantAffaireRF(8, 1990, 3, 0), new IdentifiantDroitRF(8, 1990, 3),
+			              Arrays.asList(jean, jacques), Collections.singletonList(bienFond));
+			return bienFond.getId();
+		});
+
+		// on démarre le batch
+		processor.process(1, null);
+
+		// les dates des droits devraient être intouchées
+		doInNewTransaction(status -> {
+			final ImmeubleRF immeuble = immeubleRFDAO.get(id);
+			assertNotNull(immeuble);
+
+			// il n'y a pas de droit
+			assertEmpty(immeuble.getDroitsPropriete());
+
+			// la servitude est intouchée
+			final Set<ServitudeRF> servitudes = immeuble.getServitudes();
+			assertNotNull(servitudes);
+			assertEquals(1, servitudes.size());
+			final ServitudeRF servitude0 = servitudes.iterator().next();
+			assertNull(servitude0.getDateDebut());
+			assertEquals(RegDate.get(2017, 1, 13), servitude0.getDateFin());
+			assertEquals(RegDate.get(1990, 3, 1), servitude0.getDateDebutMetier());
+			assertNull(servitude0.getDateFinMetier());
 			return null;
 		});
 	}
