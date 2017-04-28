@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+
+import ch.vd.uniregctb.common.LockHelper;
 
 /**
  * <p>Cette classe possède une unique méthode {@link LocaliteInvalideMatcherServiceImpl#match} qui permet de controler si un libellé de commune est valide.
@@ -49,7 +49,7 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class LocaliteInvalideMatcherServiceImpl implements LocaliteInvalideMatcherService, InitializingBean {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(LocaliteInvalideMatcherServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LocaliteInvalideMatcherServiceImpl.class);
 
 	private boolean enabled;
 	private String localitesInvalides;
@@ -61,11 +61,10 @@ public class LocaliteInvalideMatcherServiceImpl implements LocaliteInvalideMatch
 
 	private boolean initialized = false;
 
-
 	/**
 	 * Utile pour éviter les appels à la méthode match pendant que le bean initialise les champs statics
 	 */
-	private ReadWriteLock lockInit = new ReentrantReadWriteLock();
+	private final LockHelper lockHelper = new LockHelper();
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
@@ -91,8 +90,7 @@ public class LocaliteInvalideMatcherServiceImpl implements LocaliteInvalideMatch
 	 */
 	@Override
 	public boolean match(String localite) {
-		lockInit.readLock().lock();
-		try {
+		return lockHelper.doInReadLock(() -> {
 			if (!initialized) {
 				LOGGER.warn("LocaliteInvalideMatcher n'a pas été initialisé. match() renvoie toujours 'false'");
 				return false;
@@ -118,10 +116,7 @@ public class LocaliteInvalideMatcherServiceImpl implements LocaliteInvalideMatch
 				}
 			}
 			return false;
-		}
-		finally {
-			lockInit.readLock().unlock();
-		}
+		});
 	}
 
 	// expression régulière mappant les caractères qui peuvent être utilisé comme séparateur dans les localités invalides
@@ -162,12 +157,11 @@ public class LocaliteInvalideMatcherServiceImpl implements LocaliteInvalideMatch
 	}
 
 	/**
-	 * Utile pour les tests, ne devrait pas être utiliser dans le code de prod pour l'instant
+	 * Utile pour les tests, ne devrait pas être utilisé dans le code de prod pour l'instant
 	 * cependant dans le futur on pourrait imaginer un rechargement à chaud des parametres et donc l'utilité de cette méthode
 	 */
 	void reset() {
-		lockInit.writeLock().lock();
-		try {
+		lockHelper.doInWriteLock(() -> {
 			conversionSpeciales = new HashMap<>();
 			patternsLocaliteInvalide = new ArrayList<>();
 			patternsFauxPositif  = new ArrayList<>();
@@ -175,25 +169,18 @@ public class LocaliteInvalideMatcherServiceImpl implements LocaliteInvalideMatch
 			fauxPositifs = null;
 			enabled = false;
 			initialized = false;
-		}
-		finally {
-			lockInit.writeLock().unlock();
-		}
+		});
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		lockInit.writeLock().lock();
-		try {
+		lockHelper.doInWriteLock(() -> {
 			initialized = false;
-            initConversionsSpeciales();
-            initPatternsLocalitesInvalides();
+			initConversionsSpeciales();
+			initPatternsLocalitesInvalides();
 			initPatternsFauxPositifs();
 			initialized = true;
-		}
-		finally {
-			lockInit.writeLock().unlock();
-		}
+		});
 	}
 
 	private void initPatternsFauxPositifs() {

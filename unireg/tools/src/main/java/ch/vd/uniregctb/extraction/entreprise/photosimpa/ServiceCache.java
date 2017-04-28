@@ -7,11 +7,11 @@ import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
+
+import ch.vd.uniregctb.common.LockHelper;
 
 public abstract class ServiceCache {
 
@@ -72,7 +72,7 @@ public abstract class ServiceCache {
 
 		private final T target;
 		private final Map<Key, Object> cache = new HashMap<>();
-		private final ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
+		private final LockHelper lockHelper = new LockHelper();
 
 		public Handler(T target) {
 			this.target = target;
@@ -107,9 +107,7 @@ public abstract class ServiceCache {
 
 		@Nullable
 		private Supplier<Object> findInCache(Key key) {
-			final Lock lock = rwlock.readLock();
-			lock.lock();
-			try {
+			return lockHelper.doInReadLock(() -> {
 				final Supplier<Object> supplier;
 				if (cache.containsKey(key)) {
 					final Object value = cache.get(key);
@@ -119,21 +117,11 @@ public abstract class ServiceCache {
 					supplier = null;
 				}
 				return supplier;
-			}
-			finally {
-				lock.unlock();
-			}
+			});
 		}
 
 		private void addToCache(Key key, Object value) {
-			final Lock lock = rwlock.writeLock();
-			lock.lock();
-			try {
-				cache.put(key, value);
-			}
-			finally {
-				lock.unlock();
-			}
+			lockHelper.doInWriteLock(() -> cache.put(key, value));
 		}
 	}
 }

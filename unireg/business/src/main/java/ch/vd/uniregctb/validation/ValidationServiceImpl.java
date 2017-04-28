@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.LockHelper;
 
 /**
  * Service de validation des entités
@@ -19,7 +17,7 @@ public class ValidationServiceImpl implements ValidationService {
 
 	private final Map<Class, EntityValidator> validatorMap = new HashMap<>();
 
-	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
+	private final LockHelper lockHelper = new LockHelper();
 	private final ThreadLocal<MutableInt> callDepth = ThreadLocal.withInitial(() -> new MutableInt(0));
 
 	/**
@@ -54,26 +52,12 @@ public class ValidationServiceImpl implements ValidationService {
 
 	@Override
 	public <T> void registerValidator(Class<T> clazz, EntityValidator<T> validator) {
-		final Lock lock = rwLock.writeLock();
-		lock.lock();
-		try {
-			addValidator(clazz, validator);
-		}
-		finally {
-			lock.unlock();
-		}
+		lockHelper.doInWriteLock(() -> addValidator(clazz, validator));
 	}
 
 	@Override
 	public <T> void unregisterValidator(Class<T> clazz, EntityValidator<T> validator) {
-		final Lock lock = rwLock.writeLock();
-		lock.lock();
-		try {
-			removeValidator(clazz, validator);
-		}
-		finally {
-			lock.unlock();
-		}
+		lockHelper.doInWriteLock(() -> removeValidator(clazz, validator));
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -116,21 +100,15 @@ public class ValidationServiceImpl implements ValidationService {
 			return null;
 		}
 
-		EntityValidator validator = null;
-		Class clazz = object.getClass();
-
-		final Lock lock = rwLock.readLock();
-		lock.lock();
-		try {
+		return lockHelper.doInReadLock(() -> {
+			EntityValidator validator = null;
+			Class clazz = object.getClass();
 			while (validator == null && clazz != null) {
 				validator = validatorMap.get(clazz);
 				clazz = clazz.getSuperclass();
 			}
-		}
-		finally {
-			lock.unlock();
-		}
-		return validator;
+			return validator;
+		});
 	}
 
 	@Override

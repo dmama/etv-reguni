@@ -6,13 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import ch.vd.registre.base.date.InstantHelper;
+import ch.vd.uniregctb.common.LockHelper;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.stats.DetailedLoadMonitorable;
 import ch.vd.uniregctb.stats.LoadDetail;
@@ -44,11 +42,11 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	/**
 	 * RWLock pour protéger les accès à l'ensemble {@link #detailHolders}
 	 */
-	private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
+	private final LockHelper lockHelper = new LockHelper();
 	
 	/**
 	 * Ensemble de toutes les instances de {@link DetailHolder} créées par tous les threads. Son accès est protégé en R/W
-	 * par le verrou {@link #rwLock}.
+	 * par le verrou géré dans l'instance {@link #lockHelper}.
 	 * <ul>
 	 *     <li>Accès <b>WRITE</b> nécessaire lors de l'ajout de nouveaux éléments dans la liste - une fois par thread dans le pool</li>
 	 *     <li>Accès <b>READ</b> nécessaire lors de l'interrogation du contenu de la liste - voir méthode {@link #getLoadDetails()}</li>
@@ -74,14 +72,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 		@Override
 		protected DetailHolder initialValue() {
 			final DetailHolder holder = new DetailHolder();
-			final Lock lock = rwLock.writeLock();
-			lock.lock();
-			try {
-				detailHolders.put(holder, null);
-			}
-			finally {
-				lock.unlock();
-			}
+			lockHelper.doInWriteLock(() -> detailHolders.put(holder, null));
 			return holder;
 		}
 	};
@@ -122,22 +113,15 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 
 	@Override
 	public List<LoadDetail> getLoadDetails() {
-		final List<LoadDetail> d;
-		
-		final Lock lock = rwLock.readLock();
-		lock.lock();
-		try {
-			d = new LinkedList<>();
+		return lockHelper.doInReadLock(() -> {
+			final List<LoadDetail> d = new LinkedList<>();
 			for (DetailHolder dh : detailHolders.keySet()) {
 				if (dh != null && dh.getValue() != null) {
 					d.add(dh.getValue());
 				}
 			}
-		}
-		finally {
-			lock.unlock();
-		}
-		return d;
+			return d;
+		});
 	}
 
 	@Override

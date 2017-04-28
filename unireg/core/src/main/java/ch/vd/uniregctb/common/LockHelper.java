@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.common;
 
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 
@@ -9,7 +10,7 @@ import java.util.function.Supplier;
  */
 public final class LockHelper {
 
-	private final ReentrantReadWriteLock lock;
+	private final ReadWriteLock lock;
 
 	public LockHelper() {
 		this.lock = new ReentrantReadWriteLock();

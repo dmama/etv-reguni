@@ -5,16 +5,15 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.LockHelper;
 
 class ParametreAppContainer implements ParametreAppAccessor {
 
-	private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
+	private final LockHelper lockHelper = new LockHelper();
 	private final Map<ParametreEnum, ParametreApp> parametres = new EnumMap<>(ParametreEnum.class);
 
 	/**
@@ -22,17 +21,12 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	 * @param parametres les paramètres à charger
 	 */
 	void load(Collection<ParametreApp> parametres) {
-		final Lock lock = rwLock.writeLock();
-		lock.lock();
-		try {
+		lockHelper.doInWriteLock(() -> {
 			for (ParametreApp param : parametres) {
 				final ParametreEnum key = ParametreEnum.valueOf(param.getNom());
 				this.parametres.put(key, param);
 			}
-		}
-		finally {
-			lock.unlock();
-		}
+		});
 	}
 
 	/**
@@ -41,14 +35,7 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	 * @param value la valeur associée
 	 */
 	void put(ParametreEnum key, ParametreApp value) {
-		final Lock lock = rwLock.writeLock();
-		lock.lock();
-		try {
-			parametres.put(key, value);
-		}
-		finally {
-			lock.unlock();
-		}
+		lockHelper.doInWriteLock(() -> parametres.put(key, value));
 	}
 
 	/**
@@ -57,49 +44,34 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	 * @return la valeur (sous forme de {@link String})
 	 */
 	String get(ParametreEnum key) {
-		final Lock lock = rwLock.readLock();
-		lock.lock();
-		try {
+		return lockHelper.doInReadLock(() -> {
 			final ParametreApp p = parametres.get(key);
 			return p != null ? p.getValeur() : null;
-		}
-		finally {
-			lock.unlock();
-		}
+		});
 	}
 
 	/**
 	 * @return une photos des pairs clé/valeur actuelles
 	 */
 	Collection<Pair<String, String>> getValues() {
-		final Lock lock = rwLock.readLock();
-		lock.lock();
-		try {
+		return lockHelper.doInReadLock(() -> {
 			final List<Pair<String, String>> liste = new ArrayList<>(parametres.size());
 			for (ParametreApp pa : parametres.values()) {
 				liste.add(Pair.of(pa.getNom(), pa.getValeur()));
 			}
 			return liste;
-		}
-		finally {
-			lock.unlock();
-		}
+		});
 	}
 
 	/**
 	 * Initialize le container en plaçant la valeur par défaut de chaque paramètre
 	 */
 	void initDefaults() {
-		final Lock lock = rwLock.writeLock();
-		lock.lock();
-		try {
+		lockHelper.doInWriteLock(() -> {
 			for (ParametreEnum key : ParametreEnum.values()) {
 				parametres.put(key, new ParametreApp(key.name(), key.getDefaut()));
 			}
-		}
-		finally {
-			lock.unlock();
-		}
+		});
 	}
 
 	/**
@@ -247,14 +219,7 @@ class ParametreAppContainer implements ParametreAppAccessor {
 
 	@Override
 	public String getNom(ParametreEnum param) {
-		final Lock lock = rwLock.readLock();
-		lock.lock();
-		try {
-			return parametres.get(param).getNom();
-		}
-		finally {
-			lock.unlock();
-		}
+		return lockHelper.doInReadLock(() -> parametres.get(param).getNom());
 	}
 
 	@Override
@@ -351,18 +316,13 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	 * Remet à la valeur par défaut tous les paramètres "resetables" (voir {@link ParametreEnum#isResetable()})
 	 */
 	public void reset() {
-		final Lock lock = rwLock.writeLock();
-		lock.lock();
-		try {
+		lockHelper.doInWriteLock(() -> {
 			for (ParametreEnum p : ParametreEnum.values()) {
 				if (p.isResetable()) {
 					setValeur(p, getDefaut(p));
 				}
 			}
-		}
-		finally {
-			lock.unlock();
-		}
+		});
 	}
 
 	@Override
@@ -523,14 +483,7 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public void setValeur(ParametreEnum param, String valeur) {
 		// La validité de la valeur est verifiée dans formaterValeur()
-		final Lock lock = rwLock.writeLock();
-		lock.lock();
-		try {
-			parametres.get(param).setValeur(param.formaterValeur(valeur));
-		}
-		finally {
-			lock.unlock();
-		}
+		lockHelper.doInWriteLock(() -> parametres.get(param).setValeur(param.formaterValeur(valeur)));
 	}
 
 	@Override

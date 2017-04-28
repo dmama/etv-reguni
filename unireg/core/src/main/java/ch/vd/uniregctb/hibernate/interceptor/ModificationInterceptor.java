@@ -11,9 +11,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -25,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.LockHelper;
 import ch.vd.uniregctb.common.ThreadSwitch;
 
 /**
@@ -38,7 +36,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ModificationInterceptor.class);
 
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
-	private final ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
+	private final LockHelper lockHelper = new LockHelper();
 
 	private TransactionManager transactionManager;
 	private final ThreadLocal<Set<Transaction>> registeredTransactions = ThreadLocal.withInitial(HashSet::new);
@@ -48,37 +46,12 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 		this.transactionManager = transactionManager;
 	}
 
-	private static <T> T doInLock(Lock lock, Supplier<T> callback) {
-		lock.lock();
-		try {
-			return callback.get();
-		}
-		finally {
-			lock.unlock();
-		}
-	}
-
-	private <T> T doInReadLock(Supplier<T> callback) {
-		return doInLock(rwlock.readLock(), callback);
-	}
-
-	private void doInReadLock(Runnable action) {
-		doInReadLock(() -> {
-			action.run();
-			return null;
-		});
-	}
-
-	private <T> T doInWriteLock(Supplier<T> callback) {
-		return doInLock(rwlock.writeLock(), callback);
-	}
-
 	public void register(ModificationSubInterceptor sub) {
-		doInWriteLock(() -> subInterceptors.add(sub));
+		lockHelper.doInWriteLock(() -> subInterceptors.add(sub));
 	}
 
 	public void unregister(ModificationSubInterceptor sub) {
-		doInWriteLock(() -> subInterceptors.remove(sub));
+		lockHelper.doInWriteLock(() -> subInterceptors.remove(sub));
 	}
 
 	/**
@@ -165,7 +138,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	@Override
 	public void postFlush(Iterator<?> entities) throws CallbackException {
 		registerTxInterceptor();
-		doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postFlush));
+		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postFlush));
 	}
 
 	private boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
@@ -173,7 +146,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 		final Mutable<Boolean> modified = new MutableBoolean(false);
 		final boolean isAnnulation = detectAnnulation(currentState, previousState, propertyNames);
 
-		doInReadLock(() -> {
+		lockHelper.doInReadLock(() -> {
 			for (ModificationSubInterceptor s : subInterceptors) {
 				modified.setValue(s.onChange(entity, id, currentState, previousState, propertyNames, types, isAnnulation) || modified.getValue());
 			}
@@ -208,15 +181,15 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	}
 
 	private void preTransactionCommit() {
-		doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::preTransactionCommit));
+		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::preTransactionCommit));
 	}
 
 	private void postTransactionCommit() {
-		doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postTransactionCommit));
+		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postTransactionCommit));
 	}
 
 	private void postTransactionRollback() {
-		doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postTransactionRollback));
+		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postTransactionRollback));
 	}
 
 	private Set<Transaction> getRegisteredTransactionsSet() {
