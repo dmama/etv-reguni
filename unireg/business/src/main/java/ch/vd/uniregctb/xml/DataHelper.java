@@ -1162,6 +1162,7 @@ public abstract class DataHelper {
 				// rien à faire
 				break;
 			case LAND_RIGHTS:
+			case VIRTUAL_LAND_RIGHTS:
 			case LAND_TAX_LIGHTENINGS:
 				// TODO rien à faire pour le moment, mais ce n'est que partie remise...
 				break;

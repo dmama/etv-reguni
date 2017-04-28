@@ -1762,6 +1762,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkAgents = PartyPart.AGENTS == p;
 		boolean checkLabels = PartyPart.LABELS == p;
 		boolean checkLandRights = PartyPart.LAND_RIGHTS == p;
+		boolean checkVirtualLandRights = PartyPart.VIRTUAL_LAND_RIGHTS == p;
 		boolean checkResidencyPeriods = PartyPart.RESIDENCY_PERIODS == p;
 		boolean checkLandTaxLightenings = PartyPart.LAND_TAX_LIGHTENINGS == p;
 
@@ -1769,7 +1770,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
 				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
 				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels
-				              || checkLandRights || checkResidencyPeriods || checkLandTaxLightenings, "La partie [" + p + "] est inconnue");
+				              || checkLandRights || checkVirtualLandRights || checkResidencyPeriods || checkLandTaxLightenings, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
@@ -1809,7 +1810,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsCH(), "taxSystemsCH");
 			assertNullOrNotNull(checkLegalSeats, pm.getLegalSeats(), "legalSeats");
 			assertNullOrNotNull(checkBusinessYears, pm.getBusinessYears(), "businessYears");
-			assertNullOrNotNull(checkLandRights, pm.getLandRights(), "landRights");
+			assertNullOrNotNull(checkLandRights || checkVirtualLandRights, pm.getLandRights(), "landRights");
 			assertNullOrNotNull(checkLandTaxLightenings, pm.getIfoncExemptions(), "ifoncExemptions");
 			assertNullOrNotNull(checkLandTaxLightenings, pm.getIciAbatements(), "iciAbatements");
 		}
@@ -1818,7 +1819,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			final NaturalPerson np = (NaturalPerson) tiers;
 			assertNullOrNotNull(checkWithholdingTaxDeclarationPeriods, np.getWithholdingTaxationPeriods(), "withholdingTaxDelarationPeriods");
 			assertNullOrNotNull(checkResidencyPeriods, np.getResidencyPeriods(), "residencyPeriods");
-			assertNullOrNotNull(checkLandRights, np.getLandRights(), "landRights");
+			assertNullOrNotNull(checkLandRights || checkVirtualLandRights, np.getLandRights(), "landRights");
 		}
 	}
 

@@ -30,6 +30,8 @@ import ch.vd.unireg.xml.party.corporation.v5.LegalSeat;
 import ch.vd.unireg.xml.party.corporation.v5.MonetaryAmount;
 import ch.vd.unireg.xml.party.corporation.v5.TaxSystem;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatement;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IciAbatementRequest;
 import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
@@ -144,8 +146,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			initFlags(to, entreprise);
 		}
 
-		if (parts != null && parts.contains(PartyPart.LAND_RIGHTS)) {
-			initLandRights(to, entreprise, context);
+		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS))) {
+			initLandRights(to, entreprise, parts, context);
 		}
 
 		if (parts != null && parts.contains(PartyPart.LAND_TAX_LIGHTENINGS)) {
@@ -249,13 +251,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		final List<DatedCategory> regimesFiscaux = context.regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie(entreprise).stream()
 				.map(rf -> new DatedCategory(rf.getCategorie(), rf))
 				.collect(Collectors.toList());
-		final DateRangeHelper.AdapterCallback<DatedCategory> adapter = new DateRangeHelper.AdapterCallback<DatedCategory>() {
-			@Override
-			public DatedCategory adapt(DatedCategory range, RegDate debut, RegDate fin) {
-				final RegDate dateDebut = debut != null ? debut : range.getDateDebut();
-				final RegDate dateFin = fin != null ? fin : range.getDateFin();
-				return new DatedCategory(range.getCategorie(), dateDebut, dateFin);
-			}
+		final DateRangeHelper.AdapterCallback<DatedCategory> adapter = (range, debut, fin) -> {
+			final RegDate dateDebut = debut != null ? debut : range.getDateDebut();
+			final RegDate dateFin = fin != null ? fin : range.getDateFin();
+			return new DatedCategory(range.getCategorie(), dateDebut, dateFin);
 		};
 
 		final List<DatedLegalFormWithCategory> resultatBrut = new LinkedList<>();
@@ -401,8 +400,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			copyColl(to.getCorporationFlags(), from.getCorporationFlags());
 		}
 
-		if (parts != null && parts.contains(PartyPart.LAND_RIGHTS)) {
-			copyColl(to.getLandRights(), from.getLandRights());
+		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS))) {
+			copyLandRights(to, from, parts, mode);
 		}
 
 		if (parts != null && parts.contains(PartyPart.LAND_TAX_LIGHTENINGS)) {
@@ -412,9 +411,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 	}
 
-	private void initLandRights(Corporation to, Entreprise entreprise, Context context) {
+	private void initLandRights(Corporation to, Entreprise entreprise, @NotNull Set<PartyPart> parts, Context context) {
 
-		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(entreprise, false);
+		final boolean includeVirtual = parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS);
+		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(entreprise, includeVirtual);
 
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
@@ -423,6 +423,41 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				                                                context.registreFoncierService::getContribuableIdFor,
 				                                                new EasementRightHolderComparator(context.tiersService)))
 				.forEach(landRights::add);
+	}
+
+	private static void copyLandRights(Corporation to, Corporation from, Set<PartyPart> parts, CopyMode mode) {
+
+		// Les droits réels et les droits virtuels représentent deux ensembles qui se recoupent.
+		// Plus précisemment, les droits réels sont entièrement contenus dans les droits virtuels. En fonction
+		// du mode de copie, il est donc nécessaire de compléter ou de filtrer les droits.
+		if (mode == CopyMode.ADDITIVE) {
+			if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) || to.getLandRights() == null || to.getLandRights().isEmpty()) {
+				copyColl(to.getLandRights(), from.getLandRights());
+			}
+		}
+		else {
+			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
+			if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS)) {
+				copyColl(to.getLandRights(), from.getLandRights());
+			}
+			else {
+				// on supprime les éventuels droits virtuels s'ils ne sont pas demandés
+				if (from.getLandRights() != null && !from.getLandRights().isEmpty()) {
+					to.getLandRights().clear();
+					to.getLandRights().addAll(from.getLandRights().stream()
+							.filter(CorporationStrategy::isReel)
+							.collect(Collectors.toList()));
+				}
+				else {
+					to.getLandRights().clear();
+				}
+			}
+
+		}
+	}
+
+	private static boolean isReel(@NotNull LandRight f) {
+		return !(f instanceof VirtualLandOwnershipRight) && !(f instanceof VirtualUsufructRight);
 	}
 
 	void initLandTaxLightenings(Corporation to, Entreprise entreprise) {

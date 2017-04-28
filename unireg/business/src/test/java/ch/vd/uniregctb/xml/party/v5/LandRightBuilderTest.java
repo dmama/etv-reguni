@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.xml.party.v5;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
@@ -29,6 +31,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRFVirtuel;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
@@ -221,6 +224,119 @@ public class LandRightBuilderTest {
 		assertNotNull(reasons);
 		assertEquals(1, reasons.size());
 		assertAcquisitionReason(RegDate.get(2016, 9, 22), "Constitution de PPE", 21, "2016/322/3", reasons.get(0));
+	}
+
+	/**
+	 * <pre>
+	 *                        individuelle (1/1)              +------------+
+	 *                     +--------------------------------->| Immeuble 0 |
+	 *     +----------+    |                                  +------------+
+	 *     |          |----+                                     |
+	 *     | Tiers RF |                                          | fond dominant (20/100)
+	 *     |          |....+                                     v
+	 *     +----------+    :  droit virtuel (1/1 * 20/100)    +------------+
+	 *                     +.................................>| Immeuble 1 |
+	 *                                                        +------------+
+	 * </pre>
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testNewLandOwnershipRightVirtualLandRight() throws Exception {
+
+		final Long ctbId = 83838822L;
+
+		final Long ppId = 8292L;
+		final long dominantId = 2928282L;
+		final long servantId = 4222L;
+
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setIdRF("03040303");
+		pp.setId(ppId);
+
+		final ProprieteParEtageRF immeuble0 = new ProprieteParEtageRF();
+		immeuble0.setIdRF("a8388e8e83");
+		immeuble0.setId(dominantId);
+
+		final ImmeubleBeneficiaireRF beneficiaire0 = new ImmeubleBeneficiaireRF();
+		beneficiaire0.setIdRF(immeuble0.getIdRF());
+		beneficiaire0.setImmeuble(immeuble0);
+
+		final BienFondRF immeuble1 = new BienFondRF();
+		immeuble1.setIdRF("42432234");
+		immeuble1.setId(servantId);
+
+		final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
+		droit0.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit0.setRegime(GenrePropriete.INDIVIDUELLE);
+		droit0.setPart(new Fraction(1, 1));
+		droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
+		droit0.setAyantDroit(pp);
+		droit0.setImmeuble(immeuble0);
+		droit0.calculateDateEtMotifDebut();
+
+		final DroitProprieteImmeubleRF droit1 = new DroitProprieteImmeubleRF();
+		droit1.setRegime(GenrePropriete.FONDS_DOMINANT);
+		droit1.setPart(new Fraction(3, 5));
+		droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Constitution de PPE", new IdentifiantAffaireRF(21, 2000, 1, 0)));
+		droit1.setAyantDroit(beneficiaire0);
+		droit1.setImmeuble(immeuble1);
+		droit1.calculateDateEtMotifDebut();
+
+		final DroitProprieteRFVirtuel droit2 = new DroitProprieteRFVirtuel();
+		droit2.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		droit2.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit2.setMotifDebut("Achat");
+		droit2.setAyantDroit(pp);
+		droit2.setImmeuble(immeuble1);
+		droit2.setChemin(Arrays.asList(droit0, droit1));
+
+		final LandRight landRight = LandRightBuilder.newLandRight(droit2, t -> ctbId, rightHolderComparator);
+		assertNotNull(landRight);
+		assertTrue(landRight instanceof VirtualLandOwnershipRight);
+
+		final VirtualLandOwnershipRight virtualRight = (VirtualLandOwnershipRight) landRight;
+		assertNotNull(virtualRight);
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(virtualRight.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(virtualRight.getDateTo()));
+		assertEquals("Achat", virtualRight.getStartReason());
+		assertNull(virtualRight.getEndReason());
+		assertNull(virtualRight.getCaseIdentifier());
+		assertEquals(Integer.valueOf(ctbId.intValue()), virtualRight.getRightHolder().getTaxPayerNumber());
+		assertEquals(servantId, virtualRight.getImmovablePropertyId());
+		assertNull(virtualRight.getCommunityId());
+
+		final List<LandOwnershipRight> paths = virtualRight.getPath();
+		assertNotNull(paths);
+		assertEquals(2, paths.size());
+
+		// le chemin pp -> immeuble0
+		final LandOwnershipRight path0 = paths.get(0);
+		assertNotNull(path0);
+		assertEquals(OwnershipType.SOLE_OWNERSHIP, path0.getType());
+		assertShare(1, 1, path0.getShare());
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(path0.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(path0.getDateTo()));
+		assertEquals("Achat", path0.getStartReason());
+		assertNull(path0.getEndReason());
+		assertCaseIdentifier(21, "2016/322/3", path0.getCaseIdentifier());
+		assertEquals(Integer.valueOf(ctbId.intValue()), path0.getRightHolder().getTaxPayerNumber());
+		assertEquals(dominantId, path0.getImmovablePropertyId());
+		assertNull(path0.getCommunityId());
+
+		// le chemin immeuble0 -> immeuble1
+		final LandOwnershipRight path1 = paths.get(1);
+		assertNotNull(path1);
+		assertEquals(OwnershipType.DOMINANT_OWNERSHIP, path1.getType());
+		assertShare(3, 5, path1.getShare());
+		assertEquals(RegDate.get(2000, 1, 1), DataHelper.xmlToCore(path1.getDateFrom()));
+		assertNull(DataHelper.xmlToCore(path1.getDateTo()));
+		assertEquals("Constitution de PPE", path1.getStartReason());
+		assertNull(path1.getEndReason());
+		assertCaseIdentifier(21, "2000/1/0", path1.getCaseIdentifier());
+		assertEquals(Long.valueOf(dominantId), path1.getRightHolder().getImmovablePropertyId());
+		assertEquals(servantId, path1.getImmovablePropertyId());
+		assertNull(path1.getCommunityId());
 	}
 
 	@Test

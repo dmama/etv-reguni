@@ -3,15 +3,18 @@ package ch.vd.uniregctb.xml.party.v5.strategy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import ch.ech.ech0007.v4.CantonAbbreviation;
 import ch.ech.ech0044.v3.NamedPersonId;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -23,6 +26,8 @@ import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.unireg.xml.party.person.v5.Nationality;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategory;
@@ -237,8 +242,8 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		if (parts != null && parts.contains(PartyPart.RESIDENCY_PERIODS)) {
 			initResidencyPeriods(to, pp, context);
 		}
-		if (parts != null && parts.contains(PartyPart.LAND_RIGHTS)) {
-			initLandRights(to, pp, context);
+		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS))) {
+			initLandRights(to, pp, parts, context);
 		}
 	}
 
@@ -252,8 +257,8 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		if (parts != null && parts.contains(PartyPart.RESIDENCY_PERIODS)) {
 			copyColl(to.getResidencyPeriods(), from.getResidencyPeriods());
 		}
-		if (parts != null && parts.contains(PartyPart.LAND_RIGHTS)) {
-			copyColl(to.getLandRights(), from.getLandRights());
+		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS))) {
+			copyLandRights(to, from, parts, mode);
 		}
 	}
 
@@ -311,9 +316,10 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 				.forEach(residencyPeriods::add);
 	}
 
-	private void initLandRights(NaturalPerson to, PersonnePhysique pp, Context context) {
+	private void initLandRights(NaturalPerson to, PersonnePhysique pp, @NotNull Set<PartyPart> parts, Context context) {
 
-		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp, false);
+		final boolean includeVirtual = parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS);
+		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp, includeVirtual);
 
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
@@ -322,5 +328,40 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 				                                                context.registreFoncierService::getContribuableIdFor,
 				                                                new EasementRightHolderComparator(context.tiersService)))
 				.forEach(landRights::add);
+	}
+
+	private static void copyLandRights(NaturalPerson to, NaturalPerson from, Set<PartyPart> parts, CopyMode mode) {
+
+		// Les droits réels et les droits virtuels représentent deux ensembles qui se recoupent.
+		// Plus précisemment, les droits réels sont entièrement contenus dans les droits virtuels. En fonction
+		// du mode de copie, il est donc nécessaire de compléter ou de filtrer les droits.
+		if (mode == CopyMode.ADDITIVE) {
+			if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) || to.getLandRights() == null || to.getLandRights().isEmpty()) {
+				copyColl(to.getLandRights(), from.getLandRights());
+			}
+		}
+		else {
+			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
+			if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS)) {
+				copyColl(to.getLandRights(), from.getLandRights());
+			}
+			else {
+				// on supprime les éventuels droits virtuels s'ils ne sont pas demandés
+				if (from.getLandRights() != null && !from.getLandRights().isEmpty()) {
+					to.getLandRights().clear();
+					to.getLandRights().addAll(from.getLandRights().stream()
+							                          .filter(NaturalPersonStrategy::isReel)
+							                          .collect(Collectors.toList()));
+				}
+				else {
+					to.getLandRights().clear();
+				}
+			}
+
+		}
+	}
+
+	private static boolean isReel(@NotNull LandRight f) {
+		return !(f instanceof VirtualLandOwnershipRight) && !(f instanceof VirtualUsufructRight);
 	}
 }
