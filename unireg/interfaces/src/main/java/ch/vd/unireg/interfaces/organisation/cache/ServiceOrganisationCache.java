@@ -109,6 +109,7 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 		if (uniregCacheManager != null) {
 			uniregCacheManager.unregister(this);
 		}
+		dataEventService.unregister(this);
 	}
 
 	/**

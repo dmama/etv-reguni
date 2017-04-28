@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.data.DataEventListener;
@@ -14,7 +15,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class WebServiceEventListenerAdapter implements DataEventListener, InitializingBean {
+public class WebServiceEventListenerAdapter implements DataEventListener, InitializingBean, DisposableBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceEventListenerAdapter.class);
 
@@ -116,6 +117,11 @@ public class WebServiceEventListenerAdapter implements DataEventListener, Initia
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		dataEventService.register(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		dataEventService.unregister(this);
 	}
 }
 

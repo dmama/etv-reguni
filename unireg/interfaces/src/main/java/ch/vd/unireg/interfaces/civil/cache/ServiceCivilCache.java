@@ -116,6 +116,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 		if (uniregCacheManager != null) {
 			uniregCacheManager.unregister(this);
 		}
+		dataEventService.unregister(this);
 	}
 
 	/**

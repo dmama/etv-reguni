@@ -1,11 +1,12 @@
 package ch.vd.uniregctb.data;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Ce listener s'enregistre dans un service maître, et délégue tous les appels à un listener esclave.
  */
-public class CivilDataEventSlaveServiceListener implements CivilDataEventListener, InitializingBean {
+public class CivilDataEventSlaveServiceListener implements CivilDataEventListener, InitializingBean, DisposableBean {
 
 	private CivilDataEventService master;
 	private CivilDataEventListener slave;
@@ -21,6 +22,11 @@ public class CivilDataEventSlaveServiceListener implements CivilDataEventListene
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		master.register(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		master.unregister(this);
 	}
 
 	@Override

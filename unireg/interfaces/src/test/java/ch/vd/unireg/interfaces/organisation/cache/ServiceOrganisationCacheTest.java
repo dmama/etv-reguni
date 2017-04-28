@@ -47,6 +47,10 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 		}
 
 		@Override
+		public void unregister(CivilDataEventListener listener) {
+		}
+
+		@Override
 		public void onIndividuChange(long id) {
 		}
 

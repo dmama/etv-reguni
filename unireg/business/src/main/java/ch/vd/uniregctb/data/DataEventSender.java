@@ -2,14 +2,20 @@ package ch.vd.uniregctb.data;
 
 import java.util.List;
 
+import ch.vd.unireg.xml.event.data.v1.DataEvent;
+
 /**
- * Interface d'interaction directe avec le DataEventSender
+ * Interface d'envoi d'un événement "data" à destination de la partie WS
+ * <ul>
+ *     <li>envoi des notifications de nettoyage de caches</li>
+ *     <li>envoi des demande d'envoi d'événements fiscaux</li>
+ * </ul>
  */
 public interface DataEventSender {
 
 	/**
-	 * Envoi par le canal "data" d'une demande d'envoi des événements fiscaux dont les identifiants sont fournis
-	 * @param idsEvenementsFiscaux identifiants des événements fiscaux à envoyer
+	 * Envoi le message vers la partie WS pour les data-events donnés et les événements fiscaux
+	 * @param batch liste des événements de notification à envoyer
 	 */
-	void sendEvenementsFiscaux(List<Long> idsEvenementsFiscaux);
+	void sendDataEvent(List<DataEvent> batch) throws Exception;
 }

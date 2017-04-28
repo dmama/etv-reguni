@@ -8,8 +8,13 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +28,7 @@ import ch.vd.unireg.xml.event.data.v1.DataEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseLoadEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseTruncateEvent;
 import ch.vd.unireg.xml.event.data.v1.DroitAccesChangeEvent;
+import ch.vd.unireg.xml.event.data.v1.Events;
 import ch.vd.unireg.xml.event.data.v1.FiscalEventSendRequestEvent;
 import ch.vd.unireg.xml.event.data.v1.ImmeubleChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.IndividuChangeEvent;
@@ -104,7 +110,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		@Override
 		public void onEvent(DroitAccesChangeEvent event) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Réception d'un événement db de changement sur les droits d'accès du tiers n°" + event.getId());
+				LOGGER.debug("Traitement d'un événement db de changement sur les droits d'accès du tiers n°" + event.getId());
 			}
 			dataEventService.onDroitAccessChange(event.getId());
 		}
@@ -114,7 +120,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		@Override
 		public void onEvent(IndividuChangeEvent event) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Réception d'un événement db de changement sur l'individu n°" + event.getId());
+				LOGGER.debug("Traitement d'un événement db de changement sur l'individu n°" + event.getId());
 			}
 			dataEventService.onIndividuChange(event.getId());
 		}
@@ -124,7 +130,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		@Override
 		public void onEvent(TiersChangeEvent event) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Réception d'un événement db de changement sur le tiers n°" + event.getId());
+				LOGGER.debug("Traitement d'un événement db de changement sur le tiers n°" + event.getId());
 			}
 			dataEventService.onTiersChange(event.getId());
 		}
@@ -134,7 +140,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		@Override
 		public void onEvent(RelationChangeEvent event) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Réception d'un événement db de changement sur la relation de type " + event.getRelationType() + " entre les tiers sujet " + event.getSujetId() + " et objet " + event.getObjetId());
+				LOGGER.debug("Traitement d'un événement db de changement sur la relation de type " + event.getRelationType() + " entre les tiers sujet " + event.getSujetId() + " et objet " + event.getObjetId());
 			}
 			final TypeRapportEntreTiers type;
 			switch (event.getRelationType()) {
@@ -200,7 +206,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		@Override
 		public void onEvent(ImmeubleChangeEvent event) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Réception d'un événement db de changement sur l'immeuble n°" + event.getId());
+				LOGGER.debug("Traitement d'un événement db de changement sur l'immeuble n°" + event.getId());
 			}
 			dataEventService.onImmeubleChange(event.getId());
 		}
@@ -210,7 +216,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		@Override
 		public void onEvent(BatimentChangeEvent event) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Réception d'un événement db de changement sur le bâtiment n°" + event.getId());
+				LOGGER.debug("Traitement d'un événement db de changement sur le bâtiment n°" + event.getId());
 			}
 			dataEventService.onBatimentChange(event.getId());
 		}
@@ -220,7 +226,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		@Override
 		public void onEvent(FiscalEventSendRequestEvent event) throws EvenementFiscalException {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Réception d'un événement de demande d'émission d'événements fiscaux.");
+				LOGGER.debug("Traitement d'un événement de demande d'émission d'événements fiscaux : " + event.getId().stream().map(Objects::toString).collect(Collectors.joining(", ")));
 			}
 
 			for (Long id : event.getId()) {
@@ -255,22 +261,38 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 	@Override
 	public void onEsbMessage(EsbMessage msg) throws Exception {
 
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Réception d'un message 'DataEvent' avec BusinessID " + msg.getBusinessId());
+		}
+
 		final Unmarshaller u = jaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		final JAXBElement element = (JAXBElement) u.unmarshal(msg.getBodyAsSource());
 
-		final DataEvent evenement = element == null ? null : (DataEvent) element.getValue();
-		if (evenement != null) {
+		final List<DataEvent> events = Optional.ofNullable(element)
+				.map(JAXBElement::getValue)
+				.map(Events.class::cast)
+				.map(Events::getEvent)
+				.orElseGet(Collections::emptyList);
+		if (!events.isEmpty()) {
 			// traitement du message
-			AuthenticationHelper.pushPrincipal("JMS-DataEvent(" + msg.getMessageId() + ')');
+			AuthenticationHelper.pushPrincipal("JMS-DataEvent(" + msg.getBusinessId() + ')');
 			try {
-				final Handler handler = handlers.get(evenement.getClass());
-				if (handler == null) {
-					LOGGER.error("Pas de handler enregistré pour le message " + msg.getMessageId() + " de classe " + evenement.getClass().getSimpleName());
-				}
-				else {
-					//noinspection unchecked
-					handler.onEvent(evenement);
+				// un message contient plusieurs instructions... suivons les dans l'ordre
+				for (DataEvent event : events) {
+					final Handler handler = handlers.get(event.getClass());
+					if (handler == null) {
+						LOGGER.error("Pas de handler enregistré pour le message " + msg.getMessageId() + " de classe " + event.getClass().getSimpleName());
+						continue;
+					}
+
+					try {
+						//noinspection unchecked
+						handler.onEvent(event);
+					}
+					catch (Exception e) {
+						LOGGER.error("Exception levée lors du traitement de la portion " + event + " du message n°" + msg.getMessageId(), e);
+					}
 				}
 			}
 			catch (Exception e) {

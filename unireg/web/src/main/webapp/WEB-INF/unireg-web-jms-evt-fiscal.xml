@@ -2,12 +2,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="delegatingEvenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.DelegatingEvenementFiscalSender">
-		<property name="dataEventSender" ref="dataEventJmsSender"/>
-		<property name="enabled" value="${extprop.jms.queue.evtFiscal.enabled}"/>
-		<property name="parent" ref="modificationInterceptor"/>
-	</bean>
-
-	<alias alias="evenementFiscalSender" name="delegatingEvenementFiscalSender"/>
+	<alias alias="evenementFiscalSender" name="dataEventConcentratingJmsSender"/>
 
 </beans>

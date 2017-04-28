@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -38,7 +39,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.LogLevel;
 
-public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEventListener, InitializingBean, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache {
+public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEventListener, InitializingBean, DisposableBean, UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutorisationCacheImpl.class);
 
@@ -109,6 +110,13 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 		uniregCacheManager.register(this);
 		cache = cacheManager.getCache(cacheName);
 		Assert.notNull(cache);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		cache = null;
+		uniregCacheManager.unregister(this);
+		dataEventService.unregister(this);
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {

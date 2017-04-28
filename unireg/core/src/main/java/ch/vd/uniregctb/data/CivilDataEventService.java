@@ -14,6 +14,13 @@ public interface CivilDataEventService {
 	void register(CivilDataEventListener listener);
 
 	/**
+	 * Dés-enregistre un listener.
+	 *
+	 * @param listener le listener à dés-enregistrer
+	 */
+	void unregister(CivilDataEventListener listener);
+
+	/**
 	 * Notifie à tous les listeners qu'un individu à été changé dans le registre civil.
 	 *
 	 * @param id le numéro de l'individu changé

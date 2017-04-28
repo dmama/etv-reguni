@@ -91,6 +91,7 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 		if (statsService != null) {
 			statsService.unregisterCache(CACHE_NAME);
 		}
+		dataEventService.unregister(this);
 	}
 
 	/**

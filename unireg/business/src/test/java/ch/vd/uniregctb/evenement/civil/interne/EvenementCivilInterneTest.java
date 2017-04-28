@@ -160,7 +160,15 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		}
 
 		@Override
+		public void unregister(CivilDataEventListener listener) {
+		}
+
+		@Override
 		public void register(FiscalDataEventListener listener) {
+		}
+
+		@Override
+		public void unregister(FiscalDataEventListener listener) {
 		}
 
 		@Override

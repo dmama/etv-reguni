@@ -13,6 +13,7 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -36,7 +37,7 @@ import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.LogLevel;
 
-public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, SecurityProviderInterface, FiscalDataEventListener, InitializingBean {
+public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableCache, KeyValueDumpableCache, SecurityProviderInterface, FiscalDataEventListener, InitializingBean, DisposableBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityProviderCache.class);
 
@@ -424,6 +425,13 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 		dataEventService.register(this);
 		uniregCacheManager.register(this);
 		initCaches();
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		cache = null;
+		dataEventService.unregister(this);
+		uniregCacheManager.unregister(this);
 	}
 
 	/**

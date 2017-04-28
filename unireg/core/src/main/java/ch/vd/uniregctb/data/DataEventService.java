@@ -12,4 +12,14 @@ public interface DataEventService extends CivilDataEventService, FiscalDataEvent
 		register((FiscalDataEventListener) listener);
 	}
 
+	/**
+	 * Dés-enregistre un listener à la fois "civil" et "fiscal"
+	 *
+	 * @param listener le listener à dés-enregistrer
+	 */
+	default void unregister(DataEventListener listener) {
+		unregister((CivilDataEventListener) listener);
+		unregister((FiscalDataEventListener) listener);
+	}
+
 }

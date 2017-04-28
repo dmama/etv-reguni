@@ -13,8 +13,18 @@ public class DataEventServiceImpl implements DataEventService {
 	}
 
 	@Override
+	public void unregister(CivilDataEventListener listener) {
+		civil.unregister(listener);
+	}
+
+	@Override
 	public void register(FiscalDataEventListener listener) {
 		fiscal.register(listener);
+	}
+
+	@Override
+	public void unregister(FiscalDataEventListener listener) {
+		fiscal.unregister(listener);
 	}
 
 	@Override

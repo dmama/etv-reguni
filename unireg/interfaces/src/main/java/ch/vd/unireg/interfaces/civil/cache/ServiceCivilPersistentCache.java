@@ -93,6 +93,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 		if (statsService != null) {
 			statsService.unregisterCache(CACHE_NAME);
 		}
+		dataEventService.unregister(this);
 	}
 
 	/**
