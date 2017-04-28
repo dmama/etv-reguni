@@ -281,7 +281,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public Set<Long> getEntreprisesSansRegimeFiscal() {
+	public List<Long> getEntreprisesSansRegimeFiscal() {
 		return target.getEntreprisesSansRegimeFiscal();
 	}
 

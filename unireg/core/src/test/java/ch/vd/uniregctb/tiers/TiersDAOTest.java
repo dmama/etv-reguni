@@ -2174,7 +2174,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEntreprisesSansRegimeFiscal() throws Exception {
 
-		Set<Long> expectedIds = new HashSet<>();
+		final List<Long> expectedIds = new ArrayList<>();
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -2260,7 +2260,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		// les ids des entreprises possèdant un régime fiscal valide
 		{
-			final Set<Long> all = tiersDAO.getEntreprisesSansRegimeFiscal();
+			final List<Long> all = tiersDAO.getEntreprisesSansRegimeFiscal();
 			assertNotNull(all);
 			assertEquals(3, all.size());
 			assertTrue(all.containsAll(expectedIds));
