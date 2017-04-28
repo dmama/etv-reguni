@@ -420,7 +420,8 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(dateSecondImport.getOneDayBefore(), usufruit0.getDateFin());
 				assertNull(usufruit0.getMotifDebut());
 				assertEquals(RegDate.get(2010, 3, 8), usufruit0.getDateDebutMetier());
-				assertNull(usufruit0.getDateFinMetier());
+				// la date de fin métier doit être renseignée car la servitude est maintenant fermée
+				assertEquals(dateSecondImport.getOneDayBefore(), usufruit0.getDateFinMetier());
 				assertEquals(new IdentifiantAffaireRF(5, 2010, 731, 0), usufruit0.getNumeroAffaire());
 				assertEquals(new IdentifiantDroitRF(5, 2010, 432), usufruit0.getIdentifiantDroit());
 
