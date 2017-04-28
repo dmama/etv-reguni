@@ -1,5 +1,9 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -310,7 +314,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Vérifie que les droits virtuels sont bien calculés même s'il n'y a pas de droits entre immeubles.
+	 * Vérifie qu'aucun droit de propriété virtuel n'est trouvé s'il n'y a pas de droits entre immeubles.
 	 * <p/>
 	 * <b>Situation réelle</b>
 	 * <pre>
@@ -367,6 +371,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// on demande les droits, y compris les droits virtuels. Comme il n'y a pas de droits entre immeubles, on ne devrait recevoir que les deux droits réels.
 			final List<DroitRF> droits = serviceRF.getDroitsForTiersRF(tiersRF, false, true);
 			assertNotNull(droits);
+			droits.sort(new DroitRFRangeMetierComparator());
 			assertEquals(2, droits.size());
 
 			final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
@@ -471,7 +476,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertNotNull(tiersRF);
 
 			// on demande les droits, y compris les droits virtuels.
-			// droit retournés :
+			// droits retournés :
 			//  - 2 droits réels
 			//  - 1 droit virtuel (Tiers RF -> Immeuble 0 -> Immeuble 1)
 			final List<DroitRF> droits = serviceRF.getDroitsForTiersRF(tiersRF, false, true);
@@ -610,7 +615,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertNotNull(tiersRF);
 
 			// on demande les droits, y compris les droits virtuels.
-			// droit retournés :
+			// droits retournés :
 			//  - 2 droits réels
 			//  - 2 droits virtuels :
 			//       - Tiers RF -> Immeuble 0 -> Immeuble 2
@@ -765,7 +770,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertNotNull(tiersRF);
 
 			// on demande les droits, y compris les droits virtuels.
-			// droit retournés :
+			// droits retournés :
 			//  - 1 droit réel
 			//  - 2 droits virtuels :
 			//       - Tiers RF -> Immeuble 0 -> Immeuble 1
@@ -904,7 +909,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertNotNull(tiersRF);
 
 			// on demande les droits, y compris les droits virtuels.
-			// droit retournés :
+			// droits retournés :
 			//  - 1 droit réel
 			//  - 2 droits virtuels :
 			//       - Tiers RF -> Immeuble 0 -> Immeuble 1
@@ -954,6 +959,341 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertEquals(2, chemin1.size());
 			assertChemin(ids.droit0, 1, 3, chemin1.get(0));                         // tiers RF -> immeuble0
 			assertChemin(ids.droit1, 1, 5, chemin1.get(1));                         // immeuble0 -> immeuble1
+
+			return null;
+		});
+	}
+
+	/**
+	 * Vérifie qu'aucun usufruit virtuel n'est trouvé s'il n'y a pas de droits entre immeubles.
+	 * <p/>
+	 * <b>Situation réelle</b>
+	 * <pre>
+	 *                                    +------------+
+	 *     +----------+             +---->| Immeuble 0 |
+	 *     |          |   usufruit  |     +------------+
+	 *     | Tiers RF |-------------+
+	 *     |          |             |     +------------+
+	 *     +----------+             +---->| Immeuble 1 |
+	 *                                    +------------+
+	 * </pre>
+	 * <b>Situation avec droits virtuels (pas de différence)</b>
+	 * <pre>
+	 *                                    +------------+
+	 *     +----------+             +---->| Immeuble 0 |
+	 *     |          |   usufruit  |     +------------+
+	 *     | Tiers RF |-------------+
+	 *     |          |             |     +------------+
+	 *     +----------+             +---->| Immeuble 1 |
+	 *                                    +------------+
+	 * </pre>
+	 */
+	@Test
+	public void testGetUsufruitVirtuelsForTiersRFCasSansDroitEntreImmeuble() throws Exception {
+
+		// mise en place foncière
+		final Long tiersId = doInNewTransaction(status -> {
+
+			// un tiers RF avec un usufruit sur deux immeubles
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", gland, 4298);
+
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
+
+			addUsufruitRF(null, RegDate.get(2004, 5, 21), null, null, "Convention", null, "783626161", "1",
+			              new IdentifiantAffaireRF(123, 2004, 2, 23), new IdentifiantDroitRF(123, 2004, 1),
+			              Collections.singletonList(tiersRF), Arrays.asList(immeuble0, immeuble1));
+			return tiersRF.getId();
+		});
+
+		// appel du service
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF tiersRF = (PersonnePhysiqueRF) ayantDroitRFDAO.get(tiersId);
+			assertNotNull(tiersRF);
+
+			// on demande les droits, y compris les droits virtuels. Comme il n'y a pas de droits entre immeubles, on ne devrait recevoir que l'usufruit réel
+			final List<DroitRF> droits = serviceRF.getDroitsForTiersRF(tiersRF, false, true);
+			assertNotNull(droits);
+			assertEquals(1, droits.size());
+
+			final UsufruitRF droit0 = (UsufruitRF) droits.get(0);
+			Set<AyantDroitRF> ayantDroits0 = droit0.getAyantDroits();
+			assertEquals(1, ayantDroits0.size());
+			assertEquals(tiersId, ayantDroits0.iterator().next().getId());
+			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebutMetier());
+			assertEquals("Convention", droit0.getMotifDebut());
+			assertNull(droit0.getMotifFin());
+			assertEquals("783626161", droit0.getMasterIdRF());
+
+			final List<ImmeubleRF> immeubles = new ArrayList<>(droit0.getImmeubles());
+			assertEquals(2, immeubles.size());
+			immeubles.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+			assertEquals("01faeee", immeubles.get(0).getIdRF());
+			assertEquals("02faeee", immeubles.get(1).getIdRF());
+
+			return null;
+		});
+	}
+
+	/**
+	 * Vérifie que un usufruit virtuel est bien trouvé lorsqu'il y a un droit entre deux immeubles.
+	 * <p/>
+	 * <b>Situation réelle</b>
+	 * <pre>
+	 *                                    +------------+  fond dominant (20/100)    +------------+
+	 *     +----------+             +---->| Immeuble 0 |--------------------------->| Immeuble 2 |
+	 *     |          |   usufruit  |     +------------+                            +------------+
+	 *     | Tiers RF |-------------+
+	 *     |          |             |     +------------+
+	 *     +----------+             +---->| Immeuble 1 |
+	 *                                    +------------+
+	 * </pre>
+	 * <b>Situation avec droits virtuels</b>
+	 * <pre>
+	 *                    usufruit virtuel (usufruit + 20/100)
+	 *             +......................................................................+
+	 *             :                                                                      :
+	 *             :                                                                      v
+	 *             :                      +------------+  fond dominant (20/100)    +------------+
+	 *     +----------+             +---->| Immeuble 0 |--------------------------->| Immeuble 2 |
+	 *     |          |   usufruit  |     +------------+                            +------------+
+	 *     | Tiers RF |-------------+
+	 *     |          |             |     +------------+
+	 *     +----------+             +---->| Immeuble 1 |
+	 *                                    +------------+
+	 * </pre>
+	 */
+	@Test
+	public void testGetUsufruitVirtuelsForTiersRFCasAvecUnDroitEntreDeuxImmeubles() throws Exception {
+
+		class Ids {
+			Long tiers;
+			long droit0;
+			long droit1;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// un tiers RF avec un usufruit sur deux immeubles
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", gland, 4298);
+			final BienFondRF immeuble2 = addBienFondRF("03faeee", "CHE2", gland, 4298);
+
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
+
+
+			final UsufruitRF droit0 = addUsufruitRF(null, RegDate.get(2004, 5, 21), null, null, "Convention", null, "783626161", "1",
+			                                        new IdentifiantAffaireRF(123, 2004, 2, 23), new IdentifiantDroitRF(123, 2004, 1),
+			                                        Collections.singletonList(tiersRF), Arrays.asList(immeuble0, immeuble1));
+
+			final DroitProprieteImmeubleRF droit1 = addDroitPropriete(immeuble0, immeuble2, GenrePropriete.FONDS_DOMINANT, new Fraction(20, 100),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Remaniement parcellaire", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 6, 1), "7686758448", "1");
+			ids.tiers = tiersRF.getId();
+			ids.droit0 = droit0.getId();
+			ids.droit1 = droit1.getId();
+			return null;
+		});
+
+		// appel du service
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF tiersRF = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.tiers);
+			assertNotNull(tiersRF);
+
+			// on demande les droits, y compris les droits virtuels. 
+			// droits retournés :
+			//  - 1 usufruit réel
+			//  - 1 usufruit virtuel (Tiers RF -> Immeuble 0 -> Immeuble 2)
+			final List<DroitRF> droits = serviceRF.getDroitsForTiersRF(tiersRF, false, true);
+			assertNotNull(droits);
+			assertEquals(2, droits.size());
+			droits.sort(new DroitRFRangeMetierComparator());
+
+			final UsufruitRFVirtuel droit0 = (UsufruitRFVirtuel) droits.get(0);
+			final Set<AyantDroitRF> ayantDroits1 = droit0.getAyantDroits();
+			assertEquals(1, ayantDroits1.size());
+			assertEquals(ids.tiers, ayantDroits1.iterator().next().getId());
+			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebutMetier());
+			assertEquals("Convention", droit0.getMotifDebut());
+			assertNull(droit0.getMotifFin());
+			assertNull(droit0.getMasterIdRF());
+
+			final Set<ImmeubleRF> immeubles0 = droit0.getImmeubles();
+			assertEquals(1, immeubles0.size());
+			assertEquals("03faeee", immeubles0.iterator().next().getIdRF());
+
+			final List<DroitRF> chemin = droit0.getChemin();
+			assertNotNull(chemin);
+			assertEquals(2, chemin.size());
+			assertChemin(ids.droit0, (ServitudeRF) chemin.get(0));
+			assertChemin(ids.droit1, 20, 100, (DroitProprieteRF) chemin.get(1));
+
+			final UsufruitRF droit1 = (UsufruitRF) droits.get(1);
+			final Set<AyantDroitRF> ayantDroits0 = droit1.getAyantDroits();
+			assertEquals(1, ayantDroits0.size());
+			assertEquals(ids.tiers, ayantDroits0.iterator().next().getId());
+			assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebutMetier());
+			assertEquals("Convention", droit1.getMotifDebut());
+			assertNull(droit1.getMotifFin());
+			assertEquals("783626161", droit1.getMasterIdRF());
+
+			final List<ImmeubleRF> immeubles1 = new ArrayList<>(droit1.getImmeubles());
+			assertEquals(2, immeubles1.size());
+			immeubles1.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+			assertEquals("01faeee", immeubles1.get(0).getIdRF());
+			assertEquals("02faeee", immeubles1.get(1).getIdRF());
+
+			return null;
+		});
+	}
+
+	/**
+	 * Vérifie que un usufruit virtuel est bien trouvé lorsqu'il y a un droit entre deux immeubles.
+	 * <p/>
+	 * <b>Situation réelle</b>
+	 * <pre>
+	 *                                    +------------+  fond dominant (20/100)    +------------+
+	 *     +----------+             +---->| Immeuble 0 |--------------------------->| Immeuble 2 |
+	 *     |          |   usufruit  |     +------------+                            +------------+
+	 *     | Tiers RF |-------------+                                                     ^
+	 *     |          |             |     +------------+  fond dominant (3/100)           |
+	 *     +----------+             +---->| Immeuble 1 |----------------------------------+
+	 *                                    +------------+
+	 * </pre>
+	 * <b>Situation avec droits virtuels</b>
+	 * <pre>
+	 *                    usufruit virtuel (usufruit + 20/100)
+	 *             +......................................................................+
+	 *             :                                                                      :
+	 *             :                                                                      v
+	 *             :                      +------------+  fond dominant (20/100)    +------------+
+	 *     +----------+             +---->| Immeuble 0 |--------------------------->| Immeuble 2 |
+	 *     |          |   usufruit  |     +------------+                            +------------+
+	 *     | Tiers RF |-------------+                                                     ^   ^
+	 *     |          |             |     +------------+  fond dominant (3/100)           |   :
+	 *     +----------+             +---->| Immeuble 1 |----------------------------------+   :
+	 *             :                      +------------+                                      :
+	 *             :                                                                          :
+	 *             :      usufruit virtuel (usufruit + 3/100)                                 :
+	 *             +..........................................................................+
+	 *
+	 * </pre>
+	 */
+	@Test
+	public void testGetUsufruitVirtuelsForTiersRFCasAvecUnDeuxImmeublesAyantChacunUnDroitSurUnTroisiemeImmeuble() throws Exception {
+
+		class Ids {
+			Long tiers;
+			long droit0;
+			long droit1;
+			long droit2;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// un tiers RF avec un usufruit sur deux immeubles
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", gland, 4298);
+			final BienFondRF immeuble2 = addBienFondRF("03faeee", "CHE2", gland, 4298);
+
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
+
+			final UsufruitRF droit0 = addUsufruitRF(null, RegDate.get(2004, 5, 21), null, null, "Convention", null, "783626161", "1",
+			                                        new IdentifiantAffaireRF(123, 2004, 2, 23), new IdentifiantDroitRF(123, 2004, 1),
+			                                        Collections.singletonList(tiersRF), Arrays.asList(immeuble0, immeuble1));
+			final DroitProprieteImmeubleRF droit1 = addDroitPropriete(immeuble0, immeuble2, GenrePropriete.FONDS_DOMINANT, new Fraction(20, 100),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Remaniement parcellaire", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 6, 1), "7686758448", "1");
+			final DroitProprieteImmeubleRF droit2 = addDroitPropriete(immeuble1, immeuble2, GenrePropriete.FONDS_DOMINANT, new Fraction(3, 100),
+			                                                          null, RegDate.get(2005, 1, 1), null, "Remaniement parcellaire", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 6, 1), "122244543", "1");
+
+			ids.tiers = tiersRF.getId();
+			ids.droit0 = droit0.getId();
+			ids.droit1 = droit1.getId();
+			ids.droit2 = droit2.getId();
+			return null;
+		});
+
+		// appel du service
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF tiersRF = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.tiers);
+			assertNotNull(tiersRF);
+
+			// on demande les droits, y compris les droits virtuels.
+			// droits retournés :
+			//  - 1 usufruit réel
+			//  - 2 usufruit virtuel (Tiers RF -> Immeuble 0 -> Immeuble 2 et Tiers RF -> Immeuble 1 -> Immeuble 2)
+			final List<DroitRF> droits = serviceRF.getDroitsForTiersRF(tiersRF, false, true);
+			assertNotNull(droits);
+			assertEquals(3, droits.size());
+			droits.sort(new DroitRFRangeMetierComparator());
+
+			// usufruit virtuel (Tiers RF -> Immeuble 0 -> Immeuble 2)
+			final UsufruitRFVirtuel droit0 = (UsufruitRFVirtuel) droits.get(0);
+			final Set<AyantDroitRF> ayantDroits0 = droit0.getAyantDroits();
+			assertEquals(1, ayantDroits0.size());
+			assertEquals(ids.tiers, ayantDroits0.iterator().next().getId());
+			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebutMetier());
+			assertEquals("Convention", droit0.getMotifDebut());
+			assertNull(droit0.getMotifFin());
+			assertNull(droit0.getMasterIdRF());
+
+			final Set<ImmeubleRF> immeubles0 = droit0.getImmeubles();
+			assertEquals(1, immeubles0.size());
+			assertEquals("03faeee", immeubles0.iterator().next().getIdRF());
+
+			final List<DroitRF> chemin0 = droit0.getChemin();
+			assertNotNull(chemin0);
+			assertEquals(2, chemin0.size());
+			assertChemin(ids.droit0, (ServitudeRF) chemin0.get(0));
+			assertChemin(ids.droit1, 20, 100, (DroitProprieteRF) chemin0.get(1));
+
+			// usufruit réel
+			final UsufruitRF droit1 = (UsufruitRF) droits.get(1);
+			final Set<AyantDroitRF> ayantDroits2 = droit1.getAyantDroits();
+			assertEquals(1, ayantDroits2.size());
+			assertEquals(ids.tiers, ayantDroits2.iterator().next().getId());
+			assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebutMetier());
+			assertEquals("Convention", droit1.getMotifDebut());
+			assertNull(droit1.getMotifFin());
+			assertEquals("783626161", droit1.getMasterIdRF());
+
+			final List<ImmeubleRF> immeubles1 = new ArrayList<>(droit1.getImmeubles());
+			assertEquals(2, immeubles1.size());
+			immeubles1.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+			assertEquals("01faeee", immeubles1.get(0).getIdRF());
+			assertEquals("02faeee", immeubles1.get(1).getIdRF());
+
+			// usufruit virtuel (Tiers RF -> Immeuble 1 -> Immeuble 2)
+			final UsufruitRFVirtuel droit2 = (UsufruitRFVirtuel) droits.get(2);
+			final Set<AyantDroitRF> ayantDroits1 = droit2.getAyantDroits();
+			assertEquals(1, ayantDroits1.size());
+			assertEquals(ids.tiers, ayantDroits1.iterator().next().getId());
+			assertEquals(RegDate.get(2005, 1, 1), droit2.getDateDebutMetier());
+			assertEquals("Remaniement parcellaire", droit2.getMotifDebut());
+			assertNull(droit2.getMotifFin());
+			assertNull(droit2.getMasterIdRF());
+
+			final Set<ImmeubleRF> immeubles2 = droit2.getImmeubles();
+			assertEquals(1, immeubles2.size());
+			assertEquals("03faeee", immeubles2.iterator().next().getIdRF());
+
+			final List<DroitRF> chemin2 = droit2.getChemin();
+			assertNotNull(chemin2);
+			assertEquals(2, chemin2.size());
+			assertChemin(ids.droit0, (ServitudeRF) chemin2.get(0));
+			assertChemin(ids.droit2, 3, 100, (DroitProprieteRF) chemin2.get(1));
 
 			return null;
 		});
@@ -1147,5 +1487,9 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	private static void assertChemin(Long id, int numerateur, int denominateur, DroitProprieteRF chemin) {
 		assertEquals(id, chemin.getId());
 		assertEquals(new Fraction(numerateur, denominateur), chemin.getPart());
+	}
+
+	private static void assertChemin(Long id, ServitudeRF chemin) {
+		assertEquals(id, chemin.getId());
 	}
 }

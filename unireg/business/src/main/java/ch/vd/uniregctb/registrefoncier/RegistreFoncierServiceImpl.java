@@ -122,33 +122,79 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	public List<DroitRF> getDroitsForTiersRF(AyantDroitRF ayantDroitRF, boolean prefetchSituationsImmeuble, boolean includeVirtual) {
 		final List<DroitRF> droits = droitRFDAO.findForAyantDroit(ayantDroitRF.getId(), prefetchSituationsImmeuble);
 		if (includeVirtual) {
-			// on va parcourir les droits entre immeubles pour déterminer la liste des droits virtuels
-			final List<DroitProprieteRF> droitsVirtuels = droits.stream()
+			// on parcourt les droits entre immeubles pour déterminer la liste des droits virtuels
+			final List<DroitProprieteRF> droitsProprieteVirtuels = droits.stream()
 					.filter(AnnulableHelper::nonAnnule)
 					.filter(DroitProprieteRF.class::isInstance)
 					.map(DroitProprieteRF.class::cast)
 					.map(this::determineDroitsVirtuels)   // détermine les droits virtuels
 					.flatMap(Collection::stream)
 					.collect(Collectors.toList());
-			droits.addAll(droitsVirtuels);
+			droits.addAll(droitsProprieteVirtuels);
+
+			final List<DroitRF> servitudesVirtuelles = droits.stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(ServitudeRF.class::isInstance)
+					.map(ServitudeRF.class::cast)
+					.map(d -> determineDroitsVirtuels(ayantDroitRF, d))   // détermine les droits virtuels
+					.flatMap(Collection::stream)
+					.collect(Collectors.toList());
+			droits.addAll(servitudesVirtuelles);
 		}
 		return droits;
 	}
 
+	/**
+	 * Détermine les <i>droits de propriété</i> virtuels.
+	 */
 	private List<DroitProprieteRF> determineDroitsVirtuels(@NotNull DroitProprieteRF droitReel) {
 
 		if (droitReel instanceof DroitProprieteRFVirtuel) {
 			throw new IllegalArgumentException("Le droit doit être réel");
 		}
 
-		final List<DroitProprieteRF> chemin = new ArrayList<>();
+		final List<DroitRF> chemin = new ArrayList<>();
 		chemin.add(droitReel);
 
 		final ImmeubleRF immeuble = droitReel.getImmeuble();
-		return determineDroitsVirtuels(droitReel, immeuble, chemin);
+		return determineDroitsVirtuels(droitReel.getAyantDroit(), droitReel, immeuble, chemin, RegistreFoncierServiceImpl::newDroitProprieteRFVirtuel).stream()
+				.map(DroitProprieteRF.class::cast)
+				.collect(Collectors.toList());
 	}
 
-	private List<DroitProprieteRF> determineDroitsVirtuels(@NotNull DroitProprieteRF parent, @NotNull ImmeubleRF immeuble, @NotNull List<DroitProprieteRF> chemin) {
+	/**
+	 * Détermine les <i>servitudes</i> virtuelles.
+	 */
+	private List<DroitRF> determineDroitsVirtuels(@NotNull AyantDroitRF ayantDroit, @NotNull ServitudeRF droitReel) {
+
+		if (droitReel instanceof UsufruitRFVirtuel) {
+			throw new IllegalArgumentException("Le droit doit être réel");
+		}
+
+		if (droitReel instanceof DroitHabitationRF) {
+			// on ne virtualise pas les droits d'habitation, seulement les usufruits
+			return Collections.emptyList();
+		}
+
+		final List<DroitRF> chemin = new ArrayList<>();
+		chemin.add(droitReel);
+
+		final Set<ImmeubleRF> immeubles = droitReel.getImmeubles();
+		return immeubles.stream()
+				.map(i -> determineDroitsVirtuels(ayantDroit, droitReel, i, chemin, RegistreFoncierServiceImpl::newUsufruitRFVirtuel))
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList());
+	}
+
+	private interface DroitVirtuelSupplier {
+		DroitRF apply(@NotNull AyantDroitRF ayantDroit, @NotNull ImmeubleRF immeuble, @NotNull DroitRFHelper.DroitIntersection intersection, @NotNull List<DroitRF> chemin);
+	}
+
+	private List<DroitRF> determineDroitsVirtuels(@NotNull AyantDroitRF ayantDroit,
+	                                              @NotNull DroitRF parent,
+	                                              @NotNull ImmeubleRF immeuble,
+	                                              @NotNull List<DroitRF> chemin,
+	                                              @NotNull DroitVirtuelSupplier supplier) {
 
 		final ImmeubleBeneficiaireRF beneficiaire = immeuble.getEquivalentBeneficiaire();
 		if (beneficiaire == null) {
@@ -156,7 +202,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 			return Collections.emptyList();
 		}
 
-		final List<DroitProprieteRF> virtuels = new ArrayList<>();
+		final List<DroitRF> virtuels = new ArrayList<>();
 
 		final Set<DroitProprieteRF> sousDroits = beneficiaire.getDroitsPropriete();
 		for (DroitProprieteRF sousDroit : sousDroits) {
@@ -168,26 +214,53 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 			final DroitRFHelper.DroitIntersection intersection = DroitRFHelper.intersection(parent, sousDroit);
 			if (intersection != null) { // le sous-droit intersecte avec le parent -> on le suit
 
-				final List<DroitProprieteRF> sousChemin = new ArrayList<>(chemin);
+				final List<DroitRF> sousChemin = new ArrayList<>(chemin);
 				sousChemin.add(sousDroit);
 
 				// on crée le droit virtuel
-				final DroitProprieteRFVirtuel droitVirtuel = new DroitProprieteRFVirtuel();
-				droitVirtuel.setAyantDroit(parent.getAyantDroit());
-				droitVirtuel.setImmeuble(sousDroit.getImmeuble());
-				droitVirtuel.setDateDebutMetier(intersection.getDateDebut());
-				droitVirtuel.setDateFinMetier(intersection.getDateFin());
-				droitVirtuel.setMotifDebut(intersection.getMotifDebut());
-				droitVirtuel.setMotifFin(intersection.getMotifFin());
-				droitVirtuel.setChemin(new ArrayList<>(sousChemin)); // pas sûr que cette copie soit nécessaire
+				final DroitRF droitVirtuel = supplier.apply(ayantDroit, sousDroit.getImmeuble(), intersection, sousChemin);
 				virtuels.add(droitVirtuel);
 
 				// on continue avec l'immeuble suivant
 				final ImmeubleRF sousImmeuble = sousDroit.getImmeuble();
-				virtuels.addAll(determineDroitsVirtuels(droitVirtuel, sousImmeuble, sousChemin));
+				virtuels.addAll(determineDroitsVirtuels(ayantDroit, droitVirtuel, sousImmeuble, sousChemin, supplier));
 			}
 		}
 		return virtuels;
+	}
+
+	@NotNull
+	private static DroitProprieteRFVirtuel newDroitProprieteRFVirtuel(@NotNull AyantDroitRF ayantDroit,
+	                                                                  @NotNull ImmeubleRF immeuble,
+	                                                                  @NotNull DroitRFHelper.DroitIntersection intersection,
+	                                                                  @NotNull List<DroitRF> chemin) {
+		final DroitProprieteRFVirtuel droitVirtuel = new DroitProprieteRFVirtuel();
+		droitVirtuel.setAyantDroit(ayantDroit);
+		droitVirtuel.setImmeuble(immeuble);
+		droitVirtuel.setDateDebutMetier(intersection.getDateDebut());
+		droitVirtuel.setDateFinMetier(intersection.getDateFin());
+		droitVirtuel.setMotifDebut(intersection.getMotifDebut());
+		droitVirtuel.setMotifFin(intersection.getMotifFin());
+		droitVirtuel.setChemin(chemin.stream()
+				                       .map(DroitProprieteRF.class::cast)
+				                       .collect(Collectors.toList()));
+		return droitVirtuel;
+	}
+
+	@NotNull
+	private static UsufruitRFVirtuel newUsufruitRFVirtuel(@NotNull AyantDroitRF ayantDroit,
+	                                                      @NotNull ImmeubleRF immeuble,
+	                                                      @NotNull DroitRFHelper.DroitIntersection intersection,
+	                                                      @NotNull List<DroitRF> chemin) {
+		final UsufruitRFVirtuel droitVirtuel = new UsufruitRFVirtuel();
+		droitVirtuel.addAyantDroit(ayantDroit);
+		droitVirtuel.addImmeuble(immeuble);
+		droitVirtuel.setDateDebutMetier(intersection.getDateDebut());
+		droitVirtuel.setDateFinMetier(intersection.getDateFin());
+		droitVirtuel.setMotifDebut(intersection.getMotifDebut());
+		droitVirtuel.setMotifFin(intersection.getMotifFin());
+		droitVirtuel.setChemin(new ArrayList<>(chemin));
+		return droitVirtuel;
 	}
 
 	@Nullable
