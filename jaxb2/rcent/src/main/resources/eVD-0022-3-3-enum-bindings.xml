@@ -5,10 +5,10 @@
               xmlns:xs="http://www.w3.org/2001/XMLSchema"
               xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
 
-              schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/3/eVD-0022-3-2.xsd"
+              schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/3/eVD-0022-3-3.xsd"
               >
 
-    <!-- Java enumeration bindings for eVD-0022-3-2.xsd -->
+    <!-- Java enumeration bindings for eVD-0022-3-3.xsd -->
 
     <jxb:bindings node="//xs:simpleType[@name='senderIdentificationType']">
         <jxb:typesafeEnumClass name="SenderIdentification">
@@ -307,7 +307,7 @@
             <jxb:typesafeEnumMember name="FOSC_COMMANDEMENT_DE_PAYER" value="36"/>
             <jxb:typesafeEnumMember name="FOSC_PROCES_VERBAL_SEQUESTRE" value="37"/>
             <jxb:typesafeEnumMember name="FOSC_PROCES_VERBAL_SAISIE" value="38"/>
-            <jxb:typesafeEnumMember name="FOSC_COMMUNICATION_DANS_LA_PROUSUITE" value="39"/>
+            <jxb:typesafeEnumMember name="FOSC_COMMUNICATION_DANS_LA_POURSUITE" value="39"/>
             <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION" value="40"/>
             <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_LIQUIDATION" value="41"/>
             <jxb:typesafeEnumMember name="FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL" value="42"/>
@@ -329,6 +329,17 @@
             <jxb:typesafeEnumMember name="REE_RADIATION" value="58"/>
             <jxb:typesafeEnumMember name="REE_TRANSFERT_ETABLISSEMENT" value="59"/>
             <jxb:typesafeEnumMember name="REE_REACTIVATION" value="60"/>
+            <jxb:typesafeEnumMember name="REE_NOUVEL_ETABLISSEMENT" value="61"/><!-- SIREF-10512 "Nouvel établissement pour une entreprise déjà existante" -->
+            <!-- SIREF-10512 "TYPE_FUTUR" -->
+            <jxb:typesafeEnumMember name="TYPE_FUTUR_01" value="62"/>
+            <jxb:typesafeEnumMember name="TYPE_FUTUR_02" value="63"/>
+            <jxb:typesafeEnumMember name="TYPE_FUTUR_03" value="64"/>
+            <jxb:typesafeEnumMember name="TYPE_FUTUR_04" value="65"/>
+            <jxb:typesafeEnumMember name="TYPE_FUTUR_05" value="66"/>
+            <jxb:typesafeEnumMember name="TYPE_FUTUR_06" value="67"/>
+            <jxb:typesafeEnumMember name="TYPE_FUTUR_07" value="68"/>
+            <jxb:typesafeEnumMember name="TYPE_FUTUR_08" value="69"/>
+            <jxb:typesafeEnumMember name="TYPE_FUTUR_09" value="70"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
 

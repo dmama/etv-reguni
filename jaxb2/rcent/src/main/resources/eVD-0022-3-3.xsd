@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2012 rel. 2 sp1 (http://www.altova.com) by Gabrielle Servoz (DIRECTION DES SYSTEMS D'INFORMATION) -->
-<!--		Version 3-1 le 07.03.2016 : 
+<!-- edited with XMLSpy v2012 rel. 2 sp1 (http://www.altova.com) (DIRECTION DES SYSTEMS D'INFORMATION) -->
+<!--		Version 3-1 le 07.03.2016 :
 	Ajout du type xs:date à organisationType:organisationLocation:commercialRegisterData:VdDeregistrationDate
-			Version 3-2 du 19.05.2016 :
-	Ajout dans la demande d'annonce de l'IDE de l'entreprise + l'IDE de remplacement en cas de doublon.
+			Version 3-2 du 19.05.2016 : 
+	Ajout dans la demande d'annonce de l'IDE de l'entreprise + l'IDE de remplacement en cas de doublon. 
+			Version 3-3 du 25.04.2017 : 
+	Ajout dans le type de l'annonce des valeurs 61 è 70. 
 -->
 <xs:schema xmlns="http://evd.vd.ch/xmlns/eVD-0022/3" xmlns:eCH-0007="http://www.ech.ch/xmlns/eCH-0007/6" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/6" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/4" xmlns:eCH-0097="http://www.ech.ch/xmlns/eCH-0097/2" xmlns:eCH-0098="http://www.ech.ch/xmlns/eCH-0098/3" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://evd.vd.ch/xmlns/eVD-0022/3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/6" schemaLocation="http://www.ech.ch/xmlns/eCH-0010/6/eCH-0010-6-0.xsd"/>
@@ -92,6 +94,16 @@
 			<xs:enumeration value="58"/>
 			<xs:enumeration value="59"/>
 			<xs:enumeration value="60"/>
+			<xs:enumeration value="61"/>
+			<xs:enumeration value="62"/>
+			<xs:enumeration value="63"/>
+			<xs:enumeration value="64"/>
+			<xs:enumeration value="65"/>
+			<xs:enumeration value="66"/>
+			<xs:enumeration value="67"/>
+			<xs:enumeration value="68"/>
+			<xs:enumeration value="69"/>
+			<xs:enumeration value="70"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typeOfBusinessPublicationType">
@@ -787,10 +799,10 @@
 			<xs:element name="registrationStatus" type="commercialRegisterStatusType">
 				<xs:annotation>
 					<xs:documentation>0=Inconnu
-						1=Non inscrit
-						2=Actif
-						3=En liquidation
-						4=Radié</xs:documentation>
+1=Non inscrit
+2=Actif
+3=En liquidation
+4=Radié</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="VdDissolutionReason" type="dissolutionReasonType" minOccurs="0">

@@ -40,7 +40,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/3/eVD-0022-3-2.xsd">
+	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/3/eVD-0022-3-3.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.evd0022.v3" />
 		</jxb:schemaBindings>
@@ -49,7 +49,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0023/3/eVD-0023-3-2.xsd">
+	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0023/3/eVD-0023-3-3.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.evd0023.v3" />
 		</jxb:schemaBindings>
@@ -58,7 +58,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0024/3/eVD-0024-3-2.xsd">
+	<jxb:bindings schemaLocation="http://evd.vd.ch/xmlns/eVD-0024/3/eVD-0024-3-4.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.evd0024.v3" />
 		</jxb:schemaBindings>
