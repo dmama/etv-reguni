@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
@@ -27,7 +28,7 @@ public class ImmeubleRFController {
 	}
 
 	@SecurityCheck(rolesToCheck = {Role.VISU_ALL}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	@RequestMapping(value = "graph.do", method = RequestMethod.GET, produces = "text/plain")
+	@RequestMapping(value = "graph.do", method = RequestMethod.GET, produces = MimeTypeHelper.MIME_PLAINTEXT + "; charset=UTF-8")
 	@ResponseBody
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String graph(@RequestParam(required = false) String idRF,
