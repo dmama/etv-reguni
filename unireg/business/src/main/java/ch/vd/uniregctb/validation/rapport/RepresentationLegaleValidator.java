@@ -3,6 +3,7 @@ package ch.vd.uniregctb.validation.rapport;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -17,7 +18,9 @@ public abstract class RepresentationLegaleValidator<T extends RepresentationLega
 	}
 
 	protected void verificationClasseAutoriteTutelaire(ValidationResults vr, @Nullable Tiers autoriteTutelaire) {
-		// peut-être devrait-on tester quelque chose, ici, non ?
+		if (autoriteTutelaire != null && !(autoriteTutelaire instanceof CollectiviteAdministrative)) {
+			vr.addError("L'autorité tutélaire d'une représentation légale ne peut être qu'une collectivité administrative");
+		}
 	}
 
 	@Override
