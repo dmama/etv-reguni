@@ -10,7 +10,7 @@
 	<artifactId>unireg-wsclient-rcent</artifactId>
 	<packaging>jar</packaging>
         <!-- BEGIN_LVERSION -->
-	<version>1.11</version>
+	<version>1.12-SNAPSHOT</version>
 	<!-- END_LVERSION -->
 
 	<name>Unireg - Client WS RCEnt v3</name>
@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-rcent</artifactId>
-			<version>6.0</version>
+			<version>6.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.shared</groupId>
