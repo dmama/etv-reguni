@@ -97,30 +97,33 @@ public class ServitudeRFDetectorTest {
 		final ch.vd.capitastra.rechteregister.NatuerlichePersonGb natuerlichePerson2 = newNatuerlichePersonGb("Anne-Lise", "Lassueur", "_1f109152380ffd8901380ffda8131c65");
 		final DienstbarkeitExtendedElement dienstbarkeit1 = ServitudesRFHelperTest.newDienstbarkeitExtended(grundstueck1, natuerlichePerson1,
 		                                                                                                    ServitudesRFHelperTest.newDienstbarkeit("1f109152380ffd8901380ffed6694392",
-		                                                                                                                                     "_1f109152380ffd8901380ffed6694392",
-		                                                                                                                                     2005, 699, 8,
-		                                                                                                                                     "Usufruit",
-		                                                                                                                                     "2002/392", null,
-		                                                                                                                                     RegDate.get(2002, 9, 2),
-		                                                                                                                                     null)
+		                                                                                                                                            "1f109152380ffd8901380ffed66943a2",
+		                                                                                                                                            "_1f109152380ffd8901380ffed6694392",
+		                                                                                                                                            2005, 699, 8,
+		                                                                                                                                            "Usufruit",
+		                                                                                                                                            "2002/392", null,
+		                                                                                                                                            RegDate.get(2002, 9, 2),
+		                                                                                                                                            null)
 		);
 		final DienstbarkeitExtendedElement dienstbarkeit2 = ServitudesRFHelperTest.newDienstbarkeitExtended(grundstueck1, natuerlichePerson2,
 		                                                                                                    ServitudesRFHelperTest.newDienstbarkeit("1f109152380ffd8901380fff10eeeeee",
-		                                                                                                                                     "1f109152380ffd8901380fff10eeeeee",
-		                                                                                                                                     2005, 699, 8,
-		                                                                                                                                     "Usufruit",
-		                                                                                                                                     "2002/392", null,
-		                                                                                                                                     RegDate.get(2002, 9, 2),
-		                                                                                                                                     null)
+		                                                                                                                                            "1f109152380ffd8901380ffed6694002",
+		                                                                                                                                            "1f109152380ffd8901380fff10eeeeee",
+		                                                                                                                                            2005, 699, 8,
+		                                                                                                                                            "Usufruit",
+		                                                                                                                                            "2002/392", null,
+		                                                                                                                                            RegDate.get(2002, 9, 2),
+		                                                                                                                                            null)
 		);
 		final DienstbarkeitExtendedElement dienstbarkeit3 = ServitudesRFHelperTest.newDienstbarkeitExtended(grundstueck2, natuerlichePerson2,
 		                                                                                                    ServitudesRFHelperTest.newDienstbarkeit("1f109152380ffd8901380fff10ca631e",
-		                                                                                                                                     "_1f109152380ffd8901380fff10ca631e",
-		                                                                                                                                     2007, 375, 8,
-		                                                                                                                                     "Usufruit",
-		                                                                                                                                     null, new Beleg(8, 2007, 266, 0),
-		                                                                                                                                     RegDate.get(2007, 6, 25),
-		                                                                                                                                     null)
+		                                                                                                                                            "1f109152380ffd8901380fff10ca6331",
+		                                                                                                                                            "_1f109152380ffd8901380fff10ca631e",
+		                                                                                                                                            2007, 375, 8,
+		                                                                                                                                            "Usufruit",
+		                                                                                                                                            null, new Beleg(8, 2007, 266, 0),
+		                                                                                                                                            RegDate.get(2007, 6, 25),
+		                                                                                                                                            null)
 		);
 
 		List<DienstbarkeitExtendedElement> servitudes = Arrays.asList(dienstbarkeit1, dienstbarkeit2, dienstbarkeit3);
@@ -137,9 +140,10 @@ public class ServitudeRFDetectorTest {
 		assertEquals(TypeEntiteRF.SERVITUDE, mut0.getTypeEntite());
 		assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
 		assertEquals("1f109152380ffd8901380ffed6694392", mut0.getIdRF());  // la première servitude
+		assertEquals("1f109152380ffd8901380ffed66943a2", mut0.getVersionRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-				             "    <Dienstbarkeit MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
+				             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
 				             "        <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
 				             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
 				             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
@@ -170,9 +174,10 @@ public class ServitudeRFDetectorTest {
 		assertEquals(TypeEntiteRF.SERVITUDE, mut1.getTypeEntite());
 		assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
 		assertEquals("1f109152380ffd8901380fff10ca631e", mut1.getIdRF());  // la deuxième servitude
+		assertEquals("1f109152380ffd8901380fff10ca6331", mut1.getVersionRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-				             "    <Dienstbarkeit MasterID=\"1f109152380ffd8901380fff10ca631e\">\n" +
+				             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380fff10ca6331\" MasterID=\"1f109152380ffd8901380fff10ca631e\">\n" +
 				             "        <StandardRechtID>_1f109152380ffd8901380fff10ca631e</StandardRechtID>\n" +
 				             "        <RechtEintragJahrID>2007</RechtEintragJahrID>\n" +
 				             "        <RechtEintragNummerID>375</RechtEintragNummerID>\n" +
@@ -208,9 +213,10 @@ public class ServitudeRFDetectorTest {
 		assertEquals(TypeEntiteRF.SERVITUDE, mut2.getTypeEntite());
 		assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
 		assertEquals("1f109152380ffd8901380fff10eeeeee", mut2.getIdRF());  // la troisième servitude
+		assertEquals("1f109152380ffd8901380ffed6694002", mut2.getVersionRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-				             "    <Dienstbarkeit MasterID=\"1f109152380ffd8901380fff10eeeeee\">\n" +
+				             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed6694002\" MasterID=\"1f109152380ffd8901380fff10eeeeee\">\n" +
 				             "        <StandardRechtID>1f109152380ffd8901380fff10eeeeee</StandardRechtID>\n" +
 				             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
 				             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
@@ -259,6 +265,7 @@ public class ServitudeRFDetectorTest {
 
 		final UsufruitRF usufruit1 = new UsufruitRF();
 		usufruit1.setMasterIdRF("1f109152380ffd8901380ffed6694392");
+		usufruit1.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
 		usufruit1.addAyantDroit(pp1);
 		usufruit1.addAyantDroit(pp2);
 		usufruit1.addImmeuble(immeuble1);
@@ -276,6 +283,7 @@ public class ServitudeRFDetectorTest {
 
 		final UsufruitRF usufruit2 = new UsufruitRF();
 		usufruit2.setMasterIdRF("1f109152380ffd8901380fff10ca631e");
+		usufruit2.setVersionIdRF("1f109152380ffd8901380fff10ca6331");
 		usufruit2.addAyantDroit(pp2);
 		usufruit2.addImmeuble(immeuble2);
 		usufruit2.setDateDebut(dateImportInitial);
@@ -291,6 +299,7 @@ public class ServitudeRFDetectorTest {
 
 		final UsufruitRF usufruit3 = new UsufruitRF();
 		usufruit3.setMasterIdRF("1f109152380ffd8901380fff10eeeeee");
+		usufruit3.setVersionIdRF("1f109152380ffd8901380ffed6694002");
 		usufruit3.addAyantDroit(pp1);
 		usufruit3.addImmeuble(immeuble2);
 		usufruit3.setDateDebut(dateImportInitial);
@@ -331,6 +340,7 @@ public class ServitudeRFDetectorTest {
 		// - date de fin différente
 		final DienstbarkeitExtendedElement dienstbarkeit1 = ServitudesRFHelperTest.newDienstbarkeitExtended(Collections.singletonList(grundstueck1), Arrays.asList(natuerlichePerson1, natuerlichePerson2),
 		                                                                                                    ServitudesRFHelperTest.newDienstbarkeit("1f109152380ffd8901380ffed6694392",
+		                                                                                                                                            "1f109152380ffd8901380ffed66943a2",
 		                                                                                                                                            "_1f109152380ffd8901380ffed6694392",
 		                                                                                                                                            2005, 699, 8,
 		                                                                                                                                            "Usufruit",
@@ -341,6 +351,7 @@ public class ServitudeRFDetectorTest {
 		// - numéro d'affaire différent
 		final DienstbarkeitExtendedElement dienstbarkeit2 = ServitudesRFHelperTest.newDienstbarkeitExtended(grundstueck2, natuerlichePerson2,
 		                                                                                                    ServitudesRFHelperTest.newDienstbarkeit("1f109152380ffd8901380fff10ca631e",
+		                                                                                                                                            "1f109152380ffd8901380fff10ca6331",
 		                                                                                                                                            "_1f109152380ffd8901380fff10ca631e",
 		                                                                                                                                            2007, 375, 8,
 		                                                                                                                                            "Usufruit",
@@ -351,12 +362,13 @@ public class ServitudeRFDetectorTest {
 		// - pas de différence
 		final DienstbarkeitExtendedElement dienstbarkeit3 = ServitudesRFHelperTest.newDienstbarkeitExtended(grundstueck2, natuerlichePerson1,
 		                                                                                                    ServitudesRFHelperTest.newDienstbarkeit("1f109152380ffd8901380fff10eeeeee",
-		                                                                                                                                     "1f109152380ffd8901380fff10eeeeee",
+		                                                                                                                                            "1f109152380ffd8901380ffed6694002",
+		                                                                                                                                            "1f109152380ffd8901380fff10eeeeee",
 		                                                                                                                                            2010, 375, 8,
-		                                                                                                                                     "Usufruit",
-		                                                                                                                                     null, new Beleg(8, 2010, 266, 0),
-		                                                                                                                                     RegDate.get(2010, 6, 25),
-		                                                                                                                                     null)
+		                                                                                                                                            "Usufruit",
+		                                                                                                                                            null, new Beleg(8, 2010, 266, 0),
+		                                                                                                                                            RegDate.get(2010, 6, 25),
+		                                                                                                                                            null)
 		);
 
 		final List<DienstbarkeitExtendedElement> servitudes = Arrays.asList(dienstbarkeit1, dienstbarkeit2, dienstbarkeit3);
@@ -373,9 +385,10 @@ public class ServitudeRFDetectorTest {
 		assertEquals(TypeEntiteRF.SERVITUDE, mut0.getTypeEntite());
 		assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
 		assertEquals("1f109152380ffd8901380ffed6694392", mut0.getIdRF());  // la première servitude
+		assertEquals("1f109152380ffd8901380ffed66943a2", mut0.getVersionRF());
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-				             "    <Dienstbarkeit MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
+				             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380ffed66943a2\" MasterID=\"1f109152380ffd8901380ffed6694392\">\n" +
 				             "        <StandardRechtID>_1f109152380ffd8901380ffed6694392</StandardRechtID>\n" +
 				             "        <RechtEintragJahrID>2005</RechtEintragJahrID>\n" +
 				             "        <RechtEintragNummerID>699</RechtEintragNummerID>\n" +
@@ -416,7 +429,7 @@ public class ServitudeRFDetectorTest {
 		assertEquals("1f109152380ffd8901380fff10ca631e", mut1.getIdRF());  // la seconde servitude
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<DienstbarkeitExtended xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20101231/Datenexport/Rechteregister\">\n" +
-				             "    <Dienstbarkeit MasterID=\"1f109152380ffd8901380fff10ca631e\">\n" +
+				             "    <Dienstbarkeit VersionID=\"1f109152380ffd8901380fff10ca6331\" MasterID=\"1f109152380ffd8901380fff10ca631e\">\n" +
 				             "        <StandardRechtID>_1f109152380ffd8901380fff10ca631e</StandardRechtID>\n" +
 				             "        <RechtEintragJahrID>2007</RechtEintragJahrID>\n" +
 				             "        <RechtEintragNummerID>375</RechtEintragNummerID>\n" +
@@ -470,6 +483,7 @@ public class ServitudeRFDetectorTest {
 
 		final UsufruitRF usufruit1 = new UsufruitRF();
 		usufruit1.setMasterIdRF("1f109152380ffd8901380ffed6694392");
+		usufruit1.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
 		usufruit1.addAyantDroit(pp1);
 		usufruit1.addAyantDroit(pp2);
 		usufruit1.addImmeuble(immeuble1);
@@ -487,6 +501,7 @@ public class ServitudeRFDetectorTest {
 
 		final UsufruitRF usufruit2 = new UsufruitRF();
 		usufruit2.setMasterIdRF("1f109152380ffd8901380fff10ca631e");
+		usufruit2.setVersionIdRF("1f109152380ffd8901380fff10ca6331");
 		usufruit2.addAyantDroit(pp2);
 		usufruit2.addImmeuble(immeuble2);
 		usufruit2.setDateDebut(dateImportInitial);
@@ -502,6 +517,7 @@ public class ServitudeRFDetectorTest {
 
 		final UsufruitRF usufruit3 = new UsufruitRF();
 		usufruit3.setMasterIdRF("1f109152380ffd8901380fff10eeeeee");
+		usufruit3.setVersionIdRF("1f109152380ffd8901380ffed6694002");
 		usufruit3.addAyantDroit(pp1);
 		usufruit3.addImmeuble(immeuble2);
 		usufruit3.setDateDebut(dateImportInitial);
@@ -542,6 +558,7 @@ public class ServitudeRFDetectorTest {
 
 		final DienstbarkeitExtendedElement dienstbarkeit1 = ServitudesRFHelperTest.newDienstbarkeitExtended(Collections.singletonList(grundstueck1), Arrays.asList(natuerlichePerson1, natuerlichePerson2),
 		                                                                                                    ServitudesRFHelperTest.newDienstbarkeit("1f109152380ffd8901380ffed6694392",
+		                                                                                                                                            "1f109152380ffd8901380ffed66943a2",
 		                                                                                                                                            "_1f109152380ffd8901380ffed6694392",
 		                                                                                                                                            2005, 699, 8,
 		                                                                                                                                            "Usufruit",
@@ -551,6 +568,7 @@ public class ServitudeRFDetectorTest {
 		);
 		final DienstbarkeitExtendedElement dienstbarkeit2 = ServitudesRFHelperTest.newDienstbarkeitExtended(grundstueck2, natuerlichePerson2,
 		                                                                                                    ServitudesRFHelperTest.newDienstbarkeit("1f109152380ffd8901380fff10ca631e",
+		                                                                                                                                            "1f109152380ffd8901380fff10ca6331",
 		                                                                                                                                            "_1f109152380ffd8901380fff10ca631e",
 		                                                                                                                                            2007, 375, 8,
 		                                                                                                                                            "Usufruit",
@@ -560,6 +578,7 @@ public class ServitudeRFDetectorTest {
 		);
 		final DienstbarkeitExtendedElement dienstbarkeit3 = ServitudesRFHelperTest.newDienstbarkeitExtended(grundstueck2, natuerlichePerson1,
 		                                                                                                    ServitudesRFHelperTest.newDienstbarkeit("1f109152380ffd8901380fff10eeeeee",
+		                                                                                                                                            "1f109152380ffd8901380ffed6694002",
 		                                                                                                                                            "1f109152380ffd8901380fff10eeeeee",
 		                                                                                                                                            2010, 375, 8,
 		                                                                                                                                            "Usufruit",
@@ -599,6 +618,7 @@ public class ServitudeRFDetectorTest {
 
 		final UsufruitRF usufruit1 = new UsufruitRF();
 		usufruit1.setMasterIdRF("1f109152380ffd8901380ffed6694392");
+		usufruit1.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
 		usufruit1.addAyantDroit(pp1);
 		usufruit1.addImmeuble(immeuble1);
 		usufruit1.setDateDebut(dateImportInitial);
@@ -614,6 +634,7 @@ public class ServitudeRFDetectorTest {
 
 		final UsufruitRF usufruit2 = new UsufruitRF();
 		usufruit2.setMasterIdRF("1f109152380ffd8901380fff10eeeeee");
+		usufruit2.setVersionIdRF("1f109152380ffd8901380ffed6694002");
 		usufruit2.addAyantDroit(pp2);
 		usufruit2.addImmeuble(immeuble1);
 		usufruit2.setDateDebut(dateImportInitial);
@@ -629,6 +650,7 @@ public class ServitudeRFDetectorTest {
 
 		final UsufruitRF usufruit3 = new UsufruitRF();
 		usufruit3.setMasterIdRF("1f109152380ffd8901380fff10ca631e");
+		usufruit3.setVersionIdRF("1f109152380ffd8901380fff10ca6331");
 		usufruit3.addAyantDroit(pp2);
 		usufruit3.addImmeuble(immeuble2);
 		usufruit3.setDateDebut(dateImportInitial);
@@ -675,6 +697,7 @@ public class ServitudeRFDetectorTest {
 		assertEquals(TypeEntiteRF.SERVITUDE, mut0.getTypeEntite());
 		assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());
 		assertEquals("1f109152380ffd8901380ffed6694392", mut0.getIdRF());  // la première servitude
+		assertEquals("1f109152380ffd8901380ffed66943a2", mut0.getVersionRF());
 		assertNull(mut0.getXmlContent());
 
 		final EvenementRFMutation mut1 = mutations.get(1);
@@ -683,6 +706,7 @@ public class ServitudeRFDetectorTest {
 		assertEquals(TypeEntiteRF.SERVITUDE, mut1.getTypeEntite());
 		assertEquals(TypeMutationRF.SUPPRESSION, mut1.getTypeMutation());
 		assertEquals("1f109152380ffd8901380fff10ca631e", mut1.getIdRF());  // la deuxième servitude
+		assertEquals("1f109152380ffd8901380fff10ca6331", mut1.getVersionRF());
 		assertNull(mut1.getXmlContent());
 
 		final EvenementRFMutation mut2 = mutations.get(2);
@@ -691,6 +715,7 @@ public class ServitudeRFDetectorTest {
 		assertEquals(TypeEntiteRF.SERVITUDE, mut2.getTypeEntite());
 		assertEquals(TypeMutationRF.SUPPRESSION, mut2.getTypeMutation());
 		assertEquals("1f109152380ffd8901380fff10eeeeee", mut2.getIdRF());  // la troisième servitude
+		assertEquals("1f109152380ffd8901380ffed6694002", mut2.getVersionRF());  // la troisième servitude
 		assertNull(mut2.getXmlContent());
 	}
 }
