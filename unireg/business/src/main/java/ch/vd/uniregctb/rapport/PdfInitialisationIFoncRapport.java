@@ -21,10 +21,12 @@ import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
@@ -135,7 +137,9 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 				b.append("INDEX2").append(COMMA);
 				b.append("INDEX3").append(COMMA);
 				b.append("OFS_COMMUNE").append(COMMA);
-				b.append("NOM_COMMUNE");
+				b.append("NOM_COMMUNE").append(COMMA);
+				b.append("AYANT_DROIT_IDRF").append(COMMA);
+				b.append("IMMEUBLE_BENEFICIAIRE_ID");
 			}
 
 			@Override
@@ -162,7 +166,9 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 				b.append(Optional.ofNullable(extrait.infoImmeuble).map(info -> info.index2).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.infoImmeuble).map(info -> info.index3).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.infoImmeuble).map(info -> info.noOfsCommune).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
-				b.append(Optional.ofNullable(extrait.infoImmeuble).map(info -> info.nomCommune).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY));
+				b.append(Optional.ofNullable(extrait.infoImmeuble).map(info -> info.nomCommune).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY)).append(COMMA);
+				b.append(Optional.ofNullable(extrait.idRFAyantDroit).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY)).append(COMMA);
+				b.append(Optional.ofNullable(extrait.idImmeubleBeneficiaire).map(String::valueOf).orElse(StringUtils.EMPTY));
 				return true;
 			}
 		});
@@ -209,6 +215,7 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 		map.put(PersonnePhysiqueRF.class, "Personne physique");
 		map.put(PersonneMoraleRF.class, "Personne morale");
 		map.put(CollectivitePubliqueRF.class, "Collectivité publique");
+		map.put(ImmeubleBeneficiaireRF.class, "Immeuble bénéficiaire");
 		return map;
 	}
 
@@ -220,6 +227,7 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 		map.put(DroitProprieteCommunauteRF.class, "Propriété");
 		map.put(DroitProprietePersonneMoraleRF.class, "Propriété");
 		map.put(DroitProprietePersonnePhysiqueRF.class, "Propriété");
+		map.put(DroitProprieteImmeubleRF.class, "Propriété");
 		map.put(UsufruitRF.class, "Usufruit");
 		return map;
 	}

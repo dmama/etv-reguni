@@ -20,12 +20,14 @@ import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
@@ -111,6 +113,23 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		return extractor != null ? extractor.apply(droit) : null;
 	}
 
+	/**
+	 * Pour les droits de propriété entre immeubles, renvoie l'identifiant de l'immeuble bénéficiaire, et <code>null</code> pour les autres
+	 * @param droit le droit dont on veut extraire l'information
+	 * @return l'identifiant de l'immeuble bénéficiaire, s'il existe
+	 */
+	@Nullable
+	private static Long getIdImmeubleBeneficiaire(DroitRF droit) {
+		return Optional.of(droit)
+				.filter(DroitProprieteImmeubleRF.class::isInstance)
+				.map(DroitProprieteImmeubleRF.class::cast)
+				.map(DroitProprieteImmeubleRF::getAyantDroit)
+				.map(ImmeubleBeneficiaireRF.class::cast)
+				.map(ImmeubleBeneficiaireRF::getImmeuble)
+				.map(ImmeubleRF::getId)
+				.orElse(null);
+	}
+
 	public static class InfoImmeuble {
 		public final Long idImmeuble;
 		public final String egrid;
@@ -153,6 +172,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		public final Long idCommunaute;
 		public final NomPrenomRaisonSociale identificationRF;
 		public final Class<? extends AyantDroitRF> classAyantDroit;
+		public final String idRFAyantDroit;
 		public final Class<? extends DroitRF> classDroit;
 		public final GenrePropriete regime;
 		public final String motifDebut;
@@ -161,6 +181,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		public final RegDate dateFin;
 		public final Fraction part;
 		public final InfoImmeuble infoImmeuble;
+		public final Long idImmeubleBeneficiaire;
 
 		public InfoExtraction(@Nullable Contribuable contribuable, @NotNull DroitProprieteRF droit, @Nullable SituationRF situation) {
 			// information du contribuable
@@ -171,14 +192,17 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 				idContribuable = null;
 			}
 
+			final AyantDroitRF ayantDroit = droit.getAyantDroit();
+
 			// information d'identification en provenance du RF
-			identificationRF = buildNomPrenomRaisonSociale(droit.getAyantDroit());
+			identificationRF = buildNomPrenomRaisonSociale(ayantDroit);
 
 			// l'éventuelle communauté
 			idCommunaute = Optional.ofNullable(extractCommunaute(droit)).map(CommunauteRF::getId).orElse(null);
 
 			// les données du droit lui-même
-			classAyantDroit = droit.getAyantDroit().getClass();
+			classAyantDroit = ayantDroit.getClass();
+			idRFAyantDroit = ayantDroit.getIdRF();
 			classDroit = droit.getClass();
 			motifDebut = droit.getMotifDebut();
 			dateDebut = droit.getDateDebutMetier();
@@ -186,6 +210,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			dateFin = droit.getDateFinMetier();
 			regime = droit.getRegime();
 			part = droit.getPart();
+			idImmeubleBeneficiaire = getIdImmeubleBeneficiaire(droit);
 
 			// les données de l'immeuble et de sa situation
 			infoImmeuble = new InfoImmeuble(droit.getImmeuble(), situation);
@@ -211,14 +236,17 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 				idContribuable = null;
 			}
 
+			final AyantDroitRF ayantDroit = ayantDroits.iterator().next();
+
 			// information d'identification en provenance du RF
-			identificationRF = buildNomPrenomRaisonSociale(ayantDroits.iterator().next());
+			identificationRF = buildNomPrenomRaisonSociale(ayantDroit);
 
 			// l'éventuelle communauté
 			idCommunaute = Optional.ofNullable(extractCommunaute(servitude)).map(CommunauteRF::getId).orElse(null);
 
 			// les données du droit lui-même
-			classAyantDroit = ayantDroits.iterator().next().getClass();
+			classAyantDroit = ayantDroit.getClass();
+			idRFAyantDroit = ayantDroit.getIdRF();
 			classDroit = servitude.getClass();
 			motifDebut = servitude.getMotifDebut();
 			dateDebut = servitude.getDateDebutMetier();
@@ -226,6 +254,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			dateFin = servitude.getDateFinMetier();
 			regime = null;
 			part = null;
+			idImmeubleBeneficiaire = getIdImmeubleBeneficiaire(servitude);
 
 			// les données de l'immeuble et de sa situation
 			infoImmeuble = new InfoImmeuble(immeubles.iterator().next(), situation);
@@ -236,6 +265,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			idCommunaute = null;
 			identificationRF = null;
 			classAyantDroit = null;
+			idRFAyantDroit = null;
 			classDroit = null;
 			regime = null;
 			dateDebut = null;
@@ -243,6 +273,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			dateFin = null;
 			motifFin = null;
 			part = null;
+			idImmeubleBeneficiaire = null;
 			infoImmeuble = new InfoImmeuble(immeuble, situation);
 		}
 	}
