@@ -198,6 +198,7 @@
 		<column>DATE_DEBUT_METIER</column>
 		<column>DATE_FIN_METIER</column>
 		<column>MASTER_ID_RF</column>
+		<column>VERSION_ID_RF</column>
 		<column>MOTIF_DEBUT_CODE</column>
 		<column>MOTIF_FIN_CODE</column>
 		<column>NO_AFFAIRE</column>
@@ -222,6 +223,7 @@
 			<value>19810306</value>
 			<null />
 			<value>1f109152381059670138105f8f4c3890</value>
+			<value>1f1091523810596701381062090f42e3</value>
 			<value>Achat</value>
 			<null />
 			<value>012</value>
