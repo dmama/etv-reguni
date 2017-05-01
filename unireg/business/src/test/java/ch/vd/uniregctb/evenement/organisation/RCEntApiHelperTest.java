@@ -8,7 +8,6 @@ import ch.vd.uniregctb.evenement.RCEntApiHelper;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Raphaël Marmier, 2015-08-03
@@ -17,9 +16,69 @@ public class RCEntApiHelperTest extends WithoutSpringTest {
 
 	@Test
 	public void testConvertTypeOfNotice() throws Exception {
-		assertEquals(TypeEvenementOrganisation.values().length, TypeOfNotice.values().length);
-		for (TypeOfNotice val : TypeOfNotice.values()) {
-			assertNotNull(RCEntApiHelper.convertTypeOfNotice(val));
-		}
+		/* Test de chaque valeur codée en dur car le type jaxb contient des types supplémentaires "de réserve" qu'on ignore dans Unireg. Voir: SIREF-10512 */
+		assertEquals(70, TypeOfNotice.values().length);
+		assertEquals(61, TypeEvenementOrganisation.values().length);
+		assertEquals(TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_NOUVELLE_ENTREPRISE));
+		assertEquals(TypeEvenementOrganisation.FOSC_NOUVELLE_SUCCURSALE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_NOUVELLE_SUCCURSALE));
+		assertEquals(TypeEvenementOrganisation.FOSC_DISSOLUTION_ENTREPRISE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_DISSOLUTION_ENTREPRISE));
+		assertEquals(TypeEvenementOrganisation.FOSC_RADIATION_ENTREPRISE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_RADIATION_ENTREPRISE));
+		assertEquals(TypeEvenementOrganisation.FOSC_RADIATION_SUCCURSALE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_RADIATION_SUCCURSALE));
+		assertEquals(TypeEvenementOrganisation.FOSC_REVOCATION_DISSOLUTION_ENTREPRISE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_REVOCATION_DISSOLUTION_ENTREPRISE));
+		assertEquals(TypeEvenementOrganisation.FOSC_REINSCRIPTION_ENTREPRISE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_REINSCRIPTION_ENTREPRISE));
+		assertEquals(TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_AUTRE_MUTATION));
+		assertEquals(TypeEvenementOrganisation.IMPORTATION_ENTREPRISE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.IMPORTATION_ENTREPRISE));
+		assertEquals(TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS));
+		assertEquals(TypeEvenementOrganisation.FOSC_SUSPENSION_FAILLITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_SUSPENSION_FAILLITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_ETAT_DE_COLLOCATION_ET_INVENTAIRE_DANS_FAILLITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_ETAT_DE_COLLOCATION_ET_INVENTAIRE_DANS_FAILLITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_FAILLITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_FAILLITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_CLOTURE_DE_LA_FAILLITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_CLOTURE_DE_LA_FAILLITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_REVOCATION_DE_LA_FAILLITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_REVOCATION_DE_LA_FAILLITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_FAILLITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_FAILLITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_ETAT_DES_CHARGES_DANS_FAILLITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_ETAT_DES_CHARGES_DANS_FAILLITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_FAILLITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_COMMUNICATION_DANS_FAILLITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_DEMANDE_SURSIS_CONCORDATAIRE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_DEMANDE_SURSIS_CONCORDATAIRE));
+		assertEquals(TypeEvenementOrganisation.FOSC_SURSIS_CONCORDATAIRE_PROVISOIRE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_SURSIS_CONCORDATAIRE_PROVISOIRE));
+		assertEquals(TypeEvenementOrganisation.FOSC_SURSIS_CONCORDATAIRE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_SURSIS_CONCORDATAIRE));
+		assertEquals(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT));
+		assertEquals(TypeEvenementOrganisation.FOSC_AUDIENCE_DE_LIQUIDATION_PAR_ABANDON_ACTIF, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_AUDIENCE_DE_LIQUIDATION_PAR_ABANDON_ACTIF));
+		assertEquals(TypeEvenementOrganisation.FOSC_PROLONGATION_SURSIS_CONCORDATAIRE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_PROLONGATION_SURSIS_CONCORDATAIRE));
+		assertEquals(TypeEvenementOrganisation.FOSC_ANNULATION_SURSIS_CONCORDATAIRE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_ANNULATION_SURSIS_CONCORDATAIRE));
+		assertEquals(TypeEvenementOrganisation.FOSC_CONVOCATION_A_ASSEMBLEE_DES_CREANCIERS, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_CONVOCATION_A_ASSEMBLEE_DES_CREANCIERS));
+		assertEquals(TypeEvenementOrganisation.FOSC_HOMOLOGATION_DU_CONCORDAT, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_HOMOLOGATION_DU_CONCORDAT));
+		assertEquals(TypeEvenementOrganisation.FOSC_REFUS_HOMOLOGATION_DU_CONCORDAT, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_REFUS_HOMOLOGATION_DU_CONCORDAT));
+		assertEquals(TypeEvenementOrganisation.FOSC_REVOCATION_DU_CONCORDAT, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_REVOCATION_DU_CONCORDAT));
+		assertEquals(TypeEvenementOrganisation.FOSC_ETAT_DE_COLLOCATION_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_ETAT_DE_COLLOCATION_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF));
+		assertEquals(TypeEvenementOrganisation.FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF));
+		assertEquals(TypeEvenementOrganisation.FOSC_CONCORDAT_DE_BANQUE_ET_DE_CAISSE_EPARGNE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_CONCORDAT_DE_BANQUE_ET_DE_CAISSE_EPARGNE));
+		assertEquals(TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_LE_CONCORDAT, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_COMMUNICATION_DANS_LE_CONCORDAT));
+		assertEquals(TypeEvenementOrganisation.FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_POURSUITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_POURSUITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_COMMANDEMENT_DE_PAYER, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_COMMANDEMENT_DE_PAYER));
+		assertEquals(TypeEvenementOrganisation.FOSC_PROCES_VERBAL_SEQUESTRE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_PROCES_VERBAL_SEQUESTRE));
+		assertEquals(TypeEvenementOrganisation.FOSC_PROCES_VERBAL_SAISIE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_PROCES_VERBAL_SAISIE));
+		assertEquals(TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_LA_POURSUITE, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_COMMUNICATION_DANS_LA_POURSUITE));
+		assertEquals(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION));
+		assertEquals(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_LIQUIDATION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_APPEL_AUX_CREANCIERS_SUITE_LIQUIDATION));
+		assertEquals(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL));
+		assertEquals(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFORMATION_SA_EN_SARL, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFORMATION_SA_EN_SARL));
+		assertEquals(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER));
+		assertEquals(TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.IDE_NOUVELLE_INSCRIPTION));
+		assertEquals(TypeEvenementOrganisation.IDE_MUTATION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.IDE_MUTATION));
+		assertEquals(TypeEvenementOrganisation.IDE_RADIATION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.IDE_RADIATION));
+		assertEquals(TypeEvenementOrganisation.IDE_REACTIVATION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.IDE_REACTIVATION));
+		assertEquals(TypeEvenementOrganisation.IDE_ANNULATION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.IDE_ANNULATION));
+		assertEquals(TypeEvenementOrganisation.RCPERS_DECES, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.RCPERS_DECES));
+		assertEquals(TypeEvenementOrganisation.RCPERS_ANNULATION_DECES, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.RCPERS_ANNULATION_DECES));
+		assertEquals(TypeEvenementOrganisation.RCPERS_DEPART, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.RCPERS_DEPART));
+		assertEquals(TypeEvenementOrganisation.RCPERS_ANNULATION_DEPART, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.RCPERS_ANNULATION_DEPART));
+		assertEquals(TypeEvenementOrganisation.RCPERS_CORRECTION_DONNEES, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.RCPERS_CORRECTION_DONNEES));
+		assertEquals(TypeEvenementOrganisation.REE_NOUVELLE_INSCRIPTION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.REE_NOUVELLE_INSCRIPTION));
+		assertEquals(TypeEvenementOrganisation.REE_MUTATION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.REE_MUTATION));
+		assertEquals(TypeEvenementOrganisation.REE_SUPPRESSION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.REE_SUPPRESSION));
+		assertEquals(TypeEvenementOrganisation.REE_RADIATION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.REE_RADIATION));
+		assertEquals(TypeEvenementOrganisation.REE_TRANSFERT_ETABLISSEMENT, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.REE_TRANSFERT_ETABLISSEMENT));
+		assertEquals(TypeEvenementOrganisation.REE_REACTIVATION, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.REE_REACTIVATION));
+		assertEquals(TypeEvenementOrganisation.REE_NOUVEL_ETABLISSEMENT, RCEntApiHelper.convertTypeOfNotice(TypeOfNotice.REE_NOUVEL_ETABLISSEMENT));
 	}
 }

@@ -87,7 +87,7 @@ public class TypeOfNoticeConverter extends BaseEnumConverter<TypeOfNotice, TypeE
 			return TypeEvenementOrganisation.FOSC_PROCES_VERBAL_SEQUESTRE;
 		case FOSC_PROCES_VERBAL_SAISIE:
 			return TypeEvenementOrganisation.FOSC_PROCES_VERBAL_SAISIE;
-		case FOSC_COMMUNICATION_DANS_LA_PROUSUITE:
+		case FOSC_COMMUNICATION_DANS_LA_POURSUITE:
 			return TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_LA_POURSUITE;
 		case FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION:
 			return TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION;
@@ -114,7 +114,7 @@ public class TypeOfNoticeConverter extends BaseEnumConverter<TypeOfNotice, TypeE
 		case RCPERS_ANNULATION_DECES:
 			return TypeEvenementOrganisation.RCPERS_ANNULATION_DECES;
 		case RCPERS_DEPART:
-			return TypeEvenementOrganisation.RCPERS_ANNULATION_DEPART;
+			return TypeEvenementOrganisation.RCPERS_DEPART;
 		case RCPERS_ANNULATION_DEPART:
 			return TypeEvenementOrganisation.RCPERS_ANNULATION_DEPART;
 		case RCPERS_CORRECTION_DONNEES:
@@ -131,6 +131,8 @@ public class TypeOfNoticeConverter extends BaseEnumConverter<TypeOfNotice, TypeE
 			return TypeEvenementOrganisation.REE_TRANSFERT_ETABLISSEMENT;
 		case REE_REACTIVATION:
 			return TypeEvenementOrganisation.REE_REACTIVATION;
+		case REE_NOUVEL_ETABLISSEMENT:
+			return TypeEvenementOrganisation.REE_NOUVEL_ETABLISSEMENT;
 		default:
 			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}

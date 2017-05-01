@@ -10,7 +10,7 @@ import static ch.vd.uniregctb.type.TypeEvenementOrganisation.Source.RCPERS;
 import static ch.vd.uniregctb.type.TypeEvenementOrganisation.Source.REE;
 
 /**
- * Basée sur la spécification evd0022.v1 RCEnt
+ * Basée sur la spécification evd0022.v3 RCEnt
  *
  * Les numéros sont ceux de RCEnt tels que spécifiés pour "typeOfNoticeType". Les libellés proviennent de la documentation RCEnt:
  * "Norme d'interface entre registres d'entreprises" du 13 mai 2015.
@@ -80,7 +80,8 @@ public enum TypeEvenementOrganisation {
 		REE_SUPPRESSION(57, "Suppression dans le registre REE", REE),
 		REE_RADIATION(58, "Radiation dans le registre REE", REE),
 		REE_TRANSFERT_ETABLISSEMENT(59, "Transfert d'établissement dans le registre REE", REE),
-		REE_REACTIVATION(60, "Réactivation dans le registre REE", REE);
+		REE_REACTIVATION(60, "Réactivation dans le registre REE", REE),
+		REE_NOUVEL_ETABLISSEMENT(61, "Nouvel établissement dans le registre REE", REE); /* "Nouvel établissement pour une entreprise déjà existante" - SIREF-10512 */
 
 	/**
 	 * La source d'un énévenement organisation, c'est à dire son émetteur original.

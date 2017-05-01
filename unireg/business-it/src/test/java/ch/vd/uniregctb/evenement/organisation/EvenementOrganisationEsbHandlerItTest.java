@@ -431,7 +431,7 @@ public class EvenementOrganisationEsbHandlerItTest extends EvenementTest {
 		final Long noEvenement = 5640006354L;
 		final RegDate dateEvenement = RegDate.get();
 		long noOrganisation = 657133465L;
-		final TypeOfNotice type = TypeOfNotice.FOSC_COMMUNICATION_DANS_LA_PROUSUITE;
+		final TypeOfNotice type = TypeOfNotice.FOSC_COMMUNICATION_DANS_LA_POURSUITE;
 
 		Assert.assertEquals(0, evenementsTraites.size());
 		sender.sendEvent("toto", true, noEvenement, dateEvenement, type, noOrganisation);
