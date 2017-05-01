@@ -608,6 +608,7 @@
 		<column>DATE_DEBUT_METIER</column>
 		<column>DATE_FIN_METIER</column>
 		<column>MASTER_ID_RF</column>
+		<column>VERSION_ID_RF</column>
 		<column>MOTIF_DEBUT_CODE</column>
 		<column>MOTIF_FIN_CODE</column>
 		<column>NO_AFFAIRE</column>
@@ -632,6 +633,7 @@
 			<null />
 			<null />
 			<value>1f109152381059670138105fe7fe3932</value>
+			<value>1f1091523810596701381062090f42e3</value>
 			<null />
 			<null />
 			<null />
@@ -657,6 +659,7 @@
 			<value>19810306</value>
 			<null />
 			<value>1f109152381059670138105f8f4b388d</value>
+			<value>1f1091523810596701381062090f42e3</value>
 			<value>Succession</value>
 			<null />
 			<value>012</value>
@@ -682,6 +685,7 @@
 			<value>19810306</value>
 			<null />
 			<value>1f109152381059670138105f8f4c3890</value>
+			<value>1f1091523810596701381062090f42e3</value>
 			<value>Succession</value>
 			<null />
 			<value>012</value>
@@ -707,6 +711,7 @@
 			<value>19810306</value>
 			<value>20171017</value>
 			<value>1f109152381059670138105f8f4c388e</value>
+			<value>1f1091523810596701381062090f42e3</value>
 			<value>Succession</value>
 			<null />
 			<value>012</value>
@@ -732,6 +737,7 @@
 			<null />
 			<null />
 			<value>1f10915238106bdc01381071470f4f0d</value>
+			<value>1f10915238106bdc01381073b5934bcb</value>
 			<value>Achat</value>
 			<null />
 			<value>010-2008/1995/0</value>
@@ -757,6 +763,7 @@
 			<value>19851010</value>
 			<value>20171017</value>
 			<value>1f109152381059670138105f8f4c388f</value>
+			<value>1f1091523810596701381062090f42e4</value>
 			<value>Convention</value>
 			<null />
 			<value>044</value>
@@ -782,6 +789,7 @@
 			<value>19990808</value>
 			<null />
 			<value>1f109152381059670138105f8f4c388g</value>
+			<value>1f1091523810596701381062090f42e5</value>
 			<value>Convention</value>
 			<null />
 			<value>044</value>
