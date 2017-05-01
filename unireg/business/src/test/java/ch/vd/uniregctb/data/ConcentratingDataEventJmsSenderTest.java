@@ -17,7 +17,6 @@ import ch.vd.unireg.xml.event.data.v1.FiscalEventSendRequestEvent;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
@@ -30,7 +29,6 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 	private void buildConcentrator(DataEventSender sender, boolean enabled) throws Exception {
 		final ConcentratingDataEventJmsSender concentrator = new ConcentratingDataEventJmsSender();
 		concentrator.setEvenementsFiscauxActives(enabled);
-		concentrator.setParentInterceptor(getBean(ModificationInterceptor.class, "modificationInterceptor"));
 		concentrator.setParentService(getBean(DataEventService.class, "dataEventService"));
 		concentrator.setSender(sender);
 		concentrator.afterPropertiesSet();

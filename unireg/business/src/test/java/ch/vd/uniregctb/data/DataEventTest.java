@@ -25,7 +25,7 @@ public class DataEventTest extends BusinessTest {
 	@Test
 	public void testRelationShipMapping() {
 		for (TypeRapportEntreTiers typeRapportEntreTiers : TypeRapportEntreTiers.values()) {
-			assertNotNull(DataEventByThreadCollector.getRelationshipMapping(typeRapportEntreTiers));
+			assertNotNull(ConcentratingDataEventJmsSender.getRelationshipMapping(typeRapportEntreTiers));
 		}
 	}
 }
