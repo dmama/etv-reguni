@@ -125,6 +125,7 @@ import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.ScissionEntreprise;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
@@ -1033,13 +1034,13 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		addRapportEntreTiersBuilder(builders, AnnuleEtRemplace.class, "tiers remplacé", Tiers.class, "tiers remplaçant", Tiers.class);
 
 		// Curatelle
-		addRapportEntreTiersBuilder(builders, Curatelle.class, "pupille", PersonnePhysique.class, "curateur", PersonnePhysique.class);
+		addRapportEntreTiersBuilder(builders, Curatelle.class, "pupille", PersonnePhysique.class, "curateur", PersonnePhysique.class, "autorité tutélaire", CollectiviteAdministrative.class);
 
 		// Tutelle
-		addRapportEntreTiersBuilder(builders, Tutelle.class, "pupille", PersonnePhysique.class, "tuteur", PersonnePhysique.class);
+		addRapportEntreTiersBuilder(builders, Tutelle.class, "pupille", PersonnePhysique.class, "tuteur", PersonnePhysique.class, "autorité tutélaire", CollectiviteAdministrative.class);
 
 		// Conseil légal
-		addRapportEntreTiersBuilder(builders, ConseilLegal.class, "pupille", PersonnePhysique.class, "conseiller légal", PersonnePhysique.class);
+		addRapportEntreTiersBuilder(builders, ConseilLegal.class, "pupille", PersonnePhysique.class, "conseiller légal", PersonnePhysique.class, "autorité tutélaire", CollectiviteAdministrative.class);
 
 		// Représentation conventionnel
 		addRapportEntreTiersBuilder(builders, RepresentationConventionnelle.class, "représenté", Tiers.class, "représentant", Tiers.class);
@@ -1162,6 +1163,24 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		map.put(objectKey, (p, value, context) -> {
 			final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
 			return new AttributeView(p.getName(), displayNameObjet, tiersObjetClass, entity, false, false, false);
+		});
+	}
+
+	private static <T extends RepresentationLegale> void addRapportEntreTiersBuilder(Map<AttributeKey, AttributeBuilder> map,
+	                                                                                 Class<T> rapportClass,
+	                                                                                 String displayNameSujet,
+	                                                                                 Class<? extends Tiers> tiersSujetClass,
+	                                                                                 String displayNameObjet,
+	                                                                                 Class<? extends Tiers> tiersObjetClass,
+	                                                                                 String displayNameAutoriteTutelaire,
+	                                                                                 Class<? extends Tiers> autoriteTutelaireClass) {
+
+		addRapportEntreTiersBuilder(map, rapportClass, displayNameSujet, tiersSujetClass, displayNameObjet, tiersObjetClass);
+
+		final AttributeKey autoriteTutelaireId = new AttributeKey(rapportClass, "autoriteTutelaireId");
+		map.put(autoriteTutelaireId, (p, value, context) -> {
+			final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+			return new AttributeView(p.getName(), displayNameAutoriteTutelaire, autoriteTutelaireClass, entity, false, false, false);
 		});
 	}
 }
