@@ -6,6 +6,6 @@
 	<!-- Ce fichier a la seule fonction d'inclure les schémas locaux qui doivent être compilés.
 		Cette manière de faire indirecte permet de réutiliser les fichiers bindings.xml entre les différents projets -->
 
-	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0023/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0023/3/eVD-0023-3-2.xsd" />
-	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0024/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0024/3/eVD-0024-3-2.xsd" />
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0023/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0023/3/eVD-0023-3-3.xsd" />
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0024/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0024/3/eVD-0024-3-4.xsd" />
 </xs:schema>

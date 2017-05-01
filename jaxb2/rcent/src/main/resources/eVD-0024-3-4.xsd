@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2012 rel. 2 sp1 (http://www.altova.com) by Gabrielle Servoz (DIRECTION DES SYSTEMS D'INFORMATION) -->
-<!--			
+<!--
 		****************************************************************************************************************************************************************************
 		************************* eVD-0024 : Norme décrivant les différents éléments des interfaces de type asynchrones (JMS) de RCEnt *************************
 		****************************************************************************************************************************************************************************
@@ -16,15 +15,20 @@
 		Évolution majeur eVD-0023. Référencement eVD-0022-3-0.xsd
 	Correction version 3-1
 		Évolution mineur eVD-0023. Référencement eVD-0022-3-1.xsd
-	Correction version 3-2 / 19.05.2016
+	Correction version 3-2 / 19.05.2016 
 		Évolution mineure eVD-0022. Référencement eVD-0022-3-2.xsd
+	Correction version 3-3 / 29.11.2016 /xsicdt
+		Évolution mineure eVD-0022: ajout de history pour export full (vers la BI)
+	Correction version 3-4 / 25.04.2017 
+		Évolution mineure eVD-0022. Référencement eVD-0022-3-3.xsd
 -->
 <xs:schema xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/3" xmlns:eVD-0022="http://evd.vd.ch/xmlns/eVD-0022/3" xmlns="http://evd.vd.ch/xmlns/eVD-0024/3" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://evd.vd.ch/xmlns/eVD-0024/3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
-	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0022/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/3/eVD-0022-3-2.xsd"/>
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0022/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/3/eVD-0022-3-3.xsd"/>
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0004/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0004/3/eVD-0004-3-0.xsd"/>
 	<xs:complexType name="asynchronousExportRequestType">
 		<xs:sequence>
 			<xs:element name="referenceDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="history" type="xs:boolean" minOccurs="0"/>
 			<xs:element name="maxOrganisationsByResponse" type="xs:int" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
