@@ -73,20 +73,20 @@ public class ServitudesRFHelperTest {
 		pp2.setIdRF("_1f109152380ffd8901380ffda8131c65");
 
 		final UsufruitRF servitude1 = newUsufruit(immeuble1, pp1, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
-		                                          "1f109152380ffd8901380ffed6694392", new IdentifiantAffaireRF(8, 2002, 392, null));
+		                                          "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
 
 		final UsufruitRF servitude2 = newUsufruit(immeuble2, pp2, new IdentifiantDroitRF(8, 2006, 361), RegDate.get(2006, 6, 30), null,
-		                                          "1f109152380ffd8901380ffefad54360", new IdentifiantAffaireRF(8, 2006, 285, 0));
+		                                          "1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", new IdentifiantAffaireRF(8, 2006, 285, 0));
 
 
 		final BelastetesGrundstueck grundstueck1 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
-		final Dienstbarkeit dienstbarkeit1 = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
+		final Dienstbarkeit dienstbarkeit1 = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
 		final DienstbarkeitExtendedElement discreteDienstbarkeit1 = newDienstbarkeitExtended(grundstueck1, natuerlichePerson1, dienstbarkeit1);
 
 		final BelastetesGrundstueck grundstueck2 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe090827e1", null, null);
 		final NatuerlichePersonGb natuerlichePerson2 = newNatuerlichePersonGb("Anne-Lise", "Lassueur", "_1f109152380ffd8901380ffda8131c65");
-		final Dienstbarkeit dienstbarkeit2 = newDienstbarkeit("1f109152380ffd8901380ffefad54360", "_1f109152380ffd8901380ffefad54360", 2006, 361, 8, "Usufruit", null, new Beleg(8, 2006, 285, 0), RegDate.get(2006, 6, 30), null);
+		final Dienstbarkeit dienstbarkeit2 = newDienstbarkeit("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", "_1f109152380ffd8901380ffefad54360", 2006, 361, 8, "Usufruit", null, new Beleg(8, 2006, 285, 0), RegDate.get(2006, 6, 30), null);
 		final DienstbarkeitExtendedElement discreteDienstbarkeit2 = newDienstbarkeitExtended(grundstueck2, natuerlichePerson2, dienstbarkeit2);
 
 		final Set<ServitudeRF> servitudes = new HashSet<>(Arrays.<ServitudeRF>asList(servitude1, servitude2));
@@ -105,11 +105,11 @@ public class ServitudesRFHelperTest {
 		pp.setIdRF("_1f109152380ffd8901380ffdabcc2441");
 
 		final UsufruitRF usufruit = newUsufruit(immeuble, pp, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
-		                                        "1f109152380ffd8901380ffed6694392", new IdentifiantAffaireRF(8, 2002, 392, null));
+		                                        "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
 
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
-		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
+		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
 		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(grundstueck, natuerlichePerson, dienstbarkeit);
 
 		assertTrue(ServitudesRFHelper.dataEquals(usufruit, discreteDienstbarkeit));
@@ -125,11 +125,11 @@ public class ServitudesRFHelperTest {
 		pp.setIdRF("_1f109152380ffd8901380ffdabcc2441");
 
 		final DroitHabitationRF droitHabitation = newDroitHabitation(immeuble, pp, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
-		                                                             "1f109152380ffd8901380ffed6694392", new IdentifiantAffaireRF(8, 2002, 392, null));
+		                                                             "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
 
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
-		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Droit d'habitation", "2002/392", null, RegDate.get(2002, 9, 2), null);
+		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Droit d'habitation", "2002/392", null, RegDate.get(2002, 9, 2), null);
 		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(grundstueck, natuerlichePerson, dienstbarkeit);
 
 		assertTrue(ServitudesRFHelper.dataEquals(droitHabitation, discreteDienstbarkeit));
@@ -146,7 +146,7 @@ public class ServitudesRFHelperTest {
 
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
-		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
+		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
 		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(grundstueck, natuerlichePerson1, dienstbarkeit);
 
 		final ServitudeRF servitude = ServitudesRFHelper.newServitudeRF(discreteDienstbarkeit, (id) -> pp1, (id) -> immeuble);
@@ -180,7 +180,7 @@ public class ServitudesRFHelperTest {
 
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
-		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Droit d'habitation", "2002/392", null, RegDate.get(2002, 9, 2), null);
+		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Droit d'habitation", "2002/392", null, RegDate.get(2002, 9, 2), null);
 		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(grundstueck, natuerlichePerson1, dienstbarkeit);
 
 		final ServitudeRF servitude = ServitudesRFHelper.newServitudeRF(discreteDienstbarkeit, (id) -> pp1, (id) -> immeuble);
@@ -218,7 +218,7 @@ public class ServitudesRFHelperTest {
 		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
 		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
 		final NatuerlichePersonGb natuerlichePerson2 = newNatuerlichePersonGb("Anne-Lise", "Lassueur", "_1f109152380ffd8901380ffda8131c65");
-		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
+		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
 		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(grundstueck, natuerlichePerson1, dienstbarkeit);
 
 		final ServitudeRF servitude = ServitudesRFHelper.newServitudeRF(discreteDienstbarkeit, (id) -> pp1, (id) -> immeuble);
@@ -289,9 +289,11 @@ public class ServitudesRFHelperTest {
 		return natuerlichePersonGb;
 	}
 
-	public static Dienstbarkeit newDienstbarkeit(String masterID, String standardRechtID, int anneeDroit, int numeroDroit, int numeroOffice, String type, String numeroAffaireTexte, Beleg numeroAffaire, RegDate dateDebut, RegDate dateFin) {
+	public static Dienstbarkeit newDienstbarkeit(String masterID, String versionID, String standardRechtID, int anneeDroit, int numeroDroit, int numeroOffice, String type, String numeroAffaireTexte, Beleg numeroAffaire, RegDate dateDebut,
+	                                             RegDate dateFin) {
 		final Dienstbarkeit d = new Dienstbarkeit();
 		d.setMasterID(masterID);
+		d.setVersionID(versionID);
 		d.setStandardRechtID(standardRechtID);
 		d.setRechtEintragJahrID(anneeDroit);
 		d.setRechtEintragNummerID(numeroDroit);
@@ -304,9 +306,8 @@ public class ServitudesRFHelperTest {
 		return d;
 	}
 
-	@NotNull
 	private static UsufruitRF newUsufruit(ImmeubleRF immeuble1, PersonnePhysiqueRF pp1, IdentifiantDroitRF identifiantDroit, RegDate dateDebutOfficielle,
-	                                      @Nullable RegDate dateFinOfficielle, String masterIdRF, IdentifiantAffaireRF numeroAffaire) {
+	                                      @Nullable RegDate dateFinOfficielle, String masterIdRF, String versionIdRF, IdentifiantAffaireRF numeroAffaire) {
 		final UsufruitRF servitude1 = new UsufruitRF();
 		servitude1.setIdentifiantDroit(identifiantDroit);
 		servitude1.setDateDebutMetier(dateDebutOfficielle);
@@ -315,14 +316,14 @@ public class ServitudesRFHelperTest {
 		servitude1.setMotifFin(null);
 		servitude1.addImmeuble(immeuble1);
 		servitude1.setMasterIdRF(masterIdRF);
+		servitude1.setVersionIdRF(versionIdRF);
 		servitude1.setNumeroAffaire(numeroAffaire);
 		servitude1.addAyantDroit(pp1);
 		return servitude1;
 	}
 
-	@NotNull
 	private static DroitHabitationRF newDroitHabitation(ImmeubleRF immeuble1, PersonnePhysiqueRF pp1, IdentifiantDroitRF identifiantDroit, RegDate dateDebutOfficielle,
-	                                                    @Nullable RegDate dateFinOfficielle, String masterIdRF, IdentifiantAffaireRF numeroAffaire) {
+	                                                    @Nullable RegDate dateFinOfficielle, String masterIdRF, String versionIdRF, IdentifiantAffaireRF numeroAffaire) {
 		final DroitHabitationRF servitude1 = new DroitHabitationRF();
 		servitude1.setIdentifiantDroit(identifiantDroit);
 		servitude1.setDateDebutMetier(dateDebutOfficielle);
@@ -331,6 +332,7 @@ public class ServitudesRFHelperTest {
 		servitude1.setMotifFin(null);
 		servitude1.addImmeuble(immeuble1);
 		servitude1.setMasterIdRF(masterIdRF);
+		servitude1.setVersionIdRF(versionIdRF);
 		servitude1.setNumeroAffaire(numeroAffaire);
 		servitude1.addAyantDroit(pp1);
 		return servitude1;
