@@ -22,7 +22,7 @@ public class ImmeubleRFValidator extends EntityValidatorImpl<ImmeubleRF> {
 
 		final ValidationResults results = new ValidationResults();
 
-		// un immeuble annulée est toujours valide...
+		// un immeuble annulé est toujours valide...
 		if (immeuble.isAnnule()) {
 			return results;
 		}

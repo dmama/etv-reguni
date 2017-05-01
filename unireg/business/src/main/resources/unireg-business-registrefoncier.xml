@@ -13,6 +13,7 @@
 	</bean>
 
 	<bean id="communeRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.CommuneRFValidator" parent="dateRangeEntityValidator" />
+	<bean id="immeubleBeneficiaireRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ImmeubleBeneficiaireRFValidator" parent="entityValidator" />
 	<bean id="droitRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DroitRFValidator" abstract="true" parent="dateRangeEntityValidator" />
 	<bean id="droitProprieteRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DroitProprieteRFValidator" parent="droitRFValidator" />
 	<bean id="servitudeRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ServitudeRFValidator" parent="droitRFValidator" />
