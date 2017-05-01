@@ -105,8 +105,8 @@
 				<value>classpath:event/taxation/DossierElectronique-2-0.xsd</value>
 				<value>classpath:event/taxation/DossierElectronique-3-2.xsd</value>
 				<value>classpath:editique/UniregPM_FichierImpression.xsd</value>
-				<value>classpath:eVD-0022-3-2.xsd</value><!-- RCEnt entités -->
-				<value>classpath:eVD-0024-3-2.xsd</value><!-- RCEnt interface asynchrone -->
+				<value>classpath:eVD-0022-3-3.xsd</value><!-- RCEnt entités -->
+				<value>classpath:eVD-0024-3-4.xsd</value><!-- RCEnt interface asynchrone -->
 				<value>classpath:event/dperm/typeSimpleDPerm-1.xsd</value>
 				<value>classpath:event/docsortant/documentSortantRepElec-1.xsd</value>
 				<value>classpath:event/docsortant/quittanceRepElec-3.xsd</value>

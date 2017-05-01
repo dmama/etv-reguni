@@ -33,9 +33,9 @@ public class RCEntApiHelper {
     */
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
-			"eVD-0022-3-2.xsd",
-			"eVD-0023-3-2.xsd",
-			"eVD-0024-3-2.xsd"
+			"eVD-0022-3-3.xsd",
+			"eVD-0023-3-3.xsd",
+			"eVD-0024-3-4.xsd"
 	};
 
 	public static Resource[] getRCEntSchemaClassPathResource() {
@@ -166,7 +166,7 @@ public class RCEntApiHelper {
 			return TypeEvenementOrganisation.FOSC_PROCES_VERBAL_SEQUESTRE;
 		case FOSC_PROCES_VERBAL_SAISIE:
 			return TypeEvenementOrganisation.FOSC_PROCES_VERBAL_SAISIE;
-		case FOSC_COMMUNICATION_DANS_LA_PROUSUITE:
+		case FOSC_COMMUNICATION_DANS_LA_POURSUITE:
 			return TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_LA_POURSUITE;
 		case FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION:
 			return TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION;
@@ -210,6 +210,8 @@ public class RCEntApiHelper {
 			return TypeEvenementOrganisation.REE_TRANSFERT_ETABLISSEMENT;
 		case REE_REACTIVATION:
 			return TypeEvenementOrganisation.REE_REACTIVATION;
+		case REE_NOUVEL_ETABLISSEMENT:
+			return TypeEvenementOrganisation.REE_NOUVEL_ETABLISSEMENT;
 		default:
 			throw new IllegalArgumentException("TypeEvenementOrganisation inconnu: " + typeOfNotice.name());
 		}
