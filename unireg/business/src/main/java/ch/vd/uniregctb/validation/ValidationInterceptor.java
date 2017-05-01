@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.validation.ValidationException;
@@ -20,7 +21,7 @@ import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 
-public class ValidationInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
+public class ValidationInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean, Switchable {
 
 	private final ThreadSwitch enabled = new ThreadSwitch(true);
 
@@ -133,5 +134,10 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		parent.unregister(this);
 	}
 }

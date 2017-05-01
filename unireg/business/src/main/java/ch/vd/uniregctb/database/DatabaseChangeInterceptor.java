@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -27,7 +28,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class DatabaseChangeInterceptor implements ModificationSubInterceptor, InitializingBean {
+public class DatabaseChangeInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean {
 
 	private ModificationInterceptor parent;
 	private DataEventService dataEventService;
@@ -144,5 +145,10 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		parent.unregister(this);
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -20,7 +21,7 @@ import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
-public class MessageIdentificationIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
+public class MessageIdentificationIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean, Switchable {
 
 	private ModificationInterceptor parent;
 	private GlobalMessageIdentificationIndexer indexer;
@@ -49,6 +50,11 @@ public class MessageIdentificationIndexerHibernateInterceptor implements Modific
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		parent.unregister(this);
 	}
 
 	/**

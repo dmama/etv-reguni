@@ -15,6 +15,7 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -32,7 +33,7 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
-public class TiersIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean {
+public class TiersIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TiersIndexerHibernateInterceptor.class);
 
@@ -231,5 +232,10 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		parent.unregister(this);
 	}
 }

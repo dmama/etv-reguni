@@ -15,6 +15,7 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -38,7 +39,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 /**
  * Intercepteur de collecte des entreprises modifiées pour une éventuelle annonce de la modification à l'IDE
  */
-public class AnnonceIDEHibernateInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
+public class AnnonceIDEHibernateInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean, Switchable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnnonceIDEHibernateInterceptor.class);
 
@@ -207,5 +208,10 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		parent.unregister(this);
 	}
 }

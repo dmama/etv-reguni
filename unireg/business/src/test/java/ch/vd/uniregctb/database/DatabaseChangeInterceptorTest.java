@@ -47,7 +47,6 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 
 	private MockDataEventService eventService;
 	private DatabaseChangeInterceptor interceptor;
-	private ModificationInterceptor modificationInterceptor;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -58,14 +57,13 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		interceptor = new DatabaseChangeInterceptor();
 		interceptor.setDataEventService(eventService);
 		interceptor.setTiersService(getBean(TiersService.class, "tiersService"));
-
-		modificationInterceptor = getBean(ModificationInterceptor.class, "modificationInterceptor");
-		modificationInterceptor.register(interceptor);
+		interceptor.setParent(getBean(ModificationInterceptor.class, "modificationInterceptor"));
+		interceptor.afterPropertiesSet();
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		modificationInterceptor.unregister(interceptor);
+		interceptor.destroy();
 		super.onTearDown();
 	}
 

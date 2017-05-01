@@ -9,6 +9,7 @@ import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -31,7 +32,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 /**
  * [SIFISC-9096] Cet intercepteur recalcule automatiquement les parentés sur les personnes physiques connues du civil et modifiées après le commit de chaque transaction.
  */
-public class ParentesSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
+public class ParentesSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean, Switchable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ParentesSynchronizerInterceptor.class);
 
@@ -233,5 +234,10 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		parent.unregister(this);
 	}
 }

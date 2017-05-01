@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -12,7 +13,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 
-public class ModificationLogInterceptor implements ModificationSubInterceptor, InitializingBean {
+public class ModificationLogInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean {
 
 	private ModificationInterceptor parent;
 	private boolean completeOnly = false;
@@ -32,6 +33,11 @@ public class ModificationLogInterceptor implements ModificationSubInterceptor, I
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		parent.unregister(this);
 	}
 
 	private boolean assignValue(String methodName, String[] propertyNames, Object[] currentState, Object value) {

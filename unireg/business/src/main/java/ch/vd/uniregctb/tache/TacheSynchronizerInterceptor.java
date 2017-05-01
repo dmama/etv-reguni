@@ -8,6 +8,7 @@ import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 /**
  * [UNIREG-2305] Cet interceptor recalcul automatiquement les tâches d'envoi et d'annulation de DIs sur les contribuables modifiées après le commit de chaque transaction.
  */
-public class TacheSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
+public class TacheSynchronizerInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean, Switchable {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TacheSynchronizerInterceptor.class);
 
@@ -161,5 +162,10 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		parent.unregister(this);
 	}
 }
