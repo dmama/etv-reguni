@@ -12,8 +12,11 @@ drop table RF_SERVITUDE_IMMEUBLE cascade constraints;
 drop table RF_DROIT cascade constraints;
 drop table RF_DESCRIPTION_BATIMENT cascade constraints;
 
-drop table EVENEMENT_RF_IMPORT cascade constraints;
 drop table EVENEMENT_RF_MUTATION cascade constraints;
+
+-- plutôt que d'effacer les données d'import, on les resette
+delete from EVENEMENT_RF_IMPORT where DATE_EVENEMENT = 20170101;
+update EVENEMENT_RF_IMPORT set ETAT = 'A_TRAITER', CALLSTACK = null, ERROR_MESSAGE = null;
 
 -- l'existence d'une situation est obligatoire pour chaque immeuble -> on efface juste l'historique
 DELETE FROM RF_SITUATION to_delete  -- efface toutes les situations sauf la première de chaque immeuble
@@ -24,24 +27,6 @@ WHERE EXISTS(SELECT NULL
                    AND (to_keep.DATE_DEBUT IS NULL OR to_keep.DATE_DEBUT < to_delete.DATE_DEBUT));
 UPDATE RF_SITUATION set DATE_FIN = null WHERE DATE_FIN is not null;    -- reset la date de fin si nécessaire
 
-CREATE TABLE EVENEMENT_RF_IMPORT
-(
-    ID NUMBER(19) PRIMARY KEY NOT NULL,
-    ANNULATION_DATE TIMESTAMP(6),
-    ANNULATION_USER NVARCHAR2(65),
-    LOG_CDATE TIMESTAMP(6),
-    LOG_CUSER NVARCHAR2(65),
-    LOG_MDATE TIMESTAMP(6),
-    LOG_MUSER NVARCHAR2(65),
-    CALLSTACK CLOB,
-    DATE_EVENEMENT NUMBER(10),
-    ERROR_MESSAGE NVARCHAR2(1000),
-    ETAT NVARCHAR2(13) NOT NULL,
-    FILE_URL NVARCHAR2(512),
-    TYPE NVARCHAR2(12) NOT NULL
-);
-CREATE INDEX IDX_EV_RF_IMP_ETAT ON EVENEMENT_RF_IMPORT (ETAT);
-CREATE INDEX IDX_EV_RF_IMP_TYPE ON EVENEMENT_RF_IMPORT (TYPE);
 CREATE TABLE EVENEMENT_RF_MUTATION
 (
     ID NUMBER(19) PRIMARY KEY NOT NULL,
