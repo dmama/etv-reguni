@@ -81,11 +81,13 @@ import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
@@ -1566,6 +1568,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return merge(pm);
 	}
 
+	protected ImmeubleBeneficiaireRF addImmeubleBeneficiaireRF(ImmeubleRF immeuble) {
+		final ImmeubleBeneficiaireRF beneficiaire = new ImmeubleBeneficiaireRF();
+		beneficiaire.setImmeuble(immeuble);
+		beneficiaire.setIdRF(immeuble.getIdRF());
+		return merge(beneficiaire);
+	}
+
 	protected RapprochementRF addRapprochementRF(@Nullable RegDate dateDebut, @Nullable RegDate dateFin, TypeRapprochementRF type, Contribuable ctb, TiersRF tiersRF, boolean annule) {
 		final RapprochementRF rrf = new RapprochementRF();
 		rrf.setAnnule(annule);
@@ -1653,6 +1662,27 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		final DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
 		droit.setImmeuble(immeuble);
 		droit.setAyantDroit(communauteRF);
+		droit.setDateDebut(dateDebut);
+		droit.setDateDebutMetier(dateDebutMetier);
+		droit.setDateFin(dateFin);
+		droit.setDateFinMetier(dateFinMetier);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
+		droit.setPart(part);
+		droit.setRegime(regime);
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
+		return merge(droit);
+	}
+
+	protected DroitProprieteImmeubleRF addDroitImmeubleRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin,
+	                                                      String masterIdRF, String versionIdRF, IdentifiantAffaireRF numeroAffaire,
+	                                                      Fraction part, GenrePropriete regime,
+	                                                      ImmeubleBeneficiaireRF beneficiaire, BienFondRF immeuble) {
+		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
+		droit.setImmeuble(immeuble);
+		droit.setAyantDroit(beneficiaire);
 		droit.setDateDebut(dateDebut);
 		droit.setDateDebutMetier(dateDebutMetier);
 		droit.setDateFin(dateFin);

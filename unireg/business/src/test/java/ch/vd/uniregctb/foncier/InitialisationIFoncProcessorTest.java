@@ -10,9 +10,11 @@ import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
@@ -104,6 +106,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals(1, info.part.getNumerateur());
 				Assert.assertEquals(5, info.part.getDenominateur());
 				Assert.assertEquals(GenrePropriete.COPROPRIETE, info.regime);
+				Assert.assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+				Assert.assertNull(info.idImmeubleBeneficiaire);
 			}
 			{
 				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(1);
@@ -128,6 +132,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
 				Assert.assertNull(info.part);
 				Assert.assertNull(info.regime);
+				Assert.assertEquals("236gzbfahécf", info.idRFAyantDroit);
+				Assert.assertNull(info.idImmeubleBeneficiaire);
 			}
 		}
 		// extraction au 01.01.2018 (tous)
@@ -164,6 +170,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals(1, info.part.getNumerateur());
 				Assert.assertEquals(5, info.part.getDenominateur());
 				Assert.assertEquals(GenrePropriete.COPROPRIETE, info.regime);
+				Assert.assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+				Assert.assertNull(info.idImmeubleBeneficiaire);
 			}
 			{
 				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(1);
@@ -188,6 +196,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
 				Assert.assertNull(info.part);
 				Assert.assertNull(info.regime);
+				Assert.assertEquals("5w47tgtflbsfg", info.idRFAyantDroit);
+				Assert.assertNull(info.idImmeubleBeneficiaire);
 			}
 			{
 				final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(2);
@@ -212,6 +222,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
 				Assert.assertNull(info.part);
 				Assert.assertNull(info.regime);
+				Assert.assertEquals("236gzbfahécf", info.idRFAyantDroit);
+				Assert.assertNull(info.idImmeubleBeneficiaire);
 			}
 		}
 	}
@@ -287,6 +299,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(1, info.part.getNumerateur());
 			Assert.assertEquals(5, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.COMMUNE, info.regime);
+			Assert.assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 		{
 			final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(1);
@@ -313,6 +327,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(3, info.part.getNumerateur());
 			Assert.assertEquals(8, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.COMMUNE, info.regime);
+			Assert.assertEquals("5w47tgtflbsfg", info.idRFAyantDroit);
+			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 		{
 			final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(2);
@@ -336,6 +352,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(12, info.part.getNumerateur());
 			Assert.assertEquals(50, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.INDIVIDUELLE, info.regime);
+			Assert.assertEquals("285t378og43t", info.idRFAyantDroit);
+			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 	}
 
@@ -400,6 +418,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(1, info.part.getNumerateur());
 			Assert.assertEquals(5, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.COMMUNE, info.regime);
+			Assert.assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 		{
 			final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(1);
@@ -486,6 +506,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(1, info.part.getNumerateur());
 			Assert.assertEquals(5, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.COMMUNE, info.regime);
+			Assert.assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 
 		{
@@ -499,6 +521,87 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertNull(info.infoImmeuble.index3);
 			Assert.assertEquals("Echallens", info.infoImmeuble.nomCommune);
 			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
+		}
+	}
+
+	@Test
+	public void testImmeubleAvecDroitSurImmeuble() throws Exception {
+
+		final class Ids {
+			long idImmeublePossede;
+			long idImmeubleBeneficiaire;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
+			final BienFondRF immeublePossede = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			final BienFondRF immeubleBeneficiaire = addBienFondRF("4678536545hjksdf", "CDGHJSFDG", commune, 48415, 6, 1, 7);
+
+			final ImmeubleBeneficiaireRF ayantDroit = addImmeubleBeneficiaireRF(immeubleBeneficiaire);
+			addDroitImmeubleRF(null, date(2014, 6, 12), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.FONDS_DOMINANT, ayantDroit, immeublePossede);
+
+			final Ids res = new Ids();
+			res.idImmeublePossede = immeublePossede.getId();
+			res.idImmeubleBeneficiaire = immeubleBeneficiaire.getId();
+			return res;
+		});
+
+		final InitialisationIFoncResults results = processor.run(date(2017, 1, 1), 1, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(2, results.getNbImmeublesInspectes());
+		Assert.assertEquals(2, results.getLignesExtraites().size());
+		Assert.assertEquals(0, results.getImmeublesIgnores().size());
+		Assert.assertEquals(0, results.getErreurs().size());
+
+		{
+			final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(0);
+			Assert.assertNotNull(info);
+			Assert.assertNull(info.idContribuable);
+			Assert.assertNull(info.idCommunaute);
+			Assert.assertNull(info.identificationRF);
+			Assert.assertEquals(ImmeubleBeneficiaireRF.class, info.classAyantDroit);
+			Assert.assertEquals(DroitProprieteImmeubleRF.class, info.classDroit);
+			Assert.assertEquals("Achat", info.motifDebut);
+			Assert.assertNull(info.motifFin);
+			Assert.assertEquals((Long) ids.idImmeublePossede, info.infoImmeuble.idImmeuble);
+			Assert.assertEquals("CHEGRID", info.infoImmeuble.egrid);
+			Assert.assertEquals((Integer) 4514, info.infoImmeuble.noParcelle);
+			Assert.assertEquals((Integer) 4, info.infoImmeuble.index1);
+			Assert.assertEquals((Integer) 2, info.infoImmeuble.index2);
+			Assert.assertEquals((Integer) 1, info.infoImmeuble.index3);
+			Assert.assertEquals("Echallens", info.infoImmeuble.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
+			Assert.assertNotNull(info.part);
+			Assert.assertEquals(1, info.part.getNumerateur());
+			Assert.assertEquals(5, info.part.getDenominateur());
+			Assert.assertEquals(GenrePropriete.FONDS_DOMINANT, info.regime);
+			Assert.assertEquals("4678536545hjksdf", info.idRFAyantDroit);
+			Assert.assertEquals((Long) ids.idImmeubleBeneficiaire, info.idImmeubleBeneficiaire);
+		}
+		{
+			final InitialisationIFoncResults.InfoExtraction info = results.getLignesExtraites().get(1);
+			Assert.assertNotNull(info);
+			Assert.assertNull(info.idContribuable);
+			Assert.assertNull(info.idCommunaute);
+			Assert.assertNull(info.identificationRF);
+			Assert.assertNull(info.classAyantDroit);
+			Assert.assertNull(info.classDroit);
+			Assert.assertNull(info.motifDebut);
+			Assert.assertNull(info.motifFin);
+			Assert.assertEquals((Long) ids.idImmeubleBeneficiaire, info.infoImmeuble.idImmeuble);
+			Assert.assertEquals("CDGHJSFDG", info.infoImmeuble.egrid);
+			Assert.assertEquals((Integer) 48415, info.infoImmeuble.noParcelle);
+			Assert.assertEquals((Integer) 6, info.infoImmeuble.index1);
+			Assert.assertEquals((Integer) 1, info.infoImmeuble.index2);
+			Assert.assertEquals((Integer) 7, info.infoImmeuble.index3);
+			Assert.assertEquals("Echallens", info.infoImmeuble.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
+			Assert.assertNull(info.part);
+			Assert.assertNull(info.regime);
+			Assert.assertNull(info.idRFAyantDroit);
+			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 	}
 }
