@@ -98,7 +98,6 @@ public class ContribuableAssocieController {
 		if (StringUtils.isNotBlank(bean.getNumeroAVS())) {
 			bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 		}
-		bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 		bean.setTypeTiersImperatif(TiersCriteria.TypeTiers.CONTRIBUABLE);
 
 		// on effectue la recherche
