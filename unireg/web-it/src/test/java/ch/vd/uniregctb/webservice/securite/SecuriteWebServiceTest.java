@@ -45,7 +45,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 	private static boolean alreadySetUp = false;
 
 	private UserLogin zaiptf; // Francis Perroset
-	private UserLogin zaipmd; // Philippe Maillard
+	private UserLogin zaimkd; // Marinette Kellenberger
 	private UserLogin zciddo; // Daniel Di Lallo
 	private UserLogin zaipmx; // Pascal Mutrux
 
@@ -81,9 +81,9 @@ public class SecuriteWebServiceTest extends WebitTest {
 		zaiptf.setUserId("zaiptf");
 		zaiptf.setOid(22); // ACI
 
-		zaipmd = new UserLogin();
-		zaipmd.setUserId("zaipmd");
-		zaipmd.setOid(22); // ACI
+		zaimkd = new UserLogin();
+		zaimkd.setUserId("zaimkd");
+		zaimkd.setOid(22); // ACI
 
 		zciddo = new UserLogin();
 		zciddo.setUserId("zciddo");
@@ -137,13 +137,13 @@ public class SecuriteWebServiceTest extends WebitTest {
 	}
 
 	/**
-	 * Teste que Philippe Maillard possède les droits d'écriture sur tous les contribuables (parce qu'il fait partie de la direction de l'ACI)
+	 * Teste que Marinette Kellenberger possède les droits d'écriture sur tous les contribuables (parce qu'elle fait partie de la direction de l'ACI)
 	 */
 	@Test
-	public void testAutorisationsPhilippeMaillard() throws Exception {
+	public void testAutorisationsMarinetteKellenberger() throws Exception {
 
 		GetAutorisationSurDossier params = new GetAutorisationSurDossier();
-		params.setLogin(zaipmd);
+		params.setLogin(zaimkd);
 
 		params.setNumeroTiers(12300001L); // Christine Schmid
 		assertEquals(NiveauAutorisation.ECRITURE, service.getAutorisationSurDossier(params));
