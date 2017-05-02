@@ -15,10 +15,9 @@ public class DataEventTest extends BusinessTest {
 	 */
 	@Test
 	public void testCoherenceRelationTypeWithEvent() {
-
 		for (TypeRapportEntreTiers typeRapportEntreTier : TypeRapportEntreTiers.values()) {
-				Relationship relation= Relationship.valueOf(typeRapportEntreTier.name());
-				assertNotNull(relation);
+			final Relationship relation = Relationship.valueOf(typeRapportEntreTier.name());
+			assertNotNull(relation);
 		}
 	}
 
