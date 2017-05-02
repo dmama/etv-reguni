@@ -29,13 +29,14 @@ import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeOfNoticeConverter;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.evenement.RCEntApiHelper;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
@@ -158,7 +159,6 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		return isLatestSnapshot != null && !Boolean.parseBoolean(isLatestSnapshot);
 	}
 
-
 	/**
 	 * Déroulement des opérations :
 	 * <ol>
@@ -213,8 +213,8 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	}
 
 	/*
-		Décodage de l'événement brut, et si c'est ok, on crée l'événement. Dans tous les cas pas ok
-		une exception adéquate doit être lancée pour être remontée à l'ESB. Interdit de sortir d'ici sans un objet.
+		Décodage de l'événement brut.
+		Une exception lancée lors du décodage indique un problème de données et doit être convertie en exception business pour que le message soit correctement renvoyé dans TAO Admin.
 	 */
 	@NotNull
 	private OrganisationsOfNotice decodeEvenementOrganisation(Source xml) throws EvenementOrganisationEsbException {
@@ -231,26 +231,49 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	}
 
 	/*
-		Validation du message décodé, et seulement si c'est ok, on crée l'événement. Dans tous les cas pas ok
-		une exception adéquate doit être lancée pour être remontée à l'ESB. Interdit de sortir d'ici sans un objet.
+		Contrôle si on doit ignorer le message entrant.
+		Une exception lancée lors de la détermination du type du message indique un problème de données et doit être convertie en exception business pour que le message soit correctement renvoyé dans TAO Admin.
+	 */
+	private boolean isIgnored(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
+		try {
+			return ignoredEventTypes != null && ignoredEventTypes.contains(TYPE_OF_NOTICE_CONVERTER.convert(message.getNotice().getTypeOfNotice()));
+		}
+		catch (IllegalArgumentException e) {
+			throw createEsbBusinessException(e);
+		}
+	}
+
+	@NotNull
+	private static EvenementOrganisationEsbException createEsbBusinessException(String msg) {
+		return new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, msg);
+	}
+
+	@NotNull
+	private static EvenementOrganisationEsbException createEsbBusinessException(Exception e) {
+		return new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
+	}
+
+	/*
+		Création de l'objet événement
+		Une exception lancée pendant qu'on convertit le message indique un problème de données et doit être convertie en exception business pour que le message soit correctement renvoyé dans TAO Admin.
 	 */
 	@NotNull
 	private List<EvenementOrganisation> createEvenementOrganisation(OrganisationsOfNotice message, String businessId) throws EvenementOrganisationEsbException {
 		try {
 			return createEvenement(message, businessId);
 		}
-		catch (EvenementOrganisationException | RuntimeException e) {
-			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
+		catch (RuntimeException e) {
+			throw createEsbBusinessException(e);
 		}
 	}
 
-	private  List<EvenementOrganisation> createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice notice, String businessId) throws EvenementOrganisationException, EvenementOrganisationEsbException {
+	private  List<EvenementOrganisation> createEvenement(ch.vd.evd0022.v3.OrganisationsOfNotice notice, String businessId) throws EvenementOrganisationEsbException {
 		List<EvenementOrganisation> evts = new ArrayList<>();
 		Notice noticeHeader = notice.getNotice();
 		final long noEvenement = noticeHeader.getNoticeId().longValue();
-		final TypeEvenementOrganisation type = RCEntApiHelper.convertTypeOfNotice(noticeHeader.getTypeOfNotice());
+		final TypeEvenementOrganisation type = TYPE_OF_NOTICE_CONVERTER.convert(noticeHeader.getTypeOfNotice());
 		final RegDate noticeDate = noticeHeader.getNoticeDate();
-		final Long noAnnonceIDE = RCEntApiHelper.extractNoAnnonceIDE(noticeHeader);
+		final Long noAnnonceIDE = RCEntAnnonceIDEHelper.extractNoAnnonceIDE(noticeHeader);
 
 		final List<NoticeOrganisation> organisation = notice.getOrganisation();
 		for (NoticeOrganisation org : organisation) {
@@ -267,8 +290,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 			if (noAnnonceIDE != null) {
 				final ReferenceAnnonceIDE referencesAnnonceIDE = referenceAnnonceIDEDAO.get(noAnnonceIDE);
 				if (referencesAnnonceIDE == null) {
-					final String msg = String.format("Impossible de trouver la référence en base pour le numéro d'annonce à l'IDE %d indiqué dans l'événement RCEnt.", noAnnonceIDE);
-					throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, msg);
+					throw createEsbBusinessException(String.format("Impossible de trouver la référence en base pour le numéro d'annonce à l'IDE %d indiqué dans l'événement RCEnt.", noAnnonceIDE));
 				}
 				e.setReferenceAnnonceIDE(referencesAnnonceIDE);
 			}
@@ -276,7 +298,6 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		}
 		return evts;
 	}
-
 
 	/*
 	 On valide sur le message brut car il peut y avoir NullPointerException à la création de l'instance de l'événement.
@@ -327,7 +348,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 				b.append(").");
 				msg = b.toString();
 			}
-			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, msg);
+			throw createEsbBusinessException(msg);
 		}
 	}
 
@@ -342,19 +363,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 			                                                           notice.getTypeOfNotice().name()));
 		}
 		catch (RuntimeException e) {
-			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
-		}
-	}
-
-	/*
-		Contrôle si on doit ignorer le message entrant. On tient compte du fait que des exceptions peuvent être lancées en parcourant le message.
-	 */
-	private boolean isIgnored(OrganisationsOfNotice message) throws EvenementOrganisationEsbException {
-		try {
-			return ignoredEventTypes != null && ignoredEventTypes.contains(TYPE_OF_NOTICE_CONVERTER.convert(message.getNotice().getTypeOfNotice()));
-		}
-		catch (RuntimeException e) {
-			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
+			throw createEsbBusinessException(e);
 		}
 	}
 
@@ -375,7 +384,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = RCEntApiHelper.getRCEntClasspathSources();
+			final Source[] source = RCEntSchemaHelper.getRCEntClasspathSources();
 			schemaCache = sf.newSchema(source);
 		}
 	}

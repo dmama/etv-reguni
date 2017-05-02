@@ -14,9 +14,9 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementTest;
-import ch.vd.uniregctb.evenement.RCEntApiHelper;
 
 /**
  * @author Raphaël Marmier, 2016-08-17, <raphael.marmier@vd.ch>
@@ -44,7 +44,7 @@ public class AnnonceIDESenderItTest extends EvenementTest {
 
 		clearQueue(OUTPUT_QUEUE);
 
-		buildEsbMessageValidator(RCEntApiHelper.getRCEntSchemaClassPathResource());
+		buildEsbMessageValidator(RCEntSchemaHelper.getRCEntSchemaClassPathResource());
 
 		sender = new AnnonceIDESenderImpl();
 		sender.setServiceDestination("test");

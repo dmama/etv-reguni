@@ -5,7 +5,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.BufferedReader;
@@ -24,7 +23,6 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.util.ResourceUtils;
 import org.xml.sax.SAXException;
@@ -51,6 +49,7 @@ import ch.vd.unireg.interfaces.organisation.data.StatutAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientImpl;
 import ch.vd.unireg.wsclient.rcent.RcEntNoticeQuery;
@@ -60,13 +59,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 
 @SuppressWarnings({"JavaDoc"})
 public class ServiceOrganisationRCEntItTest extends BusinessItTest {
-
-	public static final String[] RCENT_SCHEMA = new String[]{
-			"eVD-0004-3-0.xsd",
-			"eVD-0022-3-3.xsd",
-			"eVD-0023-3-3.xsd",
-			"eVD-0024-3-4.xsd"
-	};
 
 	private static final String BASE_PATH_ORGANISATION = "/organisation/CT.VD.PARTY";
 	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/organisationsOfNotice";
@@ -302,7 +294,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		client.setNoticeRequestValidatePath(BASE_PATH_VALIDER_ANNONCE_IDE);
 		client.setNoticeRequestListPath(BASE_PATH_ANNONCE_IDE);
 		if (validating) {
-			client.setSchemasLocations(Arrays.asList(RCENT_SCHEMA));
+			client.setSchemasLocations(Arrays.asList(RCEntSchemaHelper.RCENT_SCHEMA));
 			client.setValidationEnabled(true);
 		}
 		client.afterPropertiesSet();
@@ -322,20 +314,11 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 			// This will make the unmarshaller validate the input.
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = getClasspathSources(RCENT_SCHEMA);
+			final Source[] source = RCEntSchemaHelper.getRCEntClasspathSources();
 			Schema schema = sf.newSchema(source);
 			unmarshaller.setSchema(schema);
 		}
 		return unmarshaller;
-	}
-
-	private static Source[] getClasspathSources(String... pathes) throws IOException {
-		final Source[] sources = new Source[pathes.length];
-		for (int i = 0, pathLength = pathes.length; i < pathLength; i++) {
-			final String path = pathes[i];
-			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
-		}
-		return sources;
 	}
 
 	@NotNull

@@ -29,8 +29,8 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
 import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.RCEntApiHelper;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -66,7 +66,7 @@ public class EvenementOrganisationSenderImpl implements EvenementOrganisationSen
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-		esbValidator = BusinessItTest.buildEsbMessageValidator(RCEntApiHelper.getRCEntSchemaClassPathResource());
+		esbValidator = BusinessItTest.buildEsbMessageValidator(RCEntSchemaHelper.getRCEntSchemaClassPathResource());
 
 		jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}

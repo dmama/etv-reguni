@@ -23,10 +23,10 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEEnvoyee;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.evenement.RCEntApiHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
@@ -179,7 +179,7 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = RCEntApiHelper.getRCEntClasspathSources();
+			final Source[] source = RCEntSchemaHelper.getRCEntClasspathSources();
 			schemaCache = sf.newSchema(source);
 		}
 	}

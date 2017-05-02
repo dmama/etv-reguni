@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v3.Address;
 import ch.vd.evd0022.v3.LegalForm;
+import ch.vd.evd0022.v3.Notice;
 import ch.vd.evd0022.v3.NoticeRequest;
 import ch.vd.evd0022.v3.NoticeRequestAddresses;
 import ch.vd.evd0022.v3.NoticeRequestBody;
@@ -373,6 +374,37 @@ public class RCEntAnnonceIDEHelper {
 			throw new IllegalArgumentException("Le rapport spécifié ne contient pas de numéro d'annonce à l'IDE : il ne s'agit pas d'une annonce émise par Unireg !");
 		}
 		return (AnnonceIDE) annonce;
+	}
+
+	/**
+	 * Extraire le numéro de l'annonce à l'IDE si l'événement rapporte un changement issu d'une annonce à l'IDE émise par Unireg.
+	 *
+	 * @param notice l'événement RCEnt.
+	 * @return le numéro d'annonce, ou null si l'événement ne contient pas de référence à une annonce émise par Unireg.
+	 * @throws IllegalArgumentException en cas d'incohérence dans la référence.
+	 */
+	public static Long extractNoAnnonceIDE(Notice notice) throws IllegalArgumentException {
+		final NoticeRequestIdentification noticeRequestIdent = notice.getNoticeRequest();
+		if (noticeRequestIdent != null) {
+			final String applicationId = noticeRequestIdent.getReportingApplication().getId();
+			final String applicationName = noticeRequestIdent.getReportingApplication().getApplicationName();
+		/*  SIFISC-9682 en cours: le no IDE source n'est pas encore ajouté par RCEnt. Cas en cours pour 17L1. Pour l'instant, on se contente de l'identifiant de l'application, qui suffit.
+			final NamedOrganisationId ideSource = noticeRequestIdent.getIDESource();
+			if (ideSource == null || ideSource.getOrganisationId() == null || ideSource.getOrganisationId().isEmpty()) {
+				throw new EvenementOrganisationException(String.format("L'événement organisation n°%s est issu d'une annonce, mais le numéro IDE de l'institution source n'est pas inclu! Impossible de vérifier l'origine de l'annonce.", notice.getNoticeId().longValue()));
+			}
+			if (RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS.getValeur().equals(ideSource.getOrganisationId()) && RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG.equals(applicationId)) {
+		*/
+			if (NO_APPLICATION_UNIREG.equals(applicationId) && applicationName != null && applicationName.equals(NOM_APPLICATION_UNIREG)) {
+				final String noticeRequestId = noticeRequestIdent.getNoticeRequestId();
+				if (noticeRequestId != null) {
+					return Long.parseLong(noticeRequestId);
+				} else {
+					throw new IllegalArgumentException(String.format("L'événement organisation n°%s semble provenir d'une annonce à l'IDE d'Unireg, mais le numéro d'annonce n'est pas inclus!", notice.getNoticeId().longValue()));
+				}
+			}
+		}
+		return null;
 	}
 
 	private static List<Pair<String, String>> convertErrors(NoticeRequestReport noticeReport) {
