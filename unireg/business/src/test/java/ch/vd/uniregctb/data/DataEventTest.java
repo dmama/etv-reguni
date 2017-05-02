@@ -10,21 +10,19 @@ import static org.junit.Assert.assertNotNull;
 
 public class DataEventTest extends BusinessTest {
 
-	/**Permet de s'assurer que chaque rapport entre tiers a un équivalent déclaré dans la xsd des dataEvent
-	 *
-	 * @throws Exception
+	/**
+	 * Permet de s'assurer que chaque rapport entre tiers a un équivalent déclaré dans la xsd des dataEvent
 	 */
 	@Test
-	public void testCoherenceRelationTypeWithEvent(){
-
+	public void testCoherenceRelationTypeWithEvent() {
 		for (TypeRapportEntreTiers typeRapportEntreTier : TypeRapportEntreTiers.values()) {
-				Relationship relation= Relationship.valueOf(typeRapportEntreTier.name());
-				assertNotNull(relation);
+			final Relationship relation = Relationship.valueOf(typeRapportEntreTier.name());
+			assertNotNull(relation);
 		}
 	}
 
 	@Test
-	public void testRelationShipMapping(){
+	public void testRelationShipMapping() {
 		for (TypeRapportEntreTiers typeRapportEntreTiers : TypeRapportEntreTiers.values()) {
 			assertNotNull(DataEventJmsSender.getRelationshipMapping(typeRapportEntreTiers));
 		}

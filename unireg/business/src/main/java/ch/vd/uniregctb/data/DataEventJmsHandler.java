@@ -77,7 +77,15 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		return map;
 	}
 
-	private interface Handler<T extends DataEvent> {
+	/**
+	 * Pour les tests seulements !!! (test que toutes les sous-classes concrètes de DataEvent sont présentes dans la map)
+	 * @return la map des handlers enregistrés
+	 */
+	final Map<Class<? extends DataEvent>, Handler> getHandlers() {
+		return Collections.unmodifiableMap(handlers);
+	}
+
+	interface Handler<T extends DataEvent> {
 		void onEvent(T event) throws Exception;
 	}
 
