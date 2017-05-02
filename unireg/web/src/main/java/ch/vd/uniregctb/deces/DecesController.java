@@ -102,7 +102,6 @@ public class DecesController {
 		if (StringUtils.isNotBlank(criteria.getNumeroAVS())) {
 			criteria.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(criteria.getNumeroAVS()));
 		}
-		criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 		criteria.setTypeTiersImperatif(TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE);
 
 		// on effectue la recherche
