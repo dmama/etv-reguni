@@ -164,7 +164,8 @@ public class DeclarationImpotControllerValidator implements Validator {
 		}
 
 		// [SIFISC-17773] Le délai maximal de 6 mois n'est valide que pour les DI PP
-		else if (delaiAccorde.isBefore(RegDate.get()) || (delaiAccorde.isAfter(RegDate.get().addMonths(6)) && ctb instanceof ContribuableImpositionPersonnesPhysiques)) {
+		// [SIFISC-24587] Limitation du délai maximal à 6 mois supprimée pour les PP aussi
+		else if (delaiAccorde.isBefore(RegDate.get())) {
 			errors.rejectValue("delaiAccorde", "error.delai.accorde.invalide");
 		}
 	}
