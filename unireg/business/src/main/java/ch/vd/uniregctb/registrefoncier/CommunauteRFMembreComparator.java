@@ -7,6 +7,8 @@ import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -21,14 +23,17 @@ import ch.vd.uniregctb.tiers.TiersService;
 public class CommunauteRFMembreComparator implements Comparator<Long> {
 
 	private final Function<Long, Tiers> tiersGetter;
+	private final Function<Tiers, List<ForFiscalPrincipal>> forsVirtuelsGetter;
 	private final Function<PersonnePhysique, NomPrenom> nomPrenomGetter;
 	private final Function<Tiers, String> raisonSocialeGetter;
 	private final Comparator<Tiers> tiersComparator;
 
 	public CommunauteRFMembreComparator(@NotNull Function<Long, Tiers> tiersGetter,
+	                                    @NotNull Function<Tiers, List<ForFiscalPrincipal>> forsVirtuelsGetter,
 	                                    @NotNull Function<PersonnePhysique, NomPrenom> nomPrenomGetter,
 	                                    @NotNull Function<Tiers, String> raisonSocialeGetter) {
 		this.tiersGetter = tiersGetter;
+		this.forsVirtuelsGetter = forsVirtuelsGetter;
 		this.nomPrenomGetter = nomPrenomGetter;
 		this.raisonSocialeGetter = raisonSocialeGetter;
 		this.tiersComparator = Comparator
@@ -40,6 +45,7 @@ public class CommunauteRFMembreComparator implements Comparator<Long> {
 
 	public CommunauteRFMembreComparator(@NotNull TiersService tiersService) {
 		this(tiersService::getTiers,
+		     tiersService::getForsFiscauxVirtuels,
 		     pp -> tiersService.getDecompositionNomPrenom(pp, false),
 		     tiersService::getNomRaisonSociale);
 	}
@@ -75,14 +81,22 @@ public class CommunauteRFMembreComparator implements Comparator<Long> {
 	 */
 	@NotNull
 	private TypeFor getTypeFor(@NotNull Tiers tiers) {
+
 		final List<? extends ForFiscalPrincipal> fors = tiers.getForsFiscauxPrincipauxActifsSorted();
-		if (fors.isEmpty()) {
-			// le contribuable n'a pas de for fiscal
+
+		// on s'intéresse à la situation courante
+		ForFiscalPrincipal actif = DateRangeHelper.rangeAt(fors, RegDate.get());
+		if (actif == null) {
+			// [SIFISC-24521] on essaie avec les fors fiscaux virtuels (il s'agit peut-être d'une personne physique en ménage)
+			actif = DateRangeHelper.rangeAt(forsVirtuelsGetter.apply(tiers), RegDate.get());
+		}
+
+		if (actif == null) {
+			// le contribuable n'a pas de for fiscal actif
 			return TypeFor.UNKNOWN;
 		}
-		// on s'intéresse à la dernière situation connue
-		final ForFiscalPrincipal last = fors.get(fors.size() - 1);
-		switch (last.getTypeAutoriteFiscale()) {
+
+		switch (actif.getTypeAutoriteFiscale()) {
 		case COMMUNE_OU_FRACTION_VD:
 			return TypeFor.VD;
 		case COMMUNE_HC:
@@ -90,7 +104,7 @@ public class CommunauteRFMembreComparator implements Comparator<Long> {
 		case PAYS_HS:
 			return TypeFor.HS;
 		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnue = [" + last.getTypeAutoriteFiscale() + "]");
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnue = [" + actif.getTypeAutoriteFiscale() + "]");
 		}
 	}
 

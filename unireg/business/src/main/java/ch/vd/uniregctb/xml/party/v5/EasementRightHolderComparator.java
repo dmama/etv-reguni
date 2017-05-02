@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.xml.party.v5;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
@@ -8,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreComparator;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -25,16 +27,18 @@ public class EasementRightHolderComparator implements Comparator<RightHolder> {
 	private final Comparator<RightHolder> identityComparator;
 
 	public EasementRightHolderComparator(@NotNull Function<Long, Tiers> tiersGetter,
+	                                     @NotNull Function<Tiers, List<ForFiscalPrincipal>> forsVirtuelsGetter,
 	                                     @NotNull Function<PersonnePhysique, NomPrenom> nomPrenomGetter,
 	                                     @NotNull Function<Tiers, String> raisonSocialeGetter) {
 		this.typeComparator = Comparator.comparing(this::getHolderType);
-		this.ctbComparator = new CommunauteRFMembreComparator(tiersGetter, nomPrenomGetter, raisonSocialeGetter);
+		this.ctbComparator = new CommunauteRFMembreComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter);
 		this.immeubleIdComparator = Comparator.comparing(RightHolder::getImmovablePropertyId);
 		this.identityComparator = Comparator.comparing((RightHolder r) -> r.getIdentity().getId());
 	}
 
 	public EasementRightHolderComparator(@NotNull TiersService tiersService) {
 		this(tiersService::getTiers,
+		     tiersService::getForsFiscauxVirtuels,
 		     pp -> tiersService.getDecompositionNomPrenom(pp, false),
 		     tiersService::getNomRaisonSociale);
 	}

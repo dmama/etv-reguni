@@ -164,6 +164,7 @@ import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.uniregctb.xml.DataHelper;
 
 /**
  * Service de recherche des tiers. Effectue conjointement la recherche en base et dans le moteur de recherche.
@@ -4181,7 +4182,13 @@ public class TiersServiceImpl implements TiersService {
         return forGestion;
     }
 
-    /**
+	@Override
+	@NotNull
+	public List<ForFiscalPrincipal> getForsFiscauxVirtuels(@NotNull Tiers tiers) {
+		return DataHelper.getForsFiscauxVirtuels(tiers, hibernateTemplate);
+	}
+
+	/**
      * {@inheritDoc}
      */
     @Override
