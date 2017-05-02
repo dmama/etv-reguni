@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.database;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -19,10 +22,15 @@ import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
+import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -396,6 +404,55 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEquals(id, eventService.changedImmeubles.iterator().next());
 	}
 
+	/**
+	 * [SIFISC-24600] Ce test vérifie que des événements sont bien envoyés pour chacun des immeubles concernés dans le cas d'une changement sur un droit entre immeubles.
+	 */
+	@Test
+	public void testDetectDroitProprieteImmeubleChange() throws Exception {
+
+		assertEmpty(eventService.changedImmeubles);
+
+		class Ids {
+			long bienFond;
+			long ppe;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF bienFond = addBienFondRF("38828288a", "CH38278228", commune, 234);
+			final ProprieteParEtageRF ppe = addProprieteParEtageRF("78228218", "CH88828222", new Fraction(1, 2), commune, 544, null, null, null);
+			ids.bienFond = bienFond.getId();
+			ids.ppe = ppe.getId();
+			return null;
+		});
+
+		// on vérifie que la création des immeubles a bien provoqué l'envoi de deux notifications
+		assertEquals(2, eventService.changedImmeubles.size());
+		assertEquals(new HashSet<>(Arrays.asList(ids.bienFond, ids.ppe)), eventService.changedImmeubles);
+
+		eventService.clear();
+
+		// on ajout un droit de propriété entre les deux immeubles
+		doInNewTransaction(status -> {
+			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, ids.bienFond);
+			final ProprieteParEtageRF ppe = hibernateTemplate.get(ProprieteParEtageRF.class, ids.ppe);
+
+			final ImmeubleBeneficiaireRF beneficiaire = new ImmeubleBeneficiaireRF();
+			beneficiaire.setIdRF(ppe.getIdRF());
+			beneficiaire.setImmeuble(ppe);
+
+			addDroitImmeubleRF(null, RegDate.get(2000, 1, 1), null, null, "Constitution PPE", null, "4834834838", "1818181",
+			                   new IdentifiantAffaireRF(61, 2000, 4, 12), new Fraction(1, 4), GenrePropriete.PPE,
+			                   beneficiaire, bienFond);
+			return null;
+		});
+
+		// on vérifie que l'ajout du droit entre les immeubles a bien provoqué l'envoi d'une notification sur chaque immeuble
+		assertEquals(2, eventService.changedImmeubles.size());
+		assertEquals(new HashSet<>(Arrays.asList(ids.bienFond, ids.ppe)), eventService.changedImmeubles);
+	}
+
 	@Test
 	public void testDetectSituationChange() throws Exception {
 
@@ -412,7 +469,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransaction(status -> {
 			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, id);
 			final SituationRF situation0 = bienFond.getSituations().iterator().next();
-			situation0.setDateFin(RegDate.get(2004,12,31));
+			situation0.setDateFin(RegDate.get(2004, 12, 31));
 			final SituationRF situation1 = new SituationRF();
 			situation1.setNoParcelle(1022);
 			situation1.setDateDebut(RegDate.get(2005, 1, 1));
@@ -498,7 +555,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransaction(status -> {
 			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, id);
 			final EstimationRF estimation = new EstimationRF();
-			estimation.setDateDebut(RegDate.get(2005,1,1));
+			estimation.setDateDebut(RegDate.get(2005, 1, 1));
 			estimation.setDateInscription(RegDate.get(2005, 1, 1));
 			estimation.setEnRevision(false);
 			estimation.setMontant(2_003_030L);
@@ -539,7 +596,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, ids.immeuble);
 			final BatimentRF batiment = hibernateTemplate.get(BatimentRF.class, ids.batiment);
 			final ImplantationRF implantation = new ImplantationRF();
-			implantation.setDateDebut(RegDate.get(2005,1,1));
+			implantation.setDateDebut(RegDate.get(2005, 1, 1));
 			implantation.setSurface(2_300);
 			implantation.setBatiment(batiment);
 			implantation.setImmeuble(bienFond);
@@ -599,7 +656,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		doInNewTransaction(status -> {
 			final BatimentRF batiment = hibernateTemplate.get(BatimentRF.class, id);
 			final DescriptionBatimentRF description = new DescriptionBatimentRF();
-			description.setDateDebut(RegDate.get(2000,1,1));
+			description.setDateDebut(RegDate.get(2000, 1, 1));
 			description.setType("Centrale électrique sur le champ de betteraves");
 			description.setSurface(23);
 			batiment.addDescription(description);
