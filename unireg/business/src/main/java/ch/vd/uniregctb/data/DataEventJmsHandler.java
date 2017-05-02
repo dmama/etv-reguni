@@ -33,6 +33,7 @@ import ch.vd.unireg.xml.event.data.v1.FiscalEventSendRequestEvent;
 import ch.vd.unireg.xml.event.data.v1.ImmeubleChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.IndividuChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
+import ch.vd.unireg.xml.event.data.v1.OrganisationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -71,9 +72,9 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		final Map<Class<? extends DataEvent>, Handler> map = new HashMap<>();
 		addToMap(map, DatabaseLoadEvent.class, new DatabaseLoadEventHandler());
 		addToMap(map, DatabaseTruncateEvent.class, new DatabaseTruncateEventHandler());
-		addToMap(map, DatabaseTruncateEvent.class, new DatabaseTruncateEventHandler());
 		addToMap(map, DroitAccesChangeEvent.class, new DroitAccesChangeEventHandler());
 		addToMap(map, IndividuChangeEvent.class, new IndividuChangeEventHandler());
+		addToMap(map, OrganisationChangeEvent.class, new OrganisationChangeEventHandler());
 		addToMap(map, TiersChangeEvent.class, new TiersChangeEventHandler());
 		addToMap(map, RelationChangeEvent.class, new RelationChangeEventHandler());
 		addToMap(map, ImmeubleChangeEvent.class, new ImmeubleChangeEventHandler());
@@ -123,6 +124,16 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 				LOGGER.debug("Traitement d'un événement db de changement sur l'individu n°" + event.getId());
 			}
 			dataEventService.onIndividuChange(event.getId());
+		}
+	}
+
+	private final class OrganisationChangeEventHandler implements Handler<OrganisationChangeEvent> {
+		@Override
+		public void onEvent(OrganisationChangeEvent event) throws Exception {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Traitement d'un événement db de changement sur l'organisation n°" + event.getId());
+			}
+			dataEventService.onOrganisationChange(event.getId());
 		}
 	}
 
