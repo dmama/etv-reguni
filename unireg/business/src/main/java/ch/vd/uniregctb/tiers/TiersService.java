@@ -1293,7 +1293,14 @@ public interface TiersService {
      */
     ForGestion getDernierForGestionConnu(Tiers tiers, @Nullable RegDate date);
 
-    /**
+	/**
+	 * @param tiers un tiers
+	 * @return la liste des fors fiscaux virtuels (et uniquement les virtuels) du tiers.
+	 */
+	@NotNull
+	List<ForFiscalPrincipal> getForsFiscauxVirtuels(@NotNull Tiers tiers);
+
+	/**
      * Ferme les adresses flagées temporaires dans le fiscale
      *
      * @param tiers le tiers concerné

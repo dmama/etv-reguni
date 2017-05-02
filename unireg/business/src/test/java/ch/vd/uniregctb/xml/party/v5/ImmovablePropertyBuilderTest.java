@@ -73,8 +73,9 @@ public class ImmovablePropertyBuilderTest {
 	@Before
 	public void setUp() throws Exception {
 		dummyRightHolderComparator = new EasementRightHolderComparator(id -> null,
-		                                                          pp -> null,
-		                                                          tiers -> null) {
+		                                                               tiers -> null,
+		                                                               pp -> null,
+		                                                               tiers -> null) {
 			@Override
 			public int compare(RightHolder o1, RightHolder o2) {
 				throw new NotImplementedException();
@@ -475,7 +476,7 @@ public class ImmovablePropertyBuilderTest {
 		ppe.setEquivalentBeneficiaire(beneficiaire);
 
 		// la PPE possède une part du bien-fonds
-		final DroitProprieteImmeubleRF droit0 = newDroitProprieteImm("0293929", new Fraction(1,30), GenrePropriete.PPE, RegDate.get(1993,5,13), "Consitution de PPE", beneficiaire, bienFond);
+		final DroitProprieteImmeubleRF droit0 = newDroitProprieteImm("0293929", new Fraction(1, 30), GenrePropriete.PPE, RegDate.get(1993, 5, 13), "Consitution de PPE", beneficiaire, bienFond);
 		beneficiaire.setDroitsPropriete(Collections.singleton(droit0));
 		beneficiaire.setServitudes(Collections.emptySet());
 		bienFond.setDroitsPropriete(Collections.singleton(droit0));

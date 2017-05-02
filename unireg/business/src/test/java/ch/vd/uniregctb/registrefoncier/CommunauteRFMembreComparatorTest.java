@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -10,6 +12,7 @@ import org.junit.Test;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -22,6 +25,7 @@ public class CommunauteRFMembreComparatorTest {
 
 	private CommunauteRFMembreComparator comparator;
 	private Map<Long, Tiers> tiersMap;
+	private Map<Long, List<ForFiscalPrincipal>> forsVirtuels;
 	private Map<Long, NomPrenom> nomPrenomMap;
 	private Map<Long, String> raisonSocialeMap;
 
@@ -29,14 +33,16 @@ public class CommunauteRFMembreComparatorTest {
 	public void setUp() throws Exception {
 
 		this.tiersMap = new HashMap<>();
+		this.forsVirtuels = new HashMap<>();
 		this.nomPrenomMap = new HashMap<>();
 		this.raisonSocialeMap = new HashMap<>();
 
 		final Function<Long, Tiers> tiersGetter = tiersMap::get;
+		final Function<Tiers, List<ForFiscalPrincipal>> forsVirtuelsGetter = tiers -> forsVirtuels.get(tiers.getNumero());
 		final Function<PersonnePhysique, NomPrenom> nomPrenomGetter = pp -> nomPrenomMap.get(pp.getNumero());
 		final Function<Tiers, String> raisonSocialeGetter = tiers -> raisonSocialeMap.get(tiers.getNumero());
 
-		this.comparator = new CommunauteRFMembreComparator(tiersGetter, nomPrenomGetter, raisonSocialeGetter);
+		this.comparator = new CommunauteRFMembreComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter);
 	}
 
 	@Test
@@ -74,6 +80,55 @@ public class CommunauteRFMembreComparatorTest {
 		assertAfter(comparator.compare(3L, 1L));  // HC après VD
 		assertAfter(comparator.compare(4L, 1L));  // HS après VD
 		assertAfter(comparator.compare(4L, 3L));  // HS après HC
+	}
+
+	/**
+	 * [SIFISC-24521] On s'assure que les fors fiscaux virtuels sont utilisés s'ils existent.
+	 */
+	@Test
+	public void testCompareByForFiscalTypesAvecMenageCommun() throws Exception {
+
+		// on ajoute quelques tiers VD/HC/HS en ménage commun (et donc avec des fors fiscaux virtuels)
+		PersonnePhysique pp1 = new PersonnePhysique(false);
+		pp1.setNumero(1L);
+		pp1.setPrenomUsuel("Arnold");
+		pp1.setNom("Fjjuii");
+		pp1.setForsFiscaux(Collections.emptySet());
+		forsVirtuels.put(1L, Collections.singletonList(new ForFiscalPrincipalPP(null, null, null, null, null,
+		                                                                        TypeAutoriteFiscale.COMMUNE_HC, null, null)));
+
+		PersonnePhysique pp2 = new PersonnePhysique(false);
+		pp2.setNumero(2L);
+		pp2.setPrenomUsuel("Jean");
+		pp2.setNom("Routourne");
+		pp2.setForsFiscaux(Collections.emptySet());
+		forsVirtuels.put(2L, Collections.singletonList(new ForFiscalPrincipalPP(null, null, null, null, null,
+		                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null)));
+
+		PersonnePhysique pp3 = new PersonnePhysique(false);
+		pp3.setNumero(3L);
+		pp3.setPrenomUsuel("Janine");
+		pp3.setNom("Vosch");
+		pp3.setForsFiscaux(Collections.emptySet());
+		forsVirtuels.put(3L, Collections.singletonList(new ForFiscalPrincipalPP(null, null, null, null, null,
+		                                                                        TypeAutoriteFiscale.PAYS_HS, null, null)));
+
+		tiersMap.put(pp1.getNumero(), pp1);
+		tiersMap.put(pp2.getNumero(), pp2);
+		tiersMap.put(pp3.getNumero(), pp3);
+
+		nomPrenomMap.put(pp1.getNumero(), new NomPrenom(pp1.getNom(), pp1.getPrenomUsuel()));
+		nomPrenomMap.put(pp2.getNumero(), new NomPrenom(pp2.getNom(), pp2.getPrenomUsuel()));
+		nomPrenomMap.put(pp3.getNumero(), new NomPrenom(pp3.getNom(), pp3.getPrenomUsuel()));
+
+		// on vérifie que l'ordre des types de fors fiscaux est bien respecté
+		assertAfter(comparator.compare(1L, 2L));   // HC après VD
+		assertBefore(comparator.compare(1L, 3L));  // HC avant HS
+		assertBefore(comparator.compare(2L, 3L));  // VD avant HS
+
+		assertBefore(comparator.compare(2L, 1L));  // VD avant HC
+		assertAfter(comparator.compare(3L, 1L));  // HS après HC
+		assertAfter(comparator.compare(3L, 2L));  // HS après VD
 	}
 
 	@Test

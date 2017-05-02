@@ -40,6 +40,7 @@ import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -55,6 +56,7 @@ public class LandRightBuilderTest {
 
 	private EasementRightHolderComparator rightHolderComparator;
 	private Map<Long, Tiers> tiersMap;
+	private Map<Long, List<ForFiscalPrincipal>> forsVirtuels;
 	private Map<Long, NomPrenom> nomPrenomMap;
 	private Map<Long, String> raisonSocialeMap;
 
@@ -62,13 +64,16 @@ public class LandRightBuilderTest {
 	public void setUp() throws Exception {
 
 		this.tiersMap = new HashMap<>();
+		this.forsVirtuels = new HashMap<>();
 		this.nomPrenomMap = new HashMap<>();
 		this.raisonSocialeMap = new HashMap<>();
 
 		final Function<Long, Tiers> tiersGetter = tiersMap::get;
+		final Function<Tiers, List<ForFiscalPrincipal>> forsVirtuelsGetter = tiers -> forsVirtuels.get(tiers.getNumero());
 		final Function<PersonnePhysique, NomPrenom> nomPrenomGetter = pp -> nomPrenomMap.get(pp.getNumero());
 		final Function<Tiers, String> raisonSocialeGetter = tiers -> raisonSocialeMap.get(tiers.getNumero());
-		rightHolderComparator = new EasementRightHolderComparator(tiersGetter, nomPrenomGetter, raisonSocialeGetter);
+
+		rightHolderComparator = new EasementRightHolderComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter);
 	}
 
 	@Test
