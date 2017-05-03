@@ -457,6 +457,41 @@ public class DroitRFDetectorTest {
 	}
 
 	/**
+	 * [SIFISC-24611] Ce test vérifie que les droits entre immeubles avec des immeubles dominants blacklistés sont bien ignorés.
+	 */
+	@Test
+	public void testNouveauxDroitsEntreImmeubleSurImmeubleDominantBlackliste() throws Exception {
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final AyantDroitRFDetector ayantDroitRFDetector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+
+		// on envoie un nouveau droit entre deux immeubles avec l'immeuble dominant blacklisté
+		final GrundstueckEigentumAnteil droit1 = newDroitImm("3838292", "_1f1091523810190f0138101cd6404148", "202930c0e0f3",
+		                                                     new Fraction(1, 1), GrundstueckEigentumsform.DOMINIERENDES_GRUNDSTUECK, RegDate.get(2010, 4, 11),
+		                                                     new IdentifiantAffaireRF(6, 2013, 17, 0), "Constitution de PPE");
+
+		final List<EigentumAnteil> droits = Collections.singletonList(droit1);
+		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
+
+		// on ne devrait pas avoir de mutations (= pas de création sur l'immeuble bénéficiaire, ni de création du droit)
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(0, mutations.size());
+	}
+
+	/**
 	 * Ce test vérifie que des mutations sont bien créées si les droits existent dans la base de données mais pas avec les mêmes valeurs.
 	 */
 	@Test

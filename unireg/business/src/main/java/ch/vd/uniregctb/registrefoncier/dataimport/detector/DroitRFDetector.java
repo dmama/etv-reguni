@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.hibernate.FlushMode;
@@ -101,7 +100,7 @@ public class DroitRFDetector {
 		cacheDroits.clear();
 
 		// on regroupe tous les droits par ayant-droit
-		groupByAyantDroit(iterator, cacheDroits, EigentumAnteil::getBelastetesGrundstueckIDREF, DroitRFHelper::getAyantDroitIdRF);
+		groupByAyantDroit(iterator, cacheDroits);
 
 		if (statusManager != null) {
 			statusManager.setMessage("Détection des mutations sur les droits de propriété...", 50);
@@ -117,19 +116,21 @@ public class DroitRFDetector {
 		cacheDroits.clear();
 	}
 
-	private static <T> void groupByAyantDroit(Iterator<T> iterator, PersistentCache<ArrayList<T>> cacheDroits, Function<T, String> immeubleIdRefProvider, Function<T, String> ayantDroitIdRefProvider) {
+	private static void groupByAyantDroit(Iterator<EigentumAnteil> iterator, PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
 		while (iterator.hasNext()) {
-			final T eigentumAnteil = iterator.next();
+			final EigentumAnteil eigentumAnteil = iterator.next();
 			if (eigentumAnteil == null) {
 				break;
 			}
-			if (BlacklistRFHelper.isBlacklisted(immeubleIdRefProvider.apply(eigentumAnteil))) {
-				// on ignore les droits sur les bâtiments blacklistés
+			if (BlacklistRFHelper.isBlacklisted(eigentumAnteil.getBelastetesGrundstueckIDREF()) ||  // fond servant
+					(eigentumAnteil instanceof GrundstueckEigentumAnteil                            // fond dominant
+							&& BlacklistRFHelper.isBlacklisted(((GrundstueckEigentumAnteil) eigentumAnteil).getBerechtigtesGrundstueckIDREF()))) {
+				// on ignore les droits sur les immeubles blacklistés
 				continue;
 			}
-			final String idRF = ayantDroitIdRefProvider.apply(eigentumAnteil);
+			final String idRF = DroitRFHelper.getAyantDroitIdRF(eigentumAnteil);
 			final IdRfCacheKey key = new IdRfCacheKey(idRF);
-			ArrayList<T> list = cacheDroits.get(key);
+			ArrayList<EigentumAnteil> list = cacheDroits.get(key);
 			if (list == null) {
 				list = new ArrayList<>();
 			}
@@ -265,6 +266,7 @@ public class DroitRFDetector {
 				.filter(e -> e instanceof GrundstueckEigentumAnteil)
 				.map(e -> (GrundstueckEigentumAnteil) e)
 				.map(GrundstueckEigentumAnteil::getBerechtigtesGrundstueckIDREF)
+				.filter(idRf -> !BlacklistRFHelper.isBlacklisted(idRf))
 				.map(DroitRFDetector::newDummyGrundstueck)
 				.forEach(g -> processAyantDroit(parentImport, g));
 	}
