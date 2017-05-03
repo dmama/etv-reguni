@@ -170,10 +170,12 @@ public class EnvoiDIsPPEnMasseProcessor {
 				public boolean doInTransaction(List<Long> batch, EnvoiDIsPPResults r) throws Exception {
 					status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 
-					if (nbMax > 0 && rapportFinal.nbCtbsTotal + batch.size() >= nbMax) {
+					// Attention, le nombre maintenu par le rapport final est une donnée volatile... il faut prendre une photo
+					// et n'utiliser qu'elle...
+					final int nbCtbsTotal = rapportFinal.nbCtbsTotal;
+					if (nbMax > 0 && nbCtbsTotal + batch.size() >= nbMax) {
 						// limite le nombre de contribuable pour ne pas dépasser le nombre max
-						int reducedSize = nbMax - rapportFinal.nbCtbsTotal;
-						batch = batch.subList(0, reducedSize);
+						batch = batch.subList(0, nbMax - nbCtbsTotal);
 					}
 
 					if (!batch.isEmpty()) {
