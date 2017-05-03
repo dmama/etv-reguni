@@ -38,7 +38,7 @@ public abstract class JsonAgentHelper {
 	public static class JsonGeneralAgent extends GeneralAgent implements JsonAgent {
 
 		private JsonGeneralAgent(GeneralAgent source) {
-			super(source.getDateFrom(), source.getDateTo(), source.getPostAddress(), source.isWithCopy(), source.getAny());
+			super(source.getDateFrom(), source.getDateTo(), source.getPostAddress(), source.isWithCopy(), source.getContactPerson(), source.getContactPhoneNumber(), source.getPadding(), source.getAny());
 		}
 
 		@Override
@@ -60,7 +60,7 @@ public abstract class JsonAgentHelper {
 	public static class JsonSpecialAgent extends SpecialAgent implements JsonAgent {
 
 		private JsonSpecialAgent(SpecialAgent source) {
-			super(source.getDateFrom(), source.getDateTo(), source.getPostAddress(), source.isWithCopy(), source.getTaxKind(), source.getAny());
+			super(source.getDateFrom(), source.getDateTo(), source.getPostAddress(), source.isWithCopy(), source.getTaxKind(), source.getContactPerson(), source.getContactPhoneNumber(), source.getPadding(), source.getAny());
 		}
 
 		@Override

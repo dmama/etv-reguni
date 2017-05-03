@@ -33,9 +33,9 @@ public class AgentBuilder {
 		final AdresseEnvoiDetaillee envoi = contexte.adresseService.buildAdresseEnvoi(generique.getSource().getTiers(), generique, adresse.getDateFin());
 		switch (adresse.getTypeMandat()) {
 		case GENERAL:
-			return buildGeneralAgent(adresse, envoi, adresse.isWithCopy());
+			return buildGeneralAgent(adresse, envoi, adresse.isWithCopy(), adresse.getPersonneContact(), adresse.getNoTelephoneContact());
 		case SPECIAL:
-			return buildSpecialAgent(adresse, envoi, adresse.isWithCopy(), adresse.getCodeGenreImpot());
+			return buildSpecialAgent(adresse, envoi, adresse.isWithCopy(), adresse.getPersonneContact(), adresse.getNoTelephoneContact(), adresse.getCodeGenreImpot());
 		case TIERS:
 			return null;
 		default:
@@ -58,10 +58,10 @@ public class AgentBuilder {
 				final Agent agent;
 				switch (mandat.getTypeMandat()) {
 				case GENERAL:
-					agent = buildGeneralAgent(intersection, envoi, neverNull(mandat.getWithCopy(), false));
+					agent = buildGeneralAgent(intersection, envoi, neverNull(mandat.getWithCopy(), false), mandat.getPersonneContact(), mandat.getNoTelephoneContact());
 					break;
 				case SPECIAL:
-					agent = buildSpecialAgent(intersection, envoi, neverNull(mandat.getWithCopy(), false), mandat.getCodeGenreImpot());
+					agent = buildSpecialAgent(intersection, envoi, neverNull(mandat.getWithCopy(), false), mandat.getPersonneContact(), mandat.getNoTelephoneContact(), mandat.getCodeGenreImpot());
 					break;
 				case TIERS:
 					agent = null;
@@ -81,20 +81,26 @@ public class AgentBuilder {
 		return bool != null ? bool : defaultValue;
 	}
 
-	private static GeneralAgent buildGeneralAgent(DateRange range, AdresseEnvoiDetaillee adresse, boolean withCopy) {
+	private static GeneralAgent buildGeneralAgent(DateRange range, AdresseEnvoiDetaillee adresse, boolean withCopy, String personneContact, String telephoneContact) {
 		return new GeneralAgent(DataHelper.coreToXMLv2(range.getDateDebut()),
 		                        DataHelper.coreToXMLv2(range.getDateFin()),
 		                        AddressBuilder.newPostAddressV3(adresse),
 		                        withCopy,
+		                        personneContact,
+		                        telephoneContact,
+		                        0,
 		                        null);
 	}
 
-	private static SpecialAgent buildSpecialAgent(DateRange range, AdresseEnvoiDetaillee adresse, boolean withCopy, String codeGenreImpot) {
+	private static SpecialAgent buildSpecialAgent(DateRange range, AdresseEnvoiDetaillee adresse, boolean withCopy, String personneContact, String telephoneContact, String codeGenreImpot) {
 		return new SpecialAgent(DataHelper.coreToXMLv2(range.getDateDebut()),
 		                        DataHelper.coreToXMLv2(range.getDateFin()),
 		                        AddressBuilder.newPostAddressV3(adresse),
 		                        withCopy,
 		                        codeGenreImpot,
+		                        personneContact,
+		                        telephoneContact,
+		                        0,
 		                        null);
 	}
 }

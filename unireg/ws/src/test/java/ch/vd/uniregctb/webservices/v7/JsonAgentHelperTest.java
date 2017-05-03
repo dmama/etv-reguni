@@ -25,12 +25,12 @@ public class JsonAgentHelperTest extends WithoutSpringTest {
 
 	private static final Random RND = new Random();
 
-	private static GeneralAgent buildGeneralAgent(Date dateFrom, Date dateTo, PostAddress postAddress, boolean withCopy) {
-		return new GeneralAgent(dateFrom, dateTo, postAddress, withCopy, null);
+	private static GeneralAgent buildGeneralAgent(Date dateFrom, Date dateTo, PostAddress postAddress, boolean withCopy, String contactPerson, String contactPhoneNumber) {
+		return new GeneralAgent(dateFrom, dateTo, postAddress, withCopy, contactPerson, contactPhoneNumber, 0, null);
 	}
 
-	private static SpecialAgent buildSpecialAgent(Date dateFrom, Date dateTo, PostAddress postAddress, boolean withCopy, String taxKind) {
-		return new SpecialAgent(dateFrom, dateTo, postAddress, withCopy, taxKind, null);
+	private static SpecialAgent buildSpecialAgent(Date dateFrom, Date dateTo, PostAddress postAddress, boolean withCopy, String contactPerson, String contactPhoneNumber, String taxKind) {
+		return new SpecialAgent(dateFrom, dateTo, postAddress, withCopy, taxKind, contactPerson, contactPhoneNumber, 0, null);
 	}
 
 	private static Agent doTest(Agent src, AgentType expectedType) {
@@ -56,12 +56,16 @@ public class JsonAgentHelperTest extends WithoutSpringTest {
 	private static void doTest(GeneralAgent src, AgentType expectedType) {
 		final Agent json = doTest((Agent) src, expectedType);
 		assertTrue(json instanceof GeneralAgent);
+		assertEquals(src.getContactPerson(), ((GeneralAgent) json).getContactPerson());
+		assertEquals(src.getContactPhoneNumber(), ((GeneralAgent) json).getContactPhoneNumber());
 	}
 
 	private static void doTest(SpecialAgent src, AgentType expectedType) {
 		final Agent json = doTest((Agent) src, expectedType);
 		assertTrue(json instanceof SpecialAgent);
 		assertEquals(src.getTaxKind(), ((SpecialAgent) json).getTaxKind());
+		assertEquals(src.getContactPerson(), ((SpecialAgent) json).getContactPerson());
+		assertEquals(src.getContactPhoneNumber(), ((SpecialAgent) json).getContactPhoneNumber());
 	}
 
 	private static Date generateRandomDate() {
@@ -82,9 +86,27 @@ public class JsonAgentHelperTest extends WithoutSpringTest {
 
 	private static String generateRandomTaxKind() {
 		final int length = 5 + RND.nextInt(5);      // entre 5 et 9 caractères
+		return generateRandomString(length, ALLOWED_TAX_KIND_CHARS);
+	}
+
+	private static final char[] ALLOWED_NAME_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ".toCharArray();
+
+	private static String generateRandomContactPerson() {
+		final int length = 10 + RND.nextInt(20);      // entre 10 et 39 caractères
+		return generateRandomString(length, ALLOWED_NAME_CHARS);
+	}
+
+	private static final char[] ALLOWED_PHONENUMBER_CHARS = "0123456789_/ '".toCharArray();
+
+	private static String generateRandomContactPhoneNumber() {
+		final int length = 8 + RND.nextInt(6);       // entre 8 et 13 caractères
+		return generateRandomString(length, ALLOWED_PHONENUMBER_CHARS);
+	}
+
+	private static String generateRandomString(int length, char[] allowedChars) {
 		final char[] chars = new char[length];
 		for (int i = 0 ; i < length ; ++ i) {
-			chars[i] = ALLOWED_TAX_KIND_CHARS[RND.nextInt(ALLOWED_TAX_KIND_CHARS.length)];
+			chars[i] = allowedChars[RND.nextInt(allowedChars.length)];
 		}
 		return new String(chars);
 	}
@@ -92,20 +114,20 @@ public class JsonAgentHelperTest extends WithoutSpringTest {
 	@Test
 	public void testMutationWithNulls() throws Exception {
 		assertNull(JsonRelationBetweenPartiesHelper.jsonEquivalentOf(null));
-		doTest(buildGeneralAgent(null, null, null, generateRandomBoolean()), AgentType.GENERAL);
-		doTest(buildSpecialAgent(null, null, null, generateRandomBoolean(), null), AgentType.SPECIAL);
+		doTest(buildGeneralAgent(null, null, null, generateRandomBoolean(), null, null), AgentType.GENERAL);
+		doTest(buildSpecialAgent(null, null, null, generateRandomBoolean(), null, null, null), AgentType.SPECIAL);
 	}
 
 	@Test
 	public void testMutationNonNulls() throws Exception {
-		doTest(buildGeneralAgent(generateRandomDate(), generateRandomDate(), generateRandomPostAddress(), generateRandomBoolean()), AgentType.GENERAL);
-		doTest(buildSpecialAgent(generateRandomDate(), generateRandomDate(), generateRandomPostAddress(), generateRandomBoolean(), generateRandomTaxKind()), AgentType.SPECIAL);
+		doTest(buildGeneralAgent(generateRandomDate(), generateRandomDate(), generateRandomPostAddress(), generateRandomBoolean(), generateRandomContactPerson(), generateRandomContactPhoneNumber()), AgentType.GENERAL);
+		doTest(buildSpecialAgent(generateRandomDate(), generateRandomDate(), generateRandomPostAddress(), generateRandomBoolean(), generateRandomTaxKind(), generateRandomContactPerson(), generateRandomContactPhoneNumber()), AgentType.SPECIAL);
 	}
 
 	@Test
 	public void testAlreadyJson() throws Exception {
-		doTestAlreadyJson(buildGeneralAgent(generateRandomDate(), generateRandomDate(), generateRandomPostAddress(), generateRandomBoolean()));
-		doTestAlreadyJson(buildSpecialAgent(generateRandomDate(), generateRandomDate(), generateRandomPostAddress(), generateRandomBoolean(), generateRandomTaxKind()));
+		doTestAlreadyJson(buildGeneralAgent(generateRandomDate(), generateRandomDate(), generateRandomPostAddress(), generateRandomBoolean(), generateRandomContactPerson(), generateRandomContactPhoneNumber()));
+		doTestAlreadyJson(buildSpecialAgent(generateRandomDate(), generateRandomDate(), generateRandomPostAddress(), generateRandomBoolean(), generateRandomTaxKind(), generateRandomContactPerson(), generateRandomContactPhoneNumber()));
 	}
 
 	private static void doTestAlreadyJson(Agent nonJson) {

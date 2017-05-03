@@ -7,6 +7,7 @@ Cleanup à faire pour une éventuelle version 8 du web-service
 - déplacer l'élément 'caseIdentifier' de 'landRightType' à 'easementRightType'
 - descendre les éléments 'rightHolder' et 'immovablePropertyId' de 'landRightType' à 'landOwnershipRightType'.
 - renommer l'élément 'landRights' en 'landRightsTo' sur le type 'immovablePropertyType'.
+- remonter les éléments 'contactPerson' et 'contactPhoneNumber' de 'specialAgentType' et 'generalAgentType' à 'agentType'
 
 Reprise du contenu du cleanup précédent
 ------------------------------------------------------------
