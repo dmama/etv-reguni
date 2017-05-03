@@ -58,6 +58,7 @@
 
 	<bean id="droitRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.DroitRFDetector">
 		<constructor-arg ref="xmlHelperRF"/>
+		<constructor-arg ref="blacklistRFHelper"/>
 		<constructor-arg ref="ayantDroitRFDAO"/>
 		<constructor-arg ref="evenementRFImportDAO" />
 		<constructor-arg ref="evenementRFMutationDAO" />
@@ -76,6 +77,7 @@
 
 	<bean id="immeubleRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.ImmeubleRFDetector">
 		<constructor-arg ref="xmlHelperRF"/>
+		<constructor-arg ref="blacklistRFHelper"/>
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="communeRFDAO"/>
 		<constructor-arg ref="evenementRFImportDAO" />

@@ -46,6 +46,7 @@ import ch.vd.uniregctb.registrefoncier.dao.MockCommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRFImpl;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.BlacklistRFHelperImpl;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.uniregctb.transaction.MockTransactionManager;
 
@@ -57,12 +58,15 @@ public class ImmeubleRFDetectorTest {
 
 	private static final Long IMPORT_ID = 1L;
 	private XmlHelperRF xmlHelperRF;
+	private BlacklistRFHelperImpl blacklistRFHelper;
 	private PlatformTransactionManager transactionManager;
 	private CommuneRFDAO communeRFDAO;
 
 	@Before
 	public void setUp() throws Exception {
 		xmlHelperRF = new XmlHelperRFImpl();
+		blacklistRFHelper = new BlacklistRFHelperImpl();
+		blacklistRFHelper.setBlacklistedImmeubles(new String[]{"_1f1091523810108101381012b3d64cb4"});
 		transactionManager = new MockTransactionManager();
 		communeRFDAO = new MockCommuneRFDAO(new CommuneRF(2233, "Le-gros-du-lac", 5555),
 		                                    new CommuneRF(238, "Lausanne", 5586),
@@ -103,7 +107,7 @@ public class ImmeubleRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie deux nouveaux immeubles
 		final UnbekanntesGrundstueck kopie0 = newKopie(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891");
@@ -144,7 +148,7 @@ public class ImmeubleRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie deux nouveaux immeubles
 		final Liegenschaft bienfond = newBienFond(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891", true);
@@ -242,7 +246,7 @@ public class ImmeubleRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie un immeuble blacklisté
 		final Liegenschaft bienfond = newBienFond(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "_1f1091523810108101381012b3d64cb4", "CH282891891", true);
@@ -279,7 +283,7 @@ public class ImmeubleRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les immeubles avec des modifications
 		// - nouvelle estimation fiscale
@@ -376,7 +380,7 @@ public class ImmeubleRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les immeubles avec les mêmes données que celles dans la DB
 		final Liegenschaft bienfondImport = newBienFond(2233, "Le-gros-du-lac", 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
@@ -416,7 +420,7 @@ public class ImmeubleRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie un import sans immeuble
 		final List<Grundstueck> immeublesImport = Collections.emptyList();
@@ -506,7 +510,7 @@ public class ImmeubleRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie deux nouveaux immeubles sur deux nouvelles communes
 		final Liegenschaft bienfondImport = newBienFond(2233, "Le-gros-du-lac", 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
@@ -627,7 +631,7 @@ public class ImmeubleRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les immeubles
 		// - fusion de commune (Le-gros-du-lac -> Lac-Amour *avec* réutilisation du numéro de commune) et changement de numéro de parcelle

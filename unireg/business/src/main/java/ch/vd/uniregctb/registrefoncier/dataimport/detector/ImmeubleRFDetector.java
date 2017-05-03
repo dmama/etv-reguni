@@ -50,6 +50,7 @@ public class ImmeubleRFDetector {
 
 	private final int batchSize;
 	private final XmlHelperRF xmlHelperRF;
+	private final BlacklistRFHelper blacklistRFHelper;
 	private final ImmeubleRFDAO immeubleRFDAO;
 	private final CommuneRFDAO communeRFDAO;
 	private final EvenementRFImportDAO evenementRFImportDAO;
@@ -57,16 +58,18 @@ public class ImmeubleRFDetector {
 	private final PlatformTransactionManager transactionManager;
 
 	public ImmeubleRFDetector(XmlHelperRF xmlHelperRF,
+	                          BlacklistRFHelper blacklistRFHelper,
 	                          ImmeubleRFDAO immeubleRFDAO,
 	                          CommuneRFDAO communeRFDAO,
 	                          EvenementRFImportDAO evenementRFImportDAO,
 	                          EvenementRFMutationDAO evenementRFMutationDAO,
 	                          PlatformTransactionManager transactionManager) {
-		this(20, xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		this(20, xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 	}
 
 	public ImmeubleRFDetector(int batchSize,
 	                          XmlHelperRF xmlHelperRF,
+	                          BlacklistRFHelper blacklistRFHelper,
 	                          ImmeubleRFDAO immeubleRFDAO,
 	                          CommuneRFDAO communeRFDAO,
 	                          EvenementRFImportDAO evenementRFImportDAO,
@@ -74,6 +77,7 @@ public class ImmeubleRFDetector {
 	                          PlatformTransactionManager transactionManager) {
 		this.batchSize = batchSize;
 		this.xmlHelperRF = xmlHelperRF;
+		this.blacklistRFHelper = blacklistRFHelper;
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.communeRFDAO = communeRFDAO;
 		this.evenementRFImportDAO = evenementRFImportDAO;
@@ -117,7 +121,7 @@ public class ImmeubleRFDetector {
 						// on ignore les bâtiments flaggés comme des copies
 						continue;
 					}
-					if (BlacklistRFHelper.isBlacklisted(immeuble.getGrundstueckID())) {
+					if (blacklistRFHelper.isBlacklisted(immeuble.getGrundstueckID())) {
 						// on ignore les bâtiments blacklistés
 						continue;
 					}

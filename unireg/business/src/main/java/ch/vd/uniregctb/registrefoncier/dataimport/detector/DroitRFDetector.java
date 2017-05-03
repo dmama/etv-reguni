@@ -53,6 +53,7 @@ public class DroitRFDetector {
 
 	private final int batchSize;
 	private final XmlHelperRF xmlHelperRF;
+	private final BlacklistRFHelper blacklistRFHelper;
 	private final AyantDroitRFDAO ayantDroitRFDAO;
 	private final EvenementRFImportDAO evenementRFImportDAO;
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
@@ -62,17 +63,19 @@ public class DroitRFDetector {
 	private final PersistentCache<ArrayList<EigentumAnteil>> cacheDroits;
 
 	public DroitRFDetector(XmlHelperRF xmlHelperRF,
+	                       BlacklistRFHelper blacklistRFHelper,
 	                       AyantDroitRFDAO ayantDroitRFDAO,
 	                       EvenementRFImportDAO evenementRFImportDAO,
 	                       EvenementRFMutationDAO evenementRFMutationDAO,
 	                       PlatformTransactionManager transactionManager,
 	                       AyantDroitRFDetector ayantDroitRFDetector,
 	                       PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
-		this(20, xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+		this(20, xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 	}
 
 	public DroitRFDetector(int batchSize,
 	                       XmlHelperRF xmlHelperRF,
+	                       BlacklistRFHelper blacklistRFHelper,
 	                       AyantDroitRFDAO ayantDroitRFDAO,
 	                       EvenementRFImportDAO evenementRFImportDAO,
 	                       EvenementRFMutationDAO evenementRFMutationDAO,
@@ -81,6 +84,7 @@ public class DroitRFDetector {
 	                       PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
 		this.batchSize = batchSize;
 		this.xmlHelperRF = xmlHelperRF;
+		this.blacklistRFHelper = blacklistRFHelper;
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
 		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
@@ -116,15 +120,15 @@ public class DroitRFDetector {
 		cacheDroits.clear();
 	}
 
-	private static void groupByAyantDroit(Iterator<EigentumAnteil> iterator, PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
+	private void groupByAyantDroit(Iterator<EigentumAnteil> iterator, PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
 		while (iterator.hasNext()) {
 			final EigentumAnteil eigentumAnteil = iterator.next();
 			if (eigentumAnteil == null) {
 				break;
 			}
-			if (BlacklistRFHelper.isBlacklisted(eigentumAnteil.getBelastetesGrundstueckIDREF()) ||  // fond servant
+			if (blacklistRFHelper.isBlacklisted(eigentumAnteil.getBelastetesGrundstueckIDREF()) ||  // fond servant
 					(eigentumAnteil instanceof GrundstueckEigentumAnteil                            // fond dominant
-							&& BlacklistRFHelper.isBlacklisted(((GrundstueckEigentumAnteil) eigentumAnteil).getBerechtigtesGrundstueckIDREF()))) {
+							&& blacklistRFHelper.isBlacklisted(((GrundstueckEigentumAnteil) eigentumAnteil).getBerechtigtesGrundstueckIDREF()))) {
 				// on ignore les droits sur les immeubles blacklistés
 				continue;
 			}
@@ -266,7 +270,7 @@ public class DroitRFDetector {
 				.filter(e -> e instanceof GrundstueckEigentumAnteil)
 				.map(e -> (GrundstueckEigentumAnteil) e)
 				.map(GrundstueckEigentumAnteil::getBerechtigtesGrundstueckIDREF)
-				.filter(idRf -> !BlacklistRFHelper.isBlacklisted(idRf))
+				.filter(idRf -> !blacklistRFHelper.isBlacklisted(idRf))
 				.map(DroitRFDetector::newDummyGrundstueck)
 				.forEach(g -> processAyantDroit(parentImport, g));
 	}
