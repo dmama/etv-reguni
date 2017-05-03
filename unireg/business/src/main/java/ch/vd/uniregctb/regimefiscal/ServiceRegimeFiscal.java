@@ -22,13 +22,16 @@ public interface ServiceRegimeFiscal {
 	@NotNull
 	TypeRegimeFiscal getTypeRegimeFiscal(@NotNull String code);
 
-	@NotNull TypeRegimeFiscal getTypeRegimeFiscalSocieteDePersonnes();
-
 	/**
 	 * @return le type de régime fiscal indéterminé
 	 */
 	@NotNull
 	TypeRegimeFiscal getTypeRegimeFiscalIndetermine();
+
+	/**
+	 * @return le type de régime fiscal société de personnes
+	 */
+	@NotNull TypeRegimeFiscal getTypeRegimeFiscalSocieteDePersonnes();
 
 	/**
 	 * @param formeJuridique la forme juridique
