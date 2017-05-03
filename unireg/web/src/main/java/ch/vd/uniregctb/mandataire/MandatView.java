@@ -24,8 +24,7 @@ public class MandatView {
 	private final RegDate dateFin;
 	private final boolean withCopy;
 	private final String iban;
-	private final String prenomPersonneContact;
-	private final String nomPersonneContact;
+	private final String personneContact;
 	private final String noTelContact;
 	private final String libelleGenreImpot;
 
@@ -46,8 +45,7 @@ public class MandatView {
 			this.iban = null;
 		}
 
-		this.prenomPersonneContact = mandat.getPrenomPersonneContact();
-		this.nomPersonneContact = mandat.getNomPersonneContact();
+		this.personneContact = mandat.getPersonneContact();
 		this.noTelContact = mandat.getNoTelephoneContact();
 		this.libelleGenreImpot = findLibelleGenreImpot(mandat.getCodeGenreImpot(), infraService);
 	}
@@ -61,8 +59,7 @@ public class MandatView {
 		this.dateFin = mandat.getDateFin();
 		this.withCopy = mandat.isWithCopy();
 		this.iban = null;
-		this.prenomPersonneContact = mandat.getPrenomPersonneContact();
-		this.nomPersonneContact = mandat.getNomPersonneContact();
+		this.personneContact = mandat.getPersonneContact();
 		this.noTelContact = mandat.getNoTelephoneContact();
 		this.libelleGenreImpot = findLibelleGenreImpot(mandat.getCodeGenreImpot(), infraService);
 	}
@@ -112,12 +109,8 @@ public class MandatView {
 		return iban;
 	}
 
-	public String getPrenomPersonneContact() {
-		return prenomPersonneContact;
-	}
-
-	public String getNomPersonneContact() {
-		return nomPersonneContact;
+	public String getPersonneContact() {
+		return personneContact;
 	}
 
 	public String getNoTelContact() {

@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -43,7 +42,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -189,12 +187,6 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 		return codes;
 	}
 
-	@Nullable
-	private static String buildNomPrenomPersonneContact(String prenom, String nom) {
-		final NomPrenom nomPrenom = new NomPrenom(nom, prenom);
-		return StringUtils.trimToNull(nomPrenom.getNomPrenom());
-	}
-
 	private void checkDroitAccesMandatairesCourrier() {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_MANDAT_GENERAL, Role.MODIF_MANDAT_SPECIAL)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration des mandats de types général et spécial.");
@@ -271,7 +263,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 				return null;
 			}
 
-			final String nomPrenomContact = buildNomPrenomPersonneContact(mandat.getPrenomPersonneContact(), mandat.getNomPersonneContact());
+			final String personneContact = mandat.getPersonneContact();
 			final String noTelContact = mandat.getNoTelephoneContact();
 
 			final Tiers mandataire;
@@ -279,16 +271,16 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 				mandataire = getMandataire(mandat);
 			}
 			catch (TiersNotFoundException e) {
-				return new AdresseMandatView(nomPrenomContact, noTelContact, (List<String>) null);
+				return new AdresseMandatView(personneContact, noTelContact, (List<String>) null);
 			}
 
 			try {
 				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(mandataire, mandat.getDateFin(), TypeAdresseFiscale.REPRESENTATION, false);
-				return new AdresseMandatView(nomPrenomContact, noTelContact, Arrays.asList(adresse.getLignes()));
+				return new AdresseMandatView(personneContact, noTelContact, Arrays.asList(adresse.getLignes()));
 			}
 			catch (AdresseException e) {
 				LOGGER.error("Problème à la détermination de l'adresse de représentation du tiers " + mandataire.getNumero(), e);
-				return new AdresseMandatView(nomPrenomContact, noTelContact, e.getMessage());
+				return new AdresseMandatView(personneContact, noTelContact, e.getMessage());
 			}
 		});
 	}
@@ -322,17 +314,17 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 				return null;
 			}
 
-			final String nomPrenomContact = buildNomPrenomPersonneContact(mandat.getPrenomPersonneContact(), mandat.getNomPersonneContact());
+			final String personneContact = mandat.getPersonneContact();
 			final String noTelContact = mandat.getNoTelephoneContact();
 
 			try {
 				final AdresseMandataireAdapter adapter = new AdresseMandataireAdapter(mandat, infraService);
 				final AdresseEnvoiDetaillee adresse = adresseService.buildAdresseEnvoi(adapter.getSource().getTiers(), adapter, mandat.getDateFin());
-				return new AdresseMandatView(nomPrenomContact, noTelContact, Arrays.asList(adresse.getLignes()));
+				return new AdresseMandatView(personneContact, noTelContact, Arrays.asList(adresse.getLignes()));
 			}
 			catch (AdresseException e) {
 				LOGGER.error("Problème à la construction de l'adresse mandataire " + mandat.getId(), e);
-				return new AdresseMandatView(nomPrenomContact, noTelContact, e.getMessage());
+				return new AdresseMandatView(personneContact, noTelContact, e.getMessage());
 			}
 		});
 	}
@@ -581,9 +573,8 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 					}
 
 					if (mandat.getTypeMandat() != TypeMandat.TIERS) {
-						mandat.setNomPersonneContact(view.getNomPersonneContact());
+						mandat.setPersonneContact(view.getPersonneContact());
 						mandat.setNoTelephoneContact(view.getNoTelContact());
-						mandat.setPrenomPersonneContact(view.getPrenomPersonneContact());
 					}
 					tiersService.addMandat(mandant, mandat);
 				}
@@ -599,14 +590,13 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 					adresse.setDateDebut(view.getDateDebut());
 					adresse.setDateFin(view.getDateFin());
 					adresse.setNomDestinataire(view.getRaisonSociale());
-					adresse.setNomPersonneContact(view.getNomPersonneContact());
 					adresse.setNoTelephoneContact(view.getNoTelContact());
 					adresse.setNpaCasePostale(view.getAdresse().getNpaCasePostale());
 					adresse.setNumeroCasePostale(view.getAdresse().getNumeroCasePostale());
 					adresse.setNumeroMaison(view.getAdresse().getNumeroMaison());
 					adresse.setNumeroOrdrePoste(Integer.parseInt(view.getAdresse().getNumeroOrdrePoste()));
 					adresse.setNumeroRue(view.getAdresse().getNumeroRue());
-					adresse.setPrenomPersonneContact(view.getPrenomPersonneContact());
+					adresse.setPersonneContact(view.getPersonneContact());
 					adresse.setRue(view.getAdresse().getRue());
 					adresse.setTexteCasePostale(view.getAdresse().getTexteCasePostale());
 					adresse.setTypeMandat(view.getTypeMandat());
@@ -795,10 +785,9 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 			else {
 				// la date de fin, les coordonnées de contact et le flag de copie des courriers peuvent être modifiés
 				final boolean copyFlagModifie = (mandat.getWithCopy() != null && mandat.getWithCopy()) != view.isWithCopy();
-				final boolean prenomContactModifie = !Objects.equals(mandat.getPrenomPersonneContact(), view.getPrenomPersonneContact());
-				final boolean nomContactModifie = !Objects.equals(mandat.getNomPersonneContact(), view.getNomPersonneContact());
+				final boolean personneContactModifiee = !Objects.equals(mandat.getPersonneContact(), view.getPersonneContact());
 				final boolean noTelContactModifie = !Objects.equals(mandat.getNoTelephoneContact(), view.getNoTelContact());
-				donneesModifiees = copyFlagModifie || prenomContactModifie || nomContactModifie || noTelContactModifie;
+				donneesModifiees = copyFlagModifie || personneContactModifiee || noTelContactModifie;
 			}
 
 			// si les données ont été modifiées, on procède par annulation du mandat précedent et ré-ouverture d'un autre
@@ -813,8 +802,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 				}
 				else {
 					copy.setWithCopy(view.isWithCopy());
-					copy.setNomPersonneContact(view.getNomPersonneContact());
-					copy.setPrenomPersonneContact(view.getPrenomPersonneContact());
+					copy.setPersonneContact(view.getPersonneContact());
 					copy.setNoTelephoneContact(view.getNoTelContact());
 				}
 				tiersService.addMandat(mandant, copy);
@@ -881,10 +869,9 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 			// la date de fin, les coordonnées de contact et le flag de copie des courriers peuvent être modifiés
 			final boolean copyFlagModifie = adresse.isWithCopy() != view.isWithCopy();
-			final boolean prenomContactModifie = !Objects.equals(adresse.getPrenomPersonneContact(), view.getPrenomPersonneContact());
-			final boolean nomContactModifie = !Objects.equals(adresse.getNomPersonneContact(), view.getNomPersonneContact());
+			final boolean personneContactModifiee = !Objects.equals(adresse.getPersonneContact(), view.getPersonneContact());
 			final boolean noTelContactModifie = !Objects.equals(adresse.getNoTelephoneContact(), view.getNoTelContact());
-			final boolean donneesModifiees = copyFlagModifie || prenomContactModifie || nomContactModifie || noTelContactModifie;
+			final boolean donneesModifiees = copyFlagModifie || personneContactModifiee || noTelContactModifie;
 
 			// si les données ont été modifiées, on procède par annulation du mandat précedent et ré-ouverture d'un autre
 			if (donneesModifiees) {
@@ -894,8 +881,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 					copy.setDateFin(view.getDateFin());
 				}
 				copy.setWithCopy(view.isWithCopy());
-				copy.setNomPersonneContact(view.getNomPersonneContact());
-				copy.setPrenomPersonneContact(view.getPrenomPersonneContact());
+				copy.setPersonneContact(view.getPersonneContact());
 				copy.setNoTelephoneContact(view.getNoTelContact());
 				tiersService.addMandat(mandant, copy);
 			}

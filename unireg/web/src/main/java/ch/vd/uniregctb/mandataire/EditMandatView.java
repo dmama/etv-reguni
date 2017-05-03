@@ -17,8 +17,7 @@ public class EditMandatView implements DateRange {
 	private RegDate dateDebut;          // non-éditable mais utile pour la validation
 	private RegDate dateFin;
 	private TypeMandat typeMandat;      // non-éditable mais utile pour la validation
-	private String nomPersonneContact;
-	private String prenomPersonneContact;
+	private String personneContact;
 	private String noTelContact;
 	private boolean withCopy;
 	private String iban;
@@ -42,8 +41,7 @@ public class EditMandatView implements DateRange {
 			this.iban = null;
 		}
 
-		this.prenomPersonneContact = mandat.getPrenomPersonneContact();
-		this.nomPersonneContact = mandat.getNomPersonneContact();
+		this.personneContact = mandat.getPersonneContact();
 		this.noTelContact = mandat.getNoTelephoneContact();
 	}
 
@@ -55,8 +53,7 @@ public class EditMandatView implements DateRange {
 		this.dateFin = mandat.getDateFin();
 		this.withCopy = mandat.isWithCopy();
 		this.iban = null;
-		this.prenomPersonneContact = mandat.getPrenomPersonneContact();
-		this.nomPersonneContact = mandat.getNomPersonneContact();
+		this.personneContact = mandat.getPersonneContact();
 		this.noTelContact = mandat.getNoTelephoneContact();
 	}
 
@@ -102,20 +99,12 @@ public class EditMandatView implements DateRange {
 		this.typeMandat = typeMandat;
 	}
 
-	public String getNomPersonneContact() {
-		return nomPersonneContact;
+	public String getPersonneContact() {
+		return personneContact;
 	}
 
-	public void setNomPersonneContact(String nomPersonneContact) {
-		this.nomPersonneContact = StringUtils.trimToNull(nomPersonneContact);
-	}
-
-	public String getPrenomPersonneContact() {
-		return prenomPersonneContact;
-	}
-
-	public void setPrenomPersonneContact(String prenomPersonneContact) {
-		this.prenomPersonneContact = StringUtils.trimToNull(prenomPersonneContact);
+	public void setPersonneContact(String personneContact) {
+		this.personneContact = StringUtils.trimToNull(personneContact);
 	}
 
 	public String getNoTelContact() {

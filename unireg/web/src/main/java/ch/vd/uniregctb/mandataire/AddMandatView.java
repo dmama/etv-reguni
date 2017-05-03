@@ -13,8 +13,7 @@ public class AddMandatView implements DateRange {
 	private RegDate dateFin;
 	private TypeMandat typeMandat;
 	private boolean withCopy = true;
-	private String prenomPersonneContact;
-	private String nomPersonneContact;
+	private String personneContact;
 	private String noTelContact;
 	private String codeGenreImpot;
 	private String iban;
@@ -78,20 +77,12 @@ public class AddMandatView implements DateRange {
 		this.withCopy = withCopy;
 	}
 
-	public String getPrenomPersonneContact() {
-		return prenomPersonneContact;
+	public String getPersonneContact() {
+		return personneContact;
 	}
 
-	public void setPrenomPersonneContact(String prenomPersonneContact) {
-		this.prenomPersonneContact = prenomPersonneContact;
-	}
-
-	public String getNomPersonneContact() {
-		return nomPersonneContact;
-	}
-
-	public void setNomPersonneContact(String nomPersonneContact) {
-		this.nomPersonneContact = nomPersonneContact;
+	public void setPersonneContact(String personneContact) {
+		this.personneContact = personneContact;
 	}
 
 	public String getNoTelContact() {

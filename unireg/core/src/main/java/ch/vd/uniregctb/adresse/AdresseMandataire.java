@@ -47,8 +47,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 	private TexteCasePostale texteCasePostale;
 	private Integer numeroCasePostale;
 
-	private String nomPersonneContact;
-	private String prenomPersonneContact;
+	private String personneContact;
 	private String noTelephoneContact;
 
 	public AdresseMandataire() {
@@ -65,8 +64,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.numeroMaison = src.numeroMaison;
 		this.texteCasePostale = src.texteCasePostale;
 		this.numeroCasePostale = src.numeroCasePostale;
-		this.nomPersonneContact = src.nomPersonneContact;
-		this.prenomPersonneContact = src.prenomPersonneContact;
+		this.personneContact = src.personneContact;
 		this.noTelephoneContact = src.noTelephoneContact;
 	}
 
@@ -180,22 +178,13 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.numeroCasePostale = numeroCasePostale;
 	}
 
-	@Column(name = "NOM_CONTACT", length = LengthConstants.MANDAT_NOM_CONTACT)
-	public String getNomPersonneContact() {
-		return nomPersonneContact;
+	@Column(name = "PERSONNE_CONTACT", length = LengthConstants.MANDAT_PERSONNE_CONTACT)
+	public String getPersonneContact() {
+		return personneContact;
 	}
 
-	public void setNomPersonneContact(String nomPersonneContact) {
-		this.nomPersonneContact = nomPersonneContact;
-	}
-
-	@Column(name = "PRENOM_CONTACT", length = LengthConstants.MANDAT_NOM_CONTACT)
-	public String getPrenomPersonneContact() {
-		return prenomPersonneContact;
-	}
-
-	public void setPrenomPersonneContact(String prenomPersonneContact) {
-		this.prenomPersonneContact = prenomPersonneContact;
+	public void setPersonneContact(String personneContact) {
+		this.personneContact = personneContact;
 	}
 
 	@Column(name = "TEL_CONTACT", length = LengthConstants.TIERS_NUMTEL)

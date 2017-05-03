@@ -105,23 +105,17 @@
 					</tr>
 					<c:if test="${mandat.typeMandat == 'GENERAL' || mandat.typeMandat == 'SPECIAL'}">
 						<tr class="<unireg:nextRowClass/> mdt-gen mdt-spec">
-							<td><fmt:message key="label.prenom.contact"/>&nbsp;:</td>
-							<td><form:input path="prenomPersonneContact" size="40" maxlength="${lengthpersonne}"/></td>
-							<td><fmt:message key="label.nom.contact"/>&nbsp;:</td>
-							<td><form:input path="nomPersonneContact" size="40" maxlength="${lengthpersonne}"/></td>
-						</tr>
-						<tr class="<unireg:nextRowClass/> mdt-gen mdt-spec">
+							<td><fmt:message key="label.personne.contact"/>&nbsp;:</td>
+							<td><form:input path="personneContact" size="40" maxlength="${lengthpersonne}"/></td>
 							<td><fmt:message key="label.no.tel.contact"/>&nbsp;:</td>
 							<td><form:input path="noTelContact" size="25" maxlength="${lengthtel}"/></td>
-							<c:choose>
-								<c:when test="${mandat.typeMandat == 'SPECIAL'}">
-									<td><fmt:message key="label.genre.impot"/>&nbsp;:</td>
-									<td><c:out value="${mandat.libelleGenreImpot}"/></td>
-								</c:when>
-								<c:otherwise>
-									<td colspan="2">&nbsp;</td>
-								</c:otherwise>
-							</c:choose>
+						</tr>
+					</c:if>
+			        <c:if test="${mandat.typeMandat == 'SPECIAL'}">
+						<tr class="<unireg:nextRowClass/> mdt-spec">
+							<td><fmt:message key="label.genre.impot"/>&nbsp;:</td>
+							<td><c:out value="${mandat.libelleGenreImpot}"/></td>
+							<td colspan="2">&nbsp;</td>
 						</tr>
 					</c:if>
 				</table>

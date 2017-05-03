@@ -160,7 +160,7 @@ public abstract class LengthConstants {
 	public static final int MONNAIE_ISO = 3;
 
 	public static final int MANDAT_TYPE = 15;
-	public static final int MANDAT_NOM_CONTACT = 50;
+	public static final int MANDAT_PERSONNE_CONTACT = 100;
 	public static final int MANDAT_GENRE_IMPOT = 10;
 
 	public static final int AUTRE_DOCUMENT_FISCAL_TYPE = 25;

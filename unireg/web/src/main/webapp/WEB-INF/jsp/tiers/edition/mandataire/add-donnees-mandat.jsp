@@ -3,7 +3,7 @@
 <%@page import="ch.vd.uniregctb.common.LengthConstants"%>
 
 <c:set var="lengthnumcompte" value="<%=LengthConstants.TIERS_NUMCOMPTE%>" scope="request" />
-<c:set var="lengthpersonne" value="<%=LengthConstants.TIERS_PERSONNE%>" scope="request" />
+<c:set var="lengthpersonne" value="<%=LengthConstants.MANDAT_PERSONNE_CONTACT%>" scope="request" />
 <c:set var="lengthtel" value="<%=LengthConstants.TIERS_NUMTEL%>" scope="request" />
 
 <c:set var="lengthadrnom" value="<%=LengthConstants.ADRESSE_NOM%>" scope="request" />
@@ -53,16 +53,14 @@
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/> mdt-gen mdt-spec">
-			<td><fmt:message key="label.prenom.contact"/>&nbsp;:</td>
-			<td><form:input path="prenomPersonneContact" size="40" maxlength="${lengthpersonne}"/></td>
-			<td><fmt:message key="label.nom.contact"/>&nbsp;:</td>
-			<td><form:input path="nomPersonneContact" size="40" maxlength="${lengthpersonne}"/></td>
-		</tr>
-		<tr class="<unireg:nextRowClass/> mdt-gen mdt-spec">
+			<td><fmt:message key="label.personne.contact"/>&nbsp;:</td>
+			<td><form:input path="personneContact" size="40" maxlength="${lengthpersonne}"/></td>
 			<td><fmt:message key="label.no.tel.contact"/>&nbsp;:</td>
 			<td><form:input path="noTelContact" size="25" maxlength="${lengthtel}"/></td>
-			<td class="mdt-spec"><fmt:message key="label.genre.impot"/>&nbsp;:</td>
-			<td class="mdt-spec">
+		</tr>
+		<tr class="<unireg:nextRowClass/> mdt-spec">
+			<td><fmt:message key="label.genre.impot"/>&nbsp;:</td>
+			<td>
 				<form:select path="codeGenreImpot">
 					<form:option value=""/>
 					<form:options items="${genresImpotAutorises}"/>
@@ -70,7 +68,7 @@
 				<span class="mandatory">*</span>
 				<form:errors path="codeGenreImpot" cssClass="error"/>
 			</td>
-			<td class="mdt-gen" colspan="2">&nbsp;</td>
+			<td colspan="2">&nbsp;</td>
 		</tr>
 	</table>
 </fieldset>
@@ -192,20 +190,20 @@
 
 		initTypeMandat: function(typeMandat) {
 			$(".mdt-gen, .mdt-spec, .mdt-tiers").hide();
-			if (typeMandat == 'GENERAL') {
+			if (typeMandat === 'GENERAL') {
 				$('.mdt-gen').show();
 			}
-			else if (typeMandat == 'SPECIAL') {
+			else if (typeMandat === 'SPECIAL') {
 				$('.mdt-spec').show();
 			}
-			else if (typeMandat == 'TIERS') {
+			else if (typeMandat === 'TIERS') {
 				$('.mdt-tiers').show();
 			}
 		},
 
 		onChangeTexteCasePostale: function () {
 			var value = $(this).val();
-			if (value == null || value === "") {
+			if (value === null || value === "") {
 				$('#numeroCasePostale').val("");
 				$('td.withcp').hide();
 				$('td.withoutcp').show();
@@ -240,7 +238,7 @@
 		// (curieusement, FF le fait...)
 		const selectedMandat = $('#typeMandatSelect').find(':selected');
 		var type;
-		if (selectedMandat.length == 0) {
+		if (selectedMandat.length === 0) {
 			type = $('#typeMandatSelect')[0].options[0].value;
 		}
 		else {

@@ -406,7 +406,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 				final AdresseEnvoiDetaillee adresseMandataireActif = adresseService.getAdresseEnvoi(mandataireConnu, null, TypeAdresseFiscale.REPRESENTATION, false);
 				lignesAdresseConnue = adresseMandataireActif.getLignes();
 				noTelContactMandataireConnu = mandatConnu.getNoTelephoneContact();
-				contactMandataireConnu = mandatConnu.getNomPersonneContact();
+				contactMandataireConnu = mandatConnu.getPersonneContact();
 			}
 			else if (adresseMandataireConnue != null) {
 				avecCopieMandataireConnu = adresseMandataireConnue.isWithCopy();
@@ -414,7 +414,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 				final AdresseEnvoiDetaillee adresseDetaillee = adresseService.buildAdresseEnvoi(adresseGenerique.getSource().getTiers(), adresseGenerique, dateReference);
 				lignesAdresseConnue = adresseDetaillee.getLignes();
 				noTelContactMandataireConnu = adresseMandataireConnue.getNoTelephoneContact();
-				contactMandataireConnu = adresseMandataireConnue.getNomPersonneContact();
+				contactMandataireConnu = adresseMandataireConnue.getPersonneContact();
 			}
 			else {
 				avecCopieMandataireConnu = null;
@@ -456,7 +456,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 				// c'est bien un lien qu'il faut faire...
 				final Mandat nouveauMandat = Mandat.general(dateDebutNouveauMandat, null, entreprise, mandataireFourni, avecCopieMandataireFourni);
 				nouveauMandat.setNoTelephoneContact(noTelContactMandataireFourni);
-				nouveauMandat.setNomPersonneContact(contactMandataireFourni);
+				nouveauMandat.setPersonneContact(contactMandataireFourni);
 
 				// s'il y avait une adresse/un mandat connu, il faut le fermer à la date de fin de l'exercice commercial qui précède celui de la DI retournée
 				fermerLienAdresseMandataire(entreprise, mandatConnu, adresseMandataireConnue, dateClotureMandatPrecedent);
@@ -477,7 +477,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 						nouvelleAdresseMandataire.setComplement(complement);
 					}
 					nouvelleAdresseMandataire.setNoTelephoneContact(noTelContactMandataireFourni);
-					nouvelleAdresseMandataire.setNomPersonneContact(contactMandataireFourni);
+					nouvelleAdresseMandataire.setPersonneContact(contactMandataireFourni);
 				}
 				catch (AdresseException e) {
 					LOGGER.error(String.format("Erreur à la constitution de l'adresse mandataire de type 'général' du contribuable %s au %s",

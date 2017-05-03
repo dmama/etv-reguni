@@ -38,8 +38,7 @@ public class Mandat extends RapportEntreTiers {
 
 	private TypeMandat typeMandat;
 	private CoordonneesFinancieres coordonneesFinancieres;
-	private String nomPersonneContact;
-	private String prenomPersonneContact;
+	private String personneContact;
 	private String noTelephoneContact;
 	private Boolean withCopy;
 	private String codeGenreImpot;
@@ -82,8 +81,7 @@ public class Mandat extends RapportEntreTiers {
 		super(src);
 		this.typeMandat = src.typeMandat;
 		this.coordonneesFinancieres = src.coordonneesFinancieres != null ? new CoordonneesFinancieres(src.getCoordonneesFinancieres()) : null;
-		this.nomPersonneContact = src.nomPersonneContact;
-		this.prenomPersonneContact = src.prenomPersonneContact;
+		this.personneContact = src.personneContact;
 		this.noTelephoneContact = src.noTelephoneContact;
 		this.withCopy = src.withCopy;
 		this.codeGenreImpot = src.codeGenreImpot;
@@ -112,22 +110,13 @@ public class Mandat extends RapportEntreTiers {
 		this.coordonneesFinancieres = coordonneesFinancieres;
 	}
 
-	@Column(name = "NOM_CONTACT_MANDAT", length = LengthConstants.MANDAT_NOM_CONTACT)
-	public String getNomPersonneContact() {
-		return nomPersonneContact;
+	@Column(name = "PERSONNE_CONTACT_MANDAT", length = LengthConstants.MANDAT_PERSONNE_CONTACT)
+	public String getPersonneContact() {
+		return personneContact;
 	}
 
-	public void setNomPersonneContact(String nomPersonneContact) {
-		this.nomPersonneContact = nomPersonneContact;
-	}
-
-	@Column(name = "PRENOM_CONTACT_MANDAT", length = LengthConstants.MANDAT_NOM_CONTACT)
-	public String getPrenomPersonneContact() {
-		return prenomPersonneContact;
-	}
-
-	public void setPrenomPersonneContact(String prenomPersonneContact) {
-		this.prenomPersonneContact = prenomPersonneContact;
+	public void setPersonneContact(String personneContact) {
+		this.personneContact = personneContact;
 	}
 
 	@Column(name = "TEL_CONTACT_MANDAT", length = LengthConstants.TIERS_NUMTEL)

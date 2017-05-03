@@ -4628,8 +4628,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				addFormeJuridique(mandataire, date(1950, 4, 2), null, FormeJuridiqueEntreprise.SA);
 
 				final Mandat mandat = addMandatGeneral(entreprise, mandataire, dateDebutEntreprise, dateTraitement, true);
-				mandat.setNomPersonneContact("Bertarello");
-				mandat.setPrenomPersonneContact("Alfonso");
+				mandat.setPersonneContact("Alfonso Bertarello");
 				mandat.setNoTelephoneContact("0525551247");
 
 				final Ids ids = new Ids();
@@ -4673,8 +4672,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertEquals("Bertarello", mandat.getNomPersonneContact());
-					Assert.assertEquals("Alfonso", mandat.getPrenomPersonneContact());
+					Assert.assertEquals("Alfonso Bertarello", mandat.getPersonneContact());
 					Assert.assertEquals("0525551247", mandat.getNoTelephoneContact());
 				}
 				{
@@ -4685,8 +4683,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertEquals(dateTraitement, mandat.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertEquals("Bertarello", mandat.getNomPersonneContact());
-					Assert.assertEquals("Alfonso", mandat.getPrenomPersonneContact());
+					Assert.assertEquals("Alfonso Bertarello", mandat.getPersonneContact());
 					Assert.assertEquals("0525551247", mandat.getNoTelephoneContact());
 				}
 			}
@@ -5021,8 +5018,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertNull(mandat.getNoTelephoneContact());
 				}
 
@@ -5132,8 +5128,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertNull(mandat.getNoTelephoneContact());
 				}
 
@@ -5467,8 +5462,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNull(mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertNull(mandat.getNoTelephoneContact());
 				}
 
@@ -5816,8 +5810,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertEquals(dateTraitement.getOneDayBefore(), mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertNull(mandat.getNoTelephoneContact());
 				}
 
@@ -5936,8 +5929,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertNull(mandat.getDateFin());
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertNull(mandat.getNoTelephoneContact());
 				}
 
@@ -6064,8 +6056,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertNull(mandat.getNoTelephoneContact());
 				}
 				{
@@ -6077,8 +6068,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertFalse(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertNull(mandat.getNoTelephoneContact());
 				}
 
@@ -6192,8 +6182,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertEquals(oldTelContact, mandat.getNoTelephoneContact());
 				}
 				{
@@ -6205,8 +6194,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertEquals(newTelContact, mandat.getNoTelephoneContact());
 				}
 
@@ -6316,8 +6304,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertNull(mandat.getNoTelephoneContact());
 				}
 
@@ -6428,8 +6415,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertTrue(mandat.getWithCopy());
 					Assert.assertEquals(TypeMandat.GENERAL, mandat.getTypeMandat());
 					Assert.assertEquals((Long) ids.idMandataire, mandat.getObjetId());
-					Assert.assertNull(mandat.getNomPersonneContact());
-					Assert.assertNull(mandat.getPrenomPersonneContact());
+					Assert.assertNull(mandat.getPersonneContact());
 					Assert.assertNull(mandat.getNoTelephoneContact());
 				}
 
@@ -7053,7 +7039,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseMandataireSuisse.getNumeroOrdrePoste());
 				Assert.assertEquals("Mon Mande-à-Terre", adresseMandataire.getNomDestinataire());
 				Assert.assertEquals("0213161111", adresseMandataire.getNoTelephoneContact());
-				Assert.assertEquals("Madame Delphine Rapon", adresseMandataire.getNomPersonneContact());
+				Assert.assertEquals("Madame Delphine Rapon", adresseMandataire.getPersonneContact());
 
 				final Set<Remarque> remarques = entreprise.getRemarques();
 				Assert.assertNotNull(remarques);
