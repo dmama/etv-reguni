@@ -25,7 +25,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
@@ -62,7 +62,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final AutreDocumentFiscalService autreDocumentFiscalService = getBean(AutreDocumentFiscalService.class, "autreDocumentFiscalService");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final RegistreFoncierService registreFoncierService = getBean(RegistreFoncierService.class, "serviceRF");
-		final ServiceRegimeFiscal regimeFiscalService = getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal");
+		final RegimeFiscalService regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
 		processor = new EnvoiFormulairesDemandeDegrevementICIProcessor(parametreAppService, transactionManager, autreDocumentFiscalService, hibernateTemplate, registreFoncierService, regimeFiscalService);
 		delaisService = getBean(DelaisService.class, "delaisService");
 

@@ -166,7 +166,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
+		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 		<property name="rapportService" ref="rapportService"/>
 		<property name="parametreAppService" ref="parametreAppService"/>
 	</bean>

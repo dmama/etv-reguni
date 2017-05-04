@@ -4,6 +4,6 @@
 
 	<!-- Configuration du Service Régime Fiscal, en mode limité du fait de l'absence de configuration des types de régimes par défaut, non utiles dans WS. -->
 
-	<bean id="serviceRegimeFiscalConfiguration" class="ch.vd.uniregctb.regimefiscal.MockServiceRegimeFiscalConfiguration"/>
+	<bean id="regimeFiscalConfiguration" class="ch.vd.uniregctb.regimefiscal.MockRegimeFiscalServiceConfiguration"/>
 
 </beans>

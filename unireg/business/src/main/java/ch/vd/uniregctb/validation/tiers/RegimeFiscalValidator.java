@@ -13,17 +13,17 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscalException;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalServiceException;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 
 public class RegimeFiscalValidator extends DateRangeEntityValidator<RegimeFiscal> {
 
-	private ServiceRegimeFiscal serviceRegimeFiscal;
+	private RegimeFiscalService regimeFiscalService;
 	private ParametreAppService parametreAppService;
 
-	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
@@ -60,7 +60,7 @@ public class RegimeFiscalValidator extends DateRangeEntityValidator<RegimeFiscal
 			else {
 				try {
 					// Contrôle de cohérence: le type de régime fiscal doit être valide durant toute la période de validité du régime fiscal.
-					final TypeRegimeFiscal typeRF = serviceRegimeFiscal.getTypeRegimeFiscal(rf.getCode());
+					final TypeRegimeFiscal typeRF = regimeFiscalService.getTypeRegimeFiscal(rf.getCode());
 					final RegDate dateDebutValiditeDuType = RegDate.get(typeRF.getPremierePeriodeFiscaleValidite(), 1, 1);
 					final RegDate dateFinValiditeDuType = typeRF.getDernierePeriodeFiscaleValidite() == null ? null : RegDate.get(typeRF.getDernierePeriodeFiscaleValidite(), 12, 31);
 					final DateRange rangeValiditeDuType = new DateRangeHelper.Range(dateDebutValiditeDuType, dateFinValiditeDuType);
@@ -82,7 +82,7 @@ public class RegimeFiscalValidator extends DateRangeEntityValidator<RegimeFiscal
 						}
 					}
 				}
-				catch (ServiceRegimeFiscalException e) {
+				catch (RegimeFiscalServiceException e) {
 					vr.addError(String.format("Régime fiscal %s : ", getEntityDisplayString(rf)), e);
 				}
 			}

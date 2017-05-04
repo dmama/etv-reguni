@@ -18,9 +18,9 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 /**
  * @author Raphaël Marmier, 2017-04-21, <raphael.marmier@vd.ch>
  */
-class ServiceRegimeFiscalConfigurationImpl implements ServiceRegimeFiscalConfiguration, InitializingBean {
+class RegimeFiscalServiceConfigurationImpl implements RegimeFiscalServiceConfiguration, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegimeFiscalConfigurationImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RegimeFiscalServiceConfigurationImpl.class);
 
 	private static final String WHITESPACE_CHARACTER = "\\s";
 	private static final String WHITESPACE_REGEXP = "[" + WHITESPACE_CHARACTER + "]+";

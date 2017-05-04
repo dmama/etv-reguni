@@ -246,7 +246,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	@NotNull
 	private List<LegalForm> extractFormesJuridiques(Entreprise entreprise, Context context) {
 		final List<FormeLegaleHisto> histo = context.tiersService.getFormesLegales(entreprise, false);
-		final List<DatedCategory> regimesFiscaux = context.serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise).stream()
+		final List<DatedCategory> regimesFiscaux = context.regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie(entreprise).stream()
 				.map(rf -> new DatedCategory(rf.getCategorie(), rf))
 				.collect(Collectors.toList());
 		final DateRangeHelper.AdapterCallback<DatedCategory> adapter = new DateRangeHelper.AdapterCallback<DatedCategory>() {

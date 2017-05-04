@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 /**
  * @author Raphaël Marmier, 2017-01-25, <raphael.marmier@vd.ch>
  */
-public interface ServiceRegimeFiscal {
+public interface RegimeFiscalService {
 
 	/**
 	 * @param code le code représentant le type de régime fiscal

@@ -64,7 +64,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
-		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
+		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
 	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">
@@ -113,7 +113,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
-		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
+		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
 	<bean id="partyService4Cache" class="ch.vd.uniregctb.webservices.party4.cache.PartyWebServiceCache">
@@ -228,7 +228,7 @@
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
-		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
+		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
 	<!-- WS REST v6 -->
@@ -317,7 +317,7 @@
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
-		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
+		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
 	<!-- WS REST v7 -->
@@ -409,7 +409,7 @@
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
-		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
+		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
 </beans>

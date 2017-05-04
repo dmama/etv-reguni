@@ -83,7 +83,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 				/*
 					On prend comme point de départ le type de régime fiscal du régime de portée VD de l'entreprise à la veille, s'il existe.
 				 */
-				final TypeRegimeFiscal typeRegimeFiscalVDAvant = context.getServiceRegimeFiscal().getTypeRegimeFiscalVD(entreprise, dateAvant);
+				final TypeRegimeFiscal typeRegimeFiscalVDAvant = context.getRegimeFiscalService().getTypeRegimeFiscalVD(entreprise, dateAvant);
 
 				if (typeRegimeFiscalVDAvant == null) {
 					return new TraitementManuel(event, organisation, null, context, options,
@@ -96,7 +96,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 				/*
 					Le type de régime fiscal à l'arrivée est déterminé exclusivement par le type par défaut en fonction de la forme juridique civile.
 				 */
-				final TypeRegimeFiscal typeRegimeFiscalParDefautApres = context.getServiceRegimeFiscal().getTypeRegimeFiscalParDefaut(FormeJuridiqueEntreprise.fromCode(formeLegaleApres.getCode()));
+				final TypeRegimeFiscal typeRegimeFiscalParDefautApres = context.getRegimeFiscalService().getTypeRegimeFiscalParDefaut(FormeJuridiqueEntreprise.fromCode(formeLegaleApres.getCode()));
 
 				/*
 					Pas de changement de régime. Annoncer comme neutre.
@@ -110,7 +110,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 				/*
 					Le type de régime fiscal par défaut au départ permettra de savoir si la valeur de départ a été ajustée
 				 */
-				final TypeRegimeFiscal typeRegimeFiscalParDefautAvant = context.getServiceRegimeFiscal().getTypeRegimeFiscalParDefaut(FormeJuridiqueEntreprise.fromCode(formeLegaleAvant.getCode()));
+				final TypeRegimeFiscal typeRegimeFiscalParDefautAvant = context.getRegimeFiscalService().getTypeRegimeFiscalParDefaut(FormeJuridiqueEntreprise.fromCode(formeLegaleAvant.getCode()));
 
 				/*
 					A-t-on fonctionné en mode automatique lors du réglage du précédent régime. Ca ne compte pas si on est resté en type indéterminé. On doit avoir un vrai régime.

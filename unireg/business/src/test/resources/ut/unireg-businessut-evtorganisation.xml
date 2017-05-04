@@ -9,7 +9,7 @@
 		<property name="useOrganisationsOfNotice" value="false" />
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
-		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal" />
+		<property name="regimeFiscalService" ref="regimeFiscalService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="dataEventService" ref="dataEventService"/>
 		<property name="tiersService" ref="tiersService" />

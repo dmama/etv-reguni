@@ -47,7 +47,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.regimefiscal.ModeExonerationHisto;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -66,11 +66,11 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final ParametreAppService parametreAppService;
 	private final RegistreFoncierService registreFoncierService;
-	private final ServiceRegimeFiscal regimeFiscalService;
+	private final RegimeFiscalService regimeFiscalService;
 
 	public EnvoiFormulairesDemandeDegrevementICIProcessor(ParametreAppService parametreAppService, PlatformTransactionManager transactionManager,
 	                                                      AutreDocumentFiscalService autreDocumentFiscalService, HibernateTemplate hibernateTemplate,
-	                                                      RegistreFoncierService registreFoncierService, ServiceRegimeFiscal regimeFiscalService) {
+	                                                      RegistreFoncierService registreFoncierService, RegimeFiscalService regimeFiscalService) {
 		this.transactionManager = transactionManager;
 		this.autreDocumentFiscalService = autreDocumentFiscalService;
 		this.hibernateTemplate = hibernateTemplate;

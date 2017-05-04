@@ -52,9 +52,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Raphaël Marmier, 2017-04-21, <raphael.marmier@vd.ch>
  */
-public class ServiceRegimeFiscalConfigurationTest extends WithoutSpringTest {
+public class RegimeFiscalServiceConfigurationTest extends WithoutSpringTest {
 
-	private final ServiceRegimeFiscalConfigurationImpl helper = new ServiceRegimeFiscalConfigurationImpl();
+	private final RegimeFiscalServiceConfigurationImpl helper = new RegimeFiscalServiceConfigurationImpl();
 
 	@Test
 	public void testParseConfigRegimesDiOptionnelleVd() throws Exception {
@@ -167,7 +167,7 @@ public class ServiceRegimeFiscalConfigurationTest extends WithoutSpringTest {
 			String formesJuridiquesDefauts = "0103=80, 0104=80, 0105=01, 0106=01, 0107=01, 0108=01, 0109=70, 0110=70, 0111=01, 0151=01, 0312=01";
 			String diOptionnelleVd = "190-2, 739";
 
-			final ServiceRegimeFiscalConfigurationImpl config = new ServiceRegimeFiscalConfigurationImpl();
+			final RegimeFiscalServiceConfigurationImpl config = new RegimeFiscalServiceConfigurationImpl();
 			config.setConfigTableFormesJuridiquesDefauts(formesJuridiquesDefauts);
 			config.setConfigRegimesDiOptionnelleVd(diOptionnelleVd);
 			config.afterPropertiesSet();
@@ -227,7 +227,7 @@ public class ServiceRegimeFiscalConfigurationTest extends WithoutSpringTest {
 			String formesJuridiquesDefauts = "0104=80, 0105=109, 0106=109, 0107=01, 0108=109, 0109=70, 0110=70, 0111=01, 0224=769, 0312=01";
 			String diOptionnelleVd = "739";
 
-			final ServiceRegimeFiscalConfigurationImpl config = new ServiceRegimeFiscalConfigurationImpl();
+			final RegimeFiscalServiceConfigurationImpl config = new RegimeFiscalServiceConfigurationImpl();
 			config.setConfigTableFormesJuridiquesDefauts(formesJuridiquesDefauts);
 			config.setConfigRegimesDiOptionnelleVd(diOptionnelleVd);
 			config.afterPropertiesSet();
@@ -289,7 +289,7 @@ public class ServiceRegimeFiscalConfigurationTest extends WithoutSpringTest {
 	@Test
 	public void testEmptyConfiguration() throws Exception {
 		{
-			final ServiceRegimeFiscalConfigurationImpl config = new ServiceRegimeFiscalConfigurationImpl();
+			final RegimeFiscalServiceConfigurationImpl config = new RegimeFiscalServiceConfigurationImpl();
 			config.setConfigTableFormesJuridiquesDefauts(null);
 			config.setConfigRegimesDiOptionnelleVd(null);
 			config.afterPropertiesSet();
@@ -297,7 +297,7 @@ public class ServiceRegimeFiscalConfigurationTest extends WithoutSpringTest {
 		}
 
 		{
-			final ServiceRegimeFiscalConfigurationImpl config = new ServiceRegimeFiscalConfigurationImpl();
+			final RegimeFiscalServiceConfigurationImpl config = new RegimeFiscalServiceConfigurationImpl();
 			config.setConfigTableFormesJuridiquesDefauts("");
 			config.setConfigRegimesDiOptionnelleVd("");
 			config.afterPropertiesSet();
@@ -305,7 +305,7 @@ public class ServiceRegimeFiscalConfigurationTest extends WithoutSpringTest {
 		}
 	}
 
-	private void verifyEmptyConfig(ServiceRegimeFiscalConfigurationImpl config) {
+	private void verifyEmptyConfig(RegimeFiscalServiceConfigurationImpl config) {
 		assertNull(config.getCodeTypeRegimeFiscal(EI));
 
 		assertNull(config.getCodeTypeRegimeFiscal(SNC));

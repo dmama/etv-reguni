@@ -10,15 +10,15 @@ import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ASSOCIATION;
 /**
  * @author Raphaël Marmier, 2017-04-21, <raphael.marmier@vd.ch>
  */
-public class MockServiceRegimeFiscalConfigurationTest extends WithoutSpringTest {
+public class MockRegimeFiscalServiceConfigurationTest extends WithoutSpringTest {
 
 	@Test
 	public void testDummyConfiguration() {
-		final MockServiceRegimeFiscalConfiguration dummy = new MockServiceRegimeFiscalConfiguration();
+		final MockRegimeFiscalServiceConfiguration dummy = new MockRegimeFiscalServiceConfiguration();
 
 		try {
 			dummy.getCodeTypeRegimeFiscal(ASSOCIATION);
-			Assert.fail("ServiceRegimeFiscalConfigurationDummy.getCodeTypeRegimeFiscal() doit lever une UnsupportedOperationException !");
+			Assert.fail(MockRegimeFiscalServiceConfigurationTest.class.getSimpleName() + ".getCodeTypeRegimeFiscal() doit lever une UnsupportedOperationException !");
 		}
 		catch (UnsupportedOperationException e) {
 			// tout va bien
@@ -26,7 +26,7 @@ public class MockServiceRegimeFiscalConfigurationTest extends WithoutSpringTest 
 
 		try {
 			dummy.getCodeTypeRegimeFiscal(ASSOCIATION);
-			Assert.fail("ServiceRegimeFiscalConfigurationDummy.getCodeTypeRegimeFiscal() doit lever une UnsupportedOperationException !");
+			Assert.fail(MockRegimeFiscalServiceConfigurationTest.class.getSimpleName() + ".getCodeTypeRegimeFiscal() doit lever une UnsupportedOperationException !");
 		}
 		catch (UnsupportedOperationException e) {
 			// tout va bien

@@ -80,7 +80,7 @@ import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.RattachementOrganisationResult;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
@@ -110,7 +110,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceInfrastructureService serviceInfrastructureService;
-	private ServiceRegimeFiscal serviceRegimeFiscal;
+	private RegimeFiscalService regimeFiscalService;
 	private TiersDAO tiersDAO;
 	private DataEventService dataEventService;
 	private TiersService tiersService;
@@ -144,7 +144,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementOrganisationContext(serviceOrganisationService, evenementOrganisationService, serviceInfrastructureService, serviceRegimeFiscal, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
+		context = new EvenementOrganisationContext(serviceOrganisationService, evenementOrganisationService, serviceInfrastructureService, regimeFiscalService, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
 		                                           evenementFiscalService, assujettissementService, appariementService, parametreAppService);
 
 		// Construction des stratégies
@@ -641,8 +641,8 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

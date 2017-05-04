@@ -22,7 +22,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.AbstractEvenementOrganisat
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.MessageSuiviPreExecution;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscalImpl;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalServiceImpl;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MockTiersDAO;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -74,9 +74,9 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 			}
 		};
 
-		final ServiceRegimeFiscalImpl serviceRegimeFiscal = new ServiceRegimeFiscalImpl();
-		serviceRegimeFiscal.setServiceInfra(serviceInfra);
-		context = new EvenementOrganisationContext(this.serviceOrganisation, serviceInfra, serviceRegimeFiscal, tiersDAO);
+		final RegimeFiscalServiceImpl regimeFiscalService = new RegimeFiscalServiceImpl();
+		regimeFiscalService.setServiceInfra(serviceInfra);
+		context = new EvenementOrganisationContext(this.serviceOrganisation, serviceInfra, regimeFiscalService, tiersDAO);
 
 		// La stratégie à tester
 		strategy = new CreateOrganisationStrategy(context, new EvenementOrganisationOptions());
