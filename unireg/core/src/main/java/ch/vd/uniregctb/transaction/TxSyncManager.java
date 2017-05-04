@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.transaction;
 
-import javax.transaction.Synchronization;
 import java.util.function.Consumer;
 
 /**
@@ -10,11 +9,6 @@ import java.util.function.Consumer;
  */
 @SuppressWarnings("unused")
 public interface TxSyncManager {
-
-	/**
-	 * Register a {@link Synchronization} callback with this transaction.
-	 */
-	void registerSynchronization(Synchronization sync);
 
 	/**
 	 * Register a {@link Consumer} callback called after completion of the transaction.

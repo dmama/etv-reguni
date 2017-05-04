@@ -24,9 +24,7 @@
 		<property name="userTransaction" ref="transactionManager"/>
 	</bean>
 
-	<bean id="txSyncManager" class="ch.vd.uniregctb.transaction.TxSyncManagerImpl">
-		<property name="transactionManager" ref="transactionManager"/>
-	</bean>
+	<bean id="txSyncManager" class="ch.vd.uniregctb.transaction.TxSyncManagerImpl"/>
 
 	<bean id="jdbcConnectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
 		<property name="transaction" value="xa"/>

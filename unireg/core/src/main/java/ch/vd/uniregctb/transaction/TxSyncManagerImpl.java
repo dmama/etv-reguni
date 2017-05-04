@@ -1,45 +1,23 @@
 package ch.vd.uniregctb.transaction;
 
-import javax.transaction.RollbackException;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import java.util.function.Consumer;
+
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @SuppressWarnings("unused")
 public class TxSyncManagerImpl implements TxSyncManager {
 
-	private TransactionManager transactionManager;
-
-	public void setTransactionManager(TransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
-	}
-
-	@Override
-	public void registerSynchronization(Synchronization sync) {
-		final Transaction tx;
-		try {
-			tx = transactionManager.getTransaction();
-			if (tx == null) {
-				throw new IllegalArgumentException("Il n'y a pas de transaction liée au thread courant.");
-			}
-			tx.registerSynchronization(sync);
-		}
-		catch (SystemException | RollbackException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	@Override
 	public void registerAfterCompletion(Consumer<Integer> consumer) {
-		registerSynchronization(new Synchronization() {
-			@Override
-			public void beforeCompletion() {
-			}
+		if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+			throw new IllegalStateException("Il n'y a pas de transaction liée au thread courant.");
+		}
 
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 			@Override
 			public void afterCompletion(int status) {
+				super.afterCompletion(status);
 				consumer.accept(status);
 			}
 		});
