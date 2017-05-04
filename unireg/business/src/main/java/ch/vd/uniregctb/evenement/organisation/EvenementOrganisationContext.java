@@ -9,7 +9,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
@@ -19,7 +19,7 @@ public class EvenementOrganisationContext {
 	private final ServiceOrganisationService serviceOrganisation;
 	private final EvenementOrganisationService evenementOrganisationService;
 	private final ServiceInfrastructureService serviceInfra;
-	private final ServiceRegimeFiscal serviceRegimeFiscal;
+	private final RegimeFiscalService regimeFiscalService;
 	private final DataEventService dataEventService;
 	private final TiersService tiersService;
 	private final TiersDAO tiersDAO;
@@ -31,9 +31,9 @@ public class EvenementOrganisationContext {
 	private final AppariementService appariementService;
 	private final ParametreAppService parametreAppService;
 
-	public EvenementOrganisationContext(ServiceOrganisationService serviceOrganisation, ServiceInfrastructureService serviceInfra, ServiceRegimeFiscal serviceRegimeFiscal, TiersDAO tiersDAO) {
+	public EvenementOrganisationContext(ServiceOrganisationService serviceOrganisation, ServiceInfrastructureService serviceInfra, RegimeFiscalService regimeFiscalService, TiersDAO tiersDAO) {
 		this.serviceOrganisation = serviceOrganisation;
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+		this.regimeFiscalService = regimeFiscalService;
 		this.evenementOrganisationService = null;
 		this.serviceInfra = serviceInfra;
 		this.tiersDAO = tiersDAO;
@@ -49,14 +49,14 @@ public class EvenementOrganisationContext {
 	}
 
 	public EvenementOrganisationContext(ServiceOrganisationService serviceOrganisation, EvenementOrganisationService evenementOrganisationService, ServiceInfrastructureService serviceInfra,
-	                                    ServiceRegimeFiscal serviceRegimeFiscal, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
+	                                    RegimeFiscalService regimeFiscalService, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
 	                                    MetierServicePM metierServicePM, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService,
 	                                    AssujettissementService assujettissementService,
 	                                    AppariementService appariementService, ParametreAppService parametreAppService) {
 		this.serviceOrganisation = serviceOrganisation;
 		this.evenementOrganisationService = evenementOrganisationService;
 		this.serviceInfra = serviceInfra;
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+		this.regimeFiscalService = regimeFiscalService;
 		this.dataEventService = dataEventService;
 		this.tiersService = tiersService;
 		this.indexer = indexer;
@@ -81,8 +81,8 @@ public class EvenementOrganisationContext {
 		return serviceInfra;
 	}
 
-	public ServiceRegimeFiscal getServiceRegimeFiscal() {
-		return serviceRegimeFiscal;
+	public RegimeFiscalService getRegimeFiscalService() {
+		return regimeFiscalService;
 	}
 
 	public final DataEventService getDataEventService() {

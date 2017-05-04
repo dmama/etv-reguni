@@ -2,7 +2,7 @@ package ch.vd.uniregctb.tiers.view;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 
 public class EditRegimeFiscalView implements ValidableRegimeFiscalView {
@@ -19,7 +19,7 @@ public class EditRegimeFiscalView implements ValidableRegimeFiscalView {
 	public EditRegimeFiscalView() {
 	}
 
-	public EditRegimeFiscalView(RegimeFiscal rf, ServiceRegimeFiscal regimeFiscalService) {
+	public EditRegimeFiscalView(RegimeFiscal rf, RegimeFiscalService regimeFiscalService) {
 		this.rfId = rf.getId();
 		this.pmId = rf.getEntreprise().getNumero();
 		this.portee = rf.getPortee();

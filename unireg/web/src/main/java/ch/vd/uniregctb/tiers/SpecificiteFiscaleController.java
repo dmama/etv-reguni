@@ -39,7 +39,7 @@ import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -66,7 +66,7 @@ public class SpecificiteFiscaleController {
 	private HibernateTemplate hibernateTemplate;
 	private Validator validator;
 	private TiersMapHelper tiersMapHelper;
-	private ServiceRegimeFiscal regimeFiscalService;
+	private RegimeFiscalService regimeFiscalService;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -92,7 +92,7 @@ public class SpecificiteFiscaleController {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-	public void setRegimeFiscalService(ServiceRegimeFiscal regimeFiscalService) {
+	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
 		this.regimeFiscalService = regimeFiscalService;
 	}
 

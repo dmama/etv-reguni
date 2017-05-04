@@ -19,7 +19,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -36,12 +36,12 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 
 	private final ParametreAppService parametreService;
 	private final TiersService tiersService;
-	private final ServiceRegimeFiscal serviceRegimeFiscal;
+	private final RegimeFiscalService regimeFiscalService;
 
-	public PeriodeImpositionPersonnesMoralesCalculator(ParametreAppService parametreService, TiersService tiersService, ServiceRegimeFiscal serviceRegimeFiscal) {
+	public PeriodeImpositionPersonnesMoralesCalculator(ParametreAppService parametreService, TiersService tiersService, RegimeFiscalService regimeFiscalService) {
 		this.parametreService = parametreService;
 		this.tiersService = tiersService;
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	/**
@@ -94,8 +94,8 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					// OBSOLETE (supprimé) - [SIFISC-17721] sur les DP/APM, les déclarations sont optionnelles --> selon régime fiscal, voir ci-dessous.
 
 					// Cas des 190-2 et 739 vaudois qui doivent être optionels
-					final TypeRegimeFiscal typeRegimeFiscalVD = serviceRegimeFiscal.getTypeRegimeFiscalVD(entreprise, exercice.getDateFin());
-					final boolean isOptionnelle = typeContribuable == TypeContribuable.VAUDOIS_ORDINAIRE && serviceRegimeFiscal.isRegimeFiscalDiOptionnelleVd(typeRegimeFiscalVD);
+					final TypeRegimeFiscal typeRegimeFiscalVD = regimeFiscalService.getTypeRegimeFiscalVD(entreprise, exercice.getDateFin());
+					final boolean isOptionnelle = typeContribuable == TypeContribuable.VAUDOIS_ORDINAIRE && regimeFiscalService.isRegimeFiscalDiOptionnelleVd(typeRegimeFiscalVD);
 
 					// création de la structure pour la période d'imposition
 					resultat.add(new PeriodeImpositionPersonnesMorales(intersection.getDateDebut(),
@@ -123,7 +123,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 	 */
 	@Nullable
 	private CategorieEntreprise getLastKnownCategorieEntrepriseAtOrBefore(Entreprise entreprise, @NotNull RegDate dateReference) {
-		final List<RegimeFiscalConsolide> regimesFiscaux = serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
+		final List<RegimeFiscalConsolide> regimesFiscaux = regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
 		if (regimesFiscaux.isEmpty()) {
 			return null;
 		}

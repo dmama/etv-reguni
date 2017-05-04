@@ -36,7 +36,7 @@ import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.AjustementForsSecondairesResult;
 import ch.vd.uniregctb.metier.MetierServicePM;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -93,7 +93,7 @@ public class TiersCreateController {
 	private IbanValidator ibanValidator;
 	private ServiceInfrastructureService infraService;
 	private MetierServicePM metierServicePM;
-	private ServiceRegimeFiscal serviceRegimeFiscal;
+	private RegimeFiscalService regimeFiscalService;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
@@ -123,8 +123,8 @@ public class TiersCreateController {
 		this.metierServicePM = metierServicePM;
 	}
 
-	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	@InitBinder
@@ -282,7 +282,7 @@ public class TiersCreateController {
 		tiersService.addActiviteEconomique(etablissementPrincipal, entreprise, dateFondation, true);
 
 		// Régimes fiscaux + For principal (différents en fonction de la forme juridique/catégorie entreprise)
-		final TypeRegimeFiscal typeRegimeFiscalParDefaut = serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(formeJuridique);
+		final TypeRegimeFiscal typeRegimeFiscalParDefaut = regimeFiscalService.getTypeRegimeFiscalParDefaut(formeJuridique);
 
 		// Calcul de la date d'ouverture fiscale
 		final boolean vd = civilView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;

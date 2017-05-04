@@ -36,7 +36,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -64,7 +64,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	private EvenementFiscalService evenementFiscalService;
 	private EvenementDeclarationPMSender evtDeclarationPMSender;
 	private RegistreFoncierService registreFoncierService;
-	private ServiceRegimeFiscal regimeFiscalService;
+	private RegimeFiscalService regimeFiscalService;
 
 	private final Map<Class<? extends AutreDocumentFiscal>, TypeDocumentEditique> typesDocumentEnvoiInitial = buildTypesDocumentEnvoiInitial();
 	private final Map<Class<? extends AutreDocumentFiscalAvecSuivi>, TypeDocumentEditique> typesDocumentEnvoiRappel = buildTypesDocumentEnvoiRappel();
@@ -130,7 +130,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		this.registreFoncierService = registreFoncierService;
 	}
 
-	public void setRegimeFiscalService(ServiceRegimeFiscal regimeFiscalService) {
+	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
 		this.regimeFiscalService = regimeFiscalService;
 	}
 

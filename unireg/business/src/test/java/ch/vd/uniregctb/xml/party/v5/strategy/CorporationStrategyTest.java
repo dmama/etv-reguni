@@ -22,7 +22,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -46,7 +46,7 @@ public class CorporationStrategyTest extends BusinessTest {
 
 		context = new Context();
 		context.tiersService = getBean(TiersService.class, "tiersService");
-		context.serviceRegimeFiscal = getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal");
+		context.regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
 	}
 
 	/**

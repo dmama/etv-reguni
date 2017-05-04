@@ -43,7 +43,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -139,7 +139,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
-		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
+		translator.setRegimeFiscalService(getBean(RegimeFiscalService.class, "regimeFiscalService"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -249,7 +249,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
-		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
+		translator.setRegimeFiscalService(getBean(RegimeFiscalService.class, "regimeFiscalService"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -379,7 +379,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
-		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
+		translator.setRegimeFiscalService(getBean(RegimeFiscalService.class, "regimeFiscalService"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -478,7 +478,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
-		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
+		translator.setRegimeFiscalService(getBean(RegimeFiscalService.class, "regimeFiscalService"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -619,7 +619,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
-		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
+		translator.setRegimeFiscalService(getBean(RegimeFiscalService.class, "regimeFiscalService"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));
@@ -759,7 +759,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
-		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
+		translator.setRegimeFiscalService(getBean(RegimeFiscalService.class, "regimeFiscalService"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));

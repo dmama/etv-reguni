@@ -31,26 +31,59 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.*;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ADM_CH;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ADM_CO;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ADM_CT;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ADM_DI;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ADM_PUBLIQUE_HS;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ASSOCIATION;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.CORP_DP_ADM;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.CORP_DP_ENT;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.EI;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ENT_CH;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ENT_CO;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ENT_CT;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ENT_DI;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ENT_HS;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ENT_PUBLIQUE_HS;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.FILIALE_CH_RC;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.FILIALE_HS_NIRC;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.FILIALE_HS_RC;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.FONDATION;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.IDP;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.INDIVISION;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.ORG_INTERNAT;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.PARTICULIER;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.PNC;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.SA;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.SARL;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.SC;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.SCA;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.SCOOP;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.SCPC;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.SICAF;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.SICAV;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.SNC;
+import static ch.vd.uniregctb.type.FormeJuridiqueEntreprise.SS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
  * @author Raphaël Marmier, 2017-03-30, <raphael.marmier@vd.ch>
  */
-public class ServiceRegimeFiscalTest extends BusinessTest {
+public class RegimeFiscalServiceTest extends BusinessTest {
 
-	private ServiceRegimeFiscal serviceRegimeFiscal;
+	private RegimeFiscalService regimeFiscalService;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-		serviceRegimeFiscal = getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal");
+		regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
 	}
 
 	@Test
 	public void testGetTypeRegimeFiscal() {
-		final TypeRegimeFiscal typeRegimeFiscal = serviceRegimeFiscal.getTypeRegimeFiscal("01");
+		final TypeRegimeFiscal typeRegimeFiscal = regimeFiscalService.getTypeRegimeFiscal("01");
 		assertEquals("01", typeRegimeFiscal.getCode());
 		assertEquals("Ordinaire", typeRegimeFiscal.getLibelle());
 		assertEquals(CategorieEntreprise.PM, typeRegimeFiscal.getCategorie());
@@ -59,10 +92,10 @@ public class ServiceRegimeFiscalTest extends BusinessTest {
 	@Test
 	public void testGetTypeRegimeFiscalMauvaisCode() {
 		try {
-			serviceRegimeFiscal.getTypeRegimeFiscal("00001");
+			regimeFiscalService.getTypeRegimeFiscal("00001");
 			fail();
 		}
-		catch (ServiceRegimeFiscalException e) {
+		catch (RegimeFiscalServiceException e) {
 			assertEquals("Aucun type de régime fiscal ne correspond au code fourni '00001'. Soit le code est erroné, soit il manque des données dans FiDoR.", e.getMessage());
 			return;
 		}
@@ -72,48 +105,48 @@ public class ServiceRegimeFiscalTest extends BusinessTest {
 	@Test
 	public void testGetTypeRegimeFiscalParDefaut() throws Exception {
 
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(EI).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(EI).getCode());
 
-		assertEquals("80", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(SNC).getCode());
-		assertEquals("80", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(SC).getCode());
+		assertEquals("80", regimeFiscalService.getTypeRegimeFiscalParDefaut(SNC).getCode());
+		assertEquals("80", regimeFiscalService.getTypeRegimeFiscalParDefaut(SC).getCode());
 
-		assertEquals("01", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(SCA).getCode());
-		assertEquals("01", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(SA).getCode());
-		assertEquals("01", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(SARL).getCode());
-		assertEquals("01", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(SCOOP).getCode());
+		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(SCA).getCode());
+		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(SA).getCode());
+		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(SARL).getCode());
+		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(SCOOP).getCode());
 
-		assertEquals("70", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ASSOCIATION).getCode());
-		assertEquals("70", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(FONDATION).getCode());
+		assertEquals("70", regimeFiscalService.getTypeRegimeFiscalParDefaut(ASSOCIATION).getCode());
+		assertEquals("70", regimeFiscalService.getTypeRegimeFiscalParDefaut(FONDATION).getCode());
 
-		assertEquals("01", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(FILIALE_HS_RC).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(PARTICULIER).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(SCPC).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(SICAV).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(SICAF).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(IDP).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(PNC).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(INDIVISION).getCode());
+		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(FILIALE_HS_RC).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(PARTICULIER).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(SCPC).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(SICAV).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(SICAF).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(IDP).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(PNC).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(INDIVISION).getCode());
 
-		assertEquals("01", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(FILIALE_CH_RC).getCode());
+		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(FILIALE_CH_RC).getCode());
 
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ADM_CH).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ADM_CT).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ADM_DI).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ADM_CO).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(CORP_DP_ADM).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ENT_CH).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ENT_CT).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ENT_DI).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ENT_CO).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(CORP_DP_ENT).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(SS).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ADM_CH).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ADM_CT).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ADM_DI).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ADM_CO).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(CORP_DP_ADM).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_CH).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_CT).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_DI).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_CO).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(CORP_DP_ENT).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(SS).getCode());
 
-		assertEquals("01", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(FILIALE_HS_NIRC).getCode());
+		assertEquals("01", regimeFiscalService.getTypeRegimeFiscalParDefaut(FILIALE_HS_NIRC).getCode());
 
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ENT_PUBLIQUE_HS).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ADM_PUBLIQUE_HS).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ORG_INTERNAT).getCode());
-		assertEquals("00", serviceRegimeFiscal.getTypeRegimeFiscalParDefaut(ENT_HS).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_PUBLIQUE_HS).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ADM_PUBLIQUE_HS).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ORG_INTERNAT).getCode());
+		assertEquals("00", regimeFiscalService.getTypeRegimeFiscalParDefaut(ENT_HS).getCode());
 	}
 
 	@Test
@@ -296,14 +329,14 @@ public class ServiceRegimeFiscalTest extends BusinessTest {
 
 				// null -> vide
 				{
-					final List<ModeExonerationHisto> exonerations = serviceRegimeFiscal.getExonerations(entreprise, null);
+					final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, null);
 					Assert.assertNotNull(exonerations);
 					Assert.assertEquals(0, exonerations.size());
 				}
 
 				// IBC
 				{
-					final List<ModeExonerationHisto> exonerations = serviceRegimeFiscal.getExonerations(entreprise, GenreImpotExoneration.IBC);
+					final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.IBC);
 					Assert.assertNotNull(exonerations);
 					Assert.assertEquals(2, exonerations.size());
 					{
@@ -322,7 +355,7 @@ public class ServiceRegimeFiscalTest extends BusinessTest {
 
 				// ICI
 				{
-					final List<ModeExonerationHisto> exonerations = serviceRegimeFiscal.getExonerations(entreprise, GenreImpotExoneration.ICI);
+					final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.ICI);
 					Assert.assertNotNull(exonerations);
 					Assert.assertEquals(2, exonerations.size());
 					{
@@ -341,7 +374,7 @@ public class ServiceRegimeFiscalTest extends BusinessTest {
 
 				// IFONC
 				{
-					final List<ModeExonerationHisto> exonerations = serviceRegimeFiscal.getExonerations(entreprise, GenreImpotExoneration.IFONC);
+					final List<ModeExonerationHisto> exonerations = regimeFiscalService.getExonerations(entreprise, GenreImpotExoneration.IFONC);
 					Assert.assertNotNull(exonerations);
 					Assert.assertEquals(2, exonerations.size());
 					{

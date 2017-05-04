@@ -26,7 +26,7 @@ import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.Fractionnements;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -43,11 +43,11 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class AssujettissementPersonnesMoralesCalculator implements AssujettissementCalculator<Entreprise> {
 
 	private final TiersService tiersService;
-	private final ServiceRegimeFiscal serviceRegimeFiscal;
+	private final RegimeFiscalService regimeFiscalService;
 
-	public AssujettissementPersonnesMoralesCalculator(TiersService tiersService, ServiceRegimeFiscal serviceRegimeFiscal) {
+	public AssujettissementPersonnesMoralesCalculator(TiersService tiersService, RegimeFiscalService regimeFiscalService) {
 		this.tiersService = tiersService;
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		final List<Data> fusion = fusionnerAssujettissementsSiegesEtEconomiques(sieges, economiques);
 
 		// Appliquer les exonérations totales
-		final List<RegimeFiscalConsolide> regimesFiscaux = serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
+		final List<RegimeFiscalConsolide> regimesFiscaux = regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
 		final List<Data> fusionAdaptee = appliquerExonerations(fusion, exercices, regimesFiscaux);
 
 		// et transcription en assujettissements officiels

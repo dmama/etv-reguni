@@ -29,7 +29,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		calculator = new AssujettissementPersonnesMoralesCalculator(tiersService, serviceRegimeFiscal);
+		calculator = new AssujettissementPersonnesMoralesCalculator(tiersService, regimeFiscalService);
 	}
 
 	@Nullable

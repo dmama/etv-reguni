@@ -32,7 +32,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -98,7 +98,7 @@ public class CappingEnErrorTest extends AbstractEvenementOrganisationProcessorTe
 		final EvenementOrganisationTranslatorImpl translator = new EvenementOrganisationTranslatorImpl();
 		translator.setServiceOrganisationService(serviceOrganisation);
 		translator.setServiceInfrastructureService(getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService"));
-		translator.setServiceRegimeFiscal(getBean(ServiceRegimeFiscal.class, "serviceRegimeFiscal"));
+		translator.setRegimeFiscalService(getBean(RegimeFiscalService.class, "regimeFiscalService"));
 		translator.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		translator.setTiersService(getBean(TiersService.class, "tiersService"));

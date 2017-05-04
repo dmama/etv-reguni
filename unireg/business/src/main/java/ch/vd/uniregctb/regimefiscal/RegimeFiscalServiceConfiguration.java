@@ -7,7 +7,7 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 /**
  * @author Raphaël Marmier, 2017-05-03, <raphael.marmier@vd.ch>
  */
-public interface ServiceRegimeFiscalConfiguration {
+public interface RegimeFiscalServiceConfiguration {
 
 	/**
 	 * Retourne le code du type de régime fiscal correspondant par configuration à la forme juridique.

@@ -128,7 +128,7 @@ import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
@@ -184,7 +184,7 @@ public class TiersServiceImpl implements TiersService {
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceIDEService serviceIDEService;
-	private ServiceRegimeFiscal serviceRegimeFiscal;
+	private RegimeFiscalService regimeFiscalService;
 	private TacheService tacheService;
 	private SituationFamilleService situationFamilleService;
 	private AdresseService adresseService;
@@ -241,8 +241,8 @@ public class TiersServiceImpl implements TiersService {
 		this.serviceIDEService = serviceIDEService;
 	}
 
-	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -6445,7 +6445,7 @@ public class TiersServiceImpl implements TiersService {
 	@NotNull
 	public CategorieEntreprise getCategorieEntreprise(@NotNull Entreprise entreprise, @Nullable RegDate date) {
 		final RegDate dateEffective = date == null ? RegDate.get() : date;
-		final TypeRegimeFiscal currentTypeRegimeFiscal = serviceRegimeFiscal.getTypeRegimeFiscalVD(entreprise, dateEffective);
+		final TypeRegimeFiscal currentTypeRegimeFiscal = regimeFiscalService.getTypeRegimeFiscalVD(entreprise, dateEffective);
 
 		/*
 			La catégorie est portée par le type de régime fiscal en vigueur.

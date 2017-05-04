@@ -4,7 +4,7 @@
 
 	<!-- Configuration du Service Régime Fiscal -->
 
-	<bean id="serviceRegimeFiscalConfiguration" class="ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscalConfigurationImpl">
+	<bean id="regimeFiscalServiceConfiguration" class="ch.vd.uniregctb.regimefiscal.RegimeFiscalServiceConfigurationImpl">
 		<property name="configTableFormesJuridiquesDefauts" value="${extprop.regimesfiscaux.table.formesjuridiques.defauts}"/>
 		<property name="configRegimesDiOptionnelleVd" value="${extprop.regimesfiscaux.regimes.di.optionnelle.vd}"/>
 	</bean>

@@ -34,7 +34,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TacheDAO;
@@ -62,7 +62,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	private EditiqueService editiqueService;
 	private ImpressionRappelQuestionnaireSNCHelper impressionRappelHelper;
 	private EvenementFiscalService evenementFiscalService;
-	private ServiceRegimeFiscal serviceRegimeFiscal;
+	private RegimeFiscalService regimeFiscalService;
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
@@ -128,8 +128,8 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		this.evenementFiscalService = evenementFiscalService;
 	}
 
-	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 		// 2. les périodes pendant lesquelles l'entreprise a une forme juridique de type SP
 
 		// quand a-t-on du SP ?
-		final List<RegimeFiscalConsolide> regimesFiscaux = serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
+		final List<RegimeFiscalConsolide> regimesFiscaux = regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
 		final List<DateRange> rangesSP = new ArrayList<>(regimesFiscaux.size());
 		for (RegimeFiscalConsolide regime : regimesFiscaux) {
 			if (regime.getCategorie() == CategorieEntreprise.SP) {

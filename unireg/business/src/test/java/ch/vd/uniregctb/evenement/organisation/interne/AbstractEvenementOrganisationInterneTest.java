@@ -53,7 +53,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 		eventSender.reset();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		context = new EvenementOrganisationContext(serviceOrganisation, evenementOrganisationService, serviceInfra, serviceRegimeFiscal, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, appariementService, parametreAppService);
+		context = new EvenementOrganisationContext(serviceOrganisation, evenementOrganisationService, serviceInfra, regimeFiscalService, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, appariementService, parametreAppService);
 		options = buildOptions();
 	}
 

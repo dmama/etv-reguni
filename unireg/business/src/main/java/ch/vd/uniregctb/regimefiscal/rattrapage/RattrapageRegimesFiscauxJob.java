@@ -27,8 +27,8 @@ import ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscalException;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalServiceException;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -60,7 +60,7 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
-	private ServiceRegimeFiscal serviceRegimeFiscal;
+	private RegimeFiscalService regimeFiscalService;
 	private RapportService rapportService;
 	private ParametreAppService parametreAppService;
 
@@ -89,8 +89,8 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 		this.tiersService = tiersService;
 	}
 
-	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	public void setRapportService(RapportService rapportService) {
@@ -145,7 +145,7 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 	}
 
 
-	private RattrapageRegimesFiscauxJobResults traiteTiers(Long tiersId, boolean simulation) throws ServiceRegimeFiscalException {
+	private RattrapageRegimesFiscauxJobResults traiteTiers(Long tiersId, boolean simulation) throws RegimeFiscalServiceException {
 		final Tiers tiers = tiersDAO.get(tiersId);
 		final RattrapageRegimesFiscauxJobResults resultatEntreprise = new RattrapageRegimesFiscauxJobResults(simulation);
 		if (tiers instanceof Entreprise) {
@@ -158,7 +158,7 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 					.map(FormeLegaleHisto::getFormeLegale)
 					.collect(Collectors.toSet());
 
-			final List<RegimeFiscalConsolide> regimesFiscauxPrealables = serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
+			final List<RegimeFiscalConsolide> regimesFiscauxPrealables = regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
 			final List<String> problemes = new ArrayList<>();
 
 			// Si on a déjà un régime valide sur l'entreprise, on décline poliment.
@@ -194,10 +194,10 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 			final TypeRegimeFiscal typeRegimeFiscal;
 			final FormeLegale formeLegale = typesDeFormes.iterator().next();
 			if (formeLegale == FormeLegale.N_0104_SOCIETE_EN_COMMANDITE || formeLegale == FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF) {
-				typeRegimeFiscal = serviceRegimeFiscal.getTypeRegimeFiscalSocieteDePersonnes();
+				typeRegimeFiscal = regimeFiscalService.getTypeRegimeFiscalSocieteDePersonnes();
 			}
 			else {
-				typeRegimeFiscal = serviceRegimeFiscal.getTypeRegimeFiscalIndetermine();
+				typeRegimeFiscal = regimeFiscalService.getTypeRegimeFiscalIndetermine();
 			}
 
 			final RegDate assujEpoch = RegDate.get(parametreAppService.getPremierePeriodeFiscalePersonnesMorales(), 1, 1);
@@ -223,7 +223,7 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 			tiersDAO.addAndSave(entreprise, new RegimeFiscal(dateDeDebut, null, RegimeFiscal.Portee.VD, typeRegimeFiscal.getCode()));
 			tiersDAO.addAndSave(entreprise, new RegimeFiscal(dateDeDebut, null, RegimeFiscal.Portee.CH, typeRegimeFiscal.getCode()));
 
-			final List<RegimeFiscalConsolide> regimesFiscauxVDNonAnnulesTrie = serviceRegimeFiscal.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
+			final List<RegimeFiscalConsolide> regimesFiscauxVDNonAnnulesTrie = regimeFiscalService.getRegimesFiscauxVDNonAnnulesTrie(entreprise);
 			resultatEntreprise.addRegimeFiscalInfo(entreprise.getNumero(), derniereRaisonSociale, formeLegale, dateCreationEntreprise, regimesFiscauxVDNonAnnulesTrie);
 		}
 		else {

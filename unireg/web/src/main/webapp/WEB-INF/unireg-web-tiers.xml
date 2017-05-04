@@ -111,7 +111,7 @@
 		<property name="ibanValidator" ref="ibanValidator"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="metierServicePM" ref="metierServicePM"/>
-		<property name="serviceRegimeFiscal" ref="serviceRegimeFiscal"/>
+		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 
 	<bean id="tiersManager" class="ch.vd.uniregctb.tiers.manager.TiersManager">
@@ -255,7 +255,7 @@
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
-		<property name="regimeFiscalService" ref="serviceRegimeFiscal"/>
+		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="validators">
 			<util:list>

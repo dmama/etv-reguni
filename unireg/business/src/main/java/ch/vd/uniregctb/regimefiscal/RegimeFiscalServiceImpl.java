@@ -22,32 +22,32 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 /**
  * @author Raphaël Marmier, 2017-01-25, <raphael.marmier@vd.ch>
  */
-public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
+public class RegimeFiscalServiceImpl implements RegimeFiscalService {
 
 	private ServiceInfrastructureService serviceInfra;
 
-	private ServiceRegimeFiscalConfiguration configuration;
+	private RegimeFiscalServiceConfiguration configuration;
 
 	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
 		this.serviceInfra = serviceInfra;
 	}
 
-	public void setConfiguration(ServiceRegimeFiscalConfiguration configuration) {
+	public void setConfiguration(RegimeFiscalServiceConfiguration configuration) {
 		this.configuration = configuration;
 	}
 
 	@Override
 	@NotNull
-	public TypeRegimeFiscal getTypeRegimeFiscal(@NotNull String codeRegime) throws ServiceRegimeFiscalException {
+	public TypeRegimeFiscal getTypeRegimeFiscal(@NotNull String codeRegime) throws RegimeFiscalServiceException {
 		Objects.requireNonNull(codeRegime, "Impossible de déterminer le type de régime fiscal sans son code.");
 
 		final List<TypeRegimeFiscal> typesRegimesFiscaux = serviceInfra.getRegimesFiscaux();
 		final List<TypeRegimeFiscal> typesRegimeFiscal = typesRegimesFiscaux.stream().filter(r -> codeRegime.equals(r.getCode())).collect(Collectors.toList());
 		if (typesRegimeFiscal.size() > 1) {
-			throw new ServiceRegimeFiscalException(String.format("Fatal: Deux ou plus types de régime fiscal partagent le même code '%s'. Problème de configuration FiDoR.", codeRegime));
+			throw new RegimeFiscalServiceException(String.format("Fatal: Deux ou plus types de régime fiscal partagent le même code '%s'. Problème de configuration FiDoR.", codeRegime));
 		}
 		if (typesRegimeFiscal.size() == 0) {
-			throw new ServiceRegimeFiscalException(String.format("Aucun type de régime fiscal ne correspond au code fourni '%s'. Soit le code est erroné, soit il manque des données dans FiDoR.",
+			throw new RegimeFiscalServiceException(String.format("Aucun type de régime fiscal ne correspond au code fourni '%s'. Soit le code est erroné, soit il manque des données dans FiDoR.",
 			                                                     codeRegime));
 		}
 		return typesRegimeFiscal.get(0);
@@ -61,10 +61,10 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 				.filter(TypeRegimeFiscal::isSocieteDePersonnes)
 				.collect(Collectors.toList());
 		if (typesSP.isEmpty()) {
-			throw new ServiceRegimeFiscalException("Aucun régime fiscal pour 'Société de personnes' trouvé.");
+			throw new RegimeFiscalServiceException("Aucun régime fiscal pour 'Société de personnes' trouvé.");
 		}
 		if (typesSP.size() > 1) {
-			throw new ServiceRegimeFiscalException("Plus d'un régime fiscal pour 'Société de personnes' trouvé.");
+			throw new RegimeFiscalServiceException("Plus d'un régime fiscal pour 'Société de personnes' trouvé.");
 		}
 		return typesSP.get(0);
 	}
@@ -77,17 +77,17 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 				.filter(TypeRegimeFiscal::isIndetermine)
 				.collect(Collectors.toList());
 		if (indetermines.isEmpty()) {
-			throw new ServiceRegimeFiscalException("Aucun régime fiscal indéterminé trouvé.");
+			throw new RegimeFiscalServiceException("Aucun régime fiscal indéterminé trouvé.");
 		}
 		if (indetermines.size() > 1) {
-			throw new ServiceRegimeFiscalException("Plus d'un régime fiscal indéterminé trouvé.");
+			throw new RegimeFiscalServiceException("Plus d'un régime fiscal indéterminé trouvé.");
 		}
 		return indetermines.get(0);
 	}
 
 	@Override
 	@NotNull
-	public TypeRegimeFiscal getTypeRegimeFiscalParDefaut(@NotNull FormeJuridiqueEntreprise formeJuridique) throws ServiceRegimeFiscalException {
+	public TypeRegimeFiscal getTypeRegimeFiscalParDefaut(@NotNull FormeJuridiqueEntreprise formeJuridique) throws RegimeFiscalServiceException {
 
 		String codeRegime = configuration.getCodeTypeRegimeFiscal(formeJuridique);
 		if (codeRegime == null) {
@@ -96,8 +96,8 @@ public class ServiceRegimeFiscalImpl implements ServiceRegimeFiscal {
 		try {
 			return this.getTypeRegimeFiscal(codeRegime);
 		}
-		catch (ServiceRegimeFiscalException e) {
-			throw new ServiceRegimeFiscalException(
+		catch (RegimeFiscalServiceException e) {
+			throw new RegimeFiscalServiceException(
 					String.format("Impossible de récupérer un type de régime fiscal avec le code '%s' configuré pour la forme juridique \"%s\". Faites contrôler la configuration Unireg des types par défaut.",
 					              codeRegime, formeJuridique.getLibelle()));
 		}

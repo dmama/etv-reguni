@@ -10,7 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.regimefiscal.ServiceRegimeFiscal;
+import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -28,7 +28,7 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, I
 	private AssujettissementService assujettissementService;
 	private ParametreAppService parametreAppService;
 	private TiersService tiersService;
-	private ServiceRegimeFiscal serviceRegimeFiscal;
+	private RegimeFiscalService regimeFiscalService;
 
 	/**
 	 * Le calculateur utilisé pour les contribuables PP
@@ -56,8 +56,8 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, I
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceRegimeFiscal(ServiceRegimeFiscal serviceRegimeFiscal) {
-		this.serviceRegimeFiscal = serviceRegimeFiscal;
+	public void setRegimeFiscalService(RegimeFiscalService regimeFiscalService) {
+		this.regimeFiscalService = regimeFiscalService;
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, I
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		final PeriodeImpositionCalculator<Entreprise> pmCalculator = new PeriodeImpositionPersonnesMoralesCalculator(parametreAppService, tiersService, serviceRegimeFiscal);
+		final PeriodeImpositionCalculator<Entreprise> pmCalculator = new PeriodeImpositionPersonnesMoralesCalculator(parametreAppService, tiersService, regimeFiscalService);
 		this.ppCalculator = new PeriodeImpositionPersonnesPhysiquesCalculator(parametreAppService);
 		this.calculators = buildAssujettissementCalculators(this.ppCalculator, pmCalculator);
 	}
