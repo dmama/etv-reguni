@@ -267,7 +267,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="land:easementRightType">
+			<xs:extension base="land:landRightType">
 				<xs:sequence>
 					<xs:element name="path" type="land:landRightType" minOccurs="2" maxOccurs="unbounded">
 						<xs:annotation>

@@ -18,7 +18,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
-import ch.vd.uniregctb.common.ProgrammingException;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -35,6 +35,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
+import ch.vd.uniregctb.registrefoncier.UsufruitRFVirtuel;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
@@ -60,6 +61,7 @@ public abstract class LandRightBuilder {
 		strategies.put(DroitProprieteRFVirtuel.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteRFVirtuel) d, p, c));
 		strategies.put(UsufruitRF.class, (d, p, c) -> newUsufructRight((UsufruitRF) d, p, c));
 		strategies.put(DroitHabitationRF.class, (d, p, c) -> newHousingRight((DroitHabitationRF) d, p, c));
+		strategies.put(UsufruitRFVirtuel.class, (d, p, c) -> newUsufructRight((UsufruitRFVirtuel) d, p, c));
 	}
 
 	private LandRightBuilder() {
@@ -131,6 +133,17 @@ public abstract class LandRightBuilder {
 	public static UsufructRight newUsufructRight(@NotNull UsufruitRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final UsufructRight right = new UsufructRight();
 		fillEasementRight(usufruitRF, right, ctbIdProvider, rightHolderComparator);
+		return right;
+	}
+
+	public static VirtualUsufructRight newUsufructRight(@NotNull UsufruitRFVirtuel usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
+		final VirtualUsufructRight right = new VirtualUsufructRight();
+		fillLandRight(usufruitRF, right);
+		right.setRightHolder(RightHolderBuilder.getRightHolder(usufruitRF.getAyantDroits().iterator().next(), ctbIdProvider));
+		right.setImmovablePropertyId(usufruitRF.getImmeubles().iterator().next().getId());
+		right.getPath().addAll(usufruitRF.getChemin().stream()
+				                       .map(d -> LandRightBuilder.newLandRight(d, ctbIdProvider, rightHolderComparator))
+				                       .collect(Collectors.toList()));
 		return right;
 	}
 

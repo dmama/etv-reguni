@@ -22,6 +22,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
@@ -42,6 +43,7 @@ import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
+import ch.vd.uniregctb.registrefoncier.UsufruitRFVirtuel;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -238,8 +240,6 @@ public class LandRightBuilderTest {
 	 *                     +.................................>| Immeuble 1 |
 	 *                                                        +------------+
 	 * </pre>
-	 *
-	 * @throws Exception
 	 */
 	@Test
 	public void testNewLandOwnershipRightVirtualLandRight() throws Exception {
@@ -464,6 +464,132 @@ public class LandRightBuilderTest {
 		// pour des raisons de compatibilité ascendante, ces deux propriétés sont encore renseignées
 		assertEquals(123456L, usufructRight.getImmovablePropertyId());
 		assertEquals(Integer.valueOf((int) ctbId2), usufructRight.getRightHolder().getTaxPayerNumber());
+	}
+
+	/**
+	 * <pre>
+	 *                        usufruit                                +------------+
+	 *                     +----------------------------------------->| Immeuble 0 |
+	 *     +----------+    |                                          +------------+
+	 *     |          |----+                                             |
+	 *     | Tiers RF |                                                  | fond dominant (20/100)
+	 *     |          |....+                                             v
+	 *     +----------+    :  usufruit virtuel (usufruit * 20/100)    +------------+
+	 *                     +.........................................>| Immeuble 1 |
+	 *                                                                +------------+
+	 * </pre>
+	 */
+	@Test
+	public void testNewVirtualUsfructRight() throws Exception {
+
+		final long ctbId1 = 2928282L;
+		final long ctbId2 = 4573282L;
+
+		final PersonnePhysique pp1 = new PersonnePhysique(false);
+		pp1.setNumero(ctbId1);
+		pp1.setPrenomUsuel("Arnold");
+		pp1.setNom("Fjjuii");
+		pp1.addForFiscal(new ForFiscalPrincipalPP(null, null, null, null, null, TypeAutoriteFiscale.COMMUNE_HC, null, null));
+
+		final PersonnePhysique pp2 = new PersonnePhysique(false);
+		pp2.setNumero(ctbId2);
+		pp2.setPrenomUsuel("Josua");
+		pp2.setNom("Bipbip");
+		pp2.addForFiscal(new ForFiscalPrincipalPP(null, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null));
+
+		tiersMap.put(ctbId1, pp1);
+		tiersMap.put(ctbId2, pp2);
+
+		final PersonnePhysiqueRF ppRF1 = new PersonnePhysiqueRF();
+		ppRF1.setId(ctbId1);
+
+		final PersonnePhysiqueRF ppRF2 = new PersonnePhysiqueRF();
+		ppRF2.setId(ctbId2);
+
+		final BienFondRF immeuble0 = new BienFondRF();
+		immeuble0.setIdRF("a8388e8e83");
+		immeuble0.setId(123456L);
+		immeuble0.setDroitsPropriete(Collections.emptySet());
+		immeuble0.setServitudes(Collections.emptySet());
+
+		final BienFondRF immeuble1 = new BienFondRF();
+		immeuble1.setIdRF("a26271e8e2");
+		immeuble1.setId(4783711L);
+		immeuble1.setDroitsPropriete(Collections.emptySet());
+		immeuble1.setServitudes(Collections.emptySet());
+
+		final ImmeubleBeneficiaireRF beneficiaire0 = new ImmeubleBeneficiaireRF();
+		beneficiaire0.setIdRF(immeuble0.getIdRF());
+		beneficiaire0.setImmeuble(immeuble0);
+
+		final UsufruitRF usufruit = new UsufruitRF();
+		usufruit.setDateDebut(RegDate.get(2016, 11, 3));
+		usufruit.setDateFin(RegDate.get(2017, 9, 22));
+		usufruit.setMotifDebut("Convention");
+		usufruit.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		usufruit.setDateFinMetier(RegDate.get(2017, 4, 14));
+		usufruit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
+		usufruit.addAyantDroit(ppRF1);
+		usufruit.addAyantDroit(ppRF2);
+		usufruit.addImmeuble(immeuble0);
+		usufruit.addImmeuble(immeuble1);
+
+		final DroitProprieteImmeubleRF droit1 = new DroitProprieteImmeubleRF();
+		droit1.setRegime(GenrePropriete.FONDS_DOMINANT);
+		droit1.setPart(new Fraction(3, 5));
+		droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Constitution de PPE", new IdentifiantAffaireRF(21, 2000, 1, 0)));
+		droit1.setAyantDroit(beneficiaire0);
+		droit1.setImmeuble(immeuble1);
+		droit1.calculateDateEtMotifDebut();
+
+		final UsufruitRFVirtuel droit2 = new UsufruitRFVirtuel();
+		droit2.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		droit2.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit2.setMotifDebut("Achat");
+		droit2.addAyantDroit(ppRF1);
+		droit2.addImmeuble(immeuble1);
+		droit2.setChemin(Arrays.asList(usufruit, droit1));
+
+		final LandRight landRight = LandRightBuilder.newLandRight(droit2, AyantDroitRF::getId, rightHolderComparator);
+		assertNotNull(landRight);
+		assertTrue(landRight instanceof VirtualUsufructRight);
+
+		final VirtualUsufructRight virtualRight = (VirtualUsufructRight) landRight;
+		assertNotNull(virtualRight);
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(virtualRight.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(virtualRight.getDateTo()));
+		assertEquals("Achat", virtualRight.getStartReason());
+		assertNull(virtualRight.getEndReason());
+		assertNull(virtualRight.getCaseIdentifier());
+		assertEquals(Integer.valueOf((int) ctbId1), virtualRight.getRightHolder().getTaxPayerNumber());
+		assertEquals(immeuble1.getId().longValue(), virtualRight.getImmovablePropertyId());
+
+		final List<LandRight> paths = virtualRight.getPath();
+		assertNotNull(paths);
+		assertEquals(2, paths.size());
+
+		// le chemin pp -> immeuble0
+		final UsufructRight path0 = (UsufructRight) paths.get(0);
+		assertNotNull(path0);
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(path0.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(path0.getDateTo()));
+		assertEquals("Convention", path0.getStartReason());
+		assertNull(path0.getEndReason());
+		assertCaseIdentifier(21, "2016/322/3", path0.getCaseIdentifier());
+
+		// le chemin immeuble0 -> immeuble1
+		final LandOwnershipRight path1 = (LandOwnershipRight) paths.get(1);
+		assertNotNull(path1);
+		assertEquals(OwnershipType.DOMINANT_OWNERSHIP, path1.getType());
+		assertShare(3, 5, path1.getShare());
+		assertEquals(RegDate.get(2000, 1, 1), DataHelper.xmlToCore(path1.getDateFrom()));
+		assertNull(DataHelper.xmlToCore(path1.getDateTo()));
+		assertEquals("Constitution de PPE", path1.getStartReason());
+		assertNull(path1.getEndReason());
+		assertCaseIdentifier(21, "2000/1/0", path1.getCaseIdentifier());
+		assertEquals(immeuble0.getId(), path1.getRightHolder().getImmovablePropertyId());
+		assertEquals(immeuble1.getId().longValue(), path1.getImmovablePropertyId());
+		assertNull(path1.getCommunityId());
 	}
 
 	@Test
