@@ -27,7 +27,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRFVirtuel;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteVirtuelRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
@@ -35,7 +35,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
-import ch.vd.uniregctb.registrefoncier.UsufruitRFVirtuel;
+import ch.vd.uniregctb.registrefoncier.UsufruitVirtuelRF;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
@@ -58,10 +58,10 @@ public abstract class LandRightBuilder {
 		strategies.put(DroitProprietePersonneMoraleRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d, p));
 		strategies.put(DroitProprietePersonnePhysiqueRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d, p));
 		strategies.put(DroitProprieteImmeubleRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteImmeubleRF) d, p));
-		strategies.put(DroitProprieteRFVirtuel.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteRFVirtuel) d, p, c));
+		strategies.put(DroitProprieteVirtuelRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteVirtuelRF) d, p, c));
 		strategies.put(UsufruitRF.class, (d, p, c) -> newUsufructRight((UsufruitRF) d, p, c));
 		strategies.put(DroitHabitationRF.class, (d, p, c) -> newHousingRight((DroitHabitationRF) d, p, c));
-		strategies.put(UsufruitRFVirtuel.class, (d, p, c) -> newUsufructRight((UsufruitRFVirtuel) d, p, c));
+		strategies.put(UsufruitVirtuelRF.class, (d, p, c) -> newUsufructRight((UsufruitVirtuelRF) d, p, c));
 	}
 
 	private LandRightBuilder() {
@@ -118,7 +118,7 @@ public abstract class LandRightBuilder {
 				                                     .collect(Collectors.toList()));
 	}
 
-	private static VirtualLandOwnershipRight newLandOwnershipRight(@NotNull DroitProprieteRFVirtuel droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
+	private static VirtualLandOwnershipRight newLandOwnershipRight(@NotNull DroitProprieteVirtuelRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final VirtualLandOwnershipRight right = new VirtualLandOwnershipRight();
 		fillLandRight(droitRF, right);
 		right.setRightHolder(RightHolderBuilder.getRightHolder(droitRF.getAyantDroit(), ctbIdProvider));
@@ -136,11 +136,11 @@ public abstract class LandRightBuilder {
 		return right;
 	}
 
-	public static VirtualUsufructRight newUsufructRight(@NotNull UsufruitRFVirtuel usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
+	public static VirtualUsufructRight newUsufructRight(@NotNull UsufruitVirtuelRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final VirtualUsufructRight right = new VirtualUsufructRight();
 		fillLandRight(usufruitRF, right);
-		right.setRightHolder(RightHolderBuilder.getRightHolder(usufruitRF.getAyantDroits().iterator().next(), ctbIdProvider));
-		right.setImmovablePropertyId(usufruitRF.getImmeubles().iterator().next().getId());
+		right.setRightHolder(RightHolderBuilder.getRightHolder(usufruitRF.getAyantDroit(), ctbIdProvider));
+		right.setImmovablePropertyId(usufruitRF.getImmeuble().getId());
 		right.getPath().addAll(usufruitRF.getChemin().stream()
 				                       .map(d -> LandRightBuilder.newLandRight(d, ctbIdProvider, rightHolderComparator))
 				                       .collect(Collectors.toList()));

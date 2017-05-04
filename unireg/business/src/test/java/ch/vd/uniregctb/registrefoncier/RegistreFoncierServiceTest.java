@@ -35,6 +35,7 @@ import static ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestC
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class RegistreFoncierServiceTest extends BusinessTest {
 
@@ -494,17 +495,15 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertEquals("48390a0e044", droitReel0.getMasterIdRF());
 			assertEquals("01faeee", droitReel0.getImmeuble().getIdRF());
 
-			final DroitProprieteRFVirtuel droitVirtuel1 = (DroitProprieteRFVirtuel) droits.get(1);
+			final DroitProprieteVirtuelRF droitVirtuel1 = (DroitProprieteVirtuelRF) droits.get(1);
 			assertNull(droitVirtuel1.getCommunaute());
-			assertNull(droitVirtuel1.getRegime());
-			assertNull(droitVirtuel1.getPart());
 			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel1.getDateDebutMetier());   // date d'achat du droit0
 			assertEquals("Achat", droitVirtuel1.getMotifDebut());
 			assertNull(droitVirtuel1.getMotifFin());
 			assertNull(droitVirtuel1.getMasterIdRF());
 			assertEquals("78838e838ca92", droitVirtuel1.getAyantDroit().getIdRF());                // le tiers RF
 			assertEquals("02faeee", droitVirtuel1.getImmeuble().getIdRF());                        // l'immeuble1
-			final List<DroitProprieteRF> chemin = droitVirtuel1.getChemin();                                // tiers RF -> immeuble 0 -> immeuble 1
+			final List<DroitRF> chemin = droitVirtuel1.getChemin();                                // tiers RF -> immeuble 0 -> immeuble 1
 			assertEquals(2, chemin.size());
 			assertEquals(ids.droit0, chemin.get(0).getId());
 			assertEquals(ids.droit1, chemin.get(1).getId());
@@ -635,20 +634,18 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertEquals("48390a0e044", droitReel0.getMasterIdRF());
 			assertEquals("01faeee", droitReel0.getImmeuble().getIdRF());
 
-			final DroitProprieteRFVirtuel droitVirtuel1 = (DroitProprieteRFVirtuel) droits.get(1);
+			final DroitProprieteVirtuelRF droitVirtuel1 = (DroitProprieteVirtuelRF) droits.get(1);
 			assertNull(droitVirtuel1.getCommunaute());
-			assertNull(droitVirtuel1.getRegime());
-			assertNull(droitVirtuel1.getPart());
 			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel1.getDateDebutMetier());   // date d'achat du droit0
 			assertEquals("Achat", droitVirtuel1.getMotifDebut());
 			assertNull(droitVirtuel1.getMotifFin());
 			assertNull(droitVirtuel1.getMasterIdRF());
 			assertEquals("78838e838ca92", droitVirtuel1.getAyantDroit().getIdRF());                // le tiers RF
 			assertEquals("03faeee", droitVirtuel1.getImmeuble().getIdRF());                        // l'immeuble2
-			final List<DroitProprieteRF> chemin1 = droitVirtuel1.getChemin();
+			final List<DroitRF> chemin1 = droitVirtuel1.getChemin();
 			assertEquals(2, chemin1.size());
-			assertChemin(ids.droit0, 1, 1, chemin1.get(0));                         // tiers RF -> immeuble0
-			assertChemin(ids.droit2, 17, 50, chemin1.get(1));                       // immeuble0 -> immeuble 2
+			assertDroitPropChemin(ids.droit0, 1, 1, chemin1.get(0));                         // tiers RF -> immeuble0
+			assertDroitPropChemin(ids.droit2, 17, 50, chemin1.get(1));                       // immeuble0 -> immeuble 2
 
 			final DroitProprietePersonnePhysiqueRF droitReel2 = (DroitProprietePersonnePhysiqueRF) droits.get(2);
 			assertNull(droitReel2.getCommunaute());
@@ -660,20 +657,18 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertEquals("4782389c8e", droitReel2.getMasterIdRF());
 			assertEquals("02faeee", droitReel2.getImmeuble().getIdRF());
 
-			final DroitProprieteRFVirtuel droitVirtuel3 = (DroitProprieteRFVirtuel) droits.get(3);
+			final DroitProprieteVirtuelRF droitVirtuel3 = (DroitProprieteVirtuelRF) droits.get(3);
 			assertNull(droitVirtuel3.getCommunaute());
-			assertNull(droitVirtuel3.getRegime());
-			assertNull(droitVirtuel3.getPart());
 			assertEquals(RegDate.get(2008, 3, 1), droitVirtuel3.getDateDebutMetier());   // date d'achat du droit1
 			assertEquals("Achat", droitVirtuel3.getMotifDebut());
 			assertNull(droitVirtuel3.getMotifFin());
 			assertNull(droitVirtuel3.getMasterIdRF());
 			assertEquals("78838e838ca92", droitVirtuel3.getAyantDroit().getIdRF());                // le tiers RF
 			assertEquals("03faeee", droitVirtuel3.getImmeuble().getIdRF());                        // l'immeuble2
-			final List<DroitProprieteRF> chemin3 = droitVirtuel3.getChemin();
+			final List<DroitRF> chemin3 = droitVirtuel3.getChemin();
 			assertEquals(2, chemin3.size());
-			assertChemin(ids.droit1, 1, 3, chemin3.get(0));                         // tiers RF -> immeuble1
-			assertChemin(ids.droit3, 23, 50, chemin3.get(1));                       // immeuble1 -> immeuble 2
+			assertDroitPropChemin(ids.droit1, 1, 3, chemin3.get(0));                         // tiers RF -> immeuble1
+			assertDroitPropChemin(ids.droit3, 23, 50, chemin3.get(1));                       // immeuble1 -> immeuble 2
 
 			return null;
 		});
@@ -790,36 +785,32 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertEquals("48390a0e044", droitReel0.getMasterIdRF());
 			assertEquals("01faeee", droitReel0.getImmeuble().getIdRF());
 
-			final DroitProprieteRFVirtuel droitVirtuel1 = (DroitProprieteRFVirtuel) droits.get(1);
+			final DroitProprieteVirtuelRF droitVirtuel1 = (DroitProprieteVirtuelRF) droits.get(1);
 			assertNull(droitVirtuel1.getCommunaute());
-			assertNull(droitVirtuel1.getRegime());
-			assertNull(droitVirtuel1.getPart());
 			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel1.getDateDebutMetier());   // date d'achat du droit0
 			assertEquals("Achat", droitVirtuel1.getMotifDebut());
 			assertNull(droitVirtuel1.getMotifFin());
 			assertNull(droitVirtuel1.getMasterIdRF());
 			assertEquals("78838e838ca92", droitVirtuel1.getAyantDroit().getIdRF());                // le tiers RF
 			assertEquals("02faeee", droitVirtuel1.getImmeuble().getIdRF());                        // l'immeuble1
-			final List<DroitProprieteRF> chemin1 = droitVirtuel1.getChemin();
+			final List<DroitRF> chemin1 = droitVirtuel1.getChemin();
 			assertEquals(2, chemin1.size());
-			assertChemin(ids.droit0, 1, 3, chemin1.get(0));                         // tiers RF -> immeuble0
-			assertChemin(ids.droit1, 1, 5, chemin1.get(1));                         // immeuble0 -> immeuble1
+			assertDroitPropChemin(ids.droit0, 1, 3, chemin1.get(0));                         // tiers RF -> immeuble0
+			assertDroitPropChemin(ids.droit1, 1, 5, chemin1.get(1));                         // immeuble0 -> immeuble1
 
-			final DroitProprieteRFVirtuel droitVirtuel2 = (DroitProprieteRFVirtuel) droits.get(2);
+			final DroitProprieteVirtuelRF droitVirtuel2 = (DroitProprieteVirtuelRF) droits.get(2);
 			assertNull(droitVirtuel2.getCommunaute());
-			assertNull(droitVirtuel2.getRegime());
-			assertNull(droitVirtuel2.getPart());
 			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel2.getDateDebutMetier());   // date d'achat du droit0
 			assertEquals("Achat", droitVirtuel2.getMotifDebut());
 			assertNull(droitVirtuel2.getMotifFin());
 			assertNull(droitVirtuel2.getMasterIdRF());
 			assertEquals("78838e838ca92", droitVirtuel2.getAyantDroit().getIdRF());                // le tiers RF
 			assertEquals("03faeee", droitVirtuel2.getImmeuble().getIdRF());                        // l'immeuble1
-			final List<DroitProprieteRF> chemin2 = droitVirtuel2.getChemin();
+			final List<DroitRF> chemin2 = droitVirtuel2.getChemin();
 			assertEquals(3, chemin2.size());
-			assertChemin(ids.droit0, 1, 3, chemin2.get(0));                         // tiers RF -> immeuble0
-			assertChemin(ids.droit1, 1, 5, chemin2.get(1));                         // immeuble0 -> immeuble1
-			assertChemin(ids.droit2, 33, 100, chemin2.get(2));                      // immeuble1 -> immeuble2
+			assertDroitPropChemin(ids.droit0, 1, 3, chemin2.get(0));                         // tiers RF -> immeuble0
+			assertDroitPropChemin(ids.droit1, 1, 5, chemin2.get(1));                         // immeuble0 -> immeuble1
+			assertDroitPropChemin(ids.droit2, 33, 100, chemin2.get(2));                      // immeuble1 -> immeuble2
 
 			return null;
 		});
@@ -929,36 +920,32 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertEquals("48390a0e044", droitReel0.getMasterIdRF());
 			assertEquals("01faeee", droitReel0.getImmeuble().getIdRF());
 
-			final DroitProprieteRFVirtuel droitVirtuel1 = (DroitProprieteRFVirtuel) droits.get(1);
+			final DroitProprieteVirtuelRF droitVirtuel1 = (DroitProprieteVirtuelRF) droits.get(1);
 			assertNull(droitVirtuel1.getCommunaute());
-			assertNull(droitVirtuel1.getRegime());
-			assertNull(droitVirtuel1.getPart());
 			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel1.getDateDebutMetier());   // date d'achat du droit0
 			assertEquals("Achat", droitVirtuel1.getMotifDebut());
 			assertNull(droitVirtuel1.getMotifFin());
 			assertNull(droitVirtuel1.getMasterIdRF());
 			assertEquals("78838e838ca92", droitVirtuel1.getAyantDroit().getIdRF());                // le tiers RF
 			assertEquals("01faeee", droitVirtuel1.getImmeuble().getIdRF());                        // l'immeuble0
-			final List<DroitProprieteRF> chemin2 = droitVirtuel1.getChemin();
+			final List<DroitRF> chemin2 = droitVirtuel1.getChemin();
 			assertEquals(3, chemin2.size());
-			assertChemin(ids.droit0, 1, 3, chemin2.get(0));                         // tiers RF -> immeuble0
-			assertChemin(ids.droit1, 1, 5, chemin2.get(1));                         // immeuble0 -> immeuble1
-			assertChemin(ids.droit2, 4, 7, chemin2.get(2));                         // immeuble1 -> immeuble0
+			assertDroitPropChemin(ids.droit0, 1, 3, chemin2.get(0));                         // tiers RF -> immeuble0
+			assertDroitPropChemin(ids.droit1, 1, 5, chemin2.get(1));                         // immeuble0 -> immeuble1
+			assertDroitPropChemin(ids.droit2, 4, 7, chemin2.get(2));                         // immeuble1 -> immeuble0
 
-			final DroitProprieteRFVirtuel droitVirtuel2 = (DroitProprieteRFVirtuel) droits.get(2);
+			final DroitProprieteVirtuelRF droitVirtuel2 = (DroitProprieteVirtuelRF) droits.get(2);
 			assertNull(droitVirtuel2.getCommunaute());
-			assertNull(droitVirtuel2.getRegime());
-			assertNull(droitVirtuel2.getPart());
 			assertEquals(RegDate.get(2004, 5, 21), droitVirtuel2.getDateDebutMetier());   // date d'achat du droit0
 			assertEquals("Achat", droitVirtuel2.getMotifDebut());
 			assertNull(droitVirtuel2.getMotifFin());
 			assertNull(droitVirtuel2.getMasterIdRF());
 			assertEquals("78838e838ca92", droitVirtuel2.getAyantDroit().getIdRF());                // le tiers RF
 			assertEquals("02faeee", droitVirtuel2.getImmeuble().getIdRF());                        // l'immeuble1
-			final List<DroitProprieteRF> chemin1 = droitVirtuel2.getChemin();
+			final List<DroitRF> chemin1 = droitVirtuel2.getChemin();
 			assertEquals(2, chemin1.size());
-			assertChemin(ids.droit0, 1, 3, chemin1.get(0));                         // tiers RF -> immeuble0
-			assertChemin(ids.droit1, 1, 5, chemin1.get(1));                         // immeuble0 -> immeuble1
+			assertDroitPropChemin(ids.droit0, 1, 3, chemin1.get(0));                         // tiers RF -> immeuble0
+			assertDroitPropChemin(ids.droit1, 1, 5, chemin1.get(1));                         // immeuble0 -> immeuble1
 
 			return null;
 		});
@@ -1115,24 +1102,22 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertEquals(2, droits.size());
 			droits.sort(new DroitRFRangeMetierComparator());
 
-			final UsufruitRFVirtuel droit0 = (UsufruitRFVirtuel) droits.get(0);
-			final Set<AyantDroitRF> ayantDroits1 = droit0.getAyantDroits();
-			assertEquals(1, ayantDroits1.size());
-			assertEquals(ids.tiers, ayantDroits1.iterator().next().getId());
+			final UsufruitVirtuelRF droit0 = (UsufruitVirtuelRF) droits.get(0);
+			final AyantDroitRF ayantDroit0 = droit0.getAyantDroit();
+			assertEquals(ids.tiers, ayantDroit0.getId());
 			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebutMetier());
 			assertEquals("Convention", droit0.getMotifDebut());
 			assertNull(droit0.getMotifFin());
 			assertNull(droit0.getMasterIdRF());
 
-			final Set<ImmeubleRF> immeubles0 = droit0.getImmeubles();
-			assertEquals(1, immeubles0.size());
-			assertEquals("03faeee", immeubles0.iterator().next().getIdRF());
+			final ImmeubleRF immeuble0 = droit0.getImmeuble();
+			assertEquals("03faeee", immeuble0.getIdRF());
 
 			final List<DroitRF> chemin = droit0.getChemin();
 			assertNotNull(chemin);
 			assertEquals(2, chemin.size());
-			assertChemin(ids.droit0, (ServitudeRF) chemin.get(0));
-			assertChemin(ids.droit1, 20, 100, (DroitProprieteRF) chemin.get(1));
+			assertServitudeChemin(ids.droit0, (ServitudeRF) chemin.get(0));
+			assertDroitPropChemin(ids.droit1, 20, 100, chemin.get(1));
 
 			final UsufruitRF droit1 = (UsufruitRF) droits.get(1);
 			final Set<AyantDroitRF> ayantDroits0 = droit1.getAyantDroits();
@@ -1240,24 +1225,22 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			droits.sort(new DroitRFRangeMetierComparator());
 
 			// usufruit virtuel (Tiers RF -> Immeuble 0 -> Immeuble 2)
-			final UsufruitRFVirtuel droit0 = (UsufruitRFVirtuel) droits.get(0);
-			final Set<AyantDroitRF> ayantDroits0 = droit0.getAyantDroits();
-			assertEquals(1, ayantDroits0.size());
-			assertEquals(ids.tiers, ayantDroits0.iterator().next().getId());
+			final UsufruitVirtuelRF droit0 = (UsufruitVirtuelRF) droits.get(0);
+			final AyantDroitRF ayantDroit0 = droit0.getAyantDroit();
+			assertEquals(ids.tiers, ayantDroit0.getId());
 			assertEquals(RegDate.get(2004, 5, 21), droit0.getDateDebutMetier());
 			assertEquals("Convention", droit0.getMotifDebut());
 			assertNull(droit0.getMotifFin());
 			assertNull(droit0.getMasterIdRF());
 
-			final Set<ImmeubleRF> immeubles0 = droit0.getImmeubles();
-			assertEquals(1, immeubles0.size());
-			assertEquals("03faeee", immeubles0.iterator().next().getIdRF());
+			final ImmeubleRF immeuble0 = droit0.getImmeuble();
+			assertEquals("03faeee", immeuble0.getIdRF());
 
 			final List<DroitRF> chemin0 = droit0.getChemin();
 			assertNotNull(chemin0);
 			assertEquals(2, chemin0.size());
-			assertChemin(ids.droit0, (ServitudeRF) chemin0.get(0));
-			assertChemin(ids.droit1, 20, 100, (DroitProprieteRF) chemin0.get(1));
+			assertServitudeChemin(ids.droit0, (ServitudeRF) chemin0.get(0));
+			assertDroitPropChemin(ids.droit1, 20, 100, chemin0.get(1));
 
 			// usufruit réel
 			final UsufruitRF droit1 = (UsufruitRF) droits.get(1);
@@ -1276,24 +1259,22 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertEquals("02faeee", immeubles1.get(1).getIdRF());
 
 			// usufruit virtuel (Tiers RF -> Immeuble 1 -> Immeuble 2)
-			final UsufruitRFVirtuel droit2 = (UsufruitRFVirtuel) droits.get(2);
-			final Set<AyantDroitRF> ayantDroits1 = droit2.getAyantDroits();
-			assertEquals(1, ayantDroits1.size());
-			assertEquals(ids.tiers, ayantDroits1.iterator().next().getId());
+			final UsufruitVirtuelRF droit2 = (UsufruitVirtuelRF) droits.get(2);
+			final AyantDroitRF ayantDroit2 = droit2.getAyantDroit();
+			assertEquals(ids.tiers, ayantDroit2.getId());
 			assertEquals(RegDate.get(2005, 1, 1), droit2.getDateDebutMetier());
 			assertEquals("Remaniement parcellaire", droit2.getMotifDebut());
 			assertNull(droit2.getMotifFin());
 			assertNull(droit2.getMasterIdRF());
 
-			final Set<ImmeubleRF> immeubles2 = droit2.getImmeubles();
-			assertEquals(1, immeubles2.size());
-			assertEquals("03faeee", immeubles2.iterator().next().getIdRF());
+			final ImmeubleRF immeuble2 = droit2.getImmeuble();
+			assertEquals("03faeee", immeuble2.getIdRF());
 
 			final List<DroitRF> chemin2 = droit2.getChemin();
 			assertNotNull(chemin2);
 			assertEquals(2, chemin2.size());
-			assertChemin(ids.droit0, (ServitudeRF) chemin2.get(0));
-			assertChemin(ids.droit2, 3, 100, (DroitProprieteRF) chemin2.get(1));
+			assertServitudeChemin(ids.droit0, (ServitudeRF) chemin2.get(0));
+			assertDroitPropChemin(ids.droit2, 3, 100, chemin2.get(1));
 
 			return null;
 		});
@@ -1484,12 +1465,13 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 	}
 
-	private static void assertChemin(Long id, int numerateur, int denominateur, DroitProprieteRF chemin) {
+	private static void assertDroitPropChemin(Long id, int numerateur, int denominateur, DroitRF chemin) {
+		assertTrue(chemin instanceof DroitProprieteRF);
 		assertEquals(id, chemin.getId());
-		assertEquals(new Fraction(numerateur, denominateur), chemin.getPart());
+		assertEquals(new Fraction(numerateur, denominateur), ((DroitProprieteRF) chemin).getPart());
 	}
 
-	private static void assertChemin(Long id, ServitudeRF chemin) {
+	private static void assertServitudeChemin(Long id, ServitudeRF chemin) {
 		assertEquals(id, chemin.getId());
 	}
 }

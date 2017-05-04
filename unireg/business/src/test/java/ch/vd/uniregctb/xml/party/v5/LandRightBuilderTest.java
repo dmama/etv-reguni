@@ -32,7 +32,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprieteRFVirtuel;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteVirtuelRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
@@ -43,7 +43,7 @@ import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
-import ch.vd.uniregctb.registrefoncier.UsufruitRFVirtuel;
+import ch.vd.uniregctb.registrefoncier.UsufruitVirtuelRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -283,7 +283,7 @@ public class LandRightBuilderTest {
 		droit1.setImmeuble(immeuble1);
 		droit1.calculateDateEtMotifDebut();
 
-		final DroitProprieteRFVirtuel droit2 = new DroitProprieteRFVirtuel();
+		final DroitProprieteVirtuelRF droit2 = new DroitProprieteVirtuelRF();
 		droit2.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit2.setDateFinMetier(RegDate.get(2017, 4, 14));
 		droit2.setMotifDebut("Achat");
@@ -542,12 +542,12 @@ public class LandRightBuilderTest {
 		droit1.setImmeuble(immeuble1);
 		droit1.calculateDateEtMotifDebut();
 
-		final UsufruitRFVirtuel droit2 = new UsufruitRFVirtuel();
+		final UsufruitVirtuelRF droit2 = new UsufruitVirtuelRF();
 		droit2.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit2.setDateFinMetier(RegDate.get(2017, 4, 14));
 		droit2.setMotifDebut("Achat");
-		droit2.addAyantDroit(ppRF1);
-		droit2.addImmeuble(immeuble1);
+		droit2.setAyantDroit(ppRF1);
+		droit2.setImmeuble(immeuble1);
 		droit2.setChemin(Arrays.asList(usufruit, droit1));
 
 		final LandRight landRight = LandRightBuilder.newLandRight(droit2, AyantDroitRF::getId, rightHolderComparator);
