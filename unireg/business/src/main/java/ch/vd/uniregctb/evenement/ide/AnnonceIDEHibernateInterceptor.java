@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.ide;
 
-import javax.transaction.TransactionManager;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +44,7 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 
 	private ModificationInterceptor parent;
 	private SessionFactory sessionFactory;
-	private TransactionManager transactionManager;
+	private PlatformTransactionManager transactionManager;
 	private Dialect dialect;
 
 	private final ThreadLocal<HashSet<Long>> modifiedNosEntreprises = ThreadLocal.withInitial(HashSet::new);
@@ -112,7 +111,7 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 			LOGGER.debug("Passage à dirty IDE des entreprises = " + Arrays.toString(ids.toArray()));
 		}
 
-		final TransactionTemplate template = new TransactionTemplate((PlatformTransactionManager) transactionManager);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
 		template.execute(new TransactionCallback<Object>() {
@@ -197,7 +196,7 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 		this.sessionFactory = sessionFactory;
 	}
 
-	public void setTransactionManager(TransactionManager transactionManager) {
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
