@@ -48,7 +48,7 @@ public class ImportRFController {
 	private static final String TABLE_IMPORT_LIST = "importEvent";
 	private static final String TABLE_MUTATION_LIST = "mutation";
 
-	private static final int IMPORT_PAGE_SIZE = 10;
+	private static final int IMPORT_PAGE_SIZE = 25;
 	private static final int MUTATION_PAGE_SIZE = 50;
 
 	private RegistreFoncierImportService serviceImportRF;
@@ -92,6 +92,7 @@ public class ImportRFController {
 				.collect(toList());
 		model.addAttribute("list", viewList);
 		model.addAttribute("count", count);
+		model.addAttribute("pageSize", IMPORT_PAGE_SIZE);
 
 		return "registrefoncier/import/list";
 	}
@@ -121,6 +122,7 @@ public class ImportRFController {
 		model.addAttribute("importEvent", new EvenementRFImportView(importEvent));
 		model.addAttribute("mutations", viewList);
 		model.addAttribute("count", count);
+		model.addAttribute("pageSize", MUTATION_PAGE_SIZE);
 
 		return "registrefoncier/import/show";
 	}

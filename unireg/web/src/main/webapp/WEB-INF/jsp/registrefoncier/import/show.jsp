@@ -85,10 +85,11 @@
 		        <form:checkbox path="force" id="force" label="Forcé" onchange="submitForm()" onclick="submitForm()" />
 		    </span>
 
+			<%--@elvariable id="pageSize" type="java.lang.Long"--%>
 			<%--@elvariable id="count" type="java.lang.Long"--%>
 			<%--@elvariable id="mutation" type="ch.vd.uniregctb.registrefoncier.EvenementRFMutationView"--%>
 
-			<display:table name="mutations" id="mutation" class="display_table" pagesize="50" size="${count}" sort="external" partialList="true"
+			<display:table name="mutations" id="mutation" class="display_table" pagesize="${pageSize}" size="${count}" sort="external" partialList="true"
 			               requestURI="/registrefoncier/import/show.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucune.mutation.trouvee"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.une.mutation.trouvee"/></span></display:setProperty>

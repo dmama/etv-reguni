@@ -41,8 +41,9 @@
 		    </span>
 
 			<%--@elvariable id="importEvent" type="ch.vd.uniregctb.registrefoncier.EvenementRFImportView"--%>
+			<%--@elvariable id="pageSize" type="java.lang.Long"--%>
 			<%--@elvariable id="count" type="java.lang.Long"--%>
-			<display:table name="list" id="importEvent" class="display_table" pagesize="10" size="${count}" sort="external" partialList="true"
+			<display:table name="list" id="importEvent" class="display_table" pagesize="${pageSize}" size="${count}" sort="external" partialList="true"
 			               requestURI="/registrefoncier/import/list.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucun.import.trouve"/></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.un.import.trouve"/></span></display:setProperty>
