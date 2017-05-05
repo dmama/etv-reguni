@@ -41,9 +41,13 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 	 */
 	private String ville;
 	/*
-		Numéro postal d'acheminement.
+		Numéro postal d'acheminement (Suisse).
 	 */
 	private Integer npa;
+	/*
+		Numéro postal d'acheminement (Etranger).
+	 */
+	private String npaEtranger;
 
 	/*
 		Le numéro d'ordre postal (SwissZipCodeId pour RCEnt)
@@ -129,6 +133,15 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 	}
 
 	@Override
+	public String getNpaEtranger() {
+		return npaEtranger;
+	}
+
+	public void setNpaEtranger(String npaEtranger) {
+		this.npaEtranger = npaEtranger;
+	}
+
+	@Override
 	public Integer getNumeroOrdrePostal() {
 		return numeroOrdrePostal;
 	}
@@ -161,9 +174,9 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 		if (getTexteCasePostale() != null ? !getTexteCasePostale().equals(that.getTexteCasePostale()) : that.getTexteCasePostale() != null) return false;
 		if (getVille() != null ? !getVille().equals(that.getVille()) : that.getVille() != null) return false;
 		if (getNpa() != null ? !getNpa().equals(that.getNpa()) : that.getNpa() != null) return false;
+		if (getNpaEtranger() != null ? !getNpaEtranger().equals(that.getNpaEtranger()) : that.getNpaEtranger() != null) return false;
 		if (getNumeroOrdrePostal() != null ? !getNumeroOrdrePostal().equals(that.getNumeroOrdrePostal()) : that.getNumeroOrdrePostal() != null) return false;
 		return getPays() != null ? getPays().equals(that.getPays()) : that.getPays() == null;
-
 	}
 
 	@Override
@@ -176,6 +189,7 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 		result = 31 * result + (getTexteCasePostale() != null ? getTexteCasePostale().hashCode() : 0);
 		result = 31 * result + (getVille() != null ? getVille().hashCode() : 0);
 		result = 31 * result + (getNpa() != null ? getNpa().hashCode() : 0);
+		result = 31 * result + (getNpaEtranger() != null ? getNpaEtranger().hashCode() : 0);
 		result = 31 * result + (getNumeroOrdrePostal() != null ? getNumeroOrdrePostal().hashCode() : 0);
 		result = 31 * result + (getPays() != null ? getPays().hashCode() : 0);
 		return result;

@@ -567,15 +567,17 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 	private AdresseAnnonceIDERCEnt getAdresseAnnonceIDERCEnt(AdresseEnvoiDetaillee adresse) {
 		final AdresseAnnonceIDERCEnt adresseAnnonce;
 		if (adresse != null) {
+			final String npa = adresse.getNpaEtLocalite() == null ? null : adresse.getNpaEtLocalite().getNpa();
 			final Pays pays = adresse.getPays();
 			final CasePostale casePostale = adresse.getCasePostale();
 			adresseAnnonce = RCEntAnnonceIDEHelper
 					.createAdresseAnnonceIDERCEnt(adresse.getRueEtNumero() == null ? "" : adresse.getRueEtNumero().getRue(),
 					                              adresse.getRueEtNumero() == null ? "" : adresse.getRueEtNumero().getNumero(),
-					                              adresse.getNumeroAppartement() == null ? null : adresse.getNumeroAppartement(),
-					                              Integer.parseInt(adresse.getNpaEtLocalite().getNpa()),
+					                              adresse.getNumeroAppartement(),
+					                              adresse.isSuisse() && npa != null ? Integer.parseInt(npa) : null,
+					                              adresse.isSuisse() ? null : npa,
 					                              adresse.getNumeroOrdrePostal(),
-					                              adresse.getNpaEtLocalite().getLocalite(),
+					                              adresse.getNpaEtLocalite() == null ? null : adresse.getNpaEtLocalite().getLocalite(),
 					                              pays == null ? null : pays.getNoOfsEtatSouverain(), pays == null ? null : pays.getCodeIso2(), pays == null ? null : pays.getNomCourt(),
 					                              casePostale == null ? null : casePostale.getNumero(), casePostale == null ? null : String.valueOf(casePostale.getType()),
 					                              adresse.getEgid());

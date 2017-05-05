@@ -22,7 +22,7 @@ public class AnnonceIDETest extends WithoutSpringTest {
 
 		// l'annonce modèle
 		final AdresseAnnonceIDERCEnt adresseAnnonce1 = RCEntAnnonceIDEHelper
-				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
+				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, MockLocalite.Renens.getNPA(), null, MockLocalite.Renens.getNoOrdre(), "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
 
 		final AnnonceIDE annonce1 =
@@ -32,7 +32,7 @@ public class AnnonceIDETest extends WithoutSpringTest {
 
 		// l'annonce modèle
 		final AdresseAnnonceIDERCEnt adresseAnnonce2 = RCEntAnnonceIDEHelper
-				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
+				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, MockLocalite.Renens.getNPA(), null, MockLocalite.Renens.getNoOrdre(), "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
 
 		final AnnonceIDE annonce2 =

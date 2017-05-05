@@ -46,7 +46,7 @@ public class AnnonceIDEServiceTest extends WithoutSpringTest {
 
 		// le prototype d'annonce
 		final AdresseAnnonceIDERCEnt adresseAnnonce = RCEntAnnonceIDEHelper
-				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
+				.createAdresseAnnonceIDERCEnt("Longemalle", "1", null, MockLocalite.Renens.getNPA(), null, MockLocalite.Renens.getNoOrdre(), "Renens", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
 				                              null, null);
 
 		final ProtoAnnonceIDE annonce =

@@ -21,7 +21,8 @@ public class NoticeRequestAddressConverter {
 				.createAdresseAnnonceIDERCEnt(addressInformation.getStreet(),
 				                              addressInformation.getHouseNumber(),
 				                              addressInformation.getDwellingNumber(),
-				                              toInt(addressInformation.getSwissZipCode()),
+				                              addressInformation.getSwissZipCode() == null ? null : toInt(addressInformation.getSwissZipCode()),
+				                              addressInformation.getForeignZipCode(),
 				                              addressInformation.getSwissZipCodeId(),
 				                              addressInformation.getTown(),
 				                              country.getCountryId(),
@@ -42,6 +43,7 @@ public class NoticeRequestAddressConverter {
 		addressInformation.setDwellingNumber(adresse.getNumeroAppartement());
 		final Integer npa = adresse.getNpa();
 		addressInformation.setSwissZipCode(npa == null ? null : npa.longValue());
+		addressInformation.setForeignZipCode(adresse.getNpaEtranger());
 		addressInformation.setSwissZipCodeId(adresse.getNumeroOrdrePostal());
 		addressInformation.setTown(adresse.getVille());
 		final AdresseAnnonceIDE.Pays pays = adresse.getPays();

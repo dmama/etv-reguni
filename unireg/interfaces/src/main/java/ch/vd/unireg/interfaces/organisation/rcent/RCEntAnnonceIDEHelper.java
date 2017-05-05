@@ -340,13 +340,14 @@ public class RCEntAnnonceIDEHelper {
 	}
 
 	@NotNull
-	public static AdresseAnnonceIDERCEnt createAdresseAnnonceIDERCEnt(String rue, String numero, String numeroAppartement, Integer npa, Integer numeroOrdrePostal, String ville, Integer noOfsPays, String iso2Pays, String nomCourtPays,
+	public static AdresseAnnonceIDERCEnt createAdresseAnnonceIDERCEnt(String rue, String numero, String numeroAppartement, Integer npa, String npaEtranger, Integer numeroOrdrePostal, String ville, Integer noOfsPays, String iso2Pays, String nomCourtPays,
 	                                                                  Integer numeroCasePostale, String texteCasePostale, Integer egid) {
 		final AdresseAnnonceIDERCEnt adresse = new AdresseAnnonceIDERCEnt();
 		adresse.setRue(rue);
 		adresse.setNumero(numero);
 		adresse.setNumeroAppartement(numeroAppartement);
 		adresse.setNpa(npa);
+		adresse.setNpaEtranger(npaEtranger);
 		adresse.setNumeroOrdrePostal(numeroOrdrePostal);
 		adresse.setVille(ville);
 		adresse.setPays(new AdresseAnnonceIDERCEnt.PaysRCEnt(noOfsPays, iso2Pays, nomCourtPays));

@@ -125,7 +125,7 @@ public class RetourAnnonceIDETest extends AbstractEvenementOrganisationProcessor
 			@Override
 			protected void init() {
 				final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
-						.createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(),
+						.createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), null, MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(),
 						                              MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(),
 						                              null, null, null);
 				// Annonce existante
@@ -286,7 +286,7 @@ public class RetourAnnonceIDETest extends AbstractEvenementOrganisationProcessor
 			@Override
 			protected void init() {
 				final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
-						.createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(),
+						.createAdresseAnnonceIDERCEnt(MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "1", null, MockLocalite.Renens.getNPA(), null, MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNom(),
 						                              MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(),
 						                              null, null, null);
 				// Annonce existante
