@@ -2,8 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<!-- Configuration du Service Régime Fiscal, en mode limité du fait de l'absence de configuration des types de régimes par défaut, non utiles dans WS. -->
+	<!-- Configuration du Service Régime Fiscal -->
 
-	<bean id="regimeFiscalServiceConfiguration" class="ch.vd.uniregctb.regimefiscal.MockRegimeFiscalServiceConfiguration"/>
+	<bean id="regimeFiscalServiceConfiguration" class="ch.vd.uniregctb.regimefiscal.RegimeFiscalServiceConfigurationImpl">
+		<property name="configTableFormesJuridiquesDefauts" value="${extprop.regimesfiscaux.table.formesjuridiques.defauts}"/>
+		<property name="configRegimesDiOptionnelleVd" value="${extprop.regimesfiscaux.regimes.di.optionnelle.vd}"/>
+	</bean>
 
 </beans>
