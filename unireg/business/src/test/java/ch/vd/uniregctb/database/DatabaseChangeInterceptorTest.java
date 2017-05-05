@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.database;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 
 import org.junit.Test;
@@ -54,7 +55,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * [UNIREG-2581] Test qui s'assure que toutes les modifications faites sur les tiers provoquent bien l'envoi de notifications de changement.
  */
-@SuppressWarnings({"JavaDoc"})
+@SuppressWarnings({"JavaDoc", "Duplicates"})
 public class DatabaseChangeInterceptorTest extends BusinessTest {
 
 	private MockDataEventService eventService;
@@ -419,6 +420,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		class Ids {
 			long bienFond;
 			long ppe;
+			long beneficiaire;
 		}
 		final Ids ids = new Ids();
 
@@ -426,8 +428,11 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
 			final BienFondRF bienFond = addBienFondRF("38828288a", "CH38278228", commune, 234);
 			final ProprieteParEtageRF ppe = addProprieteParEtageRF("78228218", "CH88828222", new Fraction(1, 2), commune, 544, null, null, null);
+			final ImmeubleBeneficiaireRF beneficiaire = addImmeubleBeneficiaireRF(ppe);
+
 			ids.bienFond = bienFond.getId();
 			ids.ppe = ppe.getId();
+			ids.beneficiaire = beneficiaire.getId();
 			return null;
 		});
 
@@ -440,11 +445,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		// on ajout un droit de propriété entre les deux immeubles
 		doInNewTransaction(status -> {
 			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, ids.bienFond);
-			final ProprieteParEtageRF ppe = hibernateTemplate.get(ProprieteParEtageRF.class, ids.ppe);
-
-			final ImmeubleBeneficiaireRF beneficiaire = new ImmeubleBeneficiaireRF();
-			beneficiaire.setIdRF(ppe.getIdRF());
-			beneficiaire.setImmeuble(ppe);
+			final ImmeubleBeneficiaireRF beneficiaire = hibernateTemplate.get(ImmeubleBeneficiaireRF.class, ids.beneficiaire);
 
 			addDroitImmeubleRF(null, RegDate.get(2000, 1, 1), null, null, "Constitution PPE", null, "4834834838", "1818181",
 			                   new IdentifiantAffaireRF(61, 2000, 4, 12), new Fraction(1, 4), GenrePropriete.PPE,
@@ -575,6 +576,91 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		//  - 2 pour les bien-fonds (car les PPEs ne sont pas impactées : les droits virtuels ne sont pas exposés sur les immeubles)
 		assertEquals(new HashSet<>(Arrays.asList(ids.pp0, ids.pm1, ids.pm2, ids.pp3)), eventService.changedTiers);
 		assertEquals(new HashSet<>(Arrays.asList(ids.bienFond2, ids.bienFond3)), eventService.changedImmeubles);
+	}
+
+	/**
+	 * [SIFISC-24553] Ce test vérifie que l'envoi des événements ne plante pas lorsqu'il y a un cycle dans les droits de propriété entre immeubles.
+	 * <p>
+	 * <pre>
+	 *     +----------+
+	 *     | Tiers RF |---------+
+	 *     +----------+         | copropriété (1/3)
+	 *                          v
+	 *                     +------------+
+	 *                     | Immeuble 0 |--------------------+
+	 *                     +------------+                    | ppe (1/5)
+	 *                          ^                            v
+	 *                          | fond dominant (4/7)   +------------+
+	 *                          +-----------------------| Immeuble 1 |
+	 *                                                  +------------+
+	 * </pre>
+	 */
+	@Test(timeout = 10000L)
+	public void testDetectDroitProprieteImmeubleAvecCycle() throws Exception {
+
+		assertEmpty(eventService.changedImmeubles);
+
+		class Ids {
+			Long ctb;
+			Long immeuble0;
+			Long immeuble1;
+		}
+		final Ids ids = new Ids();
+
+		// on crée le tiers et les immeubles (sans les droits entre immeubles)
+		doInNewTransaction(status -> {
+
+			final PersonnePhysique ctb = addNonHabitant("Charles-Jean", "Widmer", RegDate.get(1970, 1, 2), null);
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
+			addRapprochementRF(ctb, tiersRF, null, null, TypeRapprochementRF.AUTO);
+			ids.ctb = ctb.getId();
+
+			// un tiers RF avec un immeuble qui fait partie d'un cycle de possession avec un autre immeuble.
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", laSarraz, 4298);
+			addImmeubleBeneficiaireRF(immeuble0);
+			addImmeubleBeneficiaireRF(immeuble1);
+
+			// tiers RF -> immeuble0
+			addDroitPropriete(tiersRF, immeuble0, null, GenrePropriete.COPROPRIETE, new Fraction(1, 3),
+			                  RegDate.get(2004, 5, 21), null, RegDate.get(2004, 5, 21), null, "Achat", null,
+			                  new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044", "1");
+
+			ids.immeuble0 = immeuble0.getId();
+			ids.immeuble1 = immeuble1.getId();
+			return null;
+		});
+
+		// on vérifie que la création des immeubles et des tiers a bien provoqué l'envoi des notifications suivantes :
+		//  - 1 pour les tiers
+		//  - 2 pour les immeubles
+		assertEquals(new HashSet<>(Collections.singletonList(ids.ctb)), eventService.changedTiers);
+		assertEquals(new HashSet<>(Arrays.asList(ids.immeuble0, ids.immeuble1)), eventService.changedImmeubles);
+
+		// on ajoute les droits entre immeubles
+		doInNewTransaction(status -> {
+
+			final BienFondRF immeuble0 = hibernateTemplate.get(BienFondRF.class, ids.immeuble0);
+			final BienFondRF immeuble1 = hibernateTemplate.get(BienFondRF.class, ids.immeuble1);
+
+			// immeuble0 -> immeuble 1
+			addDroitPropriete(immeuble0, immeuble1, GenrePropriete.PPE, new Fraction(1, 5),
+			                  null, RegDate.get(2000, 1, 1), null, "Constitution de PPE", null,
+			                  new IdentifiantAffaireRF(123, 2000, 6, 1), "7686758448", "1");
+
+			// immeuble1 -> immeuble 0
+			addDroitPropriete(immeuble1, immeuble0, GenrePropriete.FONDS_DOMINANT, new Fraction(4, 7),
+			                  null, RegDate.get(2000, 1, 1), null, "Constitution de PPE", null,
+			                  new IdentifiantAffaireRF(123, 2000, 6, 1), "6680384444", "1");
+			return null;
+		});
+
+		// on vérifie que l'ajout des droits entre les immeubles a bien provoqué l'envoi des notifications suivantes :
+		//  - 1 pour les tiers
+		//  - 2 pour les immeubles
+		assertEquals(new HashSet<>(Collections.singletonList(ids.ctb)), eventService.changedTiers);
+		assertEquals(new HashSet<>(Arrays.asList(ids.immeuble0, ids.immeuble1)), eventService.changedImmeubles);
 	}
 
 	@Test

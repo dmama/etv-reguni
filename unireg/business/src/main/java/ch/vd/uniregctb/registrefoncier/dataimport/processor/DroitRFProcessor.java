@@ -165,7 +165,11 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		droits.forEach(d -> {
 			d.setAyantDroit(ayantDroit);
 			d.setDateDebut(dateValeur);
-			droitRFDAO.save(d);
+			d = (DroitProprieteRF) droitRFDAO.save(d);
+
+			// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+			d.getImmeuble().addDroitPropriete(d);
+			ayantDroit.addDroitPropriete(d);
 		});
 	}
 

@@ -401,40 +401,54 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 	protected DroitProprietePersonnePhysiqueRF addDroitPropriete(PersonnePhysiqueRF tiersRF, BienFondRF immeuble, CommunauteRF communaute, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier,
 	                                                             RegDate dateFinMetier, String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF, String versionIdRF) {
-		final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
-		droit0.setCommunaute(communaute);
-		droit0.setRegime(regime);
-		droit0.setPart(part);
-		droit0.setDateDebut(dateDebut);
-		droit0.setDateFin(dateFin);
-		droit0.setDateDebutMetier(dateDebutMetier);
-		droit0.setDateFinMetier(dateFinMetier);
-		droit0.setMotifDebut(motifDebut);
-		droit0.setMotifFin(motifFin);
-		droit0.setAyantDroit(tiersRF);
-		droit0.setMasterIdRF(masterIdRF);
-		droit0.setVersionIdRF(versionIdRF);
-		droit0.setImmeuble(immeuble);
-		droit0.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
-		return hibernateTemplate.merge(droit0);
+		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setCommunaute(communaute);
+		droit.setRegime(regime);
+		droit.setPart(part);
+		droit.setDateDebut(dateDebut);
+		droit.setDateFin(dateFin);
+		droit.setDateDebutMetier(dateDebutMetier);
+		droit.setDateFinMetier(dateFinMetier);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setAyantDroit(tiersRF);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
+		droit.setImmeuble(immeuble);
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
+		droit = hibernateTemplate.merge(droit);
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		droit = hibernateTemplate.merge(droit);
+		immeuble.addDroitPropriete(droit);
+		tiersRF.addDroitPropriete(droit);
+
+		return droit;
 	}
 
 	protected DroitProprieteCommunauteRF addDroitPropriete(CommunauteRF communaute, BienFondRF immeuble, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin,
 	                                                       String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF, String versionIdRF) {
-		final DroitProprieteCommunauteRF droit0 = new DroitProprieteCommunauteRF();
-		droit0.setRegime(regime);
-		droit0.setPart(part);
-		droit0.setDateDebut(dateDebut);
-		droit0.setDateDebutMetier(dateDebutMetier);
-		droit0.setDateFin(dateFin);
-		droit0.setMotifDebut(motifDebut);
-		droit0.setMotifFin(motifFin);
-		droit0.setAyantDroit(communaute);
-		droit0.setMasterIdRF(masterIdRF);
-		droit0.setVersionIdRF(versionIdRF);
-		droit0.setImmeuble(immeuble);
-		droit0.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
-		return hibernateTemplate.merge(droit0);
+		DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
+		droit.setRegime(regime);
+		droit.setPart(part);
+		droit.setDateDebut(dateDebut);
+		droit.setDateDebutMetier(dateDebutMetier);
+		droit.setDateFin(dateFin);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setAyantDroit(communaute);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
+		droit.setImmeuble(immeuble);
+		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
+		droit = hibernateTemplate.merge(droit);
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		droit = hibernateTemplate.merge(droit);
+		immeuble.addDroitPropriete(droit);
+		communaute.addDroitPropriete(droit);
+
+		return droit;
 	}
 
 	protected DroitProprieteImmeubleRF addDroitPropriete(ImmeubleRF fondDominant, ImmeubleRF fondServant, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin,
@@ -449,7 +463,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 			fondDominant.setEquivalentBeneficiaire(beneficiaire);
 		}
 
-		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
+		DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
 		droit.setRegime(regime);
 		droit.setPart(part);
 		droit.setDateDebut(dateDebut);
@@ -462,7 +476,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		droit.setVersionIdRF(versionIdRF);
 		droit.setImmeuble(fondServant);
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
-		return hibernateTemplate.merge(droit);
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		droit = hibernateTemplate.merge(droit);
+		fondServant.addDroitPropriete(droit);
+		beneficiaire.addDroitPropriete(droit);
+		return droit;
 	}
 
 	protected PersonnePhysiqueRF addPersonnePhysiqueRF(String idRF, String prenom, String nom, RegDate dateNaissance) {

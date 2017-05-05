@@ -240,6 +240,14 @@ public abstract class ImmeubleRF extends HibernateEntity {
 		this.droitsPropriete = droitsPropriete;
 	}
 
+	public void addDroitPropriete(DroitProprieteRF droit) {
+		if (droitsPropriete == null) {
+			droitsPropriete = new HashSet<>();
+		}
+		droit.setImmeuble(this);
+		droitsPropriete.add(droit);
+	}
+
 	// configuration hibernate : l'immeuble ne possède pas les servitudes
 	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "immeubles")
 	public Set<ServitudeRF> getServitudes() {
@@ -248,6 +256,14 @@ public abstract class ImmeubleRF extends HibernateEntity {
 
 	public void setServitudes(Set<ServitudeRF> servitudes) {
 		this.servitudes = servitudes;
+	}
+
+	public void addServitude(ServitudeRF servitude) {
+		if (servitudes == null) {
+			servitudes = new HashSet<>();
+		}
+		servitude.addImmeuble(this);
+		servitudes.add(servitude);
 	}
 
 	@Nullable

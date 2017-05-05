@@ -1629,11 +1629,16 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setRegime(regime);
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
 
-		final DroitProprietePersonnePhysiqueRF saved = merge(droit);
+		final DroitProprietePersonnePhysiqueRF persisted = merge(droit);
 		if (communaute != null) {
-			communaute.addMembre(saved);
+			communaute.addMembre(persisted);
 		}
-		return saved;
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		immeuble.addDroitPropriete(persisted);
+		ayantDroit.addDroitPropriete(persisted);
+
+		return persisted;
 	}
 
 	protected DroitProprietePersonneMoraleRF addDroitPersonneMoraleRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
@@ -1656,11 +1661,16 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setRegime(regime);
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
 
-		final DroitProprietePersonneMoraleRF saved = merge(droit);
+		final DroitProprietePersonneMoraleRF persisted = merge(droit);
 		if (communaute != null) {
-			communaute.addMembre(saved);
+			communaute.addMembre(persisted);
 		}
-		return saved;
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		immeuble.addDroitPropriete(persisted);
+		ayantDroit.addDroitPropriete(persisted);
+
+		return persisted;
 	}
 
 	protected DroitProprieteCommunauteRF addDroitCommunauteRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
@@ -1681,7 +1691,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setPart(part);
 		droit.setRegime(regime);
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
-		return merge(droit);
+		final DroitProprieteCommunauteRF persisted = merge(droit);
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		immeuble.addDroitPropriete(persisted);
+		communauteRF.addDroitPropriete(persisted);
+
+		return persisted;
 	}
 
 	protected DroitProprieteImmeubleRF addDroitImmeubleRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin,
@@ -1702,63 +1718,88 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		droit.setPart(part);
 		droit.setRegime(regime);
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
-		return merge(droit);
+		final DroitProprieteImmeubleRF persisted = merge(droit);
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		immeuble.addDroitPropriete(persisted);
+		beneficiaire.addDroitPropriete(persisted);
+
+		return persisted;
 	}
 
 	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF, IdentifiantAffaireRF numeroAffaire,
 	                                   IdentifiantDroitRF identifiantDroitRF,
 	                                   TiersRF tiersRF, BienFondRF immeuble) {
-		final UsufruitRF droit = new UsufruitRF();
-		droit.addImmeuble(immeuble);
-		droit.addAyantDroit(tiersRF);
-		droit.setDateDebut(dateDebut);
-		droit.setDateDebutMetier(dateDebutMetier);
-		droit.setDateFin(dateFin);
-		droit.setDateFinMetier(dateFinMetier);
-		droit.setMotifDebut(motifDebut);
-		droit.setMotifFin(motifFin);
-		droit.setMasterIdRF(masterIdRF);
-		droit.setVersionIdRF(versionIdRF);
-		droit.setNumeroAffaire(numeroAffaire);
-		droit.setIdentifiantDroit(identifiantDroitRF);
-		return merge(droit);
+		final UsufruitRF usufruit = new UsufruitRF();
+		usufruit.addImmeuble(immeuble);
+		usufruit.addAyantDroit(tiersRF);
+		usufruit.setDateDebut(dateDebut);
+		usufruit.setDateDebutMetier(dateDebutMetier);
+		usufruit.setDateFin(dateFin);
+		usufruit.setDateFinMetier(dateFinMetier);
+		usufruit.setMotifDebut(motifDebut);
+		usufruit.setMotifFin(motifFin);
+		usufruit.setMasterIdRF(masterIdRF);
+		usufruit.setVersionIdRF(versionIdRF);
+		usufruit.setNumeroAffaire(numeroAffaire);
+		usufruit.setIdentifiantDroit(identifiantDroitRF);
+		final UsufruitRF persisted = merge(usufruit);
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		persisted.getImmeubles().forEach(i -> i.addServitude(persisted));
+		persisted.getAyantDroits().forEach(a -> a.addServitude(persisted));
+
+		return persisted;
 	}
 
 	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF,
 	                                   String versionIdRF, IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF, List<? extends TiersRF> tiersRF, List<? extends ImmeubleRF> immeubles) {
-		final UsufruitRF droit = new UsufruitRF();
-		immeubles.forEach(droit::addImmeuble);
-		tiersRF.forEach(droit::addAyantDroit);
-		droit.setDateDebut(dateDebut);
-		droit.setDateDebutMetier(dateDebutMetier);
-		droit.setDateFin(dateFin);
-		droit.setDateFinMetier(dateFinMetier);
-		droit.setMotifDebut(motifDebut);
-		droit.setMotifFin(motifFin);
-		droit.setMasterIdRF(masterIdRF);
-		droit.setVersionIdRF(versionIdRF);
-		droit.setNumeroAffaire(numeroAffaire);
-		droit.setIdentifiantDroit(identifiantDroitRF);
-		return merge(droit);
+		final UsufruitRF usufruit = new UsufruitRF();
+		immeubles.forEach(usufruit::addImmeuble);
+		tiersRF.forEach(usufruit::addAyantDroit);
+		usufruit.setDateDebut(dateDebut);
+		usufruit.setDateDebutMetier(dateDebutMetier);
+		usufruit.setDateFin(dateFin);
+		usufruit.setDateFinMetier(dateFinMetier);
+		usufruit.setMotifDebut(motifDebut);
+		usufruit.setMotifFin(motifFin);
+		usufruit.setMasterIdRF(masterIdRF);
+		usufruit.setVersionIdRF(versionIdRF);
+		usufruit.setNumeroAffaire(numeroAffaire);
+		usufruit.setIdentifiantDroit(identifiantDroitRF);
+		final UsufruitRF persisted = merge(usufruit);
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		persisted.getImmeubles().forEach(i -> i.addServitude(persisted));
+		persisted.getAyantDroits().forEach(a -> a.addServitude(persisted));
+
+		return persisted;
 	}
 
 	protected DroitHabitationRF addDroitHabitationRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
 	                                                 IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
 	                                                 TiersRF tiersRF, BienFondRF immeuble) {
-		final DroitHabitationRF droit = new DroitHabitationRF();
-		droit.addImmeuble(immeuble);
-		droit.addAyantDroit(tiersRF);
-		droit.setDateDebut(dateDebut);
-		droit.setDateDebutMetier(dateDebutMetier);
-		droit.setDateFin(dateFin);
-		droit.setDateFinMetier(dateFinMetier);
-		droit.setMotifDebut(motifDebut);
-		droit.setMotifFin(motifFin);
-		droit.setMasterIdRF(masterIdRF);
-		droit.setVersionIdRF(versionIdRF);
-		droit.setNumeroAffaire(numeroAffaire);
-		droit.setIdentifiantDroit(identifiantDroitRF);
-		return merge(droit);
+		final DroitHabitationRF droitHabitation = new DroitHabitationRF();
+		droitHabitation.addImmeuble(immeuble);
+		droitHabitation.addAyantDroit(tiersRF);
+		droitHabitation.setDateDebut(dateDebut);
+		droitHabitation.setDateDebutMetier(dateDebutMetier);
+		droitHabitation.setDateFin(dateFin);
+		droitHabitation.setDateFinMetier(dateFinMetier);
+		droitHabitation.setMotifDebut(motifDebut);
+		droitHabitation.setMotifFin(motifFin);
+		droitHabitation.setMasterIdRF(masterIdRF);
+		droitHabitation.setVersionIdRF(versionIdRF);
+		droitHabitation.setNumeroAffaire(numeroAffaire);
+		droitHabitation.setIdentifiantDroit(identifiantDroitRF);
+
+		final DroitHabitationRF persisted = merge(droitHabitation);
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		persisted.getImmeubles().forEach(i -> i.addServitude(persisted));
+		persisted.getAyantDroits().forEach(a -> a.addServitude(persisted));
+
+		return persisted;
 	}
 
 	@NotNull

@@ -137,7 +137,12 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 
 		// on sauve la nouvelle servitude
 		servitude.setDateDebut(dateValeur);
-		droitRFDAO.save(servitude);
+		servitude = (ServitudeRF) droitRFDAO.save(servitude);
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		final ServitudeRF s = servitude;
+		servitude.getImmeubles().forEach(i -> i.addServitude(s));
+		servitude.getAyantDroits().forEach(a -> a.addServitude(s));
 	}
 
 	/**

@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,7 @@ public class DroitProprieteImmeubleRF extends DroitProprieteRF {
 		// on ne veut pas retourner les tiers Unireg dans le cas de la validation/indexation/parentés, car ils ne sont pas influencés par les données RF
 		if (context == Context.TACHES || context == Context.DATA_EVENT) {
 			// on va chercher tous les contribuables propriétaires virtuels
-			result.addAll(findLinkedContribuables(beneficiaire));
+			result.addAll(findLinkedContribuables(beneficiaire, new HashSet<>()));
 		}
 
 		return result;
@@ -45,15 +46,22 @@ public class DroitProprieteImmeubleRF extends DroitProprieteRF {
 
 	/**
 	 * @param immeubleBeneficiaire un immeuble bénéficiaire
+	 * @param visited              les ids d'immeubles déjà visités
 	 * @return tous les contribuables liés à un immeuble, y compris les propriétaires virtuels, c'est-à-dire les contribuables propriétaires d'autres immeubles eux-mêmes propriétaires de cet immeuble.
 	 */
-	@NotNull
-	public static Collection<Contribuable> findLinkedContribuables(@NotNull ImmeubleBeneficiaireRF immeubleBeneficiaire) {
+	private static Collection<Contribuable> findLinkedContribuables(@NotNull ImmeubleBeneficiaireRF immeubleBeneficiaire, @NotNull Set<Long> visited) {
 
 		final ImmeubleRF immeuble = immeubleBeneficiaire.getImmeuble();
 
+		if (visited.contains(immeuble.getId())) {
+			// on sort si l'immeuble a déjà été visité (détection des cycles)
+			return Collections.emptyList();
+		}
+		visited.add(immeuble.getId());
+
 		final Set<DroitProprieteRF> droitsPropriete = immeuble.getDroitsPropriete();
 		if (droitsPropriete == null || droitsPropriete.isEmpty()) {
+			// pas de droits, pas de chocolat
 			return Collections.emptyList();
 		}
 
@@ -76,7 +84,7 @@ public class DroitProprieteImmeubleRF extends DroitProprieteRF {
 				.map(DroitProprieteImmeubleRF.class::cast)
 				.map(DroitProprieteRF::getAyantDroit)                       // on récupère les ayants-droits (qui doivent être des immeubles)
 				.map(ImmeubleBeneficiaireRF.class::cast)
-				.map(DroitProprieteImmeubleRF::findLinkedContribuables)     // on continue en récursion
+				.map(immeubleBeneficiaire1 -> findLinkedContribuables(immeubleBeneficiaire1, visited))     // on continue en récursion
 				.flatMap(Collection::stream)
 				.collect(Collectors.toMap(Tiers::getId, Function.identity(), (l, r) -> l));
 
