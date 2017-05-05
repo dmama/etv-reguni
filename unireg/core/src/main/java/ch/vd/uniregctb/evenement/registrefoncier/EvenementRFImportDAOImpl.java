@@ -54,6 +54,16 @@ public class EvenementRFImportDAOImpl extends BaseDAOImpl<EvenementRFImport, Lon
 	}
 
 	@Override
+	@Nullable
+	public EvenementRFImport find(@NotNull TypeImportRF type, @NotNull RegDate dateEvenement) {
+		final Query query = getCurrentSession().createQuery("from EvenementRFImport where type = :type and dateEvenement = :dateEvenement");
+		query.setParameter("type", type);
+		query.setParameter("dateEvenement", dateEvenement);
+		//noinspection unchecked
+		return (EvenementRFImport) query.uniqueResult();
+	}
+
+	@Override
 	public List<EvenementRFImport> find(@Nullable List<EtatEvenementRF> etats, @NotNull ParamPagination pagination) {
 
 		final QueryFragment fragment;

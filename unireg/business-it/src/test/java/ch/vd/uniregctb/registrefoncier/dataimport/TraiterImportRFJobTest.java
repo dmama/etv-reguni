@@ -202,6 +202,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		assertNotNull(raftUrl);
 
 		// un import principal déjà processé + un import des servitudes à processer
+		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 3, 1), EtatEvenementRF.TRAITE, "http://turlututu");
 		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 9, 1), EtatEvenementRF.TRAITE, "http://turlututu");
 		final long suivant = insertImport(TypeImportRF.SERVITUDES, RegDate.get(2016, 3, 1), EtatEvenementRF.A_TRAITER, raftUrl);
 
@@ -530,18 +531,4 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 		});
 	}
 
-	private Long insertImport(final TypeImportRF type, final RegDate dateEvenement, final EtatEvenementRF etat, final String fileUrl) throws Exception {
-		// on insère les données de l'import dans la base
-		return doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				final EvenementRFImport importEvent = new EvenementRFImport();
-				importEvent.setType(type);
-				importEvent.setDateEvenement(dateEvenement);
-				importEvent.setEtat(etat);
-				importEvent.setFileUrl(fileUrl);
-				return evenementRFImportDAO.save(importEvent).getId();
-			}
-		});
-	}
 }

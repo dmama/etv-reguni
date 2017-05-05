@@ -39,6 +39,7 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("Duplicates")
 public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
@@ -66,6 +67,138 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 	}
 
 	/**
+	 * [SIFISC-24647] Ce test vérifie que le job d'import des servitudes ne démarre pas si l'import principal correspondant n'existe pas.
+	 */
+	@Test
+	public void testImportServitudeImportPrincipalInexistant() throws Exception {
+
+		// on insère les données de l'import dans la base
+		final RegDate dateEvenement = RegDate.get(2016, 9, 1);
+		final long servitudes = insertImport(TypeImportRF.SERVITUDES, dateEvenement, EtatEvenementRF.A_TRAITER, "http://turlututu");
+
+		// on déclenche le démarrage du job
+		final Map<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, servitudes);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job ne doit pas démarrer
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_EXCEPTION, job.getStatut());
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
+				assertNotNull(importEvent);
+				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
+				assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il n'y a pas d'import principal RF à la même date.", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il n'y a pas d'import principal RF à la même date."));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-24647] Ce test vérifie que le job d'import des servitudes ne démarre pas si l'import principal correspondant n'est pas traité
+	 */
+	@Test
+	public void testImportServitudeImportPrincipalPasTraite() throws Exception {
+
+		// on insère les données de l'import dans la base
+		final RegDate dateEvenement = RegDate.get(2016, 9, 1);
+		insertImport(TypeImportRF.PRINCIPAL, dateEvenement, EtatEvenementRF.A_TRAITER, "http://turlututu");
+		final long servitudes = insertImport(TypeImportRF.SERVITUDES, dateEvenement, EtatEvenementRF.A_TRAITER, "http://turlututu");
+
+		// on déclenche le démarrage du job
+		final Map<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, servitudes);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job ne doit pas démarrer
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_EXCEPTION, job.getStatut());
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
+				assertNotNull(importEvent);
+				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
+				assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car l'import principal RF à la même date n'est pas traité.", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car l'import principal RF à la même date n'est pas traité."));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-24647] Ce test vérifie que le job d'import des servitudes ne démarre pas si l'import principal est traité mais que toutes les mutations correspondantes ne sont pas traitées.
+	 */
+	@Test
+	public void testImportServitudeImportPrincipalMutationsPasTraitees() throws Exception {
+
+		// on insère les données de l'import dans la base
+		final RegDate dateEvenement = RegDate.get(2016, 9, 1);
+		final Long principal = insertImport(TypeImportRF.PRINCIPAL, dateEvenement, EtatEvenementRF.TRAITE, "http://turlututu");
+		doInNewTransaction(status -> {
+			final EvenementRFImport parentImport = evenementRFImportDAO.get(principal);
+
+			// une mutation dans l'état "à traiter"
+			final EvenementRFMutation mut0 = new EvenementRFMutation();
+			mut0.setEtat(EtatEvenementRF.A_TRAITER);
+			mut0.setIdRF("238382389");
+			mut0.setParentImport(parentImport);
+			mut0.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+			mut0.setTypeMutation(TypeMutationRF.CREATION);
+			mut0.setXmlContent("");
+			evenementRFMutationDAO.save(mut0);
+
+			// une mutation dans l'état "en erreur"
+			final EvenementRFMutation mut1 = new EvenementRFMutation();
+			mut1.setEtat(EtatEvenementRF.EN_ERREUR);
+			mut1.setIdRF("484848");
+			mut1.setParentImport(parentImport);
+			mut1.setTypeEntite(TypeEntiteRF.IMMEUBLE);
+			mut1.setTypeMutation(TypeMutationRF.MODIFICATION);
+			mut1.setXmlContent("");
+			evenementRFMutationDAO.save(mut1);
+
+			return null;
+		});
+		final long servitudes = insertImport(TypeImportRF.SERVITUDES, dateEvenement, EtatEvenementRF.A_TRAITER, "http://turlututu");
+
+		// on déclenche le démarrage du job
+		final Map<String, Object> params = new HashMap<>();
+		params.put(TraiterImportRFJob.ID, servitudes);
+		params.put(TraiterImportRFJob.NB_THREADS, 2);
+		params.put(TraiterImportRFJob.CONTINUE_WITH_MUTATIONS_JOB, false);
+
+		final JobDefinition job = batchScheduler.startJob(TraiterImportRFJob.NAME, params);
+		assertNotNull(job);
+
+		// le job ne doit pas démarrer
+		waitForJobCompletion(job);
+		assertEquals(JobDefinition.JobStatut.JOB_EXCEPTION, job.getStatut());
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
+				assertNotNull(importEvent);
+				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
+				assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il y a encore 2 mutations à traiter sur l'import principal RF à la même date.", importEvent.getErrorMessage());
+				assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il y a encore 2 mutations à traiter sur l'import principal RF à la même date."));
+			}
+		});
+	}
+
+	/**
 	 * Ce test vérifie que les mutations sont bien créées lorsqu'on importe un fichier RF de servitudes sur une base vide
 	 */
 	@Test
@@ -81,6 +214,9 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 			raftUrl = zipRaftEsbStore.store("Fiscalite", "UnitTest", "Unireg", is);
 		}
 		assertNotNull(raftUrl);
+
+		// l'import principal préalablement traité (précondition pour l'exécution de l'import des servitudes)
+		insertImport(TypeImportRF.PRINCIPAL, RegDate.get(2016, 10, 1), EtatEvenementRF.TRAITE, "http://turlututu");
 
 		// on insère les données de l'import dans la base
 		final Long importId = doInNewTransaction(new TxCallback<Long>() {
@@ -395,6 +531,9 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 		final RegDate dateImportInitial = RegDate.get(2008, 1, 1);
 		final RegDate dateSecondImport = RegDate.get(2010, 1, 1);
 
+		// l'import principal préalablement traité (précondition pour l'exécution de l'import des servitudes)
+		insertImport(TypeImportRF.PRINCIPAL, dateSecondImport, EtatEvenementRF.TRAITE, "http://turlututu");
+
 		// on va chercher le fichier d'import
 		final File importFile = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/export_servitudes_rf.xml");
 		assertNotNull(importFile);
@@ -501,6 +640,9 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 
 		final RegDate dateImportInitial = RegDate.get(2010, 1, 1);
 		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
+
+		// l'import principal préalablement traité (précondition pour l'exécution de l'import des servitudes)
+		insertImport(TypeImportRF.PRINCIPAL, dateSecondImport, EtatEvenementRF.TRAITE, "http://turlututu");
 
 		// on insère les données de l'import dans la base
 		final Long importId = doInNewTransaction(new TxCallback<Long>() {
@@ -733,6 +875,9 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 
 		final RegDate dateImportInitial = RegDate.get(2010, 1, 1);
 		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
+
+		// l'import principal préalablement traité (précondition pour l'exécution de l'import des servitudes)
+		insertImport(TypeImportRF.PRINCIPAL, dateSecondImport, EtatEvenementRF.TRAITE, "http://turlututu");
 
 		// on insère les données de l'import dans la base
 		final Long importId = doInNewTransaction(new TxCallback<Long>() {

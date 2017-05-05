@@ -15,8 +15,11 @@ import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
@@ -57,11 +60,13 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(ImportRFTestClass.class);
 
+	private EvenementRFImportDAO evenementRFImportDAO;
 	private EvenementRFMutationDAO evenementRFMutationDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+		evenementRFImportDAO = getBean(EvenementRFImportDAO.class, "evenementRFImportDAO");
 		evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
 	}
 
@@ -369,6 +374,21 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 				for (EvenementRFMutation mutation : mutations) {
 					assertEquals(etat, mutation.getEtat());
 				}
+			}
+		});
+	}
+
+	protected Long insertImport(final TypeImportRF type, final RegDate dateEvenement, final EtatEvenementRF etat, final String fileUrl) throws Exception {
+		// on insère les données de l'import dans la base
+		return doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final EvenementRFImport importEvent = new EvenementRFImport();
+				importEvent.setType(type);
+				importEvent.setDateEvenement(dateEvenement);
+				importEvent.setEtat(etat);
+				importEvent.setFileUrl(fileUrl);
+				return evenementRFImportDAO.save(importEvent).getId();
 			}
 		});
 	}

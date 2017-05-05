@@ -30,6 +30,7 @@
 		<constructor-arg ref="fichierImmeublesRFParser"/>
 		<constructor-arg ref="fichierServitudesRFParser"/>
 		<constructor-arg ref="evenementRFImportDAO"/>
+		<constructor-arg ref="evenementRFMutationDAO"/>
 		<constructor-arg ref="transactionManager"/>
 		<constructor-arg ref="zipRaftEsbStore"/>
 		<constructor-arg ref="ayantDroitRFDetector"/>
