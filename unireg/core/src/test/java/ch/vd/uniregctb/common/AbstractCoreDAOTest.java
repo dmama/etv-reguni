@@ -1185,6 +1185,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return merge(ent);
 	}
 
+	@NotNull
+	protected Entreprise addEntrepriseInconnueAuCivil(@NotNull String raisonSociale, @NotNull RegDate dateDebut) {
+		final Entreprise ent = new Entreprise();
+		final RaisonSocialeFiscaleEntreprise raisonSocialeFiscale = new RaisonSocialeFiscaleEntreprise(dateDebut, null, raisonSociale);
+		ent.addDonneeCivile(raisonSocialeFiscale);
+		return merge(ent);
+	}
+
 	protected Entreprise addEntrepriseInconnueAuCivil(long noContribuable) {
 		final Entreprise ent = new Entreprise(noContribuable);
 		return merge(ent);
@@ -1604,7 +1612,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected DroitProprietePersonnePhysiqueRF addDroitPersonnePhysiqueRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
 	                                                                      IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
 	                                                                      PersonnePhysiqueRF ayantDroit,
-	                                                                      BienFondRF immeuble, CommunauteRF communaute) {
+	                                                                      ImmeubleRF immeuble, CommunauteRF communaute) {
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
 		droit.setAyantDroit(ayantDroit);
 		droit.setCommunaute(communaute);
@@ -1631,7 +1639,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected DroitProprietePersonneMoraleRF addDroitPersonneMoraleRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
 	                                                                  IdentifiantAffaireRF numeroAffaire, Fraction part, GenrePropriete regime,
 	                                                                  PersonneMoraleRF ayantDroit,
-	                                                                  BienFondRF immeuble, CommunauteRF communaute) {
+	                                                                  ImmeubleRF immeuble, CommunauteRF communaute) {
 		final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
 		droit.setAyantDroit(ayantDroit);
 		droit.setCommunaute(communaute);

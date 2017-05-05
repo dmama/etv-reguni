@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.data;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -10,7 +8,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class MockDataEventService implements DataEventService {
 
-	public final List<Long> changedTiers = new ArrayList<>();
+	public final Set<Long> changedTiers = new HashSet<>();
 	public final Set<Long> changedImmeubles = new HashSet<>();
 	public final Set<Long> changedBatiments = new HashSet<>();
 

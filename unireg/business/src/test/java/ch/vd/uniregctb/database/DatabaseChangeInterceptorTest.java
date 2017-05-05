@@ -26,11 +26,14 @@ import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -43,6 +46,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeRapprochementRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -451,6 +455,126 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		// on vérifie que l'ajout du droit entre les immeubles a bien provoqué l'envoi d'une notification sur chaque immeuble
 		assertEquals(2, eventService.changedImmeubles.size());
 		assertEquals(new HashSet<>(Arrays.asList(ids.bienFond, ids.ppe)), eventService.changedImmeubles);
+	}
+
+	/**
+	 * [SIFISC-24553] Ce test vérifie que des événements sont bien envoyés pour chacun des propriétaires virtuels concernés dans le cas d'une changement sur un droit entre immeubles.
+	 * <p>
+	 * <pre>
+	 *     +----------+  individuelle0 (1/1)       +-----------+  copropriété4 (20/100)
+	 *     | Tiers0   |--------------------------->|   PPE0    |--------------------------+
+	 *     +----------+                            +-----------+                          |
+	 *                                                                                    v
+	 *     +----------+  copropriété1 (10/100)                                     +-----------+  fond dominant6  +-----------+
+	 *     | Tiers1   |----------------------------------------------------------->| BienFond2 |----------------->| BienFond3 |
+	 *     +----------+                                                            +-----------+                  +-----------+
+	 *                                                                                    ^
+	 *     +----------+  copropriété2 (1/3)                                               |
+	 *     | Tiers2   |------------------------+                                          |
+	 *     +----------+                        |   +-----------+  copropriété5 (70/100)   |
+	 *                                         +-->|   PPE1    |--------------------------+
+	 *     +----------+  copropriété3 (2/3)    |   +-----------+
+	 *     | Tiers3   |------------------------+
+	 *     +----------+
+	 * </pre>
+	 */
+	@Test
+	public void testDetectDroitProprieteImmeubleChangeProprietairesVirtuels() throws Exception {
+
+		assertEmpty(eventService.changedImmeubles);
+
+		class Ids {
+			long pp0;
+			long pm1;
+			long pm2;
+			long pp3;
+			long ppe0;
+			long ppe1;
+			long bienFond2;
+			long bienFond3;
+		}
+		final Ids ids = new Ids();
+
+		// création de la situation décrite dans la javadoc de la méthode mais *sans* le droit n°6
+		doInNewTransaction(status -> {
+
+			// les personnes physiques
+			final PersonnePhysique pp0 = addNonHabitant("Jean0", "Propriétaire", RegDate.get(1970, 1, 1), null);
+			final Entreprise pm1 = addEntrepriseInconnueAuCivil("Entreprise1", RegDate.get(1970, 1, 1));
+			final Entreprise pm2 = addEntrepriseInconnueAuCivil("Entreprise2", RegDate.get(1970, 1, 1));
+			final PersonnePhysique pp3 = addNonHabitant("Jean3", "Propriétaire", RegDate.get(1970, 1, 1), null);
+			ids.pp0 = pp0.getId();
+			ids.pm1 = pm1.getId();
+			ids.pm2 = pm2.getId();
+			ids.pp3 = pp3.getId();
+
+			final PersonnePhysiqueRF tiers0 = addPersonnePhysiqueRF("PP0", "Jean0", "Propriétaire", RegDate.get(1970, 1, 1));
+			final PersonneMoraleRF tiers1 = addPersonneMoraleRF("Entreprise1", "CHE1", "PM1", 101, null);
+			final PersonneMoraleRF tiers2 = addPersonneMoraleRF("Entreprise2", "CHE2", "PM2", 102, null);
+			final PersonnePhysiqueRF tiers3 = addPersonnePhysiqueRF("PP3", "Jean3", "Propriétaire", RegDate.get(1970, 1, 1));
+
+			addRapprochementRF(pp0, tiers0, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(pm1, tiers1, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(pm2, tiers2, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(pp3, tiers3, null, null, TypeRapprochementRF.AUTO);
+
+			// les immeubles
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final ProprieteParEtageRF ppe0 = addProprieteParEtageRF("PPE0", "CHPPE0", new Fraction(1, 1), commune, 200, null, null, null);
+			final ProprieteParEtageRF ppe1 = addProprieteParEtageRF("PPE1", "CHPPE1", new Fraction(1, 1), commune, 201, null, null, null);
+			final BienFondRF bienFond2 = addBienFondRF("BienFond2", "CHBF2", commune, 30);
+			final BienFondRF bienFond3 = addBienFondRF("BienFond3", "CHBF3", commune, 31);
+			final ImmeubleBeneficiaireRF beneficiaire0 = addImmeubleBeneficiaireRF(ppe0);
+			final ImmeubleBeneficiaireRF beneficiaire1 = addImmeubleBeneficiaireRF(ppe1);
+			ids.ppe0 = ppe0.getId();
+			ids.ppe1 = ppe1.getId();
+			ids.bienFond2 = bienFond2.getId();
+			ids.bienFond3 = bienFond3.getId();
+
+			// les droits de propriété
+			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(61, 2000, 1, 1);
+			final RegDate dateDebutMetier = RegDate.get(2000, 1, 1);
+			addDroitPersonnePhysiqueRF(null, dateDebutMetier, null, null, "Achat", null, "DROIT0", "1", numeroAffaire,
+			                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiers0, ppe0, null);
+			addDroitPersonneMoraleRF(null, dateDebutMetier, null, null, "Achat", null, "DROIT1", "1", numeroAffaire,
+			                         new Fraction(10, 100), GenrePropriete.COPROPRIETE, tiers1, bienFond2, null);
+			addDroitPersonneMoraleRF(null, dateDebutMetier, null, null, "Achat", null, "DROIT2", "1", numeroAffaire,
+			                         new Fraction(1, 3), GenrePropriete.COPROPRIETE, tiers2, ppe1, null);
+			addDroitPersonnePhysiqueRF(null, dateDebutMetier, null, null, "Achat", null, "DROIT3", "1", numeroAffaire,
+			                           new Fraction(2, 3), GenrePropriete.COPROPRIETE, tiers3, ppe1, null);
+			addDroitImmeubleRF(null, dateDebutMetier, null, null, "Achat", null, "DROIT4", "1", numeroAffaire,
+			                   new Fraction(20, 100), GenrePropriete.COPROPRIETE, beneficiaire0, bienFond2);
+			addDroitImmeubleRF(null, dateDebutMetier, null, null, "Achat", null, "DROIT5", "1", numeroAffaire,
+			                   new Fraction(70, 100), GenrePropriete.COPROPRIETE, beneficiaire1, bienFond2);
+			return null;
+		});
+
+		// on vérifie que la création des immeubles et des tiers a bien provoqué l'envoi des notifications suivantes :
+		//  - 4 pour les tiers
+		//  - 4 pour les immeubles
+		assertEquals(new HashSet<>(Arrays.asList(ids.pp0, ids.pm1, ids.pm2, ids.pp3)), eventService.changedTiers);
+		assertEquals(new HashSet<>(Arrays.asList(ids.ppe0, ids.ppe1, ids.bienFond2, ids.bienFond3)), eventService.changedImmeubles);
+
+		eventService.clear();
+
+		// on ajout le droit de propriété entre les deux bien-fonds
+		doInNewTransaction(status -> {
+			final BienFondRF bienFondDominant = hibernateTemplate.get(BienFondRF.class, ids.bienFond2);
+			final BienFondRF bienFondServant = hibernateTemplate.get(BienFondRF.class, ids.bienFond3);
+			final ImmeubleBeneficiaireRF beneficiaire = addImmeubleBeneficiaireRF(bienFondDominant);
+
+			addDroitImmeubleRF(null, RegDate.get(2000, 1, 1), null, null, "Achat", null, "DROIT6", "1",
+			                   new IdentifiantAffaireRF(61, 2000, 1, 1),
+			                   new Fraction(1, 1), GenrePropriete.COPROPRIETE, beneficiaire, bienFondServant);
+
+			return null;
+		});
+
+		// on vérifie que l'ajout du droit entre les immeubles a bien provoqué l'envoi des notifications suivantes :
+		//  - 4 pour les tiers
+		//  - 2 pour les bien-fonds (car les PPEs ne sont pas impactées : les droits virtuels ne sont pas exposés sur les immeubles)
+		assertEquals(new HashSet<>(Arrays.asList(ids.pp0, ids.pm1, ids.pm2, ids.pp3)), eventService.changedTiers);
+		assertEquals(new HashSet<>(Arrays.asList(ids.bienFond2, ids.bienFond3)), eventService.changedImmeubles);
 	}
 
 	@Test
