@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +29,7 @@ import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -41,6 +43,7 @@ import ch.vd.uniregctb.common.SubStatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
+import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierImportService;
@@ -66,6 +69,7 @@ public class MutationsRFDetector implements InitializingBean {
 	private final FichierImmeublesRFParser fichierImmeubleParser;
 	private final FichierServitudeRFParser fichierServitudeParser;
 	private final EvenementRFImportDAO evenementRFImportDAO;
+	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
 	private final EsbStore zipRaftStore;
 
@@ -80,7 +84,7 @@ public class MutationsRFDetector implements InitializingBean {
 	                           FichierImmeublesRFParser fichierImmeubleParser,
 	                           FichierServitudeRFParser fichierServitudeParser,
 	                           EvenementRFImportDAO evenementRFImportDAO,
-	                           PlatformTransactionManager transactionManager,
+	                           EvenementRFMutationDAO evenementRFMutationDAO, PlatformTransactionManager transactionManager,
 	                           EsbStore zipRaftStore,
 	                           AyantDroitRFDetector ayantDroitRFDetector,
 	                           BatimentRFDetector batimentRFDetector,
@@ -92,6 +96,7 @@ public class MutationsRFDetector implements InitializingBean {
 		this.fichierImmeubleParser = fichierImmeubleParser;
 		this.fichierServitudeParser = fichierServitudeParser;
 		this.evenementRFImportDAO = evenementRFImportDAO;
+		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.transactionManager = transactionManager;
 		this.zipRaftStore = zipRaftStore;
 		this.ayantDroitRFDetector = ayantDroitRFDetector;
@@ -154,11 +159,15 @@ public class MutationsRFDetector implements InitializingBean {
 
 	private void checkPreconditions(@NotNull EvenementRFImport event) {
 		final long importId = event.getId();
+
+		// l'import ne doit pas être déjà traité
 		if (event.getEtat() != EtatEvenementRF.A_TRAITER && event.getEtat() != EtatEvenementRF.EN_ERREUR) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] a déjà été traité.");
 			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
 			throw exception;
 		}
+
+		// l'import doit être dans la suite chronologique des dates
 		final RegDate previousValueDate = findValueDateOfOldestProcessedImport(importId, event.getType());
 		if (previousValueDate != null && event.getDateEvenement().isBeforeOrEqual(previousValueDate)) { // SIFISC-22393
 			final IllegalArgumentException exception =
@@ -167,17 +176,65 @@ public class MutationsRFDetector implements InitializingBean {
 			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
 			throw exception;
 		}
+
+		// l'import doit être le prochain à traiter dans la suite chronologique des dates
 		final EvenementRFImport nextToProcess = getNextImportToProcess(event.getType());
 		if (!Objects.equals(importId, nextToProcess.getId())) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] doit être traité après l'import RF avec l'id = [" + nextToProcess.getId() + "].");
 			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
 			throw exception;
 		}
+
+		// il ne doit pas y avoir des mutations non-traitées d'un import précédent
 		final Long unprocessedImport = findOldestImportWithUnprocessedMutations(importId, event.getType());
 		if (unprocessedImport != null) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + unprocessedImport + "] n'ont pas été traitées.");
 			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
 			throw exception;
+		}
+
+		if (event.getType() == TypeImportRF.SERVITUDES) {
+			try {
+				checkPreconditionsServitudes(event);
+			}
+			catch (IllegalArgumentException e) {
+				updateEvent(importId, EtatEvenementRF.EN_ERREUR, e);
+				throw e;
+			}
+		}
+	}
+
+	/**
+	 * [SIFISC-24647] un import de servitude ne doit passer que si l'import principal correspondant (= même date) est complétement traité.
+	 */
+	private void checkPreconditionsServitudes(@NotNull EvenementRFImport event) {
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final String message = template.execute(status -> {
+			String m = null;
+			final EvenementRFImport importPrincipal = evenementRFImportDAO.find(TypeImportRF.PRINCIPAL, event.getDateEvenement());
+			if (importPrincipal == null) {
+				m = "L'import des servitudes RF avec la date valeur = [" + RegDateHelper.dateToDisplayString(event.getDateEvenement()) + "] " +
+						"ne peut pas être traité car il n'y a pas d'import principal RF à la même date.";
+			}
+			else if (!(importPrincipal.getEtat() == EtatEvenementRF.TRAITE || importPrincipal.getEtat() == EtatEvenementRF.FORCE)) {
+				m = "L'import des servitudes RF avec la date valeur = [" + RegDateHelper.dateToDisplayString(event.getDateEvenement()) + "] " +
+						"ne peut pas être traité car l'import principal RF à la même date n'est pas traité.";
+			}
+			else {
+				final int count = evenementRFMutationDAO.count(importPrincipal.getId(), Arrays.asList(EtatEvenementRF.A_TRAITER, EtatEvenementRF.EN_ERREUR, EtatEvenementRF.EN_TRAITEMENT));
+				if (count > 0) {
+					m = "L'import des servitudes RF avec la date valeur = [" + RegDateHelper.dateToDisplayString(event.getDateEvenement()) + "] " +
+							"ne peut pas être traité car il y a encore " + count + " mutations à traiter sur l'import principal RF à la même date.";
+				}
+			}
+			return m;
+		});
+
+		if (message != null) {
+			throw new IllegalArgumentException(message);
 		}
 	}
 

@@ -126,6 +126,12 @@ public class MockEvenementRFImportDAO implements EvenementRFImportDAO {
 	}
 
 	@Override
+	@Nullable
+	public EvenementRFImport find(@NotNull TypeImportRF type, @NotNull RegDate dateEvenement) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<EvenementRFImport> find(@Nullable List<EtatEvenementRF> etats, @NotNull ParamPagination pagination) {
 		throw new NotImplementedException();
 	}

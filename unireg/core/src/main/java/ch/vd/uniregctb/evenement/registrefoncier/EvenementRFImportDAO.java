@@ -37,11 +37,21 @@ public interface EvenementRFImportDAO extends GenericDAO<EvenementRFImport, Long
 	/**
 	 * Recherche les imports qui correspondent aux critères spécifiés.
 	 *
-	 * @param type     le type d'import considéré
+	 * @param type le type d'import considéré
 	 * @return les événements d'import correspondants
 	 */
 	@NotNull
 	List<EvenementRFImport> find(@NotNull TypeImportRF type);
+
+	/**
+	 * Recherche l'import qui correspond aux critères spécifiés.
+	 *
+	 * @param type          le type d'import considéré
+	 * @param dateEvenement la date d'événement
+	 * @return les événements d'import correspondants
+	 */
+	@Nullable
+	EvenementRFImport find(@NotNull TypeImportRF type, @NotNull RegDate dateEvenement);
 
 	/**
 	 * Recherche des événements d'import qui correspondent aux critères spécifiés.
