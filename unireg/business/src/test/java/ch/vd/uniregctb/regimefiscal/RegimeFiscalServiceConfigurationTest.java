@@ -80,12 +80,9 @@ public class RegimeFiscalServiceConfigurationTest extends WithoutSpringTest {
 			Assert.assertTrue(strings.contains("739"));
 		}
 
-		try {
+		{
 			final Set<String> strings = helper.parseConfigRegimesDiOptionnelleVd(null);
 			Assert.assertEquals(Collections.emptySet(), strings);
-		}
-		catch (IllegalArgumentException e) {
-			Assert.assertEquals("Propriété de configuration extprop.regimesfiscaux.regimes.di.optionnelle.vd non renseigné.", e.getMessage());
 		}
 
 		try {
