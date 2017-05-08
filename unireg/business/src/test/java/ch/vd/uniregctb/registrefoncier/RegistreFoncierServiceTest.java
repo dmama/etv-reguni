@@ -37,6 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("Duplicates")
 public class RegistreFoncierServiceTest extends BusinessTest {
 
 	private AyantDroitRFDAO ayantDroitRFDAO;
@@ -148,6 +149,135 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				final Set<RaisonAcquisitionRF> raisons1 = droit1.getRaisonsAcquisition();
 				assertEquals(1, raisons1.size());
 				assertRaisonAcquisition(RegDate.get(2004, 4, 12), "Achat", new IdentifiantAffaireRF(123, 2004, 202, 3), raisons1.iterator().next());
+			}
+		});
+	}
+
+	/**
+	 * Ce test vérifie que la méthode getDroitsForCtb fonctionne dans le cas passant.
+	 */
+	@Test
+	public void testGetDroitsVirtuelsForCtb() throws Exception {
+
+		final long noIndividu = 481548L;
+		final RegDate dateNaissance = date(1970, 7, 2);
+
+		class Ids {
+			long droit0;
+			long droit1;
+			long droit2;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1970, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long pp = doInNewTransaction(status -> {
+			final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+			return ctb.getNumero();
+		});
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// un tiers RF avec deux immeubles + un lien de propriété entre les deux immeubles
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondRF immeuble1 = addBienFondRF("02faeee", "some egrid", gland, 4298);
+
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+
+			final DroitProprietePersonnePhysiqueRF droit0 = addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null,
+			                                                                           "48390a0e044", "48390a0e043", new IdentifiantAffaireRF(123, 2004, 202, 3),
+			                                                                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble0, null);
+
+			final DroitProprietePersonnePhysiqueRF droit1 = addDroitPersonnePhysiqueRF(RegDate.get(1997, 10, 7), RegDate.get(1997, 7, 2), RegDate.get(2010, 2, 23), RegDate.get(2010, 2, 20), "Achat", "Achat",
+			                                                                           "47e7d7e773", "47e7d7e772", new IdentifiantAffaireRF(23, 1997, 13, 0),
+			                                                                           new Fraction(1, 3), GenrePropriete.COPROPRIETE, tiersRF, immeuble1, null);
+
+			final DroitProprieteImmeubleRF droit2 = addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(12, 345),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Constitution PPE", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 121, 2), "39393939", "1");
+			ids.droit0 = droit0.getId();
+			ids.droit1 = droit1.getId();
+			ids.droit2 = droit2.getId();
+
+			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+			addRapprochementRF(ctb, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+			return null;
+		});
+
+		// appel du service
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
+				assertNotNull(ctb);
+
+				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, true);
+				droits.sort(new DroitRFRangeMetierComparator());
+				assertEquals(3, droits.size());
+
+				// le premier droit réel
+				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
+				assertNull(droit0.getCommunaute());
+				assertEquals(GenrePropriete.COPROPRIETE, droit0.getRegime());
+				assertEquals(new Fraction(1, 3), droit0.getPart());
+				assertEquals(RegDate.get(1997, 10, 7), droit0.getDateDebut());
+				assertEquals(RegDate.get(1997, 7, 2), droit0.getDateDebutMetier());
+				assertEquals(RegDate.get(2010, 2, 23), droit0.getDateFin());
+				assertEquals(RegDate.get(2010, 2, 20), droit0.getDateFinMetier());
+				assertEquals("Achat", droit0.getMotifDebut());
+				assertEquals("Achat", droit0.getMotifFin());
+				assertEquals("47e7d7e773", droit0.getMasterIdRF());
+				assertEquals("02faeee", droit0.getImmeuble().getIdRF());
+
+				final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
+				assertEquals(1, raisons0.size());
+				assertRaisonAcquisition(RegDate.get(1997, 7, 2), "Achat", new IdentifiantAffaireRF(23, 1997, 13, 0), raisons0.iterator().next());
+
+				// le deuxième droit réel
+				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droits.get(1);
+				assertNull(droit1.getCommunaute());
+				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
+				assertEquals(new Fraction(1, 1), droit1.getPart());
+				assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
+				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
+				assertNull(droit1.getDateFin());
+				assertNull(droit1.getDateFinMetier());
+				assertEquals("Achat", droit1.getMotifDebut());
+				assertNull(droit1.getMotifFin());
+				assertEquals("48390a0e044", droit1.getMasterIdRF());
+				assertEquals("01faeee", droit1.getImmeuble().getIdRF());
+
+				final Set<RaisonAcquisitionRF> raisons1 = droit1.getRaisonsAcquisition();
+				assertEquals(1, raisons1.size());
+				assertRaisonAcquisition(RegDate.get(2004, 4, 12), "Achat", new IdentifiantAffaireRF(123, 2004, 202, 3), raisons1.iterator().next());
+
+				// le droit virtuel
+				final DroitProprieteVirtuelRF droit2 = (DroitProprieteVirtuelRF) droits.get(2);
+				assertNull(droit2.getCommunaute());
+				assertNull(droit2.getDateDebut());
+				assertEquals(RegDate.get(2004, 4, 12), droit2.getDateDebutMetier());
+				assertNull(droit2.getDateFin());
+				assertNull(droit2.getDateFinMetier());
+				assertEquals("Achat", droit2.getMotifDebut());
+				assertNull(droit2.getMotifFin());
+				assertNull(droit2.getMasterIdRF());
+				assertEquals("02faeee", droit2.getImmeuble().getIdRF());
+
+				final List<DroitRF> chemin = droit2.getChemin();
+				assertEquals(2, chemin.size());
+				assertDroitPropChemin(ids.droit0, 1, 1, chemin.get(0));
+				assertDroitPropChemin(ids.droit2, 12, 345, chemin.get(1));
 			}
 		});
 	}

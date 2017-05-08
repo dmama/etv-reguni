@@ -67,7 +67,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	@Override
 	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean includeVirtual) {
-		return getDroitsForCtb(ctb, false, false);
+		return getDroitsForCtb(ctb, false, includeVirtual);
 	}
 
 	@Override
