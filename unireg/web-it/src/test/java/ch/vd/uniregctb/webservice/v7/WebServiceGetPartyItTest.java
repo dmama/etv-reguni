@@ -23,6 +23,7 @@ import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
 import ch.vd.unireg.xml.party.v5.Party;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 
+@SuppressWarnings("Duplicates")
 public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 
 	private static final String DB_UNIT_DATA_FILE = "WebServiceGetPartyItTest.xml";
