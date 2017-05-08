@@ -16,6 +16,9 @@ import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.mandataire.AccesMandatairesView;
+import ch.vd.uniregctb.mandataire.ConfigurationMandataire;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -88,6 +91,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	private TiersService tiersService;
 	private ServiceCivilService serviceCivil;
 	private SecurityProviderInterface securityProvider;
+	private ServiceInfrastructureService infrastructureService;
+	private ConfigurationMandataire configurationMandataire;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -100,6 +105,14 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setInfrastructureService(ServiceInfrastructureService infrastructureService) {
+		this.infrastructureService = infrastructureService;
+	}
+
+	public void setConfigurationMandataire(ConfigurationMandataire configurationMandataire) {
+		this.configurationMandataire = configurationMandataire;
 	}
 
 	@Override
@@ -481,6 +494,20 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI, visa, oid)) {
 				map.put(MODIF_DEBITEUR, Boolean.TRUE);
 			}
+
+			final AccesMandatairesView accesMandataire = new AccesMandatairesView(tiers, configurationMandataire, infrastructureService);
+			if (accesMandataire.hasGeneralInEdition() && SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.MODIF_MANDAT_GENERAL)) {
+				map.put(MODIF_MANDATS_GENERAUX, Boolean.TRUE);
+				map.put(MODIF_MANDATS, Boolean.TRUE);
+			}
+			if (accesMandataire.hasSpecialInEdition() && SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.MODIF_MANDAT_SPECIAL)) {
+				map.put(MODIF_MANDATS_SPECIAUX, Boolean.TRUE);
+				map.put(MODIF_MANDATS, Boolean.TRUE);
+			}
+			if (accesMandataire.hasTiersPerceptionInEdition() && SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.MODIF_MANDAT_TIERS)) {
+				map.put(MODIF_MANDATS_TIERS, Boolean.TRUE);
+				map.put(MODIF_MANDATS, Boolean.TRUE);
+			}
 		}
 
 		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
@@ -621,19 +648,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.QSNC_EMISSION, Role.QSNC_DUPLICATA, Role.QSNC_QUITTANCEMENT, Role.QSNC_RAPPEL)) {
 				map.put(MODIF_QSNC, Boolean.TRUE);
-			}
-
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.MODIF_MANDAT_GENERAL)) {
-				map.put(MODIF_MANDATS_GENERAUX, Boolean.TRUE);
-				map.put(MODIF_MANDATS, Boolean.TRUE);
-			}
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.MODIF_MANDAT_SPECIAL)) {
-				map.put(MODIF_MANDATS_SPECIAUX, Boolean.TRUE);
-				map.put(MODIF_MANDATS, Boolean.TRUE);
-			}
-			if (SecurityHelper.isAnyGranted(securityProvider, visa, oid, Role.MODIF_MANDAT_TIERS)) {
-				map.put(MODIF_MANDATS_TIERS, Boolean.TRUE);
-				map.put(MODIF_MANDATS, Boolean.TRUE);
 			}
 
 			if (SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid)) {

@@ -1,9 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
+<%--@elvariable id="idMandant" type="java.lang.Long"--%>
+<%--@elvariable id="mandats" type="java.util.List<ch.vd.uniregctb.mandataire.MandataireCourrierEditView>"--%>
+<%--@elvariable id="accesMandataires" type="ch.vd.uniregctb.mandataire.AccesMandatairesView"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
-		<fmt:message key="title.edition.mandataires.courrier"/>
+		<c:choose>
+			<c:when test="${accesMandataires.hasGeneralInEdition() && accesMandataires.hasSpecialInEdition()}">
+				<fmt:message key="title.edition.mandataires.courrier"/>
+			</c:when>
+			<c:when test="${accesMandataires.hasGeneralInEdition()}">
+				<fmt:message key="title.edition.mandataires.courrier.general"/>
+			</c:when>
+			<c:when test="${accesMandataires.hasSpecialInEdition()}">
+				<fmt:message key="title.edition.mandataires.courrier.special"/>
+			</c:when>
+			<c:otherwise>
+				<fmt:message key="title.edition.mandataires.courrier"/>
+			</c:otherwise>
+		</c:choose>
 	</tiles:put>
 
 	<tiles:put name="body">
@@ -12,9 +29,24 @@
 		<unireg:bandeauTiers numero="${idMandant}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" titre="Caractéristiques du mandant" />
 
 		<fieldset>
-			<legend><span><fmt:message key="label.mandataires.courrier"/></span></legend>
+			<c:choose>
+				<c:when test="${accesMandataires.hasGeneralInEdition() && accesMandataires.hasSpecialInEdition()}">
+					<legend><span><fmt:message key="label.mandataires.courrier"/></span></legend>
+				</c:when>
+				<c:when test="${accesMandataires.hasGeneralInEdition()}">
+					<legend><span><fmt:message key="label.mandataires.courrier.general"/></span></legend>
+				</c:when>
+				<c:when test="${accesMandataires.hasSpecialInEdition()}">
+					<legend><span><fmt:message key="label.mandataires.courrier.special"/></span></legend>
+				</c:when>
+				<c:otherwise>
+					<legend><span><fmt:message key="label.mandataires.courrier"/></span></legend>
+				</c:otherwise>
+			</c:choose>
 
-			<unireg:raccourciAjouter tooltip="Ajouter un nouveau mandat" display="label.bouton.ajouter" link="ajouter-list.do?idMandant=${idMandant}"/>
+			<c:if test="${accesMandataires.hasGeneralInEdition() || accesMandataires.hasSpecialInEdition()}">
+				<unireg:raccourciAjouter tooltip="Ajouter un nouveau mandat" display="label.bouton.ajouter" link="ajouter-list.do?idMandant=${idMandant}"/>
+			</c:if>
 
 			<c:if test="${not empty mandats}">
 				<display:table name="${mandats}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
@@ -50,26 +82,28 @@
 						<c:out value="${courrier.libelleGenreImpot}"/>
 					</display:column>
 					<display:column class="action" style="width: 3ex;">
-						<c:choose>
-							<c:when test="${courrier.idMandataire != null}">
-								<c:if test="${courrier.editable}">
-									<unireg:raccourciModifier tooltip="Editer les données du mandat" link="../editer-mandat.do?idMandat=${courrier.id}"/>
-								</c:if>
-								<c:if test="${courrier.annulable}">
-									<unireg:linkTo name="" title="Annuler le mandat" confirm="Voulez-vous réellement annuler ce mandat ?"
-									               action="/mandataire/annuler-mandat.do" method="post" params="{idMandat:${courrier.id}}" link_class="delete"/>
-								</c:if>
-							</c:when>
-							<c:otherwise>
-								<c:if test="${courrier.editable}">
-									<unireg:raccourciModifier tooltip="Editer les données du mandat" link="../editer-adresse.do?idAdresse=${courrier.id}"/>
-								</c:if>
-								<c:if test="${courrier.annulable}">
-									<unireg:linkTo name="" title="Annuler le mandat" confirm="Voulez-vous réellement annuler ce mandat ?"
-													action="/mandataire/annuler-adresse.do" method="post" params="{idAdresse:${courrier.id}}" link_class="delete"/>
-								</c:if>
-							</c:otherwise>
-						</c:choose>
+						<c:if test="${(courrier.typeMandat == 'GENERAL' && accesMandataires.hasGeneralInEdition()) || (courrier.typeMandat == 'SPECIAL' && accesMandataires.hasSpecialInEdition(courrier.codeGenreImpot))}">
+							<c:choose>
+								<c:when test="${courrier.idMandataire != null}">
+									<c:if test="${courrier.editable}">
+										<unireg:raccourciModifier tooltip="Editer les données du mandat" link="../editer-mandat.do?idMandat=${courrier.id}"/>
+									</c:if>
+									<c:if test="${courrier.annulable}">
+										<unireg:linkTo name="" title="Annuler le mandat" confirm="Voulez-vous réellement annuler ce mandat ?"
+										               action="/mandataire/annuler-mandat.do" method="post" params="{idMandat:${courrier.id}}" link_class="delete"/>
+									</c:if>
+								</c:when>
+								<c:otherwise>
+									<c:if test="${courrier.editable}">
+										<unireg:raccourciModifier tooltip="Editer les données du mandat" link="../editer-adresse.do?idAdresse=${courrier.id}"/>
+									</c:if>
+									<c:if test="${courrier.annulable}">
+										<unireg:linkTo name="" title="Annuler le mandat" confirm="Voulez-vous réellement annuler ce mandat ?"
+										               action="/mandataire/annuler-adresse.do" method="post" params="{idAdresse:${courrier.id}}" link_class="delete"/>
+									</c:if>
+								</c:otherwise>
+							</c:choose>
+						</c:if>
 					</display:column>
 				</display:table>
 			</c:if>

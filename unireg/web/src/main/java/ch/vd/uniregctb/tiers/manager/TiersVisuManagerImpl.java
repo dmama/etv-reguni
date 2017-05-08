@@ -158,6 +158,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				tiersVisuView.setMouvements(getMouvements(contribuable));
 				setForsFiscaux(tiersVisuView, contribuable);
 				setDecisionAciView(tiersVisuView,contribuable);
+				setMandataires(tiersVisuView, contribuable);
 
 				try {
 					setSituationsFamille(tiersVisuView, contribuable);

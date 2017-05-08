@@ -75,6 +75,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.lr.view.ListeRecapitulativeView;
 import ch.vd.uniregctb.lr.view.ListesRecapitulativesView;
+import ch.vd.uniregctb.mandataire.AccesMandatairesView;
+import ch.vd.uniregctb.mandataire.ConfigurationMandataire;
 import ch.vd.uniregctb.mandataire.MandataireCourrierView;
 import ch.vd.uniregctb.mandataire.MandatairePerceptionView;
 import ch.vd.uniregctb.mandataire.MandataireViewHelper;
@@ -184,6 +186,8 @@ public class TiersManager implements MessageSourceAware {
 	protected TiersGeneralManager tiersGeneralManager;
 
 	protected AdresseService adresseService;
+
+	protected ConfigurationMandataire configurationMandataire;
 
 	protected MessageSource messageSource;
 
@@ -581,6 +585,61 @@ public class TiersManager implements MessageSourceAware {
 		}
 	}
 
+	protected void setMandataires(TiersView tiersView, Contribuable contribuable) {
+
+		final List<MandataireCourrierView> mandatairesCourrier = new LinkedList<>();
+		final List<MandatairePerceptionView> mandatairesPerception = new LinkedList<>();
+
+		final AccesMandatairesView accesMandataire = new AccesMandatairesView(contribuable, configurationMandataire, serviceInfrastructureService);
+		if (accesMandataire.hasAnything()) {
+
+			// les liens vers les mandataires
+			final Set<RapportEntreTiers> rapportsSujet = contribuable.getRapportsSujet();
+			if (rapportsSujet != null && !rapportsSujet.isEmpty()) {
+				for (RapportEntreTiers ret : rapportsSujet) {
+					if (ret instanceof Mandat) {
+						final Mandat mandat = (Mandat) ret;
+						switch (mandat.getTypeMandat()) {
+						case TIERS:
+							if (accesMandataire.hasTiersPerception()) {
+								mandatairesPerception.add(new MandatairePerceptionView(mandat, tiersService));
+							}
+							break;
+						case GENERAL:
+							if (accesMandataire.hasGeneral()) {
+								mandatairesCourrier.add(new MandataireCourrierView(mandat, tiersService, serviceInfrastructureService));
+							}
+							break;
+						case SPECIAL:
+							if (accesMandataire.hasSpecial(mandat.getCodeGenreImpot())) {
+								mandatairesCourrier.add(new MandataireCourrierView(mandat, tiersService, serviceInfrastructureService));
+							}
+							break;
+						}
+					}
+				}
+			}
+
+			// les adresses mandataires
+			final Set<AdresseMandataire> adressesMandataires = contribuable.getAdressesMandataires();
+			if (adressesMandataires != null && !adressesMandataires.isEmpty()) {
+				for (AdresseMandataire adresse : adressesMandataires) {
+					if ((adresse.getTypeMandat() == TypeMandat.GENERAL && accesMandataire.hasGeneral()) || (adresse.getTypeMandat() == TypeMandat.SPECIAL && accesMandataire.hasSpecial(adresse.getCodeGenreImpot()))) {
+						mandatairesCourrier.add(new MandataireCourrierView(adresse, serviceInfrastructureService));
+					}
+				}
+			}
+
+			// tri et transfert dans la vue globale
+			mandatairesCourrier.sort(MandataireViewHelper.COURRIER_COMPARATOR);
+			mandatairesPerception.sort(MandataireViewHelper.BASIC_COMPARATOR);
+		}
+
+		tiersView.setMandatairesCourrier(mandatairesCourrier);
+		tiersView.setMandatairesPerception(mandatairesPerception);
+		tiersView.setAccesMandataire(accesMandataire);
+	}
+
 	/**
 	 * Met a jour la vue en fonction de l'entreprise
 	 */
@@ -691,42 +750,6 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setAutresDocumentsFiscauxSuivis(avecSuiviViews);
 			tiersView.setAutresDocumentsFiscauxNonSuivis(sansSuiviViews);
 		}
-
-		//
-		// mandataires
-		//
-		final List<MandataireCourrierView> mandatairesCourrier = new LinkedList<>();
-		final List<MandatairePerceptionView> mandatairesPerception = new LinkedList<>();
-
-		// les liens vers les mandataires
-		final Set<RapportEntreTiers> rapportsSujet = entreprise.getRapportsSujet();
-		if (rapportsSujet != null && !rapportsSujet.isEmpty()) {
-			for (RapportEntreTiers ret : rapportsSujet) {
-				if (ret instanceof Mandat) {
-					final Mandat mandat = (Mandat) ret;
-					if (mandat.getTypeMandat() == TypeMandat.TIERS) {
-						mandatairesPerception.add(new MandatairePerceptionView(mandat, tiersService));
-					}
-					else {
-						mandatairesCourrier.add(new MandataireCourrierView(mandat, tiersService, serviceInfrastructureService));
-					}
-				}
-			}
-		}
-
-		// les adresses mandataires
-		final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
-		if (adressesMandataires != null && !adressesMandataires.isEmpty()) {
-			for (AdresseMandataire adresse : adressesMandataires) {
-				mandatairesCourrier.add(new MandataireCourrierView(adresse, serviceInfrastructureService));
-			}
-		}
-
-		// tri et transfert dans la vue globale
-		mandatairesCourrier.sort(MandataireViewHelper.COURRIER_COMPARATOR);
-		mandatairesPerception.sort(MandataireViewHelper.BASIC_COMPARATOR);
-		tiersView.setMandatairesCourrier(mandatairesCourrier);
-		tiersView.setMandatairesPerception(mandatairesPerception);
 
 		// L'ACI est-elle actuellement maîtresse des données civiles pour cette entreprise?
 		try {
@@ -1375,6 +1398,10 @@ public class TiersManager implements MessageSourceAware {
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
+	}
+
+	public void setConfigurationMandataire(ConfigurationMandataire configurationMandataire) {
+		this.configurationMandataire = configurationMandataire;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

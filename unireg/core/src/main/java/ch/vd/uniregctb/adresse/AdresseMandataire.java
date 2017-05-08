@@ -24,6 +24,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.MandatOuAssimile;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.type.TexteCasePostale;
@@ -33,7 +34,7 @@ import ch.vd.uniregctb.type.TypeMandat;
 @Table(name = "ADRESSE_MANDATAIRE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "ADR_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class AdresseMandataire extends HibernateDateRangeEntity implements Comparable<AdresseMandataire>, LinkedEntity, Duplicable<AdresseMandataire>, AdresseFiscale {
+public abstract class AdresseMandataire extends HibernateDateRangeEntity implements Comparable<AdresseMandataire>, LinkedEntity, Duplicable<AdresseMandataire>, AdresseFiscale, MandatOuAssimile {
 
 	private Long id;
 	private TypeMandat typeMandat;
@@ -86,6 +87,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.id = id;
 	}
 
+	@Override
 	@Column(name = "TYPE_MANDAT", length = LengthConstants.MANDAT_TYPE, nullable = false)
 	@Enumerated(EnumType.STRING)
 	public TypeMandat getTypeMandat() {
@@ -105,6 +107,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.withCopy = withCopy;
 	}
 
+	@Override
 	@Column(name = "GENRE_IMPOT", length = LengthConstants.MANDAT_GENRE_IMPOT)
 	public String getCodeGenreImpot() {
 		return codeGenreImpot;

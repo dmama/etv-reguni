@@ -2,13 +2,11 @@ package ch.vd.uniregctb.mandataire;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -19,6 +17,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +52,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.MandatOuAssimile;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.entreprise.complexe.SearchTiersComponent;
@@ -94,6 +94,8 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	private static final String TEXTES_CASE_POSTALE_ALLOWED = "textesCasePostale";
 	private static final String DONNEES_MANDAT = "donneesMandat";
 	private static final String FORCAGE_AVEC_SANS_TIERS = "forcageAvecSansTiers";   // valeurs : avec ou sans
+	private static final String ACCES_MANDATAIRES = "accesMandataires";
+	private static final String ADD_LIEN_COURRIER_AUTORISE = "addLienCourrierAutorise";     // booléen
 
 	private static final String MODE = "mode";
 	private static final String MODE_COURRIER = "courrier";
@@ -110,6 +112,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	private MessageSource messageSource;
 	private SearchTiersComponent searchTiersComponent;
 	private IbanValidator ibanValidator;
+	private ConfigurationMandataire configurationMandataire;
 
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
@@ -150,6 +153,10 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
+	}
+
+	public void setConfigurationMandataire(ConfigurationMandataire configurationMandataire) {
+		this.configurationMandataire = configurationMandataire;
 	}
 
 	@Override
@@ -356,6 +363,29 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 		forEach(adresses, x -> true, Function.identity(), job);
 	}
 
+	private static void filtrerMapModifiablesAvecAccesMandataires(Map<TypeMandat, Boolean> modifiableMap, AccesMandatairesView acces) {
+		if (!acces.hasGeneralInEdition()) {
+			modifiableMap.put(TypeMandat.GENERAL, Boolean.FALSE);
+		}
+		if (!acces.hasSpecialInEdition()) {
+			modifiableMap.put(TypeMandat.SPECIAL, Boolean.FALSE);
+		}
+		if (!acces.hasTiersPerceptionInEdition()) {
+			modifiableMap.put(TypeMandat.TIERS, Boolean.FALSE);
+		}
+	}
+
+	private AccesMandatairesView getAccesMandatairesView(long idMandant) {
+		return transactionHelper.doInTransaction(true, status -> {
+			final Tiers tiers = hibernateTemplate.get(Contribuable.class, idMandant);
+			return getAccesMandatairesView(tiers);
+		});
+	}
+
+	private AccesMandatairesView getAccesMandatairesView(Tiers tiers) {
+		return new AccesMandatairesView(tiers, configurationMandataire, infraService);
+	}
+
 	@RequestMapping(value = "/courrier/edit-list.do", method = RequestMethod.GET)
 	public String editMandatairesCourrier(final Model model, @RequestParam("ctbId") final long idMandant) {
 		checkDroitAccesMandatairesCourrier();
@@ -368,17 +398,35 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 			}
 
 			final Map<TypeMandat, Boolean> modifiableMap = buildModifiableMap();
+			final AccesMandatairesView accesMandataires = getAccesMandatairesView(mandant);
+			filtrerMapModifiablesAvecAccesMandataires(modifiableMap, accesMandataires);
+
+			final Predicate<MandatOuAssimile> isVisible = mandat -> (mandat.getTypeMandat() == TypeMandat.GENERAL && accesMandataires.hasGeneral()) || (mandat.getTypeMandat() == TypeMandat.SPECIAL && accesMandataires.hasSpecial(mandat.getCodeGenreImpot()));
+			final Predicate<MandatOuAssimile> isEditable = mandat -> (mandat.getTypeMandat() == TypeMandat.GENERAL && accesMandataires.hasGeneralInEdition()) || (mandat.getTypeMandat() == TypeMandat.SPECIAL && accesMandataires.hasSpecialInEdition(mandat.getCodeGenreImpot()));
 
 			final List<MandataireCourrierEditView> mandats = new LinkedList<>();
 			doForAllMandatsOfType(EnumSet.of(TypeMandat.GENERAL, TypeMandat.SPECIAL),
 			                      mandant,
-			                      mandat -> mandats.add(new MandataireCourrierEditView(mandat, tiersService, infraService, modifiableMap.get(mandat.getTypeMandat()))));
+			                      mandat -> {
+				                      if (isVisible.test(mandat)) {
+					                      final boolean modifiableSelonGenreImpot = isEditable.test(mandat);
+					                      final boolean modifiableSelonDroits = modifiableMap.get(mandat.getTypeMandat());
+					                      mandats.add(new MandataireCourrierEditView(mandat, tiersService, infraService, modifiableSelonDroits && modifiableSelonGenreImpot));
+				                      }
+			                      });
 			doForAllAdressesMandataires(mandant,
-			                            adresse -> mandats.add(new MandataireCourrierEditView(adresse, infraService, modifiableMap.get(adresse.getTypeMandat()))));
+			                            adresse -> {
+				                            if (isVisible.test(adresse)) {
+					                            final boolean modifiableSelonGenreImpot = isEditable.test(adresse);
+					                            final boolean modifiableSelonDroits = modifiableMap.get(adresse.getTypeMandat());
+					                            mandats.add(new MandataireCourrierEditView(adresse, infraService, modifiableSelonDroits && modifiableSelonGenreImpot));
+				                            }
+			                            });
 			mandats.sort(MandataireViewHelper.COURRIER_COMPARATOR);
 
 			model.addAttribute(MANDATS, mandats);
 			model.addAttribute(ID_MANDANT, idMandant);
+			model.addAttribute(ACCES_MANDATAIRES, accesMandataires);
 			return "tiers/edition/mandataire/courrier";
 		});
 	}
@@ -395,15 +443,24 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 			}
 
 			final Map<TypeMandat, Boolean> modifiableMap = buildModifiableMap();
+			final AccesMandatairesView accesMandataires = getAccesMandatairesView(mandant);
+			filtrerMapModifiablesAvecAccesMandataires(modifiableMap, accesMandataires);
 
 			final List<MandatairePerceptionEditView> mandats = new LinkedList<>();
 			doForAllMandatsOfType(EnumSet.of(TypeMandat.TIERS),
 			                      mandant,
-			                      mandat -> mandats.add(new MandatairePerceptionEditView(mandat, tiersService, modifiableMap.get(mandat.getTypeMandat()))));
+			                      mandat -> {
+				                      if (accesMandataires.hasTiersPerception()) {
+					                      final boolean modifiableSelonTiers = accesMandataires.hasTiersPerceptionInEdition();
+					                      final boolean modifiableSelonDroits = modifiableMap.get(mandat.getTypeMandat());
+					                      mandats.add(new MandatairePerceptionEditView(mandat, tiersService, modifiableSelonTiers && modifiableSelonDroits));
+				                      }
+			                      });
 			mandats.sort(MandataireViewHelper.BASIC_COMPARATOR);
 
 			model.addAttribute(MANDATS, mandats);
 			model.addAttribute(ID_MANDANT, idMandant);
+			model.addAttribute(ACCES_MANDATAIRES, accesMandataires);
 			return "tiers/edition/mandataire/perception";
 		});
 	}
@@ -412,57 +469,52 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	public String ajouterMandatCourrier(Model model, HttpSession session, @RequestParam(ID_MANDANT) long idMandant) {
 		checkDroitAccesMandatairesCourrier();
 		checkAccessDossierEnEcriture(idMandant);
-		fillModelAvecDonneesAjoutMandatCourrier(model, new AddMandatView(idMandant));
+		fillModelAvecDonneesAjoutMandatCourrier(model, new AddMandatView(idMandant), getAccesMandatairesView(idMandant));
 		return searchTiersComponent.showFormulaireRecherche(model, session);
 	}
 
-	private void fillModelAvecDonneesBaseAjoutMandat(Model model, AddMandatView view) {
+	private void fillModelAvecDonneesBaseAjoutMandat(Model model, AddMandatView view, AccesMandatairesView accesMandataires) {
 		model.addAttribute(ID_MANDANT, view.getIdMandant());
 		model.addAttribute(ID_MANDATAIRE, view.getIdTiersMandataire());
 		model.addAttribute(DONNEES_MANDAT, view);
-		model.addAttribute(GENRES_IMPOT_ALLOWED, buildMapGenresImpotMandataire());
+		model.addAttribute(GENRES_IMPOT_ALLOWED, buildMapGenresImpotMandataire(accesMandataires));
 		model.addAttribute(TEXTES_CASE_POSTALE_ALLOWED, tiersMapHelper.getMapTexteCasePostale());
 	}
 
-	private void fillModelAvecDonneesAjoutMandatCourrier(Model model, AddMandatView view) {
-		fillModelAvecDonneesBaseAjoutMandat(model, view);
+	private void fillModelAvecDonneesAjoutMandatCourrier(Model model, AddMandatView view, AccesMandatairesView accesMandataires) {
+		fillModelAvecDonneesBaseAjoutMandat(model, view, accesMandataires);
 		model.addAttribute(MODE, MODE_COURRIER);
-		model.addAttribute(TYPES_MANDATS_ALLOWED, getTypesMandatAutorises(EnumSet.of(TypeMandat.GENERAL, TypeMandat.SPECIAL)));
+		model.addAttribute(TYPES_MANDATS_ALLOWED, getTypesMandatAutorises(EnumSet.of(TypeMandat.GENERAL, TypeMandat.SPECIAL), accesMandataires));
+		model.addAttribute(ADD_LIEN_COURRIER_AUTORISE, configurationMandataire.isCreationRapportEntreTiersAutoriseePourMandatsCourrier());
 	}
 
 	@RequestMapping(value = "/perception/ajouter-list.do", method = RequestMethod.GET)
 	public String ajouterMandatPerception(Model model, HttpSession session, @RequestParam(ID_MANDANT) long idMandant) {
 		checkDroitAccesMandatairesPerception();
 		checkAccessDossierEnEcriture(idMandant);
-		fillModelAvecDonneesAjoutMandatPerception(model, new AddMandatView(idMandant));
+		fillModelAvecDonneesAjoutMandatPerception(model, new AddMandatView(idMandant), getAccesMandatairesView(idMandant));
 		return searchTiersComponent.showFormulaireRecherche(model, session);
 	}
 
-	private void fillModelAvecDonneesAjoutMandatPerception(Model model, AddMandatView view) {
-		fillModelAvecDonneesBaseAjoutMandat(model, view);
+	private void fillModelAvecDonneesAjoutMandatPerception(Model model, AddMandatView view, AccesMandatairesView accesMandataires) {
+		fillModelAvecDonneesBaseAjoutMandat(model, view, accesMandataires);
 		model.addAttribute(MODE, MODE_PERCEPTION);
-		model.addAttribute(TYPES_MANDATS_ALLOWED, getTypesMandatAutorises(EnumSet.of(TypeMandat.TIERS)));
+		model.addAttribute(TYPES_MANDATS_ALLOWED, getTypesMandatAutorises(EnumSet.of(TypeMandat.TIERS), accesMandataires));
 	}
 
 	/**
+	 * Seul les genres d'impôt autorisés à la modification sont exposés ici...
 	 * @return Map de clé = code de régime, et valeur = libellé associé (l'itérateur sur la map donne les entrées dans l'ordre alphabétique des libellés
 	 */
-	private Map<String, String> buildMapGenresImpotMandataire() {
+	private Map<String, String> buildMapGenresImpotMandataire(AccesMandatairesView accesMandataires) {
 		final List<GenreImpotMandataire> gims = infraService.getGenresImpotMandataires();
-		final Map<String, String> map = new HashMap<>(gims.size());
-		for (GenreImpotMandataire gim : gims) {
-			map.put(gim.getCode(), gim.getLibelle());
-		}
-
-		// on va trier par ordre alphabétique des libellés
-		final List<Map.Entry<String, String>> flatMap = new ArrayList<>(map.entrySet());
-		flatMap.sort(Comparator.comparing(Map.Entry::getValue));
-		final Map<String, String> sortedMap = new LinkedHashMap<>(map.size());
-		for (Map.Entry<String, String> entry : flatMap) {
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
-
-		return sortedMap;
+		return gims.stream()
+				.filter(gim -> accesMandataires.hasSpecialInEdition(gim.getCode()))
+				.sorted(Comparator.comparing(GenreImpotMandataire::getLibelle))     // on va trier par ordre alphabétique des libellés
+				.collect(Collectors.toMap(GenreImpotMandataire::getCode,
+				                          GenreImpotMandataire::getLibelle,
+				                          (l1, l2) -> l1,
+				                          () -> new LinkedHashMap<>(gims.size())));
 	}
 
 	@RequestMapping(value = "/courrier/ajouter-list.do", method = RequestMethod.POST)
@@ -472,7 +524,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	                                              Model model,
 	                                              @RequestParam(ID_MANDANT) long idMandant) {
 		checkDroitAccesMandatairesCourrier();
-		fillModelAvecDonneesAjoutMandatCourrier(model, new AddMandatView(idMandant));       // en cas d'erreur dans le formulaire de recherche, il faut ré-afficher la page... correctement
+		fillModelAvecDonneesAjoutMandatCourrier(model, new AddMandatView(idMandant), getAccesMandatairesView(idMandant));       // en cas d'erreur dans le formulaire de recherche, il faut ré-afficher la page... correctement
 		fillModelForcageAvecSansTiers(model, true);
 		return searchTiersComponent.doRecherche(view, bindingResult, session, model, "ajouter-list.do");
 	}
@@ -484,7 +536,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	                                                Model model,
 	                                                @RequestParam(ID_MANDANT) long idMandant) {
 		checkDroitAccesMandatairesPerception();
-		fillModelAvecDonneesAjoutMandatPerception(model, new AddMandatView(idMandant));       // en cas d'erreur dans le formulaire de recherche, il faut ré-afficher la page... correctement
+		fillModelAvecDonneesAjoutMandatPerception(model, new AddMandatView(idMandant), getAccesMandatairesView(idMandant));       // en cas d'erreur dans le formulaire de recherche, il faut ré-afficher la page... correctement
 		return searchTiersComponent.doRecherche(view, bindingResult, session, model, "ajouter-list.do");
 	}
 
@@ -500,8 +552,9 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 		return searchTiersComponent.resetCriteresRecherche(session, "ajouter-list.do?idMandant=" + idMandant);
 	}
 
-	private Map<TypeMandat, String> getTypesMandatAutorises(Set<TypeMandat> typesPossibles) {
+	private Map<TypeMandat, String> getTypesMandatAutorises(Set<TypeMandat> typesPossibles, AccesMandatairesView accesMandataires) {
 		final Map<TypeMandat, Boolean> mapModifiables = buildModifiableMap();
+		filtrerMapModifiablesAvecAccesMandataires(mapModifiables, accesMandataires);
 		final Map<TypeMandat, String> typesMandat = tiersMapHelper.getTypesMandat();
 		final Map<TypeMandat, String> copy = new LinkedHashMap<>(typesMandat.size());       // il faut absolument conserver l'ordre...
 		for (Map.Entry<TypeMandat, String> entry : typesMandat.entrySet()) {
@@ -523,7 +576,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	                                   Model model, HttpSession session) {
 		checkDroitAccesMandatairesCourrier();
 		if (bindingResult.hasErrors()) {
-			fillModelAvecDonneesAjoutMandatCourrier(model, view);
+			fillModelAvecDonneesAjoutMandatCourrier(model, view, getAccesMandatairesView(view.getIdMandant()));
 			fillModelForcageAvecSansTiers(model, false);
 			searchTiersComponent.fillModel(model, session, true);
 			return "tiers/edition/mandataire/add";
@@ -610,13 +663,13 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 
 	@RequestMapping(value = "/courrier/ajouter-mandataire-choisi.do", method = RequestMethod.GET)
 	public String addCourrierAvecTiersMandataire(Model model, @RequestParam(ID_MANDANT) long idMandant, @RequestParam(ID_MANDATAIRE) long idMandataire) {
-		fillModelAvecDonneesAjoutMandatCourrier(model, new AddMandatView(idMandant, idMandataire));
+		fillModelAvecDonneesAjoutMandatCourrier(model, new AddMandatView(idMandant, idMandataire), getAccesMandatairesView(idMandant));
 		return "tiers/edition/mandataire/add-avec-referent";
 	}
 
 	@RequestMapping(value = "/perception/ajouter-mandataire-choisi.do", method = RequestMethod.GET)
 	public String addPerceptionAvecTiersMandataire(Model model, @RequestParam(ID_MANDANT) long idMandant, @RequestParam(ID_MANDATAIRE) long idMandataire) {
-		fillModelAvecDonneesAjoutMandatPerception(model, new AddMandatView(idMandant, idMandataire));
+		fillModelAvecDonneesAjoutMandatPerception(model, new AddMandatView(idMandant, idMandataire), getAccesMandatairesView(idMandant));
 		return "tiers/edition/mandataire/add-avec-referent";
 	}
 
@@ -626,7 +679,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	                                                 Model model) {
 		checkDroitAccesMandatairesCourrier();
 		if (bindingResult.hasErrors()) {
-			fillModelAvecDonneesAjoutMandatCourrier(model, view);
+			fillModelAvecDonneesAjoutMandatCourrier(model, view, getAccesMandatairesView(view.getIdMandant()));
 			return "tiers/edition/mandataire/add-avec-referent";
 		}
 
@@ -650,7 +703,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 	                                                   Model model) {
 		checkDroitAccesMandatairesPerception();
 		if (bindingResult.hasErrors()) {
-			fillModelAvecDonneesAjoutMandatPerception(model, view);
+			fillModelAvecDonneesAjoutMandatPerception(model, view, getAccesMandatairesView(view.getIdMandant()));
 			return "tiers/edition/mandataire/add-avec-referent";
 		}
 

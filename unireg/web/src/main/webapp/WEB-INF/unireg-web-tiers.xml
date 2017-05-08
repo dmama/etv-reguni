@@ -25,6 +25,8 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceCivil" ref="serviceCivilService" />
 		<property name="securityProvider" ref="securityProviderInterface" />
+		<property name="configurationMandataire" ref="configurationMandataire"/>
+		<property name="infrastructureService" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<bean id="autorisationCache" class="ch.vd.uniregctb.tiers.manager.AutorisationCacheImpl">
@@ -123,6 +125,7 @@
 		<property name="entrepriseService" ref="entrepriseService"/>
 		<property name="adresseService" ref="adresseService" />
 		<property name="adresseManager" ref="adresseManager" />
+		<property name="configurationMandataire" ref="configurationMandataire"/>
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
@@ -289,6 +292,13 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="ibanValidator" ref="ibanValidator"/>
+		<property name="configurationMandataire" ref="configurationMandataire"/>
+	</bean>
+
+	<bean id="configurationMandataire" class="ch.vd.uniregctb.mandataire.ConfigurationMandataireImpl">
+		<property name="properties" ref="uniregExternalProperties"/>
+		<property name="propertyNamePrefix" value="extprop.onglet.mandataires"/>
+		<property name="creationRapportEntreTiersAutoriseePourMandatsCourrier" value="${extprop.onglet.mandataires.courrier.nouveau.lien.autorise}"/>
 	</bean>
 
 	<bean id="etiquetteTiersController" class="ch.vd.uniregctb.etiquette.EtiquetteTiersController">

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.MandatOuAssimile;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -31,7 +32,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  */
 @Entity
 @DiscriminatorValue("Mandat")
-public class Mandat extends RapportEntreTiers {
+public class Mandat extends RapportEntreTiers implements MandatOuAssimile {
 
 	private static final String MANDANT = "mandant";
 	private static final String MANDATAIRE = "mandataire";
@@ -87,6 +88,7 @@ public class Mandat extends RapportEntreTiers {
 		this.codeGenreImpot = src.codeGenreImpot;
 	}
 
+	@Override
 	@Column(name = "TYPE_MANDAT", length = LengthConstants.MANDAT_TYPE)
 	@Enumerated(EnumType.STRING)
 	public TypeMandat getTypeMandat() {
@@ -137,6 +139,7 @@ public class Mandat extends RapportEntreTiers {
 		this.withCopy = withCopy;
 	}
 
+	@Override
 	@Column(name = "GENRE_IMPOT_MANDAT", length = LengthConstants.MANDAT_GENRE_IMPOT)
 	public String getCodeGenreImpot() {
 		return codeGenreImpot;

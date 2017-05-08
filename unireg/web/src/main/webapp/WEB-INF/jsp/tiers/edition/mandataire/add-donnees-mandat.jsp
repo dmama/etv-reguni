@@ -40,6 +40,7 @@
 				<form:select path="typeMandat" id="typeMandatSelect" onchange="AddInfosMandat.initTypeMandat(this.options[this.selectedIndex].value)">
 					<form:options items="${typesMandatAutorises}"/>
 				</form:select>
+				<span class="mandatory">*</span>
 				<form:errors path="typeMandat" cssClass="error"/>
 			</td>
 			<td class="mdt-gen mdt-spec"><fmt:message key="label.avec.copie.courriers"/>&nbsp;:</td>
@@ -62,7 +63,9 @@
 			<td><fmt:message key="label.genre.impot"/>&nbsp;:</td>
 			<td>
 				<form:select path="codeGenreImpot">
-					<form:option value=""/>
+					<c:if test="${fn:length(genresImpotAutorises) > 1}">
+						<form:option value=""/>
+					</c:if>
 					<form:options items="${genresImpotAutorises}"/>
 				</form:select>
 				<span class="mandatory">*</span>

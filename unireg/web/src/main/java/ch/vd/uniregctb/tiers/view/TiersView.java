@@ -20,6 +20,7 @@ import ch.vd.uniregctb.entreprise.EtablissementView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.lr.view.ListeRecapitulativeView;
+import ch.vd.uniregctb.mandataire.AccesMandatairesView;
 import ch.vd.uniregctb.mandataire.MandataireCourrierView;
 import ch.vd.uniregctb.mandataire.MandatairePerceptionView;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
@@ -142,6 +143,7 @@ public class TiersView {
 	private boolean forsSecondairesPagines = true;
 	private boolean autresForsPagines = true;
 
+	private AccesMandatairesView accesMandataire;
 	private List<MandataireCourrierView> mandatairesCourrier;
 	private List<MandatairePerceptionView> mandatairesPerception;
 
@@ -703,6 +705,18 @@ public class TiersView {
 
 	public void setMandatairesPerception(List<MandatairePerceptionView> mandatairesPerception) {
 		this.mandatairesPerception = mandatairesPerception;
+	}
+
+	public AccesMandatairesView getAccesMandataire() {
+		return accesMandataire;
+	}
+
+	public void setAccesMandataire(AccesMandatairesView accesMandataire) {
+		this.accesMandataire = accesMandataire;
+	}
+
+	public boolean isShowOngletMandataire() {
+		return accesMandataire != null && accesMandataire.hasAnything();
 	}
 
 	public List<EtiquetteTiersView> getEtiquettes() {

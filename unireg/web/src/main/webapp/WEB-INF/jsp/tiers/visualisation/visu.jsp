@@ -137,9 +137,13 @@
 							<li id="autresDocumentsFiscauxTab">
 								<a href="#tabContent_autresDocumentsTab"><fmt:message key="label.autres.documents.fiscaux"/></a>
 							</li>
+						</c:if>
+						<c:if test="${command.showOngletMandataire}">
 							<li id="mandatairesTab">
 								<a href="#tabContent_mandatairesTab"><fmt:message key="label.mandataires"/></a>
 							</li>
+						</c:if>
+						<c:if test="${command.natureTiers == 'Entreprise'}">
 							<li id="specificitesFiscalesTab">
 								<a href="#tabContent_specificitesFiscalesTab"><fmt:message key="label.specificites.fiscales"/></a>
 							</li>
@@ -246,9 +250,13 @@
 						<div id="tabContent_autresDocumentsTab" class="visuTiers">
 							<jsp:include page="pm/autresdocs.jsp"/>
 						</div>
+					</c:if>
+					<c:if test="${command.showOngletMandataire}">
 						<div id="tabContent_mandatairesTab" class="visuTiers">
-							<jsp:include page="pm/mandataires.jsp"/>
+							<jsp:include page="mandataires.jsp"/>
 						</div>
+					</c:if>
+					<c:if test="${command.natureTiers == 'Entreprise'}">
 						<div id="tabContent_specificitesFiscalesTab" class="visuTiers">
 							<jsp:include page="pm/specificites.jsp"/>
 						</div>

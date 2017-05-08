@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
+<%--@elvariable id="idMandant" type="java.lang.Long"--%>
+<%--@elvariable id="mandats" type="java.util.List<ch.vd.uniregctb.mandataire.MandatairePerceptionEditView>"--%>
+<%--@elvariable id="accesMandataires" type="ch.vd.uniregctb.mandataire.AccesMandatairesView"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
 		<fmt:message key="title.edition.mandataires.perception"/>
@@ -14,7 +18,9 @@
 		<fieldset>
 			<legend><span><fmt:message key="label.mandataires.perception"/></span></legend>
 
-			<unireg:raccourciAjouter tooltip="Ajouter un nouveau mandat" display="label.bouton.ajouter" link="ajouter-list.do?idMandant=${idMandant}"/>
+			<c:if test="${accesMandataires.hasTiersPerceptionInEdition()}">
+				<unireg:raccourciAjouter tooltip="Ajouter un nouveau mandat" display="label.bouton.ajouter" link="ajouter-list.do?idMandant=${idMandant}"/>
+			</c:if>
 
 			<c:if test="${not empty mandats}">
 				<display:table name="${mandats}" id="mandat" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
@@ -37,12 +43,14 @@
 						<c:out value="${mandat.iban}"/>
 					</display:column>
 					<display:column class="action" style="width: 3ex;">
-						<c:if test="${mandat.editable}">
-							<unireg:raccourciModifier tooltip="Editer les données du mandat" link="../editer-mandat.do?idMandat=${mandat.id}"/>
-						</c:if>
-						<c:if test="${mandat.annulable}">
-							<unireg:linkTo name="" title="Annuler le mandat" confirm="Voulez-vous réellement annuler ce mandat ?"
-							               action="/mandataire/annuler-mandat.do" method="post" params="{idMandat:${mandat.id}}" link_class="delete"/>
+						<c:if test="${accesMandataires.hasTiersPerceptionInEdition()}">
+							<c:if test="${mandat.editable}">
+								<unireg:raccourciModifier tooltip="Editer les données du mandat" link="../editer-mandat.do?idMandat=${mandat.id}"/>
+							</c:if>
+							<c:if test="${mandat.annulable}">
+								<unireg:linkTo name="" title="Annuler le mandat" confirm="Voulez-vous réellement annuler ce mandat ?"
+								               action="/mandataire/annuler-mandat.do" method="post" params="{idMandat:${mandat.id}}" link_class="delete"/>
+							</c:if>
 						</c:if>
 					</display:column>
 				</display:table>
