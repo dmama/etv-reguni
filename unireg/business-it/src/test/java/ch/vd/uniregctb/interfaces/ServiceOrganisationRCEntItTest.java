@@ -98,9 +98,9 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		username = uniregProperties.getAllProperties().get("testprop.webservice.rcent.username");
-		password = uniregProperties.getAllProperties().get("testprop.webservice.rcent.password");
-		baseUrl = uniregProperties.getAllProperties().get("testprop.webservice.rcent.url");
+		username = uniregProperties.getProperty("testprop.webservice.rcent.username");
+		password = uniregProperties.getProperty("testprop.webservice.rcent.password");
+		baseUrl = uniregProperties.getProperty("testprop.webservice.rcent.url");
 
 		service = getBean(ServiceOrganisationService.class, "serviceOrganisationService");
 	}
