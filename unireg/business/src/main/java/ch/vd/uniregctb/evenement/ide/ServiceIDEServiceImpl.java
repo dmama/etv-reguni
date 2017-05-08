@@ -337,7 +337,7 @@ public class ServiceIDEServiceImpl implements ServiceIDEService {
 				case EN_REACTIVATION:
 				case PROVISOIRE:
 				case DEFINITIF:
-					if (etatActuel != null && etatActuel.getType() == TypeEtatEntreprise.DISSOUTE) {
+					if (etatActuel != null && (etatActuel.getType() == TypeEtatEntreprise.DISSOUTE || etatActuel.getType() == TypeEtatEntreprise.ABSORBEE)) {
 						typeAnnonce = TypeAnnonce.RADIATION;
 					}
 					else {
