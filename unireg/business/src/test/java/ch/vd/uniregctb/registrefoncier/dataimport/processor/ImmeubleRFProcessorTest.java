@@ -24,6 +24,7 @@ import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
@@ -910,7 +911,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
 				ppe.setIdRF("_8af80e62567f816f01571d91f3e56a38");
 				ppe.setEgrid("CH776584246539");
-				ppe.setQuotePart(new Fraction(8, 1000));
+				ppe.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
 
 				final SituationRF situation = new SituationRF();
 				situation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -993,7 +994,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/**
-	 * [SIFISC-24672] Ce test vérifie que le processing d'une mutation de modification de la quote-part d'un immeuble lève bien une exception.
+	 * [SIFISC-24715] Ce test vérifie que le processing d'une mutation de modification de la quote-part d'un immeuble met bien à jour l'historique des quotes-parts.
 	 */
 	@Test
 	public void testProcessMutationModificationQuotePartImmeuble() throws Exception {
@@ -1012,7 +1013,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
 				ppe.setIdRF("_8af80e62567f816f01571d91f3e56a38");
 				ppe.setEgrid("CH776584246539");
-				ppe.setQuotePart(new Fraction(900, 1000));
+				ppe.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(900, 1000)));
 
 				final SituationRF situation = new SituationRF();
 				situation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -1034,17 +1035,44 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.IMMEUBLE, TypeMutationRF.MODIFICATION, "_8af80e62567f816f01571d91f3e56a38", null);
 
 		// on process la mutation
-		try {
-			doInNewTransaction(status -> {
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
 				processor.process(mutation, false, null);
-				return null;
-			});
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals("La quote-part de l'immeuble CH776584246539 (idRF=[_8af80e62567f816f01571d91f3e56a38]) a changé.", e.getMessage());
-		}
+			}
+		});
+
+		// postcondition : la mutation est traitée, l'ancienne quote-part est fermée et une nouvelle est créée
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+				assertEquals(1, immeubles.size());
+
+				final ImmeubleRF immeuble0 = immeubles.get(0);
+				assertEquals("_8af80e62567f816f01571d91f3e56a38", immeuble0.getIdRF());
+				assertEquals("CH776584246539", immeuble0.getEgrid());
+
+				final ProprieteParEtageRF ppe =(ProprieteParEtageRF) immeuble0;
+				final List<QuotePartRF> quotesParts = new ArrayList<>(ppe.getQuotesParts());
+				quotesParts.sort(new DateRangeComparator<>());
+				assertEquals(2, quotesParts.size());
+
+				// la première quote-part doit être fermée la veille de la date d'import
+				final QuotePartRF quotePart0 = quotesParts.get(0);
+				assertEquals(RegDate.get(1988, 1, 1), quotePart0.getDateDebut());
+				assertEquals(RegDate.get(2016, 9, 30), quotePart0.getDateFin());
+				assertEquals(new Fraction(900, 1000), quotePart0.getQuotePart());
+
+				// une nouvelle quote-part doit être créée
+				final QuotePartRF quotePart1 = quotesParts.get(1);
+				assertEquals(RegDate.get(2016, 10, 1), quotePart1.getDateDebut());
+				assertNull(quotePart1.getDateFin());
+				assertEquals(new Fraction(8, 1000), quotePart1.getQuotePart());
+			}
+		});
 	}
 
 	/**

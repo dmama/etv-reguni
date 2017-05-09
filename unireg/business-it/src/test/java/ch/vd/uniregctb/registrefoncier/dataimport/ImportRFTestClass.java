@@ -39,6 +39,7 @@ import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
@@ -184,7 +185,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		final ProprieteParEtageRF immeuble = new ProprieteParEtageRF();
 		immeuble.setIdRF(idRF);
 		immeuble.setEgrid(egrid);
-		immeuble.setQuotePart(quotePart);
+		immeuble.addQuotePart(new QuotePartRF(dateValeur, null, quotePart));
 		immeuble.addSituation(situation);
 		immeuble.addEstimation(estimation);
 
@@ -214,7 +215,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		final PartCoproprieteRF immeuble = new PartCoproprieteRF();
 		immeuble.setIdRF(idRF);
 		immeuble.setEgrid(egrid);
-		immeuble.setQuotePart(quotePart);
+		immeuble.addQuotePart(new QuotePartRF(dateValeur, null, quotePart));
 		immeuble.addSituation(situation);
 		immeuble.addEstimation(estimation);
 

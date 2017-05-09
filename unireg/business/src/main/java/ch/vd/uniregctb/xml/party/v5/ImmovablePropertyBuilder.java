@@ -31,6 +31,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
@@ -51,7 +52,7 @@ public abstract class ImmovablePropertyBuilder {
 	}
 
 	@FunctionalInterface
-	public interface Strategy<I extends ImmovableProperty>  {
+	public interface Strategy<I extends ImmovableProperty> {
 		/**
 		 * Stratégie de création d'un immeuble web à part d'un immeuble core.
 		 */
@@ -84,7 +85,12 @@ public abstract class ImmovablePropertyBuilder {
 	                                                            @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final CondominiumOwnership condo = new CondominiumOwnership();
 		fillBase(condo, ppe, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
-		condo.setShare(LandRightBuilder.getShare(ppe.getQuotePart()));
+		// TODO (msi) exposer l'historique des quotes-parts
+		ppe.getQuotesParts().stream()
+				.filter(q -> q.isValidAt(null))
+				.map(QuotePartRF::getQuotePart)
+				.findFirst()
+				.ifPresent(q -> condo.setShare(LandRightBuilder.getShare(q)));
 		return condo;
 	}
 
@@ -92,7 +98,12 @@ public abstract class ImmovablePropertyBuilder {
 	                                                    @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final CoOwnershipShare coown = new CoOwnershipShare();
 		fillBase(coown, part, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
-		coown.setShare(LandRightBuilder.getShare(part.getQuotePart()));
+		// TODO (msi) exposer l'historique des quotes-parts
+		part.getQuotesParts().stream()
+				.filter(q -> q.isValidAt(null))
+				.map(QuotePartRF::getQuotePart)
+				.findFirst()
+				.ifPresent(q -> coown.setShare(LandRightBuilder.getShare(q)));
 		return coown;
 	}
 

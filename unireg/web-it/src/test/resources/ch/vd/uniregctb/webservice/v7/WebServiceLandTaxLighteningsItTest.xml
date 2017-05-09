@@ -126,8 +126,6 @@
 		<column>ID_RF</column>
 		<column>URL_INTERCAPI</column>
 		<column>CFA</column>
-		<column>QUOTE_PART_DENOM</column>
-		<column>QUOTE_PART_NUM</column>
 		<row>
 			<value>BienFond</value>
 			<value>264310664</value>
@@ -142,8 +140,6 @@
 			<value>_1f109152381059670138105e5e5148b2</value>
 			<null />
 			<value>0</value>
-			<null />
-			<null />
 		</row>
 	</table>
 	<table name="RF_AYANT_DROIT">

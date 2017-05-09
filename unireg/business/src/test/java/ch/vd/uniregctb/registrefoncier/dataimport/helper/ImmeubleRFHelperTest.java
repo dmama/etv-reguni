@@ -27,6 +27,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 
@@ -363,7 +364,8 @@ public class ImmeubleRFHelperTest {
 		final ProprieteParEtageRF immeuble = new ProprieteParEtageRF();
 		immeuble.setIdRF("382929efa218");
 		immeuble.setEgrid("CH282891891");
-		immeuble.setQuotePart(new Fraction(1, 8));
+		final QuotePartRF quotePart = new QuotePartRF(null, null, new Fraction(1, 8));
+		immeuble.addQuotePart(quotePart);
 		immeuble.addSituation(situation);
 		immeuble.setEstimations(new HashSet<>());
 		immeuble.setSurfacesTotales(new HashSet<>());
@@ -383,7 +385,7 @@ public class ImmeubleRFHelperTest {
 		assertTrue(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
 
 		// les quotes-part ne sont pas les mêmes
-		immeuble.setQuotePart(new Fraction(2, 3));
+		quotePart.setQuotePart(new Fraction(2, 3));
 		assertFalse(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
 	}
 
@@ -404,7 +406,8 @@ public class ImmeubleRFHelperTest {
 		final PartCoproprieteRF immeuble = new PartCoproprieteRF();
 		immeuble.setIdRF("382929efa218");
 		immeuble.setEgrid("CH282891891");
-		immeuble.setQuotePart(new Fraction(1, 8));
+		final QuotePartRF quotePart = new QuotePartRF(null, null, new Fraction(1, 8));
+		immeuble.addQuotePart(quotePart);
 		immeuble.addSituation(situation);
 		immeuble.setEstimations(new HashSet<>());
 		immeuble.setSurfacesTotales(new HashSet<>());
@@ -424,7 +427,7 @@ public class ImmeubleRFHelperTest {
 		assertTrue(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
 
 		// les quotes-part ne sont pas les mêmes
-		immeuble.setQuotePart(new Fraction(2, 3));
+		quotePart.setQuotePart(new Fraction(2, 3));
 		assertFalse(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
 	}
 
@@ -516,7 +519,10 @@ public class ImmeubleRFHelperTest {
 		final PartCoproprieteRF copro = (PartCoproprieteRF) immeuble;
 		assertEquals("382929efa218", copro.getIdRF());
 		assertEquals("CH282891891", copro.getEgrid());
-		assertEquals(new Fraction(1, 3), copro.getQuotePart());
+
+		final Set<QuotePartRF> quotesParts = copro.getQuotesParts();
+		assertEquals(1, quotesParts.size());
+		assertEquals(new Fraction(1, 3), quotesParts.iterator().next().getQuotePart());
 
 		final Set<SituationRF> situations = copro.getSituations();
 		assertEquals(1, situations.size());
@@ -688,7 +694,10 @@ public class ImmeubleRFHelperTest {
 		final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeuble;
 		assertEquals("382929efa218", ppe.getIdRF());
 		assertEquals("CH282891891", ppe.getEgrid());
-		assertEquals(new Fraction(1, 3), ppe.getQuotePart());
+
+		final Set<QuotePartRF> quotesParts = ppe.getQuotesParts();
+		assertEquals(1, quotesParts.size());
+		assertEquals(new Fraction(1, 3), quotesParts.iterator().next().getQuotePart());
 
 		final Set<SituationRF> situations = ppe.getSituations();
 		assertEquals(1, situations.size());
@@ -734,7 +743,10 @@ public class ImmeubleRFHelperTest {
 		final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeuble;
 		assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe.getIdRF());
 		assertEquals("CH776584246539", ppe.getEgrid());
-		assertEquals(new Fraction(8, 1000), ppe.getQuotePart());
+
+		final Set<QuotePartRF> quotesParts = ppe.getQuotesParts();
+		assertEquals(1, quotesParts.size());
+		assertEquals(new Fraction(8, 1000), quotesParts.iterator().next().getQuotePart());
 
 		final Set<SituationRF> situations = ppe.getSituations();
 		assertEquals(1, situations.size());

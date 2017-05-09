@@ -43,6 +43,7 @@ import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
@@ -115,7 +116,7 @@ public class ImmovablePropertyBuilderTest {
 		ppe.setImplantations(Collections.singleton(implantation));
 		implantation.setImmeuble(ppe);
 		ppe.setDateRadiation(null);
-		ppe.setQuotePart(new Fraction(1, 23));
+		ppe.addQuotePart(new QuotePartRF(null, null, new Fraction(1, 23)));
 
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
 
@@ -187,7 +188,7 @@ public class ImmovablePropertyBuilderTest {
 		pcp.setImplantations(Collections.singleton(implantation));
 		implantation.setImmeuble(pcp);
 		pcp.setDateRadiation(null);
-		pcp.setQuotePart(new Fraction(1, 1));
+		pcp.addQuotePart(new QuotePartRF(null, null, new Fraction(1, 1)));
 
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, pcp);
 
@@ -468,7 +469,7 @@ public class ImmovablePropertyBuilderTest {
 		ppe.setEstimations(Collections.emptySet());
 		ppe.setImplantations(Collections.emptySet());
 		ppe.setDateRadiation(null);
-		ppe.setQuotePart(new Fraction(1, 23));
+		ppe.addQuotePart(new QuotePartRF(null, null, new Fraction(1, 23)));
 
 		final ImmeubleBeneficiaireRF beneficiaire = new ImmeubleBeneficiaireRF();
 		beneficiaire.setIdRF(ppe.getIdRF());

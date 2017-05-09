@@ -251,12 +251,14 @@
 		<value>ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ImmeubleRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.ImmeubleAvecQuotePartRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ImplantationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.MineRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.PartCoproprieteRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.PersonneMoraleRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.QuotePartRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ServitudeRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SituationRF</value>
