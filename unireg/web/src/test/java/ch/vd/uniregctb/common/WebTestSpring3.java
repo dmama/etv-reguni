@@ -66,7 +66,8 @@ import static org.junit.Assert.assertNotNull;
 		WebTestingConstants.UNIREG_WEBUT_JMX,
 		WebTestingConstants.UNIREG_WEBUT_ADMIN,
 		WebTestingConstants.UNIREG_WEBUT_CONTROLLER,
-		WebTestingConstants.UNIREG_WEBUT_FOURRE_NEUTRE
+		WebTestingConstants.UNIREG_WEBUT_FOURRE_NEUTRE,
+		WebTestingConstants.UNIREG_WEBUT_TIERS
 })
 public abstract class WebTestSpring3 extends AbstractBusinessTest {
 
