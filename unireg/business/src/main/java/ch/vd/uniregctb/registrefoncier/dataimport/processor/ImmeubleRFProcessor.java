@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.util.Objects;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.hibernate.FlushMode;
@@ -21,6 +22,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleAvecQuotePartRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
@@ -149,6 +151,16 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		if (persisted == null) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] n'existe pas dans la DB.");
 		}
+
+		// [SIFISC-24672] check de cohérence sur les quotes-parts
+		if (persisted instanceof ImmeubleAvecQuotePartRF) {
+			final ImmeubleAvecQuotePartRF persistedQP = (ImmeubleAvecQuotePartRF) persisted;
+			final ImmeubleAvecQuotePartRF newQP = (ImmeubleAvecQuotePartRF) newImmeuble;
+			if (!Objects.equals(persistedQP.getQuotePart(), newQP.getQuotePart())) {
+				throw new IllegalArgumentException("La quote-part de l'immeuble " + newImmeuble.getEgrid() + " (idRF=[" + newImmeuble.getIdRF() + "]) a changé.");
+			}
+		}
+
 		if (persisted.getDateRadiation() != null) {
 			// [SIFISC-24013] si l'immeuble est radié, on le réactive
 			persisted.setDateRadiation(null);

@@ -36,6 +36,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("Duplicates")
 @RunWith(UniregJUnit4Runner.class)
 public class ImmeubleRFHelperTest {
 
@@ -44,7 +45,7 @@ public class ImmeubleRFHelperTest {
 	 */
 	@Test
 	public void testCurrentDataEquals() throws Exception {
-		
+
 		final CommuneRF commune = new CommuneRF();
 		commune.setNoRf(2233);
 
@@ -343,6 +344,88 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setGrundstueckNummer(grundstueckNummer);
 
 		assertTrue(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
+	}
+
+	/**
+	 * Ce test vérifie que les quotes-parts sont bien considérées dans l'égalité entre deux PPEs.
+	 */
+	@Test
+	public void testCurrentDataEqualsPPEQuotePart() throws Exception {
+
+		final CommuneRF commune = new CommuneRF();
+		commune.setNoRf(2233);
+
+		final SituationRF situation = new SituationRF();
+		situation.setCommune(commune);
+		situation.setNoParcelle(109);
+		situation.setIndex1(17);
+
+		final ProprieteParEtageRF immeuble = new ProprieteParEtageRF();
+		immeuble.setIdRF("382929efa218");
+		immeuble.setEgrid("CH282891891");
+		immeuble.setQuotePart(new Fraction(1, 8));
+		immeuble.addSituation(situation);
+		immeuble.setEstimations(new HashSet<>());
+		immeuble.setSurfacesTotales(new HashSet<>());
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+
+		final StockwerksEinheit grundstueck = new StockwerksEinheit();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setStammGrundstueck(new StammGrundstueck(new Quote(1L, 8L, null, null), null, null));
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+
+		// les quotes-part sont les mêmes
+		assertTrue(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
+
+		// les quotes-part ne sont pas les mêmes
+		immeuble.setQuotePart(new Fraction(2, 3));
+		assertFalse(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
+	}
+
+	/**
+	 * Ce test vérifie que les quotes-parts sont bien considérées dans l'égalité entre deux Parts de Copropriété (immeuble).
+	 */
+	@Test
+	public void testCurrentDataEqualsPartCoproQuotePart() throws Exception {
+
+		final CommuneRF commune = new CommuneRF();
+		commune.setNoRf(2233);
+
+		final SituationRF situation = new SituationRF();
+		situation.setCommune(commune);
+		situation.setNoParcelle(109);
+		situation.setIndex1(17);
+
+		final PartCoproprieteRF immeuble = new PartCoproprieteRF();
+		immeuble.setIdRF("382929efa218");
+		immeuble.setEgrid("CH282891891");
+		immeuble.setQuotePart(new Fraction(1, 8));
+		immeuble.addSituation(situation);
+		immeuble.setEstimations(new HashSet<>());
+		immeuble.setSurfacesTotales(new HashSet<>());
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+
+		final GewoehnlichesMiteigentum grundstueck = new GewoehnlichesMiteigentum();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setStammGrundstueck(new StammGrundstueck(new Quote(1L, 8L, null, null), null, null));
+		grundstueck.setEGrid("CH282891891");
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+
+		// les quotes-part sont les mêmes
+		assertTrue(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
+
+		// les quotes-part ne sont pas les mêmes
+		immeuble.setQuotePart(new Fraction(2, 3));
+		assertFalse(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
 	}
 
 	@Test

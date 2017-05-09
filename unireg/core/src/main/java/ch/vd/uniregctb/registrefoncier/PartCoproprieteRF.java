@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Entity
 @DiscriminatorValue("PartCopropriete")
-public class PartCoproprieteRF extends ImmeubleRF {
+public class PartCoproprieteRF extends ImmeubleRF implements ImmeubleAvecQuotePartRF {
 
 	/**
 	 * La quote-part de l'immeuble
@@ -23,6 +23,7 @@ public class PartCoproprieteRF extends ImmeubleRF {
 			@AttributeOverride(name = "numerateur", column = @Column(name = "QUOTE_PART_NUM")),
 			@AttributeOverride(name = "denominateur", column = @Column(name = "QUOTE_PART_DENOM"))
 	})
+	@Override
 	public Fraction getQuotePart() {
 		return quotePart;
 	}

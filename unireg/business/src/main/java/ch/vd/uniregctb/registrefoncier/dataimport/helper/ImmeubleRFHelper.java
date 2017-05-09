@@ -70,11 +70,6 @@ public abstract class ImmeubleRFHelper {
 				throw new IllegalArgumentException("Le flag CFA de l'immeuble idRF=[" + immeuble.getIdRF() + "] a changé.");
 			}
 		}
-		if (immeuble instanceof PartCoproprieteRF &&
-				!FractionHelper.dataEquals(((PartCoproprieteRF) immeuble).getQuotePart(),
-				                           ((GewoehnlichesMiteigentum) grundstueck).getStammGrundstueck().getQuote())) {
-			throw new IllegalArgumentException("La quote-part de l'immeuble idRF=[" + immeuble.getIdRF() + "] a changé.");
-		}
 		if (!Objects.equals(immeuble.getEgrid(), grundstueck.getEGrid())) {
 			throw new IllegalArgumentException("L'egrid de l'immeuble idRF=[" + immeuble.getIdRF() + "] a changé.");
 		}
@@ -94,6 +89,22 @@ public abstract class ImmeubleRFHelper {
 
 		if (!SituationRFHelper.dataEquals(situation, grundstueck.getGrundstueckNummer())) {
 			return false;
+		}
+
+		// [SIFISC-24672] on vérifie la quote part
+		if (immeuble instanceof ProprieteParEtageRF) {
+			final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeuble;
+			final StockwerksEinheit se = (StockwerksEinheit) grundstueck;
+			if (!FractionHelper.dataEquals(ppe.getQuotePart(), se.getStammGrundstueck().getQuote())) {
+				return false;
+			}
+		}
+		else if (immeuble instanceof PartCoproprieteRF) {
+			final PartCoproprieteRF pcp = (PartCoproprieteRF) immeuble;
+			final GewoehnlichesMiteigentum gm = (GewoehnlichesMiteigentum) grundstueck;
+			if (!FractionHelper.dataEquals(pcp.getQuotePart(), gm.getStammGrundstueck().getQuote())) {
+				return false;
+			}
 		}
 
 		// on vérifie l'estimation fiscale courante
