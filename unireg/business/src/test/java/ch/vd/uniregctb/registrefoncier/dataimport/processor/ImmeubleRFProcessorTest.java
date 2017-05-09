@@ -21,6 +21,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
@@ -369,7 +370,8 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/**
-	 * [SIFISC-22995] Ce test vérifie que le processing d'une mutation de modification sur l'estimation fiscale corrige bien l'estimation fiscale existante s'il s'agit du passage en révision de l'estimation (il ne doit pas y avoir de création d'une nouvelle estimation fiscale).
+	 * [SIFISC-22995] Ce test vérifie que le processing d'une mutation de modification sur l'estimation fiscale corrige bien l'estimation fiscale existante s'il s'agit du passage en révision de l'estimation (il ne doit pas y avoir de création d'une
+	 * nouvelle estimation fiscale).
 	 */
 	@Test
 	public void testProcessMutationModificationEstimationPassageEnRevision() throws Exception {
@@ -905,16 +907,17 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				commune.setNoOfs(66666);
 				commune = communeRFDAO.save(commune);
 
-				final ProprieteParEtageRF bienFond = new ProprieteParEtageRF();
-				bienFond.setIdRF("_8af80e62567f816f01571d91f3e56a38");
-				bienFond.setEgrid("CH776584246539");
+				final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
+				ppe.setIdRF("_8af80e62567f816f01571d91f3e56a38");
+				ppe.setEgrid("CH776584246539");
+				ppe.setQuotePart(new Fraction(8, 1000));
 
 				final SituationRF situation = new SituationRF();
 				situation.setDateDebut(RegDate.get(1988, 1, 1));
 				situation.setCommune(commune);
 				situation.setNoParcelle(917);
 				situation.setIndex1(106);
-				bienFond.addSituation(situation);
+				ppe.addSituation(situation);
 
 				final EstimationRF estimation = new EstimationRF();
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -923,9 +926,9 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				estimation.setAnneeReference(1988);
 				estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
 				estimation.setEnRevision(false);
-				bienFond.addEstimation(estimation);
+				ppe.addEstimation(estimation);
 
-				immeubleRFDAO.save(bienFond);
+				immeubleRFDAO.save(ppe);
 				assertEquals(1, immeubleRFDAO.getAll().size());
 			}
 		});
@@ -987,6 +990,61 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertFalse(estimation0.isEnRevision());
 			}
 		});
+	}
+
+	/**
+	 * [SIFISC-24672] Ce test vérifie que le processing d'une mutation de modification de la quote-part d'un immeuble lève bien une exception.
+	 */
+	@Test
+	public void testProcessMutationModificationQuotePartImmeuble() throws Exception {
+
+		// précondition : il y a déjà un immeuble avec quote-part dans la base
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				CommuneRF commune = new CommuneRF();
+				commune.setNoRf(13);
+				commune.setNomRf("Pétahouchnok");
+				commune.setNoOfs(66666);
+				commune = communeRFDAO.save(commune);
+
+				final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
+				ppe.setIdRF("_8af80e62567f816f01571d91f3e56a38");
+				ppe.setEgrid("CH776584246539");
+				ppe.setQuotePart(new Fraction(900, 1000));
+
+				final SituationRF situation = new SituationRF();
+				situation.setDateDebut(RegDate.get(1988, 1, 1));
+				situation.setCommune(commune);
+				situation.setNoParcelle(917);
+				situation.setIndex1(106);
+				ppe.addSituation(situation);
+
+				immeubleRFDAO.save(ppe);
+				assertEquals(1, immeubleRFDAO.getAll().size());
+			}
+		});
+
+		// le même immeuble mais avec une quote-part différente
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf_sans_estimation_fiscale.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, RegDate.get(2016, 10, 1), TypeEntiteRF.IMMEUBLE, TypeMutationRF.MODIFICATION, "_8af80e62567f816f01571d91f3e56a38", null);
+
+		// on process la mutation
+		try {
+			doInNewTransaction(status -> {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation, false, null);
+				return null;
+			});
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("La quote-part de l'immeuble CH776584246539 (idRF=[_8af80e62567f816f01571d91f3e56a38]) a changé.", e.getMessage());
+		}
 	}
 
 	/**
