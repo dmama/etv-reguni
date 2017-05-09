@@ -3,11 +3,13 @@ package ch.vd.uniregctb.registrefoncier;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Fraction représentant une partie d'un tout (par exemple: quote-part dans le cas d'un immeuble en PPE ou un part de propriété).
  */
 @Embeddable
-public class Fraction {
+public class Fraction implements Comparable<Fraction> {
 
 	private int numerateur;
 	private int denominateur;
@@ -52,5 +54,29 @@ public class Fraction {
 	@Override
 	public String toString() {
 		return String.valueOf(numerateur) + "/" + denominateur;
+	}
+
+	@Override
+	public int compareTo(@NotNull Fraction other) {
+
+		if (this == other) {
+			return 0;
+		}
+		if (this.numerateur == other.numerateur && this.denominateur == other.denominateur) {
+			return 0;
+		}
+
+		// otherwise see which is less
+		long first = (long) this.numerateur * (long) other.denominateur;
+		long second = (long) other.numerateur * (long) this.denominateur;
+		if (first == second) {
+			return 0;
+		}
+		else if (first < second) {
+			return -1;
+		}
+		else {
+			return 1;
+		}
 	}
 }

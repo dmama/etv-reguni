@@ -39,6 +39,7 @@ import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -465,7 +466,7 @@ public class ImmeubleRFDetectorTest {
 			estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
 			ppe.setIdRF(idRfPPE);
-			ppe.setQuotePart(new Fraction(1, 1));
+			ppe.addQuotePart(new QuotePartRF(null, null, new Fraction(1, 1)));
 			ppe.setEgrid("CH8383820002");
 			ppe.addSituation(situation);
 			ppe.addEstimation(estimation);

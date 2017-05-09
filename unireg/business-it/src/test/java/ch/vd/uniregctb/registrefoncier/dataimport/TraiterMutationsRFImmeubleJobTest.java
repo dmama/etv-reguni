@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
@@ -29,6 +27,7 @@ import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
@@ -42,6 +41,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+@SuppressWarnings("Duplicates")
 public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 
 	private BatchScheduler batchScheduler;
@@ -366,7 +366,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(7, mutations.size());    // il y a 4 immeubles + 3 communes dans le fichier d'import et 4 immeubles + 3 communes dans le DB, dont 2 immeubles ont des données différentes
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(0).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(1).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(2).getEtat());
@@ -454,7 +454,13 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				{
 					assertEquals("_8af806fc45d223e60149c23f475365d5", ppe.getIdRF());
 					assertEquals("CH336583651349", ppe.getEgrid());
-					Assert.assertEquals(new Fraction(293, 1000), ppe.getQuotePart());
+
+					final Set<QuotePartRF> quotesParts = ppe.getQuotesParts();
+					assertEquals(1, quotesParts.size());
+					final QuotePartRF quotePart = quotesParts.iterator().next();
+					assertNull(quotePart.getDateDebut());                   // date vide en import initial
+					assertNull(quotePart.getDateFin());
+					assertEquals(new Fraction(293, 1000), quotePart.getQuotePart());
 
 					final Set<SituationRF> situations = ppe.getSituations();
 					assertEquals(1, situations.size());
@@ -488,7 +494,13 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				{
 					assertEquals("_8af806cc5043853201508e1e8a3a1a71", copro.getIdRF());
 					assertEquals("CH516579658411", copro.getEgrid());
-					assertEquals(new Fraction(1, 18), copro.getQuotePart());
+
+					final Set<QuotePartRF> quotesParts = copro.getQuotesParts();
+					assertEquals(1, quotesParts.size());
+					final QuotePartRF quotePart = quotesParts.iterator().next();
+					assertNull(quotePart.getDateDebut());                   // date vide en import initial
+					assertNull(quotePart.getDateFin());
+					assertEquals(new Fraction(1, 18), quotePart.getQuotePart());
 
 					final Set<SituationRF> situations = copro.getSituations();
 					assertEquals(1, situations.size());
@@ -816,7 +828,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(4, mutations.size());    // il y a 4 immeubles dans le fichier d'import et 4 immeubles dans le DB, dont 2 sont ont des données différentes
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(0).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(1).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(2).getEtat());
@@ -886,8 +898,8 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 					final Set<EstimationRF> estimations = ddo.getEstimations();
 					assertEquals(2, estimations.size());
 
-					final List<EstimationRF> estimationList = new ArrayList<EstimationRF>(estimations);
-					Collections.sort(estimationList, new DateRangeComparator<>());
+					final List<EstimationRF> estimationList = new ArrayList<>(estimations);
+					estimationList.sort(new DateRangeComparator<>());
 
 					final EstimationRF estimation0 = estimationList.get(0);
 					assertEquals(dateImportInitial, estimation0.getDateDebut());
@@ -918,7 +930,13 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				{
 					assertEquals("_8af806fc45d223e60149c23f475365d5", ppe.getIdRF());
 					assertEquals("CH336583651349", ppe.getEgrid());
-					assertEquals(new Fraction(293, 1000), ppe.getQuotePart());
+
+					final Set<QuotePartRF> quotesParts = ppe.getQuotesParts();
+					assertEquals(1, quotesParts.size());
+					final QuotePartRF quotePart = quotesParts.iterator().next();
+					assertEquals(dateImportInitial, quotePart.getDateDebut());
+					assertNull(quotePart.getDateFin());
+					assertEquals(new Fraction(293, 1000), quotePart.getQuotePart());
 
 					final Set<SituationRF> situations = ppe.getSituations();
 					assertEquals(1, situations.size());
@@ -953,13 +971,19 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				{
 					assertEquals("_8af806cc5043853201508e1e8a3a1a71", copro.getIdRF());
 					assertEquals("CH516579658411", copro.getEgrid());
-					assertEquals(new Fraction(1, 18), copro.getQuotePart());
+
+					final Set<QuotePartRF> quotesParts = copro.getQuotesParts();
+					assertEquals(1, quotesParts.size());
+					final QuotePartRF quotePart = quotesParts.iterator().next();
+					assertEquals(dateImportInitial, quotePart.getDateDebut());
+					assertNull(quotePart.getDateFin());
+					assertEquals(new Fraction(1, 18), quotePart.getQuotePart());
 
 					final Set<SituationRF> situations = copro.getSituations();
 					assertEquals(2, situations.size());
 
-					final List<SituationRF> situationList = new ArrayList<SituationRF>(situations);
-					Collections.sort(situationList, new DateRangeComparator<>());
+					final List<SituationRF> situationList = new ArrayList<>(situations);
+					situationList.sort(new DateRangeComparator<>());
 
 					final SituationRF situation0 = situationList.get(0);
 					assertEquals(dateImportInitial, situation0.getDateDebut());
@@ -1101,7 +1125,7 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(4, mutations.size());    // il n'y a pas d'immeubles dans le fichier d'import et 4 immeubles dans le DB
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(0).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(1).getEtat());
 				assertEquals(EtatEvenementRF.TRAITE, mutations.get(2).getEtat());
@@ -1206,7 +1230,13 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				{
 					assertEquals("_8af806fc45d223e60149c23f475365d5", ppe.getIdRF());
 					assertEquals("CH336583651349", ppe.getEgrid());
-					assertEquals(new Fraction(293, 1000), ppe.getQuotePart());
+
+					final Set<QuotePartRF> quotesParts = ppe.getQuotesParts();
+					assertEquals(1, quotesParts.size());
+					final QuotePartRF quotePart = quotesParts.iterator().next();
+					assertEquals(dateImportInitial, quotePart.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), quotePart.getDateFin());
+					assertEquals(new Fraction(293, 1000), quotePart.getQuotePart());
 
 					final Set<SituationRF> situations = ppe.getSituations();
 					assertEquals(1, situations.size());
@@ -1249,7 +1279,13 @@ public class TraiterMutationsRFImmeubleJobTest extends ImportRFTestClass {
 				{
 					assertEquals("_8af806cc5043853201508e1e8a3a1a71", copro.getIdRF());
 					assertEquals("CH516579658411", copro.getEgrid());
-					assertEquals(new Fraction(1, 18), copro.getQuotePart());
+
+					final Set<QuotePartRF> quotesParts = copro.getQuotesParts();
+					assertEquals(1, quotesParts.size());
+					final QuotePartRF quotePart = quotesParts.iterator().next();
+					assertEquals(dateImportInitial, quotePart.getDateDebut());
+					assertEquals(dateSecondImport.getOneDayBefore(), quotePart.getDateFin());
+					assertEquals(new Fraction(1, 18), quotePart.getQuotePart());
 
 					final Set<SituationRF> situations = copro.getSituations();
 					assertEquals(1, situations.size());

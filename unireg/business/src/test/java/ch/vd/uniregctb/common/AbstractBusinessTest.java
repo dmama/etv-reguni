@@ -77,6 +77,7 @@ import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
@@ -484,7 +485,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		ProprieteParEtageRF im0 = new ProprieteParEtageRF();
 		im0.setIdRF(idRF);
 		im0.setEgrid(egrid);
-		im0.setQuotePart(quotePart);
+		im0.addQuotePart(new QuotePartRF(null, null, quotePart));
 		im0.addSituation(situation);
 		return hibernateTemplate.merge(im0);
 	}

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.util.Objects;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.hibernate.FlushMode;
@@ -16,6 +15,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
@@ -24,6 +24,7 @@ import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleAvecQuotePartRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.EstimationRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.ImmeubleRFHelper;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.QuotePartRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.SituationRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.SurfaceTotaleRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.CommuneRFKey;
@@ -151,15 +153,8 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		if (persisted == null) {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] n'existe pas dans la DB.");
 		}
-
-		// [SIFISC-24672] check de cohérence sur les quotes-parts
-		if (persisted instanceof ImmeubleAvecQuotePartRF) {
-			final ImmeubleAvecQuotePartRF persistedQP = (ImmeubleAvecQuotePartRF) persisted;
-			final ImmeubleAvecQuotePartRF newQP = (ImmeubleAvecQuotePartRF) newImmeuble;
-			if (!Objects.equals(persistedQP.getQuotePart(), newQP.getQuotePart())) {
-				throw new IllegalArgumentException("La quote-part de l'immeuble " + newImmeuble.getEgrid() + " (idRF=[" + newImmeuble.getIdRF() + "]) a changé.");
-			}
-		}
+		final ImmeubleAvecQuotePartRF persistedAvecQuote = (persisted instanceof ImmeubleAvecQuotePartRF ? (ImmeubleAvecQuotePartRF) persisted : null);
+		final ImmeubleAvecQuotePartRF newAvecQuote = (newImmeuble instanceof ImmeubleAvecQuotePartRF ? (ImmeubleAvecQuotePartRF) newImmeuble : null);
 
 		if (persisted.getDateRadiation() != null) {
 			// [SIFISC-24013] si l'immeuble est radié, on le réactive
@@ -170,7 +165,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 					.ifPresent(s -> s.setDateFin(null));
 		}
 
-		// on va chercher les situations, estimations et surfaces totales courantes
+		// on va chercher les situations, estimations, surfaces totales courantes et quotes-parts
 		final SituationRF persistedSituation = persisted.getSituations().stream()
 				.filter(s -> s.isValidAt(null))
 				.findFirst()
@@ -186,13 +181,25 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				.findFirst()
 				.orElse(null);
 
-		// on va chercher les nouvelles situations et estimations
+		final QuotePartRF persistedQuotePart;
+		if (persistedAvecQuote != null) {
+			persistedQuotePart = persistedAvecQuote.getQuotesParts().stream()
+					.filter(q -> q.isValidAt(null))
+					.findFirst()
+					.orElse(null);
+		}
+		else {
+			persistedQuotePart = null;
+		}
+
+		// on va chercher les nouvelles situations, estimations et quotes-parts
 		final SituationRF newSituation = CollectionsUtils.getFirst(newImmeuble.getSituations());     // par définition, le nouvel immeuble ne contient que l'état courant,
 		if (newSituation == null) {                                                                  // il ne contient donc qu'un seul élément de chaque collection
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] ne contient pas de situation.");
 		}
 		final EstimationRF newEstimation = CollectionsUtils.getFirst(newImmeuble.getEstimations());
 		final SurfaceTotaleRF newSurfaceTotale = CollectionsUtils.getFirst(newImmeuble.getSurfacesTotales());
+		final QuotePartRF newQuotePart = (newAvecQuote == null ? null : CollectionsUtils.getFirst(newAvecQuote.getQuotesParts()));
 
 		// est-ce que la situation a changé ?
 		if (!SituationRFHelper.dataEquals(persistedSituation, newSituation)) {
@@ -240,6 +247,21 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				persisted.getSurfacesTotales().add(newSurfaceTotale);
 			}
 		}
+
+		// est-ce que la quote-part a changé ?
+		if (!QuotePartRFHelper.dataEquals(persistedQuotePart, newQuotePart)) {
+			if (persistedAvecQuote == null) {
+				throw new ProgrammingException();
+			}
+			// on ferme l'ancienne quote-part et on ajoute la nouvelle
+			if (persistedQuotePart != null) {
+				persistedQuotePart.setDateFin(dateValeur.getOneDayBefore());
+			}
+			if (newQuotePart != null) {
+				newQuotePart.setDateDebut(dateValeur);
+				persistedAvecQuote.addQuotePart(newQuotePart);
+			}
+		}
 	}
 
 	private void processSuppression(@NotNull RegDate dateValeur, @NotNull String idRF) {
@@ -252,7 +274,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] est déjà radié à la date du [" + RegDateHelper.dateToDisplayString(persisted.getDateRadiation()) + "].");
 		}
 
-		// on ferme les situation, estimation fiscale et surface totale courantes (note : les implantations ne sont pas possédées par l'immeuble, on ne les touche pas)
+		// on ferme les situation, estimation fiscale, surface totale et quote-part courantes (note : les implantations ne sont pas possédées par l'immeuble, on ne les touche pas)
 		persisted.getSituations().stream()
 				.filter(s -> s.getDateFin() == null)
 				.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
@@ -266,6 +288,13 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		persisted.getSurfacesTotales().stream()
 				.filter(s -> s.getDateFin() == null)
 				.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
+
+		if (persisted instanceof ImmeubleAvecQuotePartRF) {
+			final ImmeubleAvecQuotePartRF persistedAvecQuote = (ImmeubleAvecQuotePartRF) persisted;
+			persistedAvecQuote.getQuotesParts().stream()
+					.filter(s -> s.getDateFin() == null)
+					.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
+		}
 
 		// on radie l'immeuble
 		persisted.setDateRadiation(dateValeur.getOneDayBefore());

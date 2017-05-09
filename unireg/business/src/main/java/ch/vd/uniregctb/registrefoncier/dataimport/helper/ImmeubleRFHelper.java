@@ -19,10 +19,12 @@ import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.BergwerkElement;
@@ -91,18 +93,28 @@ public abstract class ImmeubleRFHelper {
 			return false;
 		}
 
-		// [SIFISC-24672] on vérifie la quote part
+		// [SIFISC-24715] on vérifie la quote part
 		if (immeuble instanceof ProprieteParEtageRF) {
 			final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeuble;
+			final Fraction quotePart = ppe.getQuotesParts().stream()
+					.filter(q -> q.isValidAt(null))
+					.map(QuotePartRF::getQuotePart)
+					.findFirst()
+					.orElse(null);
 			final StockwerksEinheit se = (StockwerksEinheit) grundstueck;
-			if (!FractionHelper.dataEquals(ppe.getQuotePart(), se.getStammGrundstueck().getQuote())) {
+			if (!FractionHelper.dataEquals(quotePart, se.getStammGrundstueck().getQuote())) {
 				return false;
 			}
 		}
 		else if (immeuble instanceof PartCoproprieteRF) {
 			final PartCoproprieteRF pcp = (PartCoproprieteRF) immeuble;
+			final Fraction quotePart = pcp.getQuotesParts().stream()
+					.filter(q -> q.isValidAt(null))
+					.map(QuotePartRF::getQuotePart)
+					.findFirst()
+					.orElse(null);
 			final GewoehnlichesMiteigentum gm = (GewoehnlichesMiteigentum) grundstueck;
-			if (!FractionHelper.dataEquals(pcp.getQuotePart(), gm.getStammGrundstueck().getQuote())) {
+			if (!FractionHelper.dataEquals(quotePart, gm.getStammGrundstueck().getQuote())) {
 				return false;
 			}
 		}
@@ -154,7 +166,10 @@ public abstract class ImmeubleRFHelper {
 		else if (grundstueck instanceof GewoehnlichesMiteigentum) {
 			final GewoehnlichesMiteigentum gm = (GewoehnlichesMiteigentum) grundstueck;
 			final PartCoproprieteRF copro = new PartCoproprieteRF();
-			copro.setQuotePart(FractionHelper.get(gm.getStammGrundstueck().getQuote()));
+			final QuotePartRF quotePart = QuotePartRFHelper.get(gm.getStammGrundstueck());
+			if (quotePart != null) {
+				copro.addQuotePart(quotePart);
+			}
 			immeuble = copro;
 		}
 		else if (grundstueck instanceof Liegenschaft) {
@@ -170,7 +185,10 @@ public abstract class ImmeubleRFHelper {
 		else if (grundstueck instanceof StockwerksEinheit) {
 			final StockwerksEinheit stockwerksEinheit = (StockwerksEinheit) grundstueck;
 			final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
-			ppe.setQuotePart(FractionHelper.get(stockwerksEinheit.getStammGrundstueck().getQuote()));
+			final QuotePartRF quotePart = QuotePartRFHelper.get(stockwerksEinheit.getStammGrundstueck());
+			if (quotePart != null) {
+				ppe.addQuotePart(quotePart);
+			}
 			immeuble = ppe;
 		}
 		else {
