@@ -23,6 +23,7 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	 */
 	private String complement;
 
+	@Override
 	@Column(name = "COMPLEMENT", length = LengthConstants.ADRESSE_NOM)
 	public String getComplement() {
 		return complement;
@@ -37,6 +38,7 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	 */
 	private String rue;
 
+	@Override
 	@Column(name = "RUE", length = LengthConstants.ADRESSE_NOM)
 	public String getRue() {
 		return rue;
@@ -52,6 +54,7 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	 */
 	private String numeroMaison;
 
+	@Override
 	@Column(name = "NUMERO_MAISON", length = LengthConstants.ADRESSE_NUM)
 	public String getNumeroMaison() {
 		return numeroMaison;
@@ -83,6 +86,7 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	 */
 	private TexteCasePostale texteCasePostale;
 
+	@Override
 	@Column(name = "TEXTE_CASE_POSTALE", length = LengthConstants.ADRESSE_TYPESUPPLEM)
 	@Type(type = "ch.vd.uniregctb.hibernate.TexteCasePostaleUserType")
 	public TexteCasePostale getTexteCasePostale() {
@@ -99,6 +103,7 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	 */
 	private Integer numeroCasePostale;
 
+	@Override
 	@Column(name = "NUMERO_CASE_POSTALE")
 	public Integer getNumeroCasePostale() {
 		return numeroCasePostale;
@@ -113,6 +118,7 @@ public abstract class AdresseSupplementaire extends AdresseTiers implements Adre
 	 */
 	private boolean permanente = false;
 
+	@Override
 	@Column(name = "PERMANENTE")
 	public boolean isPermanente() {
 		return permanente;

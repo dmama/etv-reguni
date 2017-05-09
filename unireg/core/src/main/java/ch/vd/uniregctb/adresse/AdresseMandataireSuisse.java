@@ -29,6 +29,7 @@ public class AdresseMandataireSuisse extends AdresseMandataire implements Adress
 		return new AdresseMandataireSuisse(this);
 	}
 
+	@Override
 	@Column(name = "NUMERO_RUE")
 	public Integer getNumeroRue() {
 		return numeroRue;
@@ -38,6 +39,7 @@ public class AdresseMandataireSuisse extends AdresseMandataire implements Adress
 		this.numeroRue = numeroRue;
 	}
 
+	@Override
 	@Column(name = "NUMERO_ORDRE_POSTE")
 	public Integer getNumeroOrdrePoste() {
 		return numeroOrdrePoste;
@@ -47,6 +49,7 @@ public class AdresseMandataireSuisse extends AdresseMandataire implements Adress
 		this.numeroOrdrePoste = numeroOrdrePoste;
 	}
 
+	@Override
 	@Column(name = "NPA_CASE_POSTALE")
 	public Integer getNpaCasePostale() {
 		return npaCasePostale;

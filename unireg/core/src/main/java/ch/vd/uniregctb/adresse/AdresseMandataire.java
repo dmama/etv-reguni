@@ -74,6 +74,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		return id;
 	}
 
+	@Override
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID", nullable = false, updatable = false)
@@ -132,6 +133,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.nomDestinataire = nomDestinataire;
 	}
 
+	@Override
 	@Column(name = "COMPLEMENT", length = LengthConstants.ADRESSE_NOM)
 	public String getComplement() {
 		return complement;
@@ -141,6 +143,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.complement = complement;
 	}
 
+	@Override
 	@Column(name = "RUE", length = LengthConstants.ADRESSE_NOM)
 	public String getRue() {
 		return rue;
@@ -150,6 +153,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.rue = rue;
 	}
 
+	@Override
 	@Column(name = "NUMERO_MAISON", length = LengthConstants.ADRESSE_NUM)
 	public String getNumeroMaison() {
 		return numeroMaison;
@@ -159,6 +163,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.numeroMaison = numeroMaison;
 	}
 
+	@Override
 	@Column(name = "TEXTE_CASE_POSTALE", length = LengthConstants.ADRESSE_TYPESUPPLEM)
 	@Enumerated(EnumType.STRING)
 	public TexteCasePostale getTexteCasePostale() {
@@ -169,6 +174,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.texteCasePostale = texteCasePostale;
 	}
 
+	@Override
 	@Column(name = "NUMERO_CASE_POSTALE")
 	public Integer getNumeroCasePostale() {
 		return numeroCasePostale;

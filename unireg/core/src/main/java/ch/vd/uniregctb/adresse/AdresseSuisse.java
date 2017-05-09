@@ -14,6 +14,7 @@ public class AdresseSuisse extends AdresseSupplementaire implements AdresseFisca
 	 */
 	private Integer numeroRue;
 
+	@Override
 	@Column(name = "NUMERO_RUE")
 	public Integer getNumeroRue() {
 		return numeroRue;
@@ -33,6 +34,7 @@ public class AdresseSuisse extends AdresseSupplementaire implements AdresseFisca
 	 */
 	private Integer numeroOrdrePoste;
 
+	@Override
 	@Column(name = "NUMERO_ORDRE_POSTE")
 	public Integer getNumeroOrdrePoste() {
 		return numeroOrdrePoste;
@@ -48,6 +50,7 @@ public class AdresseSuisse extends AdresseSupplementaire implements AdresseFisca
 	 */
 	private Integer npaCasePostale;
 
+	@Override
 	@Column(name = "NPA_CASE_POSTALE")
 	public Integer getNpaCasePostale() {
 		return npaCasePostale;

@@ -31,6 +31,7 @@ public class AdresseMandataireEtrangere extends AdresseMandataire implements Adr
 		return new AdresseMandataireEtrangere(this);
 	}
 
+	@Override
 	@Column(name = "COMPLEMENT_LOCALITE", length = LengthConstants.ADRESSE_NOM)
 	public String getComplementLocalite() {
 		return complementLocalite;
@@ -40,6 +41,7 @@ public class AdresseMandataireEtrangere extends AdresseMandataire implements Adr
 		this.complementLocalite = complementLocalite;
 	}
 
+	@Override
 	@Column(name = "NUMERO_POSTAL_LOCALITE", length = LengthConstants.ADRESSE_NUM)
 	public String getNumeroPostalLocalite() {
 		return numeroPostalLocalite;
@@ -49,6 +51,7 @@ public class AdresseMandataireEtrangere extends AdresseMandataire implements Adr
 		this.numeroPostalLocalite = numeroPostalLocalite;
 	}
 
+	@Override
 	@Column(name = "NUMERO_OFS_PAYS")
 	public Integer getNumeroOfsPays() {
 		return numeroOfsPays;

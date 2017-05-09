@@ -19,6 +19,7 @@ public class AdresseEtrangere extends AdresseSupplementaire implements AdresseFi
 	/**
 	 * @return the complementLocalite
 	 */
+	@Override
 	@Column(name = "COMPLEMENT_LOCALITE", length = LengthConstants.ADRESSE_NOM)
 	public String getComplementLocalite() {
 		return complementLocalite;
@@ -40,6 +41,7 @@ public class AdresseEtrangere extends AdresseSupplementaire implements AdresseFi
 	/**
 	 * @return the numeroPostalLocalite
 	 */
+	@Override
 	@Column(name = "NUMERO_POSTAL_LOCALITE", length = LengthConstants.ADRESSE_NUM)
 	public String getNumeroPostalLocalite() {
 		return numeroPostalLocalite;
@@ -61,6 +63,7 @@ public class AdresseEtrangere extends AdresseSupplementaire implements AdresseFi
 	/**
 	 * @return the numeroOfsPays
 	 */
+	@Override
 	@Column(name = "NUMERO_OFS_PAYS")
 	public Integer getNumeroOfsPays() {
 		return numeroOfsPays;
