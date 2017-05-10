@@ -1,20 +1,27 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Collections;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
@@ -22,6 +29,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
@@ -162,6 +170,71 @@ public class NaturalisationEchProcessorTest extends AbstractEvenementCivilEchPro
 				Assert.assertEquals(MotifFor.PERMIS_C_SUISSE, ffp.getMotifOuverture());
 				Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * C'est le cas du SIFISC-24702 : un for principal était ouvert sur la commune de résidence secondaire vaudoise
+	 */
+	@Test
+	public void testNaturalisationEtrangerHorsCantonEnSecondaireDansLeCanton() throws Exception {
+
+		final long noIndividu = 14781548L;
+		final RegDate dateNaissance = date(1956, 12, 12);
+		final RegDate dateArriveeSecondaire = date(2010, 10, 4);
+		final RegDate dateNaturalisation = date(2016, 1, 6);
+
+		// mise en place civile -> étranger résident HC inscrit en secondaire sur VD
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Barbar", "Konan", true);
+				addNationalite(ind, MockPays.Liechtenstein, dateNaissance, null);
+				addAdresse(ind, TypeAdresseCivil.COURRIER, MockRue.Aubonne.CheminDesClos, null, dateArriveeSecondaire, null);
+				final MockAdresse sec = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Aubonne.CheminDesClos, null, dateArriveeSecondaire, null);
+				sec.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale... aucun for pour le moment (= résidence en secondaire seulement !)
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			return pp.getNumero();
+		});
+
+		doModificationIndividu(noIndividu, individu -> individu.setNationalites(Collections.singletonList((Nationalite) new MockNationalite(dateNaturalisation, null, MockPays.Suisse))));
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(135566L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateNaturalisation);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.NATURALISATION);
+			return hibernateTemplate.merge(evt).getId();
+		});
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				// aucun for sur l'individu (un for sur Aubonne était créé par erreur...)
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+
+				final Set<ForFiscal> fors = pp.getForsFiscaux();
+				Assert.assertNotNull(fors);
+				Assert.assertEquals(Collections.emptySet(), fors);
 			}
 		});
 	}

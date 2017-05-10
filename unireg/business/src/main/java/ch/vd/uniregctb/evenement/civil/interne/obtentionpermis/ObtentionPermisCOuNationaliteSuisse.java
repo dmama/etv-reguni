@@ -226,7 +226,9 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				// récupération du numero OFS de la commune à partir de l'adresse du tiers
 				try {
 					final AdresseGenerique adresse = context.getAdresseService().getAdresseFiscale(habitant, TypeAdresseFiscale.DOMICILE, datePriseEnCompte, false);
-					if (adresse != null) {
+
+					// [SIFISC-24702] Seules les véritables adresses (= non-défaut) doivent être prises en compte...
+					if (adresse != null && !adresse.isDefault()) {
 						final Commune commune = context.getServiceInfra().getCommuneByAdresse(adresse, datePriseEnCompte);
 						// uniquement si la commune de domicile est vaudoise
 						if (commune != null && commune.isVaudoise()) {
