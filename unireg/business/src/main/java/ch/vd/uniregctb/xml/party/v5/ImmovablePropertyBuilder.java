@@ -9,8 +9,10 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.xml.party.landregistry.v1.CoOwnershipShare;
 import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
+import ch.vd.unireg.xml.party.landregistry.v1.DatedShare;
 import ch.vd.unireg.xml.party.landregistry.v1.DistinctAndPermanentRight;
 import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
@@ -85,12 +87,19 @@ public abstract class ImmovablePropertyBuilder {
 	                                                            @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final CondominiumOwnership condo = new CondominiumOwnership();
 		fillBase(condo, ppe, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
-		// TODO (msi) exposer l'historique des quotes-parts
+		// [SIFISC-24715] on expose la quote-part courante (pour des raisons de compatibilité ascendante du WS)
 		ppe.getQuotesParts().stream()
 				.filter(q -> q.isValidAt(null))
-				.map(QuotePartRF::getQuotePart)
 				.findFirst()
-				.ifPresent(q -> condo.setShare(LandRightBuilder.getShare(q)));
+				.map(QuotePartRF::getQuotePart)
+				.map(LandRightBuilder::getShare)
+				.ifPresent(condo::setShare);
+		// [SIFISC-24715] on expose l'historique des quotes-parts
+		condo.getShares().addAll(ppe.getQuotesParts().stream()
+				                         .filter(AnnulableHelper::nonAnnule)
+				                         .sorted(new DateRangeComparator<>())
+				                         .map(ImmovablePropertyBuilder::newShare)
+				                         .collect(Collectors.toList()));
 		return condo;
 	}
 
@@ -98,12 +107,19 @@ public abstract class ImmovablePropertyBuilder {
 	                                                    @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final CoOwnershipShare coown = new CoOwnershipShare();
 		fillBase(coown, part, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
-		// TODO (msi) exposer l'historique des quotes-parts
+		// [SIFISC-24715] on expose la quote-part courante (pour des raisons de compatibilité ascendante du WS)
 		part.getQuotesParts().stream()
 				.filter(q -> q.isValidAt(null))
-				.map(QuotePartRF::getQuotePart)
 				.findFirst()
-				.ifPresent(q -> coown.setShare(LandRightBuilder.getShare(q)));
+				.map(QuotePartRF::getQuotePart)
+				.map(LandRightBuilder::getShare)
+				.ifPresent(coown::setShare);
+		// [SIFISC-24715] on expose l'historique des quotes-parts
+		coown.getShares().addAll(part.getQuotesParts().stream()
+				                         .filter(AnnulableHelper::nonAnnule)
+				                         .sorted(new DateRangeComparator<>())
+				                         .map(ImmovablePropertyBuilder::newShare)
+				                         .collect(Collectors.toList()));
 		return coown;
 	}
 
@@ -222,6 +238,16 @@ public abstract class ImmovablePropertyBuilder {
 		area.setArea(surface.getSurface());
 		area.setType(surface.getType());
 		return area;
+	}
+
+	@NotNull
+	private static DatedShare newShare(@NotNull QuotePartRF quotePart) {
+		final DatedShare share = new DatedShare();
+		share.setNumerator(quotePart.getQuotePart().getNumerateur());
+		share.setDenominator(quotePart.getQuotePart().getDenominateur());
+		share.setDateFrom(DataHelper.coreToXMLv2(quotePart.getDateDebut()));
+		share.setDateTo(DataHelper.coreToXMLv2(quotePart.getDateFin()));
+		return share;
 	}
 
 	public static ch.vd.unireg.xml.party.immovableproperty.v2.ImmovableProperty newImmovableProperty(Immeuble immeuble) {

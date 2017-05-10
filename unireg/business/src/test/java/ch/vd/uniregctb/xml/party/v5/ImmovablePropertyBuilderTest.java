@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
 import ch.vd.unireg.xml.party.landregistry.v1.CoOwnershipShare;
 import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
+import ch.vd.unireg.xml.party.landregistry.v1.DatedShare;
 import ch.vd.unireg.xml.party.landregistry.v1.DistinctAndPermanentRight;
 import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
@@ -89,6 +90,7 @@ public class ImmovablePropertyBuilderTest {
 
 		final RegDate dateAchat = RegDate.get(2003, 4, 2);
 		final RegDate dateConstruction = dateAchat.addMonths(9);
+		final RegDate dateRemaniement = RegDate.get(2010,4,12);
 
 		// données core
 		final SituationRF situation = newSituationRF(dateAchat, BUSSIGNY, 12280, 13);
@@ -116,7 +118,8 @@ public class ImmovablePropertyBuilderTest {
 		ppe.setImplantations(Collections.singleton(implantation));
 		implantation.setImmeuble(ppe);
 		ppe.setDateRadiation(null);
-		ppe.addQuotePart(new QuotePartRF(null, null, new Fraction(1, 23)));
+		ppe.addQuotePart(new QuotePartRF(dateAchat, dateRemaniement.getOneDayBefore(), new Fraction(1, 23)));
+		ppe.addQuotePart(new QuotePartRF(dateRemaniement, null, new Fraction(2, 18)));
 
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
 
@@ -131,7 +134,13 @@ public class ImmovablePropertyBuilderTest {
 		assertEquals("rhoooo", condo.getEgrid());
 		assertEquals("http://capitastra/48383", condo.getUrlIntercapi());
 		assertNull(condo.getCancellationDate());
-		assertShare(1, 23, condo.getShare());
+		assertShare(2, 18, condo.getShare());
+
+		final List<DatedShare> shares = condo.getShares();
+		assertNotNull(shares);
+		assertEquals(2, shares.size());
+		assertShare(1, 23, dateAchat, dateRemaniement.getOneDayBefore(), shares.get(0));
+		assertShare(2, 18, dateRemaniement, null, shares.get(1));
 
 		final List<Location> locations = condo.getLocations();
 		assertEquals(1, locations.size());
@@ -164,6 +173,7 @@ public class ImmovablePropertyBuilderTest {
 	public void testNewCoOwnershipShare() throws Exception {
 
 		final RegDate dateAchat = RegDate.get(2003, 4, 2);
+		final RegDate dateRemaniement = RegDate.get(2010,4,12);
 
 		// données core
 		final SituationRF situation = newSituationRF(dateAchat, BUSSIGNY, 12280, 13);
@@ -188,7 +198,8 @@ public class ImmovablePropertyBuilderTest {
 		pcp.setImplantations(Collections.singleton(implantation));
 		implantation.setImmeuble(pcp);
 		pcp.setDateRadiation(null);
-		pcp.addQuotePart(new QuotePartRF(null, null, new Fraction(1, 1)));
+		pcp.addQuotePart(new QuotePartRF(dateAchat, dateRemaniement.getOneDayBefore(), new Fraction(1, 1)));
+		pcp.addQuotePart(new QuotePartRF(dateRemaniement, null, new Fraction(2, 18)));
 
 		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, pcp);
 
@@ -203,7 +214,13 @@ public class ImmovablePropertyBuilderTest {
 		assertEquals("raoul t'es là ?", coos.getEgrid());
 		assertEquals("http://capitastra/480302", coos.getUrlIntercapi());
 		assertNull(coos.getCancellationDate());
-		assertShare(1, 1, coos.getShare());
+		assertShare(2, 18, coos.getShare());
+
+		final List<DatedShare> shares = coos.getShares();
+		assertNotNull(shares);
+		assertEquals(2, shares.size());
+		assertShare(1, 1, dateAchat, dateRemaniement.getOneDayBefore(), shares.get(0));
+		assertShare(2, 18, dateRemaniement, null, shares.get(1));
 
 		final List<Location> locations = coos.getLocations();
 		assertEquals(1, locations.size());
@@ -513,6 +530,14 @@ public class ImmovablePropertyBuilderTest {
 		assertNotNull(share);
 		assertEquals(numerator, share.getNumerator());
 		assertEquals(denominator, share.getDenominator());
+	}
+
+	private static void assertShare(int numerator, int denominator, RegDate fromDate, RegDate toDate, DatedShare share) {
+		assertNotNull(share);
+		assertEquals(numerator, share.getNumerator());
+		assertEquals(denominator, share.getDenominator());
+		assertEquals(fromDate, DataHelper.xmlToCore(share.getDateFrom()));
+		assertEquals(toDate, DataHelper.xmlToCore(share.getDateTo()));
 	}
 
 	private static void assertSetting(RegDate dateFrom, RegDate dateTo, Integer area, long buildingId, BuildingSetting setting) {
