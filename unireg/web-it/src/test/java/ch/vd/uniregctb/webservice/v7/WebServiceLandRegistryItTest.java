@@ -19,6 +19,8 @@ import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
+import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
+import ch.vd.unireg.xml.party.landregistry.v1.DatedShare;
 import ch.vd.unireg.xml.party.landregistry.v1.GroundArea;
 import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
@@ -125,6 +127,33 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertEquals(2, reasons.size());
 		assertAcquisitionReason(RegDate.get(1981, 3, 6), "Succession", 12, null, reasons.get(0));
 		assertAcquisitionReason(RegDate.get(2014, 9, 13), "Voyage spatio-temporel", 24, "2014/12/1", reasons.get(1));
+	}
+
+	/**
+	 * [SIFISC-24715] Vérifie que l'historique des quotes-parts est bien exposé.
+	 */
+	@Test
+	public void testGetImmovablePropertyCondo() throws Exception {
+
+		final int noImmo = 189968987;
+
+		final ResponseEntity<ImmovableProperty> resp = get(ImmovableProperty.class, MediaType.APPLICATION_XML, "/landRegistry/immovableProperty/{id}?user=zaizzt/22", Collections.singletonMap("id", noImmo));
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		final ImmovableProperty immo = resp.getBody();
+		assertNotNull(immo);
+		assertEquals(CondominiumOwnership.class, immo.getClass());
+
+		final CondominiumOwnership condo = (CondominiumOwnership) immo;
+		assertEquals(noImmo, condo.getId());
+		assertEquals("CH416556658161", condo.getEgrid());
+
+		final List<DatedShare> shares = condo.getShares();
+		assertNotNull(shares);
+		assertEquals(2, shares.size());
+		assertShare(null, RegDate.get(2017, 1, 13), 172, 1000, shares.get(0));
+		assertShare(RegDate.get(2017, 1, 14), null, 170, 1000, shares.get(1));
 	}
 
 	@Test
@@ -327,5 +356,13 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertNotNull(caseIdentifier);
 		assertEquals(officeNumber, caseIdentifier.getOfficeNumber());
 		assertEquals(caseNumber, caseIdentifier.getCaseNumberText());
+	}
+
+	private static void assertShare(RegDate dateFrom, RegDate dateTo, int numerator, int denominator, DatedShare share) {
+		assertNotNull(share);
+		assertDate(dateFrom, share.getDateFrom());
+		assertDate(dateTo, share.getDateTo());
+		assertEquals(numerator, share.getNumerator());
+		assertEquals(denominator, share.getDenominator());
 	}
 }

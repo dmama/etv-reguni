@@ -207,6 +207,21 @@
 			<null />
 			<value>0</value>
 		</row>
+		<row>
+			<value>ProprieteParEtage</value>
+			<value>189968987</value>
+			<null />
+			<null />
+			<value>2017-03-18 18:52:24</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2017-05-10 14:22:11</value>
+			<value>TraiterMutationsRFJob</value>
+			<null />
+			<value>CH416556658161</value>
+			<value>_8af806fc449340d40144d5814bee027e</value>
+			<null />
+			<value>0</value>
+		</row>
 	</table>
 	<table name="RF_COMMUNE">
 		<column>ID</column>
@@ -268,6 +283,23 @@
 			<value>59</value>
 			<value>263397516</value>
 			<value>264310664</value>
+		</row>
+		<row>
+			<value>189968990</value>
+			<null />
+			<null />
+			<value>2017-03-18 18:52:24</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2017-03-18 18:52:24</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20160913</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>2559</value>
+			<value>263397516</value>
+			<value>189968987</value>
 		</row>
 	</table>
 	<table name="RF_SURFACE_TOTALE">
@@ -902,6 +934,48 @@
 			<value>Achat</value>
 			<value>010-2008/1995/0</value>
 			<value>306972799</value>
+		</row>
+	</table>
+	<table name="RF_QUOTE_PART">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>QUOTE_PART_DENOM</column>
+		<column>QUOTE_PART_NUM</column>
+		<column>IMMEUBLE_ID</column>
+		<row>
+			<value>204338412</value>
+			<null />
+			<null />
+			<value>2017-03-18 18:52:24</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2017-03-18 18:52:24</value>
+			<value>TraiterMutationsRFJob</value>
+			<null />
+			<value>20170113</value>
+			<value>1000</value>
+			<value>172</value>
+			<value>189968987</value>
+		</row>
+		<row>
+			<value>201351181</value>
+			<null />
+			<null />
+			<value>2017-05-10 10:21:10</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>2017-05-10 14:22:11</value>
+			<value>TraiterMutationsRFJob</value>
+			<value>20170114</value>
+			<null />
+			<value>1000</value>
+			<value>170</value>
+			<value>189968987</value>
 		</row>
 	</table>
 	<table name="RAPPROCHEMENT_RF">
