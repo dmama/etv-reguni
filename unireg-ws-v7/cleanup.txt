@@ -10,6 +10,7 @@ Cleanup à faire pour une éventuelle version 8 du web-service
 - supprimer les éléments 'share' sur les types 'coOwnershipShareType' et 'condominiumOwnershipType'.
 - renommer le type 'sharedType' en 'fractionType' et le type 'datedShareType' en 'shareType'.
 - remonter les éléments 'contactPerson' et 'contactPhoneNumber' de 'specialAgentType' et 'generalAgentType' à 'agentType'
+- faire la distinction entre les LiabilityChangeReason utilisée pour les fors (TaxResidence - MotifFor) et assujettissements (TaxLiability - MotifAssujettissement)
 
 Reprise du contenu du cleanup précédent
 ------------------------------------------------------------

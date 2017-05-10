@@ -8,7 +8,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -21,13 +20,13 @@ public abstract class Assujettissement implements CollatableDateRange {
 	private final Contribuable contribuable;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
-	private final MotifFor motifDebut;
-	private final MotifFor motifFin;
+	private final MotifAssujettissement motifDebut;
+	private final MotifAssujettissement motifFin;
 	private DecompositionFors fors;
 	private final AssujettissementSurCommuneAnalyzer communeAnalyzer;
 	private List<ForFiscalRevenuFortune> forsVaudoisDeterminantsPourCommunes;
 
-	protected Assujettissement(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+	protected Assujettissement(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifAssujettissement motifDebut, MotifAssujettissement motifFin, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.contribuable = contribuable;
 		this.dateDebut = dateDebut;
@@ -39,7 +38,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		this.forsVaudoisDeterminantsPourCommunes = null;    // lazy init
 	}
 
-	protected Assujettissement(Assujettissement source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+	protected Assujettissement(Assujettissement source, RegDate dateDebut, RegDate dateFin, MotifAssujettissement motifDebut, MotifAssujettissement motifFin) {
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.contribuable = source.getContribuable();
 		this.dateDebut = dateDebut;
@@ -72,7 +71,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		this.forsVaudoisDeterminantsPourCommunes = null;    // lazy init
 	}
 
-	public abstract Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin);
+	public abstract Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifAssujettissement motifDebut, MotifAssujettissement motifFin);
 
 	public Contribuable getContribuable() {
 		return contribuable;
@@ -91,10 +90,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 	@Override
 	public boolean isCollatable(DateRange next) {
 		// dans le cas d'un départ HS et d'une arrivée HC, on ne veut pas collater les deux assujettissements
-		final boolean departHSEtArriveeHC = (this.motifFin == MotifFor.DEPART_HS && ((Assujettissement) next).motifDebut == MotifFor.ARRIVEE_HC);
+		final boolean departHSEtArriveeHC = (this.motifFin == MotifAssujettissement.DEPART_HS && ((Assujettissement) next).motifDebut == MotifAssujettissement.ARRIVEE_HC);
 
 		// vente du dernier immeuble une année et rachat d'un autre l'année suivante
-		final boolean venteDernierImmeubleEtRachatAnneeSuivante = this.motifFin == MotifFor.VENTE_IMMOBILIER && ((Assujettissement) next).motifDebut == MotifFor.ACHAT_IMMOBILIER && AssujettissementHelper.isYearSwitch(this.dateFin, next.getDateDebut());
+		final boolean venteDernierImmeubleEtRachatAnneeSuivante = this.motifFin == MotifAssujettissement.VENTE_IMMOBILIER && ((Assujettissement) next).motifDebut == MotifAssujettissement.ACHAT_IMMOBILIER && AssujettissementHelper.isYearSwitch(this.dateFin, next.getDateDebut());
 
 		return !departHSEtArriveeHC && !venteDernierImmeubleEtRachatAnneeSuivante && getClass() == next.getClass() && DateRangeHelper.isCollatable(this, next);
 	}
@@ -102,14 +101,14 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * @return le motif de début de l'assujettissement
 	 */
-	public MotifFor getMotifFractDebut() {
+	public MotifAssujettissement getMotifFractDebut() {
 		return motifDebut;
 	}
 
 	/**
 	 * @return le motif de fin de l'assujettissement
 	 */
-	public MotifFor getMotifFractFin() {
+	public MotifAssujettissement getMotifFractFin() {
 		return motifFin;
 	}
 

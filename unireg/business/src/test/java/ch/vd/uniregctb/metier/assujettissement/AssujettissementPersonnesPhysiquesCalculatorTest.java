@@ -157,12 +157,12 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetPrincipal = determine(ensemble.getPrincipal(), 2007);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
 
 			final List<Assujettissement> assujetConjoint = determine(ensemble.getConjoint(), 2007);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
 
 			assertEmpty(determine(ensemble.getMenage(), 2007));
 		}
@@ -175,7 +175,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetMenage = determine(ensemble.getMenage(), 2008);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
 		}
 
 		// 2002-2010
@@ -183,17 +183,17 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetPrincipal = determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
-			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
 
 			final List<Assujettissement> assujetConjoint = determine(ensemble.getConjoint(), RANGE_2002_2010, true);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
-			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
 
 			final List<Assujettissement> assujetMenage = determine(ensemble.getMenage(), RANGE_2002_2010, true);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
-			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
 		}
 	}
 
@@ -211,12 +211,12 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetPrincipal = determine(ensemble.getPrincipal(), 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
 
 			final List<Assujettissement> assujetConjoint = determine(ensemble.getConjoint(), 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
 
 			assertEmpty(determine(ensemble.getMenage(), 2008));
 		}
@@ -229,7 +229,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetMenage = determine(ensemble.getMenage(), 2009);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
-			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
+			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
 		}
 
 		// 2002-2010
@@ -237,17 +237,17 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetPrincipal = determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
-			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
 
 			final List<Assujettissement> assujetConjoint = determine(ensemble.getConjoint(), RANGE_2002_2010, true);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
-			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
 
 			final List<Assujettissement> assujetMenage = determine(ensemble.getMenage(), RANGE_2002_2010, true);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
-			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
+			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
 		}
 	}
 
@@ -270,7 +270,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetMenage = determine(ensemble.getMenage(), 2007);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
 		}
 
 		// 2008
@@ -278,12 +278,12 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetPrincipal = determine(ensemble.getPrincipal(), 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
 
 			final List<Assujettissement> assujetConjoint = determine(ensemble.getConjoint(), 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
 
 			assertEmpty(determine(ensemble.getMenage(), 2008));
 		}
@@ -293,17 +293,17 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetPrincipal = determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
-			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
 
 			final List<Assujettissement> assujetConjoint = determine(ensemble.getConjoint(), RANGE_2002_2010, true);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
-			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
 
 			final List<Assujettissement> assujetMenage = determine(ensemble.getMenage(), RANGE_2002_2010, true);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
-			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
 		}
 	}
 
@@ -326,7 +326,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetMenage = determine(ensemble.getMenage(), 2007);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
 		}
 
 		// 2008
@@ -334,12 +334,12 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetPrincipal = determine(ensemble.getPrincipal(), 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
 
 			final List<Assujettissement> assujetConjoint = determine(ensemble.getConjoint(), 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
 
 			assertEmpty(determine(ensemble.getMenage(), 2008));
 		}
@@ -349,17 +349,17 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetPrincipal = determine(ensemble.getPrincipal(), RANGE_2002_2010, true);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
-			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
 
 			final List<Assujettissement> assujetConjoint = determine(ensemble.getConjoint(), RANGE_2002_2010, true);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
-			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
 
 			final List<Assujettissement> assujetMenage = determine(ensemble.getMenage(), RANGE_2002_2010, true);
 			assertNotNull(assujetMenage);
 			assertEquals(1, assujetMenage.size());
-			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujetMenage.get(0));
 		}
 	}
 
@@ -440,12 +440,12 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetPrincipal = determine(principal, 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
 
 			final List<Assujettissement> assujetConjoint = determine(conjoint, 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
 
 			assertEmpty(determine(menage, 2008)); // mariage pas encore actif
 		}
@@ -458,7 +458,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujettissements = determine(menage, 2009);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
-			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
+			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
 		}
 	}
 
@@ -483,7 +483,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujettissements = determine(menage, 2007);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
 		}
 
 		// 2008 : le ménage ne doit plus être assujetti, et le principal et le conjoint doivent l'être normalement
@@ -491,12 +491,12 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujetPrincipal = determine(principal, 2008);
 			assertNotNull(assujetPrincipal);
 			assertEquals(1, assujetPrincipal.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
 
 			final List<Assujettissement> assujetConjoint = determine(conjoint, 2008);
 			assertNotNull(assujetConjoint);
 			assertEquals(1, assujetConjoint.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
 
 			assertEmpty(determine(menage, 2008)); // mariage plus actif
 		}
@@ -520,7 +520,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujettissements = determine(principal, 2008);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
-			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujettissements.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujettissements.get(0));
 
 			assertEmpty(determine(conjoint, 2008)); // aucun for vaudois
 			assertEmpty(determine(menage, 2008)); // mariage pas encore actif
@@ -534,7 +534,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujettissements = determine(menage, 2009);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
-			assertHorsCanton(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
+			assertHorsCanton(date(2009, 1, 1), date(2009, 12, 31), MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
 		}
 	}
 
@@ -559,7 +559,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujettissements = determine(menage, 2007);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
-			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
 		}
 
 		// 2008 : le ménage ne doit être assujetti, mais le principal doit l'être en raison de son immeuble
@@ -567,7 +567,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujettissements = determine(principal, 2008);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
-			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujettissements.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujettissements.get(0));
 
 			assertEmpty(determine(conjoint, 2008)); // aucun for vaudois
 			assertEmpty(determine(menage, 2008)); // mariage plus actif
@@ -592,7 +592,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujettissements = determine(principal, 2008);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
-			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujettissements.get(0));
+			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujettissements.get(0));
 
 			assertEmpty(determine(conjoint, 2008)); // aucun for vaudois
 			assertEmpty(determine(menage, 2008)); // mariage pas encore actif
@@ -606,7 +606,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujettissements = determine(menage, 2009);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
-			assertHorsSuisse(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
+			assertHorsSuisse(date(2009, 1, 1), date(2009, 12, 31), MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
 		}
 	}
 
@@ -631,7 +631,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujettissements = determine(menage, 2007);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
-			assertHorsSuisse(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
+			assertHorsSuisse(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
 		}
 
 		// 2008 : le ménage ne doit être assujetti, mais le principal doit l'être en raison de son immeuble
@@ -639,7 +639,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> assujettissements = determine(principal, 2008);
 			assertNotNull(assujettissements);
 			assertEquals(1, assujettissements.size());
-			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujettissements.get(0));
+			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujettissements.get(0));
 
 			assertEmpty(determine(conjoint, 2008)); // aucun for vaudois
 			assertEmpty(determine(menage, 2008)); // mariage plus actif
@@ -658,7 +658,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
 		}
 
 		// 2008
@@ -671,7 +671,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
 		}
 	}
 
@@ -687,7 +687,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size()); // un départ-hc au 31 décembre correspond bien à une fin d'assujettissement (cas limite, il est vrai)
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
 		}
 
 		// 2002-2010
@@ -695,7 +695,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
 		}
 	}
 
@@ -711,7 +711,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
 		}
 
 		// 2008
@@ -719,7 +719,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.DEPART_HC, null, list.get(0));
 		}
 
 		// 2002-2010
@@ -727,8 +727,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
-			assertHorsCanton(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HC, null, list.get(1));
+			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.DEPART_HC, null, list.get(1));
 		}
 	}
 
@@ -744,7 +744,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
 		}
 
 		// 2009
@@ -752,7 +752,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2009, 1, 1), date(2009, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
+			assertHorsCanton(date(2009, 1, 1), date(2009, 12, 31), MotifAssujettissement.DEPART_HC, null, list.get(0));
 		}
 
 		// 2002-2010
@@ -760,8 +760,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
-			assertHorsCanton(date(2009, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HC, null, list.get(1));
+			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
+			assertHorsCanton(date(2009, 1, 1), date(2010, 12, 31), MotifAssujettissement.DEPART_HC, null, list.get(1));
 		}
 	}
 
@@ -777,7 +777,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
 		}
 
 		// 2008 (départ puis vente)
@@ -786,7 +786,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// La période d'assujettissement en raison d'un rattachement économique s'étend à toute l'année (art. 8 al. 6 LI).
-			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, MotifFor.VENTE_IMMOBILIER, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.DEPART_HC, MotifAssujettissement.VENTE_IMMOBILIER, list.get(0));
 		}
 
 		// 2002-2010
@@ -794,8 +794,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
-			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, MotifFor.VENTE_IMMOBILIER, list.get(1));
+			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.DEPART_HC, MotifAssujettissement.VENTE_IMMOBILIER, list.get(1));
 		}
 	}
 
@@ -820,8 +820,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// fractionnement de l'assujettissement
-			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierPur(date(2008, 9, 26), date(2008, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 25), null, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 9, 26), date(2008, 12, 31), MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
 		}
 
 		// 2009
@@ -837,8 +837,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierPur(date(2008, 9, 26), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2008, 9, 25), null, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 9, 26), date(2010, 12, 31), MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
 		}
 	}
 
@@ -856,7 +856,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2008
@@ -865,7 +865,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] pas de fractionnement dans ce cas-là car le contribuable reste assujetti toute l'année à raison de son for secondaire (immeuble ou activité indépendante).
-			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.DEPART_HC, null, list.get(0));
 		}
 
 		// 2009
@@ -881,8 +881,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertHorsCanton(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HC, null, list.get(1));
+			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.DEPART_HC, null, list.get(1));
 		}
 	}
 
@@ -899,7 +899,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2008
@@ -908,8 +908,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// [SIFISC-7281] le contribuable n'est plus considéré comme assujetti au rôle mais seulement à la source sur toute l'année
-			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 25), MotifFor.DEPART_HC, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierPur(date(2008, 9, 26), date(2008, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 25), MotifAssujettissement.DEPART_HC, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 9, 26), date(2008, 12, 31), MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
 		}
 
 		// 2009
@@ -925,9 +925,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(3, list.size());
-			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 25), MotifFor.DEPART_HC, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
-			assertSourcierPur(date(2008, 9, 26), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(2));
+			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 25), MotifAssujettissement.DEPART_HC, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertSourcierPur(date(2008, 9, 26), date(2010, 12, 31), MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(2));
 		}
 	}
 
@@ -953,8 +953,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// [UNIREG-1742][SIFISC-7281] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois)
-			assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierPur(date(2008, 9, 26), date(2008, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2008, 9, 25), null, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 9, 26), date(2008, 12, 31), MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
 		}
 
 		// 2009
@@ -970,8 +970,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierMixteArt137Al2(date(2002, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierPur(date(2008, 9, 26), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertSourcierMixteArt137Al2(date(2002, 1, 1), date(2008, 9, 25), null, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 9, 26), date(2010, 12, 31), MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
 		}
 	}
 
@@ -996,8 +996,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// fractionnement de l'assujettissement
-			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 24), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-			assertSourcierPur(date(2008, 9, 25), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 24), null, MotifAssujettissement.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierPur(date(2008, 9, 25), date(2008, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 		}
 
 		// 2009
@@ -1013,8 +1013,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2008, 9, 24), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-			assertSourcierPur(date(2008, 9, 25), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2008, 9, 24), null, MotifAssujettissement.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierPur(date(2008, 9, 25), date(2010, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 		}
 	}
 
@@ -1035,7 +1035,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, list.get(0));
 		}
 
 		// 2009
@@ -1051,7 +1051,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, list.get(0));
 		}
 	}
 
@@ -1067,7 +1067,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, list.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.ARRIVEE_HC, list.get(0));
 		}
 
 		// 2008
@@ -1075,7 +1075,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, list.get(0));
 		}
 
 		// 2009
@@ -1091,8 +1091,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, list.get(0));
-			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(1));
+			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.ARRIVEE_HC, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, list.get(1));
 		}
 	}
 
@@ -1113,7 +1113,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, list.get(0));
 		}
 
 		// 2009
@@ -1129,7 +1129,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, list.get(0));
 		}
 	}
 
@@ -1146,7 +1146,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
 		}
 
 		// 2008
@@ -1155,7 +1155,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [SIFISC-7281] un contribuable mixte 137 Al1 qui arrive de hors-canton doit être considéré assujetti sur toute l'année.
-			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2009
@@ -1171,8 +1171,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 7, 1), date(2007, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertSourcierPur(date(2002, 7, 1), date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 		}
 	}
 
@@ -1190,7 +1190,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, list.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.ARRIVEE_HC, list.get(0));
 		}
 
 		// 2008
@@ -1199,7 +1199,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] pas de fractionnement à la date d'arrivée dans ce cas-là car le contribuable reste assujetti toute l'année à raison de son for secondaire (immeuble ou activité indépendante).
-			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2009
@@ -1215,8 +1215,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HC, list.get(0));
-			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.ARRIVEE_HC, list.get(0));
+			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 		}
 	}
 
@@ -1233,7 +1233,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
 		}
 
 		// 2008
@@ -1242,7 +1242,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [SIFISC-7281] pas de fractionnement de l'assujettissement lors de l'arrivée hors-canton de sourcier mixte 137 al 2.
-			assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2009
@@ -1258,8 +1258,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-			assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 		}
 	}
 
@@ -1276,7 +1276,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// ordinaire pendant son séjour en suisse, et non-assujetti hors-Suisse
-			assertOrdinaire(date(2008, 1, 1), date(2008, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 6, 30), null, MotifAssujettissement.DEPART_HS, list.get(0));
 		}
 
 		// 2002-2010
@@ -1284,7 +1284,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2002, 1, 1), date(2008, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2008, 6, 30), null, MotifAssujettissement.DEPART_HS, list.get(0));
 		}
 	}
 
@@ -1301,7 +1301,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// ordinaire pendant son séjour en suisse, et non-assujetti hors-Suisse
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.DEPART_HS, list.get(0));
 		}
 
 		// 2002-2010
@@ -1309,7 +1309,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.DEPART_HS, list.get(0));
 		}
 	}
 
@@ -1326,9 +1326,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// ordinaire pendant son séjour en Suisse
-			assertOrdinaire(date(2008, 1, 1), date(2008, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 6, 30), null, MotifAssujettissement.DEPART_HS, list.get(0));
 			// hors-Suisse le reste de l'année
-			assertHorsSuisse(date(2008, 7, 1), date(2008, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
+			assertHorsSuisse(date(2008, 7, 1), date(2008, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(1));
 		}
 
 		// 2002-2010
@@ -1336,8 +1336,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertOrdinaire(date(2002, 1, 1), date(2008, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
-			assertHorsSuisse(date(2008, 7, 1), date(2010, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
+			assertOrdinaire(date(2002, 1, 1), date(2008, 6, 30), null, MotifAssujettissement.DEPART_HS, list.get(0));
+			assertHorsSuisse(date(2008, 7, 1), date(2010, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(1));
 		}
 	}
 
@@ -1353,7 +1353,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.DEPART_HS, list.get(0));
 		}
 
 		// 2009
@@ -1361,7 +1361,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsSuisse(date(2009, 1, 1), date(2009, 12, 31), MotifFor.DEPART_HS, null, list.get(0));
+			assertHorsSuisse(date(2009, 1, 1), date(2009, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(0));
 		}
 
 		// 2002-2010
@@ -1369,8 +1369,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
-			assertHorsSuisse(date(2009, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
+			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.DEPART_HS, list.get(0));
+			assertHorsSuisse(date(2009, 1, 1), date(2010, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(1));
 		}
 	}
 
@@ -1388,7 +1388,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HS, list.get(0));
 		}
 
 		// 2008 (hors-canton -> hors-Suisse)
@@ -1397,7 +1397,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner l'assujettissement en cours de période (car le rattachement économique n'est pas interrompu)
-			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HS, null, list.get(0));
+			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(0));
 		}
 
 		// 2009 (hors-Suisse)
@@ -1413,8 +1413,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(ctb, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
-			assertHorsSuisse(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
+			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HS, list.get(0));
+			assertHorsSuisse(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(1));
 		}
 	}
 
@@ -1441,8 +1441,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertOrdinaire(date(2007, 1, 1), dateDepart, null, MotifFor.DEPART_HS, list.get(0));
-			assertOrdinaire(dateDepart.getOneDayAfter(), date(2007, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(1));
+			assertOrdinaire(date(2007, 1, 1), dateDepart, null, MotifAssujettissement.DEPART_HS, list.get(0));
+			assertOrdinaire(dateDepart.getOneDayAfter(), date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, list.get(1));
 		}
 
 		// 2008
@@ -1468,7 +1468,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HS, list.get(0));
 		}
 
 		// 2008 (hors-canton -> hors-Suisse)
@@ -1477,7 +1477,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner l'assujettissement en cours de période (car le rattachement économique n'est pas interrompu)
-			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HS, null, list.get(0));
+			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(0));
 		}
 
 		// 2009 (hors-Suisse)
@@ -1493,8 +1493,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(ctb, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
-			assertHorsSuisse(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
+			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.DEPART_HS, list.get(0));
+			assertHorsSuisse(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(1));
 		}
 	}
 
@@ -1526,7 +1526,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse jusqu'à la date de la vente de l'immeuble
-			assertHorsSuisse(date(2007, 1, 1), dateVente, null, MotifFor.VENTE_IMMOBILIER, list.get(0));
+			assertHorsSuisse(date(2007, 1, 1), dateVente, null, MotifAssujettissement.VENTE_IMMOBILIER, list.get(0));
 		}
 
 		// 2008
@@ -1540,7 +1540,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2000_2008, true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsSuisse(dateAchat, dateVente, MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, list.get(0));
+			assertHorsSuisse(dateAchat, dateVente, MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, list.get(0));
 		}
 	}
 
@@ -1567,9 +1567,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// hors-Suisse jusqu'à la date d'arrivée
-			assertHorsSuisse(date(2007, 1, 1), dateArrivee.getOneDayBefore(), null, MotifFor.ARRIVEE_HS, list.get(0));
+			assertHorsSuisse(date(2007, 1, 1), dateArrivee.getOneDayBefore(), null, MotifAssujettissement.ARRIVEE_HS, list.get(0));
 			// ordinaire depuis l'arrivée
-			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(1));
+			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, list.get(1));
 		}
 
 		// 2008
@@ -1615,7 +1615,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			// TODO (msi) le motif de fermeture devrait être MotifFor.ARRIVEE_HS
 			assertHorsSuisse(date(2007, 1, 1), dateArrivee.getOneDayBefore(), null, null, list.get(0));
 			// ordinaire depuis l'arrivée
-			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(1));
+			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, list.get(1));
 		}
 
 		// 2008
@@ -1647,7 +1647,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-Suisse toute l'année
-			assertHorsSuisse(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.ARRIVEE_HS, list.get(0));
+			assertHorsSuisse(date(2006, 1, 1), date(2006, 12, 31), null, MotifAssujettissement.ARRIVEE_HS, list.get(0));
 		}
 
 		// 2007
@@ -1657,7 +1657,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertEquals(1, list.size());
 			// [UNIREG-2759] hors-canton toute l'année car son court passage comme vaudois ordinaire ne compte pas (règle des déménagements entre cantons) et
 			// que d'un point de vue de l'assujettissement pour motif de rattachement économique, l'arrivée hors-Suisse ne compte pas comme motif de fractionnement.
-			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), MotifAssujettissement.DEPART_HC, null, list.get(0));
 		}
 
 		// 2008
@@ -1691,7 +1691,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// hors-canton toute l'année
-			assertHorsCanton(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.ARRIVEE_HC, list.get(0));
+			assertHorsCanton(date(2006, 1, 1), date(2006, 12, 31), null, MotifAssujettissement.ARRIVEE_HC, list.get(0));
 		}
 
 		// 2007
@@ -1700,8 +1700,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// [UNIREG-2759] vaudois ordinaire jusqu'à son départ, puis hors-Suisse.
-			assertOrdinaire(date(2007, 1, 1), dateDepartHS, MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, list.get(0));
-			assertHorsSuisse(dateDepartHS.getOneDayAfter(), date(2007, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
+			assertOrdinaire(date(2007, 1, 1), dateDepartHS, MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HS, list.get(0));
+			assertHorsSuisse(dateDepartHS.getOneDayAfter(), date(2007, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(1));
 		}
 
 		// 2008
@@ -1746,11 +1746,11 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			// sourcier pur hors-Suisse jusqu'à l'arrivee
-			assertSourcierPur(date(2010, 1, 1), date(2010, 9, 5), null, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+			assertSourcierPur(date(2010, 1, 1), date(2010, 9, 5), null, MotifAssujettissement.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, list.get(0));
 			// sourcier pur vaudois pendant les mois de septembre et octobre 2010
-			assertSourcierPur(date(2010, 9, 6), date(2010, 10, 18), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertSourcierPur(date(2010, 9, 6), date(2010, 10, 18), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 			// sourcier pur hors-canton après le départ
-			assertSourcierPur(date(2010, 10, 19), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(2));
+			assertSourcierPur(date(2010, 10, 19), date(2010, 12, 31), MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(2));
 		}
 
 		// 2011
@@ -1793,11 +1793,11 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			// sourcier pur VD jusqu'à son départ HS
-			assertSourcierPur(date(2009, 1, 1), dateDepartHS, null, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2009, 1, 1), dateDepartHS, null, MotifAssujettissement.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 			// sourcier pur HS durant son séjour HS
-			assertSourcierPur(dateDepartHS.getOneDayAfter(), dateArriveeHS.getOneDayBefore(), MotifFor.DEPART_HS, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.PAYS_HS, list.get(1));
+			assertSourcierPur(dateDepartHS.getOneDayAfter(), dateArriveeHS.getOneDayBefore(), MotifAssujettissement.DEPART_HS, MotifAssujettissement.ARRIVEE_HC, TypeAutoriteFiscale.PAYS_HS, list.get(1));
 			// et de sourcier pur VD dès son retour
-			assertSourcierPur(dateArriveeHS, date(2009, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(2));
+			assertSourcierPur(dateArriveeHS, date(2009, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(2));
 		}
 
 		// 2010
@@ -1842,11 +1842,11 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			// sourcier pur HS jusqu'à l'arrivée
-			assertSourcierPur(date(2010, 1, 1), dateArriveeHS.getOneDayBefore(), null, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+			assertSourcierPur(date(2010, 1, 1), dateArriveeHS.getOneDayBefore(), null, MotifAssujettissement.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, list.get(0));
 			// sourcier pur VD le temps du passage en Suisse
-			assertSourcierPur(dateArriveeHS, dateDepartHS, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertSourcierPur(dateArriveeHS, dateDepartHS, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 			// sourcier pur HS dès le départ
-			assertSourcierPur(dateDepartHS.getOneDayAfter(), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.PAYS_HS, list.get(2));
+			assertSourcierPur(dateDepartHS.getOneDayAfter(), date(2010, 12, 31), MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.PAYS_HS, list.get(2));
 		}
 
 		// 2011
@@ -1889,9 +1889,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// hors-Suisse jusqu'à la date d'arrivée
-			assertHorsSuisse(date(2007, 1, 1), dateArrivee.getOneDayBefore(), null, MotifFor.ARRIVEE_HS, list.get(0));
+			assertHorsSuisse(date(2007, 1, 1), dateArrivee.getOneDayBefore(), null, MotifAssujettissement.ARRIVEE_HS, list.get(0));
 			// ordinaire depuis l'arrivée
-			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(1));
+			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, list.get(1));
 		}
 
 		// 2008
@@ -1908,8 +1908,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, RANGE_2000_2008, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertHorsSuisse(date(2000, 1, 1), dateArrivee.getOneDayBefore(), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HS, list.get(0));
-			assertOrdinaire(dateArrivee, date(2008, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(1));
+			assertHorsSuisse(date(2000, 1, 1), dateArrivee.getOneDayBefore(), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.ARRIVEE_HS, list.get(0));
+			assertOrdinaire(dateArrivee, date(2008, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, list.get(1));
 		}
 	}
 
@@ -1932,7 +1932,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(0));
+			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, list.get(0));
 		}
 
 		// 2008
@@ -1970,9 +1970,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// hors-Suisse non-assujetti avant l'arrivée, ordinaire ensuite
-			assertOrdinaire(dateArrivee, dateDepart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(dateArrivee, dateDepart, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HS, list.get(0));
 			// hors-Suisse mais assujetti après son départ
-			assertHorsSuisse(dateDepart.getOneDayAfter(), date(2007, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
+			assertHorsSuisse(dateDepart.getOneDayAfter(), date(2007, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(1));
 		}
 
 		// 2008
@@ -1989,8 +1989,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, RANGE_2000_2008, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertOrdinaire(dateArrivee, dateDepart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(0));
-			assertHorsSuisse(dateDepart.getOneDayAfter(), date(2008, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
+			assertOrdinaire(dateArrivee, dateDepart, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HS, list.get(0));
+			assertHorsSuisse(dateDepart.getOneDayAfter(), date(2008, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(1));
 		}
 	}
 
@@ -2022,9 +2022,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// assujetti comme ordinaire pendant son passage en suisse
-			assertOrdinaire(dateArrivee, dateDepart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(dateArrivee, dateDepart, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HS, list.get(0));
 			// assujetti comme hors-Suisse suite à l'achat de son immeuble
-			assertHorsSuisse(dateAchat, date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(1));
+			assertHorsSuisse(dateAchat, date(2007, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, null, list.get(1));
 		}
 
 		// 2008
@@ -2041,8 +2041,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, RANGE_2000_2008, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertOrdinaire(dateArrivee, dateDepart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(0));
-			assertHorsSuisse(dateAchat, date(2008, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(1));
+			assertOrdinaire(dateArrivee, dateDepart, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HS, list.get(0));
+			assertHorsSuisse(dateAchat, date(2008, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, null, list.get(1));
 		}
 	}
 
@@ -2060,7 +2060,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// ordinaire toute l'année
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, list.get(0));
 		}
 
 		// 2002-2010
@@ -2068,8 +2068,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, list.get(1));
 		}
 	}
 
@@ -2087,9 +2087,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// sourcier pure les deux premiers mois (=> arrondi au mois)
-			assertSourcierPur(date(2008, 1, 1), date(2008, 2, 29), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 2, 29), null, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 			// ordinaire le reste de l'année
-			assertOrdinaire(date(2008, 3, 1), date(2008, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+			assertOrdinaire(date(2008, 3, 1), date(2008, 12, 31), MotifAssujettissement.PERMIS_C_SUISSE, null, list.get(1));
 		}
 
 		// 2002-2010
@@ -2097,8 +2097,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2008, 2, 29), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertOrdinaire(date(2008, 3, 1), date(2010, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2008, 2, 29), null, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2008, 3, 1), date(2010, 12, 31), MotifAssujettissement.PERMIS_C_SUISSE, null, list.get(1));
 		}
 	}
 
@@ -2115,8 +2115,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(maria);
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		assertSourcierPur(date(2011, 2, 1), date(2011, 4, 30), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-		assertOrdinaire(date(2011, 5, 1), null, MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+		assertSourcierPur(date(2011, 2, 1), date(2011, 4, 30), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		assertOrdinaire(date(2011, 5, 1), null, MotifAssujettissement.PERMIS_C_SUISSE, null, list.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10346089&print=true&title=${methodName}")
@@ -2132,8 +2132,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(jacqueline);
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		assertSourcierPur(date(2011, 1, 1), date(2011, 1, 31), MotifFor.INDETERMINE, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-		assertOrdinaire(date(2011, 2, 1), null, MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+		assertSourcierPur(date(2011, 1, 1), date(2011, 1, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		assertOrdinaire(date(2011, 2, 1), null, MotifAssujettissement.PERMIS_C_SUISSE, null, list.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10342784&print=true&title=${methodName}")
@@ -2150,8 +2150,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(vjollca);
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		assertSourcierPur(date(2004, 12, 1), date(2010, 3, 31), MotifFor.MAJORITE, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-		assertOrdinaire(date(2010, 4, 1), null, MotifFor.DEMENAGEMENT_VD, null, list.get(1));
+		assertSourcierPur(date(2004, 12, 1), date(2010, 3, 31), MotifAssujettissement.MAJORITE, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		assertOrdinaire(date(2010, 4, 1), null, MotifAssujettissement.DEMENAGEMENT_VD, null, list.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000044&print=true&title=${methodName}")
@@ -2165,8 +2165,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(paul);
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		assertSourcierMixteArt137Al2(date(1993, 1, 1), date(2007, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-		assertOrdinaire(date(2008, 1, 1), null, MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+		assertSourcierMixteArt137Al2(date(1993, 1, 1), date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		assertOrdinaire(date(2008, 1, 1), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, null, list.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=11000044&print=true&title=${methodName}")
@@ -2180,8 +2180,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(paul);
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		assertSourcierMixteArt137Al2(date(1993, 1, 1), date(2007, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-		assertOrdinaire(date(2008, 1, 1), null, MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+		assertSourcierMixteArt137Al2(date(1993, 1, 1), date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		assertOrdinaire(date(2008, 1, 1), null, MotifAssujettissement.PERMIS_C_SUISSE, null, list.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=12000044&print=true&title=${methodName}")
@@ -2199,7 +2199,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [SIFISC-8095] ordinaire depuis le début de l'année, car le motif 'changement de mode d'imposition' ne provoque pas de fractionnement dans ce cas là
-			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, list.get(0));
 		}
 
 		// 2009
@@ -2215,8 +2215,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2007, 12, 31), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, list.get(1));
 		}
 	}
 
@@ -2235,7 +2235,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// sourcier pure jusqu'à mi-décembre -> l'assujettissement sourcier pur est étendu jusqu'à la fin de l'année
-			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2009
@@ -2243,7 +2243,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(0));
+			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifAssujettissement.PERMIS_C_SUISSE, null, list.get(0));
 		}
 
 		// 2002-2010
@@ -2251,8 +2251,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifAssujettissement.PERMIS_C_SUISSE, null, list.get(1));
 		}
 	}
 
@@ -2275,7 +2275,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// passage du rôle source à ordinaire implicite -> assujetti en tant que sourcier sur toute l'année à cause de l'arrondi en fin de mois
-			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), MotifFor.INDETERMINE, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2009
@@ -2283,7 +2283,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(0));
+			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifAssujettissement.PERMIS_C_SUISSE, null, list.get(0));
 		}
 
 		// 2002-2010
@@ -2291,8 +2291,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), MotifFor.INDETERMINE, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifAssujettissement.PERMIS_C_SUISSE, null, list.get(1));
 		}
 	}
 
@@ -2359,7 +2359,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierPur(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierPur(date(2006, 1, 1), date(2006, 12, 31), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
 		}
 
 		// 2007
@@ -2367,7 +2367,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, list.get(0));
 		}
 
 		// 2008
@@ -2383,12 +2383,12 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2006, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierPur(date(2002, 1, 1), date(2006, 12, 31), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
 			/*
 			 * Note: le passage de sourcier pure à sourcier mixte ne provoque pas de fractionnement de l'assujettissement, la validité de
 			 * l'assujettissement hors-canton débute simplement le 1er janvier
 			 */
-			assertHorsCanton(date(2007, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+			assertHorsCanton(date(2007, 1, 1), date(2010, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, list.get(1));
 		}
 	}
 
@@ -2415,8 +2415,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// TODO (msi) voir s'il est possible d'exposer le motif d'ouverture du for secondaire (qui est plus précis que celui du for principal)
-			assertSourcierPur(date(2007, 1, 1), dateChangement.getOneDayBefore(), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.PAYS_HS, list.get(0));
-			assertHorsSuisse(dateChangement, date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+			assertSourcierPur(date(2007, 1, 1), dateChangement.getOneDayBefore(), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+			assertHorsSuisse(dateChangement, date(2007, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, list.get(1));
 		}
 
 		// 2008
@@ -2432,8 +2432,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), dateChangement.getOneDayBefore(), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.PAYS_HS, list.get(0));
-			assertHorsSuisse(dateChangement, date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), dateChangement.getOneDayBefore(), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+			assertHorsSuisse(dateChangement, date(2010, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, list.get(1));
 		}
 	}
 
@@ -2457,8 +2457,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2004, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierMixteArt137Al2(date(2005, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2004, 12, 31), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al2(date(2005, 1, 1), date(2010, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 		}
 	}
 
@@ -2484,7 +2484,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2005, 1, 1), date(2005, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, list.get(0));
+			assertOrdinaire(date(2005, 1, 1), date(2005, 12, 31), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, list.get(0));
 		}
 
 		// 2006 (passage à la source pure le 16 janvier)
@@ -2492,7 +2492,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size()); // <--- une seule période (voir commentaire de la méthode)
-			assertSourcierPur(date(2006, 1, 1), date(2006, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2006, 1, 1), date(2006, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2007
@@ -2529,7 +2529,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierPur(date(2005, 1, 1), date(2005, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2005, 1, 1), date(2005, 12, 31), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2006 (passage au rôle ordinaire le 17 décembre)
@@ -2537,7 +2537,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size()); // <--- une seule période (voir commentaire de la méthode)
-			assertOrdinaire(date(2006, 1, 1), date(2006, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
+			assertOrdinaire(date(2006, 1, 1), date(2006, 12, 31), MotifAssujettissement.CHGT_MODE_IMPOSITION, null, list.get(0));
 		}
 
 		// 2007
@@ -2562,7 +2562,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 1999);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(1999, 1, 1), date(1999, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(date(1999, 1, 1), date(1999, 12, 31), null, MotifAssujettissement.DEPART_HS, list.get(0));
 		}
 
 		// 2000 (nomination comme diplomate suisse basé à l'étanger)
@@ -2570,7 +2570,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2000);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, null, list.get(0));
+			assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(0));
 		}
 
 		// 2001 (achat d'un immeuble au 13 juin)
@@ -2587,8 +2587,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(paul, RANGE_1999_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertOrdinaire(date(1999, 1, 1), date(1999, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
-			assertDiplomateSuisse(date(2000, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
+			assertOrdinaire(date(1999, 1, 1), date(1999, 12, 31), null, MotifAssujettissement.DEPART_HS, list.get(0));
+			assertDiplomateSuisse(date(2000, 1, 1), date(2010, 12, 31), MotifAssujettissement.DEPART_HS, null, list.get(1));
 		}
 	}
 
@@ -2608,7 +2608,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(ctb, 2009);
 		assertNotNull(list);
 		assertEquals(1, list.size());
-		assertHorsSuisse(date(2009, 1, 1), dateVente, null, MotifFor.VENTE_IMMOBILIER, list.get(0));
+		assertHorsSuisse(date(2009, 1, 1), dateVente, null, MotifAssujettissement.VENTE_IMMOBILIER, list.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000054&print=true&title=${methodName}")
@@ -2629,7 +2629,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, null, list.get(0));
 		}
 
 		// 2009
@@ -2661,7 +2661,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			List<Assujettissement> list = determine(ctb, new DateRangeHelper.Range(date(2007, 1, 1), date(2011, 12, 31)), true);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2008, 1, 1), date(2011, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2011, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, null, list.get(0));
 		}
 	}
 
@@ -2690,8 +2690,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertHorsSuisse(immeuble1.getDateDebut(), immeuble1.getDateFin(), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, list.get(0));
-			assertHorsSuisse(immeuble2.getDateDebut(), immeuble2.getDateFin(), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, list.get(1));
+			assertHorsSuisse(immeuble1.getDateDebut(), immeuble1.getDateFin(), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, list.get(0));
+			assertHorsSuisse(immeuble2.getDateDebut(), immeuble2.getDateFin(), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, list.get(1));
 		}
 
 		// 2009
@@ -2727,9 +2727,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(3, list.size());
-			assertSourcierPur(date(2008, 1, 1), dateAchat.getOneDayBefore(), null, MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.PAYS_HS, list.get(0));
-			assertHorsSuisse(dateAchat, dateVente, MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, list.get(1));
-			assertSourcierPur(dateVente.getOneDayAfter(), date(2008, 12, 31), MotifFor.VENTE_IMMOBILIER, null, TypeAutoriteFiscale.PAYS_HS, list.get(2));
+			assertSourcierPur(date(2008, 1, 1), dateAchat.getOneDayBefore(), null, MotifAssujettissement.ACHAT_IMMOBILIER, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+			assertHorsSuisse(dateAchat, dateVente, MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, list.get(1));
+			assertSourcierPur(dateVente.getOneDayAfter(), date(2008, 12, 31), MotifAssujettissement.VENTE_IMMOBILIER, null, TypeAutoriteFiscale.PAYS_HS, list.get(2));
 		}
 
 		// 2009
@@ -2762,7 +2762,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.VENTE_IMMOBILIER, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.VENTE_IMMOBILIER, list.get(0));
 		}
 
 		// 2009
@@ -2793,7 +2793,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.FIN_EXPLOITATION, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, MotifAssujettissement.FIN_EXPLOITATION, list.get(0));
 		}
 
 		// 2009
@@ -2824,7 +2824,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2008, 1, 1), dateDeces, null, MotifFor.VEUVAGE_DECES, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), dateDeces, null, MotifAssujettissement.VEUVAGE_DECES, list.get(0));
 		}
 
 		// 2009
@@ -2855,7 +2855,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2008, 1, 1), dateDeces, null, MotifFor.VEUVAGE_DECES, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), dateDeces, null, MotifAssujettissement.VEUVAGE_DECES, list.get(0));
 		}
 
 		// 2009
@@ -2880,7 +2880,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2002);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsSuisse(date(2002, 1, 1), date(2002, 12, 31), null, MotifFor.DEMENAGEMENT_VD, list.get(0));
+			assertHorsSuisse(date(2002, 1, 1), date(2002, 12, 31), null, MotifAssujettissement.DEMENAGEMENT_VD, list.get(0));
 		}
 
 		// 2003 (arrivée au 1er janvier)
@@ -2888,7 +2888,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(ctb, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2003, 1, 1), date(2003, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(0));
+			assertOrdinaire(date(2003, 1, 1), date(2003, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, list.get(0));
 		}
 
 		// 2004
@@ -2928,7 +2928,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2003, 12, 31), MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2003, 12, 31), MotifAssujettissement.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2004
@@ -2944,7 +2944,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al2(date(2005, 1, 1), date(2005, 12, 18), null, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al2(date(2005, 1, 1), date(2005, 12, 18), null, MotifAssujettissement.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2006
@@ -2962,7 +2962,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al2(date(2008, 7, 7), date(2008, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al2(date(2008, 7, 7), date(2008, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2009
@@ -3002,7 +3002,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2001);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierPur(date(2001, 1, 1), date(2001, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2001, 1, 1), date(2001, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2002
@@ -3010,7 +3010,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2002);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2002, 12, 31), null, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2002, 1, 1), date(2002, 12, 31), null, MotifAssujettissement.ARRIVEE_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2003 (fausse arrivée HS + changement mode d'imposition)
@@ -3018,7 +3018,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2003, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2003, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 	}
 
@@ -3052,7 +3052,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2002);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2002, 1, 1), date(2002, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(0));
+			assertOrdinaire(date(2002, 1, 1), date(2002, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, list.get(0));
 		}
 
 		// 2003
@@ -3068,7 +3068,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 6, 30), null, MotifAssujettissement.DEPART_HS, list.get(0));
 		}
 
 		// 2008
@@ -3098,9 +3098,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(3, list.size());
-			assertSourcierPur(date(2003, 1, 1), date(2003, 5, 27), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertHorsSuisse(date(2003, 5, 28), date(2003, 8, 30), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEMENAGEMENT_VD, list.get(1));
-			assertSourcierMixteArt137Al2(date(2003, 8, 31), date(2003, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(2));
+			assertSourcierPur(date(2003, 1, 1), date(2003, 5, 27), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertHorsSuisse(date(2003, 5, 28), date(2003, 8, 30), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.DEMENAGEMENT_VD, list.get(1));
+			assertSourcierMixteArt137Al2(date(2003, 8, 31), date(2003, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(2));
 		}
 
 		// 2004
@@ -3133,7 +3133,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HC, list.get(0));
+			assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.ARRIVEE_HC, list.get(0));
 		}
 
 		// 2004 (arrivée hors-canton)
@@ -3141,7 +3141,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2004);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al2(date(2004, 1, 1), date(2004, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al2(date(2004, 1, 1), date(2004, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2005
@@ -3180,7 +3180,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2005, 1, 1), date(2005, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
+			assertOrdinaire(date(2005, 1, 1), date(2005, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, list.get(0));
 		}
 
 		// 2006
@@ -3188,7 +3188,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
+			assertOrdinaire(date(2006, 1, 1), date(2006, 12, 31), null, MotifAssujettissement.DEPART_HC, list.get(0));
 		}
 
 		// 2007
@@ -3201,7 +3201,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			final List<Assujettissement> list = determine(paul);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2005, 1, 1), date(2006, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, list.get(0));
+			assertOrdinaire(date(2005, 1, 1), date(2006, 12, 31), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HC, list.get(0));
 		}
 	}
 
@@ -3224,9 +3224,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(paul);
 		assertNotNull(list);
 		assertEquals(3, list.size());
-		assertOrdinaire(date(1995, 11, 2), date(1997, 3, 1), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(0));
-		assertHorsSuisse(date(2004, 3, 2), date(2004, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEPART_HC, list.get(1));
-		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ARRIVEE_HS, null, list.get(2));
+		assertOrdinaire(date(1995, 11, 2), date(1997, 3, 1), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HS, list.get(0));
+		assertHorsSuisse(date(2004, 3, 2), date(2004, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.DEPART_HC, list.get(1));
+		assertHorsCanton(date(2005, 1, 1), null, MotifAssujettissement.ARRIVEE_HS, null, list.get(2));
 	}
 
 	/**
@@ -3243,8 +3243,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(paul);
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		assertHorsSuisse(date(2004, 5, 6), date(2006, 7, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEMENAGEMENT_VD, list.get(0));
-		assertSourcierMixteArt137Al2(date(2006, 8, 1), null, MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+		assertHorsSuisse(date(2004, 5, 6), date(2006, 7, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.DEMENAGEMENT_VD, list.get(0));
+		assertSourcierMixteArt137Al2(date(2006, 8, 1), null, MotifAssujettissement.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 	}
 
 	/**
@@ -3271,10 +3271,10 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(paul);
 		assertNotNull(list);
 		assertEquals(4, list.size());
-		assertSourcierPur(date(2004, 1, 1), date(2004, 6, 14), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-		assertHorsSuisse(date(2004, 6, 15), date(2004, 7, 10), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEPART_HC, list.get(1));
-		assertOrdinaire(date(2004, 7, 11), date(2006, 11, 15), MotifFor.DEPART_HC, MotifFor.DEPART_HS, list.get(2));
-		assertHorsSuisse(date(2006, 11, 16), null, MotifFor.DEMENAGEMENT_VD, null, list.get(3));
+		assertSourcierPur(date(2004, 1, 1), date(2004, 6, 14), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+		assertHorsSuisse(date(2004, 6, 15), date(2004, 7, 10), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.DEPART_HC, list.get(1));
+		assertOrdinaire(date(2004, 7, 11), date(2006, 11, 15), MotifAssujettissement.DEPART_HC, MotifAssujettissement.DEPART_HS, list.get(2));
+		assertHorsSuisse(date(2006, 11, 16), null, MotifAssujettissement.DEMENAGEMENT_VD, null, list.get(3));
 	}
 
 	/**
@@ -3296,8 +3296,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(ctb);
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		assertSourcierPur(date(2003, 1, 1), date(2009, 8, 13), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-		assertOrdinaire(date(2009, 8, 19), date(2009, 12, 13), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(1));
+		assertSourcierPur(date(2003, 1, 1), date(2009, 8, 13), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		assertOrdinaire(date(2009, 8, 19), date(2009, 12, 13), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HS, list.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=17907715&print=true&title=${methodName}&description=${docDescription}")
@@ -3315,7 +3315,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(ctb);
 		assertNotNull(list);
 		assertEquals(1, list.size());
-		assertOrdinaire(date(1993, 1, 1), date(2007, 12, 31), MotifFor.INDETERMINE, MotifFor.DEPART_HC, list.get(0));
+		assertOrdinaire(date(1993, 1, 1), date(2007, 12, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HC, list.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10772397&print=true&title=${methodName}&description=${docDescription}")
@@ -3339,7 +3339,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertOrdinaire(date(2010, 1, 1), date(2010, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
+		assertOrdinaire(date(2010, 1, 1), date(2010, 12, 31), MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=30928601&print=true&title=${methodName}&description=${docDescription}")
@@ -3356,7 +3356,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertHorsSuisse(date(1980, 12, 30), null, MotifFor.ACHAT_IMMOBILIER, null, liste.get(0));
+		assertHorsSuisse(date(1980, 12, 30), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10003677&print=true&title=${methodName}&description=${docDescription}")
@@ -3373,7 +3373,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10003679&print=true&title=${methodName}&description=${docDescription}")
@@ -3390,7 +3390,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
+		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10003680&print=true&title=${methodName}&description=${docDescription}")
@@ -3407,7 +3407,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertHorsCanton(date(2003, 1, 1), date(2005, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+		assertHorsCanton(date(2003, 1, 1), date(2005, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10003681&print=true&title=${methodName}&description=${docDescription}")
@@ -3424,7 +3424,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertHorsCanton(date(2003, 1, 1), date(2005, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
+		assertHorsCanton(date(2003, 1, 1), date(2005, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10003682&print=true&title=${methodName}&description=${docDescription}")
@@ -3440,7 +3440,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10003683&print=true&title=${methodName}&description=${docDescription}")
@@ -3456,7 +3456,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifFor.INDETERMINE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
+		assertOrdinaire(date(2003, 1, 1), date(2005, 12, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10003685&print=true&title=${methodName}&description=${docDescription}")
@@ -3472,7 +3472,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertHorsCanton(date(2003, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+		assertHorsCanton(date(2003, 1, 1), date(2006, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10003684&print=true&title=${methodName}&description=${docDescription}")
@@ -3488,7 +3488,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertHorsCanton(date(2003, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
+		assertHorsCanton(date(2003, 1, 1), date(2006, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10010236&print=true&title=${methodName}&description=${docDescription}")
@@ -3599,7 +3599,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(ctb);
 		assertNotNull(list);
 		assertEquals(1, list.size());
-		assertOrdinaire(date(2003, 1, 1), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, list.get(0));
+		assertOrdinaire(date(2003, 1, 1), null, MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, list.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000037&print=true&title=${methodName}&description=${docDescription}")
@@ -3618,7 +3618,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(ctb);
 		assertNotNull(list);
 		assertEquals(1, list.size());
-		assertOrdinaire(date(2003, 1, 1), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, list.get(0));
+		assertOrdinaire(date(2003, 1, 1), null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, list.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000038&print=true&title=${methodName}&description=${docDescription}")
@@ -3637,7 +3637,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(ctb);
 		assertNotNull(list);
 		assertEquals(1, list.size());
-		assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.VENTE_IMMOBILIER, list.get(0));
+		assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifAssujettissement.VENTE_IMMOBILIER, list.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000039&print=true&title=${methodName}&description=${docDescription}")
@@ -3656,7 +3656,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> list = determine(ctb);
 		assertNotNull(list);
 		assertEquals(1, list.size());
-		assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.VENTE_IMMOBILIER, list.get(0));
+		assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifAssujettissement.VENTE_IMMOBILIER, list.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=30928601&print=true&title=${methodName}&description=${docDescription}")
@@ -3674,7 +3674,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, liste.get(0));
+		assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10010236&print=true&title=${methodName}&description=${docDescription}")
@@ -3691,7 +3691,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size()); // [SIFISC-7281] pas de fractionnement de l'assujettissement lors de l'arrivée hors-canton de sourcier mixte 137 al 2.
-		assertSourcierMixteArt137Al2(date(2004, 1, 1), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierMixteArt137Al2(date(2004, 1, 1), MotifAssujettissement.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=36502102&print=true&title=${methodName}&description=${docDescription}")
@@ -3722,7 +3722,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertOrdinaire(date(1997, 1, 1), null, MotifFor.ARRIVEE_HS, null, liste.get(0));
+		assertOrdinaire(date(1997, 1, 1), null, MotifAssujettissement.ARRIVEE_HS, null, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10003678&print=true&title=${methodName}&description=${docDescription}")
@@ -3739,7 +3739,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertOrdinaire(date(1997, 1, 1), null, MotifFor.ARRIVEE_HS, null, liste.get(0));
+		assertOrdinaire(date(1997, 1, 1), null, MotifAssujettissement.ARRIVEE_HS, null, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10048078&print=true&title=${methodName}&description=${docDescription}")
@@ -3757,9 +3757,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(3, liste.size());
-		assertHorsCanton(date(2005, 1, 1), date(2006, 12, 31), MotifFor.DEBUT_EXPLOITATION, MotifFor.ARRIVEE_HC, liste.get(0));
-		assertOrdinaire(date(2007, 1, 1), date(2007, 12, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, liste.get(1));
-		assertHorsSuisse(date(2007, 12, 31), date(2011, 3, 31), MotifFor.DEMENAGEMENT_VD, MotifFor.FIN_EXPLOITATION, liste.get(2));
+		assertHorsCanton(date(2005, 1, 1), date(2006, 12, 31), MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.ARRIVEE_HC, liste.get(0));
+		assertOrdinaire(date(2007, 1, 1), date(2007, 12, 30), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HS, liste.get(1));
+		assertHorsSuisse(date(2007, 12, 31), date(2011, 3, 31), MotifAssujettissement.DEMENAGEMENT_VD, MotifAssujettissement.FIN_EXPLOITATION, liste.get(2));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=41010811&print=true&title=${methodName}&description=${docDescription}")
@@ -3777,9 +3777,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(3, liste.size());
-		assertOrdinaire(date(1991, 1, 6), date(1997, 12, 26), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, liste.get(0));
-		assertHorsSuisse(date(1997, 12, 27), date(1997, 12, 27), MotifFor.DEMENAGEMENT_VD, MotifFor.DEMENAGEMENT_VD, liste.get(1));
-		assertOrdinaire(date(1997, 12, 28), null, MotifFor.ARRIVEE_HS, null, liste.get(2));
+		assertOrdinaire(date(1991, 1, 6), date(1997, 12, 26), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HS, liste.get(0));
+		assertHorsSuisse(date(1997, 12, 27), date(1997, 12, 27), MotifAssujettissement.DEMENAGEMENT_VD, MotifAssujettissement.DEMENAGEMENT_VD, liste.get(1));
+		assertOrdinaire(date(1997, 12, 28), null, MotifAssujettissement.ARRIVEE_HS, null, liste.get(2));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10556134&print=true&title=${methodName}&description=${docDescription}")
@@ -3797,9 +3797,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(3, liste.size());
-		assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2010, 5, 31), MotifFor.DEMENAGEMENT_VD, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
-		assertSourcierPur(date(2010, 6, 1), date(2011, 3, 31), MotifFor.DEPART_HS, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.PAYS_HS, liste.get(1));
-		assertSourcierPur(date(2011, 4, 1), null, MotifFor.DEMENAGEMENT_VD, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(2));
+		assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2010, 5, 31), MotifAssujettissement.DEMENAGEMENT_VD, MotifAssujettissement.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierPur(date(2010, 6, 1), date(2011, 3, 31), MotifAssujettissement.DEPART_HS, MotifAssujettissement.DEMENAGEMENT_VD, TypeAutoriteFiscale.PAYS_HS, liste.get(1));
+		assertSourcierPur(date(2011, 4, 1), null, MotifAssujettissement.DEMENAGEMENT_VD, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(2));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10603986&print=true&title=${methodName}&description=${docDescription}")
@@ -3818,9 +3818,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(3, liste.size());
-		assertSourcierPur(date(2009, 1, 1), date(2009, 2, 1), MotifFor.ARRIVEE_HS, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
-		assertSourcierPur(date(2009, 2, 2), date(2010, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
-		assertOrdinaire(date(2012, 1, 1), null, MotifFor.ARRIVEE_HC, null, liste.get(2)); // [SIFISC-7312] la date de début était calculée à tort au 1er janvier 2011.
+		assertSourcierPur(date(2009, 1, 1), date(2009, 2, 1), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
+		assertSourcierPur(date(2009, 2, 2), date(2010, 12, 31), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
+		assertOrdinaire(date(2012, 1, 1), null, MotifAssujettissement.ARRIVEE_HC, null, liste.get(2)); // [SIFISC-7312] la date de début était calculée à tort au 1er janvier 2011.
 	}
 
 	private static Set<Integer> buildSetFromArray(Integer... ints) {
@@ -3843,8 +3843,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertEquals(2, liste.size());
 		// le motif d'ouverture 'décès' du second for ne provoque pas le fractionnement du premier for car on suppose qu'un ménage-commun existait avant le décès et que
 		// c'est bien le ménage commun qui était assujetti le jour précédent le décès.
-		assertOrdinaire(date(2000, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
-		assertOrdinaire(date(2009, 2, 2), null, MotifFor.VEUVAGE_DECES, null, liste.get(1));
+		assertOrdinaire(date(2000, 1, 1), date(2008, 12, 31), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+		assertOrdinaire(date(2009, 2, 2), null, MotifAssujettissement.VEUVAGE_DECES, null, liste.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10035699&print=true&title=${methodName}&description=${docDescription}")
@@ -3862,8 +3862,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(2, liste.size());
 		// malgré le motif d'ouverture 'décès' du second for, le fractionnement au 1er août 2005 est bien présent car le premier for se ferme pour le même motif le jour d'avant
-		assertSourcierPur(date(2000, 1, 1), date(2005, 7, 31), MotifFor.ARRIVEE_HS, MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
-		assertOrdinaire(date(2005, 8, 1), null, MotifFor.VEUVAGE_DECES, null, liste.get(1));
+		assertSourcierPur(date(2000, 1, 1), date(2005, 7, 31), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertOrdinaire(date(2005, 8, 1), null, MotifAssujettissement.VEUVAGE_DECES, null, liste.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10035700&print=true&title=${methodName}&description=${docDescription}")
@@ -3881,8 +3881,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(2, liste.size());
 		// [SIFISC-7281] les contribuables à la dépense qui partent hors-canton sont considérés hors-canton toute l'année de leur départ
-		assertDepense(date(2000, 1, 1), date(2004, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, liste.get(0));
-		assertSourcierPur(date(2005, 8, 1), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+		assertDepense(date(2000, 1, 1), date(2004, 12, 31), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, liste.get(0));
+		assertSourcierPur(date(2005, 8, 1), null, MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10867397&print=true&title=${methodName}&description=${docDescription}")
@@ -3902,8 +3902,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertEquals(2, liste.size());
 		// [SIFISC-8095] En cas de conflit entre la vue 'source' et la vue 'rôle', c'est le rôle qui doit gagner. En l'occurence, on considère que le contribuable
 		//               est assujetti au rôle à partir du 1er janvier 2012 (alors que selon la vue 'source' il était encore sourcier le 4 mai 2012).
-		assertSourcierPur(date(2000, 1, 1), date(2011, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
-		assertSourcierMixteArt137Al1(date(2012, 1, 1), null, MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
+		assertSourcierPur(date(2000, 1, 1), date(2011, 12, 31), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
+		assertSourcierMixteArt137Al1(date(2012, 1, 1), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10867398&print=true&title=${methodName}&description=${docDescription}")
@@ -3923,8 +3923,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertEquals(2, liste.size());
 		// [SIFISC-8095] En cas de conflit entre la vue 'source' et la vue 'rôle', c'est le rôle qui doit gagner. En l'occurence, on considère que le contribuable
 		//               est assujetti au rôle à partir du 1er janvier 2012 (alors que selon la vue 'source' il était encore sourcier le 4 mai 2012).
-		assertSourcierPur(date(2000, 1, 1), date(2011, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
-		assertOrdinaire(date(2012, 1, 1), null, MotifFor.CHGT_MODE_IMPOSITION, null, liste.get(1));
+		assertSourcierPur(date(2000, 1, 1), date(2011, 12, 31), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
+		assertOrdinaire(date(2012, 1, 1), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, null, liste.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10716129&print=true&title=${methodName}&description=${docDescription}")
@@ -3944,8 +3944,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertEquals(2, liste.size());
 		// [SIFISC-8095] En cas de conflit entre la vue 'source' et la vue 'rôle', c'est le rôle qui doit gagner. En l'occurence, on considère que le contribuable
 		//               est assujetti au rôle à partir du 1er janvier 2012 (alors que selon la vue 'source' il était encore sourcier le 4 mai 2012).
-		assertSourcierPur(date(2000, 1, 1), date(2011, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
-		assertSourcierMixteArt137Al2(date(2012, 1, 1), null, MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
+		assertSourcierPur(date(2000, 1, 1), date(2011, 12, 31), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
+		assertSourcierMixteArt137Al2(date(2012, 1, 1), null, MotifAssujettissement.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10802574&print=true&title=${methodName}&description=${docDescription}")
@@ -3965,7 +3965,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertEquals(1, liste.size());
 		// [SIFISC-8095] Dans le cas où le passage au rôle s'interrompt dans l'arrivée de hors-canton, on retombe dans le cas normal
 		// du fractionnement à l'arrivée du sourcier car la vue 'rôle' est vide.
-		assertSourcierPur(date(2012, 9, 1), date(2012, 10, 31), MotifFor.ARRIVEE_HC, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierPur(date(2012, 9, 1), date(2012, 10, 31), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10553402&print=true&title=${methodName}&description=${docDescription}")
@@ -3982,8 +3982,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(2, liste.size());
-		assertSourcierPur(date(2006, 4, 1), date(2007, 12, 31), MotifFor.DEMENAGEMENT_VD, MotifFor.INDETERMINE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
-		assertOrdinaire(date(2008, 1, 1), date(2009, 12, 31), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(1));
+		assertSourcierPur(date(2006, 4, 1), date(2007, 12, 31), MotifAssujettissement.DEMENAGEMENT_VD, MotifAssujettissement.INDETERMINE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertOrdinaire(date(2008, 1, 1), date(2009, 12, 31), MotifAssujettissement.INDETERMINE, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=99619010&print=true&title=${methodName}&description=${docDescription}")
@@ -4001,7 +4001,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertSourcierMixteArt137Al2(date(2000, 1, 1), MotifFor.INDETERMINE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierMixteArt137Al2(date(2000, 1, 1), MotifAssujettissement.INDETERMINE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10799600&print=true&title=${methodName}&description=${docDescription}")
@@ -4019,8 +4019,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(2, liste.size());
-		assertSourcierPur(date(2011, 2, 1), date(2011, 5, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
-		assertSourcierPur(date(2011, 6, 1), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+		assertSourcierPur(date(2011, 2, 1), date(2011, 5, 31), MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierPur(date(2011, 6, 1), null, MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10503559&print=true&title=${methodName}&description=${docDescription}")
@@ -4040,11 +4040,11 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(4, liste.size());
-		assertSourcierPur(date(2008, 11, 1), date(2009, 8, 1), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierPur(date(2008, 11, 1), date(2009, 8, 1), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 		assertSourcierPur(date(2009, 8, 2), date(2010, 4, 30), // <-- la date de fin est écrasée par la date de début de l'assujettissement source suivant
-		                  MotifFor.DEPART_HC, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
-		assertSourcierPur(date(2010, 5, 1), date(2011, 2, 28), MotifFor.CHGT_MODE_IMPOSITION, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(2));
-		assertOrdinaire(date(2011, 3, 1), null, MotifFor.PERMIS_C_SUISSE, null, liste.get(3));
+		                  MotifAssujettissement.DEPART_HC, MotifAssujettissement.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+		assertSourcierPur(date(2010, 5, 1), date(2011, 2, 28), MotifAssujettissement.CHGT_MODE_IMPOSITION, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(2));
+		assertOrdinaire(date(2011, 3, 1), null, MotifAssujettissement.PERMIS_C_SUISSE, null, liste.get(3));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10054692&print=true&title=${methodName}&description=${docDescription}")
@@ -4060,7 +4060,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertSourcierMixteArt137Al2(date(2006, 1, 1), date(2012, 9, 1), MotifFor.INDETERMINE, MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierMixteArt137Al2(date(2006, 1, 1), date(2012, 9, 1), MotifAssujettissement.INDETERMINE, MotifAssujettissement.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=56109712&print=true&title=${methodName}&description=${docDescription}")
@@ -4076,7 +4076,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertSourcierMixteArt137Al2(date(1999, 10, 12), null, MotifFor.VEUVAGE_DECES, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierMixteArt137Al2(date(1999, 10, 12), null, MotifAssujettissement.VEUVAGE_DECES, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10743138&print=true&title=${methodName}&description=${docDescription}")
@@ -4094,11 +4094,11 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(3, liste.size());
 		assertSourcierPur(date(2010, 5, 1), date(2010, 10, 7),
-		                  MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		                  MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifAssujettissement.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 		assertSourcierPur(date(2010, 10, 8), date(2010, 12, 26),
-		                  MotifFor.DEPART_HS, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, liste.get(1));
+		                  MotifAssujettissement.DEPART_HS, MotifAssujettissement.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, liste.get(1));
 		assertSourcierPur(date(2010, 12, 27), date(2010, 12, 31),
-		                  MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(2));
+		                  MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(2));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10763698&print=true&title=${methodName}&description=${docDescription}")
@@ -4116,7 +4116,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(1, liste.size());
-		assertHorsCanton(date(2010, 1, 1), date(2012, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, liste.get(0));
+		assertHorsCanton(date(2010, 1, 1), date(2012, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, liste.get(0));
 	}
 
 	/**
@@ -4135,8 +4135,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(2, liste.size());
-		assertSourcierMixteArt137Al2(arrivee, depart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
-		assertSourcierPur(depart.getOneDayAfter(), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+		assertSourcierMixteArt137Al2(arrivee, depart, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierPur(depart.getOneDayAfter(), null, MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
 	}
 
 	/**
@@ -4161,8 +4161,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 					final List<Assujettissement> liste = determine(ctb);
 					assertEquals(2, liste.size());
-					assertSourcierMixteArt137Al2(arrivee, depart.getLastDayOfTheMonth(), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
-					assertSourcierPur(depart.getLastDayOfTheMonth().getOneDayAfter(), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+					assertSourcierMixteArt137Al2(arrivee, depart.getLastDayOfTheMonth(), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+					assertSourcierPur(depart.getLastDayOfTheMonth().getOneDayAfter(), null, MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
 				}
 			});
 		}
@@ -4187,8 +4187,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determine(ctb);
 		assertEquals(2, liste.size());
-		assertSourcierPur(date(2013, 1, 1), obtention.getOneDayBefore(), MotifFor.ARRIVEE_HS, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
-		assertOrdinaire(obtention, null, MotifFor.PERMIS_C_SUISSE, null, liste.get(1));
+		assertSourcierPur(date(2013, 1, 1), obtention.getOneDayBefore(), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertOrdinaire(obtention, null, MotifAssujettissement.PERMIS_C_SUISSE, null, liste.get(1));
 
 	}
 
@@ -4212,8 +4212,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 					final List<Assujettissement> liste = determine(ctb);
 					assertEquals(2, liste.size());
-					assertSourcierPur(date(2013, 1, 1), obtention.getLastDayOfTheMonth(), MotifFor.ARRIVEE_HS, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
-					assertOrdinaire(obtention.getLastDayOfTheMonth().getOneDayAfter(), obtention.addMonths(5), MotifFor.PERMIS_C_SUISSE, MotifFor.DEPART_HS, liste.get(1));
+					assertSourcierPur(date(2013, 1, 1), obtention.getLastDayOfTheMonth(), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+					assertOrdinaire(obtention.getLastDayOfTheMonth().getOneDayAfter(), obtention.addMonths(5), MotifAssujettissement.PERMIS_C_SUISSE, MotifAssujettissement.DEPART_HS, liste.get(1));
 				}
 			});
 		}
@@ -4245,15 +4245,15 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> listeLausanne = determinePourCommunes(ctb, MockCommune.Lausanne.getNoOFS());
 		assertEquals(1, listeLausanne.size());
-		assertHorsCanton(date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
+		assertHorsCanton(date(2000, 1, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
 		final List<Assujettissement> listeCroy = determinePourCommunes(ctb, MockCommune.Croy.getNoOFS());
 		assertEquals(1, listeCroy.size());
-		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
+		assertHorsCanton(date(2005, 1, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
 		final List<Assujettissement> listeRenens = determinePourCommunes(ctb, MockCommune.Renens.getNoOFS());
 		assertEquals(1, listeRenens.size());
-		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
+		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, listeRenens.get(0));
 	}
 
 	@Test
@@ -4268,19 +4268,19 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> listeLausanne = determinePourCommunes(ctb, MockCommune.Lausanne.getNoOFS());
 		assertEquals(1, listeLausanne.size());
-		assertHorsSuisse(date(2000, 9, 4), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
+		assertHorsSuisse(date(2000, 9, 4), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
 		final List<Assujettissement> listeCroy = determinePourCommunes(ctb, MockCommune.Croy.getNoOFS());
 		assertEquals(1, listeCroy.size());
-		assertHorsSuisse(date(2005, 6, 24), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
+		assertHorsSuisse(date(2005, 6, 24), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
 		final List<Assujettissement> listeRenens = determinePourCommunes(ctb, MockCommune.Renens.getNoOFS());
 		assertEquals(1, listeRenens.size());
-		assertHorsSuisse(date(2002, 7, 12), date(2006, 12, 2), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
+		assertHorsSuisse(date(2002, 7, 12), date(2006, 12, 2), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, listeRenens.get(0));
 
 		final List<Assujettissement> listeCroyRenens = determinePourCommunes(ctb, MockCommune.Croy.getNoOFS(), MockCommune.Renens.getNoOFS());
 		assertEquals(1, listeCroyRenens.size());
-		assertHorsSuisse(date(2002, 7, 12), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroyRenens.get(0));
+		assertHorsSuisse(date(2002, 7, 12), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, listeCroyRenens.get(0));
 	}
 
 	@Test
@@ -4295,23 +4295,23 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> listeAubonne = determinePourCommunes(ctb, MockCommune.Aubonne.getNoOFS());
 		assertEquals(1, listeAubonne.size());
-		assertOrdinaire(date(2000, 6, 1), null, MotifFor.ARRIVEE_HS, null, listeAubonne.get(0));
+		assertOrdinaire(date(2000, 6, 1), null, MotifAssujettissement.ARRIVEE_HS, null, listeAubonne.get(0));
 
 		final List<Assujettissement> listeLausanne = determinePourCommunes(ctb, MockCommune.Lausanne.getNoOFS());
 		assertEquals(1, listeLausanne.size());
-		assertHorsCanton(date(2000, 6, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
+		assertHorsCanton(date(2000, 6, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
 		final List<Assujettissement> listeCroy = determinePourCommunes(ctb, MockCommune.Croy.getNoOFS());
 		assertEquals(1, listeCroy.size());
-		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
+		assertHorsCanton(date(2005, 1, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
 		final List<Assujettissement> listeRenens = determinePourCommunes(ctb, MockCommune.Renens.getNoOFS());
 		assertEquals(1, listeRenens.size());
-		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
+		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, listeRenens.get(0));
 
 		final List<Assujettissement> listeCroyRenens = determinePourCommunes(ctb, MockCommune.Croy.getNoOFS(), MockCommune.Renens.getNoOFS());
 		assertEquals(1, listeCroyRenens.size());
-		assertHorsCanton(date(2002, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroyRenens.get(0));
+		assertHorsCanton(date(2002, 1, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, listeCroyRenens.get(0));
 	}
 
 	/**
@@ -4339,18 +4339,18 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> listePrilly = determinePourCommunes(ctb, MockCommune.Prilly.getNoOFS());
 		assertEquals(1, listePrilly.size());
-		assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2005, 2, 18), MotifFor.INDETERMINE, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listePrilly.get(0));
+		assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2005, 2, 18), MotifAssujettissement.INDETERMINE, MotifAssujettissement.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listePrilly.get(0));
 
 		final List<Assujettissement> listeBussigny = determinePourCommunes(ctb, MockCommune.Bussigny.getNoOFS());
 		assertEquals(1, listeBussigny.size());
 		// assujetti en raison du for source (et uniquement du point de la vue de la source !)
-		assertSourcierPur(date(2008, 7, 7), date(2008, 7, 31), MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeBussigny.get(0));
+		assertSourcierPur(date(2008, 7, 7), date(2008, 7, 31), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeBussigny.get(0));
 
 		// c'est ici que cela explosait !
 		final List<Assujettissement> listeVevey = determinePourCommunes(ctb, MockCommune.Vevey.getNoOFS());
 		assertEquals(1, listeVevey.size());
 		// assujetti en raison du for secondaire + du for source
-		assertSourcierMixteArt137Al2(date(2008, 7, 7), null, MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeVevey.get(0));
+		assertSourcierMixteArt137Al2(date(2008, 7, 7), null, MotifAssujettissement.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeVevey.get(0));
 	}
 
 	/**
@@ -4369,7 +4369,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 
 		final List<Assujettissement> liste = determinePourCommunes(ctb, MockCommune.Aubonne.getNoOFS());
 		assertEquals(1, liste.size());
-		assertSourcierMixteArt137Al2(date(2007, 1, 1), null, MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierMixteArt137Al2(date(2007, 1, 1), null, MotifAssujettissement.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
 
 	/**
@@ -4391,14 +4391,14 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			// du point de vue d'Echallens, le contribuable est hors-canton à partir du 1er janvier 2001, année de l'achat de son immeuble.
 			final List<Assujettissement> liste = determinePourCommunes(ctb, MockCommune.Echallens.getNoOFS());
 			assertEquals(1, liste.size());
-			assertHorsCanton(date(2001, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, liste.get(0));
+			assertHorsCanton(date(2001, 1, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, liste.get(0));
 		}
 
 		{
 			// du point de vue de Moudon, le contribuable est à l'ordinaire à partir du 1er janvier 2007, année de son arrivée dans la commune
 			final List<Assujettissement> liste = determinePourCommunes(ctb, MockCommune.Moudon.getNoOFS());
 			assertEquals(1, liste.size());
-			assertOrdinaire(date(2007, 1, 1), null, MotifFor.ARRIVEE_HC, null, liste.get(0));
+			assertOrdinaire(date(2007, 1, 1), null, MotifAssujettissement.ARRIVEE_HC, null, liste.get(0));
 		}
 	}
 
@@ -4421,14 +4421,14 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 			// du point de vue d'Echallens, le contribuable est hors-canton à partir du 1er janvier 2001, année de l'achat de son immeuble.
 			final List<Assujettissement> liste = determinePourCommunes(ctb, MockCommune.Echallens.getNoOFS());
 			assertEquals(1, liste.size());
-			assertHorsCanton(date(2001, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, liste.get(0));
+			assertHorsCanton(date(2001, 1, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, liste.get(0));
 		}
 
 		{
 			// du point de vue de Moudon, le contribuable est à l'ordinaire jusqu'au 31 décembre 2006, année précédent son départ de la commune
 			final List<Assujettissement> liste = determinePourCommunes(ctb, MockCommune.Moudon.getNoOFS());
 			assertEquals(1, liste.size());
-			assertOrdinaire(date(1980, 1, 1), date(2006, 12, 31), MotifFor.MAJORITE, MotifFor.DEPART_HC, liste.get(0));
+			assertOrdinaire(date(1980, 1, 1), date(2006, 12, 31), MotifAssujettissement.MAJORITE, MotifAssujettissement.DEPART_HC, liste.get(0));
 		}
 	}
 
@@ -4533,7 +4533,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> ass = determine(ctb, 2012);
 		assertNotNull(ass);
 		assertEquals(1, ass.size());
-		assertOrdinaire(arrivee, depart, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, ass.get(0));
+		assertOrdinaire(arrivee, depart, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, ass.get(0));
 	}
 
 	/**
@@ -4555,7 +4555,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> ass = determine(ctb, 2012);
 		assertNotNull(ass);
 		assertEquals(1, ass.size());
-		assertOrdinaire(arriveeHS, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+		assertOrdinaire(arriveeHS, date(2012, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, ass.get(0));
 	}
 
 	/**
@@ -4581,7 +4581,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> ass = determine(ctb, 2012);
 		assertNotNull(ass);
 		assertEquals(1, ass.size());
-		assertOrdinaire(retourHSversHC, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+		assertOrdinaire(retourHSversHC, date(2012, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, ass.get(0));
 	}
 
 	/**
@@ -4605,7 +4605,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		final List<Assujettissement> ass = determine(pp, 2012);
 		assertNotNull(ass);
 		assertEquals(1, ass.size());
-		assertOrdinaire(arriveeHS, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+		assertOrdinaire(arriveeHS, date(2012, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, ass.get(0));
 	}
 
 	/**
@@ -4641,8 +4641,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertEquals(1, ass.size());
 
 		// TODO le comportement réellement voulu est celui qui est maintenant commenté...
-//		assertOrdinaire(retourHScouple, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
-		assertOrdinaire(arriveeHS, date(2012, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+//		assertOrdinaire(retourHScouple, date(2012, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, ass.get(0));
+		assertOrdinaire(arriveeHS, date(2012, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, ass.get(0));
 	}
 
 	/**
@@ -4670,8 +4670,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertNotNull(ass);
 		assertEquals(2, ass.size());
 
-		assertHorsSuisse(achat, arriveeHSversHC.getOneDayBefore(), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HS, ass.get(0));
-		assertOrdinaire(arriveeHSversHC, date(annee, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(1));
+		assertHorsSuisse(achat, arriveeHSversHC.getOneDayBefore(), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.ARRIVEE_HS, ass.get(0));
+		assertOrdinaire(arriveeHSversHC, date(annee, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, ass.get(1));
 	}
 
 	/**
@@ -4699,7 +4699,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertNotNull(ass);
 		assertEquals(1, ass.size());
 
-		assertOrdinaire(arriveeHSversHC, date(annee, 12, 31), MotifFor.ARRIVEE_HS, null, ass.get(0));
+		assertOrdinaire(arriveeHSversHC, date(annee, 12, 31), MotifAssujettissement.ARRIVEE_HS, null, ass.get(0));
 	}
 
 	/**
@@ -4727,7 +4727,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertNotNull(ass);
 		assertEquals(1, ass.size());
 
-		assertOrdinaire(date(annee, 1, 1), date(annee, 12, 31), MotifFor.ARRIVEE_HC, null, ass.get(0));
+		assertOrdinaire(date(annee, 1, 1), date(annee, 12, 31), MotifAssujettissement.ARRIVEE_HC, null, ass.get(0));
 	}
 
 	private static void assertCommunesActives(Assujettissement assujettissement, List<Integer> noOfsCommunesActives) {
@@ -4777,8 +4777,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertNotNull(ass);
 		assertEquals(2, ass.size());
 
-		assertSourcierMixteArt137Al2(arriveeHS, departHC.getLastDayOfTheMonth(), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ass.get(0));
-		assertSourcierPur(departHC.getLastDayOfTheMonth().getOneDayAfter(), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, ass.get(1));
+		assertSourcierMixteArt137Al2(arriveeHS, departHC.getLastDayOfTheMonth(), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ass.get(0));
+		assertSourcierPur(departHC.getLastDayOfTheMonth().getOneDayAfter(), null, MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, ass.get(1));
 	}
 
 	/**
@@ -4801,8 +4801,8 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertNotNull(ass);
 		assertEquals(2, ass.size());
 
-		assertSourcierPur(arriveeHS, departHC, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ass.get(0));
-		assertSourcierPur(departHC.getOneDayAfter(), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, ass.get(1));
+		assertSourcierPur(arriveeHS, departHC, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ass.get(0));
+		assertSourcierPur(departHC.getOneDayAfter(), null, MotifAssujettissement.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, ass.get(1));
 	}
 
 	/**
@@ -4828,9 +4828,9 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertNotNull(ass);
 		assertEquals(3, ass.size());
 
-		assertHorsSuisse(achat, arriveeHS.getOneDayBefore(), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HS, ass.get(0));
-		assertSourcierMixteArt137Al2(arriveeHS, departHC.getLastDayOfTheMonth(), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ass.get(1));
-		assertHorsCanton(departHC.getLastDayOfTheMonth().getOneDayAfter(), null, MotifFor.DEPART_HC, null, ass.get(2));
+		assertHorsSuisse(achat, arriveeHS.getOneDayBefore(), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.ARRIVEE_HS, ass.get(0));
+		assertSourcierMixteArt137Al2(arriveeHS, departHC.getLastDayOfTheMonth(), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ass.get(1));
+		assertHorsCanton(departHC.getLastDayOfTheMonth().getOneDayAfter(), null, MotifAssujettissement.DEPART_HC, null, ass.get(2));
 	}
 
 	/**
@@ -4856,7 +4856,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertNotNull(ass);
 		assertEquals(1, ass.size());
 
-		assertHorsCanton(achat, null, MotifFor.ACHAT_IMMOBILIER, null, ass.get(0));
+		assertHorsCanton(achat, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, ass.get(0));
 	}
 
 	/**
@@ -4882,7 +4882,7 @@ public class AssujettissementPersonnesPhysiquesCalculatorTest extends MetierTest
 		assertNotNull(ass);
 		assertEquals(1, ass.size());
 
-		assertHorsCanton(achat, null, MotifFor.ACHAT_IMMOBILIER, null, ass.get(0));
+		assertHorsCanton(achat, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, ass.get(0));
 	}
 
 //

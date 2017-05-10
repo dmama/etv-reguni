@@ -15,6 +15,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -167,7 +168,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(date(2010, 1, 1), a.debutAssujettissement);
 		Assert.assertEquals(date(2010, 12, 31), a.finAssujettissement);
 		Assert.assertEquals(TypeAssujettissement.VAUDOIS_ORDINAIRE, a.typeAssujettissement);
-		Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, a.motifDebut);
+		Assert.assertEquals(MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, a.motifDebut);
 		Assert.assertNull(a.motifFin);
 	}
 
@@ -292,7 +293,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(date(2010, 3, 11), hs.finAssujettissement);
 		Assert.assertEquals(TypeAssujettissement.HORS_SUISSE, hs.typeAssujettissement);
 		Assert.assertNull(hs.motifDebut);
-		Assert.assertEquals(MotifFor.ARRIVEE_HS, hs.motifFin);
+		Assert.assertEquals(MotifAssujettissement.ARRIVEE_HS, hs.motifFin);
 
 		final ListeAssujettisResults.InfoCtbAssujetti vd = results.getAssujettis().get(1);
 		Assert.assertNotNull(vd);
@@ -300,7 +301,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(date(2010, 3, 12), vd.debutAssujettissement);
 		Assert.assertEquals(date(2010, 12, 31), vd.finAssujettissement);
 		Assert.assertEquals(TypeAssujettissement.VAUDOIS_ORDINAIRE, vd.typeAssujettissement);
-		Assert.assertEquals(MotifFor.ARRIVEE_HS, vd.motifDebut);
+		Assert.assertEquals(MotifAssujettissement.ARRIVEE_HS, vd.motifDebut);
 		Assert.assertNull(vd.motifFin);
 	}
 
@@ -415,7 +416,7 @@ public class ListeAssujettisProcessorTest extends BusinessTest {
 		Assert.assertEquals(date(2010, 5, 12), a.finAssujettissement);
 		Assert.assertEquals(TypeAssujettissement.VAUDOIS_ORDINAIRE, a.typeAssujettissement);
 		Assert.assertNull(a.motifDebut);
-		Assert.assertEquals(MotifFor.DEPART_HS, a.motifFin);
+		Assert.assertEquals(MotifAssujettissement.DEPART_HS, a.motifFin);
 	}
 
 	@Test

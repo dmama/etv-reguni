@@ -38,6 +38,7 @@ import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1;
 import ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
@@ -247,26 +248,26 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP infoJean = infoLausanne.getInfoPourContribuable(ids.jean);
 			final InfoContribuablePP infoTom = infoLausanne.getInfoPourContribuable(ids.tom);
 
-			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPaul);
-			assertInfo(ids.incognito, TypeContribuable.ORDINAIRE, ofsCommune, date(2007, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoIncognito);
-			assertInfo(ids.raoul, TypeContribuable.NON_ASSUJETTI, ofsCommune, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoRaoul);
+			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), null, MotifAssujettissement.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPaul);
+			assertInfo(ids.incognito, TypeContribuable.ORDINAIRE, ofsCommune, date(2007, 4, 13), null, MotifAssujettissement.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoIncognito);
+			assertInfo(ids.raoul, TypeContribuable.NON_ASSUJETTI, ofsCommune, date(1983, 4, 13), date(2007, 9, 30), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HC, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoRaoul);
 			assertNull(infoDidier);
-			assertInfo(ids.laurent, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2008, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoLaurent);
-			assertInfo(ids.arnold, TypeContribuable.MIXTE, ofsCommune, date(1983, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoArnold);
-			assertInfo(ids.victor, TypeContribuable.SOURCE, ofsCommune, date(1983, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoVictor);
+			assertInfo(ids.laurent, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2008, 9, 30), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HC, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoLaurent);
+			assertInfo(ids.arnold, TypeContribuable.MIXTE, ofsCommune, date(1983, 4, 13), null, MotifAssujettissement.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoArnold);
+			assertInfo(ids.victor, TypeContribuable.SOURCE, ofsCommune, date(1983, 4, 13), null, MotifAssujettissement.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoVictor);
 			assertNull(infoAlbertine);
-			assertInfo(ids.geo, TypeContribuable.HORS_CANTON, ofsCommune, date(2003, 3, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeo);
-			assertInfo(ids.donald, TypeContribuable.HORS_CANTON, ofsCommune, date(1990, 1, 15), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoDonald);
-			assertInfo(ids.johnny, TypeContribuable.HORS_CANTON, ofsCommune, date(2005, 11, 3), date(2007, 8, 30), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoJohnny);
-			assertInfo(ids.tyler, TypeContribuable.HORS_CANTON, ofsCommune, date(2005, 11, 3), date(2007, 8, 30), MotifFor.DEBUT_EXPLOITATION, MotifFor.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoTyler);
-			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
+			assertInfo(ids.geo, TypeContribuable.HORS_CANTON, ofsCommune, date(2003, 3, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeo);
+			assertInfo(ids.donald, TypeContribuable.HORS_CANTON, ofsCommune, date(1990, 1, 15), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoDonald);
+			assertInfo(ids.johnny, TypeContribuable.HORS_CANTON, ofsCommune, date(2005, 11, 3), date(2007, 8, 30), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoJohnny);
+			assertInfo(ids.tyler, TypeContribuable.HORS_CANTON, ofsCommune, date(2005, 11, 3), date(2007, 8, 30), MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoTyler);
+			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), null, MotifAssujettissement.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
 			assertNull(infoMarc);
-			assertInfo(ids.louis, TypeContribuable.NON_ASSUJETTI, ofsCommune, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoLouis);
-			assertInfo(ids.albert, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoAlbert);
-			assertInfo(ids.georges, TypeContribuable.HORS_CANTON, ofsCommune, date(1980, 3, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeorges);
-			assertInfo(ids.marie, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2007, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoMarie);
-			assertInfo(ids.jean, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2007, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoJean);
-			assertInfo(ids.tom, TypeContribuable.HORS_SUISSE, ofsCommune, date(2005, 11, 3), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoTom);
+			assertInfo(ids.louis, TypeContribuable.NON_ASSUJETTI, ofsCommune, date(1983, 4, 13), date(2007, 9, 30), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HC, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoLouis);
+			assertInfo(ids.albert, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2007, 9, 30), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoAlbert);
+			assertInfo(ids.georges, TypeContribuable.HORS_CANTON, ofsCommune, date(1980, 3, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeorges);
+			assertInfo(ids.marie, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HC, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoMarie);
+			assertInfo(ids.jean, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HC, MotifAssujettissement.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoJean);
+			assertInfo(ids.tom, TypeContribuable.HORS_SUISSE, ofsCommune, date(2005, 11, 3), date(2007, 12, 31), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoTom);
 
 			assertEquals(17, infoLausanne.getInfosContribuables().size());
 		}
@@ -281,10 +282,10 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP infoLouis = infoCossonay.getInfoPourContribuable(ids.louis);
 			final InfoContribuablePP infoAlbert = infoCossonay.getInfoPourContribuable(ids.albert);
 
-			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, ofsCommune, date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
+			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, ofsCommune, date(2000, 1, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
 			assertNull(infoMarc);
-			assertInfo(ids.louis, TypeContribuable.HORS_CANTON, ofsCommune, date(2001, 3, 2), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoLouis);
-			assertInfo(ids.albert, TypeContribuable.HORS_SUISSE, ofsCommune, date(2001, 3, 2), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoAlbert);
+			assertInfo(ids.louis, TypeContribuable.HORS_CANTON, ofsCommune, date(2001, 3, 2), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoLouis);
+			assertInfo(ids.albert, TypeContribuable.HORS_SUISSE, ofsCommune, date(2001, 3, 2), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoAlbert);
 
 			assertEquals(3, infoCossonay.getInfosContribuables().size());
 		}
@@ -336,7 +337,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoBenjamin = infoLausanne.getInfoPourContribuable(ids.benjamin);
 
-			assertInfo(ids.benjamin, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
+			assertInfo(ids.benjamin, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), null, MotifAssujettissement.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -366,7 +367,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoBenjamin = infoLausanne.getInfoPourContribuable(idCtb);
 
-			assertInfo(idCtb, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifFor.MAJORITE, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoBenjamin);
+			assertInfo(idCtb, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifAssujettissement.MAJORITE, MotifAssujettissement.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoBenjamin);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -376,7 +377,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoBenjamin = infoBussigny.getInfoPourContribuable(idCtb);
 
-			assertInfo(idCtb, TypeContribuable.ORDINAIRE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
+			assertInfo(idCtb, TypeContribuable.ORDINAIRE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), null, MotifAssujettissement.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
 
 			assertEquals(1, infoBussigny.getInfosContribuables().size());
 		}
@@ -415,7 +416,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoBenjamin = infoLausanne.getInfoPourContribuable(idCtb);
 
-			assertInfo(idCtb, TypeContribuable.SOURCE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifFor.MAJORITE, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoBenjamin);
+			assertInfo(idCtb, TypeContribuable.SOURCE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifAssujettissement.MAJORITE, MotifAssujettissement.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoBenjamin);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -425,7 +426,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoBenjamin = infoBussigny.getInfoPourContribuable(idCtb);
 
-			assertInfo(idCtb, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
+			assertInfo(idCtb, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), null, MotifAssujettissement.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
 
 			assertEquals(1, infoBussigny.getInfosContribuables().size());
 		}
@@ -467,7 +468,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoCtb = infoLausanne.getInfoPourContribuable(idMarie);
 
-			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifFor.MAJORITE, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
+			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifAssujettissement.MAJORITE, MotifAssujettissement.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -477,7 +478,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoCtb = infoBussigny.getInfoPourContribuable(idMarie);
 
-			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), date(2007, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
+			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), date(2007, 12, 31), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
 
 			assertEquals(1, infoBussigny.getInfosContribuables().size());
 		}
@@ -519,7 +520,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoCtb = infoLausanne.getInfoPourContribuable(idMarie);
 
-			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifFor.MAJORITE, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
+			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), date(2007, 3, 31), MotifAssujettissement.MAJORITE, MotifAssujettissement.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -529,7 +530,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoCtb = infoBussigny.getInfoPourContribuable(idMarie);
 
-			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoCtb);
+			assertInfo(idMarie, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), date(2007, 10, 1), null, MotifAssujettissement.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoCtb);
 
 			assertEquals(1, infoBussigny.getInfosContribuables().size());
 		}
@@ -576,7 +577,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoCtb = infoCommune.getInfoPourContribuable(ppId);
 
-			assertInfo(ppId, TypeContribuable.SOURCE, MockCommune.Cossonay.getNoOFS(), dateArrivee, dateDepartHc, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC,
+			assertInfo(ppId, TypeContribuable.SOURCE, MockCommune.Cossonay.getNoOFS(), dateArrivee, dateDepartHc, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HC,
 			           InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoCtb);
 
 			assertEquals(1, infoCommune.getInfosContribuables().size());
@@ -629,7 +630,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 		final InfoContribuablePP infoCtb = infoCommune.getInfoPourContribuable(ppId);
 
-		assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), dateArrivee, dateDemenagement, MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD,
+		assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), dateArrivee, dateDemenagement, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEMENAGEMENT_VD,
 		           InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoCtb);
 
 		assertEquals(1, infoCommune.getInfosContribuables().size());
@@ -664,7 +665,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			assertNotNull(infoLausanne);
 
 			final InfoContribuablePP infoGeneview = infoLausanne.getInfoPourContribuable(ids.genevieve);
-			assertInfo(ids.genevieve, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(2003, 10, 1), null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeneview);
+			assertInfo(ids.genevieve, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(2003, 10, 1), null, MotifAssujettissement.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeneview);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -696,7 +697,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			assertNotNull(infoLausanne);
 
 			final InfoContribuablePP info = infoLausanne.getInfoPourContribuable(ppId);
-			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.Lausanne.getNoOFS(), date(2005, 1, 1), date(2008, 5, 15), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.Lausanne.getNoOFS(), date(2005, 1, 1), date(2008, 5, 15), MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -706,7 +707,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			assertNotNull(infoCroy);
 
 			final InfoContribuablePP info = infoCroy.getInfoPourContribuable(ppId);
-			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.Croy.getNoOFS(), date(2004, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.Croy.getNoOFS(), date(2004, 1, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 
 			assertEquals(1, infoCroy.getInfosContribuables().size());
 		}
@@ -716,7 +717,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			assertNotNull(infoRomainmotier);
 
 			final InfoContribuablePP info = infoRomainmotier.getInfoPourContribuable(ppId);
-			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.RomainmotierEnvy.getNoOFS(), date(2003, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.RomainmotierEnvy.getNoOFS(), date(2003, 1, 1), null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 
 			assertEquals(1, infoRomainmotier.getInfosContribuables().size());
 		}
@@ -785,7 +786,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infosCtb = infos.getInfoPourContribuable(ppId);
 			assertNotNull(infosCtb);
-			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateFin, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateFin, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
 		}
 
 		// Cossonay
@@ -796,7 +797,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infosCtb = infos.getInfoPourContribuable(ppId);
 			assertNotNull(infosCtb);
-			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), dateDebut, dateFin, MotifFor.DEBUT_EXPLOITATION, MotifFor.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), dateDebut, dateFin, MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
 		}
 	}
 
@@ -837,7 +838,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 		final InfoContribuable infosCtb = infos.getInfoPourContribuable(noCtb);
 		assertNotNull(infosCtb);
-		assertInfo(noCtb, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infosCtb);
+		assertInfo(noCtb, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), arrivee, null, MotifAssujettissement.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infosCtb);
 	}
 
 	/**
@@ -876,7 +877,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 		final InfoContribuablePP infosCtb = infos.getInfoPourContribuable(idpp);
 		assertNotNull(infosCtb);
-		assertInfo(idpp, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), arriveeLausanne, departLausanne, MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
+		assertInfo(idpp, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), arriveeLausanne, departLausanne, MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
 	}
 
 	/**
@@ -916,7 +917,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePP infoCtb = infosRegroupees.iterator().next();
 			assertNotNull(infoCtb);
-			assertInfo(idpp, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), arriveeRenens, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoCtb);
+			assertInfo(idpp, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), arriveeRenens, null, MotifAssujettissement.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoCtb);
 		}
 	}
 
@@ -970,18 +971,18 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP infoVictor = map.get(ids.victor);
 			final InfoContribuablePP infoBalthazar = map.get(ids.balthazar);
 
-			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPaul);
-			assertInfo(ids.raoul, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoRaoul);
-			assertInfo(ids.didier, TypeContribuable.NON_ASSUJETTI, MockCommune.Lausanne.getNoOFS(), date(1990, 2, 1), date(2007, 5, 31), MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoDidier);
-			assertInfo(ids.arnold, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1990, 2, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoArnold);
-			assertInfo(ids.victor, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), date(1990, 2, 1), null, MotifFor.ARRIVEE_HS, null,
+			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), null, MotifAssujettissement.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPaul);
+			assertInfo(ids.raoul, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), date(1983, 4, 13), null, MotifAssujettissement.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoRaoul);
+			assertInfo(ids.didier, TypeContribuable.NON_ASSUJETTI, MockCommune.Lausanne.getNoOFS(), date(1990, 2, 1), date(2007, 5, 31), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoDidier);
+			assertInfo(ids.arnold, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1990, 2, 1), null, MotifAssujettissement.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoArnold);
+			assertInfo(ids.victor, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), date(1990, 2, 1), null, MotifAssujettissement.ARRIVEE_HS, null,
 			           InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoVictor);
-			assertInfo(ids.balthazar, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1990, 2, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBalthazar);
+			assertInfo(ids.balthazar, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1990, 2, 1), null, MotifAssujettissement.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBalthazar);
 		}
 	}
 
 	private static void assertInfo(long id, TypeContribuable type, int ofsCommune, RegDate ouvertureFor, @Nullable RegDate fermetureFor,
-	                               MotifFor motifOuverture, @Nullable MotifFor motifFermeture, InfoContribuable.TypeAssujettissement typeAssujettissement,
+	                               MotifAssujettissement motifOuverture, @Nullable MotifAssujettissement motifFermeture, InfoContribuable.TypeAssujettissement typeAssujettissement,
 	                               @Nullable TypeContribuable ancienTypeContribuable, InfoContribuable<?> info) {
 		assertNotNull(info);
 		assertEquals(id, info.noCtb);
@@ -994,7 +995,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(typeAssujettissement, info.getTypeAssujettissementAgrege());
 	}
 
-	private static void assertInfoExtremite(RegDate date, MotifFor motif, Pair<RegDate, MotifFor> infosExtremite) {
+	private static void assertInfoExtremite(RegDate date, MotifAssujettissement motif, Pair<RegDate, MotifAssujettissement> infosExtremite) {
 		if (infosExtremite != null) {
 			assertEquals(date, infosExtremite.getLeft());
 			assertEquals(motif, infosExtremite.getRight());
@@ -1479,7 +1480,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
-			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Bussigny.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Bussigny.getNoOFS(), arrivee, null, MotifAssujettissement.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 	}
 
@@ -1520,7 +1521,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
-			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), achat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), achat, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 	}
 
@@ -1565,7 +1566,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
-			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Echallens.getNoOFS(), achat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Echallens.getNoOFS(), achat, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 		{
 			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Moudon.getNoOFS());
@@ -1574,7 +1575,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
-			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Moudon.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Moudon.getNoOFS(), arrivee, null, MotifAssujettissement.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 	}
 
@@ -1621,7 +1622,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
-			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Villette.getNoOFS(), arrivee, communeAvant.getDateFinValidite(), MotifFor.ARRIVEE_HS, MotifFor.FUSION_COMMUNES, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Villette.getNoOFS(), arrivee, communeAvant.getDateFinValidite(), MotifAssujettissement.ARRIVEE_HS, MotifAssujettissement.FUSION_COMMUNES, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 		}
 	}
 
@@ -1670,7 +1671,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
-			assertInfo(ppId, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), dateArrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ppId, TypeContribuable.SOURCE, MockCommune.Bussigny.getNoOFS(), dateArrivee, null, MotifAssujettissement.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 		{
 			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Aigle.getNoOFS());
@@ -1682,7 +1683,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			// c'est assez bizarre de trouver un NON_ASSUJETTI sur Aigle alors qu'il y a un immeuble, mais c'est dû au
 			// problème de données -> le mode d'imposition du for de domicile ne devrait pas être à SOURCE (mais à MIXTE)
 			// -> voir pour le véritable cas le test testSourcierPurVaudoisAvecForSecondaireEtChangementModeImposition() plus bas
-			assertInfo(ppId, TypeContribuable.NON_ASSUJETTI, MockCommune.Aigle.getNoOFS(), dateAchat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.SOURCE, info);
+			assertInfo(ppId, TypeContribuable.NON_ASSUJETTI, MockCommune.Aigle.getNoOFS(), dateAchat, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.SOURCE, info);
 		}
 	}
 
@@ -1732,7 +1733,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
-			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Bussigny.getNoOFS(), dateArrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Bussigny.getNoOFS(), dateArrivee, null, MotifAssujettissement.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 		{
 			final InfoCommunePP infos = results.getInfosCommunes().get(MockCommune.Aigle.getNoOFS());
@@ -1741,7 +1742,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
-			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Aigle.getNoOFS(), dateAchat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Aigle.getNoOFS(), dateAchat, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 	}
 
@@ -1811,7 +1812,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.mcId);
 			assertNotNull(info);
 
-			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Leysin.getNoOFS(), dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Leysin.getNoOFS(), dateMariage, null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 	}
 
@@ -1885,7 +1886,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.ppId);
 			assertNotNull(info);
 
-			assertInfo(ids.ppId, TypeContribuable.SOURCE, MockCommune.Fraction.LeSentier.getNoOFS(), date(2000, 1, 1), dateMariage.getOneDayBefore(), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertInfo(ids.ppId, TypeContribuable.SOURCE, MockCommune.Fraction.LeSentier.getNoOFS(), date(2000, 1, 1), dateMariage.getOneDayBefore(), MotifAssujettissement.INDETERMINE, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 		}
 		{
 			// l'abbaye
@@ -1896,7 +1897,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.mcId);
 			assertNotNull(info);
 
-			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LAbbaye.getNoOFS(), dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LAbbaye.getNoOFS(), dateMariage, null, MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 		{
 			// le pont
@@ -1907,7 +1908,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePP info = infoCommune.getInfoPourContribuable(ids.mcId);
 			assertNotNull(info);
 
-			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LePont.getNoOFS(), dateDemenagement, null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LePont.getNoOFS(), dateDemenagement, null, MotifAssujettissement.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 	}
 
@@ -1995,7 +1996,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2015, 6, 30));
 			assertNotNull(info);
 
-			assertInfo(pmId, TypeContribuable.HORS_CANTON, MockCommune.Grandson.getNoOFS(), dateAchat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(pmId, TypeContribuable.HORS_CANTON, MockCommune.Grandson.getNoOFS(), dateAchat, null, MotifAssujettissement.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 			assertEquals(date(2015, 6, 30), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertNull(info.getNoIde());
@@ -2045,7 +2046,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2015, 6, 30));
 			assertNotNull(info);
 
-			assertInfo(pmId, TypeContribuable.HORS_CANTON, MockCommune.Grandson.getNoOFS(), dateAchat, dateVente, MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertInfo(pmId, TypeContribuable.HORS_CANTON, MockCommune.Grandson.getNoOFS(), dateAchat, dateVente, MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 			assertEquals(date(2015, 6, 30), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertNull(info.getNoIde());
@@ -2100,7 +2101,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2015, 6, 30));
 			assertNotNull(info);
 
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 			assertEquals(date(2015, 6, 30), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertEquals(ide, info.getNoIde());
@@ -2116,7 +2117,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2015, 6, 30));
 			assertNotNull(info);
 
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Grandson.getNoOFS(), dateAchat, dateVente, MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Grandson.getNoOFS(), dateAchat, dateVente, MotifAssujettissement.ACHAT_IMMOBILIER, MotifAssujettissement.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 			assertEquals(date(2015, 6, 30), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertEquals(ide, info.getNoIde());
@@ -2170,7 +2171,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		{
 			final InfoContribuablePM info = data.iterator().next();
 			assertNotNull(info);
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 			assertEquals(date(2015, 6, 30), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertEquals(ide, info.getNoIde());
@@ -2217,7 +2218,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2015, 6, 30));
 			assertNotNull(info);
 
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateFaillite, MotifFor.DEBUT_EXPLOITATION, MotifFor.FAILLITE, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateFaillite, MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.FAILLITE, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 			assertEquals(date(2015, 6, 30), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertNull(info.getNoIde());
@@ -2271,7 +2272,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuablePM info = infoCommune.getInfoPourContribuable(pmId, date(2016, 6, 30));
 			assertNotNull(info);
 
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 			assertEquals(date(2016, 6, 30), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0106_SOCIETE_ANONYME, info.getFormeJuridique());
 			assertNull(info.getNoIde());
@@ -2317,7 +2318,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePM info03 = infoCommune.getInfoPourContribuable(pmId, date(2015, 3, 31));
 			assertNotNull(info03);
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info03);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info03);
 			assertEquals(date(2015, 3, 31), info03.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info03.getFormeJuridique());
 			assertNull(info03.getNoIde());
@@ -2327,7 +2328,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePM info12 = infoCommune.getInfoPourContribuable(pmId, date(2015, 12, 31));
 			assertNotNull(info12);
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info12);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info12);
 			assertEquals(date(2015, 12, 31), info12.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info12.getFormeJuridique());
 			assertNull(info12.getNoIde());
@@ -2381,7 +2382,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		{
 			final InfoContribuablePM info = sortedData.get(0);
 			assertNotNull(info);
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 			assertEquals(date(2015, 3, 31), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertNull(info.getNoIde());
@@ -2392,7 +2393,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		{
 			final InfoContribuablePM info = sortedData.get(1);
 			assertNotNull(info);
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 			assertEquals(date(2015, 12, 31), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertNull(info.getNoIde());
@@ -2441,7 +2442,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePM info03 = infoCommune.getInfoPourContribuable(pmId, date(anneeRoles, 3, 31));
 			assertNotNull(info03);
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateDemenagement.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info03);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateDemenagement.getOneDayBefore(), MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info03);
 			assertEquals(date(anneeRoles, 3, 31), info03.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info03.getFormeJuridique());
 			assertNull(info03.getNoIde());
@@ -2451,7 +2452,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePM info12 = infoCommune.getInfoPourContribuable(pmId, date(anneeRoles, 12, 31));
 			assertNotNull(info12);
-			assertInfo(pmId, TypeContribuable.NON_ASSUJETTI, MockCommune.Lausanne.getNoOFS(), dateDebut, dateDemenagement.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, info12);
+			assertInfo(pmId, TypeContribuable.NON_ASSUJETTI, MockCommune.Lausanne.getNoOFS(), dateDebut, dateDemenagement.getOneDayBefore(), MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, info12);
 			assertEquals(date(anneeRoles, 12, 31), info12.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info12.getFormeJuridique());
 			assertNull(info12.getNoIde());
@@ -2466,7 +2467,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 			final InfoContribuablePM info12 = infoCommune.getInfoPourContribuable(pmId, date(anneeRoles, 12, 31));
 			assertNotNull(info12);
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Morges.getNoOFS(), dateDemenagement, null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info12);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Morges.getNoOFS(), dateDemenagement, null, MotifAssujettissement.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info12);
 			assertEquals(date(anneeRoles, 12, 31), info12.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info12.getFormeJuridique());
 			assertNull(info12.getNoIde());
@@ -2527,7 +2528,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		{
 			final InfoContribuablePM info = sortedData.get(0);
 			assertNotNull(info);
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 			assertEquals(date(anneeRoles, 3, 31), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertNull(info.getNoIde());
@@ -2538,7 +2539,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		{
 			final InfoContribuablePM info = sortedData.get(1);
 			assertNotNull(info);
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Morges.getNoOFS(), dateDebut, null, MotifFor.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Morges.getNoOFS(), dateDebut, null, MotifAssujettissement.DEBUT_EXPLOITATION, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 			assertEquals(date(anneeRoles, 12, 31), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertNull(info.getNoIde());
@@ -2588,7 +2589,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		{
 			final InfoContribuablePM info = infos.iterator().next();
 			assertNotNull(info);
-			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateDemenagement.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertInfo(pmId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateDemenagement.getOneDayBefore(), MotifAssujettissement.DEBUT_EXPLOITATION, MotifAssujettissement.DEPART_HC, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 			assertEquals(date(anneeRoles, 12, 31), info.getDateBouclement());
 			assertEquals(FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITEE, info.getFormeJuridique());
 			assertNull(info.getNoIde());

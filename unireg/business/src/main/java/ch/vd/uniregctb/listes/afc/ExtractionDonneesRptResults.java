@@ -21,6 +21,7 @@ import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -28,7 +29,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -101,8 +101,8 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		public final RegDate debutPeriodeImposition;
 		public final RegDate finPeriodeImposition;
 		public final MotifRattachement motifRattachement;
-		public final MotifFor motifOuverture;
-		public final MotifFor motifFermeture;
+		public final MotifAssujettissement motifOuverture;
+		public final MotifAssujettissement motifFermeture;
 		public final Integer ofsCommuneForGestion;
 		public final TypeAutoriteFiscale autoriteFiscaleForPrincipal;
 
@@ -111,7 +111,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 														"OFS_COMMUNE_GESTION", "AUTORITE_FISC_FOR_PRN" };
 
 		public InfoPeriodeImposition(long noCtb, InfoIdentificationCtb identification, ModeImposition modeImposition,
-		                             RegDate debutPeriodeImposition, RegDate finPeriodeImposition, MotifRattachement motifRattachement, MotifFor motifOuverture, MotifFor motifFermeture,
+		                             RegDate debutPeriodeImposition, RegDate finPeriodeImposition, MotifRattachement motifRattachement, MotifAssujettissement motifOuverture, MotifAssujettissement motifFermeture,
 		                             Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
 			super(noCtb);
 			this.identification = identification;
@@ -267,7 +267,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 	}
 
 	protected final InfoPeriodeImposition buildInfoPeriodeImposition(Contribuable ctb, InfoIdentificationCtb identification, ModeImposition modeImposition, MotifRattachement motifRattachement, DateRange range,
-	                                                                 MotifFor motifDebut, MotifFor motifFin, Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
+	                                                                 MotifAssujettissement motifDebut, MotifAssujettissement motifFin, Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
 		return new InfoPeriodeImposition(ctb.getNumero(), identification, modeImposition, range.getDateDebut(), range.getDateFin(),
 		                                 motifRattachement, motifDebut, motifFin, ofsCommuneForGestion, autoriteFiscaleForPrincipal);
 	}

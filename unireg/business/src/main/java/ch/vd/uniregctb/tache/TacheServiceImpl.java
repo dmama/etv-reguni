@@ -57,6 +57,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
@@ -480,7 +481,7 @@ public class TacheServiceImpl implements TacheService {
 					if (size > 1) {
 						final Assujettissement dernier = assujettissements.get(size - 1);
 						final Assujettissement avantdernier = assujettissements.get(size - 2);
-						if (dernier.getMotifFractDebut() == MotifFor.ARRIVEE_HC && avantdernier.getMotifFractFin() == MotifFor.DEPART_HS) {
+						if (dernier.getMotifFractDebut() == MotifAssujettissement.ARRIVEE_HC && avantdernier.getMotifFractFin() == MotifAssujettissement.DEPART_HS) {
 							// si on est en présence d'une arrivée de hors-Canton précédée d'un départ hors-Suisse, on génère une tâche de contrôle de dossier
 							genereTacheControleDossier(contribuable, "Arrivée hors-canton précédée d'un départ hors-Suisse");
 						}

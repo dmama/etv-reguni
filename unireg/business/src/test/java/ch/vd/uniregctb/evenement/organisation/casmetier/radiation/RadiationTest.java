@@ -40,6 +40,7 @@ import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementPersonnesMoralesCalculator;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -51,7 +52,6 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
@@ -260,7 +260,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 		translator.setAssujettissementService(new AssujettissementService() {
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
-				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
+				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifAssujettissement.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
 			}
 
 			@Override
@@ -489,7 +489,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 		translator.setAssujettissementService(new AssujettissementService() {
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
-				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
+				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifAssujettissement.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
 			}
 
 			@Override
@@ -770,7 +770,7 @@ public class RadiationTest extends AbstractEvenementOrganisationProcessorTest {
 		translator.setAssujettissementService(new AssujettissementService() {
 			@Override
 			public List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
-				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifFor.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
+				return Collections.singletonList((Assujettissement) new VaudoisOrdinaire(entreprise, date(2010, 6, 24), null, MotifAssujettissement.DEBUT_EXPLOITATION, null, AssujettissementPersonnesMoralesCalculator.COMMUNE_ANALYZER));
 			}
 
 			@Override

@@ -3,8 +3,8 @@ package ch.vd.uniregctb.role.before2016;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -17,8 +17,8 @@ public class InfoFor implements DateRange {
 	public final InfoContribuable.TypeContribuable typeCtb;
 	public final RegDate dateDebut;
 	public final RegDate dateFin;
-	public final MotifFor motifDebut;
-	public final MotifFor motifFin;
+	public final MotifAssujettissement motifDebut;
+	public final MotifAssujettissement motifFin;
 	public final InfoContribuable.TypeAssujettissement typeAssujettissement;
 	public final InfoContribuable.TypeContribuable ancienTypeCtb;
 
@@ -35,7 +35,7 @@ public class InfoFor implements DateRange {
 	/**
 	 * Constructeur pour les assujettissements sur la période
 	 */
-	public InfoFor(InfoContribuable.TypeContribuable typeCtb, RegDate dateDebut, MotifFor motifDebut, RegDate dateFin, MotifFor motifFin,
+	public InfoFor(InfoContribuable.TypeContribuable typeCtb, RegDate dateDebut, MotifAssujettissement motifDebut, RegDate dateFin, MotifAssujettissement motifFin,
 	               InfoContribuable.TypeAssujettissement typeAssujettissement, ForFiscalRevenuFortune forFiscal) {
 		this(typeCtb, dateDebut, motifDebut, dateFin, motifFin, typeAssujettissement, null, forFiscal.isPrincipal(), forFiscal.getMotifRattachement(), forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateDebut(), forFiscal.getDateFin());
 		Assert.isTrue(typeAssujettissement == InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF || typeAssujettissement == InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF);
@@ -52,7 +52,7 @@ public class InfoFor implements DateRange {
 	 * @param ancienTypeCtb type du contribuable dans la période fiscale précédente (il est maintenant non-assujetti)
 	 * @param ofsCommune numéro OFS de la commune du for (vaudois!)
 	 */
-	public InfoFor(RegDate dateDebut, MotifFor motifDebut, RegDate dateFin, MotifFor motifFin, InfoContribuable.TypeContribuable ancienTypeCtb, boolean forPrincipal,
+	public InfoFor(RegDate dateDebut, MotifAssujettissement motifDebut, RegDate dateFin, MotifAssujettissement motifFin, InfoContribuable.TypeContribuable ancienTypeCtb, boolean forPrincipal,
 	               MotifRattachement motifRattachement, int ofsCommune, RegDate dateOuvertureFor, RegDate dateFermetureFor) {
 		this(InfoContribuable.TypeContribuable.NON_ASSUJETTI, dateDebut, motifDebut, dateFin, motifFin, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, ancienTypeCtb, forPrincipal, motifRattachement, ofsCommune, dateOuvertureFor, dateFermetureFor);
 	}
@@ -60,7 +60,7 @@ public class InfoFor implements DateRange {
 	/**
 	 * Constructeur interne factorisé
 	 */
-	private InfoFor(InfoContribuable.TypeContribuable typeCtb, RegDate dateDebut, MotifFor motifDebut, RegDate dateFin, MotifFor motifFin,
+	private InfoFor(InfoContribuable.TypeContribuable typeCtb, RegDate dateDebut, MotifAssujettissement motifDebut, RegDate dateFin, MotifAssujettissement motifFin,
 	                InfoContribuable.TypeAssujettissement typeAssujettissement, InfoContribuable.TypeContribuable ancienTypeCtb, boolean forPrincipal,
 	                MotifRattachement motifRattachement, int ofsCommune, RegDate dateOuvertureFor, RegDate dateFermetureFor) {
 

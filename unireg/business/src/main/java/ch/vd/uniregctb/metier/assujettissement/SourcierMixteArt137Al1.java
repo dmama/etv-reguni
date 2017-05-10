@@ -3,7 +3,6 @@ package ch.vd.uniregctb.metier.assujettissement;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -11,11 +10,11 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class SourcierMixteArt137Al1 extends SourcierMixte {
 
-	public SourcierMixteArt137Al1(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+	public SourcierMixteArt137Al1(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifAssujettissement motifFractDebut, MotifAssujettissement motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
 		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, typeAutoriteFiscale, communeAnalyzer);
 	}
 
-	private SourcierMixteArt137Al1(SourcierMixteArt137Al1 source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+	private SourcierMixteArt137Al1(SourcierMixteArt137Al1 source, RegDate dateDebut, RegDate dateFin, MotifAssujettissement motifDebut, MotifAssujettissement motifFin) {
 		super(source, dateDebut, dateFin, motifDebut, motifFin);
 	}
 
@@ -24,7 +23,7 @@ public class SourcierMixteArt137Al1 extends SourcierMixte {
 	}
 
 	@Override
-	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifAssujettissement motifDebut, MotifAssujettissement motifFin) {
 		return new SourcierMixteArt137Al1(this, dateDebut, dateFin, motifDebut, motifFin);
 	}
 

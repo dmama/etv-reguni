@@ -19,8 +19,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.GentilComparator;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
 /**
@@ -195,7 +195,7 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 	/**
 	 * Prends le tout premier for et renvoie sa date d'ouverture et son motif d'ouverture
 	 */
-	public Pair<RegDate, MotifFor> getInfosOuverture() {
+	public Pair<RegDate, MotifAssujettissement> getInfosOuverture() {
 		final InfoFor forOuverture = getPremierForSelonComparateur(COMPARATOR_OUVERTURE);
 		if (forOuverture == null || forOuverture.dateDebut == null) {
 			return null;
@@ -208,7 +208,7 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 	/**
 	 * Prend le dernier for et extrait son motif et sa date de fermeture
 	 */
-	public Pair<RegDate, MotifFor> getInfosFermeture() {
+	public Pair<RegDate, MotifAssujettissement> getInfosFermeture() {
 		final InfoFor forFermeture = getPremierForSelonComparateur(COMPARATOR_FERMETURE);
 		if (forFermeture == null || forFermeture.dateFin == null) {
 			return null;

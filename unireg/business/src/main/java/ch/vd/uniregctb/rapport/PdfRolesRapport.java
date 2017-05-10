@@ -29,11 +29,11 @@ import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.role.before2016.InfoContribuable;
 import ch.vd.uniregctb.role.before2016.InfoContribuablePM;
 import ch.vd.uniregctb.role.before2016.InfoContribuablePP;
 import ch.vd.uniregctb.role.before2016.ProduireRolesResults;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -169,7 +169,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		return triee;
 	}
 
-	protected static String getDescriptionMotif(MotifFor motif, boolean ouverture) {
+	protected static String getDescriptionMotif(MotifAssujettissement motif, boolean ouverture) {
 		return motif.getDescription(ouverture);
 	}
 
@@ -245,7 +245,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 						final String typeCtb = asCvsField(info.getTypeCtb());
 						final String complTypeCtb = getComplementTypeContribuable(info);
 
-						final Pair<RegDate, MotifFor> infosOuverture = info.getInfosOuverture();
+						final Pair<RegDate, MotifAssujettissement> infosOuverture = info.getInfosOuverture();
 						final String debut;
 						final String motifOuverture;
 						if (infosOuverture != null) {
@@ -257,7 +257,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 							motifOuverture = StringUtils.EMPTY;
 						}
 
-						final Pair<RegDate, MotifFor> infosFermeture = info.getInfosFermeture();
+						final Pair<RegDate, MotifAssujettissement> infosFermeture = info.getInfosFermeture();
 						final String fin;
 						final String motifFermeture;
 						if (infosFermeture != null) {
@@ -360,7 +360,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 							nomForPrincipal = pays != null ? pays.getNomCourt() : StringUtils.EMPTY;
 						}
 
-						final Pair<RegDate, MotifFor> infosOuverture = info.getInfosOuverture();
+						final Pair<RegDate, MotifAssujettissement> infosOuverture = info.getInfosOuverture();
 						final String debut;
 						final String motifOuverture;
 						if (infosOuverture != null) {
@@ -372,7 +372,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 							motifOuverture = StringUtils.EMPTY;
 						}
 
-						final Pair<RegDate, MotifFor> infosFermeture = info.getInfosFermeture();
+						final Pair<RegDate, MotifAssujettissement> infosFermeture = info.getInfosFermeture();
 						final String fin;
 						final String motifFermeture;
 						if (infosFermeture != null) {

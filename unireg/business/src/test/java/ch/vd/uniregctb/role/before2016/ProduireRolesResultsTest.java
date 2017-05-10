@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -54,12 +55,12 @@ public class ProduireRolesResultsTest extends BusinessTest {
 		{
 			final ForFiscalSecondaire ffsRenens = new ForFiscalSecondaire(date(1990, 7, 1), MotifFor.ACHAT_IMMOBILIER, date(anneeRoles, 6, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
 			final InfoFor infoForRenens = new InfoFor(InfoContribuable.TypeContribuable.HORS_CANTON,
-			                                          ffsRenens.getDateDebut(), ffsRenens.getMotifOuverture(), ffsRenens.getDateFin(), ffsRenens.getMotifFermeture(), InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, ffsRenens);
+			                                          ffsRenens.getDateDebut(), MotifAssujettissement.of(ffsRenens.getMotifOuverture()), ffsRenens.getDateFin(), MotifAssujettissement.of(ffsRenens.getMotifFermeture()), InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, ffsRenens);
 			results.digestInfoFor(infoForRenens, ctb, null, date(anneeRoles - 1, 12, 31), anneeRoles, MockCommune.Renens.getNoOFS(), adresseService, tiersService);
 
 			final ForFiscalSecondaire ffsCheseaux = new ForFiscalSecondaire(date(anneeRoles, 10, 15), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.CheseauxSurLausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ACTIVITE_INDEPENDANTE);
 			final InfoFor infoForCheseaux = new InfoFor(InfoContribuable.TypeContribuable.HORS_CANTON,
-			                                            ffsCheseaux.getDateDebut(), ffsCheseaux.getMotifOuverture(), ffsCheseaux.getDateFin(), ffsCheseaux.getMotifFermeture(), InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, ffsCheseaux);
+			                                            ffsCheseaux.getDateDebut(), MotifAssujettissement.of(ffsCheseaux.getMotifOuverture()), ffsCheseaux.getDateFin(), MotifAssujettissement.of(ffsCheseaux.getMotifFermeture()), InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, ffsCheseaux);
 			results.digestInfoFor(infoForCheseaux, ctb, null, date(anneeRoles - 1, 12, 31), anneeRoles, MockCommune.CheseauxSurLausanne.getNoOFS(), adresseService, tiersService);
 
 			Assert.assertTrue(results.getNoOfsCommunesTraitees().contains(MockCommune.Renens.getNoOFS()));
@@ -78,15 +79,15 @@ public class ProduireRolesResultsTest extends BusinessTest {
 			Assert.assertEquals(InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, infoCtb.getTypeAssujettissementAgrege());
 			Assert.assertEquals(InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
 
-			final Pair<RegDate, MotifFor> infoOuverture = infoCtb.getInfosOuverture();
+			final Pair<RegDate, MotifAssujettissement> infoOuverture = infoCtb.getInfosOuverture();
 			Assert.assertNotNull(infoOuverture);
 			Assert.assertEquals(date(1990, 7, 1), infoOuverture.getLeft());
-			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, infoOuverture.getRight());
+			Assert.assertEquals(MotifAssujettissement.ACHAT_IMMOBILIER, infoOuverture.getRight());
 
-			final Pair<RegDate, MotifFor> infoFermeture = infoCtb.getInfosFermeture();
+			final Pair<RegDate, MotifAssujettissement> infoFermeture = infoCtb.getInfosFermeture();
 			Assert.assertNotNull(infoFermeture);
 			Assert.assertEquals(date(anneeRoles, 6, 1), infoFermeture.getLeft());
-			Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, infoFermeture.getRight());
+			Assert.assertEquals(MotifAssujettissement.VENTE_IMMOBILIER, infoFermeture.getRight());
 		}
 
 		// Renens-Cheseaux -> doit prendre tous les fors ajoutés
@@ -101,12 +102,12 @@ public class ProduireRolesResultsTest extends BusinessTest {
 			Assert.assertEquals(InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, infoCtb.getTypeAssujettissementAgrege());
 			Assert.assertEquals(InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
 
-			final Pair<RegDate, MotifFor> infoOuverture = infoCtb.getInfosOuverture();
+			final Pair<RegDate, MotifAssujettissement> infoOuverture = infoCtb.getInfosOuverture();
 			Assert.assertNotNull(infoOuverture);
 			Assert.assertEquals(date(1990, 7, 1), infoOuverture.getLeft());
-			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, infoOuverture.getRight());
+			Assert.assertEquals(MotifAssujettissement.ACHAT_IMMOBILIER, infoOuverture.getRight());
 
-			final Pair<RegDate, MotifFor> infoFermeture = infoCtb.getInfosFermeture();
+			final Pair<RegDate, MotifAssujettissement> infoFermeture = infoCtb.getInfosFermeture();
 			Assert.assertNull(infoFermeture);
 		}
 
@@ -122,12 +123,12 @@ public class ProduireRolesResultsTest extends BusinessTest {
 			Assert.assertEquals(InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, infoCtb.getTypeAssujettissementAgrege());
 			Assert.assertEquals(InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
 
-			final Pair<RegDate, MotifFor> infoOuverture = infoCtb.getInfosOuverture();
+			final Pair<RegDate, MotifAssujettissement> infoOuverture = infoCtb.getInfosOuverture();
 			Assert.assertNotNull(infoOuverture);
 			Assert.assertEquals(date(1990, 7, 1), infoOuverture.getLeft());
-			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, infoOuverture.getRight());
+			Assert.assertEquals(MotifAssujettissement.ACHAT_IMMOBILIER, infoOuverture.getRight());
 
-			final Pair<RegDate, MotifFor> infoFermeture = infoCtb.getInfosFermeture();
+			final Pair<RegDate, MotifAssujettissement> infoFermeture = infoCtb.getInfosFermeture();
 			Assert.assertNull(infoFermeture);
 		}
 
@@ -143,12 +144,12 @@ public class ProduireRolesResultsTest extends BusinessTest {
 			Assert.assertEquals(InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, infoCtb.getTypeAssujettissementAgrege());
 			Assert.assertEquals(InfoContribuable.TypeContribuable.HORS_CANTON, infoCtb.getTypeCtb());
 
-			final Pair<RegDate, MotifFor> infoOuverture = infoCtb.getInfosOuverture();
+			final Pair<RegDate, MotifAssujettissement> infoOuverture = infoCtb.getInfosOuverture();
 			Assert.assertNotNull(infoOuverture);
 			Assert.assertEquals(date(anneeRoles, 10, 15), infoOuverture.getLeft());
-			Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, infoOuverture.getRight());
+			Assert.assertEquals(MotifAssujettissement.DEBUT_EXPLOITATION, infoOuverture.getRight());
 
-			final Pair<RegDate, MotifFor> infoFermeture = infoCtb.getInfosFermeture();
+			final Pair<RegDate, MotifAssujettissement> infoFermeture = infoCtb.getInfosFermeture();
 			Assert.assertNull(infoFermeture);
 		}
 	}

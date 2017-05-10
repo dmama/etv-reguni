@@ -63,26 +63,26 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	/**
 	 * Collections des motifs d'ouverture de for qui ne donnent normalement pas lieu à un début d'assujettissement
 	 * ou qui doivent, le cas échéant, laisser la priorité au motif d'ouverture du for "économique" - si existant à la même date - dans la méthode
-	 * {@link #fusionnerMotifs(RegDate, MotifFor, RegDate, MotifFor, boolean, Set) fusionnerMotifs}
+	 * {@link #fusionnerMotifs(RegDate, MotifAssujettissement, RegDate, MotifAssujettissement, boolean, Set) fusionnerMotifs}
 	 */
 	@SuppressWarnings({"deprecation"})
-	private static final Set<MotifFor> MOTIFS_NON_PRIO_OUVERTURE = EnumSet.of(MotifFor.INDETERMINE,
-	                                                                          MotifFor.VENTE_IMMOBILIER,
-	                                                                          MotifFor.ANNULATION,
-	                                                                          MotifFor.FIN_ACTIVITE_DIPLOMATIQUE,
-	                                                                          MotifFor.FIN_EXPLOITATION);
+	private static final Set<MotifAssujettissement> MOTIFS_NON_PRIO_OUVERTURE = EnumSet.of(MotifAssujettissement.INDETERMINE,
+	                                                                                       MotifAssujettissement.VENTE_IMMOBILIER,
+	                                                                                       MotifAssujettissement.ANNULATION,
+	                                                                                       MotifAssujettissement.FIN_ACTIVITE_DIPLOMATIQUE,
+	                                                                                       MotifAssujettissement.FIN_EXPLOITATION);
 
 	/**
 	 * Collections des motifs de fermeture de for qui ne donnent normalement pas lieu à une fin d'assujettissement
 	 * ou qui doivent, le cas échéant, laisser la priorité au motif de fermeture du for "économique" - si existant à la même date - dans la méthode
-	 * {@link #fusionnerMotifs(RegDate, MotifFor, RegDate, MotifFor, boolean, Set) fusionnerMotifs}
+	 * {@link #fusionnerMotifs(RegDate, MotifAssujettissement, RegDate, MotifAssujettissement, boolean, Set) fusionnerMotifs}
 	 */
 	@SuppressWarnings({"deprecation"})
-	private static final Set<MotifFor> MOTIFS_NON_PRIO_FERMETURE = EnumSet.of(MotifFor.INDETERMINE,
-	                                                                          MotifFor.ACHAT_IMMOBILIER,
-	                                                                          MotifFor.REACTIVATION,
-	                                                                          MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE,
-	                                                                          MotifFor.DEBUT_EXPLOITATION);
+	private static final Set<MotifAssujettissement> MOTIFS_NON_PRIO_FERMETURE = EnumSet.of(MotifAssujettissement.INDETERMINE,
+	                                                                                       MotifAssujettissement.ACHAT_IMMOBILIER,
+	                                                                                       MotifAssujettissement.REACTIVATION,
+	                                                                                       MotifAssujettissement.DEBUT_ACTIVITE_DIPLOMATIQUE,
+	                                                                                       MotifAssujettissement.DEBUT_EXPLOITATION);
 
 	/**
 	 * Détermine les fors fiscaux à prendre en compte pour la répartition sur les communes vaudoises
@@ -208,8 +208,8 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 				return new Data(debut != null ? debut : range.getDateDebut(),
 				                fin != null ? fin : range.getDateFin(),
 				                range.type,
-				                debut != null ? MotifFor.INDETERMINE : range.motifDebut,        // TODO il faudra peut-être introduire un nouveau motif, seulement pour les assujettissements (= fin exonération)
-				                fin != null ? MotifFor.INDETERMINE : range.motifFin,            // TODO il faudra peut-être introduire un nouveau motif, seulement pour les assujettissements (= début exonération)
+				                debut != null && debut != range.getDateDebut() ? MotifAssujettissement.EXONERATION : range.motifDebut,
+				                fin != null && fin != range.getDateFin() ? MotifAssujettissement.EXONERATION : range.motifFin,
 				                range.typeAutoriteFiscale);
 			}
 		});
@@ -284,16 +284,20 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	private static final class Data extends DateRangeHelper.Range {
 
 		private final Type type;
-		private final MotifFor motifDebut;
-		private final MotifFor motifFin;
+		private final MotifAssujettissement motifDebut;
+		private final MotifAssujettissement motifFin;
 		private final TypeAutoriteFiscale typeAutoriteFiscale;
 
-		public Data(RegDate dateDebut, RegDate dateFin, Type type, MotifFor motifDebut, MotifFor motifFin, TypeAutoriteFiscale typeAutoriteFiscale) {
+		public Data(RegDate dateDebut, RegDate dateFin, Type type, MotifAssujettissement motifDebut, MotifAssujettissement motifFin, TypeAutoriteFiscale typeAutoriteFiscale) {
 			super(dateDebut, dateFin);
 			this.type = type;
 			this.motifDebut = motifDebut;
 			this.motifFin = motifFin;
 			this.typeAutoriteFiscale = typeAutoriteFiscale;
+		}
+
+		public Data(RegDate dateDebut, RegDate dateFin, Type type, MotifFor motifDebut, MotifFor motifFin, TypeAutoriteFiscale typeAutoriteFiscale) {
+			this(dateDebut, dateFin, type, MotifAssujettissement.of(motifDebut), MotifAssujettissement.of(motifFin), typeAutoriteFiscale);
 		}
 
 		@Override
@@ -377,7 +381,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 
 				// si on demande une limitation sur certaines communes vaudoises et que le for n'y est pas, il s'agit d'un "non-assujettissement"
 				if (noOfsCommunesVaudoises != null && !noOfsCommunesVaudoises.contains(current.getNumeroOfsAutoriteFiscale())) {
-					data = new Data(debut, fin, Type.NonAssujetti, null, null, current.getTypeAutoriteFiscale());
+					data = new Data(debut, fin, Type.NonAssujetti, (MotifAssujettissement) null, null, current.getTypeAutoriteFiscale());
 				}
 				else {
 					// on vérifie qu'il s'agit bien d'un motif de rattachement DOMICILE (TODO SIEGE ?)
@@ -611,19 +615,19 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		// on prépare les données pour une version rognée...
 		RegDate debut = data.getDateDebut();
 		RegDate fin = data.getDateFin();
-		MotifFor motifDebut = data.motifDebut;
-		MotifFor motifFin = data.motifFin;
+		MotifAssujettissement motifDebut = data.motifDebut;
+		MotifAssujettissement motifFin = data.motifFin;
 
 		// on réduit l'assujettissement en conséquence
 
 		if (left != null && left.getDate().isAfter(debut)) {
 			debut = left.getDate();
-			motifDebut = left.getMotif();
+			motifDebut = MotifAssujettissement.of(left.getMotif());
 		}
 
 		if (right != null && right.getDate().isBeforeOrEqual(fin)) {
 			fin = right.getDate().getOneDayBefore();
-			motifFin = right.getMotif();
+			motifFin = MotifAssujettissement.of(right.getMotif());
 		}
 
 		return new Data(debut, fin, data.type, motifDebut, motifFin, data.typeAutoriteFiscale);
@@ -980,10 +984,10 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	 * @return un motif considéré comme le plus pertinent
 	 */
 	@Nullable
-	private static MotifFor fusionnerMotifs(@Nullable RegDate dateSiege, @Nullable MotifFor motifSiege,
-	                                        @Nullable RegDate dateEconomique, @Nullable MotifFor motifEconomique,
-	                                        boolean dateEffectiveIsSiege,
-	                                        Set<MotifFor> nonPrioritaires) {
+	private static MotifAssujettissement fusionnerMotifs(@Nullable RegDate dateSiege, @Nullable MotifAssujettissement motifSiege,
+	                                                     @Nullable RegDate dateEconomique, @Nullable MotifAssujettissement motifEconomique,
+	                                                     boolean dateEffectiveIsSiege,
+	                                                     Set<MotifAssujettissement> nonPrioritaires) {
 
 		if (dateSiege == dateEconomique && motifEconomique != null && (motifSiege == null || nonPrioritaires.contains(motifSiege))) {
 			return motifEconomique;

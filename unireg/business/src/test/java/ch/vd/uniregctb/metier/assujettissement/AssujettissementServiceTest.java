@@ -35,7 +35,7 @@ public class AssujettissementServiceTest extends MetierTest {
 		final List<Assujettissement> assujettissement = service.determine(ctb);
 		Assert.assertNotNull(assujettissement);
 		Assert.assertEquals(1, assujettissement.size());
-		assertOrdinaire(date(1983, 1, 1), null, MotifFor.ARRIVEE_HC, null, assujettissement.get(0));
+		assertOrdinaire(date(1983, 1, 1), null, MotifAssujettissement.ARRIVEE_HC, null, assujettissement.get(0));
 	}
 
 	/**
@@ -53,6 +53,6 @@ public class AssujettissementServiceTest extends MetierTest {
 		final List<Assujettissement> assujettissement = service.determine(ctb);
 		Assert.assertNotNull(assujettissement);
 		Assert.assertEquals(1, assujettissement.size());
-		assertOrdinaire(date(1984, 1, 1), null, MotifFor.ARRIVEE_HS, null, assujettissement.get(0));
+		assertOrdinaire(date(1984, 1, 1), null, MotifAssujettissement.ARRIVEE_HS, null, assujettissement.get(0));
 	}
 }

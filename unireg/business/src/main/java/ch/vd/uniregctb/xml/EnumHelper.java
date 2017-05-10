@@ -2183,6 +2183,270 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason coreToXMLv1(ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement ouverture) {
+		if (ouverture == null) {
+			return null;
+		}
+
+		switch (ouverture) {
+		case ACHAT_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.PURCHASE_REAL_ESTATE;
+		case ANNULATION:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.CANCELLATION;
+		case ARRIVEE_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.MOVE_IN_FROM_OTHER_CANTON;
+		case ARRIVEE_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY;
+		case CHGT_MODE_IMPOSITION:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.CHANGE_OF_TAXATION_METHOD;
+		case DEBUT_ACTIVITE_DIPLOMATIQUE:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.START_DIPLOMATIC_ACTVITY;
+		case DEBUT_EXPLOITATION:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION;
+		case DEMENAGEMENT_VD:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.MOVE_VD;
+		case DEPART_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.DEPARTURE_TO_OTHER_CANTON;
+		case DEPART_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY;
+		case FIN_ACTIVITE_DIPLOMATIQUE:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.END_DIPLOMATIC_ACTVITY;
+		case FIN_EXPLOITATION:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.END_COMMERCIAL_EXPLOITATION;
+		case FUSION_COMMUNES:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.MERGE_OF_MUNICIPALITIES;
+		case DEBUT_PRESTATION_IS:
+		case FIN_PRESTATION_IS:
+		case CESSATION_ACTIVITE_FUSION_FAILLITE:
+		case DEMENAGEMENT_SIEGE:
+		case FAILLITE:
+		case FUSION_ENTREPRISES:
+		case EXONERATION:
+		case INDETERMINE:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.UNDETERMINED;
+		case MAJORITE:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.MAJORITY;
+		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION;
+		case PERMIS_C_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.C_PERMIT_SWISS;
+		case REACTIVATION:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.REACTIVATION;
+		case SEJOUR_SAISONNIER:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.SEASONAL_JOURNEY;
+		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.SEPARATION_DIVORCE_PARTNERSHIP_ABOLITION;
+		case VENTE_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.SALE_REAL_ESTATE;
+		case VEUVAGE_DECES:
+			return ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason.WIDOWHOOD_DEATH;
+		default:
+			throw new IllegalArgumentException("Motif d'assujettissement inconnu = [" + ouverture + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason coreToXMLv2(ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement ouverture) {
+		if (ouverture == null) {
+			return null;
+		}
+
+		switch (ouverture) {
+		case ACHAT_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.PURCHASE_REAL_ESTATE;
+		case ANNULATION:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.CANCELLATION;
+		case ARRIVEE_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.MOVE_IN_FROM_OTHER_CANTON;
+		case ARRIVEE_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY;
+		case CHGT_MODE_IMPOSITION:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.CHANGE_OF_TAXATION_METHOD;
+		case DEBUT_ACTIVITE_DIPLOMATIQUE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.START_DIPLOMATIC_ACTVITY;
+		case DEBUT_EXPLOITATION:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION;
+		case DEMENAGEMENT_VD:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.MOVE_VD;
+		case DEPART_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.DEPARTURE_TO_OTHER_CANTON;
+		case DEPART_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY;
+		case FIN_ACTIVITE_DIPLOMATIQUE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.END_DIPLOMATIC_ACTVITY;
+		case FIN_EXPLOITATION:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.END_COMMERCIAL_EXPLOITATION;
+		case FUSION_COMMUNES:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.MERGE_OF_MUNICIPALITIES;
+		case DEBUT_PRESTATION_IS:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.START_WITHHOLDING_ACTIVITY;
+		case FIN_PRESTATION_IS:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.END_WITHHOLDING_ACTIVITY;
+		case CESSATION_ACTIVITE_FUSION_FAILLITE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.END_ACTIVITY_MERGER_BANKRUPTCY;
+		case DEMENAGEMENT_SIEGE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.MOVE_HEADQUARTERS;
+		case FUSION_ENTREPRISES:
+		case FAILLITE:
+		case EXONERATION:
+		case INDETERMINE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.UNDETERMINED;
+		case MAJORITE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.MAJORITY;
+		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION;
+		case PERMIS_C_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.C_PERMIT_SWISS;
+		case REACTIVATION:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.REACTIVATION;
+		case SEJOUR_SAISONNIER:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.SEASONAL_JOURNEY;
+		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.SEPARATION_DIVORCE_PARTNERSHIP_ABOLITION;
+		case VENTE_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.SALE_REAL_ESTATE;
+		case VEUVAGE_DECES:
+			return ch.vd.unireg.xml.party.taxresidence.v2.LiabilityChangeReason.WIDOWHOOD_DEATH;
+		default:
+			throw new IllegalArgumentException("Motif de for inconnu = [" + ouverture + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason coreToXMLv3(ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement ouverture) {
+		if (ouverture == null) {
+			return null;
+		}
+
+		switch (ouverture) {
+		case ACHAT_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.PURCHASE_REAL_ESTATE;
+		case ANNULATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.CANCELLATION;
+		case ARRIVEE_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MOVE_IN_FROM_OTHER_CANTON;
+		case ARRIVEE_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY;
+		case CHGT_MODE_IMPOSITION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.CHANGE_OF_TAXATION_METHOD;
+		case DEBUT_ACTIVITE_DIPLOMATIQUE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.START_DIPLOMATIC_ACTVITY;
+		case DEBUT_EXPLOITATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION;
+		case DEMENAGEMENT_VD:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MOVE_VD;
+		case DEPART_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.DEPARTURE_TO_OTHER_CANTON;
+		case DEPART_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY;
+		case FIN_ACTIVITE_DIPLOMATIQUE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.END_DIPLOMATIC_ACTVITY;
+		case FIN_EXPLOITATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.END_COMMERCIAL_EXPLOITATION;
+		case FUSION_COMMUNES:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MERGE_OF_MUNICIPALITIES;
+		case DEBUT_PRESTATION_IS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.START_WITHHOLDING_ACTIVITY;
+		case FIN_PRESTATION_IS:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.END_WITHHOLDING_ACTIVITY;
+		case CESSATION_ACTIVITE_FUSION_FAILLITE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.END_ACTIVITY_MERGER_BANKRUPTCY;
+		case DEMENAGEMENT_SIEGE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MOVE_HEADQUARTERS;
+		case FUSION_ENTREPRISES:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.CORPORATION_MERGER;
+		case FAILLITE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.BANKRUPTCY;
+		case EXONERATION:
+		case INDETERMINE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.UNDETERMINED;
+		case MAJORITE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MAJORITY;
+		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION;
+		case PERMIS_C_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.C_PERMIT_SWISS;
+		case REACTIVATION:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.REACTIVATION;
+		case SEJOUR_SAISONNIER:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.SEASONAL_JOURNEY;
+		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.SEPARATION_DIVORCE_PARTNERSHIP_ABOLITION;
+		case VENTE_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.SALE_REAL_ESTATE;
+		case VEUVAGE_DECES:
+			return ch.vd.unireg.xml.party.taxresidence.v3.LiabilityChangeReason.WIDOWHOOD_DEATH;
+		default:
+			throw new IllegalArgumentException("Motif de for inconnu = [" + ouverture + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason coreToXMLv4(ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement ouverture) {
+		if (ouverture == null) {
+			return null;
+		}
+
+		switch (ouverture) {
+		case ACHAT_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.PURCHASE_REAL_ESTATE;
+		case ANNULATION:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.CANCELLATION;
+		case ARRIVEE_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.MOVE_IN_FROM_OTHER_CANTON;
+		case ARRIVEE_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.MOVE_IN_FROM_FOREIGN_COUNTRY;
+		case CHGT_MODE_IMPOSITION:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.CHANGE_OF_TAXATION_METHOD;
+		case DEBUT_ACTIVITE_DIPLOMATIQUE:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.START_DIPLOMATIC_ACTVITY;
+		case DEBUT_EXPLOITATION:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION;
+		case DEMENAGEMENT_VD:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.MOVE_VD;
+		case DEPART_HC:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.DEPARTURE_TO_OTHER_CANTON;
+		case DEPART_HS:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.DEPARTURE_TO_FOREIGN_COUNTRY;
+		case FIN_ACTIVITE_DIPLOMATIQUE:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.END_DIPLOMATIC_ACTVITY;
+		case FIN_EXPLOITATION:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.END_COMMERCIAL_EXPLOITATION;
+		case FUSION_COMMUNES:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.MERGE_OF_MUNICIPALITIES;
+		case DEBUT_PRESTATION_IS:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.START_WITHHOLDING_ACTIVITY;
+		case FIN_PRESTATION_IS:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.END_WITHHOLDING_ACTIVITY;
+		case CESSATION_ACTIVITE_FUSION_FAILLITE:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.END_ACTIVITY_MERGER_BANKRUPTCY;
+		case DEMENAGEMENT_SIEGE:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.MOVE_HEADQUARTERS;
+		case FUSION_ENTREPRISES:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.CORPORATION_MERGER;
+		case FAILLITE:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.BANKRUPTCY;
+		case EXONERATION:
+		case INDETERMINE:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.UNDETERMINED;
+		case MAJORITE:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.MAJORITY;
+		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.MARRIAGE_PARTNERSHIP_END_OF_SEPARATION;
+		case PERMIS_C_SUISSE:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.C_PERMIT_SWISS;
+		case REACTIVATION:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.REACTIVATION;
+		case SEJOUR_SAISONNIER:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.SEASONAL_JOURNEY;
+		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.SEPARATION_DIVORCE_PARTNERSHIP_ABOLITION;
+		case VENTE_IMMOBILIER:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.SALE_REAL_ESTATE;
+		case VEUVAGE_DECES:
+			return ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason.WIDOWHOOD_DEATH;
+		default:
+			throw new IllegalArgumentException("Motif de for inconnu = [" + ouverture + ']');
+		}
+	}
+
 	public static ch.vd.unireg.xml.party.person.v1.Sex coreToXMLv1(ch.vd.uniregctb.type.Sexe sexe) {
 		if (sexe == null) {
 			return null;

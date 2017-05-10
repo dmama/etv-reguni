@@ -2,7 +2,6 @@ package ch.vd.uniregctb.metier.assujettissement;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -17,11 +16,11 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public abstract class SourcierMixte extends Sourcier {
 
-	public SourcierMixte(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
+	public SourcierMixte(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifAssujettissement motifFractDebut, MotifAssujettissement motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
 		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, typeAutoriteFiscale, communeAnalyzer);
 	}
 
-	protected SourcierMixte(SourcierMixte source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+	protected SourcierMixte(SourcierMixte source, RegDate dateDebut, RegDate dateFin, MotifAssujettissement motifDebut, MotifAssujettissement motifFin) {
 		super(source, dateDebut, dateFin, motifDebut, motifFin);
 	}
 

@@ -16,6 +16,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -607,7 +608,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		Assert.assertNull(elt.identification.noCtbPrincipal);
 		Assert.assertNull(elt.identification.noCtbConjoint);
 		Assert.assertNull(elt.motifOuverture);
-		Assert.assertEquals(MotifFor.DEPART_HS, elt.motifFermeture);
+		Assert.assertEquals(MotifAssujettissement.DEPART_HS, elt.motifFermeture);
 		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 		Assert.assertEquals(date(2008, 5, 12), elt.finPeriodeImposition);
 		Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
@@ -833,7 +834,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		Assert.assertNull(elt.identification.noCtbPrincipal);
 		Assert.assertNull(elt.identification.noCtbConjoint);
 		Assert.assertNull(elt.motifOuverture);
-		Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, elt.motifFermeture);
+		Assert.assertEquals(MotifAssujettissement.VENTE_IMMOBILIER, elt.motifFermeture);
 		Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 		Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
 		Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
@@ -1179,7 +1180,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -1198,7 +1199,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -1282,7 +1283,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -1302,7 +1303,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -1385,7 +1386,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.VEUVAGE_DECES, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.VEUVAGE_DECES, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 10, 25), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -1405,7 +1406,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idToto, elt.identification.noCtbPrincipal);
 			Assert.assertEquals(ids.idTata, elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
-			Assert.assertEquals(MotifFor.VEUVAGE_DECES, elt.motifFermeture);
+			Assert.assertEquals(MotifAssujettissement.VEUVAGE_DECES, elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 10, 24), elt.finPeriodeImposition);
 			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
@@ -1480,7 +1481,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.VEUVAGE_DECES, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.VEUVAGE_DECES, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 10, 25), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -1564,7 +1565,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);            // principal seulement
 			Assert.assertEquals(ids.idToto, elt.identification.noCtbPrincipal);
 			Assert.assertEquals(ids.idTata, elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -1653,7 +1654,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);        // principal seulement
 			Assert.assertEquals(ids.idToto, elt.identification.noCtbPrincipal);
 			Assert.assertEquals(ids.idTata, elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -1795,7 +1796,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.CHGT_MODE_IMPOSITION, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -1847,7 +1848,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
-			Assert.assertEquals(MotifFor.PERMIS_C_SUISSE, elt.motifFermeture);
+			Assert.assertEquals(MotifAssujettissement.PERMIS_C_SUISSE, elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 4, 30), elt.finPeriodeImposition);
 			Assert.assertEquals(ModeImposition.SOURCE, elt.modeImposition);
@@ -1897,7 +1898,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.CHGT_MODE_IMPOSITION, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -1982,7 +1983,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
-			Assert.assertEquals(MotifFor.DEPART_HC, elt.motifFermeture);
+			Assert.assertEquals(MotifAssujettissement.DEPART_HC, elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 4, 12), elt.finPeriodeImposition);
 			Assert.assertEquals(ModeImposition.SOURCE, elt.modeImposition);
@@ -2000,7 +2001,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.DEPART_HC, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.DEPART_HC, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 4, 13), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -2085,7 +2086,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
-			Assert.assertEquals(MotifFor.DEPART_HS, elt.motifFermeture);
+			Assert.assertEquals(MotifAssujettissement.DEPART_HS, elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 4, 12), elt.finPeriodeImposition);
 			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
@@ -2103,7 +2104,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.ARRIVEE_HS, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.ARRIVEE_HS, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 9, 26), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -2188,7 +2189,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.ARRIVEE_HS, elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.ARRIVEE_HS, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2008, 9, 26), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
@@ -2593,7 +2594,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertNull(elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
-			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,  elt.motifOuverture);
+			Assert.assertEquals(MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,  elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
 			Assert.assertEquals(date(2011, 8, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2011, 12, 31), elt.finPeriodeImposition);
@@ -2613,7 +2614,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals((Long) ids.ppId, elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
-			Assert.assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifFermeture);
+			Assert.assertEquals(MotifAssujettissement.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, elt.motifFermeture);
 			Assert.assertEquals(date(2011, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2011, 8, 31), elt.finPeriodeImposition);
 			Assert.assertEquals(ModeImposition.SOURCE, elt.modeImposition);

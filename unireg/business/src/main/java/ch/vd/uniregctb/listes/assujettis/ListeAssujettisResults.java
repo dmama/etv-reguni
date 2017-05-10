@@ -16,6 +16,7 @@ import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -24,7 +25,6 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Classe de résultats du batch d'extraction des assujettis d'une période fiscale
@@ -58,10 +58,10 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 		public final TypeAssujettissement typeAssujettissement;
 		public final RegDate debutAssujettissement;
 		public final RegDate finAssujettissement;
-		public final MotifFor motifDebut;
-		public final MotifFor motifFin;
+		public final MotifAssujettissement motifDebut;
+		public final MotifAssujettissement motifFin;
 
-		public InfoCtbAssujetti(long noCtb, TypeAssujettissement typeAssujettissement, RegDate debutAssujettissement, RegDate finAssujettissement, MotifFor motifDebut, MotifFor motifFin) {
+		public InfoCtbAssujetti(long noCtb, TypeAssujettissement typeAssujettissement, RegDate debutAssujettissement, RegDate finAssujettissement, MotifAssujettissement motifDebut, MotifAssujettissement motifFin) {
 			super(noCtb);
 			this.typeAssujettissement = typeAssujettissement;
 			this.debutAssujettissement = debutAssujettissement;

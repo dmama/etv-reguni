@@ -17,7 +17,6 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
@@ -159,7 +158,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 	 * @return l'adresse de retour correspondante.
 	 */
 	private static TypeAdresseRetour determineAdresseRetour(Assujettissement a) {
-		if (a.getMotifFractFin() == MotifFor.VEUVAGE_DECES) {
+		if (a.getMotifFractFin() == MotifAssujettissement.VEUVAGE_DECES) {
 			return TypeAdresseRetour.CEDI;
 		}
 		if (a instanceof VaudoisDepense) {
@@ -172,7 +171,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 	}
 
 	@Nullable
-	private static PeriodeImposition.CauseFermeture getCauseFermeture(MotifFor motifFractionnement, boolean isAssujettissementHS) {
+	private static PeriodeImposition.CauseFermeture getCauseFermeture(MotifAssujettissement motifFractionnement, boolean isAssujettissementHS) {
 		final PeriodeImposition.CauseFermeture cause;
 		if (motifFractionnement == null) {
 			cause = null;
@@ -244,7 +243,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
 				// [UNIREG-1976] diplomates suisses basés à l'étranger et qui possèdent un ou plusieurs immeubles => déclaration ordinaire
 				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.DIPLOMATE_SUISSE, contribuable, annee, data);
-				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifFor.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifFor.VEUVAGE_DECES);
+				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifAssujettissement.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifAssujettissement.VEUVAGE_DECES);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, optionnelle, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}
 			else {
@@ -277,7 +276,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 			boolean optionnelle = false;
 			boolean remplaceeParNote = false;
 
-			if (mixte.getMotifFractFin() == MotifFor.DEPART_HC && !is31Decembre(mixte.getDateFin())) {
+			if (mixte.getMotifFractFin() == MotifAssujettissement.DEPART_HC && !is31Decembre(mixte.getDateFin())) {
 				// [UNIREG-1742] Cas des contribuables imposés selon le mode mixte, partis dans un autre canton durant l’année et n’ayant aucun
 				// rattachement économique -> bien qu’ils soient assujettis de manière illimitée jusqu'au dernier jour du mois de leur départ,
 				// leur déclaration d’impôt est remplacée (= elle est optionnelle, en fait, voir exemples à la fin de la spécification) par une
@@ -329,7 +328,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 
 			boolean remplaceeParNote = false;
 
-			if (assujettissement.getMotifFractFin() == MotifFor.VENTE_IMMOBILIER || assujettissement.getMotifFractFin() == MotifFor.FIN_EXPLOITATION) {
+			if (assujettissement.getMotifFractFin() == MotifAssujettissement.VENTE_IMMOBILIER || assujettissement.getMotifFractFin() == MotifAssujettissement.FIN_EXPLOITATION) {
 				// [UNIREG-1742] dans le cas des contribuables domiciliés dans un autre canton dont le rattachement économique (activité indépendante ou immeuble)
 				// s’est terminé au cours de la période fiscale, la déclaration est remplacée par une note à l'administration fiscale de l'autre canton.
 				remplaceeParNote = true;
@@ -381,7 +380,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 				// [UNIREG-1742] Les contribuables domiciliées à l'étranger assujettis à raison d'une propriété d'immeuble [...] sont imposés
 				// selon un mode forfaitaire et *peuvent* recevoir une déclaration d'impôt à leur demande (dès l’année d’acquisition du 1er immeuble),
 				// mais n’en bénéficient *plus* l’année de la vente du dernier immeuble ou du décès.
-				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifFor.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifFor.VEUVAGE_DECES);
+				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifAssujettissement.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifAssujettissement.VEUVAGE_DECES);
 				final CategorieEnvoiDIPP categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_SUISSE, contribuable, annee, data);
 				return new PeriodeImpositionPersonnesPhysiques(debutAssujettissement, finAssujettissement, contribuable, optionnelle, false, causeFermeture, codeSegment, categorie, adresseRetour);
 			}

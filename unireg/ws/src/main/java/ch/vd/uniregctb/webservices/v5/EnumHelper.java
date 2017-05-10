@@ -25,6 +25,7 @@ import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriod;
 import ch.vd.unireg.xml.party.withholding.v1.WithholdingTaxDeclarationPeriodicity;
 import ch.vd.uniregctb.avatar.TypeAvatar;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEtranger;
@@ -141,6 +142,10 @@ public abstract class EnumHelper {
 	}
 
 	public static LiabilityChangeReason coreToWeb(MotifFor motif) {
+		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(motif);
+	}
+
+	public static LiabilityChangeReason coreToWeb(MotifAssujettissement motif) {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(motif);
 	}
 

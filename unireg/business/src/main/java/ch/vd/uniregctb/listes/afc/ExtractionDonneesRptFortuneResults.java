@@ -6,13 +6,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -67,7 +67,7 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptPeri
 
 	@Override
 	protected InfoPeriodeImposition buildInfoPeriodeImpositionFromPeriodeImposition(Contribuable ctb, InfoIdentificationCtb identification, ModeImposition modeImposition, MotifRattachement motifRattachement,
-	                                                                                PeriodeImposition periode, MotifFor motifDebut, MotifFor motifFin,
+	                                                                                PeriodeImposition periode, MotifAssujettissement motifDebut, MotifAssujettissement motifFin,
 	                                                                                Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
 		final boolean limite = (autoriteFiscaleForPrincipal == TypeAutoriteFiscale.PAYS_HS || autoriteFiscaleForPrincipal == TypeAutoriteFiscale.COMMUNE_HC);
 		return new InfoPeriodeImpositionFortune(ctb.getNumero(), identification, modeImposition, periode.getDateDebut(), periode.getDateFin(),
@@ -93,7 +93,7 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptPeri
 		}
 
 		public InfoPeriodeImpositionFortune(long noCtb, InfoIdentificationCtb identification, ModeImposition modeImposition,
-		                                     RegDate debutPeriodeImposition, RegDate finPeriodeImposition, MotifRattachement motifRattachement, MotifFor motifOuverture, MotifFor motifFermeture,
+		                                     RegDate debutPeriodeImposition, RegDate finPeriodeImposition, MotifRattachement motifRattachement, MotifAssujettissement motifOuverture, MotifAssujettissement motifFermeture,
 		                                     Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal, boolean limite) {
 			super(noCtb, identification, modeImposition, debutPeriodeImposition, finPeriodeImposition, motifRattachement, motifOuverture,
 			      motifFermeture, ofsCommuneForGestion, autoriteFiscaleForPrincipal);

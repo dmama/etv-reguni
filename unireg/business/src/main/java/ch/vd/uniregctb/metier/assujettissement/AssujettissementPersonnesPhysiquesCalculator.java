@@ -721,18 +721,18 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		if (left != null && left.getDate().isAfter(a.debut)) {
 			a.debut = left.getDate();
 
-			if (a.motifDebut == MotifFor.ARRIVEE_HC && left.getMotif() == MotifFor.DEPART_HS) {
+			if (a.motifDebut == MotifAssujettissement.ARRIVEE_HC && left.getMotif() == MotifFor.DEPART_HS) {
 				// dans le cas d'un départ HS et d'une arrivée HC, on ne veut pas collater les deux assujettissements,
 				// il faut donc garder le motif de début sans changement (voir isCollatable())
 			}
 			else {
-				a.motifDebut = left.getMotif();
+				a.motifDebut = MotifAssujettissement.of(left.getMotif());
 			}
 		}
 
 		if (right != null && right.getDate().isBeforeOrEqual(a.fin)) {
 			a.fin = right.getDate().getOneDayBefore();
-			a.motifFin = right.getMotif();
+			a.motifFin = MotifAssujettissement.of(right.getMotif());
 		}
 
 		return a;
@@ -1167,42 +1167,46 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 		RegDate debut;
 		RegDate fin;
-		MotifFor motifDebut;
-		MotifFor motifFin;
+		MotifAssujettissement motifDebut;
+		MotifAssujettissement motifFin;
 		Type type;
 		final TypeAutoriteFiscale typeAut;
 
 		/**
 		 * Collections des motifs d'ouverture de for qui ne donnent normalement pas lieu à un début d'assujettissement
 		 * ou qui doivent, le cas échéant, laisser la priorité au motif d'ouverture du for "économique" - si existant à la même date - dans la méthode
-		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, java.util.Set) merge}
+		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement, java.util.Set) merge}
 		 */
 		@SuppressWarnings({"deprecation"})
-		private static final Set<MotifFor> DEBUT_ASSUJETTISSEMENT = EnumSet.of(MotifFor.INDETERMINE,
-		                                                                       MotifFor.VENTE_IMMOBILIER,
-		                                                                       MotifFor.ANNULATION,
-		                                                                       MotifFor.FIN_ACTIVITE_DIPLOMATIQUE,
-		                                                                       MotifFor.FIN_EXPLOITATION);
+		private static final Set<MotifAssujettissement> DEBUT_ASSUJETTISSEMENT = EnumSet.of(MotifAssujettissement.INDETERMINE,
+		                                                                                    MotifAssujettissement.VENTE_IMMOBILIER,
+		                                                                                    MotifAssujettissement.ANNULATION,
+		                                                                                    MotifAssujettissement.FIN_ACTIVITE_DIPLOMATIQUE,
+		                                                                                    MotifAssujettissement.FIN_EXPLOITATION);
 
 		/**
 		 * Collections des motifs de fermeture de for qui ne donnent normalement pas lieu à une fin d'assujettissement
 		 * ou qui doivent, le cas échéant, laisser la priorité au motif de fermeture du for "économique" - si existant à la même date - dans la méthode
-		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, java.util.Set) merge}
+		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement, java.util.Set) merge}
 		 */
 		@SuppressWarnings({"deprecation"})
-		private static final Set<MotifFor> FIN_ASSUJETTISSEMENT = EnumSet.of(MotifFor.INDETERMINE,
-		                                                                     MotifFor.ACHAT_IMMOBILIER,
-		                                                                     MotifFor.REACTIVATION,
-		                                                                     MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE,
-		                                                                     MotifFor.DEBUT_EXPLOITATION);
+		private static final Set<MotifAssujettissement> FIN_ASSUJETTISSEMENT = EnumSet.of(MotifAssujettissement.INDETERMINE,
+		                                                                                  MotifAssujettissement.ACHAT_IMMOBILIER,
+		                                                                                  MotifAssujettissement.REACTIVATION,
+		                                                                                  MotifAssujettissement.DEBUT_ACTIVITE_DIPLOMATIQUE,
+		                                                                                  MotifAssujettissement.DEBUT_EXPLOITATION);
 
-		private Data(RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin, Type type, TypeAutoriteFiscale typeAut) {
+		private Data(RegDate debut, RegDate fin, MotifAssujettissement motifDebut, MotifAssujettissement motifFin, Type type, TypeAutoriteFiscale typeAut) {
 			this.debut = debut;
 			this.fin = fin;
 			this.motifDebut = motifDebut;
 			this.motifFin = motifFin;
 			this.type = type;
 			this.typeAut = typeAut;
+		}
+
+		private Data(RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin, Type type, TypeAutoriteFiscale typeAut) {
+			this(debut, fin, MotifAssujettissement.of(motifDebut), MotifAssujettissement.of(motifFin), type, typeAut);
 		}
 
 		private Data(Data right) {
@@ -1308,7 +1312,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		 * @param motifsDomicileNonPrioritaires la liste des motifs de fors "Domicile" pour lesquels le motif "Econonique" prend la priorité
 		 * @return le motid de début/fin d'assujettissement résultant.
 		 */
-		private static MotifFor merge(RegDate dateDomicile, MotifFor motifDomicile, RegDate dateEco, MotifFor motifEco, Set<MotifFor> motifsDomicileNonPrioritaires) {
+		private static MotifAssujettissement merge(RegDate dateDomicile, MotifAssujettissement motifDomicile, RegDate dateEco, MotifAssujettissement motifEco, Set<MotifAssujettissement> motifsDomicileNonPrioritaires) {
 			if (dateDomicile == dateEco && motifEco != null && (motifDomicile == null || motifsDomicileNonPrioritaires.contains(motifDomicile))) {
 				return motifEco;
 			}
@@ -1358,7 +1362,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 				if (noOfsCommunesVaudoises != null && !noOfsCommunesVaudoises.contains(current.getNumeroOfsAutoriteFiscale())) {
 					// [SIFISC-1769] le for principal est sur une autre commune : non-assujetti du point de vue des communes vaudoises spécifiées.
-					data = new Data(adebut, afin, null, null, Type.NonAssujetti, current.getTypeAutoriteFiscale());
+					data = new Data(adebut, afin, (MotifAssujettissement) null, null, Type.NonAssujetti, current.getTypeAutoriteFiscale());
 				}
 				else if (motifRattachement == MotifRattachement.DIPLOMATE_SUISSE) {
 					// cas particulier du diplomate suisse basé à l'étranger
@@ -1860,7 +1864,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		@Override
 		public T adapt(Assujettissement range, RegDate debut, Assujettissement surchargeDebut, RegDate fin, Assujettissement surchargeFin) {
 
-			final MotifFor motifDebut;
+			final MotifAssujettissement motifDebut;
 			if (debut == null) {
 				// pas de surcharge sur le début
 				debut = range.getDateDebut();
@@ -1871,7 +1875,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 				motifDebut = surchargeDebut.getMotifFractFin();
 			}
 
-			final MotifFor motifFin;
+			final MotifAssujettissement motifFin;
 			if (fin == null) {
 				// pas de surcharge sur la fin
 				fin = range.getDateFin();

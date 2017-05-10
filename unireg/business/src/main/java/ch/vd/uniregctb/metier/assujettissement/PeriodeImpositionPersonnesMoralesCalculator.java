@@ -24,7 +24,6 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieEntreprise;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
@@ -75,7 +74,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					// détermination de la cause de fermeture de l'assujettissement
 					final PeriodeImposition.CauseFermeture causeFermeture;
 					if (intersection.getDateFin() == assujettissement.getDateFin()) {
-						if ((assujettissement.getMotifFractFin() == MotifFor.VENTE_IMMOBILIER || assujettissement.getMotifFractFin() == MotifFor.FIN_EXPLOITATION) && assujettissement instanceof HorsSuisse) {
+						if ((assujettissement.getMotifFractFin() == MotifAssujettissement.VENTE_IMMOBILIER || assujettissement.getMotifFractFin() == MotifAssujettissement.FIN_EXPLOITATION) && assujettissement instanceof HorsSuisse) {
 							causeFermeture = PeriodeImposition.CauseFermeture.FIN_ASSUJETTISSEMENT_HS;
 						}
 						else {

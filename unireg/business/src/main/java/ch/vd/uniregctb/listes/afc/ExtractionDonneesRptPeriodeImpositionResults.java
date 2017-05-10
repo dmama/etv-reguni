@@ -20,6 +20,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -29,7 +30,6 @@ import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -155,8 +155,8 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 	}
 
 	protected InfoPeriodeImposition buildInfoPeriodeImpositionFromPeriodeImposition(Contribuable ctb, InfoIdentificationCtb identification,
-																				    ModeImposition modeImposition, MotifRattachement motifRattachement, PeriodeImposition pi, MotifFor motifDebut,
-																				    MotifFor motifFin, Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
+	                                                                                ModeImposition modeImposition, MotifRattachement motifRattachement, PeriodeImposition pi, MotifAssujettissement motifDebut,
+	                                                                                MotifAssujettissement motifFin, Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
 		return buildInfoPeriodeImposition(ctb, identification, modeImposition, motifRattachement, pi, motifDebut, motifFin, ofsCommuneForGestion, autoriteFiscaleForPrincipal);
 	}
 

@@ -18,7 +18,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -30,7 +29,7 @@ public abstract class AssujettissementHelper {
 		@Override
 		public Assujettissement adapt(Assujettissement assujettissement, RegDate debut, RegDate fin) {
 			final RegDate debutEffectif;
-			final MotifFor motifFracDebut;
+			final MotifAssujettissement motifFracDebut;
 			if (debut != null && assujettissement.getDateDebut() != debut) {
 				debutEffectif = debut;
 				motifFracDebut = null;
@@ -41,7 +40,7 @@ public abstract class AssujettissementHelper {
 			}
 
 			final RegDate finEffective;
-			final MotifFor motifFracFin;
+			final MotifAssujettissement motifFracFin;
 			if (fin != null && assujettissement.getDateFin() != fin) {
 				finEffective = fin;
 				motifFracFin = null;

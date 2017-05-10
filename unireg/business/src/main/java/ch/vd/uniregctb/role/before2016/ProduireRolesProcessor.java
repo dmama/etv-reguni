@@ -62,6 +62,7 @@ import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
+import ch.vd.uniregctb.metier.assujettissement.MotifAssujettissement;
 import ch.vd.uniregctb.metier.assujettissement.SourcierMixte;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
@@ -79,7 +80,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -1048,11 +1048,11 @@ public class ProduireRolesProcessor {
 
 	private static class DebutFinFor {
 		public final RegDate dateOuverture;
-		public final MotifFor motifOuverture;
+		public final MotifAssujettissement motifOuverture;
 		public final RegDate dateFermeture;
-		public final MotifFor motifFermeture;
+		public final MotifAssujettissement motifFermeture;
 
-		private DebutFinFor(RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
+		private DebutFinFor(RegDate dateOuverture, MotifAssujettissement motifOuverture, RegDate dateFermeture, MotifAssujettissement motifFermeture) {
 			this.dateOuverture = dateOuverture;
 			this.motifOuverture = motifOuverture;
 			this.dateFermeture = dateFermeture;
@@ -1130,22 +1130,24 @@ public class ProduireRolesProcessor {
 		final ForFiscalRevenuFortune forFiscalPourOuverture = getForDebut(forFiscal, groupement);
 		final ForFiscalRevenuFortune forFiscalPourFermeture = getForFin(forFiscal, groupement);
 
-		final Set<MotifFor> fractionnementsIgnores = EnumSet.of(MotifFor.CHGT_MODE_IMPOSITION, MotifFor.PERMIS_C_SUISSE);
+		final Set<MotifAssujettissement> fractionnementsIgnores = EnumSet.of(MotifAssujettissement.CHGT_MODE_IMPOSITION,
+		                                                                     MotifAssujettissement.PERMIS_C_SUISSE);
 
 		final RegDate dateFermeture;
-		final MotifFor motifFermeture;
+		final MotifAssujettissement motifFermeture;
 		if (forFiscalPourFermeture.getDateFin() != null && forFiscalPourFermeture.getDateFin().year() <= anneePeriode) {
 			dateFermeture = forFiscalPourFermeture.getDateFin();
-			motifFermeture = forFiscalPourFermeture.getMotifFermeture();
+			motifFermeture = MotifAssujettissement.of(forFiscalPourFermeture.getMotifFermeture());
 		}
 		else if (forFiscalPourFermeture.getDateFin() != null && forFiscalPourFermeture.getDateFin().year() <= anneePeriode + 1 && typeAssujettissement == TypeAssujettissement.TERMINE_DANS_PF) {
 			// SIFISC-1717 : pour obtenir l'assujettissement TERMINE_DANS_PF, on a regardé l'assujettissement au premier janvier de la période fiscale suivante, et il n'y en
 			// avait pas sur les communes du groupement : il faut indiquer une fin pour le groupement avec une date au 31.12 de l'année
 			dateFermeture = forFiscalPourFermeture.getDateFin();
-			motifFermeture = forFiscalPourFermeture.getMotifFermeture();
+			motifFermeture = MotifAssujettissement.of(forFiscalPourFermeture.getMotifFermeture());
 		}
 		else if (assujettissement != null && assujettissement.getMotifFractFin() != null && !fractionnementsIgnores.contains(assujettissement.getMotifFractFin()) && !isFinAnnee(assujettissement.getDateFin())) {
 			dateFermeture = assujettissement.getDateFin();
+			// FIXME jde
 			motifFermeture = assujettissement.getMotifFractFin();
 		}
 		else {
@@ -1153,7 +1155,7 @@ public class ProduireRolesProcessor {
 			motifFermeture = null;
 		}
 
-		final MotifFor motifOuverture = forFiscalPourOuverture.getMotifOuverture();
+		final MotifAssujettissement motifOuverture = MotifAssujettissement.of(forFiscalPourOuverture.getMotifOuverture());
 		final RegDate dateOuverture = forFiscalPourOuverture.getDateDebut();
 		return new DebutFinFor(dateOuverture, motifOuverture, dateFermeture, motifFermeture);
 	}

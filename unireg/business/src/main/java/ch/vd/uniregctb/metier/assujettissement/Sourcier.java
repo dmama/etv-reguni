@@ -3,7 +3,6 @@ package ch.vd.uniregctb.metier.assujettissement;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -16,13 +15,13 @@ public abstract class Sourcier extends Assujettissement {
 
 	private final TypeAutoriteFiscale typeAutoriteFiscale;
 
-	protected Sourcier(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin,
+	protected Sourcier(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifAssujettissement motifFractDebut, MotifAssujettissement motifFractFin,
 	                   TypeAutoriteFiscale typeAutoriteFiscale, AssujettissementSurCommuneAnalyzer communeAnalyzer) {
 		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, communeAnalyzer);
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
 	}
 
-	protected Sourcier(Sourcier source, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+	protected Sourcier(Sourcier source, RegDate dateDebut, RegDate dateFin, MotifAssujettissement motifDebut, MotifAssujettissement motifFin) {
 		super(source, dateDebut, dateFin, motifDebut, motifFin);
 		this.typeAutoriteFiscale = source.typeAutoriteFiscale;
 	}
