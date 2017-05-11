@@ -33,7 +33,7 @@ INSERT INTO RF_QUOTE_PART SELECT
                               i.QUOTE_PART_NUM,
                               i.ID
                           FROM RF_IMMEUBLE i
-                          WHERE i.TYPE IN ('BienFond', 'PartCopropriete') AND i.QUOTE_PART_DENOM IS NOT NULL AND i.QUOTE_PART_NUM IS NOT NULL;
+                          WHERE i.TYPE IN ('ProprieteParEtage', 'PartCopropriete') AND i.QUOTE_PART_DENOM IS NOT NULL AND i.QUOTE_PART_NUM IS NOT NULL;
 
 ALTER TABLE RF_IMMEUBLE DROP COLUMN QUOTE_PART_DENOM;
 ALTER TABLE RF_IMMEUBLE DROP COLUMN QUOTE_PART_NUM;
