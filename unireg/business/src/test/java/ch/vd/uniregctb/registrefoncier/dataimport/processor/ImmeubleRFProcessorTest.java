@@ -1155,4 +1155,89 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-24715] Ce test vérifie que le processing d'une mutation de suppression d'un immeuble ferme bien les quotes-parts
+	 */
+	@Test
+	public void testProcessMutationSuppressionImmeubleAvecQuotesParts() throws Exception {
+
+		final RegDate dateImport = RegDate.get(2016, 10, 1);
+		final RegDate veilleImport = dateImport.getOneDayBefore();
+
+		// précondition : il y a déjà un immeuble dans la base avec une quote-part
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				CommuneRF commune = new CommuneRF();
+				commune.setNoRf(13);
+				commune.setNomRf("Pétahouchnok");
+				commune.setNoOfs(66666);
+				commune = communeRFDAO.save(commune);
+
+				final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
+				ppe.setIdRF("_8af80e62567f816f01571d91f3e56a38");
+				ppe.setEgrid("CH776584246539");
+				ppe.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
+
+				final SituationRF situation = new SituationRF();
+				situation.setDateDebut(RegDate.get(1988, 1, 1));
+				situation.setCommune(commune);
+				situation.setNoParcelle(917);
+				situation.setIndex1(106);
+				ppe.addSituation(situation);
+
+				final EstimationRF estimation = new EstimationRF();
+				estimation.setDateDebut(RegDate.get(1988, 1, 1));
+				estimation.setMontant(240000L);
+				estimation.setReference("RG88");
+				estimation.setAnneeReference(1988);
+				estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
+				estimation.setEnRevision(false);
+				ppe.addEstimation(estimation);
+
+				immeubleRFDAO.save(ppe);
+				assertEquals(1, immeubleRFDAO.getAll().size());
+			}
+		});
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(null, dateImport, TypeEntiteRF.IMMEUBLE, TypeMutationRF.SUPPRESSION, "_8af80e62567f816f01571d91f3e56a38", null);
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation, false, null);
+			}
+		});
+
+		// postcondition : la mutation est traitée et l'immeuble est radié
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+				assertEquals(1, immeubles.size());
+
+				// l'immeuble est radié
+				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubles.get(0);
+				assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe.getIdRF());
+				assertEquals("CH776584246539", ppe.getEgrid());
+				assertEquals(veilleImport, ppe.getDateRadiation());
+
+				// la situation est fermée
+				final Set<SituationRF> situations = ppe.getSituations();
+				assertEquals(1, situations.size());
+				assertEquals(veilleImport, situations.iterator().next().getDateFin());
+
+				// la quote-part est fermée
+				final Set<QuotePartRF> quoteParts = ppe.getQuotesParts();
+				assertEquals(1, quoteParts.size());
+				assertEquals(veilleImport, quoteParts.iterator().next().getDateFin());
+			}
+		});
+	}
 }
