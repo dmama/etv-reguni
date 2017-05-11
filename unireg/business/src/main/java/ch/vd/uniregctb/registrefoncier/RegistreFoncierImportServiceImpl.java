@@ -124,8 +124,8 @@ public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportSe
 			throw new ObjectNotFoundException("L'import RF avec l'identifiant " + importId + " est inconnu");
 		}
 
-		if (importEvent.getEtat() != EtatEvenementRF.EN_ERREUR) {
-			throw new IllegalArgumentException("L'import à forcer n'est pas en erreur.");
+		if (importEvent.getEtat() != EtatEvenementRF.A_TRAITER && importEvent.getEtat() != EtatEvenementRF.EN_ERREUR) {
+			throw new IllegalArgumentException("L'import à forcer n'est pas en erreur ou à traiter.");
 		}
 
 		// on force le job et les mutations
