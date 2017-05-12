@@ -39,7 +39,7 @@
 		<th>&nbsp;</th>
 		<th><fmt:message key="label.date.octroi"/></th>
 		<th><fmt:message key="label.date.echeance.octroi"/></th>
-		<th><fmt:message key="label.pourcentage.caractere.social"/></th>
+		<th><fmt:message key="label.pourcentage.caractere.social.arrete"/></th>
 	</tr>
 	</thead>
 	<c:forEach items="${degrevements}" var="degrevement">
@@ -184,7 +184,7 @@
 					</c:otherwise>
 				</c:choose>
 			</td>
-			<td style="text-align: right;">
+			<td style="text-align: right; font-weight: bold;">
 				<c:choose>
 					<c:when test="${degrevement.loiLogement != null && degrevement.loiLogement.pourcentageCaractereSocial != null}">
 						<fmt:formatNumber maxIntegerDigits="4" minFractionDigits="2" value="${degrevement.loiLogement.pourcentageCaractereSocial}"/>&nbsp;&percnt;
