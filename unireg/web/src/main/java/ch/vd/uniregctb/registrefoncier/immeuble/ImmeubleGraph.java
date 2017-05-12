@@ -203,7 +203,7 @@ public class ImmeubleGraph {
 	private final Map<String, AyantDroit> ayantDroits = new HashMap<>();
 	private final List<Droit> droits = new ArrayList<>();
 
-	public void process(@NotNull ImmeubleRF immeuble) {
+	public void process(@NotNull ImmeubleRF immeuble, boolean remonterLesLiens) {
 
 		if (isProcessed(immeuble)) {
 			return;
@@ -213,18 +213,20 @@ public class ImmeubleGraph {
 		final RegDate today = RegDate.get();
 
 		// liens de propriété vers cet immeuble
-		immeuble.getDroitsPropriete().stream()
-				.filter(d -> d.isValidAt(today))
-				.filter(d -> !(d instanceof DroitProprieteImmeubleRF))
-				.forEach(this::addDroitPropriete);
-		immeuble.getDroitsPropriete().stream()
-				.filter(d -> d instanceof DroitProprieteImmeubleRF)
-				.filter(d -> d.isValidAt(today))
-				.map(d -> (DroitProprieteImmeubleRF) d)
-				.forEach(d -> {
-					final ImmeubleBeneficiaireRF beneficiaire = (ImmeubleBeneficiaireRF) d.getAyantDroit();
-					process(beneficiaire.getImmeuble());
-				});
+		if (remonterLesLiens) {
+			immeuble.getDroitsPropriete().stream()
+					.filter(d -> d.isValidAt(today))
+					.filter(d -> !(d instanceof DroitProprieteImmeubleRF))
+					.forEach(this::addDroitPropriete);
+			immeuble.getDroitsPropriete().stream()
+					.filter(d -> d instanceof DroitProprieteImmeubleRF)
+					.filter(d -> d.isValidAt(today))
+					.map(d -> (DroitProprieteImmeubleRF) d)
+					.map(DroitProprieteRF::getAyantDroit)
+					.map(ImmeubleBeneficiaireRF.class::cast)
+					.map(ImmeubleBeneficiaireRF::getImmeuble)
+					.forEach(i -> process(i, true));
+		}
 
 		// liens de propriétés depuis cet immeuble
 		final ImmeubleBeneficiaireRF beneficiaire = immeuble.getEquivalentBeneficiaire();
@@ -234,9 +236,26 @@ public class ImmeubleGraph {
 					.forEach(this::addDroitPropriete);
 			beneficiaire.getDroitsPropriete().stream()
 					.filter(d -> d.isValidAt(today))
-					.forEach(d -> process(d.getImmeuble()));
+					.forEach(d -> process(d.getImmeuble(), remonterLesLiens));
 		}
+	}
 
+	/**
+	 * Ajoute les droits de propriété d'un contribuable dans le graphe.
+	 *
+	 * @param droits les droits de propriété
+	 */
+	public void process(List<DroitProprieteRF> droits) {
+
+		final RegDate today = RegDate.get();
+
+		// liens de propriété du contribuable
+		droits.stream()
+				.filter(d -> d.isValidAt(today))
+				.forEach(this::addDroitPropriete);
+		droits.stream()
+				.filter(d -> d.isValidAt(today))
+				.forEach(d -> process(d.getImmeuble(), false));
 	}
 
 	private boolean isProcessed(@NotNull ImmeubleRF immeuble) {

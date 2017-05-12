@@ -31,7 +31,9 @@
 	</bean>
 
 	<bean id="immeubleRFController" class="ch.vd.uniregctb.registrefoncier.immeuble.ImmeubleRFController">
+		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
+		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
 	<!-- Rapprochement des tiers RF avec les contribuables Unireg -->
