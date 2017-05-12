@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -5240,6 +5241,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertEquals(dateTraitement, adresse.getDateDebut());
 					Assert.assertNull(adresse.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+					Assert.assertNull(adresse.getCivilite());
 					Assert.assertEquals("Au service de la 'hips communauté SA", adresse.getNomDestinataire());
 					Assert.assertNull(adresse.getComplement());
 					Assert.assertEquals("42", adresse.getNumeroMaison());
@@ -5353,6 +5355,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertEquals(dateTraitement, adresse.getDateDebut());
 					Assert.assertNull(adresse.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+					Assert.assertNull(adresse.getCivilite());
 					Assert.assertEquals("Au service de la 'hips communauté SA", adresse.getNomDestinataire());
 					Assert.assertEquals("Freundlicherweise AG", adresse.getComplement());
 					Assert.assertEquals("42", adresse.getNumeroMaison());
@@ -5825,6 +5828,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertEquals(dateTraitement, adresse.getDateDebut());
 					Assert.assertNull(adresse.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+					Assert.assertNull(adresse.getCivilite());
 					Assert.assertEquals("Freundlicherweise AG", adresse.getNomDestinataire());
 					Assert.assertNull(adresse.getComplement());
 					Assert.assertEquals("42", adresse.getNumeroMaison());
@@ -5944,6 +5948,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					Assert.assertEquals(dateDebutEntreprise, adresse.getDateDebut());
 					Assert.assertEquals(dateTraitement.getOneDayBefore(), adresse.getDateFin());
 					Assert.assertEquals(TypeMandat.GENERAL, adresse.getTypeMandat());
+					Assert.assertNull(adresse.getCivilite());
 					Assert.assertEquals("Chapi chapo", adresse.getNomDestinataire());
 					Assert.assertNull(adresse.getComplement());
 					Assert.assertEquals("17", adresse.getNumeroMaison());
@@ -7037,6 +7042,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				final AdresseMandataireSuisse adresseMandataireSuisse = (AdresseMandataireSuisse) adresseMandataire;
 				Assert.assertEquals(MockRue.Lausanne.CheminDeMornex.getNoRue(), adresseMandataireSuisse.getNumeroRue());
 				Assert.assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adresseMandataireSuisse.getNumeroOrdrePoste());
+				Assert.assertNull(adresseMandataire.getCivilite());
 				Assert.assertEquals("Mon Mande-à-Terre", adresseMandataire.getNomDestinataire());
 				Assert.assertEquals("0213161111", adresseMandataire.getNoTelephoneContact());
 				Assert.assertEquals("Madame Delphine Rapon", adresseMandataire.getPersonneContact());
@@ -7696,6 +7702,96 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				final AdresseTiers surcharge = surcharges.get(0);
 				Assert.assertNotNull(surcharge);
 				Assert.assertFalse(surcharge.isAnnule());
+			}
+		});
+	}
+
+	@Test
+	public void testSalutationsSurAdresseMandataire() throws Exception {
+
+		final RegDate dateDebut = date(2016, 4, 27);
+
+		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRaisonSociale(entreprise, dateDebut, null, "Ma grande entreprise");
+				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
+				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addBouclement(entreprise, dateDebut, DayMonth.get(9, 30), 12);
+				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(dateDebut.year());
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH, pf);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, dateDebut, date(dateDebut.year(), 9, 30), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				addEtatDeclarationEmise(di, date(dateDebut.year(), 10, 5));
+				addEtatDeclarationRetournee(di, date(dateDebut.year() + 1, 1, 1));
+
+				return entreprise.getNumero();
+			}
+		});
+
+		final DestinataireAdresse destinataire = new DestinataireAdresse.Personne(null, "François", "Morin", "Gérance");
+		final AdresseRaisonSociale adresseCourrier = new AdresseRaisonSociale.StructureeSuisse(destinataire, "3ème étage droite", null, MockRue.Renens.QuatorzeAvril.getNoRue(), MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), "25", null, MockLocalite.Renens.getNom(), MockLocalite.Renens.getNPA(), null, MockLocalite.Renens.getNoOrdre());
+		final InformationsMandataire mandataire = new InformationsMandataire(null, adresseCourrier, Boolean.FALSE, null);
+		final RetourDI retour = new RetourDI(pm, dateDebut.year(), 1, null, mandataire);
+
+		// traitement de ces données
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				service.traiterRetour(retour, Collections.emptyMap());
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pm);
+				Assert.assertNotNull(entreprise);
+
+				final Set<Remarque> remarques = entreprise.getRemarques();
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(0, remarques.size());
+
+				final TacheCriteria tacheCriteria = new TacheCriteria();
+				tacheCriteria.setTypeTache(TypeTache.TacheControleDossier);
+				final List<Tache> tachesControle = tacheDAO.find(tacheCriteria);
+				Assert.assertNotNull(tachesControle);
+				Assert.assertEquals(0, tachesControle.size());
+
+				final List<AdresseTiers> surcharges = entreprise.getAdressesTiersSorted();
+				Assert.assertNotNull(surcharges);
+				Assert.assertEquals(0, surcharges.size());
+
+				// une adresse mandataire a dû être créée
+				final Set<AdresseMandataire> adressesMandataires = entreprise.getAdressesMandataires();
+				Assert.assertNotNull(adressesMandataires);
+				Assert.assertEquals(1, adressesMandataires.size());
+				final AdresseMandataire adresseMandataire = adressesMandataires.iterator().next();
+				Assert.assertNotNull(adresseMandataire);
+				Assert.assertFalse(adresseMandataire.isAnnule());
+				Assert.assertTrue(adresseMandataire.isWithCopy());
+				Assert.assertEquals(RegDate.get(), adresseMandataire.getDateDebut());
+				Assert.assertNull(adresseMandataire.getDateFin());
+				Assert.assertEquals(TypeMandat.GENERAL, adresseMandataire.getTypeMandat());
+				Assert.assertEquals("Gérance", adresseMandataire.getCivilite());
+				Assert.assertEquals("François Morin", adresseMandataire.getNomDestinataire());
+				Assert.assertEquals("3ème étage droite", adresseMandataire.getComplement());
+				Assert.assertEquals("25", adresseMandataire.getNumeroMaison());
+				Assert.assertEquals(AdresseMandataireSuisse.class, adresseMandataire.getClass());
+				final AdresseMandataireSuisse adresseSuisse = (AdresseMandataireSuisse) adresseMandataire;
+				Assert.assertEquals(MockRue.Renens.QuatorzeAvril.getNoRue(), adresseSuisse.getNumeroRue());
+				Assert.assertEquals(MockLocalite.Renens.getNoOrdre(), adresseSuisse.getNumeroOrdrePoste());
+
+				// et pas de lien de mandat
+				final List<Mandat> mandats = entreprise.getRapportsSujet().stream()
+						.filter(Mandat.class::isInstance)
+						.map(Mandat.class::cast)
+						.collect(Collectors.toList());
+				Assert.assertEquals(Collections.emptyList(), mandats);
 			}
 		});
 	}

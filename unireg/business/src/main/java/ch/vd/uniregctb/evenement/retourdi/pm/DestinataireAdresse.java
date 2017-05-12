@@ -14,7 +14,6 @@ import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 
@@ -162,14 +161,7 @@ public abstract class DestinataireAdresse {
 		@NotNull
 		@Override
 		public Tiers buildDummyTiers() {
-			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
-			if (numeroAVS != null) {
-				pp.setNumeroAssureSocial(Long.toString(numeroAVS));
-			}
-			final String[] sourcesNom = { titre, prenom, nom };
-			final String nom = concatRemovingNulls(sourcesNom);
-			pp.setNom(nom);
-			return pp;
+			return new PersonnePhysiqueAvecCivilite(numeroAVS, titre, prenom, nom);
 		}
 
 		@Nullable
@@ -179,4 +171,5 @@ public abstract class DestinataireAdresse {
 			return null;
 		}
 	}
+
 }

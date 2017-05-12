@@ -426,9 +426,14 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers, @Nullable Tiers tiersPourAdresse, @Nullable RegDate date, boolean fillFormulePolitesse) {
 
+		final boolean civiliteSpecifique = tiers instanceof CiviliteSupplier;
+		if (fillFormulePolitesse && civiliteSpecifique) {
+			adresse.addFormulePolitesse((CiviliteSupplier) tiers);
+		}
+
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique personne = (PersonnePhysique) tiers;
-			if (fillFormulePolitesse) {
+			if (fillFormulePolitesse && !civiliteSpecifique) {
 				adresse.addFormulePolitesse(getFormulePolitesse(personne, date));
 			}
 			adresse.addNomPrenom(getNomPrenom(personne, date));
@@ -440,7 +445,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 			final PersonnePhysique principal = ensemble.getPrincipal();
 			if (principal != null) {
-				if (fillFormulePolitesse) {
+				if (fillFormulePolitesse && !civiliteSpecifique) {
 					adresse.addFormulePolitesse(getFormulePolitesse(ensemble, date));
 				}
 				adresse.addNomPrenom(getNomPrenom(principal, date));
@@ -455,12 +460,12 @@ public class AdresseServiceImpl implements AdresseService {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 			final Contribuable ctb = tiersService.getContribuable(debiteur);
 			if (getFormulePolitesse(ctb) == FormulePolitesse.HERITIERS) {
-				fillDestinataire(adresse, ctb, null, date, fillFormulePolitesse);
+				fillDestinataire(adresse, ctb, null, date, fillFormulePolitesse && !civiliteSpecifique);
 			}
 			else if (ctb != null) {
 				final AdresseEnvoiDetaillee sub = new AdresseEnvoiDetaillee(adresse.getDestinataire(), adresse.getSource(), adresse.getDateDebut(), adresse.getDateFin(), adresse.isArtificelle(),
 				                                                            localiteInvalideMatcherService);
-				fillDestinataire(sub, ctb, null, date, fillFormulePolitesse);
+				fillDestinataire(sub, ctb, null, date, fillFormulePolitesse && !civiliteSpecifique);
 				for (String ligneRaisonSociale : sub.getRaisonsSociales()) {
 					adresse.addRaisonSociale(ligneRaisonSociale);
 				}
@@ -491,7 +496,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
-			if (fillFormulePolitesse) {
+			if (fillFormulePolitesse && !civiliteSpecifique) {
 				adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE); // [UNIREG-2302]
 			}
 			final List<String> lignesRaisonSociale = segmenteRaisonSocialeSurPlusieursLignes(getRaisonSociale(entreprise));
@@ -501,7 +506,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof Etablissement) {
 			final Etablissement etb = (Etablissement) tiers;
-			if (fillFormulePolitesse) {
+			if (fillFormulePolitesse && !civiliteSpecifique) {
 				adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE); // [UNIREG-2302]
 			}
 

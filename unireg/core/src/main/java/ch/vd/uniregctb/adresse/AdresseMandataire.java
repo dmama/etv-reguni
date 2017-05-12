@@ -41,6 +41,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 	private boolean withCopy;
 	private String codeGenreImpot;
 	private Contribuable mandant;
+	private String civilite;            // TODO vaut-il mieux avoir ceci sous la forme d'un texte libre ou d'un choix fermé (= enum) ?
 	private String nomDestinataire;
 	private String complement;
 	private String rue;
@@ -59,6 +60,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.typeMandat = src.typeMandat;
 		this.withCopy = src.withCopy;
 		this.codeGenreImpot = src.codeGenreImpot;
+		this.civilite = src.civilite;
 		this.nomDestinataire = src.nomDestinataire;
 		this.complement = src.complement;
 		this.rue = src.rue;
@@ -125,6 +127,15 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 
 	public void setMandant(Contribuable mandant) {
 		this.mandant = mandant;
+	}
+
+	@Column(name = "CIVILITE", length = LengthConstants.ADRESSE_CIVILITE)
+	public String getCivilite() {
+		return civilite;
+	}
+
+	public void setCivilite(String civilite) {
+		this.civilite = civilite;
 	}
 
 	@Column(name = "NOM_DESTINATAIRE", length = LengthConstants.ADRESSE_NOM)

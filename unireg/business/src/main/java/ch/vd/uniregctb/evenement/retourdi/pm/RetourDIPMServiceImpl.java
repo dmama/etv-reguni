@@ -87,6 +87,7 @@ import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeMandat;
@@ -264,7 +265,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		//
 
 		final Contribuable mandataireFourni;                // le mandataire reconnu depuis les données de la DI (IDE), optionnel
-		final Pair<String, Adresse> raisonSocialeEtAdresseFournies;                  // la raison sociale fournie (optionnelle)
+		final Pair<NomAvecCivilite, Adresse> raisonSocialeEtAdresseFournies;                  // la raison sociale fournie (optionnelle)
 		final String[] lignesAdresseFournie;                // les 6 lignes de l'adresse telle que fournie sur la DI (retranscrites, quand-même...), optionelles
 		final String[] lignesAdresseMandataireFourni;       // les 6 lignes de l'adresse de représentation du mandataire reconnu depuis les données de la DI (IDE), optionnelles
 		final boolean avecCopieMandataireFourni;
@@ -331,11 +332,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 						mandatairePourAdresse = destinataire.buildDummyTiers();
 					}
 					else {
-						final Entreprise dummyEntrepriseMandataire = new Entreprise();
-						if (raisonSocialeEtAdresseFournies.getLeft() != null) {
-							dummyEntrepriseMandataire.addDonneeCivile(new RaisonSocialeFiscaleEntreprise(null, null, raisonSocialeEtAdresseFournies.getLeft()));
-						}
-						mandatairePourAdresse = dummyEntrepriseMandataire;
+						mandatairePourAdresse = new TiersAvecCivilite(raisonSocialeEtAdresseFournies.getLeft().getCivilite(), raisonSocialeEtAdresseFournies.getLeft().getNomRaisonSociale());
 					}
 				}
 				try {
@@ -466,13 +463,15 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			}
 			else if (raisonSocialeEtAdresseFournies != null) {
 				final Adresse nouvelleAdresseFournie = raisonSocialeEtAdresseFournies.getRight();
-				final String raisonSociale = mandataireFourni != null ? tiersService.getNomRaisonSociale(mandataireFourni) : raisonSocialeEtAdresseFournies.getLeft();
-				final String complement = mandataireFourni != null ? raisonSocialeEtAdresseFournies.getLeft() : null;
+				final NomAvecCivilite nomEtCivilite = raisonSocialeEtAdresseFournies.getLeft();
+				final String raisonSociale = mandataireFourni != null ? tiersService.getNomRaisonSociale(mandataireFourni) : nomEtCivilite.getNomRaisonSociale();
+				final String salutations = mandataireFourni != null ? Optional.ofNullable(adresseService.getFormulePolitesse(mandataireFourni)).map(FormulePolitesse::salutations).orElse(null) : nomEtCivilite.getCivilite();
+				final String complement = mandataireFourni != null ? StringUtils.trimToNull(nomEtCivilite.merge()) : null;
 
 				// c'est une "simple" adresse mandataire qu'il faut faire...
 				final AdresseMandataire nouvelleAdresseMandataire;
 				try {
-					nouvelleAdresseMandataire = buildAdresseMandataire(dateDebutNouveauMandat, nouvelleAdresseFournie, raisonSociale, avecCopieMandataireFourni);
+					nouvelleAdresseMandataire = buildAdresseMandataire(dateDebutNouveauMandat, nouvelleAdresseFournie, salutations, raisonSociale, avecCopieMandataireFourni);
 					if (complement != null && nouvelleAdresseMandataire.getComplement() == null) {
 						nouvelleAdresseMandataire.setComplement(complement);
 					}
@@ -884,7 +883,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 		// [SIFISC-22080] si on n'a que le destinataire, c'est là que l'on s'arrête...
 		if (!adresseCourrier.isDestinataireSeul()) {
-			final Pair<String, Adresse> raisonSocialeEtAdresse = adresseCourrier.split(infraService, tiersService, dateReference);
+			final Pair<NomAvecCivilite, Adresse> raisonSocialeEtAdresse = adresseCourrier.split(infraService, tiersService, dateReference);
 			if (raisonSocialeEtAdresse == null) {
 				tacheService.genereTacheControleDossier(entreprise, Motifs.ADRESSE_NON_TRAITEE);
 				addRemarque(entreprise, String.format("Les données d'adresse/raison sociale trouvées dans la DI %d/%d n'ont pas pu être interprétées de manière concluante (%s).",
@@ -900,7 +899,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 			traiteAdresseCourrier(entreprise, pf, noSequence, dateReference, dateReferenceExistant, adresseCourrier, raisonSocialeEtAdresse.getRight());
 
 			// puis la raison sociale
-			traiteRaisonSociale(entreprise, pf, noSequence, dateReferenceExistant, raisonSocialeEtAdresse.getLeft());
+			traiteRaisonSociale(entreprise, pf, noSequence, dateReferenceExistant, raisonSocialeEtAdresse.getLeft().getNomRaisonSociale());
 		}
 	}
 
@@ -1156,7 +1155,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 	 * @throws AdresseException en cas de souci à la transcription
 	 */
 	@NotNull
-	private AdresseMandataire buildAdresseMandataire(RegDate dateDebut, @NotNull Adresse source, String raisonSociale, boolean withCopy) throws AdresseException {
+	private AdresseMandataire buildAdresseMandataire(RegDate dateDebut, @NotNull Adresse source, String salutations, String raisonSociale, boolean withCopy) throws AdresseException {
 		// il y a deux type d'adresses mandataires : suisse ou étrangère...
 		final AdresseMandataire result;
 		final Integer ofsPays = source.getNoOfsPays();
@@ -1181,6 +1180,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		}
 		result.setNumeroMaison(source.getNumero());
 		result.setRue(source.getRue());
+		result.setCivilite(salutations);
 		result.setNomDestinataire(raisonSociale);
 		result.setTypeMandat(TypeMandat.GENERAL);
 		result.setWithCopy(withCopy);

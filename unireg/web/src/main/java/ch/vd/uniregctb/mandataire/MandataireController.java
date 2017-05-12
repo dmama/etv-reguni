@@ -642,6 +642,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 					adresse.setComplement(view.getAdresse().getComplements());
 					adresse.setDateDebut(view.getDateDebut());
 					adresse.setDateFin(view.getDateFin());
+					adresse.setCivilite(view.getCivilite());
 					adresse.setNomDestinataire(view.getRaisonSociale());
 					adresse.setNoTelephoneContact(view.getNoTelContact());
 					adresse.setNpaCasePostale(view.getAdresse().getNpaCasePostale());

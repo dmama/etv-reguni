@@ -19,6 +19,7 @@ import ch.vd.unireg.xml.event.taxation.ibc.v2.InformationMandataire;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.InformationPersonneMoraleModifiee;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.MailAddress;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.OrganisationMailAddressInfo;
+import ch.vd.unireg.xml.event.taxation.ibc.v2.PersonMailAddressInfo;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.TypAdresse;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.TypNumeroIdeAttr;
 import ch.vd.unireg.xml.event.taxation.ibc.v2.TypTelephoneAttr;
@@ -100,9 +101,41 @@ public class V2HandlerTest extends BusinessTest {
 		Assert.assertNotNull(infoExtraite.getAdresse());
 		Assert.assertEquals("Monsieur François Rollin", infoExtraite.getContact());
 
-		final Pair<String, Adresse> split = infoExtraite.getAdresse().split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> split = infoExtraite.getAdresse().split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(split);
-		Assert.assertEquals("Chez Bernard", split.getLeft());
+		Assert.assertNotNull(split.getLeft());
+		Assert.assertNull(split.getLeft().getCivilite());
+		Assert.assertEquals("Chez Bernard", split.getLeft().getNomRaisonSociale());
+		Assert.assertEquals("Avenue de la Gare", split.getRight().getRue());
+	}
+
+	@Test
+	public void testSalutationsSurAdresseMandataire() throws Exception {
+		final InformationMandataire infoMandataire = new InformationMandataire();
+		final PersonMailAddressInfo person = new PersonMailAddressInfo(null, null, "Maître", "Albert", "Framboisine");
+		final AddressInformation addressInformation = new AddressInformation(null, null, null, "Avenue de la Gare", "12", null, null, "Lausanne", null, 1003L, null, null, null, null);
+		final MailAddress address = new MailAddress(null, person, addressInformation, Boolean.TRUE);
+		infoMandataire.setAdresseCourrierStructuree(address);
+		final InformationsMandataire infoExtraite = handler.extractInformationsMandataire(infoMandataire);
+		Assert.assertNotNull(infoExtraite);
+		Assert.assertNull(infoExtraite.getIdeMandataire());
+		Assert.assertNull(infoExtraite.getContact());
+		final AdresseRaisonSociale adresse = infoExtraite.getAdresse();
+		Assert.assertNotNull(adresse);
+		Assert.assertEquals(AdresseRaisonSociale.StructureeSuisse.class, adresse.getClass());
+		Assert.assertNotNull(adresse.getDestinataire());
+		Assert.assertEquals(DestinataireAdresse.Personne.class, adresse.getDestinataire().getClass());
+		final DestinataireAdresse.Personne personneDestinataire = (DestinataireAdresse.Personne) adresse.getDestinataire();
+		Assert.assertEquals("Maître", personneDestinataire.getTitre());
+		Assert.assertEquals("Albert", personneDestinataire.getPrenom());
+		Assert.assertEquals("Framboisine", personneDestinataire.getNom());
+		Assert.assertNull(personneDestinataire.getNumeroAVS());
+
+		final Pair<NomAvecCivilite, Adresse> split = adresse.split(serviceInfra, tiersService, RegDate.get());
+		Assert.assertNotNull(split);
+		Assert.assertNotNull(split.getLeft());
+		Assert.assertEquals("Maître", split.getLeft().getCivilite());
+		Assert.assertEquals("Albert Framboisine", split.getLeft().getNomRaisonSociale());
 		Assert.assertEquals("Avenue de la Gare", split.getRight().getRue());
 	}
 
@@ -122,9 +155,11 @@ public class V2HandlerTest extends BusinessTest {
 		Assert.assertNotNull(infoExtraite.getAdresse());
 
 		// mais l'adresse est bien prise en compte
-		final Pair<String, Adresse> split = infoExtraite.getAdresse().split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> split = infoExtraite.getAdresse().split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(split);
-		Assert.assertEquals("Chez Bernard", split.getLeft());
+		Assert.assertNotNull(split.getLeft());
+		Assert.assertNull(split.getLeft().getCivilite());
+		Assert.assertEquals("Chez Bernard", split.getLeft().getNomRaisonSociale());
 		Assert.assertEquals("Avenue de la Gare", split.getRight().getRue());
 	}
 
@@ -144,9 +179,11 @@ public class V2HandlerTest extends BusinessTest {
 		Assert.assertNotNull(infoExtraite.getAdresse());
 
 		// mais l'adresse est bien prise en compte
-		final Pair<String, Adresse> split = infoExtraite.getAdresse().split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> split = infoExtraite.getAdresse().split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(split);
-		Assert.assertEquals("Chez Bernard", split.getLeft());
+		Assert.assertNotNull(split.getLeft());
+		Assert.assertNull(split.getLeft().getCivilite());
+		Assert.assertEquals("Chez Bernard", split.getLeft().getNomRaisonSociale());
 		Assert.assertEquals(MockRue.Lausanne.AvenueDeLaGare.getNoRue(), split.getRight().getNumeroRue());
 	}
 

@@ -18,6 +18,7 @@ public class AddMandatView implements DateRange {
 	private String codeGenreImpot;
 	private String iban;
 
+	private String civilite;
 	private String raisonSociale;
 	private final AdresseView adresse = new AdresseView();
 
@@ -107,6 +108,14 @@ public class AddMandatView implements DateRange {
 
 	public void setIban(String iban) {
 		this.iban = IbanHelper.normalize(iban);
+	}
+
+	public String getCivilite() {
+		return civilite;
+	}
+
+	public void setCivilite(String civilite) {
+		this.civilite = civilite;
 	}
 
 	public String getRaisonSociale() {

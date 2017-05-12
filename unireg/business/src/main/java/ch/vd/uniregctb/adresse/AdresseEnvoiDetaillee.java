@@ -109,17 +109,33 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange, Ad
 		return destinataire;
 	}
 
+	public void addFormulePolitesse(CiviliteSupplier civilite) {
+		addFormulePolitesse(civilite.getSalutations(), civilite.getFormuleAppel());
+	}
+
+	public void addFormulePolitesse(CiviliteSupplier civilite, int optionalite) {
+		addFormulePolitesse(civilite.getSalutations(), civilite.getFormuleAppel(), optionalite);
+	}
+
 	public void addFormulePolitesse(FormulePolitesse formule) {
-		this.salutations = formule.salutations();
-		this.formuleAppel = formule.formuleAppel();
+		addFormulePolitesse(formule.salutations(), formule.formuleAppel());
+	}
+
+	public void addFormulePolitesse(FormulePolitesse formule, int optionalite) {
+		addFormulePolitesse(formule.salutations(), formule.formuleAppel(), optionalite);
+	}
+
+	private void addFormulePolitesse(String salutation, String formuleAppel) {
+		this.salutations = salutation;
+		this.formuleAppel = formuleAppel;
 		if (this.salutations != null) {
 			addLine(this.salutations);
 		}
 	}
 
-	public void addFormulePolitesse(FormulePolitesse formule, int optionalite) {
-		this.salutations = formule.salutations();
-		this.formuleAppel = formule.formuleAppel();
+	private void addFormulePolitesse(String salutation, String formuleAppel, int optionalite) {
+		this.salutations = salutation;
+		this.formuleAppel = formuleAppel;
 		if (this.salutations != null) {
 			addLine(this.salutations, optionalite, false);
 		}

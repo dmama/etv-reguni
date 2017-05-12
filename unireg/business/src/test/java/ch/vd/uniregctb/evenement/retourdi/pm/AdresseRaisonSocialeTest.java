@@ -20,9 +20,11 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 
 		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin de Mornex 25bis", null, null, null,null, "1003", "Lausanne");
 
-		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
-		Assert.assertEquals("Alphonse Tartempion SARL", resultat.getLeft());
+		Assert.assertNotNull(resultat.getLeft());
+		Assert.assertNull(resultat.getLeft().getCivilite());
+		Assert.assertEquals("Alphonse Tartempion SARL", resultat.getLeft().getNomRaisonSociale());
 
 		final Adresse adresse = resultat.getRight();
 		Assert.assertNotNull(adresse);
@@ -37,9 +39,11 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 
 		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin de Mornex 25bis - machin", null, null, null,null, "1003", "Lausanne");
 
-		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
-		Assert.assertEquals("Alphonse Tartempion SARL", resultat.getLeft());
+		Assert.assertNotNull(resultat.getLeft());
+		Assert.assertNull(resultat.getLeft().getCivilite());
+		Assert.assertEquals("Alphonse Tartempion SARL", resultat.getLeft().getNomRaisonSociale());
 
 		final Adresse adresse = resultat.getRight();
 		Assert.assertNotNull(adresse);
@@ -54,9 +58,11 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 
 		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion", "SARL", "Chemin de Mornex 25bis", null, null, null,"1003", "Lausanne");
 
-		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
-		Assert.assertEquals("Alphonse Tartempion SARL", resultat.getLeft());
+		Assert.assertNotNull(resultat.getLeft());
+		Assert.assertNull(resultat.getLeft().getCivilite());
+		Assert.assertEquals("Alphonse Tartempion SARL", resultat.getLeft().getNomRaisonSociale());
 
 		final Adresse adresse = resultat.getRight();
 		Assert.assertNotNull(adresse);
@@ -71,9 +77,11 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 
 		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Chemin de Mornex 25bis", null, null, null, null, null,"1003", "Lausanne");
 
-		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
-		Assert.assertNull(resultat.getLeft());
+		Assert.assertNotNull(resultat.getLeft());
+		Assert.assertNull(resultat.getLeft().getCivilite());
+		Assert.assertNull(resultat.getLeft().getNomRaisonSociale());
 
 		final Adresse adresse = resultat.getRight();
 		Assert.assertNotNull(adresse);
@@ -88,9 +96,11 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 
 		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin de", "Mornex 25bis", null, null, null,"1003", "Lausanne");
 
-		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
-		Assert.assertEquals("Alphonse Tartempion SARL", resultat.getLeft());
+		Assert.assertNotNull(resultat.getLeft());
+		Assert.assertNull(resultat.getLeft().getCivilite());
+		Assert.assertEquals("Alphonse Tartempion SARL", resultat.getLeft().getNomRaisonSociale());
 
 		final Adresse adresse = resultat.getRight();
 		Assert.assertNotNull(adresse);
@@ -103,14 +113,14 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 	@Test
 	public void testSplitAdresseBrutteInconnue() throws Exception {
 		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin des petits bisous 14", null, null, null,null, "1003", "Lausanne");
-		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNull(resultat);
 	}
 
 	@Test
 	public void testSplitAdresseBrutteMauvaisNPA() throws Exception {
 		final AdresseRaisonSociale.Brutte brutte = new AdresseRaisonSociale.Brutte("Alphonse Tartempion SARL", "Chemin des petits bisous 14", null, null, null, null,"3", "Mirage city");
-		final Pair<String, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> resultat = brutte.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNull(resultat);
 	}
 
@@ -119,9 +129,11 @@ public class AdresseRaisonSocialeTest extends BusinessTest {
 		final String raisonSociale = "Turlututu chapeau pointu SA";
 		final DestinataireAdresse destinataire = new DestinataireAdresse.Organisation(null, raisonSociale, null, null, null);
 		final AdresseRaisonSociale.StructureeSuisse input = new AdresseRaisonSociale.StructureeSuisse(destinataire, null, null, MockRue.Echallens.GrandRue.getNoRue(), null, "42ter", null, null, null, null, MockLocalite.Echallens.getNoOrdre());
-		final Pair<String, Adresse> resultat = input.split(serviceInfra, tiersService, RegDate.get());
+		final Pair<NomAvecCivilite, Adresse> resultat = input.split(serviceInfra, tiersService, RegDate.get());
 		Assert.assertNotNull(resultat);
-		Assert.assertEquals("Turlututu chapeau pointu SA", resultat.getLeft());
+		Assert.assertNotNull(resultat.getLeft());
+		Assert.assertNull(resultat.getLeft().getCivilite());
+		Assert.assertEquals("Turlututu chapeau pointu SA", resultat.getLeft().getNomRaisonSociale());
 
 		final Adresse adresse = resultat.getRight();
 		Assert.assertNotNull(adresse);

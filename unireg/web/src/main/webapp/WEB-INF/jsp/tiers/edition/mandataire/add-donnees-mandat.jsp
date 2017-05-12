@@ -4,6 +4,7 @@
 
 <c:set var="lengthnumcompte" value="<%=LengthConstants.TIERS_NUMCOMPTE%>" scope="request" />
 <c:set var="lengthpersonne" value="<%=LengthConstants.MANDAT_PERSONNE_CONTACT%>" scope="request" />
+<c:set var="lengthcivilite" value="<%=LengthConstants.ADRESSE_CIVILITE%>" scope="request" />
 <c:set var="lengthtel" value="<%=LengthConstants.TIERS_NUMTEL%>" scope="request" />
 
 <c:set var="lengthadrnom" value="<%=LengthConstants.ADRESSE_NOM%>" scope="request" />
@@ -81,9 +82,16 @@
 		<legend><span><fmt:message key="label.adresse"/></span></legend>
 		<table>
 			<tr class="<unireg:nextRowClass/>">
+				<td style="width: 15%;"><fmt:message key="label.civilite"/>&nbsp;:</td>
+				<td colspan="5">
+					<form:input path="civilite" size="40" maxlength="${lengthcivilite}"/>
+					<form:errors path="civilite" cssClass="error"/>
+				</td>
+			</tr>
+			<tr class="<unireg:nextRowClass/>">
 				<td style="width: 15%;"><fmt:message key="label.nom.raison"/>&nbsp;:</td>
 				<td colspan="5">
-					<form:input path="raisonSociale" size="40" maxlength="${lengthpersonne}"/>
+					<form:input path="raisonSociale" size="100" maxlength="${lengthpersonne}"/>
 					<span class="mandatory">*</span>
 					<form:errors path="raisonSociale" cssClass="error"/>
 				</td>

@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,6 +30,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.CiviliteSupplier;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.StringComparator;
@@ -62,7 +64,7 @@ public abstract class AdresseRaisonSociale {
 	 * @return une pair composée de la raison sociale et d'une adresse, si disponible / identifiable
 	 */
 	@Nullable
-	public abstract Pair<String, Adresse> split(ServiceInfrastructureService infraService, TiersService tiersService, RegDate dateReference);
+	public abstract Pair<NomAvecCivilite, Adresse> split(ServiceInfrastructureService infraService, TiersService tiersService, RegDate dateReference);
 
 	/**
 	 * @return l'information de contact fournie
@@ -165,7 +167,7 @@ public abstract class AdresseRaisonSociale {
 
 		@Nullable
 		@Override
-		public Pair<String, Adresse> split(ServiceInfrastructureService infraService, TiersService tiersService, RegDate dateReference) {
+		public Pair<NomAvecCivilite, Adresse> split(ServiceInfrastructureService infraService, TiersService tiersService, RegDate dateReference) {
 			// tout d'abord, interprétation du npa et de la localité pour trouver les bonnes rues officielles
 			// puis comparaison de ce que l'on a avec ces fameuses rues...
 
@@ -231,7 +233,7 @@ public abstract class AdresseRaisonSociale {
 				localitesParONRP.put(localite.getNoOrdre(), localite);
 			}
 			final Adresse adresse = data.buildAdresse(localitesParONRP.get(data.rueIdentifiee.getNoLocalite()));
-			return Pair.of(raisonSociale, adresse);
+			return Pair.of(new NomAvecCivilite(null, raisonSociale), adresse);
 		}
 
 		/**
@@ -666,11 +668,16 @@ public abstract class AdresseRaisonSociale {
 
 		@Nullable
 		@Override
-		public Pair<String, Adresse> split(ServiceInfrastructureService infraService, TiersService tiersService, RegDate dateReference) {
+		public Pair<NomAvecCivilite, Adresse> split(ServiceInfrastructureService infraService, TiersService tiersService, RegDate dateReference) {
 			if (destinataire != null) {
 				final Tiers tiers = destinataire.buildDummyTiers();
 				final String raisonSociale = tiersService.getNomRaisonSociale(tiers);
-				return Pair.of(raisonSociale, this);
+				final String civilite = Optional.of(tiers)
+						.filter(CiviliteSupplier.class::isInstance)
+						.map(CiviliteSupplier.class::cast)
+						.map(CiviliteSupplier::getSalutations)
+						.orElse(null);
+				return Pair.of(new NomAvecCivilite(civilite, raisonSociale), this);
 			}
 			else {
 				return Pair.of(null, this);
