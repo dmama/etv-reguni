@@ -55,7 +55,7 @@
 				<c:choose>
 					<c:when test="${tache.etatTache == 'EN_INSTANCE' && !tache.annule}">
 						<c:choose>
-							<c:when test="${tache.typeTache == 'TacheControleDossier' && tache.authDossier.donneesFiscales}">
+							<c:when test="${tache.typeTache == 'TacheControleDossier'}">
 								<a href="../tiers/visu.do?id=${tache.numero}&idTacheTraite=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
 							<c:when test="${tache.typeTache == 'TacheTransmissionDossier' && tache.authDossier.mouvements}">
