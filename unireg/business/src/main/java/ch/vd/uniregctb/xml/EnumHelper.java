@@ -4454,6 +4454,7 @@ public abstract class EnumHelper {
 		switch (categorie) {
 		case APM:
 			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.ASSOCIATION_FOUNDATION;
+		case INDET:
 		case AUTRE:
 			return ch.vd.unireg.xml.party.taxpayer.v4.LegalFormCategory.OTHER;
 		case PM:
@@ -4473,6 +4474,7 @@ public abstract class EnumHelper {
 		switch (categorie) {
 		case APM:
 			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.ASSOCIATION_FOUNDATION;
+		case INDET:
 		case AUTRE:
 			return ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory.OTHER;
 		case PM:
