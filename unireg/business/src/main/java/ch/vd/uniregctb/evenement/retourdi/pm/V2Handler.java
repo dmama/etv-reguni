@@ -3,6 +3,8 @@ package ch.vd.uniregctb.evenement.retourdi.pm;
 import javax.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.evenement.retourdi.RetourDiHandler;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.TexteCasePostale;
 
 @SuppressWarnings("Duplicates")
@@ -41,6 +44,15 @@ public class V2Handler extends AbstractRetourDIHandler implements RetourDiHandle
 
 	private static final BigInteger MAX_INT = BigInteger.valueOf(Integer.MAX_VALUE);
 	private static final BigInteger MIN_INT = BigInteger.valueOf(Integer.MIN_VALUE);
+
+	private static final Map<String, String> CIVILITE_MAPPING = buildCiviliteMapping();
+
+	private static Map<String, String> buildCiviliteMapping() {
+		final Map<String, String> map = new HashMap<>();
+		map.put("Mme", FormulePolitesse.MADAME.salutations());
+		map.put("M.", FormulePolitesse.MONSIEUR.salutations());
+		return Collections.unmodifiableMap(map);
+	}
 
 	private ServiceInfrastructureService infraService;
 
@@ -196,7 +208,9 @@ public class V2Handler extends AbstractRetourDIHandler implements RetourDiHandle
 		}
 		final OrganisationMailAddressInfo organisation = adresse.getOrganisation();
 		if (organisation != null) {
-			final String contact = buildContact(organisation.getTitle(), organisation.getFirstName(), organisation.getLastName());
+			final String contactTitle = organisation.getTitle();
+			final String civilite = CIVILITE_MAPPING.getOrDefault(contactTitle, contactTitle);
+			final String contact = buildContact(civilite, organisation.getFirstName(), organisation.getLastName());
 			final DestinataireAdresse.Organisation org = new DestinataireAdresse.Organisation(extractFromElement(organisation.getNumeroIde()),
 			                                                                                  organisation.getOrganisationName(),
 			                                                                                  organisation.getOrganisationNameAddOn1(),
@@ -206,10 +220,12 @@ public class V2Handler extends AbstractRetourDIHandler implements RetourDiHandle
 		}
 		final PersonMailAddressInfo person = adresse.getPerson();
 		if (person != null) {
+			final String title = person.getTitle();
+			final String civilite = CIVILITE_MAPPING.getOrDefault(title, title);
 			final DestinataireAdresse.Personne prsn = new DestinataireAdresse.Personne(person.getNumeroAvs(),
 			                                                                           person.getFirstName(),
 			                                                                           person.getLastName(),
-			                                                                           person.getTitle());
+			                                                                           civilite);
 			return prsn.isEmpty() ? null : prsn;
 		}
 		return null;

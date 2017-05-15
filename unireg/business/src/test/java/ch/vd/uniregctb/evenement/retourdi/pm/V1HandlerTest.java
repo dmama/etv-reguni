@@ -70,9 +70,9 @@ public class V1HandlerTest extends BusinessTest {
 		Assert.assertNotNull(infoEntreprise);
 		Assert.assertNotNull(infoEntreprise.getAdresseCourrier());
 		Assert.assertEquals(AdresseRaisonSociale.DestinataireSeulement.class, infoEntreprise.getAdresseCourrier().getClass());
-		Assert.assertEquals("Mme Albertine Martin", infoEntreprise.getAdresseCourrier().getContact());
+		Assert.assertEquals("Madame Albertine Martin", infoEntreprise.getAdresseCourrier().getContact());
 		Assert.assertNotNull(infoEntreprise.getAdresseCourrier().getDestinataire());
-		Assert.assertEquals("Mme Albertine Martin", infoEntreprise.getAdresseCourrier().getDestinataire().getContact());
+		Assert.assertEquals("Madame Albertine Martin", infoEntreprise.getAdresseCourrier().getDestinataire().getContact());
 	}
 
 	/**

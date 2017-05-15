@@ -68,9 +68,9 @@ public class V2HandlerTest extends BusinessTest {
 
 		final InformationsEntreprise infoEntreprise = handler.extractInformationsEntreprise(info);
 		Assert.assertNotNull(infoEntreprise);
-		Assert.assertEquals("Mme Albertine Martin", infoEntreprise.getAdresseCourrier().getContact());
+		Assert.assertEquals("Madame Albertine Martin", infoEntreprise.getAdresseCourrier().getContact());
 		Assert.assertNotNull(infoEntreprise.getAdresseCourrier().getDestinataire());
-		Assert.assertEquals("Mme Albertine Martin", infoEntreprise.getAdresseCourrier().getDestinataire().getContact());
+		Assert.assertEquals("Madame Albertine Martin", infoEntreprise.getAdresseCourrier().getDestinataire().getContact());
 	}
 
 	/**
@@ -135,6 +135,36 @@ public class V2HandlerTest extends BusinessTest {
 		Assert.assertNotNull(split);
 		Assert.assertNotNull(split.getLeft());
 		Assert.assertEquals("Maître", split.getLeft().getCivilite());
+		Assert.assertEquals("Albert Framboisine", split.getLeft().getNomRaisonSociale());
+		Assert.assertEquals("Avenue de la Gare", split.getRight().getRue());
+	}
+
+	@Test
+	public void testSalutationsSurAdresseMandataireAvecMPoint() throws Exception {
+		final InformationMandataire infoMandataire = new InformationMandataire();
+		final PersonMailAddressInfo person = new PersonMailAddressInfo(null, null, "M.", "Albert", "Framboisine");
+		final AddressInformation addressInformation = new AddressInformation(null, null, null, "Avenue de la Gare", "12", null, null, "Lausanne", null, 1003L, null, null, null, null);
+		final MailAddress address = new MailAddress(null, person, addressInformation, Boolean.TRUE);
+		infoMandataire.setAdresseCourrierStructuree(address);
+		final InformationsMandataire infoExtraite = handler.extractInformationsMandataire(infoMandataire);
+		Assert.assertNotNull(infoExtraite);
+		Assert.assertNull(infoExtraite.getIdeMandataire());
+		Assert.assertNull(infoExtraite.getContact());
+		final AdresseRaisonSociale adresse = infoExtraite.getAdresse();
+		Assert.assertNotNull(adresse);
+		Assert.assertEquals(AdresseRaisonSociale.StructureeSuisse.class, adresse.getClass());
+		Assert.assertNotNull(adresse.getDestinataire());
+		Assert.assertEquals(DestinataireAdresse.Personne.class, adresse.getDestinataire().getClass());
+		final DestinataireAdresse.Personne personneDestinataire = (DestinataireAdresse.Personne) adresse.getDestinataire();
+		Assert.assertEquals("Monsieur", personneDestinataire.getTitre());
+		Assert.assertEquals("Albert", personneDestinataire.getPrenom());
+		Assert.assertEquals("Framboisine", personneDestinataire.getNom());
+		Assert.assertNull(personneDestinataire.getNumeroAVS());
+
+		final Pair<NomAvecCivilite, Adresse> split = adresse.split(serviceInfra, tiersService, RegDate.get());
+		Assert.assertNotNull(split);
+		Assert.assertNotNull(split.getLeft());
+		Assert.assertEquals("Monsieur", split.getLeft().getCivilite());
 		Assert.assertEquals("Albert Framboisine", split.getLeft().getNomRaisonSociale());
 		Assert.assertEquals("Avenue de la Gare", split.getRight().getRue());
 	}
