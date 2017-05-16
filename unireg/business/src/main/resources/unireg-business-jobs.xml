@@ -633,6 +633,16 @@
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
+	<bean id="extractionRegimesFiscauxJob" parent="schedulerJob" class="ch.vd.uniregctb.regimefiscal.extraction.ExtractionRegimesFiscauxJob">
+		<constructor-arg value="624"/>
+		<constructor-arg value="Extraire les régimes fiscaux utilisés"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="rapportService" ref="rapportService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="tiersService" ref="tiersService"/>
+	</bean>
+
     <bean id="dumpDatabaseJob" parent="schedulerJob" class="ch.vd.uniregctb.database.DumpDatabaseJob">
         <constructor-arg value="700"/>
         <constructor-arg value="Exporter toutes les données de la base dans un fichier sur le serveur"/>
