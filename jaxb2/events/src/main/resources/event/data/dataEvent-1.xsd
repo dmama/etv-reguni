@@ -96,6 +96,7 @@
 			<xs:enumeration value="SOCIETE_DIRECTION"/>
 			<xs:enumeration value="SCISSION_ENTREPRISE"/>
 			<xs:enumeration value="TRANSFERT_PATRIMOINE"/>
+			<xs:enumeration value="HERITAGE"/>
 		</xs:restriction>
 	</xs:simpleType>
 
