@@ -400,6 +400,8 @@
 	<bean id="administrationEntrepriseValidator" class="ch.vd.uniregctb.validation.rapport.AdministrationEntrepriseValidator" parent="rapportEntreTiersValidator"/>
 	<bean id="societeDirectionValidator" class="ch.vd.uniregctb.validation.rapport.SocieteDirectionValidator" parent="rapportEntreTiersValidator"/>
 
+	<bean id="heritageValidator" class="ch.vd.uniregctb.validation.rapport.HeritageValidator" parent="rapportEntreTiersValidator"/>
+
 	<bean id="tacheValidator" class="ch.vd.uniregctb.validation.tache.TacheValidator" abstract="true" parent="entityValidator" />
 	<bean id="defaultTacheValidator" class="ch.vd.uniregctb.validation.tache.DefaultTacheValidator" parent="tacheValidator" />
 	<bean id="tacheAnnulationDeclarationValidator" class="ch.vd.uniregctb.validation.tache.TacheAnnulationDeclarationValidator" abstract="true" parent="tacheValidator" />

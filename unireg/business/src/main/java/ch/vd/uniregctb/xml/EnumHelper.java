@@ -1687,6 +1687,7 @@ public abstract class EnumHelper {
 		case SOCIETE_DIRECTION:
 		case SCISSION_ENTREPRISE:
 		case TRANSFERT_PATRIMOINE:
+		case HERITAGE:
 			throw new IllegalArgumentException("Erreur de mapping?");
 		default:
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + type + ']');
@@ -1728,6 +1729,7 @@ public abstract class EnumHelper {
 		case SOCIETE_DIRECTION:
 		case SCISSION_ENTREPRISE:
 		case TRANSFERT_PATRIMOINE:
+		case HERITAGE:
 			throw new IllegalArgumentException("Erreur de mapping?");
 		default:
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + type + ']');

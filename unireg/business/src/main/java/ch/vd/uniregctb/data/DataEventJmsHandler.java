@@ -163,59 +163,62 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			}
 			final TypeRapportEntreTiers type;
 			switch (event.getRelationType()) {
-				case ANNULE_ET_REMPLACE:
-					type = TypeRapportEntreTiers.ANNULE_ET_REMPLACE;
-					break;
-				case APPARTENANCE_MENAGE:
-					type = TypeRapportEntreTiers.APPARTENANCE_MENAGE;
-					break;
-				case CONSEIL_LEGAL:
-					type = TypeRapportEntreTiers.CONSEIL_LEGAL;
-					break;
-				case CONTACT_IMPOT_SOURCE:
-					type = TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE;
-					break;
-				case CURATELLE:
-					type = TypeRapportEntreTiers.CURATELLE;
-					break;
-				case PARENTE:
-					type = TypeRapportEntreTiers.PARENTE;
-					break;
-				case PRESTATION_IMPOSABLE:
-					type = TypeRapportEntreTiers.PRESTATION_IMPOSABLE;
-					break;
-				case REPRESENTATION:
-					type = TypeRapportEntreTiers.REPRESENTATION;
-					break;
-				case TUTELLE:
-					type = TypeRapportEntreTiers.TUTELLE;
-					break;
-				case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
-					type = TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION;
-					break;
-				case ACTIVITE_ECONOMIQUE:
-					type = TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE;
-					break;
-				case MANDAT:
-					type = TypeRapportEntreTiers.MANDAT;
-					break;
-				case FUSION_ENTREPRISES:
-					type = TypeRapportEntreTiers.FUSION_ENTREPRISES;
-					break;
-				case ADMINISTRATION_ENTREPRISE:
-					type = TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE;
-					break;
-				case SOCIETE_DIRECTION:
-					type = TypeRapportEntreTiers.SOCIETE_DIRECTION;
-					break;
-				case SCISSION_ENTREPRISE:
-					type = TypeRapportEntreTiers.SCISSION_ENTREPRISE;
-					break;
-				case TRANSFERT_PATRIMOINE:
-				    type = TypeRapportEntreTiers.TRANSFERT_PATRIMOINE;
-					break;
-				default:
-					throw new IllegalArgumentException("Type de relation inconnu : " + event.getRelationType());
+			case ANNULE_ET_REMPLACE:
+				type = TypeRapportEntreTiers.ANNULE_ET_REMPLACE;
+				break;
+			case APPARTENANCE_MENAGE:
+				type = TypeRapportEntreTiers.APPARTENANCE_MENAGE;
+				break;
+			case CONSEIL_LEGAL:
+				type = TypeRapportEntreTiers.CONSEIL_LEGAL;
+				break;
+			case CONTACT_IMPOT_SOURCE:
+				type = TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE;
+				break;
+			case CURATELLE:
+				type = TypeRapportEntreTiers.CURATELLE;
+				break;
+			case PARENTE:
+				type = TypeRapportEntreTiers.PARENTE;
+				break;
+			case PRESTATION_IMPOSABLE:
+				type = TypeRapportEntreTiers.PRESTATION_IMPOSABLE;
+				break;
+			case REPRESENTATION:
+				type = TypeRapportEntreTiers.REPRESENTATION;
+				break;
+			case TUTELLE:
+				type = TypeRapportEntreTiers.TUTELLE;
+				break;
+			case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
+				type = TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION;
+				break;
+			case ACTIVITE_ECONOMIQUE:
+				type = TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE;
+				break;
+			case MANDAT:
+				type = TypeRapportEntreTiers.MANDAT;
+				break;
+			case FUSION_ENTREPRISES:
+				type = TypeRapportEntreTiers.FUSION_ENTREPRISES;
+				break;
+			case ADMINISTRATION_ENTREPRISE:
+				type = TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE;
+				break;
+			case SOCIETE_DIRECTION:
+				type = TypeRapportEntreTiers.SOCIETE_DIRECTION;
+				break;
+			case SCISSION_ENTREPRISE:
+				type = TypeRapportEntreTiers.SCISSION_ENTREPRISE;
+				break;
+			case TRANSFERT_PATRIMOINE:
+				type = TypeRapportEntreTiers.TRANSFERT_PATRIMOINE;
+				break;
+			case HERITAGE:
+				type = TypeRapportEntreTiers.HERITAGE;
+				break;
+			default:
+				throw new IllegalArgumentException("Type de relation inconnu : " + event.getRelationType());
 			}
 			dataEventService.onRelationshipChange(type, event.getSujetId(), event.getObjetId());
 		}

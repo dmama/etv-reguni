@@ -453,6 +453,8 @@ public abstract class PartyStrategy<T extends Party> {
 		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.TRANSFERT_PATRIMOINE, RapportEntreTiersKey.Source.SUJET), WEALTH_TRANSFER_RECIPIENT_FACTORY);
 		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.TUTELLE, RapportEntreTiersKey.Source.OBJET), null);                // on n'expose que le lien pupille -> tuteur
 		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.TUTELLE, RapportEntreTiersKey.Source.SUJET), GUARDIAN_FACTORY);
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.HERITAGE, RapportEntreTiersKey.Source.OBJET), null);         // non-exposé dans cette version
+		map.put(new RapportEntreTiersKey(TypeRapportEntreTiers.HERITAGE, RapportEntreTiersKey.Source.SUJET), null);         // non-exposé dans cette version
 		return map;
 	}
 

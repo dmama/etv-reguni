@@ -165,6 +165,9 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 		case TRANSFERT_PATRIMOINE:
 			relationship = Relationship.TRANSFERT_PATRIMOINE;
 			break;
+		case HERITAGE:
+			relationship = Relationship.HERITAGE;
+			break;
 		default:
 			throw new IllegalArgumentException("Type de relation inconnu = [" + type + ']');
 		}

@@ -104,6 +104,8 @@ public abstract class RapportHelper {
 		set.add(new RapportEntreTiersKey(TypeRapportEntreTiers.TRANSFERT_PATRIMOINE, RapportEntreTiersKey.Source.SUJET));
 //		set.add(new RapportEntreTiersKey(TypeRapportEntreTiers.TUTELLE, RapportEntreTiersKey.Source.OBJET));
 		set.add(new RapportEntreTiersKey(TypeRapportEntreTiers.TUTELLE, RapportEntreTiersKey.Source.SUJET));
+		set.add(new RapportEntreTiersKey(TypeRapportEntreTiers.HERITAGE, RapportEntreTiersKey.Source.OBJET));
+		set.add(new RapportEntreTiersKey(TypeRapportEntreTiers.HERITAGE, RapportEntreTiersKey.Source.SUJET));
 		return Collections.unmodifiableSet(set);
 	}
 }

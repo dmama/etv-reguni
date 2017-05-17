@@ -9,6 +9,7 @@ import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.FusionEntreprises;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -246,6 +247,21 @@ public enum TypeRapportEntreTiers {
 		@Override
 		public Class<? extends RapportEntreTiers> getRapportClass() {
 			return SocieteDirection.class;
+		}
+	},
+
+	/**
+	 * @since 7.2.0
+	 */
+	HERITAGE {
+		@Override
+		public RapportEntreTiers newInstance() {
+			return new Heritage();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return Heritage.class;
 		}
 	};
 

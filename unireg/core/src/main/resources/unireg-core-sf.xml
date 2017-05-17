@@ -118,6 +118,7 @@
 		<value>ch.vd.uniregctb.tiers.FusionEntreprises</value>
 		<value>ch.vd.uniregctb.tiers.ScissionEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.TransfertPatrimoine</value>
+		<value>ch.vd.uniregctb.tiers.Heritage</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamille</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamilleMenageCommun</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique</value>

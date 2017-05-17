@@ -255,7 +255,8 @@ public abstract class PartyStrategy<T extends Party> {
 	                                                                                                                    TypeRapportEntreTiers.SCISSION_ENTREPRISE,
 	                                                                                                                    TypeRapportEntreTiers.TRANSFERT_PATRIMOINE,
 	                                                                                                                    TypeRapportEntreTiers.ADMINISTRATION_ENTREPRISE,
-	                                                                                                                    TypeRapportEntreTiers.SOCIETE_DIRECTION));
+	                                                                                                                    TypeRapportEntreTiers.SOCIETE_DIRECTION,
+	                                                                                                                    TypeRapportEntreTiers.HERITAGE));
 
 	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
 		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
