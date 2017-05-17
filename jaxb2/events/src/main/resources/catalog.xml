@@ -12,6 +12,7 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/fiscal/evt-fiscal-2.xsd" uri="event/fiscal/evt-fiscal-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/fiscal/evt-fiscal-3.xsd" uri="event/fiscal/evt-fiscal-3.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/fiscal/evt-fiscal-4.xsd" uri="event/fiscal/evt-fiscal-4.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/fiscal/evt-fiscal-5.xsd" uri="event/fiscal/evt-fiscal-5.xsd"/>
 
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-common-1.xsd" uri="event/rt/rapport-travail-common-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-request-1.xsd" uri="event/rt/rapport-travail-request-1.xsd"/>
