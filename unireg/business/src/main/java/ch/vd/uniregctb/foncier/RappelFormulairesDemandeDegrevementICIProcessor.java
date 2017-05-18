@@ -13,7 +13,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.shared.batchtemplate.ProgressMonitor;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -63,11 +62,12 @@ public class RappelFormulairesDemandeDegrevementICIProcessor {
 		final List<Long> idsLettres = fetchIdsFormulaires(dateTraitement);
 
 		final RappelFormulairesDemandeDegrevementICIResults rapportFinal = new RappelFormulairesDemandeDegrevementICIResults(dateTraitement);
-		final ProgressMonitor progressMonitor = new SimpleProgressMonitor();
+		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
 		final BatchTransactionTemplateWithResults<Long, RappelFormulairesDemandeDegrevementICIResults> template = new BatchTransactionTemplateWithResults<>(idsLettres, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, RappelFormulairesDemandeDegrevementICIResults>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch, RappelFormulairesDemandeDegrevementICIResults rapport) throws Exception {
+				status.setMessage("Envoi des rappels...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, rapport, status);
 				return !status.interrupted();
 			}
