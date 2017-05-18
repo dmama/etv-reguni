@@ -1,10 +1,7 @@
 package ch.vd.uniregctb.lr.view;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -47,10 +44,9 @@ public class ListeRecapitulativeSearchResult implements Annulable {
 	}
 
 	private static List<String> computeNomCourrier(DebiteurPrestationImposable dpi, AdresseService adresseService) throws AdresseException {
-		final List<String> nom = adresseService.getNomCourrier(dpi, null, false);
-		return Stream.concat(nom.stream(), Stream.of(dpi.getComplementNom()))
-				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+		// [SIFISC-24807] Pas la peine de rajouter le complément car il est déjà présent, pour les DPI, dans le nom
+		// renvoyé par le service d'adresses
+		return adresseService.getNomCourrier(dpi, null, false);
 	}
 
 	@Override
