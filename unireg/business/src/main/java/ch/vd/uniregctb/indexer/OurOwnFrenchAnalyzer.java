@@ -15,7 +15,7 @@ public final class OurOwnFrenchAnalyzer extends OurOwnAnalyzer {
 	@Override
 	protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
 
-		final Tokenizer source = new ClassicTokenizer(Version.LUCENE_41, reader);
+		final Tokenizer source = new ClassicTokenizer(Version.LUCENE_41, new OurOwnReader(reader));
 		TokenStream result = new ClassicFilter(source);
 		result = new ASCIIFoldingFilter(result);
 		result = new LowerCaseFilter(Version.LUCENE_41, result);
