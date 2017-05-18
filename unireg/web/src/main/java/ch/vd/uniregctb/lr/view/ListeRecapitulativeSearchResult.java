@@ -3,7 +3,14 @@ package ch.vd.uniregctb.lr.view;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.Annulable;
@@ -16,9 +23,12 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class ListeRecapitulativeSearchResult implements Annulable {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ListeRecapitulativeSearchResult.class);
+
 	private final long idDebiteur;
 	private final long idListe;
 	private final List<String> nomCourrier;
+	private final String erreurNomCourrier;
 	private final CategorieImpotSource categorieImpotSource;
 	private final ModeCommunication modeCommunication;
 	private final RegDate dateDebutPeriode;
@@ -32,7 +42,11 @@ public class ListeRecapitulativeSearchResult implements Annulable {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
 		this.idDebiteur = dpi.getNumero();
 		this.idListe = lr.getId();
-		this.nomCourrier = computeNomCourrier(dpi, adresseService);
+
+		final Pair<List<String>, String> resultNomCourrier = computeNomCourrier(dpi, adresseService);
+		this.nomCourrier = resultNomCourrier.getLeft();
+		this.erreurNomCourrier = resultNomCourrier.getRight();
+
 		this.categorieImpotSource = dpi.getCategorieImpotSource();
 		this.modeCommunication = dpi.getModeCommunication();
 		this.dateDebutPeriode = lr.getDateDebut();
@@ -43,10 +57,26 @@ public class ListeRecapitulativeSearchResult implements Annulable {
 		this.annule = lr.isAnnule();
 	}
 
-	private static List<String> computeNomCourrier(DebiteurPrestationImposable dpi, AdresseService adresseService) throws AdresseException {
+	private static Pair<List<String>, String> computeNomCourrier(DebiteurPrestationImposable dpi, AdresseService adresseService) throws AdresseException {
 		// [SIFISC-24807] Pas la peine de rajouter le complément car il est déjà présent, pour les DPI, dans le nom
 		// renvoyé par le service d'adresses
-		return adresseService.getNomCourrier(dpi, null, false);
+		try {
+			final List<String> nomCourrier = adresseService.getNomCourrier(dpi, null, false);
+			return Pair.of(nomCourrier, null);
+		}
+		catch (ServiceOrganisationException e) {
+			LOGGER.error("Exception levée à la récupération du nom associé au débiteur " + dpi.getNumero(), e);
+			return Pair.of(null, "Erreur lors de l'appel au service civil des entreprises (" + e.getMessage() + ")");
+		}
+		catch (ServiceCivilException e) {
+			LOGGER.error("Exception levée à la récupération du nom associé au débiteur " + dpi.getNumero(), e);
+			return Pair.of(null, "Erreur lors de l'appel au service civil des personnes (" + e.getMessage() + ")");
+		}
+		catch (Exception e) {
+			LOGGER.error("Exception levée à la récupération du nom associé au débiteur " + dpi.getNumero(), e);
+			final String msg = Optional.ofNullable(e.getMessage()).map(StringUtils::trimToNull).orElse(e.getClass().getName());
+			return Pair.of(null, msg);
+		}
 	}
 
 	@Override
@@ -64,6 +94,10 @@ public class ListeRecapitulativeSearchResult implements Annulable {
 
 	public List<String> getNomCourrier() {
 		return nomCourrier;
+	}
+
+	public String getErreurNomCourrier() {
+		return erreurNomCourrier;
 	}
 
 	public CategorieImpotSource getCategorieImpotSource() {

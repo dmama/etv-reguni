@@ -43,7 +43,14 @@
 					    </c:choose>
 				    </display:column>
 				    <display:column titleKey="label.nom.raison">
-					    <unireg:multiline lines="${lr.nomCourrier}"/>
+					    <c:choose>
+						    <c:when test="${lr.erreurNomCourrier != null}">
+							    <span class="error"><c:out value="${lr.erreurNomCourrier}"/></span>
+						    </c:when>
+						    <c:otherwise>
+							    <unireg:multiline lines="${lr.nomCourrier}"/>
+						    </c:otherwise>
+					    </c:choose>
 				    </display:column>
 				    <display:column sortable ="true" titleKey="label.debiteur.is" sortName="categorieImpotSource">
 					    <fmt:message key="option.categorie.impot.source.${lr.categorieImpotSource}" />
