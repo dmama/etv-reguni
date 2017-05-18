@@ -99,7 +99,7 @@ public abstract class TiersWebHelper {
 			return String.format("%s %s propriétaire du fonds de placement %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
 		}
 		else if (rapport instanceof Heritage) {
-			return String.format("%s %s héritier de %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
+			return String.format("%s %s hérité de %s", nomSujet, fermeOuAnnule ? "avait" : "a", nomObjet);
 		}
 		else {
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + ']');
