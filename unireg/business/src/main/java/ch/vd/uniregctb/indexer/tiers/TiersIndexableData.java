@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -10,7 +7,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -182,8 +178,8 @@ public class TiersIndexableData extends IndexableData {
 
 		// champs de recherche
 		addNotAnalyzedValue(d, TiersIndexableData.NUMEROS, numeros);
-		addAnalyzedValue(d, TiersIndexableData.NOM_RAISON, encodeNotationPointeeDansNom(nomRaison));
-		addAnalyzedValue(d, TiersIndexableData.AUTRES_NOM, encodeNotationPointeeDansNom(autresNom));
+		addAnalyzedValue(d, TiersIndexableData.NOM_RAISON, OurOwnReader.convert(nomRaison));
+		addAnalyzedValue(d, TiersIndexableData.AUTRES_NOM, OurOwnReader.convert(autresNom));
 		addAnalyzedValue(d, TiersIndexableData.S_DATE_NAISSANCE_INSCRIPTION_RC, IndexerFormatHelper.dateCollectionToString(datesNaissanceInscriptionRC, IndexerFormatHelper.DateStringMode.INDEXATION));
 		addAnalyzedValue(d, TiersIndexableData.SEXE, sexe);
 		addNotAnalyzedValue(d, TiersIndexableData.NO_OFS_FOR_PRINCIPAL, noOfsForPrincipal);
@@ -217,7 +213,7 @@ public class TiersIndexableData extends IndexableData {
 		addMultiValuedNotAnalyzedValue(d, TiersIndexableData.TYPE_ETABLISSEMENT, typesEtablissement, ENUM_RENDERER);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
-		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissanceInscriptionRC), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
+		addToutValues(d, numeros, OurOwnReader.convert(nomRaison), OurOwnReader.convert(autresNom), toSearchString(datesNaissanceInscriptionRC), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
 
 		// champs de stockage (pas recherchables)
 		addStoredValue(d, TiersIndexableData.NOM1, nom1);
@@ -807,21 +803,5 @@ public class TiersIndexableData extends IndexableData {
 			typesEtablissement = EnumSet.noneOf(TypeEtablissement.class);
 		}
 		typesEtablissement.add(type);
-	}
-
-	private static String encodeNotationPointeeDansNom(String nom) {
-		if (nom == null) {
-			return null;
-		}
-
-		try {
-			final OurOwnReader ownReader = new OurOwnReader(new StringReader(nom));
-			final StringWriter writer = new StringWriter(nom.length());
-			IOUtils.copy(ownReader, writer);
-			return writer.toString();
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 }

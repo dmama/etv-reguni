@@ -2,8 +2,11 @@ package ch.vd.uniregctb.indexer;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.BitSet;
 
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -92,5 +95,27 @@ public class OurOwnReader extends Reader {
 	@Override
 	public void close() throws IOException {
 		target.close();
+	}
+
+	/**
+	 * Méthode utilitaire de conversion d'une chaîne de caractère en une autre, qui utilise le filtrage mis en place dans ce Reader
+	 * @param src chaîne de caractères source
+	 * @return chaîne de caractères transformée
+	 */
+	public static String convert(String src) {
+		if (src == null) {
+			return null;
+		}
+
+		try {
+			final OurOwnReader ownReader = new OurOwnReader(new StringReader(src));
+			final StringWriter writer = new StringWriter(src.length());
+			IOUtils.copy(ownReader, writer);
+			return writer.toString();
+		}
+		catch (IOException e) {
+			// ne devrait pas arriver, nous ne manipulons que des chaînes de caractères en mémoire...
+			throw new RuntimeException(e);
+		}
 	}
 }
