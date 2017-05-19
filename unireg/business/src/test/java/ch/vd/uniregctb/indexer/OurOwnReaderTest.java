@@ -49,4 +49,15 @@ public class OurOwnReaderTest extends WithoutSpringTest {
 		assertReadValue("bflwgfzag sos agfzwgfazdwaw gzur23sahgf", "bflwgfzag.s.o.s.agfzwgfazdwaw.gzur23sahgf");
 		assertReadValue("1 centre sos", "1.centre.s.o.s");
 	}
+
+	@Test
+	public void testPointFinal() throws Exception {
+		assertReadValue("bflwgfzag.", "bflwgfzag.");
+	}
+
+	@Test
+	public void testPointInitial() throws Exception {
+		assertReadValue(" bflwgfzag", ".bflwgfzag");
+		assertReadValue(".314159", ".314159");
+	}
 }

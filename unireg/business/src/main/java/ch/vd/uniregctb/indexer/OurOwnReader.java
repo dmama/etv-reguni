@@ -55,10 +55,12 @@ public class OurOwnReader extends Reader {
 
 			// retrouvons les points sans espace ensuite
 			dotsToErase.clear();
-			for (int index = 0 ; index < read ; ++ index) {
-				if (buffer[index] == '.' && index < read && !Character.isWhitespace(buffer[index + 1])) {
+
+			// pas la peine de regarder si le dernier caractère est un point puisqu'il ne sera de toute façon pas suivi d'une lettre...
+			for (int index = 0 ; index < read - 1 ; ++ index) {
+				if (buffer[index] == '.' && !Character.isWhitespace(buffer[index + 1])) {
 					final int lettersBefore = index > 0 ? countLetters(index - 1, -1) : 0;
-					final int lettersAfter = index < read - 1 ? countLetters(index + 1, 1) : 0;
+					final int lettersAfter = countLetters(index + 1, 1);
 					if (lettersAfter == 1 && lettersBefore == 1) {
 						dotsToErase.set(index);
 					}
