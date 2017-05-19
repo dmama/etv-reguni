@@ -1,12 +1,21 @@
 package ch.vd.uniregctb.validation.rapport;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class HeritageValidator extends RapportEntreTiersValidator<Heritage> {
+
+	private TiersService tiersService;
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
 
 	@Override
 	protected Class<Heritage> getValidatedClass() {
@@ -20,7 +29,7 @@ public class HeritageValidator extends RapportEntreTiersValidator<Heritage> {
 			vr.addError("Le tiers défunt n'existe pas");
 		}
 		else if (!(objet instanceof PersonnePhysique)) {
-			vr.addError(String.format("Le tiers %s n'est pas une personne physique", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
+			vr.addError(String.format("Le tiers défunt %s n'est pas une personne physique", FormatNumeroHelper.numeroCTBToDisplay(objet.getNumero())));
 		}
 	}
 
@@ -31,7 +40,7 @@ public class HeritageValidator extends RapportEntreTiersValidator<Heritage> {
 			vr.addError("Le tiers héritier n'existe pas");
 		}
 		else if (!(sujet instanceof PersonnePhysique)) {
-			vr.addError(String.format("Le tiers %s n'est pas une personne physique", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
+			vr.addError(String.format("Le tiers héritier %s n'est pas une personne physique", FormatNumeroHelper.numeroCTBToDisplay(sujet.getNumero())));
 		}
 	}
 
@@ -39,7 +48,18 @@ public class HeritageValidator extends RapportEntreTiersValidator<Heritage> {
 	public ValidationResults validate(Heritage ret) {
 		final ValidationResults vr = super.validate(ret);
 		if (!ret.isAnnule()) {
-			// TODO ne faut-il pas vérifier quelques trucs par rapport aux positions relatives de la date de décès du défunt et de la date de début du rapport ?
+			final Tiers defunt = tiersDAO.get(ret.getObjetId());
+
+			// si ce n'est pas le cas, ça a dû déjà être remonté...
+			if (defunt instanceof PersonnePhysique) {
+				final RegDate dateDeces = tiersService.getDateDeces((PersonnePhysique) defunt);
+				if (dateDeces == null) {
+					vr.addWarning(String.format("%s alors que le 'défunt' n'est pas décédé", getEntityDisplayString(ret)));
+				}
+				else if (dateDeces.getOneDayAfter() != ret.getDateDebut()) {
+					vr.addWarning(String.format("Le rapport entre tiers de type %s devrait débuter au lendemain de la date de décès du/de la défunt(e) (%s)", getEntityDisplayString(ret), RegDateHelper.dateToDisplayString(dateDeces)));
+				}
+			}
 		}
 		return vr;
 	}

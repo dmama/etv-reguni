@@ -58,4 +58,11 @@ public class Heritage extends RapportEntreTiers {
 	public TypeRapportEntreTiers getType() {
 		return TypeRapportEntreTiers.HERITAGE;
 	}
+
+	@Transient
+	@Override
+	protected String getBusinessName() {
+		// redéfini ici à cause de l'accent qui n'apparaît pas dans le nom de la classe...
+		return "Héritage";
+	}
 }

@@ -128,6 +128,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.FusionEntreprises;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -1043,6 +1044,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		parent.addRapportObjet(parente);
 		enfant.addRapportSujet(parente);
 		return parente;
+	}
+
+	protected Heritage addHeritage(PersonnePhysique heritier, PersonnePhysique defunt, RegDate dateDebut, @Nullable RegDate dateFin) {
+		final Heritage heritage = merge(new Heritage(dateDebut, dateFin, heritier, defunt));
+		heritier.addRapportSujet(heritage);
+		defunt.addRapportObjet(heritage);
+		return heritage;
 	}
 
 	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, @Nullable CollectiviteAdministrative autoriteTutelaire, RegDate dateDebut, @Nullable RegDate dateFin) {
