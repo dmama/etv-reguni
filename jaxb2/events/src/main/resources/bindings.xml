@@ -355,11 +355,11 @@
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.fiscal.v5" />
 		</jxb:schemaBindings>
-		<jxb:bindings node="//xs:complexType[@name='evenementFiscalDeclarationType']">
+		<jxb:bindings node="//xs:complexType[@name='taxDeclarationEventType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
 		</jxb:bindings>
 		<jxb:bindings>
-			<namespace:prefix name="ev-fiscal-5" />
+			<namespace:prefix name="fisc-evt-5" />
 		</jxb:bindings>
 	</jxb:bindings>
 

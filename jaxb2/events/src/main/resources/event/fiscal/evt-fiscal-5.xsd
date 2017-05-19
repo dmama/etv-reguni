@@ -13,10 +13,10 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/5" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-5.xsd" />
 
 	<!-- L'élément racine -->
-	<xs:element name="evenementFiscal" type="evenementFiscalType"/>
+	<xs:element name="fiscalEvent" type="fiscalEventType"/>
 
 	<!-- Le type abstrait de l'élément racine -->
-	<xs:complexType name="evenementFiscalType" abstract="true">
+	<xs:complexType name="fiscalEventType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -25,7 +25,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="categorieTiers" type="categorieTiersType">
+			<xs:element name="partyKind" type="partyKindType">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -34,7 +34,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="numeroTiers" type="common:partyNumberType">
+			<xs:element name="partyNumber" type="common:partyNumberType">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -55,22 +55,22 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:simpleType name="categorieTiersType">
+	<xs:simpleType name="partyKindType">
 		<xs:annotation>
 			<xs:documentation>La catégorie de tiers : PP, PM ou IS.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="PP">
+			<xs:enumeration value="NATURAL_PERSON">
 				<xs:annotation>
 					<xs:documentation>Contribuable soumis à l'imposition des personnes physiques.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="PM">
+			<xs:enumeration value="ORGANISATION">
 				<xs:annotation>
 					<xs:documentation>Contribuable soumis à l'imposition des personnes morales.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="IS">
+			<xs:enumeration value="DEBTOR">
 				<xs:annotation>
 					<xs:documentation>Débiteur IS.</xs:documentation>
 				</xs:annotation>
@@ -82,7 +82,7 @@
 	<!-- Les événements fiscaux 'simples' -->
 	<!-- -->
 
-	<xs:complexType name="changementSituationFamilleType">
+	<xs:complexType name="familyStatusEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -91,7 +91,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -103,7 +103,7 @@
 	<!-- Evénement fiscal d'Impression de fourre neutre -->
 	<!-- -->
 
-	<xs:complexType name="ImpressionFourreNeutreType">
+	<xs:complexType name="neutralJacketPrintEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -112,9 +112,9 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
-					<xs:element name="periodeFiscale" type="xs:int">
+					<xs:element name="period" type="xs:int">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -133,7 +133,7 @@
 	<!-- Evénement fiscal d'envoi d'une lettre de bienvenue -->
 	<!-- -->
 
-	<xs:complexType name="envoiLettreBienvenueType">
+	<xs:complexType name="welcomeLetterSendingEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -142,7 +142,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -154,7 +154,7 @@
 	<!-- Les événements fiscaux autour des régimes fiscaux -->
 	<!-- -->
 
-	<xs:complexType name="evenementFiscalRegimeFiscalType" abstract="true">
+	<xs:complexType name="taxSystemEventType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -163,7 +163,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
 					<xs:element name="scope" type="corporation:taxSystemScopeType">
 						<xs:annotation>
@@ -179,7 +179,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="ouvertureRegimeFiscalType">
+	<xs:complexType name="taxSystemStartEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -188,7 +188,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalRegimeFiscalType">
+			<xs:extension base="taxSystemEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -196,7 +196,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="fermetureRegimeFiscalType">
+	<xs:complexType name="taxSystemEndEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -205,7 +205,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalRegimeFiscalType">
+			<xs:extension base="taxSystemEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -213,7 +213,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="annulationRegimeFiscalType">
+	<xs:complexType name="taxSystemCancellationEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -222,7 +222,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalRegimeFiscalType">
+			<xs:extension base="taxSystemEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -234,7 +234,7 @@
 	<!-- Les événements fiscaux autour des allègements fiscaux -->
 	<!-- -->
 
-	<xs:complexType name="evenementFiscalAllegementFiscalType" abstract="true">
+	<xs:complexType name="taxLighteningEventType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -243,9 +243,9 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
-					<xs:element name="genreImpot" type="corporation:taxTypeType">
+					<xs:element name="taxType" type="corporation:taxTypeType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -254,7 +254,7 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="typeCollectivite" type="corporation:lighteningTargetType">
+					<xs:element name="target" type="corporation:lighteningTargetType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -268,7 +268,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="ouvertureAllegementFiscalType">
+	<xs:complexType name="taxLighteningStartEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -277,7 +277,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalAllegementFiscalType">
+			<xs:extension base="taxLighteningEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -285,7 +285,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="fermetureAllegementFiscalType">
+	<xs:complexType name="taxLighteningEndEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -294,7 +294,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalAllegementFiscalType">
+			<xs:extension base="taxLighteningEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -302,7 +302,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="annulationAllegementFiscalType">
+	<xs:complexType name="taxLighteningCancellationEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -311,7 +311,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalAllegementFiscalType">
+			<xs:extension base="taxLighteningEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -323,7 +323,7 @@
 	<!-- Les événements fiscaux autour des flags entreprises -->
 	<!-- -->
 
-	<xs:complexType name="evenementFiscalFlagEntrepriseType" abstract="true">
+	<xs:complexType name="organisationFlagEventType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -332,7 +332,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
 					<xs:element name="typeFlag" type="corporation:corporationFlagTypeType">
 						<xs:annotation>
@@ -348,7 +348,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="ouvertureFlagEntrepriseType">
+	<xs:complexType name="organisationFlagStartEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -357,7 +357,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalFlagEntrepriseType">
+			<xs:extension base="organisationFlagEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -365,7 +365,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="fermetureFlagEntrepriseType">
+	<xs:complexType name="organisationFlagEndEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -374,7 +374,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalFlagEntrepriseType">
+			<xs:extension base="organisationFlagEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -382,7 +382,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="annulationFlagEntrepriseType">
+	<xs:complexType name="organisationFlagCancellationEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -391,7 +391,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalFlagEntrepriseType">
+			<xs:extension base="organisationFlagEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -403,7 +403,7 @@
 	<!-- Les événements fiscaux autour des fors fiscaux -->
 	<!-- -->
 
-	<xs:complexType name="evenementFiscalForType" abstract="true">
+	<xs:complexType name="taxResidenceEventType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -412,9 +412,9 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
-					<xs:element name="forPrincipal" type="xs:boolean">
+					<xs:element name="mainTaxResidence" type="xs:boolean">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -423,7 +423,7 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="localisationFor" type="taxresidence:taxationAuthorityTypeType">
+					<xs:element name="typeAuthority" type="taxresidence:taxationAuthorityTypeType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -437,7 +437,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="ouvertureForType">
+	<xs:complexType name="taxResidenceStartEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -446,9 +446,9 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalForType">
+			<xs:extension base="taxResidenceEventType">
 				<xs:sequence>
-					<xs:element name="motifOuverture" type="taxresidence:liabilityChangeReasonType" minOccurs="0">
+					<xs:element name="startReason" type="taxresidence:liabilityChangeReasonType" minOccurs="0">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -472,7 +472,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="changementModeImpositionType">
+	<xs:complexType name="taxResidenceMethodUpdateEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -481,9 +481,9 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalForType">
+			<xs:extension base="taxResidenceEventType">
 				<xs:sequence>
-					<xs:element name="modeImposition" type="taxresidence:taxationMethodType">
+					<xs:element name="taxationMethod" type="taxresidence:taxationMethodType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -498,7 +498,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="fermetureForType">
+	<xs:complexType name="taxResidenceEndEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -507,9 +507,9 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalForType">
+			<xs:extension base="taxResidenceEventType">
 				<xs:sequence>
-					<xs:element name="motifFermeture" type="taxresidence:liabilityChangeReasonType" minOccurs="0">
+					<xs:element name="endReason" type="taxresidence:liabilityChangeReasonType" minOccurs="0">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -533,7 +533,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="annulationForType">
+	<xs:complexType name="taxResidenceCancellationEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -542,7 +542,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalForType">
+			<xs:extension base="taxResidenceEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -554,7 +554,7 @@
 	<!-- Les événements fiscaux autour des relations de parenté -->
 	<!-- -->
 
-	<xs:complexType name="evenementFiscalParenteType" abstract="true">
+	<xs:complexType name="parentalAuthorityEventType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -563,9 +563,9 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
-					<xs:element name="noContribuableEnfant" type="common:partyNumberType">
+					<xs:element name="childNumber" type="common:partyNumberType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -579,7 +579,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="naissanceType">
+	<xs:complexType name="birthEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -588,7 +588,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalParenteType">
+			<xs:extension base="parentalAuthorityEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -596,7 +596,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="finAutoriteParentaleType">
+	<xs:complexType name="parentalAuthorityEndEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -605,7 +605,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalParenteType">
+			<xs:extension base="parentalAuthorityEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -617,7 +617,7 @@
 	<!-- Les événements fiscaux autour des déclarations -->
 	<!-- -->
 
-	<xs:complexType name="evenementFiscalDeclarationType" abstract="true">
+	<xs:complexType name="taxDeclarationEventType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -626,7 +626,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
 					<xs:element name="dateFrom" type="common:dateType">
 						<xs:annotation>
@@ -651,32 +651,32 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:simpleType name="typeEvenementFiscalDeclarationSommableType">
+	<xs:simpleType name="summonsableTaxDeclarationEventTypeType">
 		<xs:annotation>
 			<xs:documentation>Le type d'un événement fiscal sur une déclaration.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="EMISSION">
+			<xs:enumeration value="SENDING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis à l'envoi (ou à la dés-annulation) du formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ANNULATION">
+			<xs:enumeration value="CANCELLING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis à l'annulation d'un formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="SOMMATION">
+			<xs:enumeration value="SUMMONSING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de la sommation d'un formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ECHEANCE">
+			<xs:enumeration value="EXPIRING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis à l'échéance après sommation d'un formulaire de déclaration, ouvrant la porte à une éventuelle taxation d'office.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="QUITTANCEMENT">
+			<xs:enumeration value="ACKNOWLEDGING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis au quittancement du retour d'un formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
@@ -684,27 +684,27 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="typeEvenementFiscalDeclarationRappelableType">
+	<xs:simpleType name="remindableTaxDeclarationEventTypeType">
 		<xs:annotation>
 			<xs:documentation>Le type d'un événement fiscal sur une déclaration.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="EMISSION">
+			<xs:enumeration value="SENDING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis à l'envoi (ou à la dés-annulation) du formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ANNULATION">
+			<xs:enumeration value="CANCELLING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis à l'annulation d'un formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="RAPPEL">
+			<xs:enumeration value="REMINDING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors du rappel d'un formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="QUITTANCEMENT">
+			<xs:enumeration value="ACKNOWLEDGING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis au quittancement du retour d'un formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
@@ -712,18 +712,18 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:complexType name="evenementFiscalDeclarationSommableType" abstract="true">
+	<xs:complexType name="summonsableTaxDeclarationEventType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Base des événements fiscaux envoyés pour les opérations sur des déclarations sommables (DI, LR)</jxb:javadoc>
+					<jxb:javadoc>Base des événements fiscaux envoyés pour les opérations sur des déclarations sur lesquelles on envoie des sommations (DI, LR, ...)</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalDeclarationType">
+			<xs:extension base="taxDeclarationEventType">
 				<xs:sequence>
-					<xs:element name="type" type="typeEvenementFiscalDeclarationSommableType">
+					<xs:element name="type" type="summonsableTaxDeclarationEventTypeType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -737,18 +737,18 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="evenementFiscalDeclarationRappelableType" abstract="true">
+	<xs:complexType name="remindableTaxDeclarationEventType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Base des événements fiscaux envoyés pour les opérations sur des déclarations rappelables (QSNC)</jxb:javadoc>
+					<jxb:javadoc>Base des événements fiscaux envoyés pour les opérations sur des déclarations sur lesquelles on envoie des rappels (QSNC, ...)</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalDeclarationType">
+			<xs:extension base="taxDeclarationEventType">
 				<xs:sequence>
-					<xs:element name="type" type="typeEvenementFiscalDeclarationRappelableType">
+					<xs:element name="type" type="remindableTaxDeclarationEventTypeType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -762,16 +762,16 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="declarationImpotType">
+	<xs:complexType name="ordinaryTaxDeclarationEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Evénement fiscal envoyé lors d'une action sur une déclaration d'impôt.</jxb:javadoc>
+					<jxb:javadoc>Evénement fiscal envoyé lors d'une action sur une déclaration d'impôt ordinaire (DI).</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalDeclarationSommableType">
+			<xs:extension base="summonsableTaxDeclarationEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -779,16 +779,16 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="listeRecapitulativeType">
+	<xs:complexType name="withholdingTaxDeclarationEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Evénement fiscal envoyé lors d'une action sur une liste récapitulative.</jxb:javadoc>
+					<jxb:javadoc>Evénement fiscal envoyé lors d'une action sur une liste récapitulative (LR).</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalDeclarationSommableType">
+			<xs:extension base="summonsableTaxDeclarationEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -796,7 +796,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="questionnaireSNCType">
+	<xs:complexType name="partnershipFormEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -805,7 +805,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalDeclarationRappelableType">
+			<xs:extension base="remindableTaxDeclarationEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
 				</xs:sequence>
@@ -817,18 +817,18 @@
 	<!-- Les événements fiscaux concernant des informations complémentaires sur les entreprises (= passe-plats) -->
 	<!-- -->
 
-	<xs:complexType name="informationComplementaireType">
+	<xs:complexType name="otherOrgInfoEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Base des événements fiscaux qui annoncent des informations complémentaires en provenance des registres civils.</jxb:javadoc>
+					<jxb:javadoc>Evénement fiscal qui annonce des informations complémentaires sur les entreprises et en provenance des registres civils.</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
-					<xs:element name="type" type="typeInformationComplementaireType">
+					<xs:element name="type" type="otherOrgInfoEventTypeType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -843,27 +843,27 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:simpleType name="typeInformationComplementaireType">
+	<xs:simpleType name="otherOrgInfoEventTypeType">
 		<xs:annotation>
 			<xs:documentation>Le type d'un événement fiscal émis à la réception d'une annonce civile autour d'une faillite ou d'un concordat sans impact sur l'assujettissement de l'entreprise.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="CHANGEMENT_FORME_JURIDIQUE_MEME_CATEGORIE">
+			<xs:enumeration value="LEGAL_FORM_UPDATE">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors du changement de forme juridique d'une entreprise conservant la même catégorie.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="MODIFICATION_STATUTS">
+			<xs:enumeration value="STATUS_UPDATE">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors d'une modification des statuts d'une entreprise.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="MODIFICATION_BUT">
+			<xs:enumeration value="GOAL_UPDATE">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors d'une modification du but d'une entreprise.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="MODIFICATION_CAPITAL">
+			<xs:enumeration value="CAPITAL_UPDATE">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors d'une modification du capital d'une entreprise.</xs:documentation>
 				</xs:annotation>
@@ -873,12 +873,12 @@
 					<xs:documentation>Type de l'événement fiscal émis lors d'une fusion d'entreprises.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="SCISSION">
+			<xs:enumeration value="SPLIT">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors d'une scission d'entreprise.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="TRANSFERT_PATRIMOINE">
+			<xs:enumeration value="WEALTH_TRANSFER">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors d'un transfert de patrimoine entre entreprises.</xs:documentation>
 				</xs:annotation>
@@ -888,125 +888,121 @@
 					<xs:documentation>Type de l'événement fiscal émis lors de la liquidation d'une entreprise.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-
-			<xs:enumeration value="AVIS_PREALABLE_OUVERTURE_FAILLITE">
+			<xs:enumeration value="NOTICE_BEFORE_BANKRUPTCY_PROCEEDINGS">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'avis préalable à l'ouverture d'une faillite.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ETAT_COLLOCATION_INVENTAIRE_FAILLITE">
+			<xs:enumeration value="COLLOCATION_STATE_INVENTORY_IN_BANKRUPTCY">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'état de collocation et inventaire dans la faillite.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="VENTE_ENCHERES_FORCEE_IMMEUBLES_FAILLITE">
+			<xs:enumeration value="FORCED_SALE_OF_IMMOVABLE_PROPERTIES_IN_BANKRUPTCY">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de la vente aux enchères forcée d'immeubles dans la faillite.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="SURSIS_CONCORDATAIRE_PROVISOIRE">
+			<xs:enumeration value="PROVISIONAL_DEBT_RESTRUCTURING_MORATORIUM">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'octroi d'un sursis concordataire provisoire.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="SURSIS_CONCORDATAIRE">
+			<xs:enumeration value="DEBT_RESTRUCTURING_MORATORIUM">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'octroi d'un sursis concordataire.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="APPEL_CREANCIERS_CONCORDAT">
+			<xs:enumeration value="CALL_TO_CREDITORS_IN_CONCORDAT">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'appel aux créanciers dans un concordat.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="AUDIENCE_LIQUIDATION_ABANDON_ACTIF">
+			<xs:enumeration value="HEARING_FOR_ASSETS_ASSIGNMENT">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'audience de liquidation par abandon d'actif.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="PROLONGATION_SURSIS_CONCORDATAIRE">
+			<xs:enumeration value="DEBT_RESTRUCTURING_MORATORIUM_EXTENSION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de la prolongation d'un sursis concordataire.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ANNULATION_SURSIS_CONCORDATAIRE">
+			<xs:enumeration value="DEBT_RESTRUCTURING_MORATORIUM_CANCELLATION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'annulation d'un sursis concordataire.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="HOMOLOGATION_CONCORDAT">
+			<xs:enumeration value="CONCORDAT_APPROVAL">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'homologation d'un concordat.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ETAT_COLLOCATION_CONCORDAT_ABANDON_ACTIF">
+			<xs:enumeration value="COLLOCATION_STATE_IN_ASSETS_ASSIGNMENT_CONCORDAT">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'état de collocation dans un concordat par abandon d'actif.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="TABLEAU_DISTRIBUTION_DECOMPTE_FINAL_CONCORDAT">
+			<xs:enumeration value="FINAL_SETTLEMENT_IN_ASSETS_ASSIGNMENT_CONCORDAT">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'établissement du tableau de distribution et du décompte final dans un concordat par abandon d'actif.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="CONCORDAT_BANQUE_CAISSE_EPARGNE">
+			<xs:enumeration value="BANK_SAVINGS_AND_LOAN_CONCORDAT">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de la constitution d'un concordat de banque et de caisse d'épargne.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="VENTE_ENCHERES_FORCEE_IMMEUBLES_POURSUITE">
+			<xs:enumeration value="FORCED_SALE_OF_IMMOVABLE_PROPERTIES_IN_PROSECUTION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de la vente aux enchères forcée d'immeubles dans la poursuite.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-
-			<xs:enumeration value="PUBLICATION_FAILLITE_APPEL_CREANCIERS">
+			<xs:enumeration value="CALL_TO_CREDITORS_IN_BANKRUPTCY">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de la publication d'une faillite et de l'appel aux créanciers.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="SUSPENSION_FAILLITE">
+			<xs:enumeration value="BANKRUPTCY_SUSPENSION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de la suspension d'une faillite.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="CLOTURE_FAILLITE">
+			<xs:enumeration value="BANKRUPTCY_CLOSING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de la clôture d'une faillite.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="REVOCATION_FAILLITE">
+			<xs:enumeration value="BANKRUPTCY_REVOCATION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de la révocation d'une faillite.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="APPEL_CREANCIERS_TRANSFERT_HS">
+			<xs:enumeration value="CALL_TO_CREDITORS_IN_TRANSFER_ABROAD">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'appel aux créanciers suite à un transfert à l'étranger.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-
-			<xs:enumeration value="ANNULATION_FUSION">
+			<xs:enumeration value="FUSION_CANCELLATION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'annulation d'une fusion d'entreprises.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ANNULATION_SCISSION">
+			<xs:enumeration value="SPLIT_CANCELLATION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'annulation d'une scission d'entreprise.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ANNULATION_TRANSFERT_PATRIMOINE">
+			<xs:enumeration value="WEALTH_TRANSFER_CANCELLATION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'annulation d'un transfert de patrimoine entre entreprises.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="ANNULATION_FAILLITE">
+			<xs:enumeration value="BANKRUPTCY_CANCELLATION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'annulation d'une faillite.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-
 		</xs:restriction>
 	</xs:simpleType>
 
