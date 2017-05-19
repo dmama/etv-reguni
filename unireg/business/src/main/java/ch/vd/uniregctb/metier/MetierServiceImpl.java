@@ -71,6 +71,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -2214,6 +2215,9 @@ public class MetierServiceImpl implements MetierService {
 		if (menageCommun == null) {
 			reopenRapportsEntreTiers(tiers, date, EnumSet.allOf(TypeRapportEntreTiers.class));
 
+			// [SIFISC-24366] annulation des rapports d'héritage dans lesquels l'ancien décédé tenait le rôle du défunt
+			annulerHeritagesDepuisDefunt(tiers);
+
 			/*
 			 * Réouverture des fors du célibataire/divorcé/séparé
 			 */
@@ -2230,6 +2234,9 @@ public class MetierServiceImpl implements MetierService {
 			if (conjoint != null) {
 				tiersService.annuleForsOuvertsAu(conjoint, date.getOneDayAfter(), MotifFor.VEUVAGE_DECES);
 			}
+
+			// [SIFISC-24366] annulation des rapports d'héritage dans lesquels l'ancien décédé tenait le rôle du défunt
+			annulerHeritagesDepuisDefunt(tiers);
 
 			/*
 			 * Réouverture des rapports APPARTENANCE_MENAGE & ceux des membres du ménage
@@ -2257,6 +2264,19 @@ public class MetierServiceImpl implements MetierService {
 			}
 
 			reopenSituationFamille(date, menageCommun);
+		}
+	}
+
+	/**
+	 * Annulation de tous les liens d'héritage dans lesquel la personne physique fournie jouait le rôle du défunt
+	 * @param defunt défunt depuis lequel il faut annuler tous les rapports d'héritage
+	 */
+	private void annulerHeritagesDepuisDefunt(PersonnePhysique defunt) {
+		if (defunt != null) {
+			defunt.getRapportsObjet().stream()
+					.filter(Heritage.class::isInstance)
+					.filter(AnnulableHelper::nonAnnule)
+					.forEach(ret -> ret.setAnnule(true));
 		}
 	}
 
