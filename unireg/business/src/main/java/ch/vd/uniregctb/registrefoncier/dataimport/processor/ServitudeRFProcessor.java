@@ -105,7 +105,7 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 
 		// on renseigne le rapport
 		if (rapport != null) {
-			rapport.addProcessed(mutation.getId(), TypeEntiteRF.DROIT, mutation.getTypeMutation());
+			rapport.addProcessed(mutation.getId(), TypeEntiteRF.SERVITUDE, mutation.getTypeMutation());
 		}
 	}
 

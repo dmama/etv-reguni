@@ -4,9 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -30,6 +32,7 @@ import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestCase;
 
@@ -124,12 +127,14 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 		// on insère la mutation dans la base
 		final Long mutationId = insertMutation(xml, dateImport, TypeEntiteRF.SERVITUDE, TypeMutationRF.CREATION, "1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2");
 
+		final MutationsRFProcessorResults results = new MutationsRFProcessorResults(0, true, dateImport, 1, evenementRFMutationDAO);
+
 		// on process la mutation
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
-				processor.process(mutation, true, null);
+				processor.process(mutation, true, results);
 			}
 		});
 
@@ -177,6 +182,14 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 				assertSame(usufruit0, usufruit1);
 			}
 		});
+
+		// [SIFISC-24511] on vérifie que le rapport contient bien des mutations de type SERVITUDE
+		assertEquals(0, results.getNbErreurs());
+		final Map<MutationsRFProcessorResults.ProcessedKey, MutableLong> processed = results.getProcessed();
+		assertEquals(1, processed.size());
+		final MutationsRFProcessorResults.ProcessedKey key0 = processed.keySet().iterator().next();
+		assertEquals(TypeEntiteRF.SERVITUDE, key0.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, key0.getTypeMutation());
 	}
 
 	/*
