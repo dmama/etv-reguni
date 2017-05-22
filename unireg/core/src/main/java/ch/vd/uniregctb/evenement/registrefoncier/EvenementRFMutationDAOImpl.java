@@ -132,7 +132,8 @@ public class EvenementRFMutationDAOImpl extends BaseDAOImpl<EvenementRFMutation,
 	public Long findNextMutationsToProcess() {
 		final Query query = getCurrentSession().createQuery("select parentImport.id from EvenementRFMutation where etat in ('A_TRAITER', 'EN_ERREUR') order by parentImport.dateEvenement asc");
 		query.setMaxResults(1);
-		return ((Number) query.uniqueResult()).longValue();
+		final Object result = query.uniqueResult();
+		return result == null ? null : ((Number) result).longValue();
 	}
 
 	@NotNull
