@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.util.Set;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.hibernate.FlushMode;
@@ -141,8 +142,14 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 
 		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
 		final ServitudeRF s = servitude;
-		servitude.getImmeubles().forEach(i -> i.addServitude(s));
-		servitude.getAyantDroits().forEach(a -> a.addServitude(s));
+		final Set<ImmeubleRF> immeubles = servitude.getImmeubles();
+		if (immeubles != null) {
+			immeubles.forEach(i -> i.addServitude(s));
+		}
+		final Set<AyantDroitRF> ayantDroits = servitude.getAyantDroits();
+		if (ayantDroits != null) {
+			ayantDroits.forEach(a -> a.addServitude(s));
+		}
 	}
 
 	/**
