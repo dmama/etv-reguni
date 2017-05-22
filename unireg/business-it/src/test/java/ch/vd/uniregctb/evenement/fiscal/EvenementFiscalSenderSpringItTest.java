@@ -96,7 +96,7 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 			LOGGER.info("Attente du premier message message pendant 3s maximum");
 
 			final Set<String> received = new HashSet<>();
-			for (int i = 0 ; i < 4 ; ++ i) {            // pour l'instant, les v1, v2 et v3 sont envoyés (= 3 événements)
+			for (int i = 0 ; i < 5 ; ++ i) {            // pour l'instant, les v1, v2, v3, v4 et v5 sont envoyés (= 5 événements)
 				final EsbMessage msg = receive(OUTPUT_QUEUE, 3000);         // On attend le message jusqu'à 3 secondes
 				LOGGER.info("Message reçu ou timeout expiré");
 				Assert.assertNotNull(msg);
@@ -108,20 +108,18 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 				}
 				received.add(version);
 			}
-			Assert.assertEquals(4, received.size());
+			Assert.assertEquals(5, received.size());
 			Assert.assertTrue("v1 absent", received.contains("1"));
 			Assert.assertTrue("v2 absent", received.contains("2"));
 			Assert.assertTrue("v3 absent", received.contains("3"));
 			Assert.assertTrue("v4 absent", received.contains("4"));
+			Assert.assertTrue("v5 absent", received.contains("5"));
 
 			// la personne physique doit avoir été sauvegardée en base
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId.getValue());
-					Assert.assertNotNull(pp);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId.getValue());
+				Assert.assertNotNull(pp);
+				return null;
 			});
 		}
 
@@ -145,13 +143,10 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 			Assert.assertNull(msg);
 
 			// la personne physique de doit pas avoir été sauvegardée en base
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId.getValue());
-					Assert.assertNull(pp);
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId.getValue());
+				Assert.assertNull(pp);
+				return null;
 			});
 		}
 	}

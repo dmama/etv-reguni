@@ -21,12 +21,26 @@
 		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
 	</bean>
 
+	<!-- Les événements v4 n'ont jamais été activés -->
+	<!--<bean id="evenementFiscalV4Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV4SenderImpl">-->
+		<!--<property name="esbTemplate" ref="esbJmsTemplate" />-->
+		<!--<property name="esbValidator" ref="esbMessageValidator"/>-->
+		<!--<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />-->
+	<!--</bean>-->
+
+	<bean id="evenementFiscalV5Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV5SenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
+	</bean>
+
 	<bean id="evenementFiscalSendingPod" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSendingPod">
 		<property name="senders">
 			<array>
 				<ref bean="evenementFiscalV1Sender"/>
 				<ref bean="evenementFiscalV2Sender"/>
 				<ref bean="evenementFiscalV3Sender"/>
+				<ref bean="evenementFiscalV5Sender"/>
 			</array>
 		</property>
 		<property name="enabled" value="${extprop.jms.queue.evtFiscal.enabled}" />
