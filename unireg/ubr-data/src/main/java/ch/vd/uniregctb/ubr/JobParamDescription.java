@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.ubr;
 
+import java.util.Collection;
+
 /**
  * Description d'un paramètre de job tel qu'exposé dans le WS batch
  */
@@ -13,20 +15,16 @@ public class JobParamDescription {
 	public JobParamDescription() {
 	}
 
-	public JobParamDescription(String name, boolean mandatory, Class<?> type) {
+	public JobParamDescription(String name, boolean mandatory, Class<?> type, Collection<String> allowedValues) {
 		this.name = name;
 		this.mandatory = mandatory;
 		this.type = (type.isEnum() ? Enum.class : type).getSimpleName().toLowerCase();
 
-		final Enum[] enums = (Enum[]) type.getEnumConstants();
-		if (enums == null || enums.length == 0) {
+		if (allowedValues == null || allowedValues.isEmpty()) {
 			this.enumValues = null;
 		}
 		else {
-			this.enumValues = new String[enums.length];
-			for (int i = 0 ; i < enums.length ; ++ i) {
-				this.enumValues[i] = enums[i].name();
-			}
+			this.enumValues = allowedValues.toArray(new String[allowedValues.size()]);
 		}
 	}
 

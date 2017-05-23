@@ -747,6 +747,39 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	}
 
 	/**
+	 * Extrait la valeur d'un paramètre particulier
+	 *
+	 * @param params les paramètres du job
+	 * @param key la clé du paramètre cherché
+	 * @param clazz classe du paramètre cherché
+	 * @param <T> type du paramètre cherché
+	 * @return la valeur du paramètre, ou <b>null</b> si le paramètre n'est pas renseigné
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, si aucun paramètre de ce nom n'a été défini, ou la valeur est invalide
+	 */
+	protected final <T> T getValue(Map<String, Object> params, String key, Class<T> clazz) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		Object value = null;
+		if (params != null) {
+			final Object v = params.get(key);
+			if (v instanceof String) {
+				final String s = (String) v;
+				value = parameterDefinition.getType().stringToValue(s);
+			}
+			else {
+				value = v;
+			}
+		}
+		if (value != null && !clazz.isInstance(value)) {
+			throw new IllegalArgumentException("Paramètre invalide (" + clazz.getName() + " attendu, " + value.getClass().getName() + "reçu ");
+		}
+		if (value == null && parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
+		}
+		//noinspection unchecked
+		return (T) value;
+	}
+
+	/**
 	 * Retourne la date de traitement; c'est-à-dire la date du jour ou la date spécifiée en paramètre si Unireg est en mode testing.
 	 *
 	 * @param params

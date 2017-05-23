@@ -17,6 +17,7 @@ import ch.vd.uniregctb.admin.GestionJob;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamCommune;
+import ch.vd.uniregctb.scheduler.JobParamDynamicEnum;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamFile;
 import ch.vd.uniregctb.scheduler.JobParamOfficeImpot;
@@ -120,7 +121,10 @@ public class JspTagBatchForm extends BodyTagSupport {
 		if (param.getType() instanceof JobParamEnum) {
 			return renderEnumParam(job, param);
 		}
-		if (param.getType() instanceof JobParamRegDate) {
+		else if (param.getType() instanceof JobParamDynamicEnum) {
+			return renderDynamicEnumParam(job, param);
+		}
+		else if (param.getType() instanceof JobParamRegDate) {
 			return renderRegDateParam(job, param, request);
 		}
 		else if (param.getType() instanceof JobParamFile) {
@@ -209,6 +213,28 @@ public class JspTagBatchForm extends BodyTagSupport {
 				b.append(" selected=\"selected\"");
 			}
 			b.append('>').append(e.toString()).append("</option>\n");
+		}
+		b.append("</select>");
+		return b.toString();
+	}
+
+	private static String renderDynamicEnumParam(GestionJob job, JobParam param) {
+		final Object defaultValue = job.getJobDefinition().getDefaultWebValue(param.getName());
+		final JobParamDynamicEnum<?> type = (JobParamDynamicEnum<?>) param.getType();
+		final String defaultCode = type.valueToString(defaultValue);
+
+		final StringBuilder b = new StringBuilder();
+		b.append("<select name=\"").append(getBatchParamNameInForm(param)).append("\">\n");
+		if (!param.isMandatory()) {
+			b.append("<option/>\n");
+		}
+		for (Object value : type.getAllowedValues()) {
+			final String code = type.valueToString(value);
+			b.append("<option value=\"").append(code).append('\"');
+			if (defaultCode != null && defaultCode.equals(code)) {
+				b.append(" selected=\"selected\"");
+			}
+			b.append('>').append(code).append("</option>\n");
 		}
 		b.append("</select>");
 		return b.toString();

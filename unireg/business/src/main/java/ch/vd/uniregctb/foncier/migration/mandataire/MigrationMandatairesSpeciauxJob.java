@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamDynamicEnum;
 import ch.vd.uniregctb.scheduler.JobParamFile;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
 import ch.vd.uniregctb.scheduler.JobParamString;
@@ -93,27 +95,23 @@ public class MigrationMandatairesSpeciauxJob extends JobDefinition {
 			param.setDescription("Genre d'impôt (mandats spéciaux)");
 			param.setName(GENRE_IMPOT);
 			param.setMandatory(true);
-			param.setType(new JobParamString());
+			param.setType(new JobParamDynamicEnum<>(GenreImpotMandataire.class, this::getGenresImpotMandataires, GenreImpotMandataire::getCode));
 			addParameterDefinition(param, null);
 		}
 	}
 
+	private Collection<GenreImpotMandataire> getGenresImpotMandataires() {
+		return infraService.getGenresImpotMandataires();
+	}
+
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
+		final RegDate dateDebut = getRegDateValue(params, DATE_DEBUT);
+		final GenreImpotMandataire genreImpot = getValue(params, GENRE_IMPOT, GenreImpotMandataire.class);
 		final byte[] data = getFileContent(params, CSV_FILE);
 		final String encoding = StringUtils.defaultIfBlank(getStringValue(params, ENCODING), DEFAULT_ENCODING);
 		final List<String> lignesInvalides = new LinkedList<>();
 		final List<DonneesMandat> mandats = extractMandats(data, encoding, lignesInvalides::add);
-		final RegDate dateDebut = getRegDateValue(params, DATE_DEBUT);
-		final String codeGenreImpot = getStringValue(params, GENRE_IMPOT);
-
-		final GenreImpotMandataire genreImpot = infraService.getGenresImpotMandataires().stream()
-				.filter(gim -> gim.getCode().equals(codeGenreImpot))
-				.findFirst()
-				.orElse(null);
-		if (genreImpot == null) {
-			throw new IllegalArgumentException("Le genre d'impot '" + codeGenreImpot + "' est inconnu dans FiDoR...");
-		}
 
 		final MigrationMandatImporter importer = new MigrationMandatImporter(infraService, transactionManager, hibernateTemplate);
 		final MigrationMandatImporterResults results = importer.importData(mandats, dateDebut, genreImpot, getStatusManager());

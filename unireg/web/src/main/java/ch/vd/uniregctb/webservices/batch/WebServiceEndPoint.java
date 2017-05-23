@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.security.Principal;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -37,6 +39,8 @@ import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamDynamicEnum;
+import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamType;
 import ch.vd.uniregctb.ubr.ErrorData;
 import ch.vd.uniregctb.ubr.JobConstants;
@@ -159,7 +163,23 @@ public class WebServiceEndPoint implements WebService {
 			destParams = new ArrayList<>(paramDefinitions.size());
 			for (JobParam param : paramDefinitions) {
 				if (param.isEnabled()) {
-					destParams.add(new JobParamDescription(param.getName(), param.isMandatory(), param.getType().getConcreteClass()));
+					final Collection<String> allowedValues;
+					final JobParamType type = param.getType();
+					if (type instanceof JobParamEnum) {
+						allowedValues = Arrays.stream(type.getConcreteClass().getEnumConstants())
+								.map(Enum.class::cast)
+								.map(Enum::name)
+								.collect(Collectors.toList());
+					}
+					else if (type instanceof JobParamDynamicEnum) {
+						allowedValues = ((JobParamDynamicEnum<?>) type).getAllowedValues().stream()
+								.map(type::valueToString)
+								.collect(Collectors.toList());
+					}
+					else {
+						allowedValues = null;
+					}
+					destParams.add(new JobParamDescription(param.getName(), param.isMandatory(), type.getConcreteClass(), allowedValues));
 				}
 			}
 		}
