@@ -185,12 +185,14 @@ public class PdfMutationsRFDetectorRapport extends PdfRapport {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("ID_RF").append(COMMA);
+					b.append("EGRID").append(COMMA);
 					b.append("MESSAGE");
 				}
 
 				@Override
 				public boolean fillLine(CsvHelper.LineFiller b, MutationsRFDetectorResults.Avertissement elt) {
 					b.append(elt.idRF).append(COMMA);
+					b.append(elt.egrid).append(COMMA);
 					b.append(CsvHelper.asCsvField(elt.message));
 					return true;
 				}

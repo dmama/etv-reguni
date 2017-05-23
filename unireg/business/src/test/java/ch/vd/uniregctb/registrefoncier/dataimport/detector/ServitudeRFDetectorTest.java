@@ -31,8 +31,10 @@ import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockAyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.MockImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationComparator;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRFImpl;
@@ -53,6 +55,7 @@ public class ServitudeRFDetectorTest {
 	private PlatformTransactionManager transactionManager;
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private DroitRFDAO droitRFDAO;
+	private ImmeubleRFDAO immeubleRFDAO;
 
 	@Before
 	public void setUp() throws Exception {
@@ -60,6 +63,7 @@ public class ServitudeRFDetectorTest {
 		transactionManager = new MockTransactionManager();
 		ayantDroitRFDAO = new MockAyantDroitRFDAO();
 		droitRFDAO = new MockDroitRFDAO();
+		immeubleRFDAO = new MockImmeubleRFDAO();
 		AuthenticationHelper.pushPrincipal("test-user");
 	}
 
@@ -88,7 +92,7 @@ public class ServitudeRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ServitudeRFDetector detector = new ServitudeRFDetector(xmlHelperRF, droitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ServitudeRFDetector detector = new ServitudeRFDetector(xmlHelperRF, droitRFDAO, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie trois nouvelles servitudes pour deux bénéficiaires qui concernent deux immeubles
 		final BelastetesGrundstueck grundstueck1 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
@@ -330,7 +334,7 @@ public class ServitudeRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ServitudeRFDetector detector = new ServitudeRFDetector(xmlHelperRF, droitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ServitudeRFDetector detector = new ServitudeRFDetector(xmlHelperRF, droitRFDAO, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les mêmes servitudes avec quelques changements
 		final BelastetesGrundstueck grundstueck1 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
@@ -548,7 +552,7 @@ public class ServitudeRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ServitudeRFDetector detector = new ServitudeRFDetector(xmlHelperRF, droitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ServitudeRFDetector detector = new ServitudeRFDetector(xmlHelperRF, droitRFDAO, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les mêmes servitudes avec quelques changements
 		final BelastetesGrundstueck grundstueck1 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
@@ -681,7 +685,7 @@ public class ServitudeRFDetectorTest {
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
-		final ServitudeRFDetector detector = new ServitudeRFDetector(xmlHelperRF, droitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		final ServitudeRFDetector detector = new ServitudeRFDetector(xmlHelperRF, droitRFDAO, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie une liste de servitudes vide
 		detector.processServitudes(IMPORT_ID, 2, Collections.<DienstbarkeitExtendedElement>emptyList().iterator(), null, null);

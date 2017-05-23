@@ -71,6 +71,7 @@
 	<bean id="servitudeRFDetector" class="ch.vd.uniregctb.registrefoncier.dataimport.detector.ServitudeRFDetector">
 		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="droitRFDAO"/>
+		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="evenementRFImportDAO" />
 		<constructor-arg ref="evenementRFMutationDAO" />
 		<constructor-arg ref="transactionManager"/>

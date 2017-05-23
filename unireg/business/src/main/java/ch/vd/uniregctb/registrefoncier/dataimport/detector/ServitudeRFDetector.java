@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.FlushMode;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +31,16 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.ServitudesRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
+import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class ServitudeRFDetector {
@@ -44,23 +50,26 @@ public class ServitudeRFDetector {
 	private final int batchSize;
 	private final XmlHelperRF xmlHelperRF;
 	private final DroitRFDAO droitRFDAO;
+	private final ImmeubleRFDAO immeubleRFDAO;
 	private final EvenementRFImportDAO evenementRFImportDAO;
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
 
 	public ServitudeRFDetector(XmlHelperRF xmlHelperRF,
 	                           DroitRFDAO droitRFDAO,
+	                           ImmeubleRFDAO immeubleRFDAO,
 	                           EvenementRFImportDAO evenementRFImportDAO,
 	                           EvenementRFMutationDAO evenementRFMutationDAO,
 	                           PlatformTransactionManager transactionManager) {
-		this(20, xmlHelperRF, droitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+		this(20, xmlHelperRF, droitRFDAO, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 	}
 
-	public ServitudeRFDetector(int batchSize, XmlHelperRF xmlHelperRF, DroitRFDAO droitRFDAO, EvenementRFImportDAO evenementRFImportDAO, EvenementRFMutationDAO evenementRFMutationDAO,
+	public ServitudeRFDetector(int batchSize, XmlHelperRF xmlHelperRF, DroitRFDAO droitRFDAO, ImmeubleRFDAO immeubleRFDAO, EvenementRFImportDAO evenementRFImportDAO, EvenementRFMutationDAO evenementRFMutationDAO,
 	                           PlatformTransactionManager transactionManager) {
 		this.batchSize = batchSize;
 		this.xmlHelperRF = xmlHelperRF;
 		this.droitRFDAO = droitRFDAO;
+		this.immeubleRFDAO = immeubleRFDAO;
 		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.transactionManager = transactionManager;
@@ -109,11 +118,12 @@ public class ServitudeRFDetector {
 
 					// SIFISC-23744 : on renseigne les servitudes vides dans le rapport
 					if (dienstbarkeit.getLastRechtGruppe().getBerechtigtePerson().isEmpty()) {
-						final List<String> grundstueckIds = dienstbarkeit.getLastRechtGruppe().getBelastetesGrundstueck().stream()
+						final List<String> egrids = dienstbarkeit.getLastRechtGruppe().getBelastetesGrundstueck().stream()
 								.map(BelastetesGrundstueck::getBelastetesGrundstueckIDREF)
+								.map(id -> resolveEgrid(id))
 								.collect(Collectors.toList());
-						final String message = "La servitude standardRechtID=[" + masterIDRF + "] sur les immeubles idRF=[" + String.join(", ", grundstueckIds) + "] ne possède pas de bénéficiaire.";
-						warnings.get().add(new MutationsRFDetectorResults.Avertissement(masterIDRF, message));
+						final String message = "La servitude standardRechtID=[" + masterIDRF + "] sur les immeubles egrids=[" + String.join(", ", egrids) + "] ne possède pas de bénéficiaire.";
+						warnings.get().add(new MutationsRFDetectorResults.Avertissement(masterIDRF, String.join(", ", egrids), message));
 					}
 
 					// on va voir si la servitude existe dans la base
@@ -171,7 +181,7 @@ public class ServitudeRFDetector {
 			@Override
 			public void afterTransactionCommit() {
 				if (rapport != null) {
-					warnings.get().forEach(a -> rapport.addAvertissement(a.getIdRF(), a.getMessage()));
+					warnings.get().forEach(a -> rapport.addAvertissement(a.getIdRF(), a.getEgrid(), a.getMessage()));
 				}
 			}
 		}, null);
@@ -203,5 +213,26 @@ public class ServitudeRFDetector {
 
 			return null;
 		});
+	}
+
+	/**
+	 * [SIFISC-24514] Cette méthode retourne l'egrid d'un immeuble à partir de son masterIdRF.
+	 */
+	@NotNull
+	private String resolveEgrid(@NotNull String masterIdRF) {
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(masterIdRF), FlushMode.MANUAL);
+		if (immeuble == null) {
+			// l'immeuble n'existe pas dans le base, on utilise le masterIdRF
+			return masterIdRF;
+		}
+		final String egrid = immeuble.getEgrid();
+		if (StringUtils.isBlank(egrid)) {
+			// l'immeuble ne possède pas d'EGRID, on utilise le masterIdRF
+			return masterIdRF;
+		}
+		else {
+			// on retourne l'EGRID
+			return egrid;
+		}
 	}
 }

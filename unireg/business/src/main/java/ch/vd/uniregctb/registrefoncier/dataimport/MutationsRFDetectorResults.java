@@ -32,15 +32,21 @@ public class MutationsRFDetectorResults {
 
 	public static final class Avertissement {
 		public final String idRF;
+		public final String egrid;
 		public final String message;
 
-		public Avertissement(String idRF, String message) {
+		public Avertissement(String idRF, String egrid, String message) {
 			this.idRF = idRF;
+			this.egrid = egrid;
 			this.message = message;
 		}
 
 		public String getIdRF() {
 			return idRF;
+		}
+
+		public String getEgrid() {
+			return egrid;
 		}
 
 		public String getMessage() {
@@ -51,6 +57,7 @@ public class MutationsRFDetectorResults {
 		public String toString() {
 			return "Avertissement{" +
 					"idRF='" + idRF + '\'' +
+					", egrid='" + egrid + '\'' +
 					", message='" + message + '\'' +
 					'}';
 		}
@@ -130,8 +137,8 @@ public class MutationsRFDetectorResults {
 		this.interrompu = interrompu;
 	}
 
-	public void addAvertissement(String idRf, String message) {
-		avertissements.add(new Avertissement(idRf, message));
+	public void addAvertissement(String idRf, String egrid, String message) {
+		avertissements.add(new Avertissement(idRf, egrid, message));
 	}
 
 	public void addErrorException(Object id, Exception e) {
