@@ -89,6 +89,7 @@ import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
 import ch.vd.uniregctb.document.MigrationDDCsvLoaderRapport;
 import ch.vd.uniregctb.document.MigrationExoIFONCRapport;
+import ch.vd.uniregctb.document.MigrationMandatairesSpeciauxRapport;
 import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
@@ -124,6 +125,7 @@ import ch.vd.uniregctb.foncier.InitialisationIFoncResults;
 import ch.vd.uniregctb.foncier.RappelFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporterResults;
 import ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCImporterResults;
+import ch.vd.uniregctb.foncier.migration.mandataire.MigrationMandatImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -1875,6 +1877,28 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 				@Override
 				public void writeDoc(ExtractionRegimesFiscauxRapport doc, OutputStream os) throws Exception {
 					final PdfExtractionRegimesFiscauxRapport document = new PdfExtractionRegimesFiscauxRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public MigrationMandatairesSpeciauxRapport generateRapport(MigrationMandatImporterResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportMigrationMandatairesSpeciaux";
+		final String description = "Rapport d'exécution du job de migration des mandataires spéciaux.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(MigrationMandatairesSpeciauxRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<MigrationMandatairesSpeciauxRapport>() {
+				@Override
+				public void writeDoc(MigrationMandatairesSpeciauxRapport doc, OutputStream os) throws Exception {
+					final PdfMigrationMandatairesSpeciauxRapport document = new PdfMigrationMandatairesSpeciauxRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

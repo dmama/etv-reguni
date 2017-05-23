@@ -156,6 +156,7 @@ public class ConfigurationMandataireTest extends WithoutSpringTest {
 			map.put(buildKeySpecial(prefix, TypeTiers.PERSONNE_PHYSIQUE, MockGenreImpotMandataire.GI.getCode()), ConfigurationMandataire.Acces.EDITION_POSSIBLE.name());
 			map.put(buildKeySpecial(prefix, TypeTiers.PERSONNE_PHYSIQUE, MockGenreImpotMandataire.DON.getCode()), ConfigurationMandataire.Acces.EDITION_POSSIBLE.name());
 			map.put(buildKeySpecial(prefix, TypeTiers.PERSONNE_PHYSIQUE, MockGenreImpotMandataire.SUCC.getCode()), ConfigurationMandataire.Acces.EDITION_POSSIBLE.name());
+			map.put(buildKeySpecial(prefix, TypeTiers.PERSONNE_PHYSIQUE, MockGenreImpotMandataire.IFONC.getCode()), ConfigurationMandataire.Acces.EDITION_POSSIBLE.name());
 			map.put(buildKeySpecial(prefix, TypeTiers.PERSONNE_PHYSIQUE, "TRUC"), ConfigurationMandataire.Acces.EDITION_POSSIBLE.name());
 
 			map.put(buildKey(prefix, TypeMandat.GENERAL, TypeTiers.MENAGE_COMMUN), ConfigurationMandataire.Acces.EDITION_POSSIBLE.name());

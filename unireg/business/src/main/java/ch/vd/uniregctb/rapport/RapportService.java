@@ -76,6 +76,7 @@ import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
 import ch.vd.uniregctb.document.MigrationDDCsvLoaderRapport;
 import ch.vd.uniregctb.document.MigrationExoIFONCRapport;
+import ch.vd.uniregctb.document.MigrationMandatairesSpeciauxRapport;
 import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
@@ -111,6 +112,7 @@ import ch.vd.uniregctb.foncier.InitialisationIFoncResults;
 import ch.vd.uniregctb.foncier.RappelFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporterResults;
 import ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCImporterResults;
+import ch.vd.uniregctb.foncier.migration.mandataire.MigrationMandatImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
@@ -772,11 +774,20 @@ public interface RapportService {
 	RattrapageRegimesFiscauxRapport generateRapport(RattrapageRegimesFiscauxJobResults results, StatusManager status);
 
 	/**
-	 * Génère le rapport d'exécution du batch de rattrapage des régimes fiscaux.
+	 * Génère le rapport d'exécution du batch d'extraction des régimes fiscaux.
 	 *
 	 * @param results le résultat du batch
 	 * @param status le status manager
 	 * @return le rapport
 	 */
 	ExtractionRegimesFiscauxRapport generateRapport(ExtractionRegimesFiscauxResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch de migration des mandataires spéciaux en provenance de TAO-PP ou SIMPA
+	 *
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	MigrationMandatairesSpeciauxRapport generateRapport(MigrationMandatImporterResults results, StatusManager status);
 }

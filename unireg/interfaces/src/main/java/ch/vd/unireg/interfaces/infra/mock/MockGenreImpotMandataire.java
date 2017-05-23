@@ -16,6 +16,7 @@ public class MockGenreImpotMandataire implements GenreImpotMandataire, Serializa
 	public static final MockGenreImpotMandataire DM = new MockGenreImpotMandataire("DM", "Droit de mutation");
 	public static final MockGenreImpotMandataire SUCC = new MockGenreImpotMandataire("SUCC", "Succession");
 	public static final MockGenreImpotMandataire DON = new MockGenreImpotMandataire("DON", "Donation");
+	public static final MockGenreImpotMandataire IFONC = new MockGenreImpotMandataire("IFONC", "Impôt foncier");
 
 	private static final long serialVersionUID = -9112721806126283476L;
 
