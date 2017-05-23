@@ -50,8 +50,11 @@
 
 			<c:if test="${not empty mandats}">
 				<display:table name="${mandats}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
-					<display:column titleKey="label.type" style="width: 20ex;">
+					<display:column titleKey="label.type" style="width: 30ex;">
 						<fmt:message key="option.mandat.type.${courrier.typeMandat}"/>
+						<c:if test="${courrier.libelleGenreImpot != null}">
+							(<c:out value="${courrier.libelleGenreImpot}"/>)
+						</c:if>
 					</display:column>
 					<display:column titleKey="label.date.debut" style="width: 12ex;">
 						<unireg:regdate regdate="${courrier.dateDebut}"/>
@@ -77,9 +80,6 @@
 						<c:if test="${courrier.withCopy != null}">
 							<input type="checkbox" disabled="disabled" <c:if test="${courrier.withCopy}">checked="checked"</c:if>/>
 						</c:if>
-					</display:column>
-					<display:column titleKey="label.genre.impot" style="width: 25ex;">
-						<c:out value="${courrier.libelleGenreImpot}"/>
 					</display:column>
 					<display:column class="action" style="width: 3ex;">
 						<c:if test="${(courrier.typeMandat == 'GENERAL' && accesMandataires.hasGeneralInEdition()) || (courrier.typeMandat == 'SPECIAL' && accesMandataires.hasSpecialInEdition(courrier.codeGenreImpot))}">
