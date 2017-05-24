@@ -26,7 +26,6 @@
 		    </table>
 		    <br/>
 		    <form:textarea id="commentValue" path="comment" cols="50" rows="4" cssClass="add-comment"/>
-		    <span class="mandatory">*</span>
 
 		    <script type="text/javascript">
 			    var CommentaireManuelEFacture = {
