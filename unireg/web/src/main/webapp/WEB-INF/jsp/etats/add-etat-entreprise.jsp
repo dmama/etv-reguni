@@ -82,6 +82,7 @@
 									<jsp:param name="path" value="dateObtention" />
 									<jsp:param name="id" value="dateObtention" />
 									<jsp:param name="onChange" value="reSubmit()"/>
+									<jsp:param name="mandatory" value="true"/>
 								</jsp:include>
 							</c:if>
 						</td>

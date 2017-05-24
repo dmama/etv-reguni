@@ -23,7 +23,8 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="20%"><fmt:message key="label.secteur.activite.long"/>&nbsp;:</td>
 						<td>
-							<form:input path="secteurActivite" maxlength="1000" size="200" />
+							<form:input path="secteurActivite" maxlength="1000" size="150" />
+							<span class="mandatory">*</span>
 							<form:errors path="secteurActivite" cssClass="error" />
 						</td>
 					</tr>
