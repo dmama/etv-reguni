@@ -17,7 +17,6 @@
 			<form:select path="erreurMessage">								
 						<form:options items="${erreursMessage}" />
 			</form:select>
-			<span class="mandatory">*</span>
 		</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >

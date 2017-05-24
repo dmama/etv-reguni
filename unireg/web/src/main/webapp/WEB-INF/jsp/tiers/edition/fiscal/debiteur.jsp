@@ -108,7 +108,6 @@
 				<span id="periodiciteDepuis" style="display: none;">
 					&nbsp;<fmt:message key="label.des.le"/>&nbsp;
 					<form:select id="dateDebutPeriodicite" path="dateDebutNouvellePeriodicite"/>
-					<span class="mandatory">*</span>
 				</span>
 				<span id="pasDeDateDisponible" style="display: none;" class="error">
 					&nbsp;<fmt:message key="label.pas.de.date.disponible.dans.lannee"/>

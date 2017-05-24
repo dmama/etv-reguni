@@ -45,13 +45,11 @@
 						<td>
 								<%--@elvariable id="genresImpot" type="java.util.Map<GenreImpot, String>"--%>
 							<form:select path="genreImpot" items="${genresImpot}" id="genreImpot" onchange="updateMotifsFors();"/>
-							<span class="mandatory">*</span>
 						</td>
 						<td width="20%"><fmt:message key="label.rattachement"/>&nbsp;:</td>
 						<td>
 							<%--@elvariable id="rattachements" type="java.util.Map<MotifRattachement, String>"--%>
 							<form:select path="motifRattachement" items="${rattachements}" id="rattachement" onchange="updateMotifsFors();"/>
-							<span class="mandatory">*</span>
 							<form:errors path="motifRattachement" cssClass="error"/>
 						</td>
 					</tr>

@@ -30,12 +30,10 @@
 									<td width="25%"><fmt:message key="label.mode.communication"/>&nbsp;:</td>
 									<td width="25%">
 										<form:select id="modeCommunication" path="fiscal.modeCommunication" items="${modesCommunication}"/>
-										<span class="mandatory">*</span>
 									</td>
 									<td width="25%"><fmt:message key="label.categorie.impot.source"/>&nbsp;:</td>
 									<td width="25%">
 										<form:select path="fiscal.categorieImpotSource" items="${categoriesImpotSource}" />
-										<span class="mandatory">*</span>
 									</td>
 								</tr>
 								<tr class="<unireg:nextRowClass/>" >
@@ -43,7 +41,6 @@
 									<td width="25%">
 										<form:select id="periodiciteCourante" path="fiscal.periodiciteDecompte" items="${periodicitesDecompte}"
 										             onchange="CreateDebiteur.selectPeriodeDecompte(this.options[this.selectedIndex].value);"/>
-										<span class="mandatory">*</span>
 									</td>
 									<td width="25%">
 										<div id="div_periodeDecompte_label" style="display:none;" ><fmt:message key="label.periode.decompte"/>&nbsp;:</div>
