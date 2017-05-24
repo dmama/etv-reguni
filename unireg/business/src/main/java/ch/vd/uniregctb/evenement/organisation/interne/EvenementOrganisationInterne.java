@@ -86,26 +86,37 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  *       </ul>
  *    </li>
  *    <li>
- *                Le status de l'événement est à REDONDANT dès le départ. Lors du traitement il faut, lorsque des données
- *                sont modifiées et / ou quelque action est entreprise en réaction à l'événement, faire passer le status
- *                à TRAITE au moyen de la méthode raiseStatusTo().
+ *                Une opération est une action par laquelle des données Unireg sont modifiées et / ou des événements sont émis, ou tout autre effet de bord.
+ *                Le principe ici est que tout traitement est effectué au niveau de cette classe dans une méthode qui prend en charge la gestion de la redondance,
+ *                le statut et le suivi.
  *    </li>
  *    <li>
- *                Le "context" est privé à cette classe. C'est intentionnel qu'il n'y a pas d'accesseur. Toutes les opérations
- *                qui ont un impact Unireg (sur la BD ou qui emettent des événements) doivent être exécutée dans une méthode
- *                qui:
+ *                Le status de l'événement est à REDONDANT au départ. Le principe à suivre est le suivant: une opération qui devrait être effectuée
+ *                en réaction à l'événment, mais qu'on ommet parce que l'effet de cette opération est déjà présent tel qu'on l'attend (par opposition à une
+ *                opération qu'on ne peut effectuer des suites d'une erreur), est redondant, de sorte qu'on n'élève pas le niveau de statut.
+ *    </li>
+ *    <li>
+ *                Lors de tout traitement non redondant, le statut doit être passé à TRAITE au moyen de la méthode raiseStatusTo().
+ *    </li>
+ *    <li>
+ *                Lorsqu'un événement ne demande aucun traitement, son statut doit aussi être passé à TRAITE. (voir SIFISC-23172) C'est assez difficile à réaliser. Il faudrait
+ *                disposer de la liste des opérations requises par un événement et monter le statut à TRAITE quand cette liste est vide.
+ *    </li>
+ *    <li>
+ *                Par convention tous les opérations (traitements) qui ont un impact Unireg (sur la BD ou qui emettent des événements)
+ *                doivent être exécutées dans une méthode de cette classe et de la manière suivante:
  *    <ol>
  *       <li>
- *                    suivis.addSuivi() proprement ce qui va être fait (il faut donc passer en paramètre le collector de suivi),
+ *                    l'opération qui va être accomplie est annoncée au moyen de suivis.addSuivi() (il faut donc passer en paramètre le collector de suivi),
  *       </li>
  *       <li>
- *                    Vérifie s'il y a redondance, le rapport dans les logs et sort le cas échéant,
+ *                    Vérifie s'il y a redondance et le rapporte dans les logs,
  *       </li>
  *       <li>
- *                    Fait ce qui doit être fait s'il y a lieu,
+ *                    Effectue le traitement si non redondant,
  *       </li>
  *       <li>
- *                    Utilise la méthode raiseStatusTo() pour régler le statut en fonction de ce qui a été fait.
+ *                    Utilise la méthode raiseStatusTo() pour régler le statut à TRAITE si non redondant.
  *       </li>
  *    </ol>
  *    </li>
@@ -377,11 +388,11 @@ public abstract class EvenementOrganisationInterne {
 		return false;
 	}
 
-	public EvenementOrganisationContext getContext() {
+	protected EvenementOrganisationContext getContext() {
 		return context;
 	}
 
-	public EvenementOrganisationOptions getOptions() {
+	protected EvenementOrganisationOptions getOptions() {
 		return options;
 	}
 
@@ -453,6 +464,7 @@ public abstract class EvenementOrganisationInterne {
 	private Entreprise createEntreprise(long noOrganisation) {
 		final Entreprise entreprise = new Entreprise();
 		entreprise.setNumeroEntreprise(noOrganisation);
+		raiseStatusTo(HandleStatus.TRAITE);
 		return (Entreprise) context.getTiersDAO().save(entreprise);
 	}
 
@@ -463,7 +475,6 @@ public abstract class EvenementOrganisationInterne {
 		final Entreprise entreprise = createEntreprise(getNoOrganisation());
 		suivis.addSuivi(String.format("Entreprise créée avec le numéro de contribuable %s pour l'organisation n°%d", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), getNoOrganisation()));
 		setEntreprise(entreprise);
-		raiseStatusTo(HandleStatus.TRAITE);
 
 		if (organisation.isInscriteAuRC(getDateEvt())) {
 			changeEtatEntreprise(entreprise, TypeEtatEntreprise.INSCRITE_RC, dateDebut, suivis);
@@ -471,6 +482,7 @@ public abstract class EvenementOrganisationInterne {
 		else {
 			changeEtatEntreprise(entreprise, TypeEtatEntreprise.FONDEE, dateDebut, suivis);
 		}
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	protected void changeEtatEntreprise(Entreprise entreprise, TypeEtatEntreprise etat, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
@@ -579,7 +591,7 @@ public abstract class EvenementOrganisationInterne {
 		// L'établissement
 		Etablissement etablissement = context.getTiersService().createEtablissement(numeroSite);
 		// L'activité économique
-		getContext().getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, principal), getEntreprise(), etablissement);
+		context.getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, principal), getEntreprise(), etablissement);
 
 		final Commune commune = getCommune(autoriteFiscale.getNumeroOfsAutoriteFiscale(), dateDebut);
 
@@ -670,6 +682,7 @@ public abstract class EvenementOrganisationInterne {
 			warnings.addWarning(
 					String.format("Ouverture de for fiscal principal sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal principal manuellement.",
 					              commune.getNomOfficielAvecCanton()));
+			raiseStatusTo(HandleStatus.TRAITE);
 		}
 		return null;
 	}
@@ -719,6 +732,7 @@ public abstract class EvenementOrganisationInterne {
 					              motifRattachement,
 					              FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), entreprise.getNumeroEntreprise())
 			);
+			raiseStatusTo(HandleStatus.TRAITE);
 		}
 		return null;
 	}
@@ -818,6 +832,7 @@ public abstract class EvenementOrganisationInterne {
 		final RegDate dateDebutPremierExerciceCommercial = RegDate.get(dateDebut.year(), 1, 1);
 		suivis.addSuivi(String.format("Réglage de la date de début du premier exercice commercial au %s", RegDateHelper.dateToDisplayString(dateDebutPremierExerciceCommercial)));
 		entreprise.setDateDebutPremierExerciceCommercial(dateDebutPremierExerciceCommercial);
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	protected void closeEtablissement(Etablissement etablissement, RegDate dateFin,  EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws
@@ -873,7 +888,7 @@ public abstract class EvenementOrganisationInterne {
 
 		final AjustementForsSecondairesResult ajustementForsSecondaires;
 		try {
-			ajustementForsSecondaires = getContext().getMetierServicePM().calculAjustementForsSecondairesPourEtablissementsVD(entreprise);
+			ajustementForsSecondaires = context.getMetierServicePM().calculAjustementForsSecondairesPourEtablissementsVD(entreprise);
 		}
 		catch (MetierServiceException e) {
 			warnings.addWarning(e.getMessage());
@@ -896,6 +911,7 @@ public abstract class EvenementOrganisationInterne {
 				                         forACreer.getMotifOuverture(), forACreer.getMotifFermeture(), forACreer.getGenreImpot(), warnings, suivis);
 			} else {
 				warnings.addWarning(renderNonCouvertWarning(forACreer));
+				raiseStatusTo(HandleStatus.TRAITE);
 			}
 		}
 	}
@@ -936,7 +952,7 @@ public abstract class EvenementOrganisationInterne {
 		empecheSurchargeExcessive(range);
 
 		try {
-			getContext().getTiersService().appliqueDonneesCivilesSurPeriode(entreprise, range, dateValeur);
+			context.getTiersService().appliqueDonneesCivilesSurPeriode(entreprise, range, dateValeur);
 		}
 		catch (TiersException e) {
 			throw new EvenementOrganisationException(String.format("Impossible d'appliquer la surcharge des données civiles: %s", e.getMessage()));
@@ -967,7 +983,7 @@ public abstract class EvenementOrganisationInterne {
 		empecheSurchargeExcessive(range);
 
 		try {
-			getContext().getTiersService().appliqueDonneesCivilesSurPeriode(etablissement, range, dateValeur);
+			context.getTiersService().appliqueDonneesCivilesSurPeriode(etablissement, range, dateValeur);
 		}
 		catch (TiersException e) {
 			throw new EvenementOrganisationException(String.format("Impossible d'appliquer la surcharge des données civiles: %s", e.getMessage()));
@@ -1056,6 +1072,7 @@ public abstract class EvenementOrganisationInterne {
 				suivis.addSuivi("L'adresse de poursuite a changé suite au changement de l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).");
 			}
 		}
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	protected void traiteTransitionAdresseLegale(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis, RegDate date) throws EvenementOrganisationException {
@@ -1070,6 +1087,7 @@ public abstract class EvenementOrganisationInterne {
 		} else {
 			suivis.addSuivi("L'adresse de poursuite a changé suite au changement de l'adresse légale civile (issue du RC).");
 		}
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	@Nullable
