@@ -17,6 +17,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurC
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneDeTraitement;
+import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -88,6 +89,10 @@ public abstract class Demenagement extends EvenementOrganisationInterneDeTraitem
 			GenreImpot genreImpot = forFiscalPrincipal.getGenreImpot();
 			closeForFiscalPrincipal(dateDebutNouveauSiege.getOneDayBefore(), motifFor, suivis);
 			openForFiscalPrincipal(dateDebutNouveauSiege, getSiegeApres(), MotifRattachement.DOMICILE, motifFor, genreImpot, warnings, suivis);
+		}
+		else {
+			// SIFISC-23172: Ne pas laisser à l'état redondant lorsqu'il n'y a rien à faire. Cette bidouille doit disparaître avec une vraie prise en charge de la redondance.
+			raiseStatusTo(HandleStatus.TRAITE);
 		}
 	}
 
