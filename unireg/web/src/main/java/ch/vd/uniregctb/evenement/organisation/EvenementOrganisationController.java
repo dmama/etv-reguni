@@ -107,6 +107,7 @@ public class EvenementOrganisationController extends AbstractEvenementCivilContr
 		model.put("typesRechercheNom", tiersMapHelper.getMapTypeRechercheNom());
 		model.put("typesEvenementOrganisation", tiersMapHelper.getMapTypeEvenementOrganisation());
 		model.put("etatsEvenement", tiersMapHelper.getMapEtatsEvenementOrganisation());
+		model.put("formesJuridiques", tiersMapHelper.getMapFormesJuridiquesEntreprise());
 		model.put("capping", cappingLevelProvider.getNiveauCapping());
 		return model;
 	}

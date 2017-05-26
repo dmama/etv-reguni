@@ -3,6 +3,8 @@ package ch.vd.uniregctb.evenement.organisation;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,6 +33,7 @@ import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 @Entity
@@ -70,6 +73,11 @@ public class EvenementOrganisation extends HibernateEntity {
 	 * En tête "businessId" du message dans l'ESB, identifiant métier permettant de détecter les messages en double.
 	 */
 	private String businessId;
+
+	/**
+	 * Forme juridique de l'organisation des suites de l'événement
+	 */
+	private FormeJuridiqueEntreprise formeJuridique;
 
 	private EtatEvenementOrganisation etat;
 	private Date dateTraitement;
@@ -216,6 +224,17 @@ public class EvenementOrganisation extends HibernateEntity {
 
 	public void setBusinessId(String messageId) {
 		this.businessId = messageId;
+	}
+
+	@Column(name = "FORME_JURIDIQUE", length = LengthConstants.PM_FORME)
+	@Index(name = "IDX_EV_ORGA_FORME_JUR")
+	@Enumerated(EnumType.STRING)
+	public FormeJuridiqueEntreprise getFormeJuridique() {
+		return formeJuridique;
+	}
+
+	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
+		this.formeJuridique = formeJuridique;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 
 /*
  * Classe générique qui convient pour les critères de recherche sur les évenements organisation.
@@ -24,6 +25,7 @@ public class EvenementOrganisationCriteria<TYPE_EVT extends Enum<TYPE_EVT> > imp
 
 	private TYPE_EVT type;
 	private EtatEvenementOrganisation etat;
+	private FormeJuridiqueEntreprise formeJuridique;
 	private Date dateTraitementDebut;
 	private Date dateTraitementFin;
 	private RegDate dateEvenementDebut;
@@ -46,6 +48,15 @@ public class EvenementOrganisationCriteria<TYPE_EVT extends Enum<TYPE_EVT> > imp
 
 	public void setEtat(EtatEvenementOrganisation etat) {
 		this.etat = etat;
+	}
+
+
+	public FormeJuridiqueEntreprise getFormeJuridique() {
+		return formeJuridique;
+	}
+
+	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
+		this.formeJuridique = formeJuridique;
 	}
 
 	public Date getDateTraitementDebut() {

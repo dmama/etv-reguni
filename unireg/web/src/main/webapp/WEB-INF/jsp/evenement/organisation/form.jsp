@@ -18,8 +18,13 @@
 				<form:options items="${etatsEvenement}" />
 			</form:select>
 		</td>
-		<td width="25%">&nbsp;</td>
-		<td width="25%">&nbsp;</td>
+		<td width="25%"><fmt:message key="label.forme.juridique.evenement" />&nbsp;:</td>
+		<td width="25%">
+			<form:select path="formeJuridiqueEvenement" >
+				<form:option value="TOUS" ><fmt:message key="option.TOUTES" /></form:option>
+				<form:options items="${formesJuridiques}" />
+			</form:select>
+		</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/> toggle" >
 		<td width="25%"><fmt:message key="label.date.evenement.debut" />&nbsp;:</td>

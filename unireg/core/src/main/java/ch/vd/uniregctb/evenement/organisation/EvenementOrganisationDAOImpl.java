@@ -27,6 +27,7 @@ import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisation, Long> implements EvenementOrganisationDAO {
@@ -248,6 +249,13 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 		if (etat != null) {
 			queryWhere += " and evenement.etat = :etat";
 			criteria.put("etat", etat);
+		}
+
+		// Si la valeur n'existe pas (TOUTES par exemple), formeJuridique = null
+		final FormeJuridiqueEntreprise formeJuridique = criterion.getFormeJuridique();
+		if (formeJuridique != null) {
+			queryWhere += " and evenement.formeJuridique = :formeJuridique";
+			criteria.put("formeJuridique", formeJuridique);
 		}
 
 		Date dateTraitementDebut = criterion.getDateTraitementDebut();

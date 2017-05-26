@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCriteria;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationCriteriaView extends EvenementOrganisationCriteria<ch.vd.uniregctb.type.TypeEvenementOrganisation> {
@@ -22,6 +23,7 @@ public class EvenementOrganisationCriteriaView extends EvenementOrganisationCrit
 	private String numeroCTBFormatte;
 	private String typeEvenement;
 	private String etatEvenement;
+	private String formeJuridiqueEvenement;
 
 	private boolean modeLotEvenement;
 
@@ -86,6 +88,34 @@ public class EvenementOrganisationCriteriaView extends EvenementOrganisationCrit
 		}
 		else {
 			this.etatEvenement = TOUS;
+		}
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public String getFormeJuridiqueEvenement() {
+		return formeJuridiqueEvenement;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public void setFormeJuridiqueEvenement(String formeJuridiqueEvenement) {
+		if (TOUS.equals(formeJuridiqueEvenement)) {
+			setFormeJuridique(null);
+		}
+		else {
+			final FormeJuridiqueEntreprise formeJuridique = FormeJuridiqueEntreprise.valueOf(formeJuridiqueEvenement);
+			setFormeJuridique(formeJuridique);
+		}
+		this.formeJuridiqueEvenement = formeJuridiqueEvenement;
+	}
+
+	@Override
+	public void setFormeJuridique(@Nullable FormeJuridiqueEntreprise formeJuridique) {
+		super.setFormeJuridique(formeJuridique);
+		if (formeJuridique != null) {
+			this.formeJuridiqueEvenement = formeJuridique.name();
+		}
+		else {
+			this.formeJuridiqueEvenement = TOUS;
 		}
 	}
 
