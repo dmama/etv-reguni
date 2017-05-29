@@ -1346,7 +1346,7 @@ public class DeclarationImpotController {
 	}
 
 	@RequestMapping(value = "/di/delai/print-confirmation.do", method = RequestMethod.POST)
-	public String imprimerConfirmation(@RequestParam("idDelai") long idDelai, HttpServletResponse response) throws Exception {
+	public String imprimerConfirmation(@RequestParam("idDelai") long idDelai) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DELAI_PP, Role.DI_DELAI_PM)) {
 			throw new AccessDeniedException("Vous n'avez pas le droit d'apporter des modification sur les delais des DI");
