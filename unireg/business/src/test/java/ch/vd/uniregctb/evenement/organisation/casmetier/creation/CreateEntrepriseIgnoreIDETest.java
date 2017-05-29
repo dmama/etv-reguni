@@ -258,6 +258,67 @@ public class CreateEntrepriseIgnoreIDETest extends AbstractEvenementOrganisation
 	}
 
 	@Test(timeout = 10000L)
+	public void testCreationPMFOSCPasInscription() throws Exception {
+
+		/*
+			SIFISC-23174: Ne pas être trop laxiste lorsqu'il s'agit d'ignorer les événements en vertu du SIFISC-22016 / SIFISC-21128.
+			Ici l'événement FOSC n'est pas une nouvelle inscription et ne doit pas compter. On ne peut ignorer l'événement IDE.
+		 */
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 27), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                                 MockCommune.Lausanne));
+			}
+		});
+
+		// Création de l'événement
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event1 = createEvent(1111L, noOrganisation, TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION, RegDate.get(2015, 6, 27), A_TRAITER);
+				final EvenementOrganisation event2 = createEvent(2222L, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 27), A_TRAITER);
+				hibernateTemplate.merge(event1).getId();
+				hibernateTemplate.merge(event2).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = getUniqueEvent(1111L);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+
+				                             Assert.assertEquals("Mutation : Création d'une entreprise vaudoise",
+				                                                 evt.getErreurs().get(1).getMessage());
+
+				                             final EvenementOrganisation evt2 = getUniqueEvent(2222L);
+				                             Assert.assertNotNull(evt2);
+				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt2.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             Assert.assertNotNull(entreprise);
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
 	public void testCreationPMEvtPourDateAnterieurAnomalieRCEnt() throws Exception {
 
 		/*

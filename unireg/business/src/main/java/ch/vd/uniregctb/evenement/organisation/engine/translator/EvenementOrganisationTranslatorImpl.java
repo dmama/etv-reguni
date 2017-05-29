@@ -498,23 +498,23 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		// S'assurer que l'événement est vide de tout changement de siège, car dès lors qu'il est présent sur un événement IDE, il serait absent de l'événement FOSC qui suivrait.
 		final boolean sansChangementDeSiege = siegePrincipalAvant == null || (siegePrincipalAvant.getTypeAutoriteFiscale() == siegePrincipalApres.getTypeAutoriteFiscale() && siegePrincipalAvant.getNumeroOfsAutoriteFiscale().equals(siegePrincipalApres.getNumeroOfsAutoriteFiscale()));
 
-		// S'assurer qu'il y a aucun d'événement FOSC avant et au moins un après pour le même jour
+		// S'assurer qu'il y a aucun d'événement FOSC avant et au moins un FOSC_NOUVELLE_ENTREPRISE après pour le même jour (SIFISC-23174: ne pas être trop laxiste et insister pour un événement de création)
 		final List<EvenementOrganisation> evenementsDuJour = evenementOrganisationService.evenementsPourDateValeurEtOrganisation(dateEvenement, event.getNoOrganisation());
 		final List<EvenementOrganisation> evenementsFOSCRecusAvant = new ArrayList<>();
-		final List<EvenementOrganisation> evenementsFOSCRecusApres = new ArrayList<>();
+		final List<EvenementOrganisation> evenementsFOSCNouvelleInscriptionRecusApres = new ArrayList<>();
 		for (EvenementOrganisation evt : evenementsDuJour) {
 			if (evt.getType().getSource() == TypeEvenementOrganisation.Source.FOSC) {
 				if (evt.getId() < event.getId()) {
 					evenementsFOSCRecusAvant.add(evt);
 				}
-				else if (evt.getId() > event.getId()) {
-					evenementsFOSCRecusApres.add(evt);
+				else if (evt.getId() > event.getId() && evt.getType() == TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE) {
+					evenementsFOSCNouvelleInscriptionRecusApres.add(evt);
 				}
 			}
 		}
-		final boolean evtFOSCApresPasAvant = evenementsFOSCRecusAvant.isEmpty() && evenementsFOSCRecusApres.size() > 0;
+		final boolean conditionEvtFOSC = evenementsFOSCRecusAvant.isEmpty() && evenementsFOSCNouvelleInscriptionRecusApres.size() > 0;
 
-		return evtIDEIncriptionMutation && actifAuRC && estNouveauCivil && estVaudoise && sansChangementDeSiege && evtFOSCApresPasAvant;
+		return evtIDEIncriptionMutation && actifAuRC && estNouveauCivil && estVaudoise && sansChangementDeSiege && conditionEvtFOSC;
 	}
 
 	private static EvenementOrganisationInterne buildEvenementInterneCapping(EvenementOrganisation event, Organisation organisation, Entreprise entreprise,
