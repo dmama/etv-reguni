@@ -529,7 +529,7 @@ public class DeterminationDIsPPAEmettreProcessor {
 			}
 		}
 
-		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
+		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, details.getDateFin());
 		Assert.notNull(oid);
 
 		// Création et sauvegarde de la tâche en base

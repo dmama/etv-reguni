@@ -6,18 +6,22 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.MultipleSwitch;
+import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
@@ -71,6 +75,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 	private TacheDAO tacheDAO;
 	private PeriodeImpositionService periodeImpositionService;
 	private AdresseService adresseService;
+	private Switchable officeImpotInterceptor;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -82,11 +87,10 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		adresseService = getBean(AdresseService.class, "adresseService");
+		officeImpotInterceptor = getBean(Switchable.class, "officeImpotHibernateInterceptor");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		service = new DeterminationDIsPPAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService, periodeImpositionService,
-				adresseService);
-
+		service = new DeterminationDIsPPAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService, periodeImpositionService, adresseService);
 	}
 
 	/**
@@ -1622,6 +1626,94 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 				}
 
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-23832 : l'OID présent dans le rapport d'exécution était celui du contribuable et pas celui auquel la tâche était assignée
+	 */
+	@Test
+	public void testOIDPresentDansRapport() throws Exception {
+
+		final int annee = 2016;
+		final RegDate achat = date(2010, 1, 12);
+		final RegDate vente = date(annee, 11, 26);
+
+		// service civil vide
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// rien du tout...
+			}
+		});
+
+		final long ppId;
+		final MultipleSwitch masterSwitch = new MultipleSwitch(officeImpotInterceptor, tacheSynchronizer);
+		masterSwitch.pushState();
+		try {
+			// pas de création de tâches ni assignation d'office d'impôt...
+			masterSwitch.setEnabled(false);
+
+			// mise en place fiscale
+			ppId = doInNewTransactionAndSession(status -> {
+				addPeriodeFiscale(annee);
+				final PersonnePhysique pp = addNonHabitant("Francis", "Rouge", date(1974, 7, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, achat, null, MockCommune.Bern);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, vente, MotifFor.VENTE_IMMOBILIER, MockCommune.Grandson.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+				addForSecondaire(pp, vente.addDays(-10), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, GenreImpot.REVENU_FORTUNE);
+				pp.setOfficeImpotId(MockOfficeImpot.OID_GRANDSON.getNoColAdm());
+				return pp.getNumero();
+			});
+		}
+		finally {
+			masterSwitch.popState();
+		}
+
+		// vérification que l'OID associé au contribuable est toujours l'ancien (puisque le premier des fors fiscaux secondaires valides est encore ouvert aujourd'hui)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertEquals((Integer) MockOfficeImpot.OID_GRANDSON.getNoColAdm(), pp.getOfficeImpotId());
+			}
+		});
+
+		// lancement de la génération des tâches (l'OID associé à la tâche, et montré dans le rapport, doit être le nouveau, i.e. celui de la fin de l'année)
+		final DeterminationDIsPPResults results = service.run(annee, date(annee + 1, 1, 4), 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.traites.size());
+		{
+			final DeterminationDIsPPResults.Traite traite = results.traites.get(0);
+			assertNotNull(traite);
+			assertEquals(ppId, traite.noCtb);
+			assertEquals(date(annee, 1, 1), traite.dateDebut);
+			assertEquals(date(annee, 12, 31), traite.dateFin);
+			assertEquals((Integer) MockOfficeImpot.OID_AIGLE.getNoColAdm(), traite.officeImpotID);
+		}
+
+		// vérification des données en base
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertEquals((Integer) MockOfficeImpot.OID_GRANDSON.getNoColAdm(), pp.getOfficeImpotId());
+
+				final List<Tache> taches = tacheDAO.listTaches(ppId, TypeTache.TacheEnvoiDeclarationImpotPP);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+				{
+					final Tache tache = taches.get(0);
+					assertNotNull(tache);
+					assertFalse(tache.isAnnule());
+					assertEquals(TacheEnvoiDeclarationImpotPP.class, tache.getClass());
+					final TacheEnvoiDeclarationImpotPP tacheDI = (TacheEnvoiDeclarationImpotPP) tache;
+					assertEquals(date(annee, 1, 1), tacheDI.getDateDebut());
+					assertEquals(date(annee, 12, 31), tacheDI.getDateFin());
+					assertEquals((Integer) MockOfficeImpot.OID_AIGLE.getNoColAdm(), tache.getCollectiviteAdministrativeAssignee().getNumeroCollectiviteAdministrative());
+				}
 			}
 		});
 	}

@@ -139,15 +139,15 @@ public class DeterminationDIsPPResults extends JobResults<Long, DeterminationDIs
 	}
 
 	public void addTacheEnvoiCreee(ContribuableImpositionPersonnesPhysiques ctb, TacheEnvoiDeclarationImpotPP tache) {
-		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDateDebut(), tache.getDateFin(), TraiteType.TACHE_ENVOI_CREEE, tache.getCodeSegment(), tache.getTypeDocument(), tache.getTypeContribuable()));
+		traites.add(new Traite(ctb.getNumero(), tache.getCollectiviteAdministrativeAssignee().getNumeroCollectiviteAdministrative(), tache.getDateDebut(), tache.getDateFin(), TraiteType.TACHE_ENVOI_CREEE, tache.getCodeSegment(), tache.getTypeDocument(), tache.getTypeContribuable()));
 	}
 
 	public void addTacheEnvoiAnnulee(ContribuableImpositionPersonnesPhysiques ctb, TacheEnvoiDeclarationImpotPP tache) {
-		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDateDebut(), tache.getDateFin(), TraiteType.TACHE_ENVOI_ANNULEE, null, null, null));
+		traites.add(new Traite(ctb.getNumero(), tache.getCollectiviteAdministrativeAssignee().getNumeroCollectiviteAdministrative(), tache.getDateDebut(), tache.getDateFin(), TraiteType.TACHE_ENVOI_ANNULEE, null, null, null));
 	}
 
 	public void addTacheAnnulationCreee(Contribuable ctb, TacheAnnulationDeclarationImpot tache) {
-		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDeclaration().getDateDebut(), tache.getDeclaration().getDateFin(),
+		traites.add(new Traite(ctb.getNumero(), tache.getCollectiviteAdministrativeAssignee().getNumeroCollectiviteAdministrative(), tache.getDeclaration().getDateDebut(), tache.getDeclaration().getDateFin(),
 		                       TraiteType.TACHE_ANNULATION_CREE, null, null, null));
 	}
 
