@@ -450,6 +450,7 @@ INPUT.readonly {
 	font-family: monospace;
 	font-size: 10px;
 	font-weight: normal;
+	word-break: break-all;
 }
 
 table.postit {
