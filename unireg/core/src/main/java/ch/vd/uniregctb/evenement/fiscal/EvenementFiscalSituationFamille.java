@@ -8,7 +8,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 
 @Entity
 @DiscriminatorValue(value = "SITUATION_FAMILLE")
-public class EvenementFiscalSituationFamille extends EvenementFiscal {
+public class EvenementFiscalSituationFamille extends EvenementFiscalTiers {
 
 	public EvenementFiscalSituationFamille() {
 	}

@@ -92,7 +92,11 @@ public class EvenementFiscalV5SenderImpl implements EvenementFiscalSender, Initi
 			m.setServiceDestination(serviceDestination);
 			m.setContext("fiscalEvent.v5");
 			m.addHeader(VERSION_ATTRIBUTE, "5");
-			m.addHeader("noCtb", String.valueOf(evenement.getTiers().getNumero()));
+
+			if (evenement instanceof EvenementFiscalTiers) {
+				m.addHeader("noCtb", String.valueOf(((EvenementFiscalTiers) evenement).getTiers().getNumero()));
+			}
+
 			m.setBody(doc);
 
 			if (outputQueue != null) {

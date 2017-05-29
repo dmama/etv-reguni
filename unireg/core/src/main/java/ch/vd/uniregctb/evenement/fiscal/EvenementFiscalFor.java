@@ -17,7 +17,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 
 @Entity
 @DiscriminatorValue(value = "FOR")
-public class EvenementFiscalFor extends EvenementFiscal {
+public class EvenementFiscalFor extends EvenementFiscalTiers {
 
 	/**
 	 * Différents types d'événements fiscaux autour des fors

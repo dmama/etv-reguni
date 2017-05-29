@@ -8,7 +8,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 
 @Entity
 @DiscriminatorValue(value = "LETTRE_BIENVENUE")
-public class EvenementFiscalEnvoiLettreBienvenue extends EvenementFiscal {
+public class EvenementFiscalEnvoiLettreBienvenue extends EvenementFiscalTiers {
 
 	public EvenementFiscalEnvoiLettreBienvenue() {
 	}

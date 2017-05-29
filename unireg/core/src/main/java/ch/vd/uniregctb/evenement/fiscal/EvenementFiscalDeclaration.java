@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.Declaration;
 
 @Entity
-public abstract class EvenementFiscalDeclaration extends EvenementFiscal {
+public abstract class EvenementFiscalDeclaration extends EvenementFiscalTiers {
 
 	private Declaration declaration;
 

@@ -17,7 +17,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 @Entity
 @DiscriminatorValue(value = "PARENTE")
-public class EvenementFiscalParente extends EvenementFiscal {
+public class EvenementFiscalParente extends EvenementFiscalTiers {
 
 	public enum TypeEvenementFiscalParente {
 		NAISSANCE,

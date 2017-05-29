@@ -12,7 +12,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 
 @Entity
 @DiscriminatorValue(value = "INFORMATION_COMPLEMENTAIRE")
-public class EvenementFiscalInformationComplementaire extends EvenementFiscal {
+public class EvenementFiscalInformationComplementaire extends EvenementFiscalTiers {
 
 	public enum TypeInformationComplementaire {
 		/**

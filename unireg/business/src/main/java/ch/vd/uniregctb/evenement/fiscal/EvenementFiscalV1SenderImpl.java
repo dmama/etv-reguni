@@ -72,9 +72,16 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 			return;
 		}
 
+		// historiquement, ce canal n'a jamais envoyé d'événements RF, on continue comme ça...
+		if (!(evenement instanceof EvenementFiscalTiers)) {
+			return;
+		}
+
+		final EvenementFiscalTiers evenementTiers = (EvenementFiscalTiers) evenement;
+
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		Assert.notNull(principal);
-		
+
 		// Crée la représentation XML de l'événement
 		final XmlObject document = core2xml(evenement);
 		if (document == null) {
@@ -93,7 +100,7 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 			m.setServiceDestination(serviceDestination);
 			m.setContext("evenementFiscal.v1");
 			m.addHeader(VERSION_ATTRIBUTE, "1");
-			m.addHeader("noCtb", String.valueOf(evenement.getTiers().getNumero()));
+			m.addHeader("noCtb", String.valueOf(evenementTiers.getTiers().getNumero()));
 			m.setBody(XmlUtils.xmlbeans2string(document));
 
 			if (outputQueue != null) {

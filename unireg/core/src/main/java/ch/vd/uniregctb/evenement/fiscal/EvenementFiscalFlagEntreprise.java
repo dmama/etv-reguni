@@ -16,7 +16,7 @@ import ch.vd.uniregctb.tiers.FlagEntreprise;
 
 @Entity
 @DiscriminatorValue(value = "FLAG_ENTREPRISE")
-public class EvenementFiscalFlagEntreprise extends EvenementFiscal {
+public class EvenementFiscalFlagEntreprise extends EvenementFiscalTiers {
 
 	/**
 	 * Différents types d'événements fiscaux autour des allègements

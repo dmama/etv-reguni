@@ -26,6 +26,7 @@ import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclarationSommable;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalTiers;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPM;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -245,7 +246,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertNotNull(all);
 					Assert.assertEquals(1, all.size());
 
-					final EvenementFiscal evtFiscal = all.get(0);
+					final EvenementFiscalTiers evtFiscal = (EvenementFiscalTiers) all.get(0);
 					Assert.assertNotNull(evtFiscal);
 					Assert.assertFalse(evtFiscal.isAnnule());
 					Assert.assertSame(evtFiscal.getTiers(), e);
@@ -420,7 +421,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertNotNull(all);
 					Assert.assertEquals(1, all.size());
 
-					final EvenementFiscal evtFiscal = all.get(0);
+					final EvenementFiscalTiers evtFiscal = (EvenementFiscalTiers) all.get(0);
 					Assert.assertNotNull(evtFiscal);
 					Assert.assertFalse(evtFiscal.isAnnule());
 					Assert.assertSame(evtFiscal.getTiers(), e);
@@ -595,7 +596,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertNotNull(all);
 					Assert.assertEquals(1, all.size());
 
-					final EvenementFiscal evtFiscal = all.get(0);
+					final EvenementFiscalTiers evtFiscal = (EvenementFiscalTiers) all.get(0);
 					Assert.assertNotNull(evtFiscal);
 					Assert.assertFalse(evtFiscal.isAnnule());
 					Assert.assertSame(evtFiscal.getTiers(), e);

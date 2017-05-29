@@ -143,6 +143,13 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 			throw new IllegalArgumentException("Argument evenement ne peut être null.");
 		}
 
+		// historiquement, ce canal n'a jamais envoyé d'événements RF, on continue comme ça...
+		if (!(evenement instanceof EvenementFiscalTiers)) {
+			return;
+		}
+
+		final EvenementFiscalTiers evenementTiers = (EvenementFiscalTiers) evenement;
+
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		Assert.notNull(principal);
 
@@ -169,7 +176,7 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 			m.setServiceDestination(serviceDestination);
 			m.setContext("evenementFiscal.v2");
 			m.addHeader(VERSION_ATTRIBUTE, "2");
-			m.addHeader("noCtb", String.valueOf(evenement.getTiers().getNumero()));
+			m.addHeader("noCtb", String.valueOf(evenementTiers.getTiers().getNumero()));
 			m.setBody(doc);
 
 			if (outputQueue != null) {

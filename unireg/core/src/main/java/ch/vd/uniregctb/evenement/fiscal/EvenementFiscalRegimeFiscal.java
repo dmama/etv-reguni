@@ -16,7 +16,7 @@ import ch.vd.uniregctb.tiers.RegimeFiscal;
 
 @Entity
 @DiscriminatorValue(value = "REGIME_FISCAL")
-public class EvenementFiscalRegimeFiscal extends EvenementFiscal {
+public class EvenementFiscalRegimeFiscal extends EvenementFiscalTiers {
 
 	/**
 	 * Différents types d'événements fiscaux autour des allègements

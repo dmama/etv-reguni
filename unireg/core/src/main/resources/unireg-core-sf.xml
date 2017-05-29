@@ -69,6 +69,14 @@
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRegimeFiscal</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSituationFamille</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRapprochementTiersRF</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalBatiment</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroit</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImplantationBatiment</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalRF</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude</value>
 		<value>ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch</value>
 		<value>ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur</value>
 		<value>ch.vd.uniregctb.evenement.organisation.EvenementOrganisation</value>

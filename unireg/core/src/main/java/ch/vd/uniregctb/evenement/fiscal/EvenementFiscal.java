@@ -4,24 +4,20 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.Tiers;
 
 @Entity
 @Table(name = "EVENEMENT_FISCAL")
@@ -30,14 +26,13 @@ import ch.vd.uniregctb.tiers.Tiers;
 public abstract class EvenementFiscal extends HibernateEntity {
 
 	private Long id;
-	private Tiers tiers;
+	@Nullable
 	private RegDate dateValeur;
 
 	public EvenementFiscal() {
 	}
 
-	public EvenementFiscal(Tiers tiers, RegDate dateValeur) {
-		this.tiers = tiers;
+	public EvenementFiscal(@Nullable RegDate dateValeur) {
 		this.dateValeur = dateValeur;
 	}
 
@@ -58,29 +53,14 @@ public abstract class EvenementFiscal extends HibernateEntity {
 		this.id = id;
 	}
 
-	@JoinColumn(name = "TIERS_ID")
-	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_EVTFISC_TIERS_ID")
-	public Tiers getTiers() {
-		return tiers;
-	}
-
-	public void setTiers(Tiers tiers) {
-		this.tiers = tiers;
-	}
-
+	@Nullable
 	@Column(name = "DATE_VALEUR")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateValeur() {
 		return dateValeur;
 	}
 
-	public void setDateValeur(RegDate dateValeur) {
+	public void setDateValeur(@Nullable RegDate dateValeur) {
 		this.dateValeur = dateValeur;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s{id=%d, dateValeur=%s, tiers=%d}", getClass().getSimpleName(), id, dateValeur, tiers.getNumero());
 	}
 }

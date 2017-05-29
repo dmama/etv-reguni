@@ -9,7 +9,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 
 @Entity
 @DiscriminatorValue(value = "IMPRESSION_FOURRE_NEUTRE")
-public class EvenementFiscalImpressionFourreNeutre extends EvenementFiscal {
+public class EvenementFiscalImpressionFourreNeutre extends EvenementFiscalTiers {
 	private Integer periodeFiscale;
 	public EvenementFiscalImpressionFourreNeutre() {
 	}

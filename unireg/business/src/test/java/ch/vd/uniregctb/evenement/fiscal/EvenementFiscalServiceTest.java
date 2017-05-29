@@ -24,6 +24,7 @@ import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class EvenementFiscalServiceTest extends BusinessTest {
 
@@ -43,8 +44,8 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		super.onSetUp();
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
-	    evenementFiscalSender = getBean(CollectingEvenementFiscalSender.class, "evenementFiscalSender");
-		tiersDAO = getBean( TiersDAO.class, "tiersDAO");
+		evenementFiscalSender = getBean(CollectingEvenementFiscalSender.class, "evenementFiscalSender");
+		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 	}
 
 	@Test
@@ -94,7 +95,8 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				evenementFiscalSender.reset();;
+				evenementFiscalSender.reset();
+				;
 				assertEquals(0, evenementFiscalDAO.getAll().size());
 
 				// le DPI
@@ -162,11 +164,11 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 	}
 
 	private static void assertCSFEvent(Long tiersId, RegDate dateEvenement, EvenementFiscal event) {
-		assertEvent(tiersId, dateEvenement, EvenementFiscalSituationFamille.class, event);
+		assertTiersEvent(tiersId, dateEvenement, EvenementFiscalSituationFamille.class, event);
 	}
 
 	private static void assertForEvent(Long tiersId, RegDate dateEvenement, EvenementFiscalFor.TypeEvenementFiscalFor type, EvenementFiscal event) {
-		assertEvent(tiersId, dateEvenement, EvenementFiscalFor.class, event);
+		assertTiersEvent(tiersId, dateEvenement, EvenementFiscalFor.class, event);
 		final EvenementFiscalFor forEvent = (EvenementFiscalFor) event;
 		assertEquals(type, forEvent.getType());
 		assertNotNull(forEvent.getForFiscal());
@@ -179,7 +181,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 	                                           RegDate dateFinPeriode,
 	                                           Class<? extends Declaration> expectedDeclarationClass,
 	                                           EvenementFiscal event) {
-		assertEvent(tiersId, dateEvenement, EvenementFiscalDeclarationSommable.class, event);
+		assertTiersEvent(tiersId, dateEvenement, EvenementFiscalDeclarationSommable.class, event);
 
 		final EvenementFiscalDeclarationSommable declaEvent = (EvenementFiscalDeclarationSommable) event;
 		assertEquals(type, declaEvent.getTypeAction());
@@ -190,9 +192,10 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		assertEquals(dateFinPeriode, declaration.getDateFin());
 	}
 
-	private static void assertEvent(Long tiersId, RegDate dateEvenement, Class<? extends EvenementFiscal> expectedClass, EvenementFiscal event0) {
+	private static void assertTiersEvent(Long tiersId, RegDate dateEvenement, Class<? extends EvenementFiscal> expectedClass, EvenementFiscal event0) {
 		assertNotNull(event0);
-		assertEquals(tiersId, event0.getTiers().getNumero());
+		assertTrue(event0 instanceof EvenementFiscalTiers);
+		assertEquals(tiersId, ((EvenementFiscalTiers) event0).getTiers().getNumero());
 		assertEquals(dateEvenement, event0.getDateValeur());
 		assertEquals(expectedClass, event0.getClass());
 	}
