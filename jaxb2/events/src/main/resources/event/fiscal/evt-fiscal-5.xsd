@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v4 : événements fiscaux avec prise en compte de la fourre neutre -->
+<!-- v5 : événements sur les données du registre foncier -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/fiscal/5" elementFormDefault="qualified" attributeFormDefault="unqualified"
            xmlns="http://www.vd.ch/fiscalite/unireg/event/fiscal/5"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -668,7 +668,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:simpleType name="summonsableTaxDeclarationEventTypeType">
+	<xs:simpleType name="summonableTaxDeclarationEventTypeType">
 		<xs:annotation>
 			<xs:documentation>Le type d'un événement fiscal sur une déclaration.</xs:documentation>
 		</xs:annotation>
@@ -683,7 +683,7 @@
 					<xs:documentation>Type de l'événement fiscal émis à l'annulation d'un formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="SUMMONSING">
+			<xs:enumeration value="SUMMONING">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de la sommation d'un formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
@@ -729,7 +729,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:complexType name="summonsableTaxDeclarationEventType" abstract="true">
+	<xs:complexType name="summonableTaxDeclarationEventType" abstract="true">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -740,7 +740,7 @@
 		<xs:complexContent>
 			<xs:extension base="taxDeclarationEventType">
 				<xs:sequence>
-					<xs:element name="type" type="summonsableTaxDeclarationEventTypeType">
+					<xs:element name="type" type="summonableTaxDeclarationEventTypeType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -788,7 +788,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="summonsableTaxDeclarationEventType">
+			<xs:extension base="summonableTaxDeclarationEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -805,7 +805,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="summonsableTaxDeclarationEventType">
+			<xs:extension base="summonableTaxDeclarationEventType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -834,7 +834,7 @@
 	<!-- Les événements fiscaux concernant des informations complémentaires sur les entreprises (= passe-plats) -->
 	<!-- -->
 
-	<xs:complexType name="otherOrgInfoEventType">
+	<xs:complexType name="additionalOrgInfoEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -845,7 +845,7 @@
 		<xs:complexContent>
 			<xs:extension base="partyEventType">
 				<xs:sequence>
-					<xs:element name="type" type="otherOrgInfoEventTypeType">
+					<xs:element name="type" type="additionalOrgInfoEventTypeType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -860,7 +860,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:simpleType name="otherOrgInfoEventTypeType">
+	<xs:simpleType name="additionalOrgInfoEventTypeType">
 		<xs:annotation>
 			<xs:documentation>Le type d'un événement fiscal émis à la réception d'une annonce civile autour d'une faillite ou d'un concordat sans impact sur l'assujettissement de l'entreprise.</xs:documentation>
 		</xs:annotation>
@@ -885,7 +885,7 @@
 					<xs:documentation>Type de l'événement fiscal émis lors d'une modification du capital d'une entreprise.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="FUSION">
+			<xs:enumeration value="MERGER">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors d'une fusion d'entreprises.</xs:documentation>
 				</xs:annotation>
@@ -1000,7 +1000,7 @@
 					<xs:documentation>Type de l'événement fiscal émis lors de l'appel aux créanciers suite à un transfert à l'étranger.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="FUSION_CANCELLATION">
+			<xs:enumeration value="MERGER_CANCELLATION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis lors de l'annulation d'une fusion d'entreprises.</xs:documentation>
 				</xs:annotation>
@@ -1074,7 +1074,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="immoStartEventType">
+	<xs:complexType name="immovablePropertyStartEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -1091,7 +1091,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="immoEndEventType">
+	<xs:complexType name="immovablePropertyEndEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -1550,7 +1550,7 @@
 		<xs:complexContent>
 			<xs:extension base="landRightEventType">
 				<xs:sequence>
-					<xs:element name="rightHolders" type="land:rightHolderType" minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="rightHolders" type="land:rightHolderType" minOccurs="1" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -1559,7 +1559,7 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="immovablePropertyId" type="xs:long" minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="immovablePropertyIds" type="xs:long" minOccurs="1" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>

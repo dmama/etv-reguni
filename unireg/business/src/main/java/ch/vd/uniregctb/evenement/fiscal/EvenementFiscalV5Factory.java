@@ -6,6 +6,8 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.xml.event.fiscal.v5.AdditionalOrgInfoEvent;
+import ch.vd.unireg.xml.event.fiscal.v5.AdditionalOrgInfoEventType;
 import ch.vd.unireg.xml.event.fiscal.v5.BirthEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.FamilyStatusEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.FiscalEvent;
@@ -15,16 +17,14 @@ import ch.vd.unireg.xml.event.fiscal.v5.OrganisationFlagCancellationEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.OrganisationFlagEndEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.OrganisationFlagEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.OrganisationFlagStartEvent;
-import ch.vd.unireg.xml.event.fiscal.v5.OtherOrgInfoEvent;
-import ch.vd.unireg.xml.event.fiscal.v5.OtherOrgInfoEventType;
 import ch.vd.unireg.xml.event.fiscal.v5.ParentalAuthorityEndEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.ParentalAuthorityEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.PartnershipFormEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.PartyKind;
 import ch.vd.unireg.xml.event.fiscal.v5.RemindableTaxDeclarationEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.RemindableTaxDeclarationEventType;
-import ch.vd.unireg.xml.event.fiscal.v5.SummonsableTaxDeclarationEvent;
-import ch.vd.unireg.xml.event.fiscal.v5.SummonsableTaxDeclarationEventType;
+import ch.vd.unireg.xml.event.fiscal.v5.SummonableTaxDeclarationEvent;
+import ch.vd.unireg.xml.event.fiscal.v5.SummonableTaxDeclarationEventType;
 import ch.vd.unireg.xml.event.fiscal.v5.TaxLighteningCancellationEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.TaxLighteningEndEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.TaxLighteningEvent;
@@ -89,10 +89,10 @@ public abstract class EvenementFiscalV5Factory {
 	private static FactoryMap buildOutputDataFactories() {
 		final FactoryMap map = new FactoryMapImpl();
 		registerOutputDataFactory(map, EvenementFiscalAllegementFiscal.class, new TaxLighteningEventFactory());
-		registerOutputDataFactory(map, EvenementFiscalDeclarationSommable.class, new SummonsableTaxDeclarationEventFactory());
+		registerOutputDataFactory(map, EvenementFiscalDeclarationSommable.class, new SummonableTaxDeclarationEventFactory());
 		registerOutputDataFactory(map, EvenementFiscalDeclarationRappelable.class, new RemindableTaxDeclarationEventFactory());
 		registerOutputDataFactory(map, EvenementFiscalFor.class, new TaxResidenceEventFactory());
-		registerOutputDataFactory(map, EvenementFiscalInformationComplementaire.class, new OtherOrgInfoEventFactory());
+		registerOutputDataFactory(map, EvenementFiscalInformationComplementaire.class, new AdditionalOrgInfoEventFactory());
 		registerOutputDataFactory(map, EvenementFiscalParente.class, new ParentalAuthorityEventFactory());
 		registerOutputDataFactory(map, EvenementFiscalRegimeFiscal.class, new TaxSystemEventFactory());
 		registerOutputDataFactory(map, EvenementFiscalSituationFamille.class, new FamilyStatusEventFactory());
@@ -152,12 +152,12 @@ public abstract class EvenementFiscalV5Factory {
 		}
 	}
 
-	private static class SummonsableTaxDeclarationEventFactory implements OutputDataFactory<EvenementFiscalDeclarationSommable, SummonsableTaxDeclarationEvent> {
+	private static class SummonableTaxDeclarationEventFactory implements OutputDataFactory<EvenementFiscalDeclarationSommable, SummonableTaxDeclarationEvent> {
 		@NotNull
 		@Override
-		public SummonsableTaxDeclarationEvent build(@NotNull EvenementFiscalDeclarationSommable evenementFiscal) {
+		public SummonableTaxDeclarationEvent build(@NotNull EvenementFiscalDeclarationSommable evenementFiscal) {
 			final Declaration declaration = evenementFiscal.getDeclaration();
-			final SummonsableTaxDeclarationEvent instance = instanciateSommable(declaration);
+			final SummonableTaxDeclarationEvent instance = instanciateSommable(declaration);
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setPartyNumber(safeLongIdToInt(tiers.getNumero()));
 			instance.setPartyKind(extractPartyKind(tiers));
@@ -168,7 +168,7 @@ public abstract class EvenementFiscalV5Factory {
 			return instance;
 		}
 
-		private static SummonsableTaxDeclarationEvent instanciateSommable(Declaration declaration) {
+		private static SummonableTaxDeclarationEvent instanciateSommable(Declaration declaration) {
 			if (declaration instanceof DeclarationImpotOrdinaire) {
 				return new OrdinaryTaxDeclarationEvent();
 			}
@@ -179,18 +179,18 @@ public abstract class EvenementFiscalV5Factory {
 		}
 	}
 
-	protected static SummonsableTaxDeclarationEventType mapType(EvenementFiscalDeclarationSommable.TypeAction type) {
+	protected static SummonableTaxDeclarationEventType mapType(EvenementFiscalDeclarationSommable.TypeAction type) {
 		switch (type) {
 		case ANNULATION:
-			return SummonsableTaxDeclarationEventType.CANCELLING;
+			return SummonableTaxDeclarationEventType.CANCELLING;
 		case ECHEANCE:
-			return SummonsableTaxDeclarationEventType.EXPIRING;
+			return SummonableTaxDeclarationEventType.EXPIRING;
 		case EMISSION:
-			return SummonsableTaxDeclarationEventType.SENDING;
+			return SummonableTaxDeclarationEventType.SENDING;
 		case QUITTANCEMENT:
-			return SummonsableTaxDeclarationEventType.ACKNOWLEDGING;
+			return SummonableTaxDeclarationEventType.ACKNOWLEDGING;
 		case SOMMATION:
-			return SummonsableTaxDeclarationEventType.SUMMONSING;
+			return SummonableTaxDeclarationEventType.SUMMONING;
 		default:
 			throw new IllegalArgumentException("Type d'action sur une déclaration 'sommable' non-supporté : " + type);
 		}
@@ -282,11 +282,11 @@ public abstract class EvenementFiscalV5Factory {
 		}
 	}
 
-	private static class OtherOrgInfoEventFactory implements OutputDataFactory<EvenementFiscalInformationComplementaire, OtherOrgInfoEvent> {
+	private static class AdditionalOrgInfoEventFactory implements OutputDataFactory<EvenementFiscalInformationComplementaire, AdditionalOrgInfoEvent> {
 		@NotNull
 		@Override
-		public OtherOrgInfoEvent build(@NotNull EvenementFiscalInformationComplementaire evenementFiscal) {
-			final OtherOrgInfoEvent instance = new OtherOrgInfoEvent();
+		public AdditionalOrgInfoEvent build(@NotNull EvenementFiscalInformationComplementaire evenementFiscal) {
+			final AdditionalOrgInfoEvent instance = new AdditionalOrgInfoEvent();
 			final Tiers tiers = evenementFiscal.getTiers();
 			instance.setPartyNumber(safeLongIdToInt(tiers.getNumero()));
 			instance.setPartyKind(extractPartyKind(tiers));
@@ -296,70 +296,70 @@ public abstract class EvenementFiscalV5Factory {
 		}
 	}
 
-	protected static OtherOrgInfoEventType mapType(EvenementFiscalInformationComplementaire.TypeInformationComplementaire type) {
+	protected static AdditionalOrgInfoEventType mapType(EvenementFiscalInformationComplementaire.TypeInformationComplementaire type) {
 		switch (type) {
 		case ANNULATION_FAILLITE:
-			return OtherOrgInfoEventType.BANKRUPTCY_CANCELLATION;
+			return AdditionalOrgInfoEventType.BANKRUPTCY_CANCELLATION;
 		case ANNULATION_FUSION:
-			return OtherOrgInfoEventType.FUSION_CANCELLATION;
+			return AdditionalOrgInfoEventType.MERGER_CANCELLATION;
 		case ANNULATION_SCISSION:
-			return OtherOrgInfoEventType.SPLIT_CANCELLATION;
+			return AdditionalOrgInfoEventType.SPLIT_CANCELLATION;
 		case ANNULATION_TRANFERT_PATRIMOINE:
-			return OtherOrgInfoEventType.WEALTH_TRANSFER_CANCELLATION;
+			return AdditionalOrgInfoEventType.WEALTH_TRANSFER_CANCELLATION;
 		case ANNULATION_SURSIS_CONCORDATAIRE:
-			return OtherOrgInfoEventType.DEBT_RESTRUCTURING_MORATORIUM_CANCELLATION;
+			return AdditionalOrgInfoEventType.DEBT_RESTRUCTURING_MORATORIUM_CANCELLATION;
 		case APPEL_CREANCIERS_CONCORDAT:
-			return OtherOrgInfoEventType.CALL_TO_CREDITORS_IN_CONCORDAT;
+			return AdditionalOrgInfoEventType.CALL_TO_CREDITORS_IN_CONCORDAT;
 		case APPEL_CREANCIERS_TRANSFERT_HS:
-			return OtherOrgInfoEventType.CALL_TO_CREDITORS_IN_TRANSFER_ABROAD;
+			return AdditionalOrgInfoEventType.CALL_TO_CREDITORS_IN_TRANSFER_ABROAD;
 		case AUDIENCE_LIQUIDATION_ABANDON_ACTIF:
-			return OtherOrgInfoEventType.HEARING_FOR_ASSETS_ASSIGNMENT;
+			return AdditionalOrgInfoEventType.HEARING_FOR_ASSETS_ASSIGNMENT;
 		case AVIS_PREALABLE_OUVERTURE_FAILLITE:
-			return OtherOrgInfoEventType.NOTICE_BEFORE_BANKRUPTCY_PROCEEDINGS;
+			return AdditionalOrgInfoEventType.NOTICE_BEFORE_BANKRUPTCY_PROCEEDINGS;
 		case CHANGEMENT_FORME_JURIDIQUE_MEME_CATEGORIE:
-			return OtherOrgInfoEventType.LEGAL_FORM_UPDATE;
+			return AdditionalOrgInfoEventType.LEGAL_FORM_UPDATE;
 		case CLOTURE_FAILLITE:
-			return OtherOrgInfoEventType.BANKRUPTCY_CLOSING;
+			return AdditionalOrgInfoEventType.BANKRUPTCY_CLOSING;
 		case CONCORDAT_BANQUE_CAISSE_EPARGNE:
-			return OtherOrgInfoEventType.BANK_SAVINGS_AND_LOAN_CONCORDAT;
+			return AdditionalOrgInfoEventType.BANK_SAVINGS_AND_LOAN_CONCORDAT;
 		case ETAT_COLLOCATION_CONCORDAT_ABANDON_ACTIF:
-			return OtherOrgInfoEventType.COLLOCATION_STATE_IN_ASSETS_ASSIGNMENT_CONCORDAT;
+			return AdditionalOrgInfoEventType.COLLOCATION_STATE_IN_ASSETS_ASSIGNMENT_CONCORDAT;
 		case ETAT_COLLOCATION_INVENTAIRE_FAILLITE:
-			return OtherOrgInfoEventType.COLLOCATION_STATE_INVENTORY_IN_BANKRUPTCY;
+			return AdditionalOrgInfoEventType.COLLOCATION_STATE_INVENTORY_IN_BANKRUPTCY;
 		case FUSION:
-			return OtherOrgInfoEventType.FUSION;
+			return AdditionalOrgInfoEventType.MERGER;
 		case HOMOLOGATION_CONCORDAT:
-			return OtherOrgInfoEventType.CONCORDAT_APPROVAL;
+			return AdditionalOrgInfoEventType.CONCORDAT_APPROVAL;
 		case LIQUIDATION:
-			return OtherOrgInfoEventType.LIQUIDATION;
+			return AdditionalOrgInfoEventType.LIQUIDATION;
 		case MODIFICATION_BUT:
-			return OtherOrgInfoEventType.GOAL_UPDATE;
+			return AdditionalOrgInfoEventType.GOAL_UPDATE;
 		case MODIFICATION_CAPITAL:
-			return OtherOrgInfoEventType.CAPITAL_UPDATE;
+			return AdditionalOrgInfoEventType.CAPITAL_UPDATE;
 		case MODIFICATION_STATUTS:
-			return OtherOrgInfoEventType.STATUS_UPDATE;
+			return AdditionalOrgInfoEventType.STATUS_UPDATE;
 		case PROLONGATION_SURSIS_CONCORDATAIRE:
-			return OtherOrgInfoEventType.DEBT_RESTRUCTURING_MORATORIUM_EXTENSION;
+			return AdditionalOrgInfoEventType.DEBT_RESTRUCTURING_MORATORIUM_EXTENSION;
 		case PUBLICATION_FAILLITE_APPEL_CREANCIERS:
-			return OtherOrgInfoEventType.CALL_TO_CREDITORS_IN_BANKRUPTCY;
+			return AdditionalOrgInfoEventType.CALL_TO_CREDITORS_IN_BANKRUPTCY;
 		case REVOCATION_FAILLITE:
-			return OtherOrgInfoEventType.BANKRUPTCY_REVOCATION;
+			return AdditionalOrgInfoEventType.BANKRUPTCY_REVOCATION;
 		case SCISSION:
-			return OtherOrgInfoEventType.SPLIT;
+			return AdditionalOrgInfoEventType.SPLIT;
 		case SURSIS_CONCORDATAIRE:
-			return OtherOrgInfoEventType.DEBT_RESTRUCTURING_MORATORIUM;
+			return AdditionalOrgInfoEventType.DEBT_RESTRUCTURING_MORATORIUM;
 		case SURSIS_CONCORDATAIRE_PROVISOIRE:
-			return OtherOrgInfoEventType.PROVISIONAL_DEBT_RESTRUCTURING_MORATORIUM;
+			return AdditionalOrgInfoEventType.PROVISIONAL_DEBT_RESTRUCTURING_MORATORIUM;
 		case SUSPENSION_FAILLITE:
-			return OtherOrgInfoEventType.BANKRUPTCY_SUSPENSION;
+			return AdditionalOrgInfoEventType.BANKRUPTCY_SUSPENSION;
 		case TABLEAU_DISTRIBUTION_DECOMPTE_FINAL_CONCORDAT:
-			return OtherOrgInfoEventType.FINAL_SETTLEMENT_IN_ASSETS_ASSIGNMENT_CONCORDAT;
+			return AdditionalOrgInfoEventType.FINAL_SETTLEMENT_IN_ASSETS_ASSIGNMENT_CONCORDAT;
 		case TRANSFERT_PATRIMOINE:
-			return OtherOrgInfoEventType.WEALTH_TRANSFER;
+			return AdditionalOrgInfoEventType.WEALTH_TRANSFER;
 		case VENTE_ENCHERES_FORCEE_IMMEUBLES_FAILLITE:
-			return OtherOrgInfoEventType.FORCED_SALE_OF_IMMOVABLE_PROPERTIES_IN_BANKRUPTCY;
+			return AdditionalOrgInfoEventType.FORCED_SALE_OF_IMMOVABLE_PROPERTIES_IN_BANKRUPTCY;
 		case VENTE_ENCHERES_FORCEE_IMMEUBLES_POURSUITE:
-			return OtherOrgInfoEventType.FORCED_SALE_OF_IMMOVABLE_PROPERTIES_IN_PROSECUTION;
+			return AdditionalOrgInfoEventType.FORCED_SALE_OF_IMMOVABLE_PROPERTIES_IN_PROSECUTION;
 		default:
 			throw new IllegalArgumentException("Type d'information complémentaire non-supporté : " + type);
 		}

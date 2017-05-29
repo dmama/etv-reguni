@@ -3,11 +3,11 @@ package ch.vd.uniregctb.evenement.fiscal;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ch.vd.unireg.xml.event.fiscal.v5.AdditionalOrgInfoEventType;
 import ch.vd.unireg.xml.event.fiscal.v5.FiscalEvent;
-import ch.vd.unireg.xml.event.fiscal.v5.OtherOrgInfoEventType;
 import ch.vd.unireg.xml.event.fiscal.v5.ParentalAuthorityEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.RemindableTaxDeclarationEventType;
-import ch.vd.unireg.xml.event.fiscal.v5.SummonsableTaxDeclarationEventType;
+import ch.vd.unireg.xml.event.fiscal.v5.SummonableTaxDeclarationEventType;
 import ch.vd.unireg.xml.event.fiscal.v5.TaxResidenceEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.TaxSystemEvent;
 
@@ -26,7 +26,7 @@ public class EvenementFiscalV5FactoryTest {
 	public void testTypeActionEvenementDeclarationSommable() throws Exception {
 		// on doit vérifier que types d'événement autour des déclarations sont acceptés par l'XSD des événements fiscaux V5
 		for (EvenementFiscalDeclarationSommable.TypeAction type : EvenementFiscalDeclarationSommable.TypeAction.values()) {
-			final SummonsableTaxDeclarationEventType mapped = EvenementFiscalV5Factory.mapType(type);
+			final SummonableTaxDeclarationEventType mapped = EvenementFiscalV5Factory.mapType(type);
 			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux V5", mapped);
 		}
 	}
@@ -53,7 +53,7 @@ public class EvenementFiscalV5FactoryTest {
 	public void testTypeInformationComplementaire() throws Exception {
 		// on doit vérifier que types d'événement autour des informations complémentaires sont acceptés par l'XSD des événements fiscaux V5
 		for (EvenementFiscalInformationComplementaire.TypeInformationComplementaire type : EvenementFiscalInformationComplementaire.TypeInformationComplementaire.values()) {
-			final OtherOrgInfoEventType mapped = EvenementFiscalV5Factory.mapType(type);
+			final AdditionalOrgInfoEventType mapped = EvenementFiscalV5Factory.mapType(type);
 			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux V5", mapped);
 		}
 	}
