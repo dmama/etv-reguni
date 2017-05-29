@@ -1,10 +1,11 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
@@ -13,6 +14,26 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalBatiment;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroit;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImplantationBatiment;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
+import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.UsufruitRF;
+import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -52,15 +73,12 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 	public void testPublierEvenementFor() throws Exception {
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				evenementFiscalSender.reset();
-				assertEquals(0, evenementFiscalDAO.getAll().size());
+		final long id = doInNewTransactionAndSession(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
 
-				final PersonnePhysique pp = addNonHabitant("Laurent", "Schmidt", date(1970, 5, 27), Sexe.MASCULIN);
-				return pp.getNumero();
-			}
+			final PersonnePhysique pp = addNonHabitant("Laurent", "Schmidt", date(1970, 5, 27), Sexe.MASCULIN);
+			return pp.getNumero();
 		});
 
 		// création d'un for et envoi d'un événement
@@ -92,17 +110,13 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 	public void publierEvenementFiscalRetourLR() throws Exception {
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				evenementFiscalSender.reset();
-				;
-				assertEquals(0, evenementFiscalDAO.getAll().size());
+		final long id = doInNewTransactionAndSession(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
 
-				// le DPI
-				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
-				return debiteur.getNumero();
-			}
+			// le DPI
+			final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
+			return debiteur.getNumero();
 		});
 
 		// création d'une LR et publication d'un événement correspondant
@@ -137,16 +151,13 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 	public void publierEvenementFiscalChangementSituation() throws Exception {
 
 		// mise en place
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				evenementFiscalSender.reset();
-				assertEquals(0, evenementFiscalDAO.getAll().size());
+		final long id = doInNewTransactionAndSession(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
 
-				final PersonnePhysique pp = addNonHabitant("Laurent", "Schmidt", date(1970, 4, 2), Sexe.MASCULIN);
-				evenementFiscalService.publierEvenementFiscalChangementSituationFamille(RegDate.get().addDays(-3), pp);
-				return pp.getNumero();
-			}
+			final PersonnePhysique pp = addNonHabitant("Laurent", "Schmidt", date(1970, 4, 2), Sexe.MASCULIN);
+			evenementFiscalService.publierEvenementFiscalChangementSituationFamille(RegDate.get().addDays(-3), pp);
+			return pp.getNumero();
 		});
 
 		// Vérifie que l'événement a été envoyé
@@ -160,6 +171,318 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 				assertEquals(1, events.size());
 				assertCSFEvent(id, RegDate.get().addDays(-3), events.get(0));
 			}
+		});
+	}
+
+	@Test
+	public void testPublierCreationBatiment() throws Exception {
+
+		// appel du service
+		final Long id = doInNewTransaction(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
+
+			final BatimentRF batiment = addBatimentRF("32099903");
+			evenementFiscalService.publierCreationBatiment(RegDate.get(2000, 1, 1), batiment);
+			return batiment.getId();
+		});
+
+		// Vérifie que l'événement a été envoyé
+		assertEquals(1, evenementFiscalSender.getCount());
+
+		doInNewTransaction(status -> {
+			// Vérifie que l'événement est dans la base
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalBatiment event0 = (EvenementFiscalBatiment) events.get(0);
+			assertNotNull(event0);
+			assertEquals(EvenementFiscalBatiment.TypeEvenementFiscalBatiment.CREATION, event0.getType());
+			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
+			assertEquals(id, event0.getBatiment().getId());
+			return null;
+		});
+	}
+
+	@Test
+	public void testPublierRadiationBatiment() throws Exception {
+
+		// appel du service
+		final Long id = doInNewTransaction(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
+
+			final BatimentRF batiment = addBatimentRF("32099903");
+			evenementFiscalService.publierRadiationBatiment(RegDate.get(2000, 1, 1), batiment);
+			return batiment.getId();
+		});
+
+		// Vérifie que l'événement a été envoyé
+		assertEquals(1, evenementFiscalSender.getCount());
+
+		doInNewTransaction(status -> {
+			// Vérifie que l'événement est dans la base
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalBatiment event0 = (EvenementFiscalBatiment) events.get(0);
+			assertNotNull(event0);
+			assertEquals(EvenementFiscalBatiment.TypeEvenementFiscalBatiment.RADIATION, event0.getType());
+			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
+			assertEquals(id, event0.getBatiment().getId());
+			return null;
+		});
+	}
+
+	@Test
+	public void testPublierModificationDescriptionBatiment() throws Exception {
+
+		// appel du service
+		final Long id = doInNewTransaction(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
+
+			final BatimentRF batiment = addBatimentRF("32099903");
+			evenementFiscalService.publierModificationDescriptionBatiment(RegDate.get(2000, 1, 1), batiment);
+			return batiment.getId();
+		});
+
+		// Vérifie que l'événement a été envoyé
+		assertEquals(1, evenementFiscalSender.getCount());
+
+		doInNewTransaction(status -> {
+			// Vérifie que l'événement est dans la base
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalBatiment event0 = (EvenementFiscalBatiment) events.get(0);
+			assertNotNull(event0);
+			assertEquals(EvenementFiscalBatiment.TypeEvenementFiscalBatiment.MODIFICATION_DESCRIPTION, event0.getType());
+			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
+			assertEquals(id, event0.getBatiment().getId());
+			return null;
+		});
+	}
+
+	@Test
+	public void testPublierOuvertureDroitPropriete() throws Exception {
+
+		class Ids {
+			Long immeuble;
+			Long pp;
+
+			public Ids(Long immeuble, Long pp) {
+				this.immeuble = immeuble;
+				this.pp = pp;
+			}
+		}
+
+		// appel du service
+		final Ids ids = doInNewTransaction(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
+
+			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
+			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
+			final PersonnePhysiqueRF pp = addPersonnePhysiqueRF("383883", "Jean", "Jean", RegDate.get(1970, 1, 1));
+			final DroitProprietePersonnePhysiqueRF droit =
+					addDroitPropriete(pp, immeuble, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
+					                  RegDate.get(2000, 1, 1), null, RegDate.get(2000, 1, 1), null, "Achat", null,
+					                  new IdentifiantAffaireRF(12, 2000, 1, null), "232323232", "2323");
+
+			evenementFiscalService.publierOuvertureDroitPropriete(RegDate.get(2000, 1, 1), droit);
+
+			return new Ids(immeuble.getId(), pp.getId());
+		});
+
+		// Vérifie que l'événement a été envoyé
+		assertEquals(1, evenementFiscalSender.getCount());
+
+		doInNewTransaction(status -> {
+			// Vérifie que l'événement est dans la base
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
+			assertNotNull(event0);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
+			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
+			assertEquals(ids.immeuble, event0.getImmeuble().getId());
+			assertEquals(ids.pp, event0.getAyantDroit().getId());
+			return null;
+		});
+	}
+
+	@Test
+	public void testPublierOuvertureServitude() throws Exception {
+
+		class Ids {
+			Long immeuble;
+			Long pp;
+
+			public Ids(Long immeuble, Long pp) {
+				this.immeuble = immeuble;
+				this.pp = pp;
+			}
+		}
+
+		// appel du service
+		final Ids ids = doInNewTransaction(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
+
+			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
+			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
+			final PersonnePhysiqueRF pp = addPersonnePhysiqueRF("383883", "Jean", "Jean", RegDate.get(1970, 1, 1));
+
+			final UsufruitRF usufruit = addUsufruitRF(RegDate.get(2000, 1, 1), RegDate.get(2000, 1, 1), null, null, "Convention", null,
+			                                            "23233", "29292", new IdentifiantAffaireRF(12, 2000, 1, null), new IdentifiantDroitRF(12, 2000, 1), pp, immeuble);
+
+			evenementFiscalService.publierOuvertureServitude(RegDate.get(2000, 1, 1), usufruit);
+
+			return new Ids(immeuble.getId(), pp.getId());
+		});
+
+		// Vérifie que l'événement a été envoyé
+		assertEquals(1, evenementFiscalSender.getCount());
+
+		doInNewTransaction(status -> {
+			// Vérifie que l'événement est dans la base
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalServitude event0 = (EvenementFiscalServitude) events.get(0);
+			assertNotNull(event0);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
+			assertEquals(EvenementFiscalServitude.TypeEvenementServitude.USUFRUIT, event0.getTypeServitude());
+			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
+
+			final List<Long> immeublesIds = event0.getImmeubles().stream()
+					.map(ImmeubleRF::getId)
+					.collect(Collectors.toList());
+			assertEquals(Collections.singletonList(ids.immeuble), immeublesIds);
+
+			final List<Long> ayantDroitIds = event0.getAyantDroits().stream()
+					.map(AyantDroitRF::getId)
+					.collect(Collectors.toList());
+			assertEquals(Collections.singletonList(ids.pp), ayantDroitIds);
+
+			return null;
+		});
+	}
+
+	@Test
+	public void testPublierCreationImmeuble() throws Exception {
+
+		// appel du service
+		final Long id = doInNewTransaction(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
+
+			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
+			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
+
+			evenementFiscalService.publierCreationImmeuble(RegDate.get(2000, 1, 1), immeuble);
+
+			return immeuble.getId();
+		});
+
+		// Vérifie que l'événement a été envoyé
+		assertEquals(1, evenementFiscalSender.getCount());
+
+		doInNewTransaction(status -> {
+			// Vérifie que l'événement est dans la base
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalImmeuble event0 = (EvenementFiscalImmeuble) events.get(0);
+			assertNotNull(event0);
+			assertEquals(EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.CREATION, event0.getType());
+			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
+			assertEquals(id, event0.getImmeuble().getId());
+
+			return null;
+		});
+	}
+
+	@Test
+	public void testPublierDebutEstimationFiscale() throws Exception {
+
+		// appel du service
+		final Long id = doInNewTransaction(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
+
+			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
+			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
+			final EstimationRF estimation = addEstimationFiscale(RegDate.get(2000, 1, 1), RegDate.get(2000, 1, 1), null, false, 100_000L, "2017", immeuble);
+
+			evenementFiscalService.publierDebutEstimationFiscalImmeuble(RegDate.get(2000, 1, 1), estimation);
+
+			return immeuble.getId();
+		});
+
+		// Vérifie que l'événement a été envoyé
+		assertEquals(1, evenementFiscalSender.getCount());
+
+		doInNewTransaction(status -> {
+			// Vérifie que l'événement est dans la base
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalImmeuble event0 = (EvenementFiscalImmeuble) events.get(0);
+			assertNotNull(event0);
+			assertEquals(EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.DEBUT_ESTIMATION, event0.getType());
+			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
+			assertEquals(id, event0.getImmeuble().getId());
+
+			return null;
+		});
+	}
+
+	@Test
+	public void testPublierDebutImplantation() throws Exception {
+
+		class Ids {
+			Long immeuble;
+			Long batiment;
+
+			public Ids(Long immeuble, Long batiment) {
+				this.immeuble = immeuble;
+				this.batiment = batiment;
+			}
+		}
+
+		// appel du service
+		final Ids ids = doInNewTransaction(status -> {
+			evenementFiscalSender.reset();
+			assertEquals(0, evenementFiscalDAO.getAll().size());
+
+			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
+			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
+			final BatimentRF batiment = addBatimentRF("32099903");
+			final ImplantationRF implantation = addImplantationRF(RegDate.get(2000, 1, 1), null, 100, immeuble, batiment);
+
+			evenementFiscalService.publierDebutImplantationBatiment(RegDate.get(2000, 1, 1), implantation);
+
+			return new Ids(immeuble.getId(), batiment.getId());
+		});
+
+		// Vérifie que l'événement a été envoyé
+		assertEquals(1, evenementFiscalSender.getCount());
+
+		doInNewTransaction(status -> {
+			// Vérifie que l'événement est dans la base
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalImplantationBatiment event0 = (EvenementFiscalImplantationBatiment) events.get(0);
+			assertNotNull(event0);
+			assertEquals(EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation.CREATION, event0.getType());
+			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
+			assertEquals(ids.batiment, event0.getBatiment().getId());
+			assertEquals(ids.immeuble, event0.getImmeuble().getId());
+			return null;
 		});
 	}
 

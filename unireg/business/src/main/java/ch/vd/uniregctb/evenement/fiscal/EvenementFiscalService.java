@@ -8,6 +8,16 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
+import ch.vd.uniregctb.registrefoncier.ServitudeRF;
+import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -246,4 +256,172 @@ public interface EvenementFiscalService {
 	 * @param dateTraitement la date valeur de l'impression
 	 */
 	void publierEvenementFiscalImpressionFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement);
+
+	/**
+	 * Publie un événement de création d'un bâtiment.
+	 *
+	 * @param dateCreation la date de création (ou d'apparition) du bâtiment.
+	 * @param batiment     le bâtiment en question.
+	 */
+	void publierCreationBatiment(RegDate dateCreation, BatimentRF batiment);
+
+	/**
+	 * Publie un événement de radiation d'un bâtiment.
+	 *
+	 * @param dateRadiation la date de radiation (ou de disparition) du bâtiment.
+	 * @param batiment      le bâtiment en question.
+	 */
+	void publierRadiationBatiment(RegDate dateRadiation, BatimentRF batiment);
+
+	/**
+	 * Publie un événement de modification de la description d'un bâtiment.
+	 *
+	 * @param dateModification la date de modification de la description.
+	 * @param batiment         le bâtiment en question.
+	 */
+	void publierModificationDescriptionBatiment(RegDate dateModification, BatimentRF batiment);
+
+	/**
+	 * Publie un événement d'ouverture d'un droit de propriété sur un immeuble.
+	 *
+	 * @param dateDebut la date de début métier du droit de propriété.
+	 * @param droit     le droit en question.
+	 */
+	void publierOuvertureDroitPropriete(RegDate dateDebut, DroitProprieteRF droit);
+
+	/**
+	 * Publie un événement de fermeture d'un droit de propriété sur un immeuble.
+	 *
+	 * @param dateFin la date de fin métier du droit de propriété.
+	 * @param droit   le droit en question.
+	 */
+	void publierFermetureDroitPropriete(RegDate dateFin, DroitProprieteRF droit);
+
+	/**
+	 * Publie un événement de modification d'un droit de propriété sur un immeuble.
+	 *
+	 * @param dateModification la date de modification du droit de propriété.
+	 * @param droit            le droit en qestion.
+	 */
+	void publierModificationDroitPropriete(RegDate dateModification, DroitProprieteRF droit);
+
+	/**
+	 * Publie un événement d'ouverture d'une servitude sur un immeuble.
+	 *
+	 * @param dateDebut la date de début métier de la servitude.
+	 * @param servitude la servitude en question.
+	 */
+	void publierOuvertureServitude(RegDate dateDebut, ServitudeRF servitude);
+
+	/**
+	 * Publie un événement de fermeture d'une servitude sur un immeuble.
+	 *
+	 * @param dateFin   la date de fin métier de la servitude.
+	 * @param servitude la servitude en question.
+	 */
+	void publierFermetureServitude(RegDate dateFin, ServitudeRF servitude);
+
+	/**
+	 * Publie un événement de modification d'une servitude sur un immeuble.
+	 *
+	 * @param dateModification la date de modificaiton de la servitude.
+	 * @param servitude        la servitude en question.
+	 */
+	void publierModificationServitude(RegDate dateModification, ServitudeRF servitude);
+
+	/**
+	 * Publie un événement de création d'un immeuble.
+	 *
+	 * @param dateCreation la date de création (ou d'apparition) de l'immeuble.
+	 * @param immeuble     l'immeuble en question.
+	 */
+	void publierCreationImmeuble(RegDate dateCreation, ImmeubleRF immeuble);
+
+	/**
+	 * Publie un événement de radiation d'un immeuble.
+	 *
+	 * @param dateRadiation la date de radiation (ou de disparition) de l'immeuble.
+	 * @param immeuble      l'immeuble en question.
+	 */
+	void publierRadiationImmeuble(RegDate dateRadiation, ImmeubleRF immeuble);
+
+	/**
+	 * Publie un événement de modification de la situation d'un immeuble.
+	 *
+	 * @param dateModification la date de modification de la situation de l'immeuble.
+	 * @param situation        la situation en question.
+	 */
+	void publierModificationSituationImmeuble(RegDate dateModification, SituationRF situation);
+
+	/**
+	 * Publie un événement de modification de la surface totale d'un immeuble.
+	 *
+	 * @param dateModification la date de modification de la surface totale de l'immeuble.
+	 * @param surfaceTotale    la surface en question.
+	 */
+	void publierModificationSurfaceTotaleImmeuble(RegDate dateModification, SurfaceTotaleRF surfaceTotale);
+
+	/**
+	 * Publie un événement de modification d'une surface au sol d'un immeuble.
+	 *
+	 * @param dateModification la date de modification d'une surface au sol de l'immeuble.
+	 * @param surfaceAuSol     la surface en question.
+	 */
+	void publierModificationSurfaceAuSolImmeuble(RegDate dateModification, SurfaceAuSolRF surfaceAuSol);
+
+	/**
+	 * Publie un événement de modification d'une quote-part d'un immeuble.
+	 *
+	 * @param dateModification la date de modification d'une quote-part de l'immeuble.
+	 * @param quotePart        la quote-part en question.
+	 */
+	void publierModificationQuotePartImmeuble(RegDate dateModification, QuotePartRF quotePart);
+
+	/**
+	 * Publie un événement de début d'estimation fiscale d'un immeuble.
+	 *
+	 * @param dateDebut  la date de début d'une estimation fiscale d'un immeuble.
+	 * @param estimation l'estimation en question.
+	 */
+	void publierDebutEstimationFiscalImmeuble(RegDate dateDebut, EstimationRF estimation);
+
+	/**
+	 * Publie un événement de fin d'estimation fiscale d'un immeuble.
+	 *
+	 * @param dateFin    la date de fin d'une estimation fiscale d'un immeuble.
+	 * @param estimation l'estimation en question.
+	 */
+	void publierFinEstimationFiscalImmeuble(RegDate dateFin, EstimationRF estimation);
+
+	/**
+	 * Publie un événement d'annulation d'estimation fiscale d'un immeuble.
+	 *
+	 * @param dateAnnulation la date d'annulation d'une estimation fiscale d'un immeuble.
+	 * @param estimation     l'estimation en question.
+	 */
+	void publierAnnulationEstimationFiscalImmeuble(RegDate dateAnnulation, EstimationRF estimation);
+
+	/**
+	 * Publie un événement de début d'implantation d'un bâtiment.
+	 *
+	 * @param dateDebut    la date de début de l'implantiation d'un bâtiment.
+	 * @param implantation l'implantation en question.
+	 */
+	void publierDebutImplantationBatiment(RegDate dateDebut, ImplantationRF implantation);
+
+	/**
+	 * Publie un événement de fin d'implantation d'un bâtiment.
+	 *
+	 * @param dateFin      la date de fin de l'implantiation d'un bâtiment.
+	 * @param implantation l'implantation en question.
+	 */
+	void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation);
+
+	/**
+	 * Publie un événement de modification d'implantation d'un bâtiment.
+	 *
+	 * @param dateModification la date de modification de l'implantiation d'un bâtiment.
+	 * @param implantation     l'implantation en question.
+	 */
+	void publierModificationImplantationBatiment(RegDate dateModification, ImplantationRF implantation);
 }

@@ -555,16 +555,17 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		batiment.addDescription(description);
 	}
 
-	protected void addImplantationRF(RegDate dateDebut, RegDate dateFin, Integer surface, ImmeubleRF immeuble, BatimentRF batiment) {
+	protected ImplantationRF addImplantationRF(RegDate dateDebut, RegDate dateFin, Integer surface, ImmeubleRF immeuble, BatimentRF batiment) {
 		final ImplantationRF implantation = new ImplantationRF();
 		implantation.setDateDebut(dateDebut);
 		implantation.setDateFin(dateFin);
 		implantation.setSurface(surface);
 		implantation.setImmeuble(immeuble);
 		batiment.addImplantation(implantation);
+		return implantation;
 	}
 
-	protected void addEstimationFiscale(RegDate dateInscription, RegDate dateDebut, RegDate dateFin, boolean enRevision, Long montant, String reference, ImmeubleRF immeuble) {
+	protected EstimationRF addEstimationFiscale(RegDate dateInscription, RegDate dateDebut, RegDate dateFin, boolean enRevision, Long montant, String reference, ImmeubleRF immeuble) {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setDateDebut(dateDebut);
 		estimation.setDateFin(dateFin);
@@ -576,6 +577,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		estimation.setAnneeReference(EstimationRFHelper.determineAnneeReference(reference));
 		estimation.setDateDebutMetier(EstimationRFHelper.determineDateDebutMetier(reference, dateInscription));
 		immeuble.addEstimation(estimation);
+		return estimation;
 	}
 
 	protected SurfaceAuSolRF addSurfaceAuSol(RegDate dateDebut, RegDate dateFin, int aire, String type, ImmeubleRF immeuble) {

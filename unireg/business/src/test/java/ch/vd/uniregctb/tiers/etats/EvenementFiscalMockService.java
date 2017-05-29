@@ -11,6 +11,16 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
+import ch.vd.uniregctb.registrefoncier.ServitudeRF;
+import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -209,6 +219,111 @@ public class EvenementFiscalMockService implements EvenementFiscalService {
 	@Override
 	public void publierEvenementFiscalImpressionFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) {
 
+	}
+
+	@Override
+	public void publierCreationBatiment(RegDate dateCreation, BatimentRF batiment) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierRadiationBatiment(RegDate dateRadiation, BatimentRF batiment) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierModificationDescriptionBatiment(RegDate dateModification, BatimentRF batiment) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierOuvertureDroitPropriete(RegDate dateDebut, DroitProprieteRF droit) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierFermetureDroitPropriete(RegDate dateFin, DroitProprieteRF droit) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierModificationDroitPropriete(RegDate dateModification, DroitProprieteRF droit) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierOuvertureServitude(RegDate dateDebut, ServitudeRF servitude) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierFermetureServitude(RegDate dateFin, ServitudeRF servitude) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierModificationServitude(RegDate dateModification, ServitudeRF servitude) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierCreationImmeuble(RegDate dateCreation, ImmeubleRF immeuble) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierRadiationImmeuble(RegDate dateRadiation, ImmeubleRF immeuble) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierModificationSituationImmeuble(RegDate dateModification, SituationRF situation) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierModificationSurfaceTotaleImmeuble(RegDate dateModification, SurfaceTotaleRF surfaceTotale) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierModificationSurfaceAuSolImmeuble(RegDate dateModification, SurfaceAuSolRF surfaceAuSol) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierModificationQuotePartImmeuble(RegDate dateModification, QuotePartRF quotePart) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierDebutEstimationFiscalImmeuble(RegDate dateDebut, EstimationRF estimation) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierFinEstimationFiscalImmeuble(RegDate dateFin, EstimationRF estimation) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierAnnulationEstimationFiscalImmeuble(RegDate dateAnnulation, EstimationRF estimation) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierDebutImplantationBatiment(RegDate dateDebut, ImplantationRF implantation) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierModificationImplantationBatiment(RegDate dateModification, ImplantationRF implantation) {
+		throw new UnsupportedOperationException();
 	}
 
 	public boolean isCalledOnce() {

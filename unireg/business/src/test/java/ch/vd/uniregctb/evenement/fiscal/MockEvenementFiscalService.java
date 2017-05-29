@@ -8,6 +8,16 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
+import ch.vd.uniregctb.registrefoncier.ServitudeRF;
+import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
+import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -154,6 +164,111 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 
 	@Override
 	public void publierEvenementFiscalImpressionFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) {
+
+	}
+
+	@Override
+	public void publierCreationBatiment(RegDate dateCreation, BatimentRF batiment) {
+
+	}
+
+	@Override
+	public void publierRadiationBatiment(RegDate dateRadiation, BatimentRF batiment) {
+
+	}
+
+	@Override
+	public void publierModificationDescriptionBatiment(RegDate dateModification, BatimentRF batiment) {
+
+	}
+
+	@Override
+	public void publierOuvertureDroitPropriete(RegDate dateDebut, DroitProprieteRF droit) {
+
+	}
+
+	@Override
+	public void publierFermetureDroitPropriete(RegDate dateFin, DroitProprieteRF droit) {
+
+	}
+
+	@Override
+	public void publierModificationDroitPropriete(RegDate dateModification, DroitProprieteRF droit) {
+
+	}
+
+	@Override
+	public void publierOuvertureServitude(RegDate dateDebut, ServitudeRF servitude) {
+
+	}
+
+	@Override
+	public void publierFermetureServitude(RegDate dateFin, ServitudeRF servitude) {
+
+	}
+
+	@Override
+	public void publierModificationServitude(RegDate dateModification, ServitudeRF servitude) {
+
+	}
+
+	@Override
+	public void publierCreationImmeuble(RegDate dateCreation, ImmeubleRF immeuble) {
+
+	}
+
+	@Override
+	public void publierRadiationImmeuble(RegDate dateRadiation, ImmeubleRF immeuble) {
+
+	}
+
+	@Override
+	public void publierModificationSituationImmeuble(RegDate dateModification, SituationRF situation) {
+
+	}
+
+	@Override
+	public void publierModificationSurfaceTotaleImmeuble(RegDate dateModification, SurfaceTotaleRF surfaceTotale) {
+
+	}
+
+	@Override
+	public void publierModificationSurfaceAuSolImmeuble(RegDate dateModification, SurfaceAuSolRF surfaceAuSol) {
+
+	}
+
+	@Override
+	public void publierModificationQuotePartImmeuble(RegDate dateModification, QuotePartRF quotePart) {
+
+	}
+
+	@Override
+	public void publierDebutEstimationFiscalImmeuble(RegDate dateDebut, EstimationRF estimation) {
+
+	}
+
+	@Override
+	public void publierFinEstimationFiscalImmeuble(RegDate dateFin, EstimationRF estimation) {
+
+	}
+
+	@Override
+	public void publierAnnulationEstimationFiscalImmeuble(RegDate dateAnnulation, EstimationRF estimation) {
+
+	}
+
+	@Override
+	public void publierDebutImplantationBatiment(RegDate dateDebut, ImplantationRF implantation) {
+
+	}
+
+	@Override
+	public void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation) {
+
+	}
+
+	@Override
+	public void publierModificationImplantationBatiment(RegDate dateModification, ImplantationRF implantation) {
 
 	}
 }
