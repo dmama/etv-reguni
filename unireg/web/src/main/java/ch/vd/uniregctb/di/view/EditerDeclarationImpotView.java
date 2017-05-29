@@ -3,13 +3,17 @@ package ch.vd.uniregctb.di.view;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
@@ -19,6 +23,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
 import ch.vd.uniregctb.declaration.view.EtatDeclarationView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.EtatDelaiDeclaration;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -157,16 +162,18 @@ public class EditerDeclarationImpotView {
 		}
 
 		// Trie par ordre décroissant des dates de traitement (pour tenir compte des délais non-accordés)
-		Collections.sort(list, new Comparator<DelaiDeclarationView>() {
-			@Override
-			public int compare(DelaiDeclarationView o1, DelaiDeclarationView o2) {
-				int comparison = o2.getDateTraitement().compareTo(o1.getDateTraitement());
-				if (comparison == 0) {
-					comparison = Long.compare(o2.getId(), o1.getId());
-				}
-				return comparison;
-			}
-		});
+		list.sort(Comparator.comparing(DelaiDeclarationView::getDateTraitement)
+				          .thenComparingLong(DelaiDeclarationView::getId)
+				          .reversed());
+
+		// calcul du flag "lastOfState" pour le dernier délai à chaque état
+		list.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.collect(Collectors.toMap(DelaiDeclarationView::getEtat,
+				                          Function.identity(),
+				                          (dd1, dd2) -> dd1,            // selon le tri ci-dessus, le premier vu est le dernier valide...
+				                          () -> new EnumMap<>(EtatDelaiDeclaration.class)))
+				.forEach((etat, dd) -> dd.setLastOfState(true));
 
 		return list;
 	}

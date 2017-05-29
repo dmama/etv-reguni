@@ -37,6 +37,7 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 	private boolean sursis;
 	private boolean annule;
 	private boolean first;
+	private boolean lastOfState;
 
 	public DelaiDeclarationView() {
 	}
@@ -200,6 +201,14 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 
 	public boolean isSursis() {
 		return sursis;
+	}
+
+	public boolean isLastOfState() {
+		return lastOfState;
+	}
+
+	public void setLastOfState(boolean lastOfState) {
+		this.lastOfState = lastOfState;
 	}
 
 	/**

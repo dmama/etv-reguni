@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -404,7 +406,7 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 
 		// tri par ordre croissant
 		final List<EtatDeclaration> list = new ArrayList<>(etats);
-		Collections.sort(list, new EtatDeclaration.Comparator());
+		list.sort(new EtatDeclaration.Comparator());
 
 		return list;
 	}
@@ -430,21 +432,16 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 
 	@Transient
 	public RegDate getPremierDelai() {
-		RegDate premierDelai = null;
-		Set<DelaiDeclaration> delais = this.delais;
+		final Set<DelaiDeclaration> delais = this.delais;
 		if (delais != null) {
-			for (DelaiDeclaration delai : delais) {
-				if (!delai.isAnnule() && delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {
-					if (premierDelai == null) {
-						premierDelai = delai.getDelaiAccordeAu();
-					}
-					if (delai.getDelaiAccordeAu().isBefore(premierDelai)) {
-						premierDelai = delai.getDelaiAccordeAu();
-					}
-				}
-			}
+			return delais.stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(delai -> delai.getEtat() == EtatDelaiDeclaration.ACCORDE)
+					.map(DelaiDeclaration::getDelaiAccordeAu)
+					.min(Comparator.naturalOrder())
+					.orElse(null);
 		}
-		return premierDelai;
+		return null;
 	}
 
 	public void addEtat(EtatDeclaration etat) {

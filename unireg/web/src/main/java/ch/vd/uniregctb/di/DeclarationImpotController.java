@@ -9,7 +9,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -1340,6 +1343,60 @@ public class DeclarationImpotController {
 			// Pas de duplicata -> on retourne à l'édition de la DI
 			return "redirect:/di/editer.do?id=" + id;
 		}
+	}
+
+	@RequestMapping(value = "/di/delai/print-confirmation.do", method = RequestMethod.POST)
+	public String imprimerConfirmation(@RequestParam("idDelai") long idDelai, HttpServletResponse response) throws Exception {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DELAI_PP, Role.DI_DELAI_PM)) {
+			throw new AccessDeniedException("Vous n'avez pas le droit d'apporter des modification sur les delais des DI");
+		}
+
+		final Mutable<Long> idDeclaration = new MutableObject<>();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		final Callable<EditiqueResultat> actionEnvoi = template.execute(status -> {
+			final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
+			if (delai == null) {
+				throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
+			}
+
+			if (delai.isAnnule()) {
+				throw new ActionException("Opération impossible sur un délai annulé.");
+			}
+			if (delai.getCleArchivageCourrier() != null || delai.getCleDocument() != null) {
+				throw new ActionException("Le document a déjà été généré pour ce délai.");
+			}
+
+			// impression document...
+			final Declaration declaration = delai.getDeclaration();
+			idDeclaration.setValue(declaration.getId());
+			if (declaration instanceof DeclarationImpotOrdinairePP) {
+				if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
+					throw new AccessDeniedException("Vous n'avez pas le droit d'apporter des modification sur les delais des DI PP");
+				}
+				return () -> manager.envoieImpressionLocalConfirmationDelaiPP(declaration.getId(), idDelai);
+			}
+			else if (declaration instanceof DeclarationImpotOrdinairePM) {
+				if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
+					throw new AccessDeniedException("Vous n'avez pas le droit d'apporter des modification sur les delais des DI PM");
+				}
+				return () -> manager.envoieImpressionLocaleLettreDecisionDelaiPM(idDelai);
+			}
+			else {
+				throw new ActionException("Type de déclaration non-supporté.");
+			}
+		});
+
+		// On imprime le document
+		final EditiqueResultat resultat = actionEnvoi.call();
+		final RedirectEditDI inbox = new RedirectEditDI(idDeclaration.getValue());
+		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(idDeclaration.getValue(), messageSource);
+		return retourEditiqueControllerHelper.traiteRetourEditiqueAfterRedirect(resultat,
+		                                                                        "delai",
+		                                                                        String.format("redirect:/di/editer.do?id=%d", idDeclaration.getValue()),
+		                                                                        inbox,
+		                                                                        null,
+		                                                                        erreur);
 	}
 
 	/**
