@@ -24,6 +24,7 @@
 			<!-- The new Properties -->
 			<util:properties>
 				<prop key="com.atomikos.icatch.hide_init_file_path">true</prop>
+				<prop key="com.atomikos.icatch.registered">so what?</prop>          <!-- pour enlever le message de pub au démarrage -->
 			</util:properties>
 		</property>
 	</bean>
