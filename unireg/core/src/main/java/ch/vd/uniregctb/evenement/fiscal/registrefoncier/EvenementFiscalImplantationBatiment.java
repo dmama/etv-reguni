@@ -27,8 +27,7 @@ public class EvenementFiscalImplantationBatiment extends EvenementFiscalRF {
 	 */
 	public enum TypeEvenementFiscalImplantation {
 		CREATION,
-		RADIATION,
-		MODIFICATION
+		RADIATION
 	}
 
 	private ImmeubleRF immeuble;

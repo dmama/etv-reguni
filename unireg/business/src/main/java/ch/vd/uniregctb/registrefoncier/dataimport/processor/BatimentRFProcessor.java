@@ -16,6 +16,7 @@ import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
@@ -50,7 +51,10 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
-	public BatimentRFProcessor(@NotNull BatimentRFDAO batimentRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
+	@NotNull
+	private final EvenementFiscalService evenementFiscalService;
+
+	public BatimentRFProcessor(@NotNull BatimentRFDAO batimentRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF, @NotNull EvenementFiscalService evenementFiscalService) {
 		this.batimentRFDAO = batimentRFDAO;
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.unmarshaller = ThreadLocal.withInitial(() -> {
@@ -61,6 +65,7 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 				throw new RuntimeException(e);
 			}
 		});
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override
@@ -129,7 +134,11 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 		newBatiment.getDescriptions().forEach(s -> s.setDateDebut(dateValeur));
 		newBatiment.getImplantations().forEach(s -> s.setDateDebut(dateValeur));
 
-		batimentRFDAO.save(newBatiment);
+		// on sauve le bâtiment dans la DB
+		newBatiment = batimentRFDAO.save(newBatiment);
+
+		// on publie l'événement fiscal correspondant
+		evenementFiscalService.publierCreationBatiment(dateValeur, newBatiment);
 	}
 
 	private void processModification(RegDate dateValeur, @NotNull BatimentRF newBatiment) {
@@ -151,11 +160,11 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 				.filter(s -> s.isValidAt(null))
 				.collect(Collectors.toList());
 
-		// on va chercher les nouvelles descriptions et estimations
+		// on va chercher les nouvelles descriptions et implantations
 		final DescriptionBatimentRF newDescription = CollectionsUtils.getFirst(newBatiment.getDescriptions());     // par définition, le nouveau bâtiment ne contient zéro ou une surface courante,
 		final Set<ImplantationRF> newImplantations = newBatiment.getImplantations();
 
-		// on détermine les changements sur la surface
+		// on détermine les changements sur les descriptions
 		if (!DescriptionBatimentRFHelper.dataEquals(persistedDescription, newDescription)) {
 			// on ferme l'ancienne description et on ajoute la nouvelle
 			if (persistedDescription != null) {
@@ -165,6 +174,9 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 				newDescription.setDateDebut(dateValeur);
 				persisted.addDescription(newDescription);
 			}
+
+			// on publie l'événement fiscal correspondant
+			evenementFiscalService.publierModificationDescriptionBatiment(dateValeur, persisted);
 		}
 
 		// on détermine les changements sur implantations
@@ -174,12 +186,16 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 			CollectionsUtils.removeCommonElements(toAddList, toCloseList, ImplantationRFHelper::dataEquals);
 
 			// on ferme toutes les implantations à fermer
-			toCloseList.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
+			toCloseList.forEach(i -> {
+				i.setDateFin(dateValeur.getOneDayBefore());
+				evenementFiscalService.publierFinImplantationBatiment(dateValeur.getOneDayBefore(), i);
+			});
 
 			// on ajoute toutes les nouvelles implantations sur le bâtiment déjà persisté
-			toAddList.forEach(d -> {
-				d.setDateDebut(dateValeur);
-				persisted.addImplantation(d);
+			toAddList.forEach(i -> {
+				i.setDateDebut(dateValeur);
+				persisted.addImplantation(i);
+				evenementFiscalService.publierDebutImplantationBatiment(dateValeur, i);
 			});
 		}
 	}
@@ -198,5 +214,8 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 		persisted.getDescriptions().stream()
 				.filter(d -> d.isValidAt(null))
 				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
+
+		// on publie l'événement fiscal correspondant
+		evenementFiscalService.publierRadiationBatiment(dateValeur, persisted);
 	}
 }

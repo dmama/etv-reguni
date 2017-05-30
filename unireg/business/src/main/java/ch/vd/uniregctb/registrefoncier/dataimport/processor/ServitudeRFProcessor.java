@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
@@ -47,7 +48,11 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
-	public ServitudeRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull DroitRFDAO droitRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
+	@NotNull
+	private final EvenementFiscalService evenementFiscalService;
+
+	public ServitudeRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull DroitRFDAO droitRFDAO, @NotNull XmlHelperRF xmlHelperRF,
+	                            @NotNull EvenementFiscalService evenementFiscalService) {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.droitRFDAO = droitRFDAO;
@@ -60,6 +65,7 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 				throw new RuntimeException(e);
 			}
 		});
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override
@@ -140,6 +146,9 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 		servitude.setDateDebut(dateValeur);
 		servitude = (ServitudeRF) droitRFDAO.save(servitude);
 
+		// on publie l'événement fiscal correspondant
+		evenementFiscalService.publierOuvertureServitude(servitude.getDateDebutMetier(), servitude);
+
 		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
 		final ServitudeRF s = servitude;
 		final Set<ImmeubleRF> immeubles = servitude.getImmeubles();
@@ -174,14 +183,21 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 		if (persisted == null) {
 			throw new IllegalArgumentException("La servitude idRF=[" + servitudeKey.getMasterIdRF() + "] versionRF=[" + servitudeKey.getVersionIdRF() + "] n'existe pas dans la DB.");
 		}
+		if (!(persisted instanceof ServitudeRF)) {
+			throw new IllegalArgumentException("La servitude idRF=[" + servitudeKey.getMasterIdRF() + "] versionRF=[" + servitudeKey.getVersionIdRF() + "] n'est pas une servitude.");
+		}
+
 		// on ferme la servitude
 		persisted.setDateFin(dateValeur.getOneDayBefore());
 		if (persisted.getDateFinMetier() == null) {
-			// on renseigne la date de fin métier à  la même valeur que la date technique, car :
+			// on renseigne la date de fin métier à la même valeur que la date technique, car :
 			// - il n'y a pas forcément une nouvelle servitude qui suivra et donc il n'est pas possible de déduire la date de fin métier
 			//   de la date de début métier de la servitude suivante (comme pour les droits de propriété)
 			// - il n'y a pas d'autre date disponible et il faut bien renseigner quelque chose.
 			persisted.setDateFinMetier(dateValeur.getOneDayBefore());
+
+			// on publie l'événement fiscal correspondant
+			evenementFiscalService.publierFermetureServitude(persisted.getDateFinMetier(), (ServitudeRF) persisted);
 		}
 	}
 }

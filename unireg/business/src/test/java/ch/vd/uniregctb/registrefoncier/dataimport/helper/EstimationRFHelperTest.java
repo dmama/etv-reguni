@@ -194,14 +194,14 @@ public class EstimationRFHelperTest {
 		// cas liste vide
 		{
 			final List<EstimationRF> estimations = Collections.emptyList();
-			EstimationRFHelper.determineDatesFinMetier(estimations);
+			EstimationRFHelper.determineDatesFinMetier(estimations, null, null);
 		}
 
 		// cas liste avec une seule valeur
 		{
 			final EstimationRF e1 = newEstimationRF(RegDate.get(1970, 1, 1));
 			final List<EstimationRF> estimations = Collections.singletonList(e1);
-			EstimationRFHelper.determineDatesFinMetier(estimations);
+			EstimationRFHelper.determineDatesFinMetier(estimations, null, null);
 			assertNull(e1.getDateFinMetier());
 		}
 
@@ -210,7 +210,7 @@ public class EstimationRFHelperTest {
 			final EstimationRF e1 = newEstimationRF(RegDate.get(1970, 1, 1));
 			final EstimationRF e2 = newEstimationRF(RegDate.get(1980, 1, 1));
 			final List<EstimationRF> estimations = Arrays.asList(e1, e2);
-			EstimationRFHelper.determineDatesFinMetier(estimations);
+			EstimationRFHelper.determineDatesFinMetier(estimations, null, null);
 			assertEquals(RegDate.get(1979, 12, 31), e1.getDateFinMetier());
 			assertNull(e2.getDateFinMetier());
 		}
@@ -221,7 +221,7 @@ public class EstimationRFHelperTest {
 			final EstimationRF e2 = newEstimationRF(RegDate.get(1980, 1, 1));
 			final EstimationRF e3 = newEstimationRF(RegDate.get(1980, 1, 2));
 			final List<EstimationRF> estimations = Arrays.asList(e1, e2, e3);
-			EstimationRFHelper.determineDatesFinMetier(estimations);
+			EstimationRFHelper.determineDatesFinMetier(estimations, null, null);
 			assertEquals(RegDate.get(1979, 12, 31), e1.getDateFinMetier());
 			assertEquals(RegDate.get(1980, 1, 1), e2.getDateFinMetier());
 			assertNull(e3.getDateFinMetier());
@@ -233,7 +233,7 @@ public class EstimationRFHelperTest {
 			final EstimationRF e2 = newEstimationRF(RegDate.get(1980, 1, 1));
 			final EstimationRF e3 = newEstimationRF(RegDate.get(1980, 1, 2));
 			final List<EstimationRF> estimations = Arrays.asList(e3, e2, e1);
-			EstimationRFHelper.determineDatesFinMetier(estimations);
+			EstimationRFHelper.determineDatesFinMetier(estimations, null, null);
 			assertEquals(RegDate.get(1979, 12, 31), e1.getDateFinMetier());
 			assertEquals(RegDate.get(1980, 1, 1), e2.getDateFinMetier());
 			assertNull(e3.getDateFinMetier());
@@ -248,7 +248,7 @@ public class EstimationRFHelperTest {
 		e2.setAnnule(true);
 		final EstimationRF e3 = newEstimationRF(RegDate.get(1980, 1, 2));
 		final List<EstimationRF> estimations = Arrays.asList(e1, e2, e3);
-		EstimationRFHelper.determineDatesFinMetier(estimations);
+		EstimationRFHelper.determineDatesFinMetier(estimations, null, null);
 		assertEquals(RegDate.get(1980, 1, 1), e1.getDateFinMetier());
 		assertNull(e2.getDateFinMetier());
 		assertNull(e3.getDateFinMetier());
@@ -264,7 +264,7 @@ public class EstimationRFHelperTest {
 		final EstimationRF e2 = newEstimationRF(RegDate.get(2017, 1, 14), RegDate.get(2000, 1, 1));
 		final List<EstimationRF> estimations = Arrays.asList(e1, e2);
 
-		EstimationRFHelper.determineDatesFinMetier(estimations);
+		EstimationRFHelper.determineDatesFinMetier(estimations, null, null);
 		assertEstimation(RegDate.get(2016, 1, 1), null, true, e1);
 		assertEquals(RegDate.get(2000, 1, 1), e2.getDateDebutMetier());
 		assertNull(e2.getDateFinMetier());
@@ -283,7 +283,7 @@ public class EstimationRFHelperTest {
 		final EstimationRF e4 = newEstimationRF(RegDate.get(2017, 1, 21), RegDate.get(2000, 1, 1));
 		final List<EstimationRF> estimations = Arrays.asList(e1, e2, e3, e4);
 
-		EstimationRFHelper.determineDatesFinMetier(estimations);
+		EstimationRFHelper.determineDatesFinMetier(estimations, null, null);
 		assertEstimation(RegDate.get(2005, 1, 1), RegDate.get(2009, 12, 31), true, e1);
 		assertEstimation(RegDate.get(2010, 1, 1), RegDate.get(2014, 12, 31), true, e2);
 		assertEstimation(RegDate.get(2015, 1, 1), null, true, e3);
@@ -305,7 +305,7 @@ public class EstimationRFHelperTest {
 		                                        RegDate.get(2000, 1, 1));   // date début métier
 		final List<EstimationRF> estimations = Arrays.asList(e1, e2);
 
-		EstimationRFHelper.determineDatesFinMetier(estimations);
+		EstimationRFHelper.determineDatesFinMetier(estimations, null, null);
 		assertEquals(RegDate.get(1990, 1, 1), e1.getDateDebutMetier());
 		assertEquals(RegDate.get(1999, 12, 31), e1.getDateFinMetier());
 		assertFalse(e1.isAnnule());

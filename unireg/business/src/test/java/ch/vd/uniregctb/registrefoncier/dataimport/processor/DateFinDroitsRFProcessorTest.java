@@ -12,6 +12,11 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroit;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
@@ -36,12 +41,15 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 
 	private DateFinDroitsRFProcessor processor;
 	private ImmeubleRFDAO immeubleRFDAO;
+	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
-		processor = new DateFinDroitsRFProcessor(immeubleRFDAO, transactionManager);
+		final EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
+		this.immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
+		this.processor = new DateFinDroitsRFProcessor(immeubleRFDAO, transactionManager, evenementFiscalService);
+		this.evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	}
 
 	/**
@@ -81,6 +89,13 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			droits.sort(new DateRangeComparator<>());
 			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), "Achat", "Vente", droits.get(0));
 			assertDatesDroit(RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null, droits.get(1));
+			return null;
+		});
+
+		// postcondition : aucun événement fiscal n'a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(0, events.size());
 			return null;
 		});
 	}
@@ -125,6 +140,13 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			assertNull(servitude0.getDateFinMetier());
 			return null;
 		});
+
+		// postcondition : aucun événement fiscal n'a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(0, events.size());
+			return null;
+		});
 	}
 
 	/**
@@ -164,6 +186,20 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			droits.sort(new DateRangeComparator<>());
 			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 13), "Achat", "Vente", droits.get(0));
 			assertDatesDroit(RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null, droits.get(1));
+			return null;
+		});
+
+		// postcondition : les événements fiscaux correspondants ont été envoyés
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event0.getType());
+			assertEquals(RegDate.get(2003, 5, 13), event0.getDateValeur());
+			assertEquals("38383838", event0.getImmeuble().getIdRF());
+			assertEquals("02893039", event0.getAyantDroit().getIdRF());
+
 			return null;
 		});
 	}
@@ -238,6 +274,27 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			assertDatesDroit(RegDate.get(2017, 1, 7), null, RegDate.get(2013, 5, 31), null, "Succession", null, droits.get(3));
 			return null;
 		});
+
+		// postcondition : les événements fiscaux correspondants ont été envoyés
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(2, events.size());
+			events.sort(Comparator.comparing(EvenementFiscal::getDateValeur));
+
+			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event0.getType());
+			assertEquals(RegDate.get(2001, 9, 4), event0.getDateValeur());
+			assertEquals("38383838", event0.getImmeuble().getIdRF());
+			assertEquals("02893039", event0.getAyantDroit().getIdRF());
+
+			final EvenementFiscalDroitPropriete event1 = (EvenementFiscalDroitPropriete) events.get(1);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event1.getType());
+			assertEquals(RegDate.get(2013, 5, 31), event1.getDateValeur());
+			assertEquals("38383838", event1.getImmeuble().getIdRF());
+			assertEquals("937823a0a02", event1.getAyantDroit().getIdRF());
+
+			return null;
+		});
 	}
 
 	/*
@@ -309,6 +366,26 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			return null;
 		});
 
+		// postcondition : les événements fiscaux correspondants ont été envoyés
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(2, events.size());
+			events.sort(Comparator.comparing(EvenementFiscal::getDateValeur));
+
+			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event0.getType());
+			assertEquals(RegDate.get(1980, 12, 29), event0.getDateValeur());
+			assertEquals(idImmeubleRF1, event0.getImmeuble().getIdRF());
+			assertEquals(idPPRF1, event0.getAyantDroit().getIdRF());
+
+			final EvenementFiscalDroitPropriete event1 = (EvenementFiscalDroitPropriete) events.get(1);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event1.getType());
+			assertEquals(RegDate.get(1998, 2, 11), event1.getDateValeur());
+			assertEquals(idImmeubleRF1, event1.getImmeuble().getIdRF());
+			assertEquals(idPPRF2, event1.getAyantDroit().getIdRF());
+
+			return null;
+		});
 	}
 
 	private static void assertDatesDroit(RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier, RegDate dateFinMetier, String motifDebut, String motifFin, DroitRF droit) {

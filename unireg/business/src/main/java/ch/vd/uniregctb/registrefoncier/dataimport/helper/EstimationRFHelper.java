@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,9 +99,11 @@ public abstract class EstimationRFHelper {
 	 * Détermine les dates de fin métier d'une collection d'estimations fiscales. Les estimations fiscales spécifiées doivent appartenir au même immeuble.
 	 * En cas de chevauchement, les estimations fiscales les plus anciennes sont adaptées ou annulées pour que l'ensemble de la liste reste valide.
 	 *
-	 * @param estimations une collection d'estimations fiscales à mettre-à-jour
+	 * @param estimations        une collection d'estimations fiscales à mettre-à-jour
+	 * @param fermetureListener  un listener qui reçoit les estimations fiscales fermées
+	 * @param annulationListener un listener qui reçoit les estimations fiscales annulées
 	 */
-	public static void determineDatesFinMetier(@NotNull Collection<EstimationRF> estimations) {
+	public static void determineDatesFinMetier(@NotNull Collection<EstimationRF> estimations, @Nullable Consumer<EstimationRF> fermetureListener, @Nullable Consumer<EstimationRF> annulationListener) {
 
 		final List<EstimationRF> list = new ArrayList<>(estimations);
 		list.sort(new DateRangeComparator<>(DateRangeComparator.CompareOrder.ASCENDING));
@@ -129,10 +132,18 @@ public abstract class EstimationRFHelper {
 					// la nouvelle estimation surcharge *complétement* l'estimation active courante : on l'annule et la retire de la liste des actives
 					currentActive.setAnnule(true);
 					actives.remove(j);
+					// on signale que l'estimation a été annulée
+					if (annulationListener != null) {
+						annulationListener.accept(currentActive);
+					}
 				}
 				else if (activeFin == null || activeFin.isAfterOrEqual(newDebut)) {
 					// la nouvelle estimation surcharge *partiellement* l'estimation active courante : on met-à-jour la date de fin
 					currentActive.setDateFinMetier(newDebut.getOneDayBefore());
+					// on signale que l'estimation a été fermée
+					if (fermetureListener != null) {
+						fermetureListener.accept(currentActive);
+					}
 				}
 				else {
 					// rien à faire
@@ -147,6 +158,10 @@ public abstract class EstimationRFHelper {
 			final EstimationRF last = actives.get(actives.size() - 1);
 			if (last != null && last.getDateFin() != null) {
 				last.setDateFinMetier(last.getDateFin());
+				// on signale que l'estimation a été fermée
+				if (fermetureListener != null) {
+					fermetureListener.accept(last);
+				}
 			}
 		}
 	}

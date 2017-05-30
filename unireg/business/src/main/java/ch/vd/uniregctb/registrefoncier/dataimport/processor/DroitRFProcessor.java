@@ -18,6 +18,7 @@ import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
@@ -56,7 +57,11 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
-	public DroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull DroitRFDAO droitRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
+	@NotNull
+	private final EvenementFiscalService evenementFiscalService;
+
+	public DroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull DroitRFDAO droitRFDAO, @NotNull XmlHelperRF xmlHelperRF,
+	                        @NotNull EvenementFiscalService evenementFiscalService) {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.droitRFDAO = droitRFDAO;
@@ -69,6 +74,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 				throw new RuntimeException(e);
 			}
 		});
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override
@@ -170,6 +176,9 @@ public class DroitRFProcessor implements MutationRFProcessor {
 			// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
 			d.getImmeuble().addDroitPropriete(d);
 			ayantDroit.addDroitPropriete(d);
+
+			// on publie l'événement fiscal correspondant
+			evenementFiscalService.publierOuvertureDroitPropriete(d.getDateDebutMetier(), d);
 		});
 	}
 
@@ -211,7 +220,10 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		toAddList.forEach(d -> {
 			d.setAyantDroit(ayantDroit);
 			d.setDateDebut(dateValeur);
-			droitRFDAO.save(d);
+			d = (DroitProprieteRF) droitRFDAO.save(d);
+
+			// on publie l'événement fiscal correspondant
+			evenementFiscalService.publierOuvertureDroitPropriete(d.getDateDebutMetier(), d);
 		});
 	}
 
@@ -234,6 +246,9 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// on ajoute toutes les nouvelles raisons
 		toAdd.forEach(persisted::addRaisonAcquisition);
 		persisted.calculateDateEtMotifDebut();
+
+		// on publie l'événement fiscal correspondant
+		evenementFiscalService.publierModificationDroitPropriete(persisted.getDateDebutMetier(), persisted);
 	}
 
 	/**
@@ -244,5 +259,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		ayantDroit.getDroitsPropriete().stream()
 				.filter(d -> d.isValidAt(null))
 				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
+
+		// note : l'émission des événements fiscaux de fermeture est faite dans le DateFinDroitsRFProcessor
 	}
 }

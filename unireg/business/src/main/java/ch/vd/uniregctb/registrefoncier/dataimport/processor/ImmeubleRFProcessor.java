@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.util.function.Consumer;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.hibernate.FlushMode;
@@ -16,6 +17,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ProgrammingException;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
@@ -55,7 +57,11 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
-	public ImmeubleRFProcessor(@NotNull CommuneRFDAO communeRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
+	@NotNull
+	private final EvenementFiscalService evenementFiscalService;
+
+	public ImmeubleRFProcessor(@NotNull CommuneRFDAO communeRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF,
+	                           @NotNull EvenementFiscalService evenementFiscalService) {
 		this.communeRFDAO = communeRFDAO;
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.unmarshaller = ThreadLocal.withInitial(() -> {
@@ -66,6 +72,7 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				throw new RuntimeException(e);
 			}
 		});
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override
@@ -142,7 +149,11 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 			surfaceTotale.setDateDebut(dateValeur);
 		}
 
-		immeubleRFDAO.save(newImmeuble);
+		// on sauve l'immeuble dans la DB
+		newImmeuble = immeubleRFDAO.save(newImmeuble);
+
+		// on publie l'événement fiscal correspondant
+		evenementFiscalService.publierCreationImmeuble(dateValeur, newImmeuble);
 	}
 
 	private void processModification(@NotNull RegDate dateValeur, @NotNull ImmeubleRF newImmeuble) {
@@ -156,13 +167,20 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		final ImmeubleAvecQuotePartRF persistedAvecQuote = (persisted instanceof ImmeubleAvecQuotePartRF ? (ImmeubleAvecQuotePartRF) persisted : null);
 		final ImmeubleAvecQuotePartRF newAvecQuote = (newImmeuble instanceof ImmeubleAvecQuotePartRF ? (ImmeubleAvecQuotePartRF) newImmeuble : null);
 
+		final boolean reactivation;
 		if (persisted.getDateRadiation() != null) {
+			reactivation = true;
 			// [SIFISC-24013] si l'immeuble est radié, on le réactive
 			persisted.setDateRadiation(null);
 			// on réactive aussi sa dernière situation
 			persisted.getSituations().stream()
 					.max(new DateRangeComparator<>())
 					.ifPresent(s -> s.setDateFin(null));
+			// on publie l'événement fiscal correspondant
+			evenementFiscalService.publierReactivationImmeuble(dateValeur, persisted);
+		}
+		else {
+			reactivation = false;
 		}
 
 		// on va chercher les situations, estimations, surfaces totales courantes et quotes-parts
@@ -206,7 +224,11 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 			// on ferme l'ancienne situation et on ajoute la nouvelle
 			persistedSituation.setDateFin(dateValeur.getOneDayBefore());
 			newSituation.setDateDebut(dateValeur);
-			persisted.getSituations().add(newSituation);
+			persisted.addSituation(newSituation);
+			// on publie l'événement fiscal correspondant
+			if (!reactivation) {
+				evenementFiscalService.publierModificationSituationImmeuble(dateValeur, persisted);
+			}
 		}
 
 		// est-ce que l'estimation changé ?
@@ -215,6 +237,10 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				// [SIFISC-22995] le seul changement est le flag 'en révision' => on considère qu'il s'agit
 				// d'une correction et on met-à-jour l'estimation actuellement persistée
 				persistedEstimation.setEnRevision(newEstimation.isEnRevision());
+				// on publie l'événement fiscal correspondant
+				if (!reactivation) {
+					evenementFiscalService.publierChangementEnRevisionEstimationFiscalImmeuble(dateValeur, persistedEstimation);
+				}
 			}
 			else if (persistedEstimation != null && newEstimation != null && persistedEstimation.getDateDebutMetier() == newEstimation.getDateDebutMetier()) {
 				// [SIFISC-22995] la nouvelle estimation est valable à partir de la même période que l'ancienne, il s'agit
@@ -222,6 +248,9 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				persistedEstimation.setAnnule(true);
 				newEstimation.setDateDebut(dateValeur);
 				persisted.addEstimation(newEstimation);
+				// on publie les événements fiscaux correspondants
+				evenementFiscalService.publierAnnulationEstimationFiscalImmeuble(dateValeur, persistedEstimation);
+				evenementFiscalService.publierDebutEstimationFiscalImmeuble(newEstimation.getDateDebutMetier(), newEstimation);
 			}
 			else {
 				// on ferme l'ancienne estimation et on ajoute la nouvelle
@@ -231,9 +260,17 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				if (newEstimation != null) {
 					newEstimation.setDateDebut(dateValeur);
 					persisted.addEstimation(newEstimation);
+					// on publie l'événement fiscal correspondant
+					if (!reactivation) {
+						evenementFiscalService.publierDebutEstimationFiscalImmeuble(newEstimation.getDateDebutMetier(), newEstimation);
+					}
 				}
 			}
-			EstimationRFHelper.determineDatesFinMetier(persisted.getEstimations()); // SIFISC-22995
+			final Consumer<EstimationRF> fermetureListener = (reactivation ? null : e -> evenementFiscalService.publierFinEstimationFiscalImmeuble(e.getDateFinMetier(), e));
+			final Consumer<EstimationRF> annulationListener = (reactivation ? null : e -> evenementFiscalService.publierAnnulationEstimationFiscalImmeuble(dateValeur, e));
+			EstimationRFHelper.determineDatesFinMetier(persisted.getEstimations(),  // SIFISC-22995
+			                                           fermetureListener,           // fermetureListener
+			                                           annulationListener);         // annulationListener
 		}
 
 		// est-ce que la surface totale changé ?
@@ -245,6 +282,10 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 			if (newSurfaceTotale != null) {
 				newSurfaceTotale.setDateDebut(dateValeur);
 				persisted.getSurfacesTotales().add(newSurfaceTotale);
+			}
+			// on publie l'événement fiscal correspondant
+			if (!reactivation) {
+				evenementFiscalService.publierModificationSurfaceTotaleImmeuble(dateValeur, persisted);
 			}
 		}
 
@@ -260,6 +301,10 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 			if (newQuotePart != null) {
 				newQuotePart.setDateDebut(dateValeur);
 				persistedAvecQuote.addQuotePart(newQuotePart);
+			}
+			// on publie l'événement fiscal correspondant
+			if (!reactivation) {
+				evenementFiscalService.publierModificationQuotePartImmeuble(dateValeur, persisted);
 			}
 		}
 	}
@@ -298,5 +343,8 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 
 		// on radie l'immeuble
 		persisted.setDateRadiation(dateValeur.getOneDayBefore());
+
+		// on publie l'événement fiscal correspondant
+		evenementFiscalService.publierRadiationImmeuble(dateValeur, persisted);
 	}
 }

@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
@@ -39,8 +40,8 @@ public class EvenementFiscalServitude extends EvenementFiscalDroit {
 	public EvenementFiscalServitude(@Nullable RegDate dateValeur, @NotNull Set<AyantDroitRF> ayantDroits, @NotNull Set<ImmeubleRF> immeubles, @NotNull EvenementFiscalServitude.TypeEvenementFiscalDroitPropriete type,
 	                                @NotNull EvenementFiscalServitude.TypeEvenementServitude typeServitude) {
 		super(dateValeur, type);
-		this.ayantDroits = ayantDroits;
-		this.immeubles = immeubles;
+		this.ayantDroits = new HashSet<>(ayantDroits);
+		this.immeubles = new HashSet<>(immeubles);
 		this.typeServitude = typeServitude;
 	}
 

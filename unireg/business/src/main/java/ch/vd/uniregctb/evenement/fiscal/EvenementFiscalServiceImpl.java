@@ -22,11 +22,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -276,13 +272,13 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	}
 
 	@Override
-	public void publierOuvertureDroitPropriete(RegDate dateDebut, DroitProprieteRF droit) {
-		saveAndPublish(new EvenementFiscalDroitPropriete(dateDebut, droit.getAyantDroit(), droit.getImmeuble(), EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE));
+	public void publierOuvertureDroitPropriete(RegDate dateDebutMetier, DroitProprieteRF droit) {
+		saveAndPublish(new EvenementFiscalDroitPropriete(dateDebutMetier, droit.getAyantDroit(), droit.getImmeuble(), EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE));
 	}
 
 	@Override
-	public void publierFermetureDroitPropriete(RegDate dateFin, DroitProprieteRF droit) {
-		saveAndPublish(new EvenementFiscalDroitPropriete(dateFin, droit.getAyantDroit(), droit.getImmeuble(), EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE));
+	public void publierFermetureDroitPropriete(RegDate dateFinMetier, DroitProprieteRF droit) {
+		saveAndPublish(new EvenementFiscalDroitPropriete(dateFinMetier, droit.getAyantDroit(), droit.getImmeuble(), EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE));
 	}
 
 	@Override
@@ -319,33 +315,43 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	}
 
 	@Override
-	public void publierModificationSituationImmeuble(RegDate dateModification, SituationRF situation) {
-		saveAndPublish(new EvenementFiscalImmeuble(dateModification, situation.getImmeuble(), EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_SITUATION));
+	public void publierReactivationImmeuble(RegDate dateReactivation, ImmeubleRF immeuble) {
+		saveAndPublish(new EvenementFiscalImmeuble(dateReactivation, immeuble, EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.REACTIVATION));
 	}
 
 	@Override
-	public void publierModificationSurfaceTotaleImmeuble(RegDate dateModification, SurfaceTotaleRF surfaceTotale) {
-		saveAndPublish(new EvenementFiscalImmeuble(dateModification, surfaceTotale.getImmeuble(), EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_SURFACE_TOTALE));
+	public void publierModificationSituationImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
+		saveAndPublish(new EvenementFiscalImmeuble(dateModification, immeuble, EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_SITUATION));
 	}
 
 	@Override
-	public void publierModificationSurfaceAuSolImmeuble(RegDate dateModification, SurfaceAuSolRF surfaceAuSol) {
-		saveAndPublish(new EvenementFiscalImmeuble(dateModification, surfaceAuSol.getImmeuble(), EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_SURFACE_AU_SOL));
+	public void publierModificationSurfaceTotaleImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
+		saveAndPublish(new EvenementFiscalImmeuble(dateModification, immeuble, EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_SURFACE_TOTALE));
 	}
 
 	@Override
-	public void publierModificationQuotePartImmeuble(RegDate dateModification, QuotePartRF quotePart) {
-		saveAndPublish(new EvenementFiscalImmeuble(dateModification, quotePart.getImmeuble(), EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_QUOTE_PART));
+	public void publierModificationSurfaceAuSolImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
+		saveAndPublish(new EvenementFiscalImmeuble(dateModification, immeuble, EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_SURFACE_AU_SOL));
 	}
 
 	@Override
-	public void publierDebutEstimationFiscalImmeuble(RegDate dateDebut, EstimationRF estimation) {
-		saveAndPublish(new EvenementFiscalImmeuble(dateDebut, estimation.getImmeuble(), EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.DEBUT_ESTIMATION));
+	public void publierModificationQuotePartImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
+		saveAndPublish(new EvenementFiscalImmeuble(dateModification, immeuble, EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_QUOTE_PART));
 	}
 
 	@Override
-	public void publierFinEstimationFiscalImmeuble(RegDate dateFin, EstimationRF estimation) {
-		saveAndPublish(new EvenementFiscalImmeuble(dateFin, estimation.getImmeuble(), EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.FIN_ESTIMATION));
+	public void publierDebutEstimationFiscalImmeuble(RegDate dateDebutMetier, EstimationRF estimation) {
+		saveAndPublish(new EvenementFiscalImmeuble(dateDebutMetier, estimation.getImmeuble(), EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.DEBUT_ESTIMATION));
+	}
+
+	@Override
+	public void publierChangementEnRevisionEstimationFiscalImmeuble(RegDate dateChangement, EstimationRF estimation) {
+		saveAndPublish(new EvenementFiscalImmeuble(dateChangement, estimation.getImmeuble(), EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_STATUT_REVISION_ESTIMATION));
+	}
+
+	@Override
+	public void publierFinEstimationFiscalImmeuble(RegDate dateFinMetier, EstimationRF estimation) {
+		saveAndPublish(new EvenementFiscalImmeuble(dateFinMetier, estimation.getImmeuble(), EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.FIN_ESTIMATION));
 	}
 
 	@Override
@@ -361,10 +367,5 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	@Override
 	public void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation) {
 		saveAndPublish(new EvenementFiscalImplantationBatiment(dateFin, implantation.getImmeuble(), implantation.getBatiment(), EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation.RADIATION));
-	}
-
-	@Override
-	public void publierModificationImplantationBatiment(RegDate dateModification, ImplantationRF implantation) {
-		saveAndPublish(new EvenementFiscalImplantationBatiment(dateModification, implantation.getImmeuble(), implantation.getBatiment(), EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation.MODIFICATION));
 	}
 }

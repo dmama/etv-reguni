@@ -13,11 +13,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -284,18 +280,18 @@ public interface EvenementFiscalService {
 	/**
 	 * Publie un événement d'ouverture d'un droit de propriété sur un immeuble.
 	 *
-	 * @param dateDebut la date de début métier du droit de propriété.
-	 * @param droit     le droit en question.
+	 * @param dateDebutMetier la date de début métier du droit de propriété.
+	 * @param droit           le droit en question.
 	 */
-	void publierOuvertureDroitPropriete(RegDate dateDebut, DroitProprieteRF droit);
+	void publierOuvertureDroitPropriete(RegDate dateDebutMetier, DroitProprieteRF droit);
 
 	/**
 	 * Publie un événement de fermeture d'un droit de propriété sur un immeuble.
 	 *
-	 * @param dateFin la date de fin métier du droit de propriété.
-	 * @param droit   le droit en question.
+	 * @param dateFinMetier la date de fin métier du droit de propriété.
+	 * @param droit         le droit en question.
 	 */
-	void publierFermetureDroitPropriete(RegDate dateFin, DroitProprieteRF droit);
+	void publierFermetureDroitPropriete(RegDate dateFinMetier, DroitProprieteRF droit);
 
 	/**
 	 * Publie un événement de modification d'un droit de propriété sur un immeuble.
@@ -346,52 +342,68 @@ public interface EvenementFiscalService {
 	void publierRadiationImmeuble(RegDate dateRadiation, ImmeubleRF immeuble);
 
 	/**
+	 * Publie un événement de réactivation d'un immeuble.
+	 *
+	 * @param dateReactivation la date de réactivation de l'immeuble.
+	 * @param immeuble         l'immeuble en question.
+	 */
+	void publierReactivationImmeuble(RegDate dateReactivation, ImmeubleRF immeuble);
+
+	/**
 	 * Publie un événement de modification de la situation d'un immeuble.
 	 *
 	 * @param dateModification la date de modification de la situation de l'immeuble.
-	 * @param situation        la situation en question.
+	 * @param immeuble         l'immeuble en question.
 	 */
-	void publierModificationSituationImmeuble(RegDate dateModification, SituationRF situation);
+	void publierModificationSituationImmeuble(RegDate dateModification, ImmeubleRF immeuble);
 
 	/**
 	 * Publie un événement de modification de la surface totale d'un immeuble.
 	 *
 	 * @param dateModification la date de modification de la surface totale de l'immeuble.
-	 * @param surfaceTotale    la surface en question.
+	 * @param immeuble         l'immeuble en question.
 	 */
-	void publierModificationSurfaceTotaleImmeuble(RegDate dateModification, SurfaceTotaleRF surfaceTotale);
+	void publierModificationSurfaceTotaleImmeuble(RegDate dateModification, ImmeubleRF immeuble);
 
 	/**
 	 * Publie un événement de modification d'une surface au sol d'un immeuble.
 	 *
 	 * @param dateModification la date de modification d'une surface au sol de l'immeuble.
-	 * @param surfaceAuSol     la surface en question.
+	 * @param immeuble         l'immeuble en question.
 	 */
-	void publierModificationSurfaceAuSolImmeuble(RegDate dateModification, SurfaceAuSolRF surfaceAuSol);
+	void publierModificationSurfaceAuSolImmeuble(RegDate dateModification, ImmeubleRF immeuble);
 
 	/**
 	 * Publie un événement de modification d'une quote-part d'un immeuble.
 	 *
 	 * @param dateModification la date de modification d'une quote-part de l'immeuble.
-	 * @param quotePart        la quote-part en question.
+	 * @param immeuble         l'immeuble en question.
 	 */
-	void publierModificationQuotePartImmeuble(RegDate dateModification, QuotePartRF quotePart);
+	void publierModificationQuotePartImmeuble(RegDate dateModification, ImmeubleRF immeuble);
 
 	/**
 	 * Publie un événement de début d'estimation fiscale d'un immeuble.
 	 *
-	 * @param dateDebut  la date de début d'une estimation fiscale d'un immeuble.
-	 * @param estimation l'estimation en question.
+	 * @param dateDebutMetier la date de début métier d'une estimation fiscale d'un immeuble.
+	 * @param estimation      l'estimation en question.
 	 */
-	void publierDebutEstimationFiscalImmeuble(RegDate dateDebut, EstimationRF estimation);
+	void publierDebutEstimationFiscalImmeuble(RegDate dateDebutMetier, EstimationRF estimation);
+
+	/**
+	 * Publie un événement de changement du flag <i>en révision</i> d'une estimation fiscale d'un immeuble.
+	 *
+	 * @param dateChangement la date de changement du flag.
+	 * @param estimation     l'estimation en question.
+	 */
+	void publierChangementEnRevisionEstimationFiscalImmeuble(RegDate dateChangement, EstimationRF estimation);
 
 	/**
 	 * Publie un événement de fin d'estimation fiscale d'un immeuble.
 	 *
-	 * @param dateFin    la date de fin d'une estimation fiscale d'un immeuble.
-	 * @param estimation l'estimation en question.
+	 * @param dateFinMetier la date de fin métier d'une estimation fiscale d'un immeuble.
+	 * @param estimation    l'estimation en question.
 	 */
-	void publierFinEstimationFiscalImmeuble(RegDate dateFin, EstimationRF estimation);
+	void publierFinEstimationFiscalImmeuble(RegDate dateFinMetier, EstimationRF estimation);
 
 	/**
 	 * Publie un événement d'annulation d'estimation fiscale d'un immeuble.
@@ -416,12 +428,4 @@ public interface EvenementFiscalService {
 	 * @param implantation l'implantation en question.
 	 */
 	void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation);
-
-	/**
-	 * Publie un événement de modification d'implantation d'un bâtiment.
-	 *
-	 * @param dateModification la date de modification de l'implantiation d'un bâtiment.
-	 * @param implantation     l'implantation en question.
-	 */
-	void publierModificationImplantationBatiment(RegDate dateModification, ImplantationRF implantation);
 }

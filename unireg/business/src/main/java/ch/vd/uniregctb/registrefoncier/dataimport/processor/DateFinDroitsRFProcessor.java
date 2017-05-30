@@ -25,6 +25,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -41,12 +42,19 @@ public class DateFinDroitsRFProcessor {
 	private static final String MOTIF_ACHAT = "Achat";
 	private static final String MOTIF_VENTE = "Vente";
 
+	@NotNull
 	private final ImmeubleRFDAO immeubleRFDAO;
+
+	@NotNull
 	private final PlatformTransactionManager transactionManager;
 
-	public DateFinDroitsRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull PlatformTransactionManager transactionManager) {
+	@NotNull
+	private final EvenementFiscalService evenementFiscalService;
+
+	public DateFinDroitsRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull PlatformTransactionManager transactionManager, @NotNull EvenementFiscalService evenementFiscalService) {
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.transactionManager = transactionManager;
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	public TraitementFinsDeDroitRFResults process(int nbThreads, @Nullable StatusManager s) {
@@ -127,7 +135,7 @@ public class DateFinDroitsRFProcessor {
 			if (droit.getDateFin() != null && droit.getDateFinMetier() == null) {
 				// le droit a été fermé, on l'ajoute à la liste des anciens droits
 				final RegDate dateAffaire = droit.getDateFin().getOneDayAfter();
-				final Affaire affaire = affaires.computeIfAbsent(groupingStrategy.newKey(dateAffaire, droit), key -> new Affaire(immeuble.getId(), key.getDateAffaire()));
+				final Affaire affaire = affaires.computeIfAbsent(groupingStrategy.newKey(dateAffaire, droit), key -> new Affaire(immeuble.getId(), key.getDateAffaire(), evenementFiscalService));
 				affaire.addAncientDroit(droit);
 			}
 			if (droit.getDateDebut() != null) {
@@ -221,12 +229,14 @@ public class DateFinDroitsRFProcessor {
 	private static class Affaire {
 		private final long immeubleId;
 		private final RegDate dateAffaire;
+		private final EvenementFiscalService evenementFiscalService;
 		private final List<DroitRF> anciensDroits = new ArrayList<>();
 		private final List<DroitRF> nouveauxDroits = new ArrayList<>();
 
-		public Affaire(long immeubleId, RegDate dateAffaire) {
+		public Affaire(long immeubleId, RegDate dateAffaire, @NotNull EvenementFiscalService evenementFiscalService) {
 			this.immeubleId = immeubleId;
 			this.dateAffaire = dateAffaire;
+			this.evenementFiscalService = evenementFiscalService;
 		}
 
 		/**
@@ -279,6 +289,14 @@ public class DateFinDroitsRFProcessor {
 			anciensDroits.forEach(d -> {
 				d.setDateFinMetier(dateFinMetier);
 				d.setMotifFin(motifFin);
+
+				// on publie l'événement fiscal correspondant
+				if (d instanceof DroitProprieteRF) {
+					evenementFiscalService.publierFermetureDroitPropriete(d.getDateFinMetier(), (DroitProprieteRF) d);
+				}
+				else {
+					throw new IllegalArgumentException("Type de droit=[" + d.getClass() + "] inattendu.");
+				}
 			});
 		}
 	}

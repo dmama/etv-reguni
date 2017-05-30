@@ -1108,6 +1108,23 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="immovablePropertyRestartEventType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal qui indique la réactivation d'un immeuble anciennement radié.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="immovablePropertyEventType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="immoSituationUpdateEventType">
 		<xs:annotation>
 			<xs:appinfo>
@@ -1195,6 +1212,23 @@
 			<xs:appinfo>
 				<jxb:class>
 					<jxb:javadoc>Evénement fiscal qui correspond à l'ouverture d'une estimation fiscale sur un immeuble du Registre Foncier.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="immoTaxEstimateEventType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="immoTaxEstimateInReviewUpdateEventType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal qui correspond au changement de l'état 'en revision' d'une estimation fiscale.</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
@@ -1356,23 +1390,6 @@
 			<xs:appinfo>
 				<jxb:class>
 					<jxb:javadoc>Evénement fiscal qui indique l'ouverture d'une implantation d'un bâtiment sur un immeuble.</jxb:javadoc>
-				</jxb:class>
-			</xs:appinfo>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="buildingSettingEventType">
-				<xs:sequence>
-					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
-	<xs:complexType name="buildingSettingUpdateEventType">
-		<xs:annotation>
-			<xs:appinfo>
-				<jxb:class>
-					<jxb:javadoc>Evénement fiscal qui indique la modification d'une implantation d'un bâtiment sur un immeuble.</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>

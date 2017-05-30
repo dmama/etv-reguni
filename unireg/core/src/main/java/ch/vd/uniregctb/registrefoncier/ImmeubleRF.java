@@ -162,6 +162,7 @@ public abstract class ImmeubleRF extends HibernateEntity {
 		if (this.situations == null) {
 			this.situations = new HashSet<>();
 		}
+		situation.setImmeuble(this);
 		this.situations.add(situation);
 	}
 
@@ -217,6 +218,7 @@ public abstract class ImmeubleRF extends HibernateEntity {
 		if (this.estimations == null) {
 			this.estimations = new HashSet<>();
 		}
+		estimation.setImmeuble(this);
 		this.estimations.add(estimation);
 	}
 

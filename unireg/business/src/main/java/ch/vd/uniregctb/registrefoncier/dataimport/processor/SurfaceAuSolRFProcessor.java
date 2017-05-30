@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.GrundstueckExport.BodenbedeckungList;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
@@ -42,7 +43,11 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
-	public SurfaceAuSolRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull SurfaceAuSolRFDAO surfaceAuSolRFDAO, @NotNull XmlHelperRF xmlHelperRF) {
+	@NotNull
+	private final EvenementFiscalService evenementFiscalService;
+
+	public SurfaceAuSolRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull SurfaceAuSolRFDAO surfaceAuSolRFDAO, @NotNull XmlHelperRF xmlHelperRF,
+	                               @NotNull EvenementFiscalService evenementFiscalService) {
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.surfaceAuSolRFDAO = surfaceAuSolRFDAO;
 
@@ -54,6 +59,7 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 				throw new RuntimeException(e);
 			}
 		});
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override
@@ -129,6 +135,9 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 			s.setDateDebut(dateValeur);
 			surfaceAuSolRFDAO.save(s);
 		});
+
+		// on publie l'événement fiscal correspondant
+		evenementFiscalService.publierModificationSurfaceAuSolImmeuble(dateValeur, immeuble);
 	}
 
 	/**
@@ -171,6 +180,9 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 			s.setDateDebut(dateValeur);
 			surfaceAuSolRFDAO.save(s);
 		});
+
+		// on publie l'événement fiscal correspondant
+		evenementFiscalService.publierModificationSurfaceAuSolImmeuble(dateValeur, immeuble);
 	}
 
 	private void processSuppression(@NotNull RegDate dateValeur, @NotNull ImmeubleRF immeuble) {
@@ -178,5 +190,8 @@ public class SurfaceAuSolRFProcessor implements MutationRFProcessor {
 		immeuble.getSurfacesAuSol().stream()
 				.filter(d -> d.isValidAt(null))
 				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
+
+		// on publie l'événement fiscal correspondant
+		evenementFiscalService.publierModificationSurfaceAuSolImmeuble(dateValeur, immeuble);
 	}
 }

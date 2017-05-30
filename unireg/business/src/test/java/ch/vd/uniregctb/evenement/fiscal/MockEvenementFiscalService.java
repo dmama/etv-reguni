@@ -13,11 +13,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
-import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
-import ch.vd.uniregctb.registrefoncier.SituationRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
-import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -183,12 +179,12 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 	}
 
 	@Override
-	public void publierOuvertureDroitPropriete(RegDate dateDebut, DroitProprieteRF droit) {
+	public void publierOuvertureDroitPropriete(RegDate dateDebutMetier, DroitProprieteRF droit) {
 
 	}
 
 	@Override
-	public void publierFermetureDroitPropriete(RegDate dateFin, DroitProprieteRF droit) {
+	public void publierFermetureDroitPropriete(RegDate dateFinMetier, DroitProprieteRF droit) {
 
 	}
 
@@ -223,32 +219,42 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 	}
 
 	@Override
-	public void publierModificationSituationImmeuble(RegDate dateModification, SituationRF situation) {
+	public void publierReactivationImmeuble(RegDate dateReactivation, ImmeubleRF immeuble) {
 
 	}
 
 	@Override
-	public void publierModificationSurfaceTotaleImmeuble(RegDate dateModification, SurfaceTotaleRF surfaceTotale) {
+	public void publierModificationSituationImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
 
 	}
 
 	@Override
-	public void publierModificationSurfaceAuSolImmeuble(RegDate dateModification, SurfaceAuSolRF surfaceAuSol) {
+	public void publierModificationSurfaceTotaleImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
 
 	}
 
 	@Override
-	public void publierModificationQuotePartImmeuble(RegDate dateModification, QuotePartRF quotePart) {
+	public void publierModificationSurfaceAuSolImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
 
 	}
 
 	@Override
-	public void publierDebutEstimationFiscalImmeuble(RegDate dateDebut, EstimationRF estimation) {
+	public void publierModificationQuotePartImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
 
 	}
 
 	@Override
-	public void publierFinEstimationFiscalImmeuble(RegDate dateFin, EstimationRF estimation) {
+	public void publierDebutEstimationFiscalImmeuble(RegDate dateDebutMetier, EstimationRF estimation) {
+
+	}
+
+	@Override
+	public void publierChangementEnRevisionEstimationFiscalImmeuble(RegDate dateChangement, EstimationRF estimation) {
+
+	}
+
+	@Override
+	public void publierFinEstimationFiscalImmeuble(RegDate dateFinMetier, EstimationRF estimation) {
 
 	}
 
@@ -264,11 +270,6 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 
 	@Override
 	public void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation) {
-
-	}
-
-	@Override
-	public void publierModificationImplantationBatiment(RegDate dateModification, ImplantationRF implantation) {
 
 	}
 }
