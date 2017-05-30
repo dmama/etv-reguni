@@ -222,6 +222,12 @@
 			<groupId>ch.vd.shared</groupId>
 			<artifactId>shared-hibernate</artifactId>
 			<version>4.7.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jencks</groupId>
+					<artifactId>jencks</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
