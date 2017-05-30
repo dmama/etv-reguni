@@ -61,7 +61,27 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 	}
 
 	protected void clearQueue(String queueName) throws Exception {
-		while (esbTemplate.receive(queueName) != null) {}
+		while (true) {
+			final boolean found = doInNewReadOnlyTransaction(new TxCallback<Boolean>() {
+				@Override
+				public Boolean execute(TransactionStatus status) throws Exception {
+					return esbTemplate.receive(queueName) != null;
+				}
+			});
+			if (!found) {
+				break;
+			}
+		}
+	}
+
+	protected EsbMessage receive(String queueName, long timeoutMs) throws Exception {
+		return doInNewTransactionAndSession(new TxCallback<EsbMessage>() {
+			@Override
+			public EsbMessage execute(TransactionStatus status) throws Exception {
+				esbTemplate.setReceiveTimeout(timeoutMs);
+				return esbTemplate.receive(queueName);
+			}
+		});
 	}
 
 	@Test
@@ -76,9 +96,8 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 			LOGGER.info("Attente du premier message message pendant 3s maximum");
 
 			final Set<String> received = new HashSet<>();
-			esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
 			for (int i = 0 ; i < 4 ; ++ i) {            // pour l'instant, les v1, v2 et v3 sont envoyés (= 3 événements)
-				final EsbMessage msg = esbTemplate.receive(OUTPUT_QUEUE);
+				final EsbMessage msg = receive(OUTPUT_QUEUE, 3000);         // On attend le message jusqu'à 3 secondes
 				LOGGER.info("Message reçu ou timeout expiré");
 				Assert.assertNotNull(msg);
 
@@ -121,8 +140,7 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 			// on doit maintenant vérifier qu'aucun message n'a été envoyé
 			LOGGER.info("Attente du premier message message pendant 3s maximum");
 
-			esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
-			final EsbMessage msg = esbTemplate.receive(OUTPUT_QUEUE);
+			final EsbMessage msg = receive(OUTPUT_QUEUE, 3000);         // On attend le message jusqu'à 3 secondes
 			LOGGER.info("Message reçu ou timeout expiré");
 			Assert.assertNull(msg);
 
@@ -171,15 +189,14 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 	/**
 	 * Vérifie qu'aucun événement n'est envoyé dans une transaction marquée comme rollback-only (voir utilisation de la méthode ForFiscalManagerImpl#buildSynchronizeActionsTableSurFermetureDeFor)
 	 */
-	@Test(timeout = 10000L)
+	@Test           //(timeout = 10000L)
 	public void testSendEvenementInRollbackOnlyTransaction() throws Exception {
 
 		// Premier essai avec une transaction normale
 		doInNewTransactionAndSession(new SendEventCallback(false));
 
 		// On vérifie que le message a été envoyé et bien reçu
-		esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
-		EsbMessage msg = esbTemplate.receive(OUTPUT_QUEUE);
+		EsbMessage msg = receive(OUTPUT_QUEUE, 3000);       // On attend le message jusqu'à 3 secondes
 		assertNotNull(msg);
 
 		clearQueue(OUTPUT_QUEUE);
@@ -188,8 +205,7 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 		doInNewTransactionAndSession(new SendEventCallback(true));
 
 		// On vérifie que le message n'a *pas* été envoyé
-		esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
-		msg = esbTemplate.receive(OUTPUT_QUEUE);
+		msg = receive(OUTPUT_QUEUE, 3000);      // On attend le message jusqu'à 3 secondes
 		assertNull(msg);
 	}
 

@@ -23,7 +23,7 @@ public abstract class IdentificationContribuableRequestListenerItTest extends Bu
 
 	private EsbJmsTemplate esbTemplate;
 	private String inputQueue;
-	private String OutputQueue;
+	private String outputQueue;
 	private EsbMessageValidator esbValidator;
 	private SmartLifecycle endpointManager;
 
@@ -40,12 +40,12 @@ public abstract class IdentificationContribuableRequestListenerItTest extends Bu
 		esbValidator = buildEsbMessageValidator(new Resource[]{new ClassPathResource(getRequestXSD()), new ClassPathResource(getResponseXSD())});
 
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.ident.ctb.input");
-		OutputQueue = inputQueue + ".response";
+		outputQueue = inputQueue + ".response";
 
-		EvenementHelper.clearQueue(esbTemplate, inputQueue);
-		EvenementHelper.clearQueue(esbTemplate, OutputQueue);
+		EvenementHelper.clearQueue(esbTemplate, inputQueue, transactionManager);
+		EvenementHelper.clearQueue(esbTemplate, outputQueue, transactionManager);
 
-		endpointManager = getBean(SmartLifecycle.class, "jmsIdentCtbEndpointManagerAutomatique");
+		endpointManager = getBean(SmartLifecycle.class, "identCtbMessageListenerAutomatique");
 		endpointManager.start();
 	}
 
@@ -67,7 +67,7 @@ public abstract class IdentificationContribuableRequestListenerItTest extends Bu
 	}
 
 	protected String getOutputQueue() {
-		return OutputQueue;
+		return outputQueue;
 	}
 
 	protected EsbMessage buildTextMessage(String queueName, String texte, String replyTo) throws Exception {
@@ -84,12 +84,11 @@ public abstract class IdentificationContribuableRequestListenerItTest extends Bu
 	protected void sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
 		final EsbMessage m = buildTextMessage(queueName, texte, replyTo);
 		esbValidator.validate(m);
-		getEsbTemplate().send(m);
+		EvenementHelper.sendMessage(esbTemplate, m, transactionManager);
 	}
 
 	protected EsbMessage getEsbMessage(String queue) throws Exception {
-		getEsbTemplate().setReceiveTimeout(10000);        // On attend le message jusqu'à 10 secondes
-		final EsbMessage msg = getEsbTemplate().receive(queue);
+		final EsbMessage msg = EvenementHelper.getMessage(esbTemplate, queue, 10000, transactionManager);       // On attend le message jusqu'à 10 secondes
 		assertNotNull("L'événement n'a pas été reçu.", msg);
 		return msg;
 	}

@@ -13,6 +13,7 @@ import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.fiscact.periodic.v1.PeriodicFiscalActivityRequest;
 import ch.vd.unireg.xml.event.party.fiscact.v1.FiscalActivityResponse;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.evenement.EvenementHelper;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
@@ -64,12 +65,7 @@ public class PeriodicFiscalActivityRequestV1EsbHandlerItTest extends PartyReques
 		request.setPartyNumber(42);
 
 		// Envoie le message
-		final String businessId = doInNewTransaction(new TxCallback<String>() {
-			@Override
-			public String execute(TransactionStatus status) throws Exception {
-				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-			}
-		});
+		final String businessId = sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage msg = getEsbBusinessErrorMessage();
 		assertNotNull(msg);
@@ -101,13 +97,7 @@ public class PeriodicFiscalActivityRequestV1EsbHandlerItTest extends PartyReques
 		request.setPartyNumber(id.intValue());
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
@@ -144,16 +134,10 @@ public class PeriodicFiscalActivityRequestV1EsbHandlerItTest extends PartyReques
 		final String headerValue = "John Lanonne";
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final EsbMessage m = buildTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				m.addHeader(headerName, headerValue);
-				validateMessage(m);
-				getEsbTemplate().send(m);
-				return null;
-			}
-		});
+		final EsbMessage m = buildTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+		m.addHeader(headerName, headerValue);
+		validateMessage(m);
+		EvenementHelper.sendMessage(getEsbTemplate(), m, transactionManager);
 
 		final EsbMessage answer = getEsbMessage(getOutputQueue());
 		assertNotNull(answer);

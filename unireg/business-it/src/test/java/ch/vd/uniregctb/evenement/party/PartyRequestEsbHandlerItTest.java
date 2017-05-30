@@ -31,7 +31,7 @@ public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;
 	private String inputQueue;
-	private String OutputQueue;
+	private String outputQueue;
 	private EsbMessageValidator esbValidator;
 	private EsbBusinessErrorCollector errorCollector;
 
@@ -51,10 +51,10 @@ public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		esbValidator = buildEsbMessageValidator(sources.toArray(new Resource[sources.size()]));
 
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.party.service");
-		OutputQueue = inputQueue + ".response";
+		outputQueue = inputQueue + ".response";
 
-		EvenementHelper.clearQueue(esbTemplate, inputQueue);
-		EvenementHelper.clearQueue(esbTemplate, OutputQueue);
+		EvenementHelper.clearQueue(esbTemplate, inputQueue, transactionManager);
+		EvenementHelper.clearQueue(esbTemplate, outputQueue, transactionManager);
 	}
 
 	protected abstract List<String> getResponseXSD();
@@ -74,7 +74,7 @@ public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 	}
 
 	protected String getOutputQueue() {
-		return OutputQueue;
+		return outputQueue;
 	}
 
 	protected EsbBusinessErrorCollector getErrorCollector() {
@@ -98,7 +98,7 @@ public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 	protected String sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
 		final EsbMessage m = buildTextMessage(queueName, texte, replyTo);
 		validateMessage(m);
-		getEsbTemplate().send(m);
+		EvenementHelper.sendMessage(esbTemplate, m, transactionManager);
 		return m.getBusinessId();
 	}
 
@@ -109,8 +109,7 @@ public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 	}
 
 	protected EsbMessage getEsbMessage(String queue) throws Exception {
-		getEsbTemplate().setReceiveTimeout(10000);        // On attend le message jusqu'à 10 secondes
-		final EsbMessage msg = getEsbTemplate().receive(queue);
+		final EsbMessage msg = EvenementHelper.getMessage(esbTemplate, queue, 10000, transactionManager);       // On attend le message jusqu'à 10 secondes
 		assertNotNull("L'événement n'a pas été reçu.", msg);
 		return msg;
 	}

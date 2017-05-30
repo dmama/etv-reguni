@@ -85,13 +85,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
@@ -133,13 +127,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
@@ -187,13 +175,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
@@ -227,13 +209,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(Collections.singletonList(data));
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
@@ -351,13 +327,7 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 		final IdentificationContribuableRequest request = new IdentificationContribuableRequest(identificationDataList);
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);

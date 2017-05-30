@@ -110,7 +110,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.reqdes");
 
-		EvenementHelper.clearQueue(esbTemplate, inputQueue);
+		EvenementHelper.clearQueue(esbTemplate, inputQueue, transactionManager);
 	}
 
 	private static String toString(CreationModification cm) throws IOException, JAXBException {
@@ -135,7 +135,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 	private void sendTextMessage(String queueName, String texte, String businessId) throws Exception {
 		final EsbMessage m = buildTextMessage(queueName, texte, businessId);
 		esbValidator.validate(m);
-		esbTemplate.send(m);
+		EvenementHelper.sendMessage(esbTemplate, m, transactionManager);
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -205,13 +205,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 				Assert.assertEquals(2, evt.getTransactions().size());
 
 				final List<TransactionImmobiliere> sortedTransactions = new ArrayList<>(evt.getTransactions());
-				Collections.sort(sortedTransactions, new Comparator<TransactionImmobiliere>() {
-					@Override
-					public int compare(TransactionImmobiliere o1, TransactionImmobiliere o2) {
-						// d'abord Aigle, puis Leysin
-						return o1.getOfsCommune() - o2.getOfsCommune();
-					}
-				});
+				sortedTransactions.sort(Comparator.comparingInt(TransactionImmobiliere::getOfsCommune));    // d'abord Aigle, puis Leysin
 				{
 					final TransactionImmobiliere ti = sortedTransactions.get(0);
 					Assert.assertNotNull(ti);
@@ -276,14 +270,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 				final List<RolePartiePrenante> roles = new ArrayList<>(pp.getRoles());
 				Assert.assertNotNull(roles);
 				Assert.assertEquals(2, roles.size());
-
-				Collections.sort(roles, new Comparator<RolePartiePrenante>() {
-					@Override
-					public int compare(RolePartiePrenante o1, RolePartiePrenante o2) {
-						// d'abord Aigle, puis Leysin
-						return o1.getTransaction().getOfsCommune() - o2.getTransaction().getOfsCommune();
-					}
-				});
+				roles.sort(Comparator.comparingInt(o -> o.getTransaction().getOfsCommune()));
 				{
 					final RolePartiePrenante role = roles.get(0);
 					Assert.assertNotNull(role);
@@ -384,13 +371,8 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 				Assert.assertEquals(2, evt.getTransactions().size());
 
 				final List<TransactionImmobiliere> sortedTransactions = new ArrayList<>(evt.getTransactions());
-				Collections.sort(sortedTransactions, new Comparator<TransactionImmobiliere>() {
-					@Override
-					public int compare(TransactionImmobiliere o1, TransactionImmobiliere o2) {
-						// d'abord Aigle, puis Leysin
-						return o1.getOfsCommune() - o2.getOfsCommune();
-					}
-				});
+				// d'abord Aigle, puis Leysin
+				sortedTransactions.sort(Comparator.comparingInt(TransactionImmobiliere::getOfsCommune));
 				{
 					final TransactionImmobiliere ti = sortedTransactions.get(0);
 					Assert.assertNotNull(ti);
@@ -455,13 +437,8 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 				Assert.assertNotNull(roles);
 				Assert.assertEquals(2, roles.size());
 
-				Collections.sort(roles, new Comparator<RolePartiePrenante>() {
-					@Override
-					public int compare(RolePartiePrenante o1, RolePartiePrenante o2) {
-						// d'abord Aigle, puis Leysin
-						return o1.getTransaction().getOfsCommune() - o2.getTransaction().getOfsCommune();
-					}
-				});
+				// d'abord Aigle, puis Leysin
+ 				roles.sort(Comparator.comparingInt(o -> o.getTransaction().getOfsCommune()));
 				{
 					final RolePartiePrenante role = roles.get(0);
 					Assert.assertNotNull(role);
@@ -563,13 +540,8 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 				Assert.assertEquals(2, evt.getTransactions().size());
 
 				final List<TransactionImmobiliere> sortedTransactions = new ArrayList<>(evt.getTransactions());
-				Collections.sort(sortedTransactions, new Comparator<TransactionImmobiliere>() {
-					@Override
-					public int compare(TransactionImmobiliere o1, TransactionImmobiliere o2) {
-						// d'abord Aigle, puis Leysin
-						return o1.getOfsCommune() - o2.getOfsCommune();
-					}
-				});
+				// d'abord Aigle, puis Leysin
+				sortedTransactions.sort(Comparator.comparingInt(TransactionImmobiliere::getOfsCommune));
 				{
 					final TransactionImmobiliere ti = sortedTransactions.get(0);
 					Assert.assertNotNull(ti);
@@ -634,13 +606,8 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 				Assert.assertNotNull(roles);
 				Assert.assertEquals(2, roles.size());
 
-				Collections.sort(roles, new Comparator<RolePartiePrenante>() {
-					@Override
-					public int compare(RolePartiePrenante o1, RolePartiePrenante o2) {
-						// d'abord Aigle, puis Leysin
-						return o1.getTransaction().getOfsCommune() - o2.getTransaction().getOfsCommune();
-					}
-				});
+				// d'abord Aigle, puis Leysin
+				roles.sort(Comparator.comparingInt(o -> o.getTransaction().getOfsCommune()));
 				{
 					final RolePartiePrenante role = roles.get(0);
 					Assert.assertNotNull(role);

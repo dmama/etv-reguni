@@ -15,7 +15,6 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
@@ -86,12 +85,7 @@ public class AdvancePaymentCorporationsRequestEsbHandlerItTest extends PartyRequ
 		request.setReferenceDate(DataHelper.coreToXMLv2(RegDate.get()));
 
 		// Envoi du message
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		// attente de la réponse
 		final EsbMessage esbMessage = getEsbMessage(getOutputQueue());

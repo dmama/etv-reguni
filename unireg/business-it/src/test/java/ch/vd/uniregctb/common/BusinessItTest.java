@@ -85,5 +85,4 @@ public abstract class BusinessItTest extends AbstractBusinessTest {
 		validator.setSources(sources);
 		return validator;
 	}
-
 }

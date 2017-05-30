@@ -77,13 +77,7 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		request.setCreationProlongationRapportTravail(new CreationProlongationRapportTravail());
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
@@ -135,18 +129,12 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
 
-		final MiseAJourRapportTravailResponse response = (MiseAJourRapportTravailResponse) parseResponse(message);
+		final MiseAJourRapportTravailResponse response = parseResponse(message);
 		assertNotNull(response);
 		assertNotNull(response.getExceptionInfo());
 		final String messageErreur = String.format("Exception de validation pour le message {businessId: %s}: Debiteur ou sourcier invalide dans Unireg.",message.getBusinessCorrelationId());
@@ -179,18 +167,12 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
 
-		final MiseAJourRapportTravailResponse response = (MiseAJourRapportTravailResponse) parseResponse(message);
+		final MiseAJourRapportTravailResponse response = parseResponse(message);
 		assertNotNull(response);
 		assertNotNull(response.getExceptionInfo());
 		final String messageErreur = "Le débiteur 15.000.00 n'existe pas dans unireg";
@@ -241,18 +223,12 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
 
-		final MiseAJourRapportTravailResponse response = (MiseAJourRapportTravailResponse) parseResponse(message);
+		final MiseAJourRapportTravailResponse response = parseResponse(message);
 		assertNotNull(response);
 		assertEquals(DataHelper.coreToXMLv1(RegDate.get()), response.getDatePriseEnCompte());
 

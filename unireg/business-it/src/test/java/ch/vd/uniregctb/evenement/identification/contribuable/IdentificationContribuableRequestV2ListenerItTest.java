@@ -120,13 +120,7 @@ public class IdentificationContribuableRequestV2ListenerItTest extends Identific
 		request.setPrenoms("Christophe");
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
@@ -154,13 +148,7 @@ public class IdentificationContribuableRequestV2ListenerItTest extends Identific
 		request.setPrenoms("Raphaël");
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);

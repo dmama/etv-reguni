@@ -102,12 +102,7 @@ public class PartyCreateNonresidentByVNRequestV1EsbHandlerItTest extends PartyRe
 		final CreateNonresidentByVNRequest request = createRequest();
 
 		// Envoie le message
-		return doInNewTransaction(new TxCallback<String>() {
-			@Override
-			public String execute(TransactionStatus status) throws Exception {
-				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-			}
-		});
+		return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -116,14 +111,10 @@ public class PartyCreateNonresidentByVNRequestV1EsbHandlerItTest extends PartyRe
 		handler.setSecurityProvider(provider);
 		final CreateNonresidentByVNRequest request = createRequest();
 		final String xmlRequeteSansBaliseLogin = requestToString(request).replaceAll("^(.*)(<[^<]*login>.*</[^<]*login>)(.*)$", "$1$3");
+
 		// Envoie le message
-		final String businessId = doInNewTransaction(new TxCallback<String>() {
-			@Override
-			public String execute(TransactionStatus status) throws Exception {
-				deactivateEsbValidator(); // desactivation du validateur, c'est le but du test d'envoyer un truc pourri
-				return sendTextMessage(getInputQueue(), xmlRequeteSansBaliseLogin, getOutputQueue());
-			}
-		});
+		deactivateEsbValidator(); // desactivation du validateur, c'est le but du test d'envoyer un truc pourri
+		final String businessId = sendTextMessage(getInputQueue(), xmlRequeteSansBaliseLogin, getOutputQueue());
 
 		final List<EsbMessage> errors = getErrorCollector().waitForIncomingMessages(1, BusinessItTest.JMS_TIMEOUT);
 		assertNotNull(errors);

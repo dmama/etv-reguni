@@ -82,13 +82,7 @@ public class PartyPeriodicTaxLiabilityRequestV3EsbHandlerItTest extends PartyReq
 		request.setSearchParents(false);
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
@@ -129,13 +123,7 @@ public class PartyPeriodicTaxLiabilityRequestV3EsbHandlerItTest extends PartyReq
 		request.getIndividualTaxLiabilityToReject().add(IndividualTaxLiabilityType.MIXED_WITHHOLDING_137_2);
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);

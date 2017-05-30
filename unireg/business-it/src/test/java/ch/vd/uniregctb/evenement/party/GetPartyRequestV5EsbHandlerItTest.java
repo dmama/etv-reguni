@@ -115,13 +115,7 @@ public class GetPartyRequestV5EsbHandlerItTest extends PartyRequestEsbHandlerV2I
 		request.getParts().add(PartyPart.WITHHOLDING_TAXATION_PERIODS);
 
 		// Envoie le message
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-				return null;
-			}
-		});
+		sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final Response response = parseResponse(getEsbMessage(getOutputQueue()));
 		assertNotNull(response);
@@ -180,12 +174,7 @@ public class GetPartyRequestV5EsbHandlerItTest extends PartyRequestEsbHandlerV2I
 		request.getParts().add(PartyPart.WITHHOLDING_TAXATION_PERIODS);
 
 		// Envoie le message
-		final String businessId = doInNewTransaction(new TxCallback<String>() {
-			@Override
-			public String execute(TransactionStatus status) throws Exception {
-				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-			}
-		});
+		final String businessId = sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final List<EsbMessage> errors = getErrorCollector().waitForIncomingMessages(1, BusinessItTest.JMS_TIMEOUT);
 		assertNotNull(errors);
@@ -236,12 +225,7 @@ public class GetPartyRequestV5EsbHandlerItTest extends PartyRequestEsbHandlerV2I
 		request.getParts().add(PartyPart.WITHHOLDING_TAXATION_PERIODS);
 
 		// Envoie le message
-		final String businessId = doInNewTransaction(new TxCallback<String>() {
-			@Override
-			public String execute(TransactionStatus status) throws Exception {
-				return sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
-			}
-		});
+		final String businessId = sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
 
 		final List<EsbMessage> errors = getErrorCollector().waitForIncomingMessages(1, BusinessItTest.JMS_TIMEOUT);
 		assertNotNull(errors);

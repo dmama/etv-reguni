@@ -19,6 +19,7 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.jms.EsbBusinessErrorCollector;
 import ch.vd.uniregctb.jms.EsbBusinessErrorHandler;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
@@ -72,6 +73,7 @@ public abstract class EvenementTest {
 	public void tearDown() {
 		esbValidator = null;
 		if (listener != null) {
+			listener.stop();
 			listener.destroy();
 		}
 	}
@@ -86,12 +88,14 @@ public abstract class EvenementTest {
 		listener.setEsbErrorHandler(errorHandler);
 		listener.setEsbTemplate(esbTemplate);
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
+		listener.setConnectionFactory(jmsConnectionFactory);
 		listener.setDestinationName(queueName);
 		listener.afterPropertiesSet();
+		listener.start();
 	}
 
 	protected void initListenerContainer(String queueName, EsbMessageHandler handler) {
-		initListenerContainer(queueName, handler, null);
+		initListenerContainer(queueName, handler, new EsbBusinessErrorCollector());
 	}
 
 	protected void clearQueue(String queueName) throws Exception {

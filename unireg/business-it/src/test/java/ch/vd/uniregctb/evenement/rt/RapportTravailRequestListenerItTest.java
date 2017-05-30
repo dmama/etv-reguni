@@ -62,8 +62,8 @@ abstract class RapportTravailRequestListenerItTest extends BusinessItTest {
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.rapportTravail.service");
 		OutputQueue = inputQueue + ".response";
 
-		EvenementHelper.clearQueue(esbTemplate, inputQueue);
-		EvenementHelper.clearQueue(esbTemplate, OutputQueue);
+		EvenementHelper.clearQueue(esbTemplate, inputQueue, transactionManager);
+		EvenementHelper.clearQueue(esbTemplate, OutputQueue, transactionManager);
 	}
 
 	abstract String getResponseXSD();
@@ -97,12 +97,11 @@ abstract class RapportTravailRequestListenerItTest extends BusinessItTest {
 	void sendTextMessage(String queueName, String texte, String replyTo) throws Exception {
 		final EsbMessage m = buildTextMessage(queueName, texte, replyTo);
 		esbValidator.validate(m);
-		getEsbTemplate().send(m);
+		EvenementHelper.sendMessage(esbTemplate, m, transactionManager);
 	}
 
 	protected EsbMessage getEsbMessage(String queue) throws Exception {
-		getEsbTemplate().setReceiveTimeout(10000);        // On attend le message jusqu'à 10 secondes
-		final EsbMessage msg = getEsbTemplate().receive(queue);
+		final EsbMessage msg = EvenementHelper.getMessage(esbTemplate, queue, 10000, transactionManager);   // On attend le message jusqu'à 10 secondes
 		assertNotNull("L'événement n'a pas été reçu.", msg);
 		return msg;
 	}
