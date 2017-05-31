@@ -62,7 +62,7 @@
 		<property name="target" ref="userTransactionManager"/>
 	</bean>
 
-	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager" depends-on="userTransactionService">
+	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager" depends-on="userTransactionService, jmsConnectionFactory, dataSource">
 		<property name="transactionManager" ref="tracingTransactionManager"/>
 		<property name="userTransaction" ref="userTransaction"/>
 	</bean>
