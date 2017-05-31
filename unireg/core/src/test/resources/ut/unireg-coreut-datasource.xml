@@ -32,7 +32,8 @@
 	<bean id="userTransactionService" class="com.atomikos.icatch.config.UserTransactionServiceImp" init-method="init" destroy-method="shutdownForce" depends-on="atomikosSystemProps">
 		<constructor-arg>
 			<props>
-				<prop key="com.atomikos.icatch.max_timeout">300000</prop>           <!-- en millisecondes, la durée maximale admissible d'une transaction : 5mn -->
+				<prop key="com.atomikos.icatch.max_timeout">0</prop>                <!-- en millisecondes, la durée maximale admissible pour le timeout d'une transaction : aucune -->
+				<prop key="com.atomikos.icatch.default_jta_timeout">300000</prop>   <!-- en millisecondes, le timeout par défaut d'une transaction JTA : 5min -->
 				<prop key="com.atomikos.icatch.log_base_dir">${java.io.tmpdir}</prop>
 				<prop key="com.atomikos.icatch.service">com.atomikos.icatch.standalone.UserTransactionServiceFactory</prop>
 				<prop key="com.atomikos.icatch.enable_logging">false</prop>         <!-- désactivation des logs de transaction pendant les tests unitaires -->
