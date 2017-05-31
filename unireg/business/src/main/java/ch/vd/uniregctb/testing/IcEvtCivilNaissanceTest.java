@@ -2,6 +2,7 @@ package ch.vd.uniregctb.testing;
 
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -12,7 +13,6 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class IcEvtCivilNaissanceTest extends InContainerTest {

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.capitastra.grundstueck.Gebaeude;
 import ch.vd.shared.batchtemplate.BatchCallback;
@@ -31,7 +32,6 @@ import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.BatimentRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.BatimentRFKey;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class BatimentRFDetector {
 

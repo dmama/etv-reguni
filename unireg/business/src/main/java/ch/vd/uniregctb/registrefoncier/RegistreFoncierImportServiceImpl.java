@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -31,7 +32,6 @@ import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportService {
 

@@ -16,6 +16,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -27,7 +28,6 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * [SIFISC-9096] Cet intercepteur recalcule automatiquement les parentés sur les personnes physiques connues du civil et modifiées après le commit de chaque transaction.

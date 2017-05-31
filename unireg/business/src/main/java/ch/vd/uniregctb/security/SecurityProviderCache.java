@@ -18,6 +18,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.CacheHelper;
@@ -32,7 +33,6 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.data.FiscalDataEventListener;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.LogLevel;

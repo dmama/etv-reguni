@@ -9,8 +9,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-
-import ch.vd.uniregctb.transaction.TransactionTemplate;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class EvenementCivilEchRecuperateurImpl implements EvenementCivilEchRecuperateur {
 

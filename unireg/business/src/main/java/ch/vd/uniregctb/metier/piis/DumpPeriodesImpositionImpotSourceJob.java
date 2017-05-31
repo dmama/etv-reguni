@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -29,7 +30,6 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 

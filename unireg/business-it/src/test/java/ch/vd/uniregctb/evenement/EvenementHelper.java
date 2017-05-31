@@ -15,6 +15,7 @@ import org.springframework.jca.work.SimpleTaskWorkManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Log4jConfigurer;
 
 import ch.vd.registre.base.tx.TxCallback;
@@ -22,7 +23,6 @@ import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.utils.UniregProperties;
 import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 

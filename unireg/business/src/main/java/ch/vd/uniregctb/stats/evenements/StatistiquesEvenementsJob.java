@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
@@ -15,7 +16,6 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Job qui génère des statistiques pour les événements reçus et traités par

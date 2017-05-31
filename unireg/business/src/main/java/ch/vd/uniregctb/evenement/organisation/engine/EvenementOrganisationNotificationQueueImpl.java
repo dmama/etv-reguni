@@ -22,6 +22,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.InstantHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -30,7 +31,6 @@ import ch.vd.uniregctb.common.Aged;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Classe utilitaire qui joue le rôle d'une queue bloquante pour le traitement des événements organisation reçus de RCEnt.

@@ -12,12 +12,12 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.dbutils.SqlFileExecutor;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public abstract class InContainerTest {
 

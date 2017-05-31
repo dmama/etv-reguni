@@ -6,11 +6,11 @@ import java.util.Map;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Job qui scanne le repository des documents à la recherche de fichiers non-référencés et qui les référence dans la base de données.

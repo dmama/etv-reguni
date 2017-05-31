@@ -29,6 +29,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
@@ -73,7 +74,6 @@ import ch.vd.uniregctb.reqdes.RolePartiePrenante;
 import ch.vd.uniregctb.reqdes.TransactionImmobiliere;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.xml.DataHelper;

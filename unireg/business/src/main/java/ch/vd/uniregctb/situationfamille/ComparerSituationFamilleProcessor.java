@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -31,7 +32,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class ComparerSituationFamilleProcessor {
 

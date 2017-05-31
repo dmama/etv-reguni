@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.capitastra.rechteregister.BelastetesGrundstueck;
 import ch.vd.shared.batchtemplate.BatchCallback;
@@ -41,7 +42,6 @@ import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.Dienstbarke
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.ServitudesRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class ServitudeRFDetector {
 

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
@@ -19,7 +20,6 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamCommune;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
 import ch.vd.uniregctb.scheduler.JobParamString;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Job qui effectue les changements sur les fors fiscaux suite à une fusion de communes.

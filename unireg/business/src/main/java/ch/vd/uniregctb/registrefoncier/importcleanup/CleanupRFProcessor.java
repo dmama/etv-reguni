@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -20,7 +21,6 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierImportService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Processor qui efface les anciens imports (et leurs mutations) pour faire de la place.

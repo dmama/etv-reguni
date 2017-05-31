@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -18,7 +19,6 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Batch d'extraction des listes nominatives

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -27,7 +28,6 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Classe qui permet de validation la cohérence des données d'un tiers dans un thread autonome.

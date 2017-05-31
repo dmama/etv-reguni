@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallback;
@@ -39,7 +40,6 @@ import ch.vd.uniregctb.registrefoncier.dataimport.processor.DroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.MutationRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.ServitudeRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.SurfaceAuSolRFProcessor;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.xml.ExceptionHelper;
 
 /**

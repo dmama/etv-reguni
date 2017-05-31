@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.function.ToIntFunction;
 
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -18,7 +19,6 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Job qui produit les statistiques des déclaration d'impôts ordinaires ou des contribuables

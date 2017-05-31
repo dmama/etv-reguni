@@ -19,6 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -57,7 +58,6 @@ import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.validation.ValidationService;

@@ -20,6 +20,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.EntityKey;
@@ -30,7 +31,6 @@ import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class TiersIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean {
 

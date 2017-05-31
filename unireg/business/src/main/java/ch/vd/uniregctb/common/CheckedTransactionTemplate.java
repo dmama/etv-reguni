@@ -3,8 +3,7 @@ package ch.vd.uniregctb.common;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-
-import ch.vd.uniregctb.transaction.TransactionTemplate;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Classe qui fonctionne comme le {@link TransactionTemplate} de Spring, mais qui utilise un callback avec des exceptions checkées.

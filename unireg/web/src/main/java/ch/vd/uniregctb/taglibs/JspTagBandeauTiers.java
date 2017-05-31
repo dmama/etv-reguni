@@ -18,6 +18,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -54,7 +55,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.PeriodeDecompte;

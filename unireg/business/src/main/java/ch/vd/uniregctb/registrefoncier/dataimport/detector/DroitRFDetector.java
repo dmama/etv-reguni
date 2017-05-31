@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.capitastra.common.Rechteinhaber;
 import ch.vd.capitastra.grundstueck.EigentumAnteil;
@@ -45,7 +46,6 @@ import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigen
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.BlacklistRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class DroitRFDetector {
 

@@ -32,6 +32,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -98,7 +99,6 @@ import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.GenreImpot;

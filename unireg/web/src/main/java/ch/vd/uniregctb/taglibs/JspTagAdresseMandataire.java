@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -22,7 +23,6 @@ import ch.vd.uniregctb.adresse.AdresseMandataireAdapter;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class JspTagAdresseMandataire extends BodyTagSupport {
 

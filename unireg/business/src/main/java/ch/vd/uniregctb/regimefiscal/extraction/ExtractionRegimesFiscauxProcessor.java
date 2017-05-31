@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -38,7 +39,6 @@ import ch.vd.uniregctb.tiers.FormeLegaleHisto;
 import ch.vd.uniregctb.tiers.RaisonSocialeHisto;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class ExtractionRegimesFiscauxProcessor {
 

@@ -29,11 +29,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackException;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

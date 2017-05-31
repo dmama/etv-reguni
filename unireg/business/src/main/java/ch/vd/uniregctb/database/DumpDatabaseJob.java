@@ -10,6 +10,7 @@ import java.util.zip.ZipOutputStream;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -20,7 +21,6 @@ import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Job qui dump la contenu de la base de données dans un fichier sur le disque du serveur.

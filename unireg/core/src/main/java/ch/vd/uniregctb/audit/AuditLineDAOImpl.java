@@ -14,6 +14,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -21,7 +22,6 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements AuditLineDAO, InitializingBean {
 

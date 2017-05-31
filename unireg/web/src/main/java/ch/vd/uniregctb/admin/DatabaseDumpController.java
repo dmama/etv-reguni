@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,7 +35,6 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**

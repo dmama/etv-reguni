@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -29,7 +30,6 @@ import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.TraitementFinsDeDroitRFResults;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * [SIFISC-22997] Processeur qui détermine les dates de fin de droits sur les immeubles du registre foncier.

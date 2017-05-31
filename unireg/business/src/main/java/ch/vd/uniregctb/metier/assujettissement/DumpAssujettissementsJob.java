@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.shared.batchtemplate.BatchCallback;
@@ -24,7 +25,6 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamString;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>

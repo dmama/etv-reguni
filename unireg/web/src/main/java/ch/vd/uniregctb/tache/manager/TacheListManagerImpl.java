@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
@@ -57,7 +58,6 @@ import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationCache;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 

@@ -9,12 +9,12 @@ import org.hibernate.Session;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {

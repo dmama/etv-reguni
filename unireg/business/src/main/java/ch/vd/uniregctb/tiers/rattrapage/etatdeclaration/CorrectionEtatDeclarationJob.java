@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -36,7 +37,6 @@ import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 /**

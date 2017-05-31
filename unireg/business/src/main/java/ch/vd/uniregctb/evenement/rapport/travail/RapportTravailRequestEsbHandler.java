@@ -30,6 +30,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -51,7 +52,6 @@ import ch.vd.uniregctb.evenement.EsbMessageValidationHelper;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.stats.ServiceTracing;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.xml.ServiceException;
 
 //Listener qui écoute les demandes sur les rapports de travail pour le moment on a que des demandes de mise à jour

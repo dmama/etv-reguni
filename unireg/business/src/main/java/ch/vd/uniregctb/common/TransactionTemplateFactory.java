@@ -7,6 +7,6 @@ public final class TransactionTemplateFactory implements ch.vd.shared.batchtempl
 
 	@Override
 	public TransactionTemplate createTransactionTemplate(PlatformTransactionManager transactionManager) {
-		return new ch.vd.uniregctb.transaction.TransactionTemplate(transactionManager);
+		return new org.springframework.transaction.support.TransactionTemplate(transactionManager);
 	}
 }

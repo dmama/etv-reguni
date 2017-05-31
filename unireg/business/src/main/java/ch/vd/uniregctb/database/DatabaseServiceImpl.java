@@ -45,6 +45,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -55,7 +56,6 @@ import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class DatabaseServiceImpl implements DatabaseService {
 

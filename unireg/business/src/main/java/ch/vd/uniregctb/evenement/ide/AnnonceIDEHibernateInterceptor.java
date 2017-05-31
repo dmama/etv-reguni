@@ -20,6 +20,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BatchIterator;
@@ -33,7 +34,6 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FormeJuridiqueFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.RaisonSocialeFiscaleEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Intercepteur de collecte des entreprises modifiées pour une éventuelle annonce de la modification à l'IDE

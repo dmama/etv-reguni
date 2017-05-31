@@ -9,6 +9,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -17,7 +18,6 @@ import ch.vd.uniregctb.load.BasicLoadMonitor;
 import ch.vd.uniregctb.load.LoadAverager;
 import ch.vd.uniregctb.stats.LoadMonitorable;
 import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchReceptionHandler, EvenementCivilEchReceptionMonitor, InitializingBean, DisposableBean {
 

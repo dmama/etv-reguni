@@ -4,13 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTestApplication;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDIPP;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Programme de test des performances des batch de traitement des déclaration. Il s'agit d'un programme stand-alone car le plugin jProfiler

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -38,7 +39,6 @@ import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.common.ThreadNameGenerator;
 import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Implémentation du service d'extractions asynchrones

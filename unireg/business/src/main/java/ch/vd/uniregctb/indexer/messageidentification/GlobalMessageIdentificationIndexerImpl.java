@@ -14,6 +14,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
@@ -28,7 +29,6 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.utils.LogLevel;
 
 public class GlobalMessageIdentificationIndexerImpl implements GlobalMessageIdentificationIndexer {

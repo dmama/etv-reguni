@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.GrundstueckExport;
@@ -36,7 +37,6 @@ import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.SurfaceAuSolRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class SurfaceAuSolRFDetector {
 

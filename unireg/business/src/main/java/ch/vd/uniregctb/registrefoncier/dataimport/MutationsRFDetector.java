@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.EigentumAnteil;
@@ -55,7 +56,6 @@ import ch.vd.uniregctb.registrefoncier.dataimport.detector.ImmeubleRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.ServitudeRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.detector.SurfaceAuSolRFDetector;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.xml.ExceptionHelper;
 
 /**

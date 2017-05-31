@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -15,7 +16,6 @@ import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Processeur utilisé lors des tentatives de remettre d'aplomb les flags "habitant" des personnes physiques en fonction de leurs adresses de résidences civiles

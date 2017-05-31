@@ -29,6 +29,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -134,7 +135,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TransfertPatrimoine;
 import ch.vd.uniregctb.tiers.Tutelle;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
