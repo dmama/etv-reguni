@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
@@ -26,6 +27,7 @@ public class RapprochementProprietaireHandlerImpl implements RapprochementPropri
 
 	private HibernateTemplate hibernateTemplate;
 	private RapprochementRFDAO rapprochementRFDAO;
+	private EvenementFiscalService evenementFiscalService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -33,6 +35,10 @@ public class RapprochementProprietaireHandlerImpl implements RapprochementPropri
 
 	public void setRapprochementRFDAO(RapprochementRFDAO rapprochementRFDAO) {
 		this.rapprochementRFDAO = rapprochementRFDAO;
+	}
+
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override
@@ -73,6 +79,9 @@ public class RapprochementProprietaireHandlerImpl implements RapprochementPropri
 			rapprochement.setTypeRapprochement(TypeRapprochementRF.MANUEL);
 
 			contribuable.addRapprochementRF(hibernateTemplate.merge(rapprochement));
+
+			// on publie l'événement fiscal correspondant
+			evenementFiscalService.publierDebutRapprochementTiersRF(rapprochement.getDateDebut(), rapprochement);
 
 			LOGGER.info(String.format("Généré rapprochement manuel entre le contribuable %s et le tiers RF %d (numéro RF %d) pour la période %s.",
 			                          FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero()),

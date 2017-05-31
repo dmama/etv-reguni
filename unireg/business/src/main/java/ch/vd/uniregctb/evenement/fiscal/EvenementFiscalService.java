@@ -13,6 +13,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -36,24 +37,28 @@ public interface EvenementFiscalService {
 
 	/**
 	 * Publie un événement fiscal de type 'Ouverture de for'
+	 *
 	 * @param forFiscal le for fiscal ouvert pour lequel on publie l'événement
 	 */
 	void publierEvenementFiscalOuvertureFor(ForFiscal forFiscal);
 
 	/**
 	 * Publie un événement fiscal de type 'Fermeture de for'
+	 *
 	 * @param forFiscal le for fermé ouvert pour lequel on publie l'événement
 	 */
 	void publierEvenementFiscalFermetureFor(ForFiscal forFiscal);
 
 	/**
 	 * Publie un événement fiscal de type 'Annulation de for'
-	 * @param forFiscal      le for fiscal qui vient d'être annulé
+	 *
+	 * @param forFiscal le for fiscal qui vient d'être annulé
 	 */
 	void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal);
 
 	/**
 	 * Publie un événement fiscal de type 'Changement de mode d'imposition'
+	 *
 	 * @param forFiscal le nouveau for fiscal avec le nouveau mode d'imposition
 	 */
 	void publierEvenementFiscalChangementModeImposition(ForFiscal forFiscal);
@@ -78,177 +83,204 @@ public interface EvenementFiscalService {
 
 	/**
 	 * Publie un événement fiscal de type 'Changement de situation de famille'
+	 *
 	 * @param date la date de valeur du changement
-	 * @param ctb le contribuable ciblé par le changement
+	 * @param ctb  le contribuable ciblé par le changement
 	 */
 	void publierEvenementFiscalChangementSituationFamille(RegDate date, ContribuableImpositionPersonnesPhysiques ctb);
 
 	/**
 	 * Publie un événement fiscal de type 'émission de LR'
-	 * @param lr la LR juste émise
+	 *
+	 * @param lr           la LR juste émise
 	 * @param dateEmission la date d'émission (en général la date du jour)
 	 */
 	void publierEvenementFiscalEmissionListeRecapitulative(DeclarationImpotSource lr, RegDate dateEmission);
 
 	/**
 	 * Publie un événement fiscal de type 'quittancement de LR'
-	 * @param lr la LR quittancée
+	 *
+	 * @param lr                la LR quittancée
 	 * @param dateQuittancement la date de quittancement (qui peut ne pas être la date du jour car le quittancement nous vient d'une source externe qui indique sa propre date)
 	 */
 	void publierEvenementFiscalQuittancementListeRecapitulative(DeclarationImpotSource lr, RegDate dateQuittancement);
 
 	/**
 	 * Publie un événement fiscal de type 'sommation de LR'
-	 * @param lr la LR sommée
+	 *
+	 * @param lr            la LR sommée
 	 * @param dateSommation la date de sommation (en général la date du jour)
 	 */
 	void publierEvenementFiscalSommationListeRecapitulative(DeclarationImpotSource lr, RegDate dateSommation);
 
 	/**
 	 * Publie un événement fiscal de type 'échéance de LR'
-	 * @param lr la LR échue
+	 *
+	 * @param lr           la LR échue
 	 * @param dateEcheance la date d'échéance (en général la date du jour)
 	 */
 	void publierEvenementFiscalEcheanceListeRecapitulative(DeclarationImpotSource lr, RegDate dateEcheance);
 
 	/**
 	 * Publie un événement fiscal de type 'annulation de LR'
+	 *
 	 * @param lr la LR annulée
 	 */
 	void publierEvenementFiscalAnnulationListeRecapitulative(DeclarationImpotSource lr);
 
 	/**
 	 * Publie un événement fiscal de type 'émission de DI'
-	 * @param di la déclaration émise
+	 *
+	 * @param di           la déclaration émise
 	 * @param dateEmission la date d'émission (en général la date du jour)
 	 */
 	void publierEvenementFiscalEmissionDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEmission);
 
 	/**
 	 * Publie un événement fiscal de type 'quittancement de DI'
-	 * @param di la déclaration quittancée
+	 *
+	 * @param di            la déclaration quittancée
 	 * @param dateQuittance la date de quittance (qui peut ne pas être la date du jour car le quittancement nous vient d'une source externe qui indique sa propre date)
 	 */
 	void publierEvenementFiscalQuittancementDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateQuittance);
 
 	/**
 	 * Publie un événement fiscal de type 'sommation de DI'
-	 * @param di la déclaration sommée
+	 *
+	 * @param di            la déclaration sommée
 	 * @param dateSommation la date de sommation (en général la date du jour)
 	 */
 	void publierEvenementFiscalSommationDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateSommation);
 
 	/**
 	 * Publie un événement fiscal de type 'échéance de DI'
-	 * @param di la déclaration échue
+	 *
+	 * @param di           la déclaration échue
 	 * @param dateEcheance la date d'échéance (en général la date du jour)
 	 */
 	void publierEvenementFiscalEcheanceDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEcheance);
 
 	/**
 	 * Publie un événement fiscal de type 'annulation de DI'
+	 *
 	 * @param di la déclaration annulée
 	 */
 	void publierEvenementFiscalAnnulationDeclarationImpot(DeclarationImpotOrdinaire di);
 
 	/**
 	 * Publie un événement fiscal de type 'émission de questionnaire SNC'
-	 * @param qsnc le questionnaire SNC émis
+	 *
+	 * @param qsnc         le questionnaire SNC émis
 	 * @param dateEmission la date d'émission (en général la date du jour)
 	 */
 	void publierEvenementFiscalEmissionQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateEmission);
 
 	/**
 	 * Publie un événement fiscal de type 'quittancement de questionnaire SNC'
-	 * @param qsnc le questionnaire quittancé
+	 *
+	 * @param qsnc          le questionnaire quittancé
 	 * @param dateQuittance la date de quittance (qui peut ne pas être la date du jour car le quittancement nous vient d'une source externe qui indique sa propre date)
 	 */
 	void publierEvenementFiscalQuittancementQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateQuittance);
 
 	/**
 	 * Publie un événement fiscal de type 'rappel de questionnaire SNC'
-	 * @param qsnc le questionnaire rappelé
+	 *
+	 * @param qsnc       le questionnaire rappelé
 	 * @param dateRappel la date de rappel (en général la date du jour)
 	 */
 	void publierEvenementFiscalRappelQuestionnaireSNC(QuestionnaireSNC qsnc, RegDate dateRappel);
 
 	/**
 	 * Publie un événement fiscal de type 'annulation de questionnaire SNC'
+	 *
 	 * @param qsnc le questionnaire SNC
 	 */
 	void publierEvenementFiscalAnnulationQuestionnaireSNC(QuestionnaireSNC qsnc);
 
 	/**
 	 * Publie un événement fiscal de type 'ouverture de régime fiscal'
+	 *
 	 * @param rf le régime fiscal nouvellement ouvert
 	 */
 	void publierEvenementFiscalOuvertureRegimeFiscal(RegimeFiscal rf);
 
 	/**
 	 * Publie un événement fiscal de type 'fermeture de régime fiscal'
+	 *
 	 * @param rf le régime fiscal nouvellement fermé (= auquel on vient d'assigner une date de fin de validité)
 	 */
 	void publierEvenementFiscalFermetureRegimeFiscal(RegimeFiscal rf);
 
 	/**
 	 * Publie un événement fiscal de type 'annulation de régime fiscal'
+	 *
 	 * @param rf le régime fiscal nouvellement annulé
 	 */
 	void publierEvenementFiscalAnnulationRegimeFiscal(RegimeFiscal rf);
 
 	/**
 	 * Publie un événement fiscal de type 'ouverture d'allègement fiscal'
+	 *
 	 * @param af l'allègement fiscal nouvellement ouvert
 	 */
 	void publierEvenementFiscalOuvertureAllegementFiscal(AllegementFiscal af);
 
 	/**
 	 * Publie un événement fiscal de type 'fermeture d'allègement fiscal'
+	 *
 	 * @param af l'allègement fiscal nouvellement fermé (= auquel on vient d'assigner une date de fin de validité)
 	 */
 	void publierEvenementFiscalFermetureAllegementFiscal(AllegementFiscal af);
 
 	/**
 	 * Publie un événement fiscal de type 'annulation d'allègement fiscal'
+	 *
 	 * @param af l'allègement fiscal nouvellement annulé
 	 */
 	void publierEvenementFiscalAnnulationAllegementFiscal(AllegementFiscal af);
 
 	/**
 	 * Publie un événement fiscal de type 'ouverture de flag entreprise'
+	 *
 	 * @param flag le flag entreprise nouvellement ouvert
 	 */
 	void publierEvenementFiscalOuvertureFlagEntreprise(FlagEntreprise flag);
 
 	/**
 	 * Publie un événement fiscal de type 'fermeture de flag entreprise'
+	 *
 	 * @param flag le flag entreprise nouvellement fermé (= auquel on vient d'assigner une date de fin de validité)
 	 */
 	void publierEvenementFiscalFermetureFlagEntreprise(FlagEntreprise flag);
 
 	/**
 	 * Publie un événement fiscal de type 'annulation de flag entreprise'
+	 *
 	 * @param flag le flag entreprise nouvellement annulé
 	 */
 	void publierEvenementFiscalAnnulationFlagEntreprise(FlagEntreprise flag);
 
 	/**
 	 * Publie un événement fiscal de type 'information complémentaire'
-	 * @param entreprise entreprise concernée par l'événement
-	 * @param type type d'information complémentaire
+	 *
+	 * @param entreprise    entreprise concernée par l'événement
+	 * @param type          type d'information complémentaire
 	 * @param dateEvenement date de valeur de l'événement
 	 */
 	void publierEvenementFiscalInformationComplementaire(Entreprise entreprise, EvenementFiscalInformationComplementaire.TypeInformationComplementaire type, RegDate dateEvenement);
 
 	/**
 	 * Publie un événement fiscal de type 'émission de lettre de bienvenue'
+	 *
 	 * @param lettre la lettre émise
 	 */
 	void publierEvenementFiscalEmissionLettreBienvenue(LettreBienvenue lettre);
 
 	/**
 	 * Publie un evenement fiscal de type 'Impression d'une fourre neutre'
-	 * @param fourreNeutre concernée pat l'event
+	 *
+	 * @param fourreNeutre   concernée pat l'event
 	 * @param dateTraitement la date valeur de l'impression
 	 */
 	void publierEvenementFiscalImpressionFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement);
@@ -416,7 +448,7 @@ public interface EvenementFiscalService {
 	/**
 	 * Publie un événement de début d'implantation d'un bâtiment.
 	 *
-	 * @param dateDebut    la date de début de l'implantiation d'un bâtiment.
+	 * @param dateDebut    la date de début de l'implantation d'un bâtiment.
 	 * @param implantation l'implantation en question.
 	 */
 	void publierDebutImplantationBatiment(RegDate dateDebut, ImplantationRF implantation);
@@ -424,8 +456,32 @@ public interface EvenementFiscalService {
 	/**
 	 * Publie un événement de fin d'implantation d'un bâtiment.
 	 *
-	 * @param dateFin      la date de fin de l'implantiation d'un bâtiment.
+	 * @param dateFin      la date de fin de l'implantation d'un bâtiment.
 	 * @param implantation l'implantation en question.
 	 */
 	void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation);
+
+	/**
+	 * Publie un événement de début de rapprochement entre un tiers Unireg et un tiers RF.
+	 *
+	 * @param dateDebut     la date de début du rapprochement
+	 * @param rapprochement le rapprochement en question.
+	 */
+	void publierDebutRapprochementTiersRF(RegDate dateDebut, RapprochementRF rapprochement);
+
+	/**
+	 * Publie un événement de fin de rapprochement entre un tiers Unireg et un tiers RF.
+	 *
+	 * @param dateFin       la date de fin du rapprochement
+	 * @param rapprochement le rapprochement en question.
+	 */
+	void publierFinRapprochementTiersRF(RegDate dateFin, RapprochementRF rapprochement);
+
+	/**
+	 * Publie un événement d'annulation du rapprochement entre un tiers Unireg et un tiers RF.
+	 *
+	 * @param dateAnnulation la date d'annulation du rapprochement
+	 * @param rapprochement  le rapprochement en question.
+	 */
+	void publierAnnulationRapprochementTiersRF(RegDate dateAnnulation, RapprochementRF rapprochement);
 }

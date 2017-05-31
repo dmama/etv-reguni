@@ -15,7 +15,7 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/landregistry/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-landregistry-1.xsd" />
 
 	<!-- L'élément racine -->
-	<xs:element name="fiscalEvent" type="fiscalEventType"/>
+	<xs:element name="fiscalEvent" type="fiscalEventType" />
 
 	<!-- Le type abstrait de l'élément racine -->
 	<xs:complexType name="fiscalEventType" abstract="true">
@@ -824,7 +824,7 @@
 		<xs:complexContent>
 			<xs:extension base="remindableTaxDeclarationEventType">
 				<xs:sequence>
-					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -1681,14 +1681,43 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="partyEventType">
+			<xs:extension base="fiscalEventType">
 				<xs:sequence>
+					<xs:element name="partyKind" type="partyKindType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La catégorie du tiers pour lequel l'événement fiscal est émis.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="partyNumber" type="common:partyNumberType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le numéro du tiers pour lequel l'événement fiscal est émis.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="date" type="common:dateType" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La date de valeur de l'événement fiscal (cette date est nulle dans la plupart des ouvertures de rapprochements :
+										elle n'est renseignée que lorsqu'un nouveau rapprochement est ouvert sur un tiers qui en possédait déjà un. Elle est
+										bien renseignée dans le cas des fermetures et des annulations de rapprochements, par contre).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="landRegReconcStartEventType">
+	<xs:complexType name="landRegistryReconciliationStartEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -1699,13 +1728,22 @@
 		<xs:complexContent>
 			<xs:extension base="landRegistryReconciliationEventType">
 				<xs:sequence>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="landRegReconcEndEventType">
+	<xs:complexType name="landRegistryReconciliationEndEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -1716,13 +1754,22 @@
 		<xs:complexContent>
 			<xs:extension base="landRegistryReconciliationEventType">
 				<xs:sequence>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="landRegReconcCancellationEventType">
+	<xs:complexType name="landRegistryReconciliationCancellationEventType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -1733,6 +1780,15 @@
 		<xs:complexContent>
 			<xs:extension base="landRegistryReconciliationEventType">
 				<xs:sequence>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
 			</xs:extension>

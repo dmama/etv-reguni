@@ -10,9 +10,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -23,6 +20,10 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRapprochementTiersRF;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.MockRapprochementManuelTiersRFService;
@@ -46,6 +47,7 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 	private RapprochementTiersRFProcessor processor;
 	private RapprochementRFDAO rapprochementDAO;
 	private CollectingRapprochementManuelTiersRFService rapprochementManuelTiersRFService;
+	private EvenementFiscalDAO evenementFiscalDAO;
 
 	private static class CollectingRapprochementManuelTiersRFService extends MockRapprochementManuelTiersRFService {
 
@@ -77,7 +79,11 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		rapprochementDAO = getBean(RapprochementRFDAO.class, "rapprochementRFDAO");
 		final IdentificationContribuableService identificationService = getBean(IdentificationContribuableService.class, "identCtbService");
 		rapprochementManuelTiersRFService = new CollectingRapprochementManuelTiersRFService();
-		processor = new RapprochementTiersRFProcessor(transactionManager, tiersService, adresseService, rapprochementDAO, hibernateTemplate, identificationService, rapprochementManuelTiersRFService);
+		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
+		final EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
+
+		processor = new RapprochementTiersRFProcessor(transactionManager, tiersService, adresseService, rapprochementDAO, hibernateTemplate,
+		                                              identificationService, rapprochementManuelTiersRFService, evenementFiscalService);
 	}
 
 	/**
@@ -92,26 +98,23 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final RegDate dateNaissance = date(1985, 3, 1);
-				final PersonnePhysique pp = addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final RegDate dateNaissance = date(1985, 3, 1);
+			final PersonnePhysique pp = addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
 
-				// on crée, pour être sûr, une personne morale avec le même nom et date d'inscription au RC
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
-				addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
-				addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			// on crée, pour être sûr, une personne morale avec le même nom et date d'inscription au RC
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
+			addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
 
-				// le tiers RF
-				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alphonse", "Baudet", dateNaissance, "monidrf", 43723L, null);
+			// le tiers RF
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alphonse", "Baudet", dateNaissance, "monidrf", 43723L, null);
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero();
-				ids.idTiersRF = tiersRF.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero();
+			ids1.idTiersRF = tiersRF.getId();
+			return ids1;
 		});
 
 		// attente de la fin de l'indexation du tiers
@@ -135,27 +138,38 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(Collections.singletonList(Pair.of(ids.idTiersRF, ids.pp)), rapprochementManuelTiersRFService.marquagesCollectes);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp);
+			Assert.assertNotNull(pp);
 
-				final Set<RapprochementRF> rapprochementsRF = pp.getRapprochementsRF();
-				Assert.assertNotNull(rapprochementsRF);
-				Assert.assertEquals(1, rapprochementsRF.size());
+			final Set<RapprochementRF> rapprochementsRF = pp.getRapprochementsRF();
+			Assert.assertNotNull(rapprochementsRF);
+			Assert.assertEquals(1, rapprochementsRF.size());
 
-				final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
-				Assert.assertNotNull(rapprochementRF);
-				Assert.assertFalse(rapprochementRF.isAnnule());
-				Assert.assertEquals((Long) ids.idTiersRF, rapprochementRF.getTiersRF().getId());
-				Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochementRF.getTypeRapprochement());
-				Assert.assertNull(rapprochementRF.getDateDebut());
-				Assert.assertNull(rapprochementRF.getDateFin());
+			final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
+			Assert.assertNotNull(rapprochementRF);
+			Assert.assertFalse(rapprochementRF.isAnnule());
+			Assert.assertEquals((Long) ids.idTiersRF, rapprochementRF.getTiersRF().getId());
+			Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochementRF.getTypeRapprochement());
+			Assert.assertNull(rapprochementRF.getDateDebut());
+			Assert.assertNull(rapprochementRF.getDateFin());
 
-				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
-				Assert.assertEquals(Collections.singletonList(rapprochementRF), tousRapprochements);
-			}
+			final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
+			Assert.assertEquals(Collections.singletonList(rapprochementRF), tousRapprochements);
+			return null;
+		});
+
+		// postcondition : l'événement fiscal correspondant a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(1, events.size());
+
+			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
+			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
+			Assert.assertNull(event0.getDateValeur());
+			Assert.assertEquals(Long.valueOf(ids.pp), event0.getTiers().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+			return null;
 		});
 	}
 
@@ -171,26 +185,23 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final RegDate dateNaissance = date(1985, 3, 1);
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
-				addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
-				addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final RegDate dateNaissance = date(1985, 3, 1);
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
+			addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
 
-				// une personne physique avec les mêmes données
-				addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
+			// une personne physique avec les mêmes données
+			addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
 
-				// le tiers RF
-				final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Alphonse Baudet sàrl", "CH550744154", "monidrf", 43723L, null);
+			// le tiers RF
+			final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Alphonse Baudet sàrl", "CH550744154", "monidrf", 43723L, null);
 
-				final Ids ids = new Ids();
-				ids.pm = entreprise.getNumero();
-				ids.idTiersRF = tiersRF.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pm = entreprise.getNumero();
+			ids1.idTiersRF = tiersRF.getId();
+			return ids1;
 		});
 
 		// attente de la fin de l'indexation du tiers
@@ -214,27 +225,38 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(Collections.singletonList(Pair.of(ids.idTiersRF, ids.pm)), rapprochementManuelTiersRFService.marquagesCollectes);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise pm = (Entreprise) tiersDAO.get(ids.pm);
-				Assert.assertNotNull(pm);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise pm = (Entreprise) tiersDAO.get(ids.pm);
+			Assert.assertNotNull(pm);
 
-				final Set<RapprochementRF> rapprochementsRF = pm.getRapprochementsRF();
-				Assert.assertNotNull(rapprochementsRF);
-				Assert.assertEquals(1, rapprochementsRF.size());
+			final Set<RapprochementRF> rapprochementsRF = pm.getRapprochementsRF();
+			Assert.assertNotNull(rapprochementsRF);
+			Assert.assertEquals(1, rapprochementsRF.size());
 
-				final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
-				Assert.assertNotNull(rapprochementRF);
-				Assert.assertFalse(rapprochementRF.isAnnule());
-				Assert.assertEquals((Long) ids.idTiersRF, rapprochementRF.getTiersRF().getId());
-				Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochementRF.getTypeRapprochement());
-				Assert.assertNull(rapprochementRF.getDateDebut());
-				Assert.assertNull(rapprochementRF.getDateFin());
+			final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
+			Assert.assertNotNull(rapprochementRF);
+			Assert.assertFalse(rapprochementRF.isAnnule());
+			Assert.assertEquals((Long) ids.idTiersRF, rapprochementRF.getTiersRF().getId());
+			Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochementRF.getTypeRapprochement());
+			Assert.assertNull(rapprochementRF.getDateDebut());
+			Assert.assertNull(rapprochementRF.getDateFin());
 
-				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
-				Assert.assertEquals(Collections.singletonList(rapprochementRF), tousRapprochements);
-			}
+			final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
+			Assert.assertEquals(Collections.singletonList(rapprochementRF), tousRapprochements);
+			return null;
+		});
+
+		// postcondition : l'événement fiscal correspondant a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(1, events.size());
+
+			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
+			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
+			Assert.assertNull(event0.getDateValeur());
+			Assert.assertEquals(Long.valueOf(ids.pm), event0.getTiers().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+			return null;
 		});
 	}
 
@@ -252,27 +274,24 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final RegDate dateNaissance = date(1985, 3, 1);
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
-				addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
-				addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final RegDate dateNaissance = date(1985, 3, 1);
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
+			addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
 
-				// une personne physique avec les mêmes données
-				final PersonnePhysique pp = addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
+			// une personne physique avec les mêmes données
+			final PersonnePhysique pp = addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
 
-				// le tiers RF
-				final CollectivitePubliqueRF tiersRF = addCollectivitePubliqueRF("Alphonse Baudet", "monidrf", 43723L, null);
+			// le tiers RF
+			final CollectivitePubliqueRF tiersRF = addCollectivitePubliqueRF("Alphonse Baudet", "monidrf", 43723L, null);
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero();
-				ids.pm = entreprise.getNumero();
-				ids.idTiersRF = tiersRF.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero();
+			ids1.pm = entreprise.getNumero();
+			ids1.idTiersRF = tiersRF.getId();
+			return ids1;
 		});
 
 		// attente de la fin de l'indexation du tiers
@@ -295,28 +314,33 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(Collections.emptyList(), rapprochementManuelTiersRFService.marquagesCollectes);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise pm = (Entreprise) tiersDAO.get(ids.pm);
-				Assert.assertNotNull(pm);
-				{
-					final Set<RapprochementRF> rapprochementsRF = pm.getRapprochementsRF();
-					Assert.assertNotNull(rapprochementsRF);
-					Assert.assertEquals(0, rapprochementsRF.size());
-				}
-
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp);
-				Assert.assertNotNull(pp);
-				{
-					final Set<RapprochementRF> rapprochementsRF = pp.getRapprochementsRF();
-					Assert.assertNotNull(rapprochementsRF);
-					Assert.assertEquals(0, rapprochementsRF.size());
-				}
-
-				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
-				Assert.assertEquals(Collections.emptyList(), tousRapprochements);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise pm = (Entreprise) tiersDAO.get(ids.pm);
+			Assert.assertNotNull(pm);
+			{
+				final Set<RapprochementRF> rapprochementsRF = pm.getRapprochementsRF();
+				Assert.assertNotNull(rapprochementsRF);
+				Assert.assertEquals(0, rapprochementsRF.size());
 			}
+
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp);
+			Assert.assertNotNull(pp);
+			{
+				final Set<RapprochementRF> rapprochementsRF = pp.getRapprochementsRF();
+				Assert.assertNotNull(rapprochementsRF);
+				Assert.assertEquals(0, rapprochementsRF.size());
+			}
+
+			final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
+			Assert.assertEquals(Collections.emptyList(), tousRapprochements);
+			return null;
+		});
+
+		// postcondition : aucun événement fiscal n'a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(0, events.size());
+			return null;
 		});
 	}
 
@@ -333,29 +357,26 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final RegDate dateNaissance = date(1985, 3, 1);
-				final PersonnePhysique pp = addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final RegDate dateNaissance = date(1985, 3, 1);
+			final PersonnePhysique pp = addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
 
-				// le presque jumeau !
-				addNonHabitant("Alphonse André", "Baudet Madus", dateNaissance, Sexe.MASCULIN);
+			// le presque jumeau !
+			addNonHabitant("Alphonse André", "Baudet Madus", dateNaissance, Sexe.MASCULIN);
 
-				// on crée, pour être sûr, une personne morale avec le même nom et date d'inscription au RC
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
-				addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
-				addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			// on crée, pour être sûr, une personne morale avec le même nom et date d'inscription au RC
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
+			addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
 
-				// le tiers RF
-				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alphonse", "Baudet", dateNaissance, "monidrf", 43723L, pp.getNumero());       // le RF nous aide à la résolution du cas
+			// le tiers RF
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alphonse", "Baudet", dateNaissance, "monidrf", 43723L, pp.getNumero());       // le RF nous aide à la résolution du cas
 
-				final Ids ids = new Ids();
-				ids.pp = pp.getNumero();
-				ids.idTiersRF = tiersRF.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp = pp.getNumero();
+			ids1.idTiersRF = tiersRF.getId();
+			return ids1;
 		});
 
 		// attente de la fin de l'indexation du tiers
@@ -379,29 +400,39 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(Collections.singletonList(Pair.of(ids.idTiersRF, ids.pp)), rapprochementManuelTiersRFService.marquagesCollectes);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp);
+			Assert.assertNotNull(pp);
 
-				final Set<RapprochementRF> rapprochementsRF = pp.getRapprochementsRF();
-				Assert.assertNotNull(rapprochementsRF);
-				Assert.assertEquals(1, rapprochementsRF.size());
+			final Set<RapprochementRF> rapprochementsRF = pp.getRapprochementsRF();
+			Assert.assertNotNull(rapprochementsRF);
+			Assert.assertEquals(1, rapprochementsRF.size());
 
-				final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
-				Assert.assertNotNull(rapprochementRF);
-				Assert.assertFalse(rapprochementRF.isAnnule());
-				Assert.assertEquals((Long) ids.idTiersRF, rapprochementRF.getTiersRF().getId());
-				Assert.assertEquals(TypeRapprochementRF.AUTO_MULTIPLE, rapprochementRF.getTypeRapprochement());
-				Assert.assertNull(rapprochementRF.getDateDebut());
-				Assert.assertNull(rapprochementRF.getDateFin());
+			final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
+			Assert.assertNotNull(rapprochementRF);
+			Assert.assertFalse(rapprochementRF.isAnnule());
+			Assert.assertEquals((Long) ids.idTiersRF, rapprochementRF.getTiersRF().getId());
+			Assert.assertEquals(TypeRapprochementRF.AUTO_MULTIPLE, rapprochementRF.getTypeRapprochement());
+			Assert.assertNull(rapprochementRF.getDateDebut());
+			Assert.assertNull(rapprochementRF.getDateFin());
 
-				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
-				Assert.assertEquals(Collections.singletonList(rapprochementRF), tousRapprochements);
-			}
+			final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
+			Assert.assertEquals(Collections.singletonList(rapprochementRF), tousRapprochements);
+			return null;
 		});
 
+		// postcondition : l'événement fiscal correspondant a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(1, events.size());
+
+			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
+			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
+			Assert.assertNull(event0.getDateValeur());
+			Assert.assertEquals(Long.valueOf(ids.pp), event0.getTiers().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+			return null;
+		});
 	}
 
 	/**
@@ -418,30 +449,27 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final RegDate dateNaissance = date(1985, 3, 1);
-				final PersonnePhysique pp1 = addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final RegDate dateNaissance = date(1985, 3, 1);
+			final PersonnePhysique pp1 = addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
 
-				// le presque jumeau !
-				final PersonnePhysique pp2 = addNonHabitant("Alphonse André", "Baudet Madus", dateNaissance, Sexe.MASCULIN);
+			// le presque jumeau !
+			final PersonnePhysique pp2 = addNonHabitant("Alphonse André", "Baudet Madus", dateNaissance, Sexe.MASCULIN);
 
-				// on crée, pour être sûr, une personne morale avec le même nom et date d'inscription au RC
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
-				addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
-				addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			// on crée, pour être sûr, une personne morale avec le même nom et date d'inscription au RC
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
+			addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
 
-				// le tiers RF
-				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alphonse", "Baudet", dateNaissance, "monidrf", 43723L, null);       // le RF ne nous donne aucun numéro de contribuable
+			// le tiers RF
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alphonse", "Baudet", dateNaissance, "monidrf", 43723L, null);       // le RF ne nous donne aucun numéro de contribuable
 
-				final Ids ids = new Ids();
-				ids.pp1 = pp1.getNumero();
-				ids.pp2 = pp2.getNumero();
-				ids.idTiersRF = tiersRF.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp1 = pp1.getNumero();
+			ids1.pp2 = pp2.getNumero();
+			ids1.idTiersRF = tiersRF.getId();
+			return ids1;
 		});
 
 		// attente de la fin de l'indexation du tiers
@@ -464,12 +492,17 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(Collections.emptyList(), rapprochementManuelTiersRFService.marquagesCollectes);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
-				Assert.assertEquals(Collections.emptyList(), tousRapprochements);
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
+			Assert.assertEquals(Collections.emptyList(), tousRapprochements);
+			return null;
+		});
+
+		// postcondition : aucun événement fiscal n'a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(0, events.size());
+			return null;
 		});
 	}
 
@@ -487,30 +520,27 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final RegDate dateNaissance = date(1985, 3, 1);
-				final PersonnePhysique pp1 = addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final RegDate dateNaissance = date(1985, 3, 1);
+			final PersonnePhysique pp1 = addNonHabitant("Alphonse", "Baudet", dateNaissance, Sexe.MASCULIN);
 
-				// le presque jumeau !
-				final PersonnePhysique pp2 = addNonHabitant("Alphonse André", "Baudet Madus", dateNaissance, Sexe.MASCULIN);
+			// le presque jumeau !
+			final PersonnePhysique pp2 = addNonHabitant("Alphonse André", "Baudet Madus", dateNaissance, Sexe.MASCULIN);
 
-				// on crée, pour être sûr, une personne morale avec le même nom et date d'inscription au RC
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
-				addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
-				addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
+			// on crée, pour être sûr, une personne morale avec le même nom et date d'inscription au RC
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateNaissance, null, FormeJuridiqueEntreprise.SARL);
+			addRaisonSociale(entreprise, dateNaissance, null, "Alphonse Baudet sàrl");
+			addEtatEntreprise(entreprise, dateNaissance, TypeEtatEntreprise.INSCRITE_RC, TypeGenerationEtatEntreprise.AUTOMATIQUE);
 
-				// le tiers RF
-				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alphonse", "Baudet", dateNaissance, "monidrf", 43723L, entreprise.getNumero());       // le RF nous donne un numéro qui n'est pas le bon
+			// le tiers RF
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alphonse", "Baudet", dateNaissance, "monidrf", 43723L, entreprise.getNumero());       // le RF nous donne un numéro qui n'est pas le bon
 
-				final Ids ids = new Ids();
-				ids.pp1 = pp1.getNumero();
-				ids.pp2 = pp2.getNumero();
-				ids.idTiersRF = tiersRF.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp1 = pp1.getNumero();
+			ids1.pp2 = pp2.getNumero();
+			ids1.idTiersRF = tiersRF.getId();
+			return ids1;
 		});
 
 		// attente de la fin de l'indexation du tiers
@@ -533,12 +563,17 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(Collections.emptyList(), rapprochementManuelTiersRFService.marquagesCollectes);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
-				Assert.assertEquals(Collections.emptyList(), tousRapprochements);
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
+			Assert.assertEquals(Collections.emptyList(), tousRapprochements);
+			return null;
+		});
+
+		// postcondition : aucun événement fiscal n'a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(0, events.size());
+			return null;
 		});
 	}
 
@@ -560,29 +595,26 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		}
 
 		// mise en place préliminaire
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				// l'ancien
-				final PersonnePhysique pp1 = addNonHabitant("Alfred", "Jacquart", null, Sexe.MASCULIN);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			// l'ancien
+			final PersonnePhysique pp1 = addNonHabitant("Alfred", "Jacquart", null, Sexe.MASCULIN);
 
-				// le nouveau candidat
-				final RegDate dateNaissance = date(1964, 7, 23);
-				final PersonnePhysique pp2 = addNonHabitant("Alfredo", "Jacquouille", dateNaissance, Sexe.MASCULIN);
+			// le nouveau candidat
+			final RegDate dateNaissance = date(1964, 7, 23);
+			final PersonnePhysique pp2 = addNonHabitant("Alfredo", "Jacquouille", dateNaissance, Sexe.MASCULIN);
 
-				// le tiers RF
-				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alfredo", "Jacquouille", dateNaissance, "547835673zg", 3224L, pp1.getNumero());
+			// le tiers RF
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Alfredo", "Jacquouille", dateNaissance, "547835673zg", 3224L, pp1.getNumero());
 
-				// il existe déjà un rapprochement entre pp1 l'ancien et le tiers RF (automatique puis réduit manuellement - dédoublonage)
-				addRapprochementRF(null, null, TypeRapprochementRF.AUTO_MULTIPLE, pp1, tiersRF, true);
-				addRapprochementRF(null, finAnneeDerniere, TypeRapprochementRF.MANUEL, pp1, tiersRF, false);
+			// il existe déjà un rapprochement entre pp1 l'ancien et le tiers RF (automatique puis réduit manuellement - dédoublonage)
+			addRapprochementRF(null, null, TypeRapprochementRF.AUTO_MULTIPLE, pp1, tiersRF, true);
+			addRapprochementRF(null, finAnneeDerniere, TypeRapprochementRF.MANUEL, pp1, tiersRF, false);
 
-				final Ids ids = new Ids();
-				ids.pp1 = pp1.getNumero();
-				ids.pp2 = pp2.getNumero();
-				ids.idTiersRF = tiersRF.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pp1 = pp1.getNumero();
+			ids1.pp2 = pp2.getNumero();
+			ids1.idTiersRF = tiersRF.getId();
+			return ids1;
 		});
 
 		// attente de la fin de l'indexation
@@ -606,27 +638,38 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(Collections.singletonList(Pair.of(ids.idTiersRF, ids.pp2)), rapprochementManuelTiersRFService.marquagesCollectes);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
-				Assert.assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
+			Assert.assertNotNull(pp);
 
-				final Set<RapprochementRF> rapprochementsRF = pp.getRapprochementsRF();
-				Assert.assertNotNull(rapprochementsRF);
-				Assert.assertEquals(1, rapprochementsRF.size());
+			final Set<RapprochementRF> rapprochementsRF = pp.getRapprochementsRF();
+			Assert.assertNotNull(rapprochementsRF);
+			Assert.assertEquals(1, rapprochementsRF.size());
 
-				final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
-				Assert.assertNotNull(rapprochementRF);
-				Assert.assertFalse(rapprochementRF.isAnnule());
-				Assert.assertEquals((Long) ids.idTiersRF, rapprochementRF.getTiersRF().getId());
-				Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochementRF.getTypeRapprochement());
-				Assert.assertEquals(finAnneeDerniere.getOneDayAfter(), rapprochementRF.getDateDebut());
-				Assert.assertNull(rapprochementRF.getDateFin());
+			final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
+			Assert.assertNotNull(rapprochementRF);
+			Assert.assertFalse(rapprochementRF.isAnnule());
+			Assert.assertEquals((Long) ids.idTiersRF, rapprochementRF.getTiersRF().getId());
+			Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochementRF.getTypeRapprochement());
+			Assert.assertEquals(finAnneeDerniere.getOneDayAfter(), rapprochementRF.getDateDebut());
+			Assert.assertNull(rapprochementRF.getDateFin());
 
-				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
-				Assert.assertEquals(3, tousRapprochements.size());      // les deux préparés dans l'initialisation, plus le nouveau
-			}
+			final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
+			Assert.assertEquals(3, tousRapprochements.size());      // les deux préparés dans l'initialisation, plus le nouveau
+			return null;
+		});
+
+		// postcondition : l'événement fiscal correspondant a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(1, events.size());
+
+			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
+			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
+			Assert.assertEquals(finAnneeDerniere.getOneDayAfter(), event0.getDateValeur());
+			Assert.assertEquals(Long.valueOf(ids.pp2), event0.getTiers().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+			return null;
 		});
 	}
 
@@ -658,22 +701,19 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		});
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseConnueAuCivil(noCantonalEntreprise);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseConnueAuCivil(noCantonalEntreprise);
 
-				// on en crée une autre avec le même nom pour être certain que ce n'est pas le nom qui est déterminant
-				final Entreprise leure = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(leure, dateDebut, null, "Machin bidule chose SA");
-				addFormeJuridique(leure, dateDebut, null, FormeJuridiqueEntreprise.SA);
+			// on en crée une autre avec le même nom pour être certain que ce n'est pas le nom qui est déterminant
+			final Entreprise leure = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(leure, dateDebut, null, "Machin bidule chose SA");
+			addFormeJuridique(leure, dateDebut, null, FormeJuridiqueEntreprise.SA);
 
-				final TiersRF tiersRF = addPersonneMoraleRF("Machin bidule SA", numeroRC, "548354837lJDFSGZ", 235643L, null);
-				final Ids ids = new Ids();
-				ids.pm = entreprise.getNumero();
-				ids.tiersRF = tiersRF.getId();
-				return ids;
-			}
+			final TiersRF tiersRF = addPersonneMoraleRF("Machin bidule SA", numeroRC, "548354837lJDFSGZ", 235643L, null);
+			final Ids ids1 = new Ids();
+			ids1.pm = entreprise.getNumero();
+			ids1.tiersRF = tiersRF.getId();
+			return ids1;
 		});
 
 		// indexation...
@@ -697,27 +737,38 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 		Assert.assertEquals(Collections.singletonList(Pair.of(ids.tiersRF, ids.pm)), rapprochementManuelTiersRFService.marquagesCollectes);
 
 		// vérification en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Entreprise pm = (Entreprise) tiersDAO.get(ids.pm);
-				Assert.assertNotNull(pm);
+		doInNewTransactionAndSession(status -> {
+			final Entreprise pm = (Entreprise) tiersDAO.get(ids.pm);
+			Assert.assertNotNull(pm);
 
-				final Set<RapprochementRF> rapprochementsRF = pm.getRapprochementsRF();
-				Assert.assertNotNull(rapprochementsRF);
-				Assert.assertEquals(1, rapprochementsRF.size());
+			final Set<RapprochementRF> rapprochementsRF = pm.getRapprochementsRF();
+			Assert.assertNotNull(rapprochementsRF);
+			Assert.assertEquals(1, rapprochementsRF.size());
 
-				final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
-				Assert.assertNotNull(rapprochementRF);
-				Assert.assertFalse(rapprochementRF.isAnnule());
-				Assert.assertEquals((Long) ids.tiersRF, rapprochementRF.getTiersRF().getId());
-				Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochementRF.getTypeRapprochement());
-				Assert.assertNull(rapprochementRF.getDateDebut());
-				Assert.assertNull(rapprochementRF.getDateFin());
+			final RapprochementRF rapprochementRF = rapprochementsRF.iterator().next();
+			Assert.assertNotNull(rapprochementRF);
+			Assert.assertFalse(rapprochementRF.isAnnule());
+			Assert.assertEquals((Long) ids.tiersRF, rapprochementRF.getTiersRF().getId());
+			Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochementRF.getTypeRapprochement());
+			Assert.assertNull(rapprochementRF.getDateDebut());
+			Assert.assertNull(rapprochementRF.getDateFin());
 
-				final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
-				Assert.assertEquals(Collections.singletonList(rapprochementRF), tousRapprochements);
-			}
+			final List<RapprochementRF> tousRapprochements = rapprochementDAO.getAll();
+			Assert.assertEquals(Collections.singletonList(rapprochementRF), tousRapprochements);
+			return null;
+		});
+
+		// postcondition : l'événement fiscal correspondant a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(1, events.size());
+
+			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
+			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
+			Assert.assertNull(event0.getDateValeur());
+			Assert.assertEquals(Long.valueOf(ids.pm), event0.getTiers().getId());
+			Assert.assertEquals(Long.valueOf(ids.tiersRF), event0.getTiersRF().getId());
+			return null;
 		});
 	}
 }

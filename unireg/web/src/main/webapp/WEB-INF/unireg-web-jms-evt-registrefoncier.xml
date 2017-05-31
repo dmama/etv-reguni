@@ -37,6 +37,7 @@
 	<bean id="rapprochementProprietaireHandler" class="ch.vd.uniregctb.evenement.registrefoncier.RapprochementProprietaireHandlerImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="rapprochementRFDAO" ref="rapprochementRFDAO"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 	
 </beans>

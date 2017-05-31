@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -25,6 +26,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -54,6 +56,8 @@ public class RapprochementTiersRFProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final IdentificationContribuableService identificationService;
 	private final RapprochementManuelTiersRFService rapprochementManuelService;
+	@NotNull
+	private final EvenementFiscalService evenementFiscalService;
 
 	private final Map<Class<? extends TiersRF>, Identifier<? extends TiersRF>> identifiers;
 
@@ -63,7 +67,7 @@ public class RapprochementTiersRFProcessor {
 	}
 
 	public RapprochementTiersRFProcessor(PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService, RapprochementRFDAO rapprochementDAO, HibernateTemplate hibernateTemplate,
-	                                     IdentificationContribuableService identificationService, RapprochementManuelTiersRFService rapprochementManuelService) {
+	                                     IdentificationContribuableService identificationService, RapprochementManuelTiersRFService rapprochementManuelService, EvenementFiscalService evenementFiscalService) {
 		this.transactionManager = transactionManager;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
@@ -71,6 +75,7 @@ public class RapprochementTiersRFProcessor {
 		this.hibernateTemplate = hibernateTemplate;
 		this.identificationService = identificationService;
 		this.rapprochementManuelService = rapprochementManuelService;
+		this.evenementFiscalService = evenementFiscalService;
 		this.identifiers = buildIdentifierMap();
 	}
 
@@ -248,6 +253,9 @@ public class RapprochementTiersRFProcessor {
 			ctb.addRapprochementRF(saved);
 
 			rapport.addNouveauRapprochement(saved);
+
+			// on publie l'événement fiscal correspondant
+			evenementFiscalService.publierDebutRapprochementTiersRF(rapprochement.getDateDebut(), rapprochement);
 
 			// en fait, il faudrait aussi marquer comme "traitée" une éventuelle demande d'identification manuelle
 			// encore en suspens concernant ce même tiers RF

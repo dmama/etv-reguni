@@ -166,6 +166,7 @@
 		<constructor-arg ref="hibernateTemplate"/>
 		<constructor-arg ref="identCtbService"/>
 		<constructor-arg ref="rapprochementManuelTiersRFService"/>
+		<constructor-arg ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="dateFinDroitsRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.DateFinDroitsRFProcessor">

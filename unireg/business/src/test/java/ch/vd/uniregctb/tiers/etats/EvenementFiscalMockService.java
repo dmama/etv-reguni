@@ -16,6 +16,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -324,6 +325,21 @@ public class EvenementFiscalMockService implements EvenementFiscalService {
 
 	@Override
 	public void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierDebutRapprochementTiersRF(RegDate dateDebut, RapprochementRF rapprochement) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierFinRapprochementTiersRF(RegDate dateFin, RapprochementRF rapprochement) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierAnnulationRapprochementTiersRF(RegDate dateAnnulation, RapprochementRF rapprochement) {
 		throw new UnsupportedOperationException();
 	}
 

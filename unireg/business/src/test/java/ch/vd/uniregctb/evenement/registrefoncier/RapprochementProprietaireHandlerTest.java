@@ -7,12 +7,14 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRapprochementTiersRF;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
@@ -26,14 +28,19 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 
 	private RapprochementProprietaireHandlerImpl handler;
 	private RapprochementRFDAO rapprochementRFDAO;
+	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 		rapprochementRFDAO = getBean(RapprochementRFDAO.class, "rapprochementRFDAO");
+		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
+		final EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
+
 		handler = new RapprochementProprietaireHandlerImpl();
 		handler.setHibernateTemplate(hibernateTemplate);
 		handler.setRapprochementRFDAO(rapprochementRFDAO);
+		handler.setEvenementFiscalService(evenementFiscalService);
 	}
 
 	@Test
@@ -45,16 +52,13 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
-				final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
-				final Ids ids = new Ids();
-				ids.idContribuable = pp.getNumero();
-				ids.idTiersRF = rf.getId();
-				return ids;
-			}
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
+			final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
+			final Ids ids1 = new Ids();
+			ids1.idContribuable = pp.getNumero();
+			ids1.idTiersRF = rf.getId();
+			return ids1;
 		});
 
 		// réception du message de rapprochement
@@ -66,22 +70,33 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		});
 
 		// vérification des données en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<RapprochementRF> all = rapprochementRFDAO.getAll();
-				Assert.assertNotNull(all);
-				Assert.assertEquals(1, all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<RapprochementRF> all = rapprochementRFDAO.getAll();
+			Assert.assertNotNull(all);
+			Assert.assertEquals(1, all.size());
 
-				final RapprochementRF rapprochement = all.get(0);
-				Assert.assertNotNull(rapprochement);
-				Assert.assertFalse(rapprochement.isAnnule());
-				Assert.assertNull(rapprochement.getDateDebut());
-				Assert.assertNull(rapprochement.getDateFin());
-				Assert.assertEquals((Long) ids.idContribuable, rapprochement.getContribuable().getNumero());
-				Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
-				Assert.assertEquals(TypeRapprochementRF.MANUEL, rapprochement.getTypeRapprochement());
-			}
+			final RapprochementRF rapprochement = all.get(0);
+			Assert.assertNotNull(rapprochement);
+			Assert.assertFalse(rapprochement.isAnnule());
+			Assert.assertNull(rapprochement.getDateDebut());
+			Assert.assertNull(rapprochement.getDateFin());
+			Assert.assertEquals((Long) ids.idContribuable, rapprochement.getContribuable().getNumero());
+			Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
+			Assert.assertEquals(TypeRapprochementRF.MANUEL, rapprochement.getTypeRapprochement());
+			return null;
+		});
+
+		// postcondition : l'événement fiscal correspondant a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(1, events.size());
+
+			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
+			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
+			Assert.assertNull(event0.getDateValeur());
+			Assert.assertEquals(Long.valueOf(ids.idContribuable), event0.getTiers().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+			return null;
 		});
 	}
 
@@ -97,23 +112,20 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique precedent = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
-				final PersonnePhysique nouveau = addNonHabitant("Patrock", "Duschmolle", date(1964, 2, 2), Sexe.MASCULIN);
-				final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique precedent = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
+			final PersonnePhysique nouveau = addNonHabitant("Patrock", "Duschmolle", date(1964, 2, 2), Sexe.MASCULIN);
+			final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
 
-				// un rapprochement existant (+ un autre annulé pour faire bonne figure et vérifier en même temps que ceux-là ne sont pas pris en compte)
-				addRapprochementRF(null, null, TypeRapprochementRF.AUTO, precedent, rf, true);
-				addRapprochementRF(null, dateFinPrecedentRapprochement, TypeRapprochementRF.AUTO_MULTIPLE, precedent, rf, false);
+			// un rapprochement existant (+ un autre annulé pour faire bonne figure et vérifier en même temps que ceux-là ne sont pas pris en compte)
+			addRapprochementRF(null, null, TypeRapprochementRF.AUTO, precedent, rf, true);
+			addRapprochementRF(null, dateFinPrecedentRapprochement, TypeRapprochementRF.AUTO_MULTIPLE, precedent, rf, false);
 
-				final Ids ids = new Ids();
-				ids.idContribuablePrecedent = precedent.getNumero();
-				ids.idContribuableNouveau = nouveau.getNumero();
-				ids.idTiersRF = rf.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idContribuablePrecedent = precedent.getNumero();
+			ids1.idContribuableNouveau = nouveau.getNumero();
+			ids1.idTiersRF = rf.getId();
+			return ids1;
 		});
 
 		// réception du message de rapprochement
@@ -125,49 +137,60 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		});
 
 		// vérification des données en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<RapprochementRF> all = rapprochementRFDAO.getAll();
-				Assert.assertNotNull(all);
-				Assert.assertEquals(3, all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<RapprochementRF> all = rapprochementRFDAO.getAll();
+			Assert.assertNotNull(all);
+			Assert.assertEquals(3, all.size());
 
-				// triés par ID
-				final List<RapprochementRF> tries = all.stream()
-						.sorted(Comparator.comparing(RapprochementRF::getId))
-						.collect(Collectors.toList());
+			// triés par ID
+			final List<RapprochementRF> tries = all.stream()
+					.sorted(Comparator.comparing(RapprochementRF::getId))
+					.collect(Collectors.toList());
 
-				{
-					final RapprochementRF rapprochement = tries.get(0);
-					Assert.assertNotNull(rapprochement);
-					Assert.assertTrue(rapprochement.isAnnule());
-					Assert.assertNull(rapprochement.getDateDebut());
-					Assert.assertNull(rapprochement.getDateFin());
-					Assert.assertEquals((Long) ids.idContribuablePrecedent, rapprochement.getContribuable().getNumero());
-					Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
-					Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.getTypeRapprochement());
-				}
-				{
-					final RapprochementRF rapprochement = tries.get(1);
-					Assert.assertNotNull(rapprochement);
-					Assert.assertFalse(rapprochement.isAnnule());
-					Assert.assertNull(rapprochement.getDateDebut());
-					Assert.assertEquals(dateFinPrecedentRapprochement, rapprochement.getDateFin());
-					Assert.assertEquals((Long) ids.idContribuablePrecedent, rapprochement.getContribuable().getNumero());
-					Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
-					Assert.assertEquals(TypeRapprochementRF.AUTO_MULTIPLE, rapprochement.getTypeRapprochement());
-				}
-				{
-					final RapprochementRF rapprochement = tries.get(2);
-					Assert.assertNotNull(rapprochement);
-					Assert.assertFalse(rapprochement.isAnnule());
-					Assert.assertEquals(dateFinPrecedentRapprochement.getOneDayAfter(), rapprochement.getDateDebut());
-					Assert.assertNull(rapprochement.getDateFin());
-					Assert.assertEquals((Long) ids.idContribuableNouveau, rapprochement.getContribuable().getNumero());
-					Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
-					Assert.assertEquals(TypeRapprochementRF.MANUEL, rapprochement.getTypeRapprochement());
-				}
+			{
+				final RapprochementRF rapprochement = tries.get(0);
+				Assert.assertNotNull(rapprochement);
+				Assert.assertTrue(rapprochement.isAnnule());
+				Assert.assertNull(rapprochement.getDateDebut());
+				Assert.assertNull(rapprochement.getDateFin());
+				Assert.assertEquals((Long) ids.idContribuablePrecedent, rapprochement.getContribuable().getNumero());
+				Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
+				Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.getTypeRapprochement());
 			}
+			{
+				final RapprochementRF rapprochement = tries.get(1);
+				Assert.assertNotNull(rapprochement);
+				Assert.assertFalse(rapprochement.isAnnule());
+				Assert.assertNull(rapprochement.getDateDebut());
+				Assert.assertEquals(dateFinPrecedentRapprochement, rapprochement.getDateFin());
+				Assert.assertEquals((Long) ids.idContribuablePrecedent, rapprochement.getContribuable().getNumero());
+				Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
+				Assert.assertEquals(TypeRapprochementRF.AUTO_MULTIPLE, rapprochement.getTypeRapprochement());
+			}
+			{
+				final RapprochementRF rapprochement = tries.get(2);
+				Assert.assertNotNull(rapprochement);
+				Assert.assertFalse(rapprochement.isAnnule());
+				Assert.assertEquals(dateFinPrecedentRapprochement.getOneDayAfter(), rapprochement.getDateDebut());
+				Assert.assertNull(rapprochement.getDateFin());
+				Assert.assertEquals((Long) ids.idContribuableNouveau, rapprochement.getContribuable().getNumero());
+				Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
+				Assert.assertEquals(TypeRapprochementRF.MANUEL, rapprochement.getTypeRapprochement());
+			}
+			return null;
+		});
+
+		// postcondition : l'événement fiscal correspondant a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(1, events.size());
+
+			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
+			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
+			Assert.assertEquals(dateFinPrecedentRapprochement.getOneDayAfter(), event0.getDateValeur());
+			Assert.assertEquals(Long.valueOf(ids.idContribuableNouveau), event0.getTiers().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+			return null;
 		});
 	}
 
@@ -184,23 +207,20 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique precedent = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
-				final PersonnePhysique nouveau = addNonHabitant("Patrock", "Duschmolle", date(1964, 2, 2), Sexe.MASCULIN);
-				final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique precedent = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
+			final PersonnePhysique nouveau = addNonHabitant("Patrock", "Duschmolle", date(1964, 2, 2), Sexe.MASCULIN);
+			final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
 
-				// un rapprochement existant (+ un autre annulé pour faire bonne figure et vérifier en même temps que ceux-là ne sont pas pris en compte)
-				addRapprochementRF(null, null, TypeRapprochementRF.AUTO, precedent, rf, true);
-				addRapprochementRF(dateDebutPrecedentRapprochement, dateFinPrecedentRapprochement, TypeRapprochementRF.AUTO_MULTIPLE, precedent, rf, false);
+			// un rapprochement existant (+ un autre annulé pour faire bonne figure et vérifier en même temps que ceux-là ne sont pas pris en compte)
+			addRapprochementRF(null, null, TypeRapprochementRF.AUTO, precedent, rf, true);
+			addRapprochementRF(dateDebutPrecedentRapprochement, dateFinPrecedentRapprochement, TypeRapprochementRF.AUTO_MULTIPLE, precedent, rf, false);
 
-				final Ids ids = new Ids();
-				ids.idContribuablePrecedent = precedent.getNumero();
-				ids.idContribuableNouveau = nouveau.getNumero();
-				ids.idTiersRF = rf.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idContribuablePrecedent = precedent.getNumero();
+			ids1.idContribuableNouveau = nouveau.getNumero();
+			ids1.idTiersRF = rf.getId();
+			return ids1;
 		});
 
 		// réception du message de rapprochement
@@ -212,59 +232,79 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		});
 
 		// vérification des données en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<RapprochementRF> all = rapprochementRFDAO.getAll();
-				Assert.assertNotNull(all);
-				Assert.assertEquals(4, all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<RapprochementRF> all = rapprochementRFDAO.getAll();
+			Assert.assertNotNull(all);
+			Assert.assertEquals(4, all.size());
 
-				// triés par ID
-				final List<RapprochementRF> tries = all.stream()
-						.sorted(Comparator.comparing(RapprochementRF::getId))
-						.collect(Collectors.toList());
+			// triés par ID
+			final List<RapprochementRF> tries = all.stream()
+					.sorted(Comparator.comparing(RapprochementRF::getId))
+					.collect(Collectors.toList());
 
-				{
-					final RapprochementRF rapprochement = tries.get(0);
-					Assert.assertNotNull(rapprochement);
-					Assert.assertTrue(rapprochement.isAnnule());
-					Assert.assertNull(rapprochement.getDateDebut());
-					Assert.assertNull(rapprochement.getDateFin());
-					Assert.assertEquals((Long) ids.idContribuablePrecedent, rapprochement.getContribuable().getNumero());
-					Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
-					Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.getTypeRapprochement());
-				}
-				{
-					final RapprochementRF rapprochement = tries.get(1);
-					Assert.assertNotNull(rapprochement);
-					Assert.assertFalse(rapprochement.isAnnule());
-					Assert.assertEquals(dateDebutPrecedentRapprochement, rapprochement.getDateDebut());
-					Assert.assertEquals(dateFinPrecedentRapprochement, rapprochement.getDateFin());
-					Assert.assertEquals((Long) ids.idContribuablePrecedent, rapprochement.getContribuable().getNumero());
-					Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
-					Assert.assertEquals(TypeRapprochementRF.AUTO_MULTIPLE, rapprochement.getTypeRapprochement());
-				}
-				{
-					final RapprochementRF rapprochement = tries.get(2);
-					Assert.assertNotNull(rapprochement);
-					Assert.assertFalse(rapprochement.isAnnule());
-					Assert.assertNull(null, rapprochement.getDateDebut());
-					Assert.assertEquals(dateDebutPrecedentRapprochement.getOneDayBefore(), rapprochement.getDateFin());
-					Assert.assertEquals((Long) ids.idContribuableNouveau, rapprochement.getContribuable().getNumero());
-					Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
-					Assert.assertEquals(TypeRapprochementRF.MANUEL, rapprochement.getTypeRapprochement());
-				}
-				{
-					final RapprochementRF rapprochement = tries.get(3);
-					Assert.assertNotNull(rapprochement);
-					Assert.assertFalse(rapprochement.isAnnule());
-					Assert.assertEquals(dateFinPrecedentRapprochement.getOneDayAfter(), rapprochement.getDateDebut());
-					Assert.assertNull(rapprochement.getDateFin());
-					Assert.assertEquals((Long) ids.idContribuableNouveau, rapprochement.getContribuable().getNumero());
-					Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
-					Assert.assertEquals(TypeRapprochementRF.MANUEL, rapprochement.getTypeRapprochement());
-				}
+			{
+				final RapprochementRF rapprochement = tries.get(0);
+				Assert.assertNotNull(rapprochement);
+				Assert.assertTrue(rapprochement.isAnnule());
+				Assert.assertNull(rapprochement.getDateDebut());
+				Assert.assertNull(rapprochement.getDateFin());
+				Assert.assertEquals((Long) ids.idContribuablePrecedent, rapprochement.getContribuable().getNumero());
+				Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
+				Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.getTypeRapprochement());
 			}
+			{
+				final RapprochementRF rapprochement = tries.get(1);
+				Assert.assertNotNull(rapprochement);
+				Assert.assertFalse(rapprochement.isAnnule());
+				Assert.assertEquals(dateDebutPrecedentRapprochement, rapprochement.getDateDebut());
+				Assert.assertEquals(dateFinPrecedentRapprochement, rapprochement.getDateFin());
+				Assert.assertEquals((Long) ids.idContribuablePrecedent, rapprochement.getContribuable().getNumero());
+				Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
+				Assert.assertEquals(TypeRapprochementRF.AUTO_MULTIPLE, rapprochement.getTypeRapprochement());
+			}
+			{
+				final RapprochementRF rapprochement = tries.get(2);
+				Assert.assertNotNull(rapprochement);
+				Assert.assertFalse(rapprochement.isAnnule());
+				Assert.assertNull(null, rapprochement.getDateDebut());
+				Assert.assertEquals(dateDebutPrecedentRapprochement.getOneDayBefore(), rapprochement.getDateFin());
+				Assert.assertEquals((Long) ids.idContribuableNouveau, rapprochement.getContribuable().getNumero());
+				Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
+				Assert.assertEquals(TypeRapprochementRF.MANUEL, rapprochement.getTypeRapprochement());
+			}
+			{
+				final RapprochementRF rapprochement = tries.get(3);
+				Assert.assertNotNull(rapprochement);
+				Assert.assertFalse(rapprochement.isAnnule());
+				Assert.assertEquals(dateFinPrecedentRapprochement.getOneDayAfter(), rapprochement.getDateDebut());
+				Assert.assertNull(rapprochement.getDateFin());
+				Assert.assertEquals((Long) ids.idContribuableNouveau, rapprochement.getContribuable().getNumero());
+				Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
+				Assert.assertEquals(TypeRapprochementRF.MANUEL, rapprochement.getTypeRapprochement());
+			}
+			return null;
+		});
+
+		// postcondition : l'événement fiscal correspondant a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(2, events.size());
+			events.sort(Comparator.comparing(EvenementFiscal::getId));
+
+			// le rapprochement [null -> dateDebutPrecedentRapprochement]
+			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
+			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
+			Assert.assertNull(event0.getDateValeur());
+			Assert.assertEquals(Long.valueOf(ids.idContribuableNouveau), event0.getTiers().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+
+			// le rapprochement [dateFinPrecedentRapprochement -> null]
+			final EvenementFiscalRapprochementTiersRF event1 = (EvenementFiscalRapprochementTiersRF) events.get(1);
+			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event1.getType());
+			Assert.assertEquals(dateFinPrecedentRapprochement.getOneDayAfter(), event1.getDateValeur());
+			Assert.assertEquals(Long.valueOf(ids.idContribuableNouveau), event1.getTiers().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event1.getTiersRF().getId());
+			return null;
 		});
 	}
 
@@ -277,16 +317,13 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
+		final Ids ids = doInNewTransactionAndSession(status -> {
 //				final PersonnePhysique pp = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
-				final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
-				final Ids ids = new Ids();
-				ids.idContribuable = 453543;        // numéro de tiers bidon
-				ids.idTiersRF = rf.getId();
-				return ids;
-			}
+			final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
+			final Ids ids1 = new Ids();
+			ids1.idContribuable = 453543;        // numéro de tiers bidon
+			ids1.idTiersRF = rf.getId();
+			return ids1;
 		});
 
 		// réception du message de rapprochement
@@ -305,13 +342,18 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		}
 
 		// vérification des données en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<RapprochementRF> all = rapprochementRFDAO.getAll();
-				Assert.assertNotNull(all);
-				Assert.assertEquals(0, all.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<RapprochementRF> all = rapprochementRFDAO.getAll();
+			Assert.assertNotNull(all);
+			Assert.assertEquals(0, all.size());
+			return null;
+		});
+
+		// postcondition : aucun événement fiscal n'a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(0, events.size());
+			return null;
 		});
 	}
 
@@ -324,16 +366,13 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
 //				final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
-				final Ids ids = new Ids();
-				ids.idContribuable = pp.getNumero();
-				ids.idTiersRF = 54845165L;
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idContribuable = pp.getNumero();
+			ids1.idTiersRF = 54845165L;
+			return ids1;
 		});
 
 		// réception du message de rapprochement
@@ -352,13 +391,18 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		}
 
 		// vérification des données en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<RapprochementRF> all = rapprochementRFDAO.getAll();
-				Assert.assertNotNull(all);
-				Assert.assertEquals(0, all.size());
-			}
+		doInNewTransactionAndSession(status -> {
+			final List<RapprochementRF> all = rapprochementRFDAO.getAll();
+			Assert.assertNotNull(all);
+			Assert.assertEquals(0, all.size());
+			return null;
+		});
+
+		// postcondition : aucun événement fiscal n'a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(0, events.size());
+			return null;
 		});
 	}
 
@@ -372,22 +416,19 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique existant = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
-				final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
-				final PersonnePhysique nouveau = addNonHabitant("Patrock", "Duschmolle", date(1964, 2, 2), Sexe.MASCULIN);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique existant = addNonHabitant("Patrick", "Duschmol", date(1964, 2, 1), Sexe.MASCULIN);
+			final TiersRF rf = addPersonnePhysiqueRF("Patrick", "Duschmolle", date(1964, 2, 2), "547385965363876763", 853634L, null);
+			final PersonnePhysique nouveau = addNonHabitant("Patrock", "Duschmolle", date(1964, 2, 2), Sexe.MASCULIN);
 
-				// rapprochement déjà complet sur le tiers RF
-				addRapprochementRF(null, null, TypeRapprochementRF.AUTO, existant, rf, false);
+			// rapprochement déjà complet sur le tiers RF
+			addRapprochementRF(null, null, TypeRapprochementRF.AUTO, existant, rf, false);
 
-				final Ids ids = new Ids();
-				ids.idContribuableExistant = existant.getNumero();
-				ids.idContribuableNouveau = nouveau.getNumero();
-				ids.idTiersRF = rf.getId();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.idContribuableExistant = existant.getNumero();
+			ids1.idContribuableNouveau = nouveau.getNumero();
+			ids1.idTiersRF = rf.getId();
+			return ids1;
 		});
 
 		// réception du message de rapprochement
@@ -406,22 +447,27 @@ public class RapprochementProprietaireHandlerTest extends BusinessTest {
 		}
 
 		// vérification des données en base
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final List<RapprochementRF> all = rapprochementRFDAO.getAll();
-				Assert.assertNotNull(all);
-				Assert.assertEquals(1, all.size());
+		doInNewTransactionAndSession(status -> {
+			final List<RapprochementRF> all = rapprochementRFDAO.getAll();
+			Assert.assertNotNull(all);
+			Assert.assertEquals(1, all.size());
 
-				final RapprochementRF rapprochement = all.get(0);
-				Assert.assertNotNull(rapprochement);
-				Assert.assertFalse(rapprochement.isAnnule());
-				Assert.assertNull(rapprochement.getDateDebut());
-				Assert.assertNull(rapprochement.getDateFin());
-				Assert.assertEquals((Long) ids.idContribuableExistant, rapprochement.getContribuable().getNumero());
-				Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
-				Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.getTypeRapprochement());
-			}
+			final RapprochementRF rapprochement = all.get(0);
+			Assert.assertNotNull(rapprochement);
+			Assert.assertFalse(rapprochement.isAnnule());
+			Assert.assertNull(rapprochement.getDateDebut());
+			Assert.assertNull(rapprochement.getDateFin());
+			Assert.assertEquals((Long) ids.idContribuableExistant, rapprochement.getContribuable().getNumero());
+			Assert.assertEquals((Long) ids.idTiersRF, rapprochement.getTiersRF().getId());
+			Assert.assertEquals(TypeRapprochementRF.AUTO, rapprochement.getTypeRapprochement());
+			return null;
+		});
+
+		// postcondition : aucun événement fiscal n'a été envoyé
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			Assert.assertEquals(0, events.size());
+			return null;
 		});
 	}
 

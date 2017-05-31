@@ -22,6 +22,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
@@ -253,7 +254,7 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 
 	@Override
 	public void publierEvenementFiscalImpressionFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) {
-		saveAndPublish(new EvenementFiscalImpressionFourreNeutre(fourreNeutre.getTiers(),fourreNeutre.getPeriodeFIscale(), dateTraitement));
+		saveAndPublish(new EvenementFiscalImpressionFourreNeutre(fourreNeutre.getTiers(), fourreNeutre.getPeriodeFIscale(), dateTraitement));
 	}
 
 	@Override
@@ -367,5 +368,20 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	@Override
 	public void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation) {
 		saveAndPublish(new EvenementFiscalImplantationBatiment(dateFin, implantation.getImmeuble(), implantation.getBatiment(), EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation.RADIATION));
+	}
+
+	@Override
+	public void publierDebutRapprochementTiersRF(RegDate dateDebut, RapprochementRF rapprochement) {
+		saveAndPublish(new EvenementFiscalRapprochementTiersRF(dateDebut, rapprochement.getContribuable(), rapprochement.getTiersRF(), EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE));
+	}
+
+	@Override
+	public void publierFinRapprochementTiersRF(RegDate dateFin, RapprochementRF rapprochement) {
+		saveAndPublish(new EvenementFiscalRapprochementTiersRF(dateFin, rapprochement.getContribuable(), rapprochement.getTiersRF(), EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.FERMETURE));
+	}
+
+	@Override
+	public void publierAnnulationRapprochementTiersRF(RegDate dateAnnulation, RapprochementRF rapprochement) {
+		saveAndPublish(new EvenementFiscalRapprochementTiersRF(dateAnnulation, rapprochement.getContribuable(), rapprochement.getTiersRF(), EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.ANNULATION));
 	}
 }

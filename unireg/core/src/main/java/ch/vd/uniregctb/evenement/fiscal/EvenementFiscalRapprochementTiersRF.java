@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -19,7 +20,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 
 @Entity
 @DiscriminatorValue(value = "RAPPROCHEMENT_RF")
-public class EvenementFiscalRapprochementTiersRF extends EvenementFiscalTiers {
+public class EvenementFiscalRapprochementTiersRF extends EvenementFiscal {
 
 	/**
 	 * Différents types d'événements fiscaux autour des rapprochements RF
@@ -30,16 +31,29 @@ public class EvenementFiscalRapprochementTiersRF extends EvenementFiscalTiers {
 		ANNULATION
 	}
 
+	private Tiers tiers;
 	private TiersRF tiersRF;
 	private TypeEvenementFiscalRapprochement type;
 
 	public EvenementFiscalRapprochementTiersRF() {
 	}
 
-	public EvenementFiscalRapprochementTiersRF(@NotNull RegDate dateValeur, @NotNull Tiers tiers, @NotNull TiersRF tiersRF, @NotNull TypeEvenementFiscalRapprochement type) {
-		super(tiers, dateValeur);
+	public EvenementFiscalRapprochementTiersRF(@Nullable RegDate dateValeur, @NotNull Tiers tiers, @NotNull TiersRF tiersRF, @NotNull TypeEvenementFiscalRapprochement type) {
+		super(dateValeur);
+		this.tiers = tiers;
 		this.tiersRF = tiersRF;
 		this.type = type;
+	}
+
+	@JoinColumn(name = "TIERS_ID")
+	@ManyToOne(fetch = FetchType.EAGER)
+	@ForeignKey(name = "FK_EVTFISC_TIERS_ID")
+	public Tiers getTiers() {
+		return tiers;
+	}
+
+	public void setTiers(Tiers tiers) {
+		this.tiers = tiers;
 	}
 
 	@JoinColumn(name = "TIERS_RF_ID")
@@ -61,5 +75,10 @@ public class EvenementFiscalRapprochementTiersRF extends EvenementFiscalTiers {
 
 	public void setType(TypeEvenementFiscalRapprochement type) {
 		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s{id=%d, dateValeur=%s, tiers=%d, tiersRF=%d}", getClass().getSimpleName(), getId(), getDateValeur(), tiers.getNumero(), tiersRF.getId());
 	}
 }
