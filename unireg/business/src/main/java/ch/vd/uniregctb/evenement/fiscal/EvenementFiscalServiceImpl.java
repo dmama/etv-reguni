@@ -18,6 +18,8 @@ import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImplantat
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
 import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -274,17 +276,20 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 
 	@Override
 	public void publierOuvertureDroitPropriete(RegDate dateDebutMetier, DroitProprieteRF droit) {
-		saveAndPublish(new EvenementFiscalDroitPropriete(dateDebutMetier, droit.getAyantDroit(), droit.getImmeuble(), EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE));
+		final CommunauteRF communaute = (droit instanceof DroitProprietePersonneRF ? ((DroitProprietePersonneRF) droit).getCommunaute() : null);
+		saveAndPublish(new EvenementFiscalDroitPropriete(dateDebutMetier, droit.getAyantDroit(), droit.getImmeuble(), communaute, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE));
 	}
 
 	@Override
 	public void publierFermetureDroitPropriete(RegDate dateFinMetier, DroitProprieteRF droit) {
-		saveAndPublish(new EvenementFiscalDroitPropriete(dateFinMetier, droit.getAyantDroit(), droit.getImmeuble(), EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE));
+		final CommunauteRF communaute = (droit instanceof DroitProprietePersonneRF ? ((DroitProprietePersonneRF) droit).getCommunaute() : null);
+		saveAndPublish(new EvenementFiscalDroitPropriete(dateFinMetier, droit.getAyantDroit(), droit.getImmeuble(), communaute, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE));
 	}
 
 	@Override
 	public void publierModificationDroitPropriete(RegDate dateModification, DroitProprieteRF droit) {
-		saveAndPublish(new EvenementFiscalDroitPropriete(dateModification, droit.getAyantDroit(), droit.getImmeuble(), EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION));
+		final CommunauteRF communaute = (droit instanceof DroitProprietePersonneRF ? ((DroitProprietePersonneRF) droit).getCommunaute() : null);
+		saveAndPublish(new EvenementFiscalDroitPropriete(dateModification, droit.getAyantDroit(), droit.getImmeuble(), communaute, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION));
 	}
 
 	@Override

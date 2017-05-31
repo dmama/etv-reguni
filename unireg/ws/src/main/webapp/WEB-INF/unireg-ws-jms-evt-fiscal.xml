@@ -32,6 +32,11 @@
 		<property name="esbTemplate" ref="esbJmsTemplate" />
 		<property name="esbValidator" ref="esbMessageValidator"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
+		<property name="evenementFiscalV5Factory" ref="evenementFiscalV5Factory"/>
+	</bean>
+
+	<bean id="evenementFiscalV5Factory" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV5FactoryImpl">
+		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
 	<bean id="evenementFiscalSendingPod" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSendingPod">

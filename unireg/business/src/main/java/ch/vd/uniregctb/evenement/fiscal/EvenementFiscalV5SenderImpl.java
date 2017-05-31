@@ -31,6 +31,7 @@ public class EvenementFiscalV5SenderImpl implements EvenementFiscalSender, Initi
 	private EsbJmsTemplate esbTemplate;
 	private EsbMessageValidator esbValidator;
 	private String serviceDestination;
+	private EvenementFiscalV5Factory evenementFiscalV5Factory;
 
 	private final ObjectFactory objectFactory = new ObjectFactory();
 	private JAXBContext jaxbContext;
@@ -54,6 +55,10 @@ public class EvenementFiscalV5SenderImpl implements EvenementFiscalSender, Initi
 		this.serviceDestination = serviceDestination;
 	}
 
+	public void setEvenementFiscalV5Factory(EvenementFiscalV5Factory evenementFiscalV5Factory) {
+		this.evenementFiscalV5Factory = evenementFiscalV5Factory;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -69,7 +74,7 @@ public class EvenementFiscalV5SenderImpl implements EvenementFiscalSender, Initi
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		Assert.notNull(principal);
 
-		final FiscalEvent event = EvenementFiscalV5Factory.buildOutputData(evenement);
+		final FiscalEvent event = evenementFiscalV5Factory.buildOutputData(evenement);
 		if (event == null) {
 			// mapping inexistant pour le canal v5 -> on abandonne
 			if (LOGGER.isDebugEnabled()) {

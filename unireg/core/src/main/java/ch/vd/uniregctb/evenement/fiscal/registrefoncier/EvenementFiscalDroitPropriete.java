@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 
 @Entity
@@ -20,11 +21,13 @@ public class EvenementFiscalDroitPropriete extends EvenementFiscalDroit {
 
 	private AyantDroitRF ayantDroit;
 	private ImmeubleRF immeuble;
+	@Nullable
+	private CommunauteRF communaute;
 
 	public EvenementFiscalDroitPropriete() {
 	}
 
-	public EvenementFiscalDroitPropriete(@Nullable RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull ImmeubleRF immeuble, @NotNull EvenementFiscalDroitPropriete.TypeEvenementFiscalDroitPropriete type) {
+	public EvenementFiscalDroitPropriete(@Nullable RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull ImmeubleRF immeuble, @Nullable CommunauteRF communaute, @NotNull EvenementFiscalDroitPropriete.TypeEvenementFiscalDroitPropriete type) {
 		super(dateValeur, type);
 		this.ayantDroit = ayantDroit;
 		this.immeuble = immeuble;
@@ -50,5 +53,17 @@ public class EvenementFiscalDroitPropriete extends EvenementFiscalDroit {
 
 	public void setImmeuble(ImmeubleRF immeuble) {
 		this.immeuble = immeuble;
+	}
+
+	@Nullable
+	@JoinColumn(name = "COMMUNAUTE_ID")
+	@ManyToOne(fetch = FetchType.EAGER)
+	@ForeignKey(name = "FK_EVTFISC_COMMUNAUTE_ID")
+	public CommunauteRF getCommunaute() {
+		return communaute;
+	}
+
+	public void setCommunaute(@Nullable CommunauteRF communaute) {
+		this.communaute = communaute;
 	}
 }

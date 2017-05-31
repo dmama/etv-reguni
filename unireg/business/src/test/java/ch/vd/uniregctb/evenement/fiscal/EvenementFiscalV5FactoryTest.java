@@ -17,7 +17,7 @@ public class EvenementFiscalV5FactoryTest {
 	public void testInstanciateAllegementFiscal() throws Exception {
 		// on doit vérifier que types d'événement d'allègement fiscal sont acceptés par l'XSD des événements fiscaux v4
 		for (EvenementFiscalAllegementFiscal.TypeEvenementFiscalAllegement type : EvenementFiscalAllegementFiscal.TypeEvenementFiscalAllegement.values()) {
-			final FiscalEvent instance = EvenementFiscalV5Factory.instanciate(type);
+			final FiscalEvent instance = EvenementFiscalV5FactoryImpl.instanciate(type);
 			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux V5", instance);
 		}
 	}
@@ -26,7 +26,7 @@ public class EvenementFiscalV5FactoryTest {
 	public void testTypeActionEvenementDeclarationSommable() throws Exception {
 		// on doit vérifier que types d'événement autour des déclarations sont acceptés par l'XSD des événements fiscaux V5
 		for (EvenementFiscalDeclarationSommable.TypeAction type : EvenementFiscalDeclarationSommable.TypeAction.values()) {
-			final SummonableTaxDeclarationEventType mapped = EvenementFiscalV5Factory.mapType(type);
+			final SummonableTaxDeclarationEventType mapped = EvenementFiscalV5FactoryImpl.mapType(type);
 			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux V5", mapped);
 		}
 	}
@@ -35,7 +35,7 @@ public class EvenementFiscalV5FactoryTest {
 	public void testTypeActionEvenementDeclarationRappelable() throws Exception {
 		// on doit vérifier que types d'événement autour des déclarations sont acceptés par l'XSD des événements fiscaux V5
 		for (EvenementFiscalDeclarationRappelable.TypeAction type : EvenementFiscalDeclarationRappelable.TypeAction.values()) {
-			final RemindableTaxDeclarationEventType mapped = EvenementFiscalV5Factory.mapType(type);
+			final RemindableTaxDeclarationEventType mapped = EvenementFiscalV5FactoryImpl.mapType(type);
 			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux V5", mapped);
 		}
 	}
@@ -44,7 +44,7 @@ public class EvenementFiscalV5FactoryTest {
 	public void testInstanciateFor() throws Exception {
 		// on doit vérifier que types d'événement de fors sont acceptés par l'XSD des événements fiscaux V5
 		for (EvenementFiscalFor.TypeEvenementFiscalFor type : EvenementFiscalFor.TypeEvenementFiscalFor.values()) {
-			final TaxResidenceEvent instance = EvenementFiscalV5Factory.instanciate(type);
+			final TaxResidenceEvent instance = EvenementFiscalV5FactoryImpl.instanciate(type);
 			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux V5", instance);
 		}
 	}
@@ -53,7 +53,7 @@ public class EvenementFiscalV5FactoryTest {
 	public void testTypeInformationComplementaire() throws Exception {
 		// on doit vérifier que types d'événement autour des informations complémentaires sont acceptés par l'XSD des événements fiscaux V5
 		for (EvenementFiscalInformationComplementaire.TypeInformationComplementaire type : EvenementFiscalInformationComplementaire.TypeInformationComplementaire.values()) {
-			final AdditionalOrgInfoEventType mapped = EvenementFiscalV5Factory.mapType(type);
+			final AdditionalOrgInfoEventType mapped = EvenementFiscalV5FactoryImpl.mapType(type);
 			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux V5", mapped);
 		}
 	}
@@ -62,7 +62,7 @@ public class EvenementFiscalV5FactoryTest {
 	public void testInstanciateParente() throws Exception {
 		// on doit vérifier que types d'événement de parenté sont acceptés par l'XSD des événements fiscaux V5
 		for (EvenementFiscalParente.TypeEvenementFiscalParente type : EvenementFiscalParente.TypeEvenementFiscalParente.values()) {
-			final ParentalAuthorityEvent instance = EvenementFiscalV5Factory.instanciate(type);
+			final ParentalAuthorityEvent instance = EvenementFiscalV5FactoryImpl.instanciate(type);
 			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux V5", instance);
 		}
 	}
@@ -71,7 +71,7 @@ public class EvenementFiscalV5FactoryTest {
 	public void testInstanciateRegimeFiscal() throws Exception {
 		// on doit vérifier que types d'événement autour des régimes fiscaux sont acceptés par l'XSD des événements fiscaux V5
 		for (EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime type : EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.values()) {
-			final TaxSystemEvent instance = EvenementFiscalV5Factory.instanciate(type);
+			final TaxSystemEvent instance = EvenementFiscalV5FactoryImpl.instanciate(type);
 			Assert.assertNotNull("type " + type + " inconnu dans la XSD des événements fiscaux V5", instance);
 		}
 	}
