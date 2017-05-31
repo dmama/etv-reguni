@@ -261,6 +261,7 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 	 */
 	private final class TransactionCollectedData {
 
+		private boolean sent = false;
 		private final List<EvenementFiscal> evenementsFiscaux = new LinkedList<>();
 		private final List<DataEvent> evenementsNotification = new LinkedList<>();
 		private final AlreadySentData alreadySentNotifications = new AlreadySentData();
@@ -278,6 +279,9 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 					if (!readOnly) {
 						// c'est un commit qui s'annonce, envoyons les événements collectés en une fois
 						reallySendEvents(evenementsFiscaux, evenementsNotification);
+
+						// notons que nous avons envoyé un truc... tout ce qui vient ensuite devra être envoyé individuellement
+						sent = true;
 					}
 				}
 
@@ -294,12 +298,24 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 			});
 		}
 
-		public void addEvenementFiscal(EvenementFiscal evtFiscal) {
-			evenementsFiscaux.add(evtFiscal);
+		private void addEvenementFiscal(EvenementFiscal evtFiscal) {
+			if (sent) {
+				// envoi direct si l'envoi groupé a déjà été lancé
+				reallySendEvents(Collections.singletonList(evtFiscal), Collections.emptyList());
+			}
+			else {
+				evenementsFiscaux.add(evtFiscal);
+			}
 		}
 
 		private void collectNotification(DataEvent dataEvent) {
-			evenementsNotification.add(dataEvent);
+			if (sent) {
+				// envoi direct si l'envoi groupé a déjà été lancé
+				reallySendEvents(Collections.emptyList(), Collections.singletonList(dataEvent));
+			}
+			else {
+				evenementsNotification.add(dataEvent);
+			}
 		}
 
 		/**
