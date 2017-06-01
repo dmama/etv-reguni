@@ -157,7 +157,7 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 			return PartyKind.DEBTOR;
 		}
 		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-			return PartyKind.NATURAL_PERSON;
+			return PartyKind.NATURAL_PERSON_OR_DEEMED_EQUIVALENT;
 		}
 		if (tiers instanceof ContribuableImpositionPersonnesMorales) {
 			return PartyKind.ORGANISATION;

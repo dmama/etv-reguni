@@ -101,7 +101,7 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			// On vérifie que l'on a bien envoyé le message
 			final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 					"<fisc-evt-5:fiscalEvent xmlns:fisc-evt-5=\"http://www.vd.ch/fiscalite/unireg/event/fiscal/5\" xmlns:common-2=\"http://www.vd.ch/fiscalite/unireg/common/2\" xmlns:corp-5=\"http://www.vd.ch/fiscalite/unireg/party/corporation/5\" xmlns:land-1=\"http://www.vd.ch/fiscalite/unireg/party/landregistry/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"fisc-evt-5:familyStatusEventType\">" +
-					"<fisc-evt-5:partyKind>NATURAL_PERSON</fisc-evt-5:partyKind>" +
+					"<fisc-evt-5:partyKind>NATURAL_PERSON_OR_DEEMED_EQUIVALENT</fisc-evt-5:partyKind>" +
 					"<fisc-evt-5:partyNumber>12300652</fisc-evt-5:partyNumber>" +
 					"<fisc-evt-5:date><common-2:year>2009</common-2:year><common-2:month>12</common-2:month><common-2:day>9</common-2:day></fisc-evt-5:date>" +
 					"</fisc-evt-5:fiscalEvent>";
@@ -130,7 +130,7 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			// On vérifie que l'on a bien envoyé le message
 			final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 					"<fisc-evt-5:fiscalEvent xmlns:fisc-evt-5=\"http://www.vd.ch/fiscalite/unireg/event/fiscal/5\" xmlns:common-2=\"http://www.vd.ch/fiscalite/unireg/common/2\" xmlns:corp-5=\"http://www.vd.ch/fiscalite/unireg/party/corporation/5\" xmlns:land-1=\"http://www.vd.ch/fiscalite/unireg/party/landregistry/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"fisc-evt-5:taxResidenceStartEventType\">" +
-					"<fisc-evt-5:partyKind>NATURAL_PERSON</fisc-evt-5:partyKind>" +
+					"<fisc-evt-5:partyKind>NATURAL_PERSON_OR_DEEMED_EQUIVALENT</fisc-evt-5:partyKind>" +
 					"<fisc-evt-5:partyNumber>12300652</fisc-evt-5:partyNumber>" +
 					"<fisc-evt-5:date><common-2:year>2009</common-2:year><common-2:month>12</common-2:month><common-2:day>9</common-2:day></fisc-evt-5:date>" +
 					"<fisc-evt-5:mainTaxResidence>true</fisc-evt-5:mainTaxResidence>" +
@@ -161,7 +161,7 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			// On vérifie que l'on a bien envoyé le message
 			final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 					"<fisc-evt-5:fiscalEvent xmlns:fisc-evt-5=\"http://www.vd.ch/fiscalite/unireg/event/fiscal/5\" xmlns:common-2=\"http://www.vd.ch/fiscalite/unireg/common/2\" xmlns:corp-5=\"http://www.vd.ch/fiscalite/unireg/party/corporation/5\" xmlns:land-1=\"http://www.vd.ch/fiscalite/unireg/party/landregistry/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"fisc-evt-5:neutralJacketPrintEventType\">" +
-					"<fisc-evt-5:partyKind>NATURAL_PERSON</fisc-evt-5:partyKind>" +
+					"<fisc-evt-5:partyKind>NATURAL_PERSON_OR_DEEMED_EQUIVALENT</fisc-evt-5:partyKind>" +
 					"<fisc-evt-5:partyNumber>12300652</fisc-evt-5:partyNumber>" +
 					"<fisc-evt-5:date><common-2:year>2017</common-2:year><common-2:month>1</common-2:month><common-2:day>20</common-2:day></fisc-evt-5:date>" +
 					"<fisc-evt-5:period>2015</fisc-evt-5:period>" +

@@ -77,9 +77,9 @@
 			<xs:documentation>La catégorie de tiers : PP, PM ou IS.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="NATURAL_PERSON">
+			<xs:enumeration value="NATURAL_PERSON_OR_DEEMED_EQUIVALENT">
 				<xs:annotation>
-					<xs:documentation>Contribuable soumis à l'imposition des personnes physiques.</xs:documentation>
+					<xs:documentation>Contribuable soumis à l'imposition des personnes physiques ou équivalent (par exemple, un ménage commun).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="ORGANISATION">
@@ -1780,6 +1780,69 @@
 		<xs:complexContent>
 			<xs:extension base="landRegistryReconciliationEventType">
 				<xs:sequence>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- Structure réservée pour des événements futurs -->
+	<xs:complexType name="futureEventType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Structure réservée pour des types d'événements fiscaux créés après la publication de ce XSD.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="fiscalEventType">
+				<xs:sequence>
+					<xs:element name="type" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Une description du "type" d'événement.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="data1" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Données de l'événement dont la signification dépendra du type d'événement et de la documentation qui sera fournie par Unireg.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="data2" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Données de l'événement dont la signification dépendra du type d'événement et de la documentation qui sera fournie par Unireg.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="data3" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Données de l'événement dont la signification dépendra du type d'événement et de la documentation qui sera fournie par Unireg.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="padding" type="xs:int">
 						<xs:annotation>
 							<xs:appinfo>
