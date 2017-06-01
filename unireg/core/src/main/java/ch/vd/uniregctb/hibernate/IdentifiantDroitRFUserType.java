@@ -16,8 +16,6 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
  */
 public class IdentifiantDroitRFUserType extends GenericUserType implements UserType {
 
-	private boolean allowPartial;
-
 	public IdentifiantDroitRFUserType() {
 	}
 
