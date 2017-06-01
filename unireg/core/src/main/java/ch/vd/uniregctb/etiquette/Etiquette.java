@@ -71,7 +71,7 @@ public class Etiquette extends HibernateEntity {
 	 * format "[A-Z][A-Z0-9_]*"
 	 */
 	@Column(name = "CODE", nullable = false, unique = true, length = LengthConstants.ETIQUETTE_CODE)
-	@Index(name = "IDX_ETIQ_CODE", columnNames = "CODE")
+//	@Index(name = "IDX_ETIQ_CODE", columnNames = "CODE")        --> impliqué par la contrainte "unique = true"
 	public String getCode() {
 		return code;
 	}
