@@ -1684,7 +1684,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected DroitProprieteCommunauteRF addDroitCommunauteRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
 	                                                          IdentifiantAffaireRF numeroAffaire,
 	                                                          Fraction part, GenrePropriete regime,
-	                                                          CommunauteRF communauteRF, BienFondRF immeuble) {
+	                                                          CommunauteRF communauteRF, ImmeubleRF immeuble) {
 		final DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
 		droit.setImmeuble(immeuble);
 		droit.setAyantDroit(communauteRF);

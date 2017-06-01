@@ -68,8 +68,7 @@ public class DroitProprieteImmeubleRF extends DroitProprieteRF {
 		// les contribuables qui sont directement propriétaires de l'immeuble
 		final Map<Long, Contribuable> contribuables = droitsPropriete.stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.filter(DroitProprieteRF.class::isInstance)                 // tous les droits de propriété vers cet immeuble
-				.filter(d -> !(d instanceof DroitProprieteImmeubleRF))      // sauf les droits entre immeubles
+				.filter(DroitProprietePersonneRF.class::isInstance)         // tous les droits de propriété de tiers vers cet immeuble
 				.map(DroitProprieteRF.class::cast)
 				.map(DroitProprieteRF::getAyantDroit)                       // on récupère l'ayant-droit (qui doit être un tiers)
 				.map(TiersRF.class::cast)

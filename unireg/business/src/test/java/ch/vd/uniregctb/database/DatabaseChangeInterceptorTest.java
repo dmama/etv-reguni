@@ -20,6 +20,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -33,10 +34,12 @@ import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -450,6 +453,74 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 			addDroitImmeubleRF(null, RegDate.get(2000, 1, 1), null, null, "Constitution PPE", null, "4834834838", "1818181",
 			                   new IdentifiantAffaireRF(61, 2000, 4, 12), new Fraction(1, 4), GenrePropriete.PPE,
 			                   beneficiaire, bienFond);
+			return null;
+		});
+
+		// on vérifie que l'ajout du droit entre les immeubles a bien provoqué l'envoi d'une notification sur chaque immeuble
+		assertEquals(2, eventService.changedImmeubles.size());
+		assertEquals(new HashSet<>(Arrays.asList(ids.bienFond, ids.ppe)), eventService.changedImmeubles);
+	}
+
+	/**
+	 * [SIFISC-24979] Ce test vérifie que la méthode {@link ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF#getLinkedEntities(LinkedEntity.Context, boolean)}
+	 * ne crashe pas lorsqu'on ajoute un lien entre immeubles et que l'immeuble dominant est possédé par une communauté.
+	 */
+	@Test
+	public void testDetectDroitProprieteImmeubleChangeAvecCommunaute() throws Exception {
+
+		assertEmpty(eventService.changedImmeubles);
+
+		class Ids {
+			long bienFond;
+			long ppe;
+			long beneficiaire;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+
+			// les deux immeubles
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondRF bienFond = addBienFondRF("38828288a", "CH38278228", commune, 234);
+			final ProprieteParEtageRF ppe = addProprieteParEtageRF("78228218", "CH88828222", new Fraction(1, 2), commune, 544, null, null, null);
+			final ImmeubleBeneficiaireRF beneficiaire = addImmeubleBeneficiaireRF(ppe);
+
+			// la communauté
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("2872822", "Jean", "Lassale", RegDate.get(1960, 1, 1));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2872823", "Gudule", "Lassale", RegDate.get(1960, 1, 1));
+			final CommunauteRF communaute = addCommunauteRF("89393939", TypeCommunaute.COMMUNAUTE_DE_BIENS);
+
+			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(61, 2000, 4, 12);
+			addDroitCommunauteRF(null, RegDate.get(2000, 1, 1), null, null, "Achat", null, "9292929", "0103920",
+			                     numeroAffaire, new Fraction(3, 4), GenrePropriete.COPROPRIETE, communaute, ppe);
+			addDroitPropriete(pp1, ppe, communaute, GenrePropriete.COPROPRIETE, new Fraction(3, 4), null, RegDate.get(2000, 1, 1),
+			                  null, null, "Achat", null, numeroAffaire, "3377822", "1");
+			addDroitPropriete(pp2, ppe, communaute, GenrePropriete.COPROPRIETE, new Fraction(3, 4), null, RegDate.get(2000, 1, 1),
+			                  null, null, "Achat", null, numeroAffaire, "3377823", "1");
+
+			ids.bienFond = bienFond.getId();
+			ids.ppe = ppe.getId();
+			ids.beneficiaire = beneficiaire.getId();
+			return null;
+		});
+
+		// on vérifie que la création des immeubles a bien provoqué l'envoi de deux notifications
+		assertEquals(2, eventService.changedImmeubles.size());
+		assertEquals(new HashSet<>(Arrays.asList(ids.bienFond, ids.ppe)), eventService.changedImmeubles);
+
+		eventService.clear();
+
+		// on ajout un droit de propriété entre les deux immeubles et un droit de propriété d'une communauté
+		doInNewTransaction(status -> {
+			final BienFondRF bienFond = hibernateTemplate.get(BienFondRF.class, ids.bienFond);
+			final ImmeubleBeneficiaireRF beneficiaire = hibernateTemplate.get(ImmeubleBeneficiaireRF.class, ids.beneficiaire);
+
+			// le droit entre immeubles
+			addDroitImmeubleRF(null, RegDate.get(2000, 1, 1), null, null,
+			                   "Constitution PPE", null, "4834834838", "1818181",
+			                   new IdentifiantAffaireRF(61, 2000, 5, 1), new Fraction(1, 4), GenrePropriete.PPE,
+			                   beneficiaire, bienFond);
+
 			return null;
 		});
 

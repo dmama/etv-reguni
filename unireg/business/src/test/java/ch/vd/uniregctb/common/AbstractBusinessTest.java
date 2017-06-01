@@ -399,7 +399,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return hibernateTemplate.merge(rapprochement);
 	}
 
-	protected DroitProprietePersonnePhysiqueRF addDroitPropriete(PersonnePhysiqueRF tiersRF, BienFondRF immeuble, CommunauteRF communaute, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier,
+	protected DroitProprietePersonnePhysiqueRF addDroitPropriete(PersonnePhysiqueRF tiersRF, ImmeubleRF immeuble, CommunauteRF communaute, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier,
 	                                                             RegDate dateFinMetier, String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF, String versionIdRF) {
 		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
 		droit.setCommunaute(communaute);
