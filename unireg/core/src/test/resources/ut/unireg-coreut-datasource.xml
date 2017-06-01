@@ -111,7 +111,6 @@
 	<util:map id="hibernateProperties">
 		<entry key="hibernate.connection.autocommit" value="false" />
 		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory" />
-		<entry key="hibernate.transaction.manager_lookup_class" value="com.atomikos.icatch.jta.hibernate3.TransactionManagerLookup"/>
 		<entry key="hibernate.dialect" value-ref="hibernateDialectClassName" />
 		<entry key="hibernate.query.substitutions" value-ref="hibernateQuerySubstitutions" />
 		<entry key="hibernate.show_sql" value="false" />
