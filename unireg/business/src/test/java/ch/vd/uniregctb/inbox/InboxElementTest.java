@@ -33,6 +33,7 @@ public class InboxElementTest extends WithoutSpringTest {
 		Assert.assertEquals("text/plain", attachment.getMimeType());
 		Assert.assertEquals("doloris", attachment.getFilenameRadical());
 
+		Assert.assertNotNull(elt.getIncomingInstant());
 		Assert.assertNotNull(elt.getIncomingDate());
 		Assert.assertFalse(elt.isRead());
 

@@ -46,7 +46,7 @@ public class InboxContentJmxBeanImpl implements InboxContentJmxBean {
 				attachment = StringUtils.EMPTY;
 			}
 			final String desc = String.format("%s \"%s\", income on %s%s%s, %s (%s)", elt.getName(),
-			                                  elt.getDescription(), elt.getIncomingDate(), expiration, attachment,
+			                                  elt.getDescription(), elt.getIncomingInstant(), expiration, attachment,
 			                                  elt.isRead() ? "read" : "unread", elt.getUuid());
 			descriptions.add(desc);
 		}

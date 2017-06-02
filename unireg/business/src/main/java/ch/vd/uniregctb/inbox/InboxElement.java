@@ -23,8 +23,8 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 	private final String name;
 	private final String description;
 	private final InboxAttachment attachment;
-	private final Instant incomingDate;
-	private final Instant expirationDate;
+	private final Instant incomingInstant;
+	private final Instant expirationInstant;
 	private boolean read;
 
 	/**
@@ -41,8 +41,8 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 		this.name = name;
 		this.description = description;
 		this.attachment = attachement;
-		this.incomingDate = InstantHelper.get();
-		this.expirationDate = untilExpiration == null || untilExpiration.isNegative() || untilExpiration.isZero() ? null : this.incomingDate.plus(untilExpiration);
+		this.incomingInstant = InstantHelper.get();
+		this.expirationInstant = untilExpiration == null || untilExpiration.isNegative() || untilExpiration.isZero() ? null : this.incomingInstant.plus(untilExpiration);
 		this.read = false;
 	}
 
@@ -75,8 +75,19 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 		return attachment;
 	}
 
-	public Instant getIncomingDate() {
-		return incomingDate;
+	/**
+	 * @return le point dans le temps auquel cet élément a été introduit dans l'inbox (sous la forme d'un {@link java.time.Instant})
+	 */
+	public Instant getIncomingInstant() {
+		return incomingInstant;
+	}
+
+	/**
+	 * @return le point dans le temps auquel cet élément a été introduit dans l'inbox (sous la forme d'une {@link java.util.Date})
+	 */
+	@SuppressWarnings("unused")
+	public Date getIncomingDate() {
+		return Date.from(getIncomingInstant());
 	}
 
 	@Override
@@ -88,11 +99,11 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 	@Nullable
 	public Duration getTimeToExpiration() {
 		final Duration timeToExpiration;
-		if (expirationDate == null) {
+		if (expirationInstant == null) {
 			timeToExpiration = null;
 		}
 		else {
-			timeToExpiration = Duration.between(InstantHelper.get(), expirationDate);
+			timeToExpiration = Duration.between(InstantHelper.get(), expirationInstant);
 		}
 		return timeToExpiration;
 	}
@@ -117,12 +128,12 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 
 	@Override
 	public int compareTo(@NotNull InboxElement o) {
-		return - this.incomingDate.compareTo(o.incomingDate);
+		return - this.incomingInstant.compareTo(o.incomingInstant);
 	}
 
 	@Override
 	public String toString() {
-		return String.format("{uuid=%s, name=%s, arrival=%s}", uuid, name, DateHelper.dateTimeToDisplayString(Date.from(incomingDate)));
+		return String.format("{uuid=%s, name=%s, arrival=%s}", uuid, name, DateHelper.dateTimeToDisplayString(Date.from(incomingInstant)));
 	}
 
 	@Override
