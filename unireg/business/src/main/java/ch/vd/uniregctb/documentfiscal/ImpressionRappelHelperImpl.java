@@ -10,7 +10,6 @@ import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.editique.unireg.CTypeInfoDocument;
 import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
 import ch.vd.editique.unireg.FichierImpression;
-import ch.vd.editique.unireg.STypeLettreRappel;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -38,7 +37,7 @@ public class ImpressionRappelHelperImpl extends EditiqueAbstractHelperImpl imple
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, lettre.getDateRappel(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
-			final FichierImpression.Document.LettreRappel rappel = new FichierImpression.Document.LettreRappel(STypeLettreRappel.LETTRE_BIENVENUE);
+			final FichierImpression.Document.LettreRappel rappel = new FichierImpression.Document.LettreRappel(ImpressionLettreBienvenueHelperImpl.mapType(lettre.getType()));
 			final FichierImpression.Document document = new FichierImpression.Document();
 			document.setInfoDocument(infoDocument);
 			document.setInfoArchivage(infoArchivage);
