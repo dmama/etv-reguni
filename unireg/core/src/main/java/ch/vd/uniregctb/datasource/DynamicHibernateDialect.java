@@ -13,6 +13,7 @@ public class DynamicHibernateDialect implements FactoryBean, InitializingBean {
 
 	private Class<?> oracleDialectClass;
 	private Class<?> postgresqlDialectClass;
+	private Class<?> h2DialectClass;
 	private Dialect instance;
 
 	@Override
@@ -39,6 +40,9 @@ public class DynamicHibernateDialect implements FactoryBean, InitializingBean {
 		else if (jdbcProfile.equalsIgnoreCase("postgresql")) {
 			instance = (Dialect) postgresqlDialectClass.newInstance();
 		}
+		else if (jdbcProfile.equalsIgnoreCase("h2")) {
+			instance = (Dialect) h2DialectClass.newInstance();
+		}
 		else {
 			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + ']');
 		}
@@ -57,5 +61,9 @@ public class DynamicHibernateDialect implements FactoryBean, InitializingBean {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPostgresqlDialectClass(Class<?> postgresqlDialectClass) {
 		this.postgresqlDialectClass = postgresqlDialectClass;
+	}
+
+	public void setH2DialectClass(Class<?> h2DialectClass) {
+		this.h2DialectClass = h2DialectClass;
 	}
 }

@@ -25,6 +25,11 @@ public class DynamicDataSource implements FactoryBean<XADataSource>, Initializin
 	private String postgresqlUsername;
 	private String postgresqlPassword;
 
+	private String h2DataSourceClassName;
+	private String h2Url;
+	private String h2Username;
+	private String h2Password;
+
 	private XADataSource instance;
 
 	@Override
@@ -55,6 +60,12 @@ public class DynamicDataSource implements FactoryBean<XADataSource>, Initializin
 			final Class<? extends XADataSource> clazz = (Class<? extends XADataSource>) Class.forName(postgresqlDataSourceClassName);
 			final XADataSource ds = clazz.newInstance();
 			setConnectionProperties(ds, "setUrl", postgresqlUrl, "setUser", postgresqlUsername, "setPassword", postgresqlPassword);
+			instance = ds;
+		}
+		else if (jdbcProfile.equalsIgnoreCase("h2")) {
+			final Class<? extends XADataSource> clazz = (Class<? extends XADataSource>) Class.forName(h2DataSourceClassName);
+			final XADataSource ds = clazz.newInstance();
+			setConnectionProperties(ds, "setUrl", h2Url, "setUser", h2Username, "setPassword", h2Password);
 			instance = ds;
 		}
 		else {
@@ -118,5 +129,21 @@ public class DynamicDataSource implements FactoryBean<XADataSource>, Initializin
 
 	public void setPostgresqlPassword(String postgresqlPassword) {
 		this.postgresqlPassword = postgresqlPassword;
+	}
+
+	public void setH2DataSourceClassName(String h2DataSourceClassName) {
+		this.h2DataSourceClassName = h2DataSourceClassName;
+	}
+
+	public void setH2Url(String h2Url) {
+		this.h2Url = h2Url;
+	}
+
+	public void setH2Username(String h2Username) {
+		this.h2Username = h2Username;
+	}
+
+	public void setH2Password(String h2Password) {
+		this.h2Password = h2Password;
 	}
 }

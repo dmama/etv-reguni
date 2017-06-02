@@ -12,6 +12,7 @@ public class DynamicString implements FactoryBean, InitializingBean {
 
 	private String oracleProperty;
 	private String postgresqlProperty;
+	private String h2Property;
 
 	private String instance;
 
@@ -39,6 +40,9 @@ public class DynamicString implements FactoryBean, InitializingBean {
 		else if (jdbcProfile.equalsIgnoreCase("postgresql")) {
 			instance = postgresqlProperty;
 		}
+		else if (jdbcProfile.equalsIgnoreCase("h2")) {
+			instance = h2Property;
+		}
 		else {
 			throw new RuntimeException("Type de profile jdbc inconnu = [" + jdbcProfile + ']');
 		}
@@ -57,5 +61,9 @@ public class DynamicString implements FactoryBean, InitializingBean {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPostgresqlProperty(String postgresqlProperty) {
 		this.postgresqlProperty = postgresqlProperty;
+	}
+
+	public void setH2Property(String h2Property) {
+		this.h2Property = h2Property;
 	}
 }

@@ -581,6 +581,17 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		<profile>
+			<id>h2</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<version>${h2.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<!-- =================== Environnement profiles -->
 		
@@ -684,7 +695,12 @@
 		<postgresql.jdbc.dataSourceClassName>org.postgresql.xa.PGXADataSource</postgresql.jdbc.dataSourceClassName>
 		<postgresql.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.PostgreSQL83Dialect</postgresql.hibernate.dialect>
 		<postgresql.hibernate.query.substitutions/>
-		
+
+		<h2.version>1.4.195</h2.version>
+		<h2.jdbc.dataSourceClassName>org.h2.jdbcx.JdbcDataSource</h2.jdbc.dataSourceClassName>
+		<h2.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar</h2.hibernate.dialect>
+		<h2.hibernate.query.substitutions>true 1, false 0</h2.hibernate.query.substitutions>
+
 		<dbunit.version>2.2.3</dbunit.version>
 		<dbunit.dataTypeFactoryName>org.dbunit.dataset.datatype.DefaultDataTypeFactory</dbunit.dataTypeFactoryName>
 		<dbunit.operation.type>CLEAN_INSERT</dbunit.operation.type>

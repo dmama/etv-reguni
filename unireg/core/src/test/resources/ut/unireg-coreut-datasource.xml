@@ -72,6 +72,10 @@
 		<property name="postgresqlUrl" value="${testprop.postgresql.jdbc.url}" />
 		<property name="postgresqlUsername" value="${testprop.postgresql.jdbc.username}" />
 		<property name="postgresqlPassword" value="${testprop.postgresql.jdbc.password}" />
+		<property name="h2DataSourceClassName" value="${h2.jdbc.dataSourceClassName}"/>
+		<property name="h2Url" value="${testprop.h2.jdbc.url}" />
+		<property name="h2Username" value="${testprop.h2.jdbc.username}" />
+		<property name="h2Password" value="${testprop.h2.jdbc.password}" />
 	</bean>
 
 	<bean id="realDataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">
@@ -93,18 +97,21 @@
 		<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
 		<property name="oracleDialectClass" value="${oracle.hibernate.dialect}" />
 		<property name="postgresqlDialectClass" value="${postgresql.hibernate.dialect}" />
+		<property name="h2DialectClass" value="${h2.hibernate.dialect}" />
 	</bean>
 
 	<bean id="hibernateDialectClassName" class="ch.vd.uniregctb.datasource.DynamicString">
 		<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
 		<property name="oracleProperty" value="${oracle.hibernate.dialect}" />
 		<property name="postgresqlProperty" value="${postgresql.hibernate.dialect}" />
+		<property name="h2Property" value="${h2.hibernate.dialect}" />
 	</bean>
 
 	<bean id="hibernateQuerySubstitutions" class="ch.vd.uniregctb.datasource.DynamicString">
 		<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
 		<property name="oracleProperty" value="${oracle.hibernate.query.substitutions}" />
 		<property name="postgresqlProperty" value="${postgresql.hibernate.query.substitutions}" />
+		<property name="h2Property" value="${h2.hibernate.query.substitutions}" />
 	</bean>
 
 	<!-- hibernateProperties specifiques à cette datasource. -->

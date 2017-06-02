@@ -24,6 +24,11 @@ testprop.postgresql.jdbc.port=5432
 testprop.postgresql.jdbc.instance=${testprop.jdbc.username}
 testprop.postgresql.jdbc.url=jdbc:postgresql://${testprop.postgresql.jdbc.server}/${testprop.postgresql.jdbc.instance}
 
+# h2
+testprop.h2.jdbc.username=sa
+testprop.h2.jdbc.password=
+testprop.h2.jdbc.url=jdbc:h2:mem:test;MODE=Oracle;DB_CLOSE_ON_EXIT=FALSE
+
 # CEDM/CIIA1 (Devel)
 testprop.host-interfaces.url=t3://ssv0213v:51330
 testprop.host-interfaces.username=
