@@ -676,12 +676,12 @@
 
 		<!-- Database settings -->
 		<oracle.version>12.1.0.2.0</oracle.version>
-		<oracle.jdbc.driverClassName>oracle.jdbc.OracleDriver</oracle.jdbc.driverClassName>
+		<oracle.jdbc.dataSourceClassName>oracle.jdbc.xa.client.OracleXADataSource</oracle.jdbc.dataSourceClassName>
 		<oracle.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar</oracle.hibernate.dialect>
 		<oracle.hibernate.query.substitutions>true 1, false 0</oracle.hibernate.query.substitutions>
 
 		<postgresql.version>42.1.1</postgresql.version>
-		<postgresql.jdbc.driverClassName>org.postgresql.Driver</postgresql.jdbc.driverClassName>
+		<postgresql.jdbc.dataSourceClassName>org.postgresql.xa.PGXADataSource</postgresql.jdbc.dataSourceClassName>
 		<postgresql.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.PostgreSQL83Dialect</postgresql.hibernate.dialect>
 		<postgresql.hibernate.query.substitutions/>
 		

@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.datasource;
 
 import javax.sql.XADataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-import oracle.jdbc.xa.client.OracleXADataSource;
-import org.postgresql.xa.PGXADataSource;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -15,12 +15,12 @@ public class DynamicDataSource implements FactoryBean<XADataSource>, Initializin
 
 	private String jdbcProfile;
 
-	private String oracleDriverClassName;
+	private String oracleDataSourceClassName;
 	private String oracleUrl;
 	private String oracleUsername;
 	private String oraclePassword;
 
-	private String postgresqlDriverClassName;
+	private String postgresqlDataSourceClassName;
 	private String postgresqlUrl;
 	private String postgresqlUsername;
 	private String postgresqlPassword;
@@ -46,17 +46,15 @@ public class DynamicDataSource implements FactoryBean<XADataSource>, Initializin
 	public void afterPropertiesSet() throws Exception {
 
 		if (jdbcProfile.equalsIgnoreCase("oracle")) {
-			final OracleXADataSource ds = new OracleXADataSource();
-			ds.setURL(oracleUrl);
-			ds.setUser(oracleUsername);
-			ds.setPassword(oraclePassword);
+			final Class<? extends XADataSource> clazz = (Class<? extends XADataSource>) Class.forName(oracleDataSourceClassName);
+			final XADataSource ds = clazz.newInstance();
+			setConnectionProperties(ds, "setURL", oracleUrl, "setUser", oracleUsername, "setPassword", oraclePassword);
 			instance = ds;
 		}
 		else if (jdbcProfile.equalsIgnoreCase("postgresql")) {
-			final PGXADataSource ds = new PGXADataSource();
-			ds.setUrl(postgresqlUrl);
-			ds.setUser(postgresqlUsername);
-			ds.setPassword(postgresqlPassword);
+			final Class<? extends XADataSource> clazz = (Class<? extends XADataSource>) Class.forName(postgresqlDataSourceClassName);
+			final XADataSource ds = clazz.newInstance();
+			setConnectionProperties(ds, "setUrl", postgresqlUrl, "setUser", postgresqlUsername, "setPassword", postgresqlPassword);
 			instance = ds;
 		}
 		else {
@@ -68,6 +66,17 @@ public class DynamicDataSource implements FactoryBean<XADataSource>, Initializin
 		}
 	}
 
+	private static void setConnectionProperties(XADataSource dataSource, String urlSetterName, String url, String userSetterName, String user, String passwordSetterName, String password) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		invokeSetter(dataSource, urlSetterName, String.class, url);
+		invokeSetter(dataSource, userSetterName, String.class, user);
+		invokeSetter(dataSource, passwordSetterName, String.class, password);
+	}
+
+	private static <T> void invokeSetter(Object target, String setterName, Class<T> attributeType, T attributeValue) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		final Method method = target.getClass().getMethod(setterName, attributeType);
+		method.invoke(target, attributeValue);
+	}
+
 	@Override
 	public void destroy() throws Exception {
 		if (instance instanceof DisposableBean) {
@@ -75,47 +84,38 @@ public class DynamicDataSource implements FactoryBean<XADataSource>, Initializin
 		}
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setJdbcProfile(String jdbcProfile) {
 		this.jdbcProfile = jdbcProfile;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setOracleDriverClassName(String oracleDriverClassName) {
-		this.oracleDriverClassName = oracleDriverClassName;
+	public void setOracleDataSourceClassName(String oracleDataSourceClassName) {
+		this.oracleDataSourceClassName = oracleDataSourceClassName;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setOracleUrl(String oracleUrl) {
 		this.oracleUrl = oracleUrl;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setOracleUsername(String oracleUsername) {
 		this.oracleUsername = oracleUsername;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setOraclePassword(String oraclePassword) {
 		this.oraclePassword = oraclePassword;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setPostgresqlDriverClassName(String postgresqlDriverClassName) {
-		this.postgresqlDriverClassName = postgresqlDriverClassName;
+	public void setPostgresqlDataSourceClassName(String postgresqlDataSourceClassName) {
+		this.postgresqlDataSourceClassName = postgresqlDataSourceClassName;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPostgresqlUrl(String postgresqlUrl) {
 		this.postgresqlUrl = postgresqlUrl;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPostgresqlUsername(String postgresqlUsername) {
 		this.postgresqlUsername = postgresqlUsername;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPostgresqlPassword(String postgresqlPassword) {
 		this.postgresqlPassword = postgresqlPassword;
 	}

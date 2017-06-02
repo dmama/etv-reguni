@@ -64,11 +64,11 @@
 
 	<bean id="xaDataSource" class="ch.vd.uniregctb.datasource.DynamicDataSource">
 		<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
-		<property name="oracleDriverClassName" value="${oracle.jdbc.driverClassName}" />
+		<property name="oracleDataSourceClassName" value="${oracle.jdbc.dataSourceClassName}"/>
 		<property name="oracleUrl" value="${testprop.oracle.jdbc.url}" />
 		<property name="oracleUsername" value="${testprop.oracle.jdbc.username}" />
 		<property name="oraclePassword" value="${testprop.oracle.jdbc.password}" />
-		<property name="postgresqlDriverClassName" value="${postgresql.jdbc.driverClassName}" />
+		<property name="postgresqlDataSourceClassName" value="${postgresql.jdbc.dataSourceClassName}"/>
 		<property name="postgresqlUrl" value="${testprop.postgresql.jdbc.url}" />
 		<property name="postgresqlUsername" value="${testprop.postgresql.jdbc.username}" />
 		<property name="postgresqlPassword" value="${testprop.postgresql.jdbc.password}" />
