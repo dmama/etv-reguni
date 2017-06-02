@@ -71,7 +71,7 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperI
 	}
 
 
-	private static STypeLettreBienvenue mapType(TypeLettreBienvenue type) {
+	static STypeLettreBienvenue mapType(TypeLettreBienvenue type) {
 		switch (type) {
 		case APM_VD_NON_RC:
 			return STypeLettreBienvenue.APM;
