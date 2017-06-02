@@ -236,7 +236,7 @@
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="typeLettre" type="STypeLettreRappel"/>
+						<xs:element name="typeLettre" type="STypeLettreBienvenue"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1032,11 +1032,6 @@ U1P8ADASROUTE
 			<xs:enumeration value="HCHSEtablissementStableVD"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="STypeLettreRappel">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="LettreBienvenue"/>
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:simpleType name="STypeReferenceAnnexeDI">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="A01a"/>
@@ -1069,7 +1064,7 @@ U1P8ADASROUTE
 	</xs:simpleType>
 	<xs:simpleType name="STypeVersionXSD">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="16.9"/>
+			<xs:enumeration value="16.10"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
