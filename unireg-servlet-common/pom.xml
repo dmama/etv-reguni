@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-servlet-common</artifactId>
 	<packaging>jar</packaging>
-	<version>1.5</version>
+	<version>1.6-SNAPSHOT</version>
 
 	<name>Unireg - Servlet Common</name>
 	<description>Unireg - Classes communes aux applications Unireg pour les servlets web</description>
@@ -58,12 +58,13 @@
 				<version>2.0.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.1</version>
 				<executions>
 					<execution>
 						<goals>
@@ -93,7 +94,7 @@
 	
 	<properties>
 		<!-- Application settings -->
-		<copyright.year>2015</copyright.year>
+		<copyright.year>2017</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<log4j.version>1.2.17</log4j.version>
