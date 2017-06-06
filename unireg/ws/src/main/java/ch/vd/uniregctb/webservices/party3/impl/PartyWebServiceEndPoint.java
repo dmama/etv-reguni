@@ -6,7 +6,6 @@ import javax.jws.WebService;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
-import java.security.Principal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
@@ -816,7 +816,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	private String getBasicAuthenticationUser() {
 		final MessageContext ctx = (context == null ? null : context.getMessageContext());
 		final HttpServletRequest request = (ctx == null ? null : (HttpServletRequest) ctx.get(AbstractHTTPDestination.HTTP_REQUEST));
-		final Principal userPrincipal = (request == null ? null : request.getUserPrincipal());
-		return (userPrincipal == null ? "n/a" : userPrincipal.getName());
+		return AuthenticatedUserHelper.getAuthenticatedUser(request);
 	}
 }

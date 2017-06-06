@@ -3,7 +3,6 @@ package ch.vd.uniregctb.webservices.common;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.security.Principal;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -36,14 +36,6 @@ public abstract class WebServiceHelper {
 	private static final String NULL = "null";
 
 	/**
-	 * @return le nom de l'utilisateur utilisé pour se connecter au web-service en mode <i>basic authentication</i>; ou "n/a" si cette information n'existe pas.
-	 */
-	public static String getBasicAuthenticationUser(HttpServletRequest request) {
-		final Principal userPrincipal = (request == null ? null : request.getUserPrincipal());
-		return (userPrincipal == null ? "n/a" : userPrincipal.getName());
-	}
-
-	/**
 	 * Utilisé pour le log d'un appel web-service
 	 * @param accessLogger le logger dans lequel (au niveau INFO) on enverra les informations de l'appel
 	 * @param request requête HTTP entrante (pour y récupérer l'éventuelle donnée d'authentification)
@@ -57,7 +49,7 @@ public abstract class WebServiceHelper {
 	 */
 	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Supplier<String> params, Duration duration, int load, @Nullable String contentType, @Nullable Response.Status status, @Nullable Integer nbItems, @Nullable Throwable t) {
 		if (accessLogger.isInfoEnabled()) {
-			final String user = getBasicAuthenticationUser(request);
+			final String user = AuthenticatedUserHelper.getAuthenticatedUser(request);
 			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
 			final String statusString = (status == null ? StringUtils.EMPTY : String.format(" status='%d %s'", status.getStatusCode(), status.getReasonPhrase()));
 			final String itemString = (nbItems == null ? StringUtils.EMPTY : String.format(" => %d item(s)", nbItems));

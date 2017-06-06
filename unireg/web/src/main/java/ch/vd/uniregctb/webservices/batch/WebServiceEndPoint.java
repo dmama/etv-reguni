@@ -6,7 +6,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.security.Principal;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +31,7 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.document.Document;
 import ch.vd.uniregctb.document.DocumentService;
@@ -90,17 +90,12 @@ public class WebServiceEndPoint implements WebService {
 			final String statusString = (status == null ? StringUtils.EMPTY : String.format(", status='%d %s'", status.getStatusCode(), status.getReasonPhrase()));
 			final Logger logger = getLogger(request);
 			logger.info(String.format("[%s] (%d ms) %s%s",
-			                          getBasicAuthenticationUser(request),
+			                          AuthenticatedUserHelper.getAuthenticatedUser(request),
 			                          TimeUnit.NANOSECONDS.toMillis(end - start),
 			                          getURL(request),
 			                          statusString));
 		}
 		return response;
-	}
-
-	private static String getBasicAuthenticationUser(HttpServletRequest request) {
-		final Principal principal = request.getUserPrincipal();
-		return principal == null ? "n/a" : principal.getName();
 	}
 
 	private static String getURL(HttpServletRequest request) {

@@ -9,7 +9,6 @@ import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
-import java.security.Principal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -21,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.servlet.security.AuthenticatedUserHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.security.DroitAccesDAO;
@@ -168,8 +168,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, DetailedLoadM
 	private String getBasicAuthenticationUser() {
 		final MessageContext ctx = (context == null ? null : context.getMessageContext());
 		final HttpServletRequest request = (ctx == null ? null : (HttpServletRequest) ctx.get(AbstractHTTPDestination.HTTP_REQUEST));
-		final Principal userPrincipal = (request == null ? null : request.getUserPrincipal());
-		return (userPrincipal == null ? "n/a" : userPrincipal.getName());
+		return AuthenticatedUserHelper.getAuthenticatedUser(request);
 	}
 
 	public void setDao(DroitAccesDAO dao) {
