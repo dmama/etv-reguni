@@ -326,9 +326,6 @@
 
 	<bean id="impressionFourreNeutreHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.fourreNeutre.ImpressionFourreNeutreHelperImpl"/>
 
-	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
-	</bean>
-
 	<bean id="impressionLRHelper" parent="editiqueAbstractLegacyHelper" class="ch.vd.uniregctb.declaration.source.ImpressionListeRecapHelperImpl">
 		<property name="bvrPlusClient" ref="bvrPlusClient" />
 	</bean>

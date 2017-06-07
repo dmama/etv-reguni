@@ -37,7 +37,6 @@ import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClient;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientException;
-import ch.vd.uniregctb.common.JvmVersionHelper;
 
 /**
  * @author Baba NGOM
@@ -63,10 +62,6 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 		this.client = client;
 	}
 
-
-	public ServiceInfrastructureHostInterfacesRest() {
-		JvmVersionHelper.checkJvmWrtHostInterfaces();
-	}
 
 	/**
 	 * {@inheritDoc}

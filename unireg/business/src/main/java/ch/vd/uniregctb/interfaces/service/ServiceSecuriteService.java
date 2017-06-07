@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.interfaces.service;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
-import ch.vd.securite.service.SecuriteException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeUtilisateur;
 import ch.vd.unireg.interfaces.infra.data.TypeCollectivite;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
@@ -19,10 +17,6 @@ public interface ServiceSecuriteService {
 	 * @param visaOperateur
 	 *            le visa de l'opérateur.
 	 * @return la liste des collectivités administrative de l'opérateur.
-	 * @throws SecuriteException
-	 *             si un problème métier survient lors de l'invocation du service.
-	 * @throws RemoteException
-	 *             si un problème technique survient durant l'invocation du service.
 	 */
 	List<CollectiviteAdministrativeUtilisateur> getCollectivitesUtilisateur(String visaOperateur);
 
@@ -34,10 +28,6 @@ public interface ServiceSecuriteService {
 	 * @param codeCollectivite
 	 *            le code de la collectivité administrative.
 	 * @return le profil que possède un opérateur pour une collectivité administrative.
-	 * @throws SecuriteException
-	 *             si un problème métier survient lors de l'invocation du service.
-	 * @throws RemoteException
-	 *             si un problème technique survient durant l'invocation du service.
 	 */
 	IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite);
 

@@ -29,29 +29,8 @@ testprop.h2.jdbc.username=sa
 testprop.h2.jdbc.password=
 testprop.h2.jdbc.url=jdbc:h2:mem:test;MODE=Oracle;DB_CLOSE_ON_EXIT=FALSE
 
-# CEDM/CIIA1 (Devel)
-testprop.host-interfaces.url=t3://ssv0213v:51330
-testprop.host-interfaces.username=
-testprop.host-interfaces.password=
-
-# CJVZ/CIIV1 (Validation)
-#testprop.host-interfaces.url=t3://ssv0214v:31330
-#testprop.host-interfaces.username=
-#testprop.host-interfaces.password=
-
-# CFTZ/CIIT1 (Formation)
-#testprop.host-interfaces.url=t3://solve61v:63252
-#testprop.host-interfaces.username=
-#testprop.host-interfaces.password=
-
-# CMDZ/CIIA2 (Preproduction)
-#testprop.host-interfaces.url=t3://solve61v:63226
-#testprop.host-interfaces.username=
-#testprop.host-interfaces.password=
-
 #Service Rest host-interfaces
 testprop.host-interfaces.webservice.url=http://int-hostinterfaces-ws.etat-de-vaud.ch/fiscalite/int-hostinterfaces/rest
-testprop.host-interfaces.webservice.mode.rest=true
 testprop.host-interfaces.webservice.username=gvd0unireg
 testprop.host-interfaces.webservice.password=Welc0me_
 

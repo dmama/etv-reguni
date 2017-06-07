@@ -4,8 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.securite.model.Procedure;
-import ch.vd.securite.model.ProfilOperateur;
+import ch.vd.securite.model.rest.ProfilOperateur;
 import ch.vd.uniregctb.security.IfoSecProcedure;
 import ch.vd.uniregctb.security.IfoSecProfil;
 
@@ -24,16 +23,6 @@ public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
 	public IfoSecProfilImpl() {
 	}
 
-	public IfoSecProfilImpl(String imprimante, String nom, String noTelephone, String prenom, List<IfoSecProcedure> procedures, String titre, String visaOperateur) {
-		this.imprimante = imprimante;
-		this.nom = nom;
-		this.noTelephone = noTelephone;
-		this.prenom = prenom;
-		this.procedures = procedures;
-		this.titre = titre;
-		this.visaOperateur = visaOperateur;
-	}
-
 	public IfoSecProfilImpl(ProfilOperateur profile) {
 		this.imprimante = profile.getImprimante();
 		this.nom = profile.getNom();
@@ -44,34 +33,13 @@ public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
 		this.visaOperateur = profile.getVisaOperateur();
 	}
 
-	public IfoSecProfilImpl(ch.vd.securite.model.rest.ProfilOperateur profile) {
-		this.imprimante = profile.getImprimante();
-		this.nom = profile.getNom();
-		this.noTelephone = profile.getNoTelephone();
-		this.prenom = profile.getPrenom();
-		this.procedures = initProcedures(profile.getProcedures());
-		this.titre = profile.getTitre();
-		this.visaOperateur = profile.getVisaOperateur();
-	}
-
-	private List<IfoSecProcedure> initProcedures(ch.vd.securite.model.rest.ProfilOperateur.Procedures procedures) {
+	private List<IfoSecProcedure> initProcedures(ProfilOperateur.Procedures procedures) {
 		if (procedures == null) {
 			return null;
 		}
 		final List<IfoSecProcedure> list = new ArrayList<>();
 		for (ch.vd.securite.model.rest.Procedure p : procedures.getProcedure()) {
 			list.add(IfoSecProcedureImpl.get(p));
-		}
-		return list;
-	}
-
-	private static List<IfoSecProcedure> initProcedures(List<?> procedures) {
-		if (procedures == null) {
-			return null;
-		}
-		final List<IfoSecProcedure> list = new ArrayList<>();
-		for (Object p : procedures) {
-			list.add(IfoSecProcedureImpl.get((Procedure) p));
 		}
 		return list;
 	}
@@ -140,14 +108,6 @@ public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
 	}
 
 	public static IfoSecProfil get(ProfilOperateur profile) {
-		if (profile == null) {
-		return null;
-		}
-
-		return new IfoSecProfilImpl(profile);
-	}
-
-	public static IfoSecProfil get(ch.vd.securite.model.rest.ProfilOperateur profile) {
 		if (profile == null) {
 			return null;
 		}

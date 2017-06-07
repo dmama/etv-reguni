@@ -5,10 +5,9 @@ import java.io.Serializable;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.infrastructure.model.EnumCanton;
 import ch.vd.infrastructure.model.rest.CommuneSimple;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.uniregctb.common.XmlUtils;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
@@ -27,23 +26,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	private final Integer codeDistrict;
 	private final Integer codeRegion;
 
-
-
-	public static CommuneImpl get(ch.vd.infrastructure.model.Commune target) {
-		if (target == null) {
-			return null;
-		}
-		return new CommuneImpl(target);
-	}
-
 	public static CommuneImpl get(CommuneSimple target) {
-		if (target == null) {
-			return null;
-		}
-		return new CommuneImpl(target);
-	}
-
-	public static CommuneImpl get(ch.vd.infrastructure.model.CommuneSimple target) {
 		if (target == null) {
 			return null;
 		}
@@ -63,33 +46,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.dateFin = ch.vd.registre.base.xml.XmlUtils.cal2regdate(target.getDateFinValidite());
 		this.sigleCanton = target.getSigleCanton();
 		this.noOfsCommuneMere = target.getNumTechMere();
-		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
-		this.fraction = target.isFraction();
-		this.principale = target.isPrincipale();
-		this.codeDistrict = null;
-		this.codeRegion = null;
-	}
-
-	protected CommuneImpl(ch.vd.infrastructure.model.CommuneSimple target) {
-		super((target.isFraction() ? target.getNoTechnique() : target.getNoOFS()), target.getNomMinuscule(), target.getNomMinuscule(), target.getSigleOFS());
-		this.dateDebut = RegDateHelper.get(target.getDateDebutValidite());
-		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
-		this.sigleCanton = target.getSigleCanton();
-		this.noOfsCommuneMere = target.getNumTechMere();
-		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
-		this.fraction = target.isFraction();
-		this.principale = target.isPrincipale();
-		this.codeDistrict = null;
-		this.codeRegion = null;
-	}
-
-	protected CommuneImpl(ch.vd.infrastructure.model.Commune target) {
-		super((target.isFraction() ? target.getNoTechnique() : target.getNoOFS()), target.getNomMinuscule(), target.getNomMinuscule(), target.getSigleOFS());
-		this.dateDebut = RegDateHelper.get(target.getDateDebutValidite());
-		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
-		this.sigleCanton = target.getSigleCanton();
-		this.noOfsCommuneMere = target.getNumTechMere();
-		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
+		this.vaudoise = ServiceInfrastructureRaw.SIGLE_CANTON_VD.equals(sigleCanton);
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
 		this.codeDistrict = null;
@@ -102,7 +59,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.dateFin = XmlUtils.xmlcal2regdate(target.getDateFinValidite());
 		this.sigleCanton = target.getSigleCanton();
 		this.noOfsCommuneMere = target.isEstUneFractionDeCommune() ? link2OfsId(target.getCommuneFaitiereLink()) : -1;
-		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
+		this.vaudoise = ServiceInfrastructureRaw.SIGLE_CANTON_VD.equals(sigleCanton);
 		this.fraction = target.isEstUneFractionDeCommune();
 		this.principale = target.isEstUneCommuneFaitiere();
 		this.codeDistrict = link2OfsId(target.getDistrictFiscalLink());

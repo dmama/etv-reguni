@@ -22,29 +22,11 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	private final String codeIso3;
 	private final TypeAffranchissement typeAffranchissement;
 
-	public static PaysImpl get(ch.vd.infrastructure.model.Pays target) {
-		if (target == null) {
-			return null;
-		}
-		return new PaysImpl(target);
-	}
-
 	public static Pays get(ch.vd.evd0007.v1.Country target) {
 		if (target == null) {
 			return null;
 		}
 		return new PaysImpl(target.getCountry(), target.getCountryAddOn(), target.getValidityDates());
-	}
-
-	private PaysImpl(ch.vd.infrastructure.model.Pays target) {
-		super(target);
-		this.valide = true; // tous les pays retournés par host-interfaces sont valides
-		this.validityRange = ETERNITY;  // tous les pays retournés par host-interfaces sont valides
-		this.etatSouverain = true; // cette information n'est pas disponible dans host-interface
-		this.ofsEtatSouverainParent = null; // cette information n'est pas disponible dans host-interface
-		this.codeIso2 = null; // cette information n'est pas disponible dans host-interface
-		this.codeIso3 = null; // cette information n'est pas disponible dans host-interface
-		this.typeAffranchissement = null;
 	}
 
 	private static DateRange buildValidityRangeBasedOnFlagAndDateOfChange(ch.ech.ech0072.v1.Country target) {

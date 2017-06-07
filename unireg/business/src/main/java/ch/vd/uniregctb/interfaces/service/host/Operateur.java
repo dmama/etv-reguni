@@ -11,22 +11,6 @@ public class Operateur implements Serializable {
 	private String code;
 
 
-	public static Operateur get(ch.vd.securite.model.Operateur o){
-		if (o == null) {
-			return null;
-		}
-
-		final Operateur op= new Operateur();
-		op.setNom(o.getNom());
-		op.setPrenom(o.getPrenom());
-		op.setEmail(o.getEmail());
-		op.setIndividuNoTechnique(o.getIndividuNoTechnique());
-		op.setCode(o.getCode());
-
-
-		return op;
-	}
-
 	public static Operateur get(ch.vd.securite.model.rest.Operateur o){
 		if (o == null) {
 			return null;

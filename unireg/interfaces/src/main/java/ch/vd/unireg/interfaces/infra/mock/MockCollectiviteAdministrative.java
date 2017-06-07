@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.infrastructure.model.EnumTypeSupportEchangeInformation;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
@@ -60,7 +59,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	private String nomCourt = null;
 	private String sigle = null;
 	private String sigleCanton = null;
-	private EnumTypeSupportEchangeInformation supportEchanAO = null;
 	private boolean isACI;
 	private boolean isOID;
 	private boolean isValide;
@@ -387,21 +385,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	 */
 	public void setSigleCanton(String sigleCanton) {
 		this.sigleCanton = sigleCanton;
-	}
-
-	/**
-	 * @return the supportEchanAO
-	 */
-	public EnumTypeSupportEchangeInformation getSupportEchanAO() {
-		return supportEchanAO;
-	}
-
-	/**
-	 * @param supportEchanAO
-	 *            the supportEchanAO to set
-	 */
-	public void setSupportEchanAO(EnumTypeSupportEchangeInformation supportEchanAO) {
-		this.supportEchanAO = supportEchanAO;
 	}
 
 	/**

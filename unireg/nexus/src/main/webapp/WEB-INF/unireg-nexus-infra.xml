@@ -2,18 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="serviceInfrastructureServiceHostEjb" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfaces">
-		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
-	</bean>
-
 	<bean id="serviceInfrastructureServiceHostRest" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesRest">
 		<property name="client" ref="serviceInfrastructureClient" />
-	</bean>
-
-	<bean id="serviceInfrastructureHostMarshaller" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfacesMarshaller">
-		<property name="ejbClient" ref="serviceInfrastructureServiceHostEjb"/>
-		<property name="restClient" ref="serviceInfrastructureServiceHostRest"/>
-		<property name="modeRest" value="${extprop.host-interfaces.webservice.mode.rest}"/>
 	</bean>
 
 	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
@@ -22,7 +12,7 @@
 	</bean>
 
 	<bean id="serviceInfrastructureMarshaller" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureMarshaller">
-		<property name="hostService" ref="serviceInfrastructureHostMarshaller" />
+		<property name="hostService" ref="serviceInfrastructureServiceHostRest" />
 		<property name="fidorService" ref="serviceInfrastructureFidor" />
 	</bean>
 

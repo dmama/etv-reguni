@@ -53,10 +53,6 @@
 		<level value="DEBUG" />
 	</logger>
 
-	<logger name="ch.vd.uniregctb.ejb.GentilRemoteStatelessSessionProxyFactoryBean">
-		<level value="INFO" />
-	</logger>
-
 	<logger name="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer">
 		<level value="INFO" />
 	</logger>

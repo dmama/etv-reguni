@@ -2,7 +2,7 @@ package ch.vd.uniregctb.interfaces.service.host;
 
 import java.io.Serializable;
 
-import ch.vd.securite.model.Procedure;
+import ch.vd.securite.model.rest.Procedure;
 import ch.vd.uniregctb.security.IfoSecProcedure;
 
 public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
@@ -18,13 +18,6 @@ public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
 	}
 
 	public IfoSecProcedureImpl(Procedure p) {
-		this.code = p.getCode();
-		this.codeActivite = p.getCodeActivite();
-		this.designation = p.getDesignation();
-		this.numero = p.getNumero();
-	}
-
-	public IfoSecProcedureImpl(ch.vd.securite.model.rest.Procedure p) {
 		this.code = p.getCode();
 		this.codeActivite = p.getCodeActivite();
 		this.designation = p.getDesignation();
@@ -68,13 +61,6 @@ public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
 	}
 
 	public static IfoSecProcedure get(Procedure p) {
-		if (p==null) {
-			return null;
-		}
-		return new IfoSecProcedureImpl(p);
-	}
-
-	public static IfoSecProcedure get(ch.vd.securite.model.rest.Procedure p) {
 		if (p==null) {
 			return null;
 		}

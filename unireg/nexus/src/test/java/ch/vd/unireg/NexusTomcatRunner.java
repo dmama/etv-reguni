@@ -56,10 +56,6 @@ public class NexusTomcatRunner {
 		final String credentialsPath = String.format("%s/%s/config/credentials.properties", appDir, System.getProperty("unireg-nexus.appname"));
 		System.setProperty("unireg-nexus.credentials.path", credentialsPath);
 
-		System.setProperty("host-interfaces.version-short", "1.9");
-		System.setProperty("host-interfaces.factory", "weblogic.jndi.WLInitialContextFactory");
-		System.setProperty("host-interfaces.ejb-proxy-class", "org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean");
-
 		/**
 		 * Paramètres:
 		 * <ul>

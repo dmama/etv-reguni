@@ -28,8 +28,6 @@
 		</property>
 		<property name="properties"
 			value="
-                | Host Interfaces URL     : ${testprop.host-interfaces.url}
-                | Host Interfaces user    : ${testprop.host-interfaces.username}
                 | Index path UT           : ${testprop.indexer.globalIndexPath}
                 | Docs repository UT      : ${testprop.documents.repository}
                 " />

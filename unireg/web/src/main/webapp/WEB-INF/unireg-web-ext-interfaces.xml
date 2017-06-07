@@ -4,36 +4,18 @@
 
 	<!-- Ce fichier définit les services d'interfaces externes; c'est-à-dire les clients de services externes à Unireg et que Unireg utilise. -->
 
-	<!-- Bean remoteJndiConnection for Host-Interfaces EJBs -->
-	<bean id="ejbJndiTemplate" class="ch.vd.uniregctb.utils.UniregJndiTemplate">
-		<property name="environment">
-			<map>
-				<entry key="java.naming.factory.initial" value="${host-interfaces.factory}" />
-				<entry key="java.naming.provider.url" value="${extprop.host-interfaces.url}"/>
-				<entry key="java.naming.security.principal" value="${extprop.host-interfaces.username}" />
-				<entry key="java.naming.security.credentials" value="${extprop.host-interfaces.password}" />
-			</map>
-		</property>
-	</bean>
-
-
 	<bean id="serviceSecuriteClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientImpl">
 		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}" />
 		<property name="username" value="${extprop.host-interfaces.webservice.username}" />
 		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
-
-	</bean>
-	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfaces">
-		<property name="serviceSecurite" ref="_serviceSecurite" />
 	</bean>
 
 	<bean id="serviceSecuriteServiceHostRest" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfacesRest">
 		<property name="client" ref="serviceSecuriteClient" />
 	</bean>
 
-
 	<bean id="serviceSecuriteServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteTracing">
-		<property name="target" ref="serviceSecuriteMarshaller" />
+		<property name="target" ref="serviceSecuriteServiceHostRest" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -43,43 +25,5 @@
 	</bean>
 
 	<alias name="serviceSecuriteClientTracing" alias="serviceSecuriteClient"/>
-
-	<!-- Bean client serviceSecurite -->
-	<bean name="_serviceSecurite" class="${host-interfaces.ejb-proxy-class}">
-		<property name="jndiName" value="ejb/ch.vd.securite.service.ServiceSecurite-${host-interfaces.version-short}"/>
-		<property name="cacheSessionBean" value="${extprop.host-interfaces.cacheSessionBean}"/>
-		<property name="resourceRef" value="false"/>
-		<property name="lookupHomeOnStartup" value="false"/>
-		<property name="refreshHomeOnConnectFailure" value="true"/>
-		<property name="businessInterface" value="ch.vd.securite.service.ServiceSecurite"/>
-		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
-	</bean>
-	<bean id="serviceSecuriteMarshaller" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteMarshaller">
-		<property name="ejbClient" ref="serviceSecuriteServiceHost" />
-		<property name="restClient" ref="serviceSecuriteServiceHostRest" />
-		<property name="modeRest" value="${extprop.host-interfaces.webservice.mode.rest}" />
-	</bean>
-
-	<!-- Bean client servicePM -->
-	<bean name="_servicePersonneMorale" class="${host-interfaces.ejb-proxy-class}">
-		<property name="jndiName" value="ejb/ch.vd.registre.pm.service.ServicePersonneMorale-${host-interfaces.version-short}"/>
-		<property name="cacheSessionBean" value="${extprop.host-interfaces.cacheSessionBean}"/>
-		<property name="resourceRef" value="false"/>
-		<property name="lookupHomeOnStartup" value="false"/>
-		<property name="refreshHomeOnConnectFailure" value="true"/>
-		<property name="businessInterface" value="ch.vd.registre.pm.service.ServicePersonneMorale"/>
-		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
-	</bean>
-
-	<!-- Bean client serviceInfrastructure -->
-	<bean name="_serviceInfrastructure" class="${host-interfaces.ejb-proxy-class}">
-		<property name="jndiName" value="ejb/ch.vd.infrastructure.service.ServiceInfrastructure-${host-interfaces.version-short}"/>
-		<property name="cacheSessionBean" value="${extprop.host-interfaces.cacheSessionBean}"/>
-		<property name="resourceRef" value="false"/>
-		<property name="lookupHomeOnStartup" value="false"/>
-		<property name="refreshHomeOnConnectFailure" value="true"/>
-		<property name="businessInterface" value="ch.vd.infrastructure.service.ServiceInfrastructure"/>
-		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
-	</bean>
 
 </beans>

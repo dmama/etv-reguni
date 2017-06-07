@@ -15,17 +15,6 @@ public class InstitutionFinanciereImpl implements InstitutionFinanciere, Seriali
 	private final String noIdentificationDTA;
 	private final String nomInstitutionFinanciere;
 
-	public InstitutionFinanciereImpl(ch.vd.registre.common.model.InstitutionFinanciere target) {
-		this.adresse1 = target.getAdresse1();
-		this.adresse2 = target.getAdresse2();
-		this.adresse3 = target.getAdresse3();
-		this.code = target.getCode();
-		this.noClearing = target.getNoClearing();
-		this.noCompte = target.getNoCompte();
-		this.noIdentificationDTA = target.getNoIdentificationDTA();
-		this.nomInstitutionFinanciere = target.getNomInstitutionFinanciere();
-	}
-
 	public InstitutionFinanciereImpl(ch.vd.infrastructure.registre.common.model.rest.InstitutionFinanciere target) {
 		this.adresse1 = target.getAdresse1();
 		this.adresse2 = target.getAdresse2();
@@ -35,13 +24,6 @@ public class InstitutionFinanciereImpl implements InstitutionFinanciere, Seriali
 		this.noCompte = target.getNoCompte();
 		this.noIdentificationDTA = target.getNoIdentificationDTA();
 		this.nomInstitutionFinanciere = target.getNomInstitutionFinanciere();
-	}
-
-	public static InstitutionFinanciere get(ch.vd.registre.common.model.InstitutionFinanciere institutionFinanciere) {
-		if (institutionFinanciere == null) {
-			return null;
-		}
-		return new InstitutionFinanciereImpl(institutionFinanciere);
 	}
 
 	@Override

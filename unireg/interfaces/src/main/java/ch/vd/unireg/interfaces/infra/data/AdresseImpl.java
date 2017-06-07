@@ -6,10 +6,8 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
@@ -40,21 +38,6 @@ public class AdresseImpl implements Adresse, Serializable {
 	private final Integer egid;
 	private final Integer ewid;
 
-
-
-	public static AdresseImpl get(ch.vd.common.model.Adresse target, ch.vd.infrastructure.service.ServiceInfrastructure serviceInfrastructure) {
-		if (target == null) {
-			return null;
-		}
-		// UNIREG-474 : si une adresse civile possède une date de fin de validité et que celle-ci est avant le 1er janvier 1900, il s'agit
-		// en fait d'une adresse annulée et il ne faut pas en tenir compte
-		final Date dateFinValidite = target.getDateFinValidite();
-		if (dateFinValidite != null && DateHelper.isNullDate(dateFinValidite)) {
-			return null;
-		}
-		return new AdresseImpl(target, serviceInfrastructure);
-	}
-
 	public static Adresse get(ch.vd.common.model.rest.AdresseImpl target, ServiceInfrastructureClient client) {
 		if (target == null) {
 			return null;
@@ -67,38 +50,6 @@ public class AdresseImpl implements Adresse, Serializable {
 		}
 		return new AdresseImpl(target, client);
 	}
-
-	private AdresseImpl(ch.vd.common.model.Adresse target, ch.vd.infrastructure.service.ServiceInfrastructure serviceInfrastructure) {
-		this.dateDebut = RegDateHelper.get(target.getDateDebutValidite());
-		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
-		this.casePostale = CasePostale.parse(target.getCasePostale());
-		this.localiteAbregeMinuscule = target.getLocaliteAbregeMinuscule();
-		this.numero = null;         // numéro de police TOUJOURS déjà concaténé dans la rue
-		this.numeroAppartement = target.getNumeroAppartement();
-		this.numeroPostal = target.getNumeroPostal();
-		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
-		this.noOfsPays = (target.getPays() == null ? ServiceInfrastructureRaw.noOfsSuisse : target.getPays().getNoOFS()); // le pays n'est pas toujours renseignée dans le base lorsqu'il s'agit de la Suisse
-		this.rue = target.getRue(); // nom de la rue TOUJOURS résolu (+ concaténation éventuelle du numéro de police)
-		this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : AdresseHelper.getNoOrdrePosteOfficiel(target.getNumeroOrdrePostal());
-		this.numeroRue = null;      // on ne veut plus de ces numéros qui viennent du host !!
-		this.titre = target.getTitre();
-		this.typeAdresse = initTypeAdresse(target.getTypeAdresse());
-
-		final CommuneImpl commune = CommuneImpl.get(target.getCommuneAdresse());
-		this.noOfsCommuneAdresse = commune == null ? null : commune.getNoOFS();
-
-		if (this.typeAdresse == TypeAdresseCivil.COURRIER || this.typeAdresse == TypeAdresseCivil.TUTEUR) {
-			// les adresses courrier (et tuteur) ne doivent pas posséder d'egid/ewid (= ça n'a pas de sens).
-			this.egid = null;
-			this.ewid = null;
-		}
-		else {
-			// [SIFISC-3460] la valeur minimale admise pour les EGID et les EWID est 1 (on teste aussi les valeurs maximales, tant qu'on y est)
-			this.egid = string2int(target.getEgid(), 1, 999999999);
-			this.ewid = string2int(target.getEwid(), 1, 999);
-		}
-	}
-
 
 	public AdresseImpl(ch.vd.common.model.rest.AdresseImpl target, ServiceInfrastructureClient client) {
 		this.dateDebut = XmlUtils.cal2regdate(target.getDateDebutValidite());
@@ -152,28 +103,6 @@ public class AdresseImpl implements Adresse, Serializable {
 			throw new IllegalArgumentException("Type d'adresse civile inconnue = [" + type + ']');
 		}
 
-	}
-
-	private static TypeAdresseCivil initTypeAdresse(EnumTypeAdresse type) {
-		if (type == null) {
-			return null;
-		}
-
-		if (type == EnumTypeAdresse.SECONDAIRE) {
-			return TypeAdresseCivil.SECONDAIRE;
-		}
-		else if (type == EnumTypeAdresse.PRINCIPALE) {
-			return TypeAdresseCivil.PRINCIPALE;
-		}
-		else if (type == EnumTypeAdresse.COURRIER) {
-			return TypeAdresseCivil.COURRIER;
-		}
-		else if (type == EnumTypeAdresse.TUTELLE) {
-			return TypeAdresseCivil.TUTEUR;
-		}
-		else {
-			throw new IllegalArgumentException("Type d'adresse civile inconnue = [" + type.getName() + ']');
-		}
 	}
 
 	private static Integer string2int(String string, int minValue, int maxValue) {

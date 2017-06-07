@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.xmlbeans.XmlObject;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -23,7 +24,6 @@ import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalSituationFamill
 import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalSituationFamilleType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.ModeImpositionEnumType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.MotifForEnumType;
-import ch.vd.infrastructure.model.impl.DateUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
@@ -150,7 +150,7 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 		final EvenementFiscalSituationFamilleDocument document = EvenementFiscalSituationFamilleDocument.Factory.newInstance();
 		final EvenementFiscalSituationFamilleType evt = document.addNewEvenementFiscalSituationFamille();
 		evt.setCodeEvenement(EvenementFiscalSituationFamilleEnumType.CHANGEMENT_SITUATION_FAMILLE);
-		evt.setDateEvenement(DateUtils.calendar(evenementSituationFamille.getDateValeur().asJavaDate()));
+		evt.setDateEvenement(DateUtils.toCalendar(evenementSituationFamille.getDateValeur().asJavaDate()));
 		evt.setNumeroTiers(String.valueOf(evenementSituationFamille.getTiers().getNumero()));
 		evt.setNumeroTechnique(evenementSituationFamille.getId());
 		return document;
@@ -296,7 +296,7 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 		final MotifForEnumType.Enum motif = mapMotif(getMotif(ff, evenementFor.getType()));
 
 		evt.setCodeEvenement(codeEvenement);
-		evt.setDateEvenement(DateUtils.calendar(evenementFor.getDateValeur().asJavaDate()));
+		evt.setDateEvenement(DateUtils.toCalendar(evenementFor.getDateValeur().asJavaDate()));
 		if (modeImposition != null) {
 			evt.setModeImposition(modeImposition);
 		}
@@ -370,13 +370,13 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 		}
 
 		evt.setCodeEvenement(codeEvenement);
-		evt.setDateEvenement(DateUtils.calendar(evenementDeclaration.getDateValeur().asJavaDate()));
+		evt.setDateEvenement(DateUtils.toCalendar(evenementDeclaration.getDateValeur().asJavaDate()));
 		evt.setNumeroTiers(String.valueOf(evenementDeclaration.getTiers().getNumero()));
 		evt.setNumeroTechnique(evenementDeclaration.getId());
 
 		final Declaration declaration = evenementDeclaration.getDeclaration();
-		evt.setDateDebutPeriode(DateUtils.calendar(declaration.getDateDebut().asJavaDate()));
-		evt.setDateFinPeriode(DateUtils.calendar(declaration.getDateFin().asJavaDate()));
+		evt.setDateDebutPeriode(DateUtils.toCalendar(declaration.getDateDebut().asJavaDate()));
+		evt.setDateFinPeriode(DateUtils.toCalendar(declaration.getDateFin().asJavaDate()));
 
 		return document;
 	}
@@ -393,13 +393,13 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 		}
 
 		evt.setCodeEvenement(codeEvenement);
-		evt.setDateEvenement(DateUtils.calendar(evenementDeclaration.getDateValeur().asJavaDate()));
+		evt.setDateEvenement(DateUtils.toCalendar(evenementDeclaration.getDateValeur().asJavaDate()));
 		evt.setNumeroTiers(String.valueOf(evenementDeclaration.getTiers().getNumero()));
 		evt.setNumeroTechnique(evenementDeclaration.getId());
 
 		final Declaration declaration = evenementDeclaration.getDeclaration();
-		evt.setDateDebutPeriode(DateUtils.calendar(declaration.getDateDebut().asJavaDate()));
-		evt.setDateFinPeriode(DateUtils.calendar(declaration.getDateFin().asJavaDate()));
+		evt.setDateDebutPeriode(DateUtils.toCalendar(declaration.getDateDebut().asJavaDate()));
+		evt.setDateFinPeriode(DateUtils.toCalendar(declaration.getDateFin().asJavaDate()));
 
 		return document;
 	}
@@ -418,8 +418,8 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 	private static EvenementFiscalFinAutoriteParentaleDocument creerEvenementFiscalFinAutoriteParentale(EvenementFiscalParente evenement) {
 		final EvenementFiscalFinAutoriteParentaleDocument document = EvenementFiscalFinAutoriteParentaleDocument.Factory.newInstance();
 		final EvenementFiscalFinAutoriteParentaleType evt = document.addNewEvenementFiscalFinAutoriteParentale();
-		evt.setDateEvenement(DateUtils.calendar(evenement.getDateValeur().asJavaDate()));
-		evt.setDateTraitement(DateUtils.calendar(DateHelper.getCurrentDate()));
+		evt.setDateEvenement(DateUtils.toCalendar(evenement.getDateValeur().asJavaDate()));
+		evt.setDateTraitement(DateUtils.toCalendar(DateHelper.getCurrentDate()));
 		evt.setNumeroTiers(String.valueOf(evenement.getTiers().getNumero()));
 		evt.setNumeroTiersEnfant(String.valueOf(evenement.getEnfant().getNumero()));
 		evt.setNumeroTechnique(evenement.getId());
@@ -429,8 +429,8 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 	private static EvenementFiscalNaissanceDocument creerEvenementFiscalNaissance(EvenementFiscalParente evenement) {
 		final EvenementFiscalNaissanceDocument document = EvenementFiscalNaissanceDocument.Factory.newInstance();
 		final EvenementFiscalNaissanceType evt = document.addNewEvenementFiscalNaissance();
-		evt.setDateEvenement(DateUtils.calendar(evenement.getDateValeur().asJavaDate()));
-		evt.setDateTraitement(DateUtils.calendar(DateHelper.getCurrentDate()));
+		evt.setDateEvenement(DateUtils.toCalendar(evenement.getDateValeur().asJavaDate()));
+		evt.setDateTraitement(DateUtils.toCalendar(DateHelper.getCurrentDate()));
 		evt.setNumeroTiers(String.valueOf(evenement.getTiers().getNumero()));
 		evt.setNumeroTiersEnfant(String.valueOf(evenement.getEnfant().getNumero()));
 		evt.setNumeroTechnique(evenement.getId());

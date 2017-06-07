@@ -2,9 +2,7 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.xml.XmlUtils;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClient;
@@ -34,18 +32,6 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 
 	private static final String IS_ACTIVE = "O";
 
-	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.CollectiviteAdministrative target, ch.vd.infrastructure.service.ServiceInfrastructure serviceInfrastructure) {
-		if (target == null) {
-			return null;
-		}
-		if (EnumTypeCollectivite.SIGLE_CIR.equals(target.getType().getEnumTypeCollectivite())) {
-			return new OfficeImpotImpl(target, serviceInfrastructure);
-		}
-		else {
-			return new CollectiviteAdministrativeImpl(target, serviceInfrastructure);
-		}
-	}
-
 	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target, ServiceInfrastructureClient client) {
 		if (target == null) {
 			return null;
@@ -59,38 +45,13 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 
 	}
 
-	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.CollectiviteAdministrative target) {
-		return get(target,null);
-	}
-
 	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target) {
 		return get(target,null);
-
 	}
 
 	protected CollectiviteAdministrativeImpl(ch.vd.infrastructure.model.rest.CollectiviteAdministrative target, ServiceInfrastructureClient client) {
 		this.adresse = AdresseImpl.get(target.getAdresse(), client);
 		this.dateFin = XmlUtils.cal2regdate(target.getDateFinValidite());
-		this.adresseEmail = target.getAdresseEmail();
-		this.noCCP = target.getNoCCP();
-		this.noColAdm = target.getNoColAdm();
-		this.noFax = target.getNoFax();
-		this.noTelephone = target.getNoTelephone();
-		this.nomComplet1 = target.getNomComplet1();
-		this.nomComplet2 = target.getNomComplet2();
-		this.nomComplet3 = target.getNomComplet3();
-		this.nomCourt = target.getNomCourt();
-		this.sigle = target.getSigle();
-		this.sigleCanton = target.getSigleCanton();
-		this.aci = target.isACI();
-		this.oid = target.isOID();
-		this.valide = target.isValide();
-		this.parDefaut = IS_ACTIVE.equals(target.getCodeActivite());
-	}
-
-	protected CollectiviteAdministrativeImpl(ch.vd.infrastructure.model.CollectiviteAdministrative target, ch.vd.infrastructure.service.ServiceInfrastructure serviceInfrastructure) {
-		this.adresse = AdresseImpl.get(target.getAdresse(), serviceInfrastructure);
-		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
 		this.adresseEmail = target.getAdresseEmail();
 		this.noCCP = target.getNoCCP();
 		this.noColAdm = target.getNoColAdm();

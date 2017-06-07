@@ -7,36 +7,6 @@
 
 	<!-- Ce fichier définit les services d'interfaces externes; c'est-à-dire les clients de services externes à Unireg et que Unireg utilise. -->
 
-	<!-- Bean remoteJndiConnection connexion base de données -->
-	<bean id="ejbJndiTemplate" class="ch.vd.uniregctb.utils.UniregJndiTemplate">
-		<property name="environment">
-			<map>
-				<entry key="java.naming.factory.initial" value="${host-interfaces.factory}" />
-				<entry key="java.naming.provider.url" value="${testprop.host-interfaces.url}"/>
-				<entry key="java.naming.security.principal" value="${testprop.host-interfaces.username}" />
-				<entry key="java.naming.security.credentials" value="${testprop.host-interfaces.password}" />
-			</map>
-		</property>
-	</bean>
-
-	<!-- Bean client serviceInfrastructure -->
-	<bean name="_serviceInfrastructure" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
-		<property name="jndiName" value="ejb/ch.vd.infrastructure.service.ServiceInfrastructure-${host-interfaces.version-short}"/>
-		<property name="resourceRef" value="false"/>
-		<property name="lookupHomeOnStartup" value="false"/>
-		<property name="businessInterface" value="ch.vd.infrastructure.service.ServiceInfrastructure"/>
-		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
-	</bean>
-
-	<!-- Bean client serviceInfrastructureFiscal -->
-	<bean name="_serviceInfrastructureFiscal" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
-		<property name="jndiName" value="ejb/ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal-${host-interfaces.version-short}"/>
-		<property name="resourceRef" value="false"/>
-		<property name="lookupHomeOnStartup" value="false"/>
-		<property name="businessInterface" value="ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal"/>
-		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
-	</bean>
-
 	<bean id="serviceSecuriteClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientImpl">
 		<property name="baseUrl" value="${testprop.host-interfaces.webservice.url}" />
 		<property name="username" value="${testprop.host-interfaces.webservice.username}" />
@@ -44,26 +14,12 @@
 
 	</bean>
 
-	<!-- Bean client serviceSecurite -->
-	<bean name="_serviceSecurite" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
-		<property name="jndiName" value="ejb/ch.vd.securite.service.ServiceSecurite-${host-interfaces.version-short}"/>
-		<property name="resourceRef" value="false"/>
-		<property name="lookupHomeOnStartup" value="false"/>
-		<property name="businessInterface" value="ch.vd.securite.service.ServiceSecurite"/>
-		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
-	</bean>
-
-	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfaces">
-		<property name="serviceSecurite" ref="_serviceSecurite" />
-	</bean>
-
 	<bean id="serviceSecuriteServiceHostRest" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfacesRest">
 		<property name="client" ref="serviceSecuriteClient" />
 	</bean>
 
-
 	<bean id="serviceSecuriteServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteTracing">
-		<property name="target" ref="serviceSecuriteMarshaller" />
+		<property name="target" ref="serviceSecuriteServiceHostRest" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -73,15 +29,6 @@
 	</bean>
 
 	<alias name="serviceSecuriteClientTracing" alias="serviceSecuriteClient"/>
-
-	<!-- Bean client servicePM -->
-	<bean name="_servicePersonneMorale" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
-		<property name="jndiName" value="ejb/ch.vd.registre.pm.service.ServicePersonneMorale-${host-interfaces.version-short}"/>
-		<property name="resourceRef" value="false"/>
-		<property name="lookupHomeOnStartup" value="false"/>
-		<property name="businessInterface" value="ch.vd.registre.pm.service.ServicePersonneMorale"/>
-		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
-	</bean>
 
 	<bean id="fidorClient" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
 		<property name="serviceUrl" value="${testprop.webservice.fidor.url}" />

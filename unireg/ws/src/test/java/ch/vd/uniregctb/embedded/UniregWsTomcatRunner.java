@@ -60,10 +60,6 @@ public class UniregWsTomcatRunner {
 		final String credentialsPath = String.format("%s/%s/config/credentials.properties", appDir, System.getProperty("unireg-ws.appname"));
 		System.setProperty("unireg-ws.credentials.path", credentialsPath);
 
-		System.setProperty("host-interfaces.version-short", "1.9");
-		System.setProperty("host-interfaces.factory", "weblogic.jndi.WLInitialContextFactory");
-		System.setProperty("host-interfaces.ejb-proxy-class", "org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean");
-
 		System.setProperty("editique.locale.sync.attente.timeout", "30");
 		System.setProperty("editique.locale.async.attente.delai", "10");
 

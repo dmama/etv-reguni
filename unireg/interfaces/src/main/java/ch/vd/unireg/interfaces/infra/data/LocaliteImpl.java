@@ -11,7 +11,6 @@ import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.fidor.XmlUtils;
 
 public class LocaliteImpl implements Localite, Serializable {
@@ -29,31 +28,11 @@ public class LocaliteImpl implements Localite, Serializable {
 	private final String nomAbrege;
 	private final String nomComplet;
 
-	public static LocaliteImpl get(ch.vd.infrastructure.model.Localite target) {
-		if (target == null) {
-			return null;
-		}
-		return new LocaliteImpl(target);
-	}
-
 	public static LocaliteImpl get(PostalLocality target, Map<Integer, List<Commune>> communesByOfsId) {
 		if (target == null) {
 			return null;
 		}
 		return new LocaliteImpl(target, communesByOfsId);
-	}
-
-	private LocaliteImpl(ch.vd.infrastructure.model.Localite target) {
-		this.commune = CommuneImpl.get(target.getCommuneLocalite());
-		this.dateDebut = null;      // les localités du mainframe sont supposées valides depuis toujours...
-		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
-		this.chiffreComplementaire = target.getChiffreComplementaire();
-		this.complementNPA = initComplementNPA(target.getComplementNPA());
-		this.npa = target.getNPA();
-		this.noCommune = target.getNoCommune();
-		this.noOrdre = target.getNoOrdre();
-		this.nomAbrege = target.getNomAbregeMinuscule();
-		this.nomComplet = target.getNomCompletMinuscule();
 	}
 
 	private LocaliteImpl(PostalLocality target, Map<Integer, List<Commune>> communesByOfsId) {

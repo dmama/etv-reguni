@@ -18,25 +18,11 @@ public class RueImpl implements Rue, Serializable {
 	private final Integer noRue;
 	private final DateRange validite;
 
-	public static RueImpl get(ch.vd.infrastructure.model.Rue target) {
-		if (target == null) {
-			return null;
-		}
-		return new RueImpl(target);
-	}
-
 	public static RueImpl get(Street target) {
 		if (target == null) {
 			return null;
 		}
 		return new RueImpl(target);
-	}
-
-	private RueImpl(ch.vd.infrastructure.model.Rue target) {
-		this.designationCourrier = target.getDesignationCourrier();
-		this.noLocalite = target.getNoLocalite();
-		this.noRue = target.getNoRue();
-		this.validite = null;
 	}
 
 	private RueImpl(Street target) {
