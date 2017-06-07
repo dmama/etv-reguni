@@ -295,7 +295,12 @@ public class AdresseRCPers implements Adresse, Serializable {
 		if (number == null && StringUtils.isBlank(text)) {
 			return null;
 		}
-		return new CasePostale(text, number);
+		if (number == null) {
+			return CasePostale.parse(text);
+		}
+		else {
+			return new CasePostale(text, number);
+		}
 	}
 
 	private static TypeAdresseCivil initTypeAdresseResidence(Residence residence) {

@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseServiceImpl;
 import ch.vd.uniregctb.common.NpaEtLocalite;
@@ -17,6 +18,7 @@ public class AdresseCivilView implements DateRange {
 	private RegDate dateFin;
 	private String complements;
 	private String rue;
+	private String casePostale;
 	private String localite;
 	private Integer paysOFS;
 	private Integer egid;
@@ -30,6 +32,10 @@ public class AdresseCivilView implements DateRange {
 		this.dateFin = adresse.getDateFin();
 		this.complements = AdresseCivileAdapter.extractComplement(adresse);
 		this.rue = extractRue(adresse);
+
+		final CasePostale casePostale = adresse.getCasePostale();
+		this.casePostale = casePostale != null ? casePostale.toString() : null;
+
 		this.localite = extractLocalite(adresse);
 		this.paysOFS = adresse.getNoOfsPays();
 		this.egid = adresse.getEgid();
@@ -92,6 +98,14 @@ public class AdresseCivilView implements DateRange {
 
 	public void setRue(String rue) {
 		this.rue = rue;
+	}
+
+	public String getCasePostale() {
+		return casePostale;
+	}
+
+	public void setCasePostale(String casePostale) {
+		this.casePostale = casePostale;
 	}
 
 	public String getLocalite() {
