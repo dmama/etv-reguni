@@ -12,18 +12,20 @@ import ch.vd.shared.batchtemplate.StatusManager;
 
 public class BatchTransactionTemplate<E> extends ch.vd.shared.batchtemplate.BatchTransactionTemplate<E> {
 
-	private static final TransactionTemplateFactory TRANSACTION_TEMPLATE_FACTORY = new TransactionTemplateFactory();
+	public BatchTransactionTemplate(Iterator<E> iterator, int totalSize, int batchSize, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager) {
+		super(iterator, totalSize, batchSize, behavior, transactionManager, statusManager);
+	}
 
 	public BatchTransactionTemplate(Iterator<E> iterator, int batchSize, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager) {
-		super(iterator, batchSize, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager);
+		super(iterator, batchSize, behavior, transactionManager, statusManager);
 	}
 
 	public BatchTransactionTemplate(Collection<E> list, int batchSize, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager) {
-		super(list, batchSize, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager);
+		super(list, batchSize, behavior, transactionManager, statusManager);
 	}
 
 	public BatchTransactionTemplate(BatchIterator<E> iterator, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager) {
-		super(iterator, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager);
+		super(iterator, behavior, transactionManager, statusManager);
 	}
 
 	@Override

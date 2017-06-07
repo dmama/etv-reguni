@@ -12,16 +12,19 @@ import ch.vd.shared.batchtemplate.StatusManager;
 
 public class ParallelBatchTransactionTemplate<T> extends ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplate<T> {
 
-	private static final ch.vd.uniregctb.common.TransactionTemplateFactory TRANSACTION_TEMPLATE_FACTORY = new ch.vd.uniregctb.common.TransactionTemplateFactory();
-
 	public ParallelBatchTransactionTemplate(List<T> elements, int batchSize, int nbThreads, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager,
 	                                        @Nullable AuthenticationInterface authenticationInterface) {
-		super(elements, batchSize, nbThreads, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager, authenticationInterface);
+		super(elements, batchSize, nbThreads, behavior, transactionManager, statusManager, authenticationInterface);
 	}
 
 	public ParallelBatchTransactionTemplate(Iterator<T> iterator, int batchSize, int nbThreads, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager,
 	                                        @Nullable AuthenticationInterface authenticationInterface) {
-		super(iterator, batchSize, nbThreads, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager, authenticationInterface);
+		super(iterator, batchSize, nbThreads, behavior, transactionManager, statusManager, authenticationInterface);
+	}
+
+	public ParallelBatchTransactionTemplate(Iterator<T> iterator, int totalSize, int batchSize, int nbThreads, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager,
+	                                        @Nullable AuthenticationInterface authenticationInterface) {
+		super(iterator, totalSize, batchSize, nbThreads, behavior, transactionManager, statusManager, authenticationInterface);
 	}
 
 	@Override

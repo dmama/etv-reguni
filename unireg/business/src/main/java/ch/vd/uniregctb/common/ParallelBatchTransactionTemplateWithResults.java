@@ -18,21 +18,19 @@ import ch.vd.shared.batchtemplate.StatusManager;
  */
 public class ParallelBatchTransactionTemplateWithResults<E, R extends BatchResults<E, R>> extends ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplateWithResults<E, R> {
 
-	private static final TransactionTemplateFactory TRANSACTION_TEMPLATE_FACTORY = new TransactionTemplateFactory();
-
 	public ParallelBatchTransactionTemplateWithResults(List<E> elements, int batchSize, int nbThreads, Behavior behavior, PlatformTransactionManager transactionManager,
 	                                                   @Nullable StatusManager statusManager, @Nullable AuthenticationInterface authenticationInterface) {
-		super(elements, batchSize, nbThreads, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager, authenticationInterface);
+		super(elements, batchSize, nbThreads, behavior, transactionManager, statusManager, authenticationInterface);
 	}
 
 	public ParallelBatchTransactionTemplateWithResults(Iterator<E> elements, int batchSize, int nbThreads, Behavior behavior, PlatformTransactionManager transactionManager,
 	                                                   @Nullable StatusManager statusManager, @Nullable AuthenticationInterface authenticationInterface) {
-		super(elements, batchSize, nbThreads, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager, authenticationInterface);
+		super(elements, batchSize, nbThreads, behavior, transactionManager, statusManager, authenticationInterface);
 	}
 
 	public ParallelBatchTransactionTemplateWithResults(Iterator<E> elements, int totalSize, int batchSize, int nbThreads, Behavior behavior, PlatformTransactionManager transactionManager,
 	                                                   @Nullable StatusManager statusManager, @Nullable AuthenticationInterface authenticationInterface) {
-		super(elements, totalSize, batchSize, nbThreads, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager, authenticationInterface);
+		super(elements, totalSize, batchSize, nbThreads, behavior, transactionManager, statusManager, authenticationInterface);
 	}
 
 	@Override

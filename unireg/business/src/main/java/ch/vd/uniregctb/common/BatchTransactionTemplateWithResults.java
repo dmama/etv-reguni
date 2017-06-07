@@ -13,8 +13,6 @@ import ch.vd.shared.batchtemplate.StatusManager;
 
 public class BatchTransactionTemplateWithResults<E, R extends BatchResults<E, R>> extends ch.vd.shared.batchtemplate.BatchTransactionTemplateWithResults<E, R> {
 
-	private static final TransactionTemplateFactory TRANSACTION_TEMPLATE_FACTORY = new TransactionTemplateFactory();
-
 	/**
 	 * @param iterator           un itérateur qui retourne les éléments à processer
 	 * @param batchSize          la taille maximale des batches
@@ -23,7 +21,19 @@ public class BatchTransactionTemplateWithResults<E, R extends BatchResults<E, R>
 	 * @param statusManager      un status manager (peut être nul)
 	 */
 	public BatchTransactionTemplateWithResults(Iterator<E> iterator, int batchSize, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager) {
-		super(iterator, batchSize, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager);
+		super(iterator, batchSize, behavior, transactionManager, statusManager);
+	}
+
+	/**
+	 * @param iterator           un itérateur qui retourne les éléments à processer
+	 * @param totalSize          le nombre d'éléments à sortir de l'itérateur (pour pouvoir gérer une progression)
+	 * @param batchSize          la taille maximale des batches
+	 * @param behavior           le comportement de l'itérateur en cas d'exception durant la transaction
+	 * @param transactionManager le transaction manager Spring
+	 * @param statusManager      un status manager (peut être nul)
+	 */
+	public BatchTransactionTemplateWithResults(Iterator<E> iterator, int totalSize, int batchSize, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager) {
+		super(iterator, totalSize, batchSize, behavior, transactionManager, statusManager);
 	}
 
 	/**
@@ -34,11 +44,11 @@ public class BatchTransactionTemplateWithResults<E, R extends BatchResults<E, R>
 	 * @param statusManager      un status manager (peut être nul)
 	 */
 	public BatchTransactionTemplateWithResults(Collection<E> list, int batchSize, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager) {
-		super(list, batchSize, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager);
+		super(list, batchSize, behavior, transactionManager, statusManager);
 	}
 
 	public BatchTransactionTemplateWithResults(BatchIterator<E> iterator, Behavior behavior, PlatformTransactionManager transactionManager, @Nullable StatusManager statusManager) {
-		super(iterator, behavior, transactionManager, TRANSACTION_TEMPLATE_FACTORY, statusManager);
+		super(iterator, behavior, transactionManager, statusManager);
 	}
 
 	@Override
