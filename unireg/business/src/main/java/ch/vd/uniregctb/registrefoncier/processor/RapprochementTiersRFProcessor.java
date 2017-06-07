@@ -255,7 +255,7 @@ public class RapprochementTiersRFProcessor {
 			rapport.addNouveauRapprochement(saved);
 
 			// on publie l'événement fiscal correspondant
-			evenementFiscalService.publierDebutRapprochementTiersRF(rapprochement.getDateDebut(), rapprochement);
+			evenementFiscalService.publierDebutRapprochementTiersRF(rapprochement.getDateDebut(), saved);
 
 			// en fait, il faudrait aussi marquer comme "traitée" une éventuelle demande d'identification manuelle
 			// encore en suspens concernant ce même tiers RF

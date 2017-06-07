@@ -197,14 +197,14 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
 			assertEquals(RegDate.get(2003, 1, 1), event0.getDateValeur());
-			assertEquals("_8af806fc4a35927c014ae2a6e76041b8", event0.getImmeuble().getIdRF());
-			assertEquals(ppId, event0.getAyantDroit().getId());
+			assertEquals("_8af806fc4a35927c014ae2a6e76041b8", event0.getDroit().getImmeuble().getIdRF());
+			assertEquals(ppId, event0.getDroit().getAyantDroit().getId());
 
 			final EvenementFiscalDroitPropriete event1 = (EvenementFiscalDroitPropriete) events.get(1);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event1.getType());
 			assertEquals(RegDate.get(2005, 1, 1), event1.getDateValeur());
-			assertEquals("_1f109152381009be0138100ba7e31031", event1.getImmeuble().getIdRF());
-			assertEquals(ppId, event1.getAyantDroit().getId());
+			assertEquals("_1f109152381009be0138100ba7e31031", event1.getDroit().getImmeuble().getIdRF());
+			assertEquals(ppId, event1.getDroit().getAyantDroit().getId());
 
 			return null;
 		});
@@ -276,8 +276,8 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
 			assertEquals(RegDate.get(2010, 4, 11), event0.getDateValeur());
-			assertEquals("_1f109152381009be0138100ba7e31031", event0.getImmeuble().getIdRF());
-			assertEquals(immId, event0.getAyantDroit().getId());
+			assertEquals("_1f109152381009be0138100ba7e31031", event0.getDroit().getImmeuble().getIdRF());
+			assertEquals(immId, event0.getDroit().getAyantDroit().getId());
 
 			return null;
 		});
@@ -439,8 +439,8 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
 			assertEquals(RegDate.get(2005, 1, 1), event0.getDateValeur());
-			assertEquals("_1f109152381009be0138100ba7e31031", event0.getImmeuble().getIdRF());
-			assertEquals(ppId, event0.getAyantDroit().getId());
+			assertEquals("_1f109152381009be0138100ba7e31031", event0.getDroit().getImmeuble().getIdRF());
+			assertEquals(ppId, event0.getDroit().getAyantDroit().getId());
 
 			// note : l'événement fiscal de fermeture du droit est envoyé par le DateFinDroitsRFProcessor
 
@@ -567,8 +567,8 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
 			assertEquals(RegDate.get(2010, 4, 11), event0.getDateValeur());
-			assertEquals("_1f109152381009be0138100ba7e31031", event0.getImmeuble().getIdRF());
-			assertEquals(immId, event0.getAyantDroit().getId());
+			assertEquals("_1f109152381009be0138100ba7e31031", event0.getDroit().getImmeuble().getIdRF());
+			assertEquals(immId, event0.getDroit().getAyantDroit().getId());
 
 			// note : l'événement fiscal de fermeture du droit est envoyé par le DateFinDroitsRFProcessor
 
@@ -697,8 +697,8 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
 			assertEquals(RegDate.get(2010, 4, 11), event0.getDateValeur());
-			assertEquals("_1f109152381009be0138100ba7e31031", event0.getImmeuble().getIdRF());
-			assertEquals(immId, event0.getAyantDroit().getId());
+			assertEquals("_1f109152381009be0138100ba7e31031", event0.getDroit().getImmeuble().getIdRF());
+			assertEquals(immId, event0.getDroit().getAyantDroit().getId());
 
 			// note : l'événement fiscal de fermeture du droit est envoyé par le DateFinDroitsRFProcessor
 
@@ -844,8 +844,8 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION, event0.getType());
 			assertEquals(RegDate.get(2005, 1, 1), event0.getDateValeur());
-			assertEquals("_1f109152381009be0138100ba7e31031", event0.getImmeuble().getIdRF());
-			assertEquals(ppId, event0.getAyantDroit().getId());
+			assertEquals("_1f109152381009be0138100ba7e31031", event0.getDroit().getImmeuble().getIdRF());
+			assertEquals(ppId, event0.getDroit().getAyantDroit().getId());
 
 			return null;
 		});

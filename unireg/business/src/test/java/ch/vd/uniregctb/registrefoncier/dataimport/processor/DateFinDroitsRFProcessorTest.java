@@ -197,8 +197,8 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event0.getType());
 			assertEquals(RegDate.get(2003, 5, 13), event0.getDateValeur());
-			assertEquals("38383838", event0.getImmeuble().getIdRF());
-			assertEquals("02893039", event0.getAyantDroit().getIdRF());
+			assertEquals("38383838", event0.getDroit().getImmeuble().getIdRF());
+			assertEquals("02893039", event0.getDroit().getAyantDroit().getIdRF());
 
 			return null;
 		});
@@ -284,14 +284,14 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event0.getType());
 			assertEquals(RegDate.get(2001, 9, 4), event0.getDateValeur());
-			assertEquals("38383838", event0.getImmeuble().getIdRF());
-			assertEquals("02893039", event0.getAyantDroit().getIdRF());
+			assertEquals("38383838", event0.getDroit().getImmeuble().getIdRF());
+			assertEquals("02893039", event0.getDroit().getAyantDroit().getIdRF());
 
 			final EvenementFiscalDroitPropriete event1 = (EvenementFiscalDroitPropriete) events.get(1);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event1.getType());
 			assertEquals(RegDate.get(2013, 5, 31), event1.getDateValeur());
-			assertEquals("38383838", event1.getImmeuble().getIdRF());
-			assertEquals("937823a0a02", event1.getAyantDroit().getIdRF());
+			assertEquals("38383838", event1.getDroit().getImmeuble().getIdRF());
+			assertEquals("937823a0a02", event1.getDroit().getAyantDroit().getIdRF());
 
 			return null;
 		});
@@ -375,14 +375,14 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event0.getType());
 			assertEquals(RegDate.get(1980, 12, 29), event0.getDateValeur());
-			assertEquals(idImmeubleRF1, event0.getImmeuble().getIdRF());
-			assertEquals(idPPRF1, event0.getAyantDroit().getIdRF());
+			assertEquals(idImmeubleRF1, event0.getDroit().getImmeuble().getIdRF());
+			assertEquals(idPPRF1, event0.getDroit().getAyantDroit().getIdRF());
 
 			final EvenementFiscalDroitPropriete event1 = (EvenementFiscalDroitPropriete) events.get(1);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event1.getType());
 			assertEquals(RegDate.get(1998, 2, 11), event1.getDateValeur());
-			assertEquals(idImmeubleRF1, event1.getImmeuble().getIdRF());
-			assertEquals(idPPRF2, event1.getAyantDroit().getIdRF());
+			assertEquals(idImmeubleRF1, event1.getDroit().getImmeuble().getIdRF());
+			assertEquals(idPPRF2, event1.getDroit().getAyantDroit().getIdRF());
 
 			return null;
 		});

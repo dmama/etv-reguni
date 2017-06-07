@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -191,12 +192,26 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 				evenementFiscalService.publierFinImplantationBatiment(dateValeur.getOneDayBefore(), i);
 			});
 
+			final long maxId = persisted.getImplantations().stream()
+					.map(ImplantationRF::getId)
+					.max(Comparator.naturalOrder())
+					.orElse(0L);    // l'id max des implantations existantes
+
 			// on ajoute toutes les nouvelles implantations sur le bâtiment déjà persisté
 			toAddList.forEach(i -> {
 				i.setDateDebut(dateValeur);
 				persisted.addImplantation(i);
-				evenementFiscalService.publierDebutImplantationBatiment(dateValeur, i);
 			});
+
+			// on sauve le bâtiment pour persister les nouvelles implantations (on a besoin des entités persistées pour l'envoi des événements fiscaux)
+			final BatimentRF updated = batimentRFDAO.save(persisted);
+			final List<ImplantationRF> addedList = updated.getImplantations().stream()
+					.filter(i -> i.getId() > maxId)
+					.collect(Collectors.toList());
+			if (toAddList.size() != addedList.size()) {
+				throw new IllegalArgumentException("Les nouvelles implantation n'ont pas été détectées correctement : toAdd=" + toAddList.size() + ", added=" + addedList.size());
+			}
+			addedList.forEach(i -> evenementFiscalService.publierDebutImplantationBatiment(dateValeur, i));
 		}
 	}
 

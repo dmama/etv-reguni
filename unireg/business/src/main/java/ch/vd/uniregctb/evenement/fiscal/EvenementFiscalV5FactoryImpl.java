@@ -82,7 +82,11 @@ import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImplantationBatiment;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
+import ch.vd.uniregctb.registrefoncier.ServitudeRF;
+import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscalCommune;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
@@ -576,12 +580,15 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 			default:
 				throw new IllegalArgumentException("Type d'événement inconnu = [" + evenementFiscal.getType() + "]");
 			}
-			event.setCommunityId(Optional.of(evenementFiscal)
-					                     .map(EvenementFiscalDroitPropriete::getCommunaute)
+			final DroitProprieteRF droit = evenementFiscal.getDroit();
+			event.setCommunityId(Optional.of(droit)
+					                     .filter(DroitProprietePersonneRF.class::isInstance)
+					                     .map(DroitProprietePersonneRF.class::cast)
+					                     .map(DroitProprietePersonneRF::getCommunaute)
 					                     .map(AyantDroitRF::getId)
 					                     .orElse(null));
-			event.setImmovablePropertyId(evenementFiscal.getImmeuble().getId());
-			event.setRightHolder(RightHolderBuilder.getRightHolder(evenementFiscal.getAyantDroit(), registreFoncierService::getContribuableIdFor));
+			event.setImmovablePropertyId(droit.getImmeuble().getId());
+			event.setRightHolder(RightHolderBuilder.getRightHolder(droit.getAyantDroit(), registreFoncierService::getContribuableIdFor));
 			event.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
 			return event;
 		}
@@ -605,7 +612,8 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 			default:
 				throw new IllegalArgumentException("Type d'événement inconnu = [" + evenementFiscal.getType() + "]");
 			}
-			event.setEasementType(evenementFiscal.getTypeServitude() == EvenementFiscalServitude.TypeEvenementServitude.USUFRUIT ? EasementType.USUFRUCT : EasementType.HOUSING);
+			final ServitudeRF servitude = evenementFiscal.getServitude();
+			event.setEasementType(servitude instanceof UsufruitRF ? EasementType.USUFRUCT : EasementType.HOUSING);
 			event.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
 			return event;
 		}
@@ -674,8 +682,8 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 			default:
 				throw new IllegalArgumentException("Type d'événement inconnu = [" + evenementFiscal.getType() + "]");
 			}
-			event.setBuildingId(evenementFiscal.getBatiment().getId());
-			event.setImmovablePropertyId(evenementFiscal.getImmeuble().getId());
+			event.setBuildingId(evenementFiscal.getImplantation().getBatiment().getId());
+			event.setImmovablePropertyId(evenementFiscal.getImplantation().getImmeuble().getId());
 			event.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
 			return event;
 		}
@@ -699,7 +707,7 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 			default:
 				throw new IllegalArgumentException("Type d'événement inconnu = [" + evenementFiscal.getType() + "]");
 			}
-			final Tiers tiers = evenementFiscal.getTiers();
+			final Tiers tiers = evenementFiscal.getRapprochement().getContribuable();
 			event.setPartyKind(extractPartyKind(tiers));
 			event.setPartyNumber(safeLongIdToInt(tiers.getNumero()));
 			event.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));

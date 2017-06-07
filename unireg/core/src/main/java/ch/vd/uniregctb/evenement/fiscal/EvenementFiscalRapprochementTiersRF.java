@@ -10,13 +10,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.ForeignKey;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 
 @Entity
 @DiscriminatorValue(value = "RAPPROCHEMENT_RF")
@@ -31,40 +29,27 @@ public class EvenementFiscalRapprochementTiersRF extends EvenementFiscal {
 		ANNULATION
 	}
 
-	private Tiers tiers;
-	private TiersRF tiersRF;
+	private RapprochementRF rapprochement;
 	private TypeEvenementFiscalRapprochement type;
 
 	public EvenementFiscalRapprochementTiersRF() {
 	}
 
-	public EvenementFiscalRapprochementTiersRF(@Nullable RegDate dateValeur, @NotNull Tiers tiers, @NotNull TiersRF tiersRF, @NotNull TypeEvenementFiscalRapprochement type) {
+	public EvenementFiscalRapprochementTiersRF(@Nullable RegDate dateValeur, RapprochementRF rapprochement, TypeEvenementFiscalRapprochement type) {
 		super(dateValeur);
-		this.tiers = tiers;
-		this.tiersRF = tiersRF;
+		this.rapprochement = rapprochement;
 		this.type = type;
 	}
 
-	@JoinColumn(name = "TIERS_ID")
+	@JoinColumn(name = "RAPPROCHEMENT_ID")
 	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_EVTFISC_TIERS_ID")
-	public Tiers getTiers() {
-		return tiers;
+	@ForeignKey(name = "FK_EVTFISC_RAPPR_ID")
+	public RapprochementRF getRapprochement() {
+		return rapprochement;
 	}
 
-	public void setTiers(Tiers tiers) {
-		this.tiers = tiers;
-	}
-
-	@JoinColumn(name = "TIERS_RF_ID")
-	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_EVTFISC_TIERS_RF_ID")
-	public TiersRF getTiersRF() {
-		return tiersRF;
-	}
-
-	public void setTiersRF(TiersRF tiersRF) {
-		this.tiersRF = tiersRF;
+	public void setRapprochement(RapprochementRF rapprochement) {
+		this.rapprochement = rapprochement;
 	}
 
 	@Column(name = "TYPE_EVT_RAPPROCHEMENT", length = LengthConstants.EVTFISCAL_TYPE_EVT_RAPPROCHEMENT)
@@ -79,6 +64,6 @@ public class EvenementFiscalRapprochementTiersRF extends EvenementFiscal {
 
 	@Override
 	public String toString() {
-		return String.format("%s{id=%d, dateValeur=%s, tiers=%d, tiersRF=%d}", getClass().getSimpleName(), getId(), getDateValeur(), tiers.getNumero(), tiersRF.getId());
+		return String.format("%s{id=%d, dateValeur=%s, rapprochement=%d}", getClass().getSimpleName(), getId(), getDateValeur(), rapprochement.getId());
 	}
 }

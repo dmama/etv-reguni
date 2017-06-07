@@ -202,12 +202,13 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
 			assertEquals(RegDate.get(2002, 9, 2), event0.getDateValeur());
 
-			final Set<String> immeubles = event0.getImmeubles().stream()
+			final ServitudeRF servitude = event0.getServitude();
+			final Set<String> immeubles = servitude.getImmeubles().stream()
 					.map(ImmeubleRF::getIdRF)
 					.collect(Collectors.toSet());
 			assertEquals(new HashSet<>(Arrays.asList("_1f109152380ffd8901380ffe15bb729c", "_1f109152381037590138103b6f6e3cfc")), immeubles);
 
-			final Set<String> ayantDroits = event0.getAyantDroits().stream()
+			final Set<String> ayantDroits = servitude.getAyantDroits().stream()
 					.map(AyantDroitRF::getIdRF)
 					.collect(Collectors.toSet());
 			assertEquals(new HashSet<>(Arrays.asList("_1f109152380ffd8901380ffdabcc2441", "_1f109152380ffd8901380ffda8131c65")), ayantDroits);
@@ -477,12 +478,13 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, event0.getType());
 			assertEquals(dateSecondImport.getOneDayBefore(), event0.getDateValeur());
 
-			final Set<String> immeubles = event0.getImmeubles().stream()
+			final ServitudeRF servitude = event0.getServitude();
+			final Set<String> immeubles = servitude.getImmeubles().stream()
 					.map(ImmeubleRF::getIdRF)
 					.collect(Collectors.toSet());
 			assertEquals(new HashSet<>(Arrays.asList("_1f109152381037590138103b6f6e3cfa", "_1f109152381037590138103b6f6e3cfc")), immeubles);
 
-			final Set<String> ayantDroits = event0.getAyantDroits().stream()
+			final Set<String> ayantDroits = servitude.getAyantDroits().stream()
 					.map(AyantDroitRF::getIdRF)
 					.collect(Collectors.toSet());
 			assertEquals(new HashSet<>(Arrays.asList("_1f1091523810375901381037f42e3142", "_1f109152381037590138103835995c0d")), ayantDroits);

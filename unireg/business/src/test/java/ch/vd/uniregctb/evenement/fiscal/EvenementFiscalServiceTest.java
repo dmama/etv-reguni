@@ -307,8 +307,8 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 			assertNotNull(event0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
 			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
-			assertEquals(ids.immeuble, event0.getImmeuble().getId());
-			assertEquals(ids.pp, event0.getAyantDroit().getId());
+			assertEquals(ids.immeuble, event0.getDroit().getImmeuble().getId());
+			assertEquals(ids.pp, event0.getDroit().getAyantDroit().getId());
 			return null;
 		});
 	}
@@ -354,15 +354,15 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 			final EvenementFiscalServitude event0 = (EvenementFiscalServitude) events.get(0);
 			assertNotNull(event0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
-			assertEquals(EvenementFiscalServitude.TypeEvenementServitude.USUFRUIT, event0.getTypeServitude());
+			assertTrue(event0.getServitude() instanceof UsufruitRF);
 			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
 
-			final List<Long> immeublesIds = event0.getImmeubles().stream()
+			final List<Long> immeublesIds = event0.getServitude().getImmeubles().stream()
 					.map(ImmeubleRF::getId)
 					.collect(Collectors.toList());
 			assertEquals(Collections.singletonList(ids.immeuble), immeublesIds);
 
-			final List<Long> ayantDroitIds = event0.getAyantDroits().stream()
+			final List<Long> ayantDroitIds = event0.getServitude().getAyantDroits().stream()
 					.map(AyantDroitRF::getId)
 					.collect(Collectors.toList());
 			assertEquals(Collections.singletonList(ids.pp), ayantDroitIds);
@@ -460,8 +460,11 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 
 			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
 			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
-			final BatimentRF batiment = addBatimentRF("32099903");
-			final ImplantationRF implantation = addImplantationRF(RegDate.get(2000, 1, 1), null, 100, immeuble, batiment);
+			BatimentRF batiment = addBatimentRF("32099903");
+			addImplantationRF(RegDate.get(2000, 1, 1), null, 100, immeuble, batiment);
+
+			batiment = hibernateTemplate.merge(batiment);
+			final ImplantationRF implantation = batiment.getImplantations().iterator().next();
 
 			evenementFiscalService.publierDebutImplantationBatiment(RegDate.get(2000, 1, 1), implantation);
 
@@ -480,8 +483,8 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 			assertNotNull(event0);
 			assertEquals(EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation.CREATION, event0.getType());
 			assertEquals(RegDate.get(2000, 1, 1), event0.getDateValeur());
-			assertEquals(ids.batiment, event0.getBatiment().getId());
-			assertEquals(ids.immeuble, event0.getImmeuble().getId());
+			assertEquals(ids.batiment, event0.getImplantation().getBatiment().getId());
+			assertEquals(ids.immeuble, event0.getImplantation().getImmeuble().getId());
 			return null;
 		});
 	}

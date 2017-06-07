@@ -18,15 +18,12 @@ import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImplantat
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
 import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
-import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -276,38 +273,32 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 
 	@Override
 	public void publierOuvertureDroitPropriete(RegDate dateDebutMetier, DroitProprieteRF droit) {
-		final CommunauteRF communaute = (droit instanceof DroitProprietePersonneRF ? ((DroitProprietePersonneRF) droit).getCommunaute() : null);
-		saveAndPublish(new EvenementFiscalDroitPropriete(dateDebutMetier, droit.getAyantDroit(), droit.getImmeuble(), communaute, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE));
+		saveAndPublish(new EvenementFiscalDroitPropriete(dateDebutMetier, droit, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE));
 	}
 
 	@Override
 	public void publierFermetureDroitPropriete(RegDate dateFinMetier, DroitProprieteRF droit) {
-		final CommunauteRF communaute = (droit instanceof DroitProprietePersonneRF ? ((DroitProprietePersonneRF) droit).getCommunaute() : null);
-		saveAndPublish(new EvenementFiscalDroitPropriete(dateFinMetier, droit.getAyantDroit(), droit.getImmeuble(), communaute, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE));
+		saveAndPublish(new EvenementFiscalDroitPropriete(dateFinMetier, droit, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE));
 	}
 
 	@Override
 	public void publierModificationDroitPropriete(RegDate dateModification, DroitProprieteRF droit) {
-		final CommunauteRF communaute = (droit instanceof DroitProprietePersonneRF ? ((DroitProprietePersonneRF) droit).getCommunaute() : null);
-		saveAndPublish(new EvenementFiscalDroitPropriete(dateModification, droit.getAyantDroit(), droit.getImmeuble(), communaute, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION));
+		saveAndPublish(new EvenementFiscalDroitPropriete(dateModification, droit, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION));
 	}
 
 	@Override
 	public void publierOuvertureServitude(RegDate dateDebut, ServitudeRF servitude) {
-		final EvenementFiscalServitude.TypeEvenementServitude typeServitude = (servitude instanceof UsufruitRF ? EvenementFiscalServitude.TypeEvenementServitude.USUFRUIT : EvenementFiscalServitude.TypeEvenementServitude.DROIT_HABITATION);
-		saveAndPublish(new EvenementFiscalServitude(dateDebut, servitude.getAyantDroits(), servitude.getImmeubles(), EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, typeServitude));
+		saveAndPublish(new EvenementFiscalServitude(dateDebut, servitude, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE));
 	}
 
 	@Override
 	public void publierFermetureServitude(RegDate dateFin, ServitudeRF servitude) {
-		final EvenementFiscalServitude.TypeEvenementServitude typeServitude = (servitude instanceof UsufruitRF ? EvenementFiscalServitude.TypeEvenementServitude.USUFRUIT : EvenementFiscalServitude.TypeEvenementServitude.DROIT_HABITATION);
-		saveAndPublish(new EvenementFiscalServitude(dateFin, servitude.getAyantDroits(), servitude.getImmeubles(), EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE, typeServitude));
+		saveAndPublish(new EvenementFiscalServitude(dateFin, servitude, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.FERMETURE));
 	}
 
 	@Override
 	public void publierModificationServitude(RegDate dateModification, ServitudeRF servitude) {
-		final EvenementFiscalServitude.TypeEvenementServitude typeServitude = (servitude instanceof UsufruitRF ? EvenementFiscalServitude.TypeEvenementServitude.USUFRUIT : EvenementFiscalServitude.TypeEvenementServitude.DROIT_HABITATION);
-		saveAndPublish(new EvenementFiscalServitude(dateModification, servitude.getAyantDroits(), servitude.getImmeubles(), EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION, typeServitude));
+		saveAndPublish(new EvenementFiscalServitude(dateModification, servitude, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION));
 	}
 
 	@Override
@@ -367,26 +358,26 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 
 	@Override
 	public void publierDebutImplantationBatiment(RegDate dateDebut, ImplantationRF implantation) {
-		saveAndPublish(new EvenementFiscalImplantationBatiment(dateDebut, implantation.getImmeuble(), implantation.getBatiment(), EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation.CREATION));
+		saveAndPublish(new EvenementFiscalImplantationBatiment(dateDebut, implantation, EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation.CREATION));
 	}
 
 	@Override
 	public void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation) {
-		saveAndPublish(new EvenementFiscalImplantationBatiment(dateFin, implantation.getImmeuble(), implantation.getBatiment(), EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation.RADIATION));
+		saveAndPublish(new EvenementFiscalImplantationBatiment(dateFin, implantation, EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation.RADIATION));
 	}
 
 	@Override
 	public void publierDebutRapprochementTiersRF(RegDate dateDebut, RapprochementRF rapprochement) {
-		saveAndPublish(new EvenementFiscalRapprochementTiersRF(dateDebut, rapprochement.getContribuable(), rapprochement.getTiersRF(), EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE));
+		saveAndPublish(new EvenementFiscalRapprochementTiersRF(dateDebut, rapprochement, EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE));
 	}
 
 	@Override
 	public void publierFinRapprochementTiersRF(RegDate dateFin, RapprochementRF rapprochement) {
-		saveAndPublish(new EvenementFiscalRapprochementTiersRF(dateFin, rapprochement.getContribuable(), rapprochement.getTiersRF(), EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.FERMETURE));
+		saveAndPublish(new EvenementFiscalRapprochementTiersRF(dateFin, rapprochement, EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.FERMETURE));
 	}
 
 	@Override
 	public void publierAnnulationRapprochementTiersRF(RegDate dateAnnulation, RapprochementRF rapprochement) {
-		saveAndPublish(new EvenementFiscalRapprochementTiersRF(dateAnnulation, rapprochement.getContribuable(), rapprochement.getTiersRF(), EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.ANNULATION));
+		saveAndPublish(new EvenementFiscalRapprochementTiersRF(dateAnnulation, rapprochement, EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.ANNULATION));
 	}
 }

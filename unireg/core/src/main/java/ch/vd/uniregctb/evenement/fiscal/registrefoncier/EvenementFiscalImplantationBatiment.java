@@ -15,8 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 
 @Entity
 @DiscriminatorValue(value = "IMPLANTATION_RF")
@@ -30,40 +29,27 @@ public class EvenementFiscalImplantationBatiment extends EvenementFiscalRF {
 		RADIATION
 	}
 
-	private ImmeubleRF immeuble;
-	private BatimentRF batiment;
+	private ImplantationRF implantation;
 	private TypeEvenementFiscalImplantation type;
 
 	public EvenementFiscalImplantationBatiment() {
 	}
 
-	public EvenementFiscalImplantationBatiment(@Nullable RegDate dateValeur, @NotNull ImmeubleRF immeuble, @NotNull BatimentRF batiment, @NotNull EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation type) {
+	public EvenementFiscalImplantationBatiment(@Nullable RegDate dateValeur, @NotNull ImplantationRF implantation, @NotNull TypeEvenementFiscalImplantation type) {
 		super(dateValeur);
-		this.immeuble = immeuble;
-		this.batiment = batiment;
+		this.implantation = implantation;
 		this.type = type;
 	}
 
-	@JoinColumn(name = "IMMEUBLE_ID")
+	@JoinColumn(name = "IMPLANTATION_ID")
 	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_EVTFISC_IMMEUBLE_ID")
-	public ImmeubleRF getImmeuble() {
-		return immeuble;
+	@ForeignKey(name = "FK_EVTFISC_IMPLANTATION_ID")
+	public ImplantationRF getImplantation() {
+		return implantation;
 	}
 
-	public void setImmeuble(ImmeubleRF immeuble) {
-		this.immeuble = immeuble;
-	}
-
-	@JoinColumn(name = "BATIMENT_ID")
-	@ManyToOne(fetch = FetchType.EAGER)
-	@ForeignKey(name = "FK_EVTFISC_BATIMENT_ID")
-	public BatimentRF getBatiment() {
-		return batiment;
-	}
-
-	public void setBatiment(BatimentRF batiment) {
-		this.batiment = batiment;
+	public void setImplantation(ImplantationRF implantation) {
+		this.implantation = implantation;
 	}
 
 	@Column(name = "TYPE_EVT_IMPLANTATION", length = LengthConstants.EVTFISCAL_TYPE_EVT_IMPLANTATION)

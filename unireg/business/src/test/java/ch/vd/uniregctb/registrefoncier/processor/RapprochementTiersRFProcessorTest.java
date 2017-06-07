@@ -167,8 +167,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
 			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
 			Assert.assertNull(event0.getDateValeur());
-			Assert.assertEquals(Long.valueOf(ids.pp), event0.getTiers().getId());
-			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+			Assert.assertEquals(Long.valueOf(ids.pp), event0.getRapprochement().getContribuable().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getRapprochement().getTiersRF().getId());
 			return null;
 		});
 	}
@@ -254,8 +254,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
 			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
 			Assert.assertNull(event0.getDateValeur());
-			Assert.assertEquals(Long.valueOf(ids.pm), event0.getTiers().getId());
-			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+			Assert.assertEquals(Long.valueOf(ids.pm), event0.getRapprochement().getContribuable().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getRapprochement().getTiersRF().getId());
 			return null;
 		});
 	}
@@ -429,8 +429,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
 			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
 			Assert.assertNull(event0.getDateValeur());
-			Assert.assertEquals(Long.valueOf(ids.pp), event0.getTiers().getId());
-			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+			Assert.assertEquals(Long.valueOf(ids.pp), event0.getRapprochement().getContribuable().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getRapprochement().getTiersRF().getId());
 			return null;
 		});
 	}
@@ -667,8 +667,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
 			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
 			Assert.assertEquals(finAnneeDerniere.getOneDayAfter(), event0.getDateValeur());
-			Assert.assertEquals(Long.valueOf(ids.pp2), event0.getTiers().getId());
-			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getTiersRF().getId());
+			Assert.assertEquals(Long.valueOf(ids.pp2), event0.getRapprochement().getContribuable().getId());
+			Assert.assertEquals(Long.valueOf(ids.idTiersRF), event0.getRapprochement().getTiersRF().getId());
 			return null;
 		});
 	}
@@ -766,8 +766,8 @@ public class RapprochementTiersRFProcessorTest extends BusinessTest {
 			final EvenementFiscalRapprochementTiersRF event0 = (EvenementFiscalRapprochementTiersRF) events.get(0);
 			Assert.assertEquals(EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE, event0.getType());
 			Assert.assertNull(event0.getDateValeur());
-			Assert.assertEquals(Long.valueOf(ids.pm), event0.getTiers().getId());
-			Assert.assertEquals(Long.valueOf(ids.tiersRF), event0.getTiersRF().getId());
+			Assert.assertEquals(Long.valueOf(ids.pm), event0.getRapprochement().getContribuable().getId());
+			Assert.assertEquals(Long.valueOf(ids.tiersRF), event0.getRapprochement().getTiersRF().getId());
 			return null;
 		});
 	}

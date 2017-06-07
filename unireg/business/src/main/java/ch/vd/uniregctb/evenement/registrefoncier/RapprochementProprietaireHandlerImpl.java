@@ -78,10 +78,11 @@ public class RapprochementProprietaireHandlerImpl implements RapprochementPropri
 			rapprochement.setContribuable(contribuable);
 			rapprochement.setTypeRapprochement(TypeRapprochementRF.MANUEL);
 
-			contribuable.addRapprochementRF(hibernateTemplate.merge(rapprochement));
+			final RapprochementRF persisted = hibernateTemplate.merge(rapprochement);
+			contribuable.addRapprochementRF(persisted);
 
 			// on publie l'événement fiscal correspondant
-			evenementFiscalService.publierDebutRapprochementTiersRF(rapprochement.getDateDebut(), rapprochement);
+			evenementFiscalService.publierDebutRapprochementTiersRF(rapprochement.getDateDebut(), persisted);
 
 			LOGGER.info(String.format("Généré rapprochement manuel entre le contribuable %s et le tiers RF %d (numéro RF %d) pour la période %s.",
 			                          FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero()),
