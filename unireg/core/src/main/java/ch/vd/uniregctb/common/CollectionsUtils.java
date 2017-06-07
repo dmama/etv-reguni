@@ -347,4 +347,19 @@ public abstract class CollectionsUtils {
 				.map(entry -> String.format("%s -> %s", keyRenderer.toString(entry.getKey()), valueRenderer.toString(entry.getValue())))
 				.collect(Collectors.joining(separator, prefix, suffix));
 	}
+
+	/**
+	 * @param coll une collection qui peut être nulle.
+	 * @param <T>  le type d'éléments de la liste
+	 * @return une liste non-nulle
+	 */
+	@NotNull
+	public static <T> List<T> newList(@Nullable Collection<T> coll) {
+		if (coll == null) {
+			return Collections.emptyList();
+		}
+		else {
+			return new ArrayList<>(coll);
+		}
+	}
 }

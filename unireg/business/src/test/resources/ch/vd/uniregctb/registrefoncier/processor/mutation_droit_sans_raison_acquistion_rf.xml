@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PersonEigentumAnteilList xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+	<PersonEigentumAnteil VersionID="1f109152381009be0138100e4c7c00e5" MasterID="1f109152381009be0138100c87276e68">
+		<Quote>
+			<AnteilZaehler>1</AnteilZaehler>
+			<AnteilNenner>1</AnteilNenner>
+			<QuoteUnbekannt>false</QuoteUnbekannt>
+		</Quote>
+		<BelastetesGrundstueckIDREF>_1f109152381009be0138100ba7e31031</BelastetesGrundstueckIDREF>
+		<NatuerlichePersonGb VersionID="1f109152381009be0138100c87296e9a" MasterID="1f109152381009be0138100e4c7c00e6">
+			<Name>Schulz</Name>
+			<Status>definitiv</Status>
+			<Vorname>Alodie</Vorname>
+			<Geburtsdatum>
+				<Tag>5</Tag>
+				<Monat>11</Monat>
+				<Jahr>1987</Jahr>
+			</Geburtsdatum>
+			<Zivilstand>unbekannt</Zivilstand>
+			<NameEltern>Claude</NameEltern>
+			<WeitereVornamen>Lydia</WeitereVornamen>
+			<PersonstammIDREF>_1f109152381009be0138100a1d442eee</PersonstammIDREF>
+		</NatuerlichePersonGb>
+		<PersonEigentumsForm>alleineigentum</PersonEigentumsForm>
+		<AnzahlPaquiers>0</AnzahlPaquiers>
+	</PersonEigentumAnteil>
+</PersonEigentumAnteilList>

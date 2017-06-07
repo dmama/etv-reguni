@@ -852,6 +852,107 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/*
+	 * [SIFISC-24887] Ce test vérifie que le processing d'une mutation fonctionne bien dans le cas où le nouvel immeuble ne possède pas de raisons d'acquisition.
+	 */
+	@Test
+	public void testProcessMutationModificationSansRaisonAcquisition() throws Exception {
+
+		final String idPPRF = "_1f109152381009be0138100a1d442eee";
+		final String idImmeubleRF1 = "_1f109152381009be0138100ba7e31031";
+		final RegDate dateImportInitial = RegDate.get(2015, 3, 17);
+		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
+
+		// précondition : il y a déjà un droit dans la base de données
+		final Long ppId = doInNewTransaction(status -> {
+
+			PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+			pp.setIdRF(idPPRF);
+			pp.setNom("Schulz");
+			pp.setPrenom("Alodie");
+			pp.setDateNaissance(RegDate.get(1900, 1, 1));
+			pp = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp);
+
+			BienFondRF immeuble1 = new BienFondRF();
+			immeuble1.setIdRF(idImmeubleRF1);
+			immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+
+			// on droit différent de celui qui arrive dans le fichier XML
+			final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
+			droit0.setMasterIdRF("1f109152381009be0138100c87276e68");
+			droit0.setVersionIdRF("1f109152381009be0138100e4c7c00e5");
+			droit0.setDateDebut(dateImportInitial);
+			droit0.setAyantDroit(pp);
+			droit0.setImmeuble(immeuble1);
+			droit0.setPart(new Fraction(1, 1));
+			droit0.setRegime(GenrePropriete.INDIVIDUELLE);
+			// une seule raison d'acquisition (il n'y en a pas dans le fichier)
+			droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 1, 1), "Achat", new IdentifiantAffaireRF(13, 2005, 173, 0)));
+			droit0.calculateDateEtMotifDebut();
+			droitRFDAO.save(droit0);
+
+			return pp.getId();
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_droit_sans_raison_acquistion_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.DROIT, TypeMutationRF.MODIFICATION, idPPRF, null);
+
+		// on process la mutation
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
+		});
+
+		// postcondition : la mutation est traitée et :
+		//  - le droit0 est modifié
+		doInNewTransaction(status -> {
+
+			final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ppId);
+			assertNotNull(pp);
+
+			final Set<DroitProprieteRF> droits = pp.getDroitsPropriete();
+			assertNotNull(droits);
+			assertEquals(1, droits.size());
+
+			// le droit0 doit être à jour
+			final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.iterator().next();
+			assertNotNull(droit0);
+			assertEquals("1f109152381009be0138100c87276e68", droit0.getMasterIdRF());
+			assertEquals("1f109152381009be0138100e4c7c00e5", droit0.getVersionIdRF());
+			assertEquals(dateImportInitial, droit0.getDateDebut());
+			assertNull(droit0.getDateFin());
+			assertEquals("Achat", droit0.getMotifDebut());
+			assertEquals(RegDate.get(2005, 1, 1), droit0.getDateDebutMetier());
+			assertEquals("_1f109152381009be0138100ba7e31031", droit0.getImmeuble().getIdRF());
+			assertEquals(new Fraction(1, 1), droit0.getPart());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
+
+			// il n'y a plus de raisons d'acquisition
+			final List<RaisonAcquisitionRF> raisons0 = new ArrayList<>(droit0.getRaisonsAcquisition());
+			assertEquals(1, raisons0.size());
+			assertNotNull(raisons0.get(0).getAnnulationDate());
+			return null;
+		});
+
+		// postcondition : les événements fiscaux correspondants ont été envoyés
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION, event0.getType());
+			assertEquals(RegDate.get(2005, 1, 1), event0.getDateValeur());
+			assertEquals("_1f109152381009be0138100ba7e31031", event0.getDroit().getImmeuble().getIdRF());
+			assertEquals(ppId, event0.getDroit().getAyantDroit().getId());
+
+			return null;
+		});
+	}
+
+	/*
 	 * Ce test vérifie que le processing d'une mutation de suppression fonctionne bien.
 	 */
 	@Test
