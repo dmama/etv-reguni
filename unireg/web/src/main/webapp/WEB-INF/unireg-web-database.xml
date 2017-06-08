@@ -55,7 +55,7 @@
 	</bean>
 
 	<bean id="userTransaction" class="com.atomikos.icatch.jta.UserTransactionImp" depends-on="userTransactionService">
-		<property name="transactionTimeout" value="3600"/>
+		<property name="transactionTimeout" value="${extprop.tx.timeout}"/>
 	</bean>
 
 	<bean id="txSyncManager" class="ch.vd.uniregctb.transaction.TxSyncManagerImpl"/>
@@ -81,7 +81,7 @@
 		<property name="password" value="${extprop.jdbc.password}" />
 	</bean>
 
-	<bean id="realDataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean">
+	<bean id="realDataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">
 		<property name="uniqueResourceName" value="jdbc-web"/>
 		<property name="xaDataSource" ref="xaDataSource"/>
 		<property name="maxPoolSize" value="${extprop.jdbc.poolMaxSize}"/>
