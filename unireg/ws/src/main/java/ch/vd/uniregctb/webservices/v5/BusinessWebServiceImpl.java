@@ -92,7 +92,6 @@ import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -686,9 +685,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		// TODO [SIPM] remettre quelque chose ???
-		final Long corpNr = corporationId != null ? Long.valueOf(corporationId) : null;
-		final List<EvenementPM> list = Collections.emptyList();
-		return DataHelper.coreToXML(list);
+		return Collections.emptyList();
 	}
 
 	private interface PartyFactory<T extends Tiers> {

@@ -17,8 +17,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public abstract class Localisation {
 
-	private static final Localisation UNKNOWN = new LocalisationInconnue();
-	private static final Localisation VD = new LocalisationVaudoise();
 	private static final Map<String, Localisation> HC = new HashMap<>();
 
 	/**
@@ -32,7 +30,7 @@ public abstract class Localisation {
 	@NotNull
 	public static Localisation get(int noOfs, RegDate date, TypeAutoriteFiscale taf, ServiceInfrastructureService infraService) {
 		if (taf == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			return VD;
+			return getVaud();
 		}
 		else if (taf == TypeAutoriteFiscale.PAYS_HS) {
 			return getHorsSuisse(noOfs);
@@ -54,7 +52,7 @@ public abstract class Localisation {
 	@NotNull
 	public static Localisation get(ForFiscalPrincipal ffp, ServiceInfrastructureService infrastructureService) {
 		if (ffp == null) {
-			return UNKNOWN;
+			return getInconnue();
 		}
 		else {
 			return get(ffp.getNumeroOfsAutoriteFiscale(), ffp.getDateDebut(), ffp.getTypeAutoriteFiscale(), infrastructureService);
@@ -62,11 +60,11 @@ public abstract class Localisation {
 	}
 
 	protected static Localisation getVaud() {
-		return VD;
+		return LocalisationVaudoise.INSTANCE;
 	}
 
 	protected static Localisation getInconnue() {
-		return UNKNOWN;
+		return LocalisationInconnue.INSTANCE;
 	}
 
 	protected static Localisation getHorsCanton(@Nullable String sigleCanton) {
@@ -97,6 +95,9 @@ public abstract class Localisation {
 	public final boolean isInconnue() { return !isVD() && !isHC() && !isHS(); }
 
 	private static final class LocalisationVaudoise extends Localisation {
+
+		public static final LocalisationVaudoise INSTANCE = new LocalisationVaudoise();
+
 		@Override
 		public String toString() {
 			return ServiceInfrastructureService.SIGLE_CANTON_VD;
@@ -187,6 +188,9 @@ public abstract class Localisation {
 	}
 
 	private static final class LocalisationInconnue extends Localisation {
+
+		public static final LocalisationInconnue INSTANCE = new LocalisationInconnue();
+
 		@Override
 		public String toString() {
 			return "INCONNUE";

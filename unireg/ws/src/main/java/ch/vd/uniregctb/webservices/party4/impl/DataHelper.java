@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.unireg.webservices.party4.PartyPart;
-import ch.vd.unireg.webservices.party4.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.party4.SearchPartyRequest;
-import ch.vd.unireg.xml.party.corporation.v2.CorporationEvent;
 import ch.vd.unireg.xml.party.v2.PartyType;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
@@ -245,20 +243,5 @@ public class DataHelper {
 		default:
 			throw new IllegalArgumentException("Type de part inconnue = [" + part + "]");
 		}
-	}
-
-	public static SearchCorporationEventsResponse events2web(List<ch.vd.uniregctb.interfaces.model.EvenementPM> events) {
-		if (events == null || events.isEmpty()) {
-			return null;
-		}
-		final SearchCorporationEventsResponse response = new SearchCorporationEventsResponse();
-		for (ch.vd.uniregctb.interfaces.model.EvenementPM e : events) {
-			final CorporationEvent event = new CorporationEvent();
-			event.setPartyNumber(e.getNumeroPM().intValue());
-			event.setDate(ch.vd.uniregctb.xml.DataHelper.coreToXMLv1(e.getDate()));
-			event.setCode(e.getCode());
-			response.getEvents().add(event);
-		}
-		return response;
 	}
 }

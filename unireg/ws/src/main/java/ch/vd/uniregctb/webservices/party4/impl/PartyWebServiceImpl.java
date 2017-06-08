@@ -2,7 +2,6 @@ package ch.vd.uniregctb.webservices.party4.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -626,11 +625,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
 		// TODO [SIPM] Remettre quelque chose ?
-		final Long corpNr = params.getCorporationNumber() != null ? Long.valueOf(params.getCorporationNumber()) : null;
-		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list = Collections.emptyList();
-//				context.servicePM.findEvenements(corpNr, params.getEventCode(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getStartDate()),
-//				                                 ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getEndDate()));
-		return DataHelper.events2web(list);
+		return new SearchCorporationEventsResponse();
 	}
 
 	@Override
