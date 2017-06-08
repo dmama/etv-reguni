@@ -1,10 +1,14 @@
 package ch.vd.unireg.interfaces.common;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.type.TexteCasePostale;
@@ -86,12 +90,18 @@ public class CasePostale implements Serializable {
 		return result;
 	}
 
-	private static final Pattern CASE_POSTALE_PATTERN = Pattern.compile("^(?:case|cases)\\s(?:postale|postales)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern CASE_POSTALE_PATTERN_2 = Pattern.compile("^(?:CP)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern BOITE_POSTALE_PATTERN = Pattern.compile("^(?:boite|boîte|boites|boîtes)\\s(?:postale|postales)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern POSTFACH_PATTERN = Pattern.compile("^(?:postfach)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern CASELLA_POSTALE_PATTERN = Pattern.compile("^(?:casella)\\s(?:postale)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern PO_BOX_PATTERN = Pattern.compile("^(?:po)\\s(?:box)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE);
+	private static final List<Pair<TexteCasePostale, Pattern>> PARSING_PATTERNS = buildParsingPatterns();
+
+	private static List<Pair<TexteCasePostale, Pattern>> buildParsingPatterns() {
+		final List<Pair<TexteCasePostale, Pattern>> patterns = new ArrayList<>();
+		patterns.add(Pair.of(TexteCasePostale.CASE_POSTALE, Pattern.compile("^(?:case|cases)\\s(?:postale|postales)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE)));
+		patterns.add(Pair.of(TexteCasePostale.CASE_POSTALE, Pattern.compile("^(?:CP)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE)));
+		patterns.add(Pair.of(TexteCasePostale.BOITE_POSTALE, Pattern.compile("^(?:boite|boîte|boites|boîtes)\\s(?:postale|postales)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE)));
+		patterns.add(Pair.of(TexteCasePostale.POSTFACH, Pattern.compile("^(?:postfach)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE)));
+		patterns.add(Pair.of(TexteCasePostale.CASELLA_POSTALE, Pattern.compile("^(?:casella)\\s(?:postale)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE)));
+		patterns.add(Pair.of(TexteCasePostale.PO_BOX, Pattern.compile("^(?:po)\\s(?:box)[^\\d]*(\\d*)", Pattern.CASE_INSENSITIVE)));
+		return Collections.unmodifiableList(patterns);
+	}
 
 	/**
 	 * Converti une case postale exprimée sous forme de chaîne de caractères en un objet composé. <p> Exemples de case postales vus en production :
@@ -116,58 +126,12 @@ public class CasePostale implements Serializable {
 			return null;
 		}
 
-		final Matcher cp = CASE_POSTALE_PATTERN.matcher(string);
-		if (cp.find()) {
-			String numero = null;
-			if (cp.groupCount() > 0) {
-				numero = cp.group(1);
+		for (Pair<TexteCasePostale, Pattern> parsingPattern : PARSING_PATTERNS) {
+			final Matcher matcher = parsingPattern.getRight().matcher(string);
+			if (matcher.find()) {
+				final String numero = matcher.groupCount() > 0 ? matcher.group(1) : null;
+				return new CasePostale(parsingPattern.getLeft(), parseInt(numero));
 			}
-			return new CasePostale(TexteCasePostale.CASE_POSTALE, parseInt(numero));
-		}
-
-		final Matcher cp2 = CASE_POSTALE_PATTERN_2.matcher(string);
-		if (cp2.find()) {
-			String numero = null;
-			if (cp2.groupCount() > 0) {
-				numero = cp2.group(1);
-			}
-			return new CasePostale(TexteCasePostale.CASE_POSTALE, parseInt(numero));
-		}
-
-		final Matcher bp = BOITE_POSTALE_PATTERN.matcher(string);
-		if (bp.find()) {
-			String numero = null;
-			if (bp.groupCount() > 0) {
-				numero = bp.group(1);
-			}
-			return new CasePostale(TexteCasePostale.BOITE_POSTALE, parseInt(numero));
-		}
-
-		final Matcher pf = POSTFACH_PATTERN.matcher(string);
-		if (pf.find()) {
-			String numero = null;
-			if (pf.groupCount() > 0) {
-				numero = pf.group(1);
-			}
-			return new CasePostale(TexteCasePostale.POSTFACH, parseInt(numero));
-		}
-
-		final Matcher ll = CASELLA_POSTALE_PATTERN.matcher(string);
-		if (ll.find()) {
-			String numero = null;
-			if (ll.groupCount() > 0) {
-				numero = ll.group(1);
-			}
-			return new CasePostale(TexteCasePostale.CASELLA_POSTALE, parseInt(numero));
-		}
-
-		final Matcher po = PO_BOX_PATTERN.matcher(string);
-		if (po.find()) {
-			String numero = null;
-			if (po.groupCount() > 0) {
-				numero = po.group(1);
-			}
-			return new CasePostale(TexteCasePostale.PO_BOX, parseInt(numero));
 		}
 
 		return null;
