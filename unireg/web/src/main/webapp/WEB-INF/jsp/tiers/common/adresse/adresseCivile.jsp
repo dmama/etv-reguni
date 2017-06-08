@@ -92,6 +92,10 @@
 								</div>
 							</authz:authorize>
 						</c:if>
+						<c:if test="${adresseCivileConjoint.casePostale != null}">
+							<c:if test="${adresseCivileConjoint.rue != null}"><br/></c:if>
+							<c:out value="${adresseCivileConjoint.casePostale}"/>
+						</c:if>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.localite" property="localite"/>
 					<display:column sortable ="true" titleKey="label.pays">
