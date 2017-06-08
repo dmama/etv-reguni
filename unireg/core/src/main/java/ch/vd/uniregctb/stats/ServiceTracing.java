@@ -160,7 +160,7 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 					calls += recent.calls;
 				}
 			}
-			
+
 			return calls;
 		}
 
@@ -400,16 +400,17 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 			final String paramString = Optional.ofNullable(params).map(Supplier::get).orElse(null);
 			final String throwableString;
 			if (thrown != null) {
-				throwableString = String.format(", %s thrown", thrown.getClass().getName());
+				throwableString = ", " + thrown.getClass().getName() + " thrown";
 			}
 			else {
 				throwableString = StringUtils.EMPTY;
 			}
+			final long millis = TimeUnit.NANOSECONDS.toMillis(nanoTime - start);
 			if (StringUtils.isBlank(paramString)) {
-				detailLogger.info(String.format("(%d ms) %s%s", TimeUnit.NANOSECONDS.toMillis(nanoTime - start), StringUtils.trimToEmpty(name), throwableString));
+				detailLogger.info("(" + millis + " ms) " + StringUtils.trimToEmpty(name) + throwableString);
 			}
 			else {
-				detailLogger.info(String.format("(%d ms) %s{%s}%s", TimeUnit.NANOSECONDS.toMillis(nanoTime - start), StringUtils.trimToEmpty(name), paramString, throwableString));
+				detailLogger.info("(" + millis + " ms) " + StringUtils.trimToEmpty(name) + "{" + paramString + "}" + throwableString);
 			}
 		}
 	}
@@ -431,12 +432,13 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 		addTime(nanoTime - start, items, name);
 		if (detailLogger != null && detailLogger.isInfoEnabled()) {
 			final String paramString = Optional.ofNullable(params).map(Supplier::get).orElse(null);
-			final String returnInfo = (thrown == null ? String.format(" => %d item(s)", items) : String.format(", %s thrown", thrown.getClass().getName()));
+			final String returnInfo = (thrown == null ? " => " + items + " item(s)" : ", " + thrown.getClass().getName() + " thrown");
+			final long millis = TimeUnit.NANOSECONDS.toMillis(nanoTime - start);
 			if (StringUtils.isBlank(paramString)) {
-				detailLogger.info(String.format("(%d ms) %s%s", TimeUnit.NANOSECONDS.toMillis(nanoTime - start), StringUtils.trimToEmpty(name), returnInfo));
+				detailLogger.info("(" + millis + " ms) " + StringUtils.trimToEmpty(name) + returnInfo);
 			}
 			else {
-				detailLogger.info(String.format("(%d ms) %s{%s}%s", TimeUnit.NANOSECONDS.toMillis(nanoTime - start), StringUtils.trimToEmpty(name), paramString, returnInfo));
+				detailLogger.info("(" + millis + " ms) " + StringUtils.trimToEmpty(name) + "{" + paramString + "}" + returnInfo);
 			}
 		}
 	}
