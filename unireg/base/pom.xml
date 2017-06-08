@@ -367,11 +367,6 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>trove</groupId>
-			<artifactId>trove</artifactId>
-			<version>1.1-beta-5</version>
-		</dependency>
-		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>itextpdf</artifactId>
 			<version>5.5.1</version>
