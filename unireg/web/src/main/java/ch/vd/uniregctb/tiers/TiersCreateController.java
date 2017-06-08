@@ -286,8 +286,7 @@ public class TiersCreateController {
 
 		// Calcul de la date d'ouverture fiscale
 		final boolean vd = civilView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-		final boolean isAssociationFondation = formeJuridique == FormeJuridiqueEntreprise.ASSOCIATION || formeJuridique == FormeJuridiqueEntreprise.FONDATION;
-		final RegDate dateOuvertureFiscale = vd && isAssociationFondation ? dateOuverture : dateOuverture.getOneDayAfter(); // SIFISC-22478 - Ne pas appliquer la règle jour + 1 pour les associations/fondations
+		final RegDate dateOuvertureFiscale = vd && civilView.isInscriteRC() ? dateOuverture.getOneDayAfter() : dateOuverture; // SIFISC-25054 - Ne pas appliquer la règle jour + 1 pour les entités inscrites au RC (supplante SIFISC-22478)
 
 		// Ajout des régimes fiscaux
 		tiersService.addRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscalParDefaut, dateOuvertureFiscale, null);
