@@ -1,10 +1,8 @@
 package ch.vd.uniregctb.editique.print;
 
 public class PrintPCLException extends Exception {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = -8346595753203629233L;
 
 	/**
      * Constructeur.

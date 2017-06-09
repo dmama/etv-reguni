@@ -5,7 +5,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class EvenementCivilRegPPCriteriaView extends EvenementCivilCriteriaView<TypeEvenementCivil> {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4778412566605280203L;
 
 	@Override
 	protected Class<TypeEvenementCivil> getTypeClass() {

@@ -5,7 +5,7 @@ import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
 public class SourcierListView extends TiersCriteriaView {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 8758064251087339743L;
 
 	private TiersGeneralView debiteur;
 
