@@ -25,6 +25,7 @@ import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalSituationFamill
 import ch.vd.fiscalite.registre.evenementFiscalV1.ModeImpositionEnumType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.MotifForEnumType;
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -57,7 +58,8 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 	private ParametreAppService parametres;
 
 	private boolean peutPublierEvenementFiscal(EvenementFiscal evenementFiscal) {
-		return evenementFiscal.getDateValeur().year() >= parametres.getPremierePeriodeFiscalePersonnesPhysiques();
+		final RegDate dateValeur = evenementFiscal.getDateValeur();
+		return dateValeur != null && dateValeur.year() >= parametres.getPremierePeriodeFiscalePersonnesPhysiques();
 	}
 
 	@Override
