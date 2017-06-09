@@ -7,6 +7,13 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -33,7 +40,9 @@ import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 
-public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportService {
+public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportService, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(RegistreFoncierImportServiceImpl.class);
 
 	private PlatformTransactionManager transactionManager;
 	private EvenementRFImportDAO evenementRFImportDAO;
@@ -43,6 +52,7 @@ public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportSe
 	private BatimentRFDAO batimentRFDAO;
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private CommuneRFDAO communeRFDAO;
+	private ApplicationContext applicationContext;
 
 	private BatchScheduler batchScheduler;
 
@@ -180,6 +190,26 @@ public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportSe
 			return communeRFDAO.findActive(new CommuneRFKey(Integer.parseInt(idRF)));
 		default:
 			throw new IllegalArgumentException("Type d'entité RF inconnu = [" + type + "]");
+		}
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		// au démarrage de l'application, on corrige l'état des imports interrompus si nécessaire
+		if (event.getApplicationContext() == this.applicationContext) {
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.execute(status -> {
+				final int count = evenementRFImportDAO.fixAbnormalJVMTermination();
+				if (count > 0) {
+					LOGGER.warn("Corrigé l'état de " + count + " job(s) d'importation RF suite à l'arrêt anormal de la JVM.");
+				}
+				return null;
+			});
 		}
 	}
 }

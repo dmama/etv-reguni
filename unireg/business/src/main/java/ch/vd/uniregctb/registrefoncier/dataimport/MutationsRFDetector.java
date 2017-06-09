@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -61,7 +60,7 @@ import ch.vd.uniregctb.xml.ExceptionHelper;
 /**
  * Cette classe reçoit les données extraites de l'import du registre foncier, les compare avec les données en base et génère des événements de mutation correspondants.
  */
-public class MutationsRFDetector implements InitializingBean {
+public class MutationsRFDetector {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MutationsRFDetector.class);
 
@@ -464,17 +463,5 @@ public class MutationsRFDetector implements InitializingBean {
 
 	public void processSurfaces(long importId, int nbThreads, Iterator<Bodenbedeckung> iterator, @Nullable StatusManager statusManager) {
 		surfaceAuSolRFDetector.processSurfaces(importId, nbThreads, iterator, statusManager);
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(status -> {
-			final int count = evenementRFImportDAO.fixAbnormalJVMTermination();
-			if (count > 0) {
-				LOGGER.warn("Corrigé l'état de " + count + " job(s) d'importation RF suite à l'arrêt anormal de la JVM.");
-			}
-			return null;
-		});
 	}
 }
