@@ -329,7 +329,7 @@ public class BatimentRFProcessorTest extends MutationRFProcessorTestCase {
 
 			final EvenementFiscalBatiment event0 = (EvenementFiscalBatiment) events.get(0);
 			assertEquals(EvenementFiscalBatiment.TypeEvenementFiscalBatiment.RADIATION, event0.getType());
-			assertEquals(RegDate.get(2016, 10, 1), event0.getDateValeur());
+			assertEquals(RegDate.get(2016, 9, 30), event0.getDateValeur());
 			assertEquals("1f109152381026b50138102aa28557e0", event0.getBatiment().getMasterIdRF());
 
 			return null;

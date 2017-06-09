@@ -231,6 +231,6 @@ public class BatimentRFProcessor implements MutationRFProcessor {
 				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
 
 		// on publie l'événement fiscal correspondant
-		evenementFiscalService.publierRadiationBatiment(dateValeur, persisted);
+		evenementFiscalService.publierRadiationBatiment(dateValeur.getOneDayBefore(), persisted);
 	}
 }
