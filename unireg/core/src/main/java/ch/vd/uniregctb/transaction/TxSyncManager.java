@@ -2,6 +2,8 @@ package ch.vd.uniregctb.transaction;
 
 import java.util.function.Consumer;
 
+import org.springframework.transaction.support.TransactionSynchronization;
+
 /**
  * Manager spécialisé qui permet d'enregistrer une synchronisation sur la transaction ouverte (par exemple, lors de la réception d'un message ESB).
  * <p/>
@@ -14,6 +16,7 @@ public interface TxSyncManager {
 	 * Register a {@link Consumer} callback called after completion of the transaction.
 	 *
 	 * @param consumer a consumer
+	 * @see TransactionSynchronization#STATUS_COMMITTED
 	 */
 	void registerAfterCompletion(Consumer<Integer> consumer);
 }

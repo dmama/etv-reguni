@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.evenement.registrefoncier;
 
-import javax.transaction.Status;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionSynchronization;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -71,7 +70,7 @@ public class EvenementRFImportEsbHandler implements EsbMessageHandler {
 
 			// on provoque le démarrage du batch de traitement à la fermeture de la transaction
 			txSyncManager.registerAfterCompletion(status -> {
-				if (status == Status.STATUS_COMMITTED) {
+				if (status == TransactionSynchronization.STATUS_COMMITTED) {
 					startBatch(eventId);
 				}
 			});
