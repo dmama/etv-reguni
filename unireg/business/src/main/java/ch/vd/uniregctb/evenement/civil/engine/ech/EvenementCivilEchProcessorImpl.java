@@ -342,12 +342,15 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 		@Override
 		public void postFlush() throws CallbackException {
+			// ceci doit être fait avant les appels à {@link #postTransactionCommit()}... donc ici c'est bon !
+			// (faire cet appel dans le {@link #preTransactionCommit()} est en fait même déjà trop tard, sans doute parce que le flush JTA
+			// est maintenant lancé depuis un preTransactionCommit() - voir UniregJtaTransactionManager)
+			// TODO peut-être que la vraie solution passe par un ordonnancement des SubInterceptors...
+			parentesSynchronizerInterceptor.forceRefreshOnIndividu(noIndividu);
 		}
 
 		@Override
 		public void preTransactionCommit() {
-			// ceci doit être fait avant les appels à {@link #postTransactionCommit()}... donc ici c'est bon !
-			parentesSynchronizerInterceptor.forceRefreshOnIndividu(noIndividu);
 		}
 
 		@Override
