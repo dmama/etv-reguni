@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.fiscal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -84,6 +85,7 @@ import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
@@ -594,7 +596,7 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 		}
 	}
 
-	private static class EasementRightEventFactory extends OutputDataFactory<EvenementFiscalServitude, EasementRightEvent> {
+	private class EasementRightEventFactory extends OutputDataFactory<EvenementFiscalServitude, EasementRightEvent> {
 		@NotNull
 		@Override
 		protected EasementRightEvent internalBuild(@NotNull EvenementFiscalServitude evenementFiscal) throws NotSupportedInHereException {
@@ -615,6 +617,12 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 			final ServitudeRF servitude = evenementFiscal.getServitude();
 			event.setEasementType(servitude instanceof UsufruitRF ? EasementType.USUFRUCT : EasementType.HOUSING);
 			event.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
+			event.getImmovablePropertyIds().addAll(servitude.getImmeubles().stream()
+					                                       .map(ImmeubleRF::getId)
+					                                       .collect(Collectors.toList()));
+			event.getRightHolders().addAll(servitude.getAyantDroits().stream()
+					                               .map(r -> RightHolderBuilder.getRightHolder(r, registreFoncierService::getContribuableIdFor))
+					                               .collect(Collectors.toList()));
 			return event;
 		}
 	}
