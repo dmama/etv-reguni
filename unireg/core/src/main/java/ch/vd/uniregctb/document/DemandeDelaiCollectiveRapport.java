@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("DemDelaiCollRapport")
 public class DemandeDelaiCollectiveRapport extends Document {
 
-	private static final long serialVersionUID = 6265360263330461631L;
-
 	public DemandeDelaiCollectiveRapport() {
 	}
 

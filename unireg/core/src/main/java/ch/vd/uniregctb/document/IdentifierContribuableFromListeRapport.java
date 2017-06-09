@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("IdentifierCtbFromListeRapport")
 public class IdentifierContribuableFromListeRapport extends Document{
 
-	private static final long serialVersionUID = 8809653870053422078L;
-
 	public IdentifierContribuableFromListeRapport() {
 	}
 

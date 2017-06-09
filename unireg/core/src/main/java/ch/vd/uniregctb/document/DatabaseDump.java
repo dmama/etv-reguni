@@ -8,8 +8,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("DBDump")
 public class DatabaseDump extends Document {
 
-	private static final long serialVersionUID = 6660912465190415981L;
-
 	private int nbTiers;
 
 	public DatabaseDump() {

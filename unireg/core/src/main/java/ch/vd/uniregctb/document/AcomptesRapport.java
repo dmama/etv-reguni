@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("AcomptesRapport")
 public class AcomptesRapport extends Document {
 
-	private static final long serialVersionUID = -9172726369448172743L;
-
 	public AcomptesRapport() {
 	}
 

@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("MigrCoquillesPM")
 public class MigrationCoquillesPMRapport extends Document {
 
-	private static final long serialVersionUID = -6902229047337062357L;
-
 	public MigrationCoquillesPMRapport() {
 	}
 

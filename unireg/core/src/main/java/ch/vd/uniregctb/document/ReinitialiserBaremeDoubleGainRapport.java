@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ReinitDoubleGainRapport")
 public class ReinitialiserBaremeDoubleGainRapport extends Document {
 
-	private static final long serialVersionUID = 3640102509362376402L;
-
 	public ReinitialiserBaremeDoubleGainRapport() {
 	}
 

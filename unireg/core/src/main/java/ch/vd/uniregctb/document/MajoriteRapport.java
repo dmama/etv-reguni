@@ -7,12 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("MajoriteRapport")
 public class MajoriteRapport extends Document {
 
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 5274822372533490368L;
-
 	public MajoriteRapport() {
 	}
 

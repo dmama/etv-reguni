@@ -20,8 +20,6 @@ import ch.vd.uniregctb.type.Localisation;
 @Entity
 public abstract class ReceptionDossier extends MouvementDossier {
 
-	private static final long serialVersionUID = 1869381562928472165L;
-
 	private CollectiviteAdministrative collectiviteAdministrativeReceptrice;
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

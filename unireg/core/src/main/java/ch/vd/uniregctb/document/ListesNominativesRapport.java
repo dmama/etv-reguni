@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ListesNominativesRapport")
 public class ListesNominativesRapport extends Document {
 
-	private static final long serialVersionUID = -8732595117893165746L;
-
 	public ListesNominativesRapport() {
 	}
 

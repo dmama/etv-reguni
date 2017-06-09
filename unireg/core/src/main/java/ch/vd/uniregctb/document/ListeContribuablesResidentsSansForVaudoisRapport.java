@@ -11,8 +11,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ListeCtbsResSansForVD")
 public class ListeContribuablesResidentsSansForVaudoisRapport extends Document {
 
-	private static final long serialVersionUID = -1962749557441433107L;
-
 	public ListeContribuablesResidentsSansForVaudoisRapport() {
 	}
 

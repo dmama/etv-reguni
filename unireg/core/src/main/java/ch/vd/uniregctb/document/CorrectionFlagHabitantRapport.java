@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("CorrectionFlagHabitantRapport")
 public class CorrectionFlagHabitantRapport extends Document {
 
-	private static final long serialVersionUID = -4013311793112167967L;
-
 	public CorrectionFlagHabitantRapport() {
 	}
 

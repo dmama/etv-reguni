@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ComparerForFiscalEtCommuneRapport")
 public class ComparerForFiscalEtCommuneRapport extends Document{
 
-	private static final long serialVersionUID = 8809695370053422078L;
-
 	public ComparerForFiscalEtCommuneRapport() {
 	}
 

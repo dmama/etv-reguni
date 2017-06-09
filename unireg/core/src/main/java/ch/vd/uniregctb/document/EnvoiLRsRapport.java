@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("EnvoiLRsRapport")
 public class EnvoiLRsRapport extends Document {
 
-	private static final long serialVersionUID = 4288375085852879130L;
-
 	public EnvoiLRsRapport() {
 	}
 

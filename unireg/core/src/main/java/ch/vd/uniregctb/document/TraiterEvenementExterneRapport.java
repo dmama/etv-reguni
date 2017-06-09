@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("TraiterEvenementExterneRapport")
 public class TraiterEvenementExterneRapport extends Document{
 
-	private static final long serialVersionUID = 8809653873691334278L;
-
 	public TraiterEvenementExterneRapport() {
 	}
 

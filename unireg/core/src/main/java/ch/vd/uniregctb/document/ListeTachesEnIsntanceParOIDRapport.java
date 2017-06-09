@@ -12,8 +12,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ListeTachesEnIsntanceParOIDRapport")
 public class ListeTachesEnIsntanceParOIDRapport extends Document {
 
-	private static final long serialVersionUID = -5309096750654428461L;
-
 	public ListeTachesEnIsntanceParOIDRapport() {
 	}
 

@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ResolutionAdresseRapport")
 public class ResolutionAdresseRapport extends Document{
 
-	private static final long serialVersionUID = 8809632870053483078L;
-
 	public ResolutionAdresseRapport() {
 	}
 

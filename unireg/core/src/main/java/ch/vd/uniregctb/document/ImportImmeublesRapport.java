@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ImportImmeublesRapport")
 public class ImportImmeublesRapport extends Document {
 
-	private static final long serialVersionUID = 5737493096745914108L;
-
 	public ImportImmeublesRapport() {
 	}
 

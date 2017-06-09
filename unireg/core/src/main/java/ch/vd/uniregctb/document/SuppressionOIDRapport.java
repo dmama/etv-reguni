@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("SuppressionOIDRapport ")
 public class SuppressionOIDRapport extends Document {
 
-
 	public SuppressionOIDRapport() {
 	}
 

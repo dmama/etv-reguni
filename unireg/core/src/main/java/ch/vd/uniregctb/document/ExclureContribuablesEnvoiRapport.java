@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ExclCtbsEnvoiRapport")
 public class ExclureContribuablesEnvoiRapport extends Document {
 
-	private static final long serialVersionUID = 7664158889002088102L;
-
 	public ExclureContribuablesEnvoiRapport() {
 	}
 

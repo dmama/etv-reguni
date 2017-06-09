@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ImportCodesSegmentRapport")
 public class ImportCodesSegmentRapport extends Document {
 
-	private static final long serialVersionUID = 8809638700534747648L;
-
 	public ImportCodesSegmentRapport() {
 	}
 

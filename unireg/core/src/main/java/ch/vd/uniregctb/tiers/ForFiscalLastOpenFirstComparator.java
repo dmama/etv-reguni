@@ -10,7 +10,6 @@ import ch.vd.registre.base.date.RegDateHelper;
  * @author Raphaël Marmier, 2015-12-21
  */
 public class ForFiscalLastOpenFirstComparator implements Comparator<ForFiscal> {
-	private static final long serialVersionUID = 1L;
 
 	public ForFiscalLastOpenFirstComparator() {}
 

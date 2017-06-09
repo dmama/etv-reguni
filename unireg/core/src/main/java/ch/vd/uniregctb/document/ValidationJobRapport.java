@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ValidationJobRapport")
 public class ValidationJobRapport extends Document {
 
-	private static final long serialVersionUID = -6711906346556685174L;
-
 	public ValidationJobRapport() {
 	}
 

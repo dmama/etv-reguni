@@ -41,8 +41,6 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
 @Table(name = "EVENEMENT_CIVIL")
 public class EvenementCivilRegPP extends HibernateEntity {
 
-	private static final long serialVersionUID = 2422294829219811626L;
-
 	private Long id;
 	private TypeEvenementCivil type;
 	private EtatEvenementCivil etat = EtatEvenementCivil.A_TRAITER;

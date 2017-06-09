@@ -35,8 +35,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 @DiscriminatorColumn(name = "EVENT_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class EvenementExterne extends HibernateEntity {
 
-	private static final long serialVersionUID = -2680733628961424191L;
-
 	private Long id;
 	protected Tiers tiers;
 	private Date dateEvenement;

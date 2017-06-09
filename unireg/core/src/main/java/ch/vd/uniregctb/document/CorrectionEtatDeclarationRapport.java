@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("CorrectionEtatDeclarationRapport")
 public class CorrectionEtatDeclarationRapport extends Document {
 
-	private static final long serialVersionUID = -190949074275648806L;
-
 	public CorrectionEtatDeclarationRapport() {
 	}
 

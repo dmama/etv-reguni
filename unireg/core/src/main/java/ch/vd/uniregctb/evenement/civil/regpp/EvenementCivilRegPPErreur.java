@@ -28,8 +28,6 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
 @Table(name = "EVENEMENT_CIVIL_ERREUR")
 public class EvenementCivilRegPPErreur extends HibernateEntity implements EvenementErreur {
 
-	private static final long serialVersionUID = -1077312693852919409L;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilRegPPErreur.class);
 
 	public EvenementCivilRegPPErreur() {

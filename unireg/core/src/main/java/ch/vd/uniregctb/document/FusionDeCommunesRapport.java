@@ -6,8 +6,6 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue("FusionDeCommunesRapport")
 public class FusionDeCommunesRapport extends Document {
-	
-	private static final long serialVersionUID = 8809653870053433078L;
 
 	public FusionDeCommunesRapport() {
 	}

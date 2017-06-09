@@ -12,8 +12,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ListeNoteRapport")
 public class ListeNoteRapport extends Document {
 
-	private static final long serialVersionUID = 8554086128587760818L;
-
 	public ListeNoteRapport() {
 	}
 

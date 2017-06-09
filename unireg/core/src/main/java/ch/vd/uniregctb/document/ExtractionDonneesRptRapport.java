@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("ExtractionAfcRapport")         // nom historique...
 public class ExtractionDonneesRptRapport extends Document {
 
-	private static final long serialVersionUID = 451574987594516913L;
-
 	public ExtractionDonneesRptRapport() {
 	}
 

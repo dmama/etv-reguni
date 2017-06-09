@@ -12,8 +12,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue("StatistiquesDIsRapport")
 public class StatistiquesDIsRapport extends Document {
 
-	private static final long serialVersionUID = -2194082795005069066L;
-
 	public StatistiquesDIsRapport() {
 	}
 
