@@ -2,6 +2,7 @@ package ch.vd.uniregctb.xml.party.v5;
 
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.xml.party.landregistry.v1.AdministrativeAuthorityIdentity;
@@ -71,7 +72,7 @@ public abstract class RightHolderBuilder {
 			final PersonneMoraleRF pm = (PersonneMoraleRF) tiersRF;
 			final CorporationIdentity identity = new CorporationIdentity();
 			identity.setName(pm.getRaisonSociale());
-			identity.setCommercialRegisterNumber(pm.getNumeroRC());
+			identity.setCommercialRegisterNumber(StringUtils.trimToEmpty(pm.getNumeroRC())); // le numéro RC est obligatoire sous peine de non-validation XML
 			holderIdentity = identity;
 		}
 		else if (tiersRF instanceof CollectivitePubliqueRF) {

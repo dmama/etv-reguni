@@ -82,6 +82,10 @@ public abstract class EvenementTest {
 		esbValidator = BusinessItTest.buildEsbMessageValidator(sources);
 	}
 
+	protected void buildEsbMessageValidator(String[] locationPatterns) throws Exception {
+		esbValidator = BusinessItTest.buildEsbMessageValidator(locationPatterns);
+	}
+
 	protected void initListenerContainer(String queueName, EsbMessageHandler handler, EsbBusinessErrorHandler errorHandler) {
 		listener = new GentilEsbMessageListenerContainer();
 		listener.setHandler(handler);

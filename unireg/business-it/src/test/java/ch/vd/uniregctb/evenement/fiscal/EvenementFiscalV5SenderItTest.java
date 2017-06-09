@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -15,11 +14,14 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroit;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
 import ch.vd.uniregctb.registrefoncier.BienFondRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.MockRegistreFoncierService;
+import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
@@ -63,7 +65,12 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 
 		clearQueue(OUTPUT_QUEUE);
 
-		buildEsbMessageValidator(new Resource[]{new ClassPathResource("event/fiscal/evt-fiscal-5.xsd")});
+		buildEsbMessageValidator(new String[] {
+				"classpath*:ws/*.xsd",
+				"classpath*:party/*.xsd",
+				"unireg-common-2.xsd",
+				"event/fiscal/evt-fiscal-5.xsd",
+		});
 
 		evenementFiscalV5Factory = new EvenementFiscalV5FactoryImpl();
 		evenementFiscalV5Factory.afterPropertiesSet();
@@ -271,4 +278,67 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 		}
 	}
 
+	@Test(timeout = 10000L)
+	public void testSendEvenementOuvertureDroitSurEntrepriseSansNumeroRC() throws Exception {
+		AuthenticationHelper.pushPrincipal("EvenementFiscalSenderTest");
+		try {
+			// Création du message
+
+			final CommuneRF commune = new CommuneRF(12, "Echallens", 2322);
+
+			final SituationRF situation = new SituationRF();
+			situation.setDateDebut(RegDate.get(2000, 1, 1));
+			situation.setNoParcelle(212);
+			situation.setCommune(commune);
+
+			final BienFondRF immeuble = new BienFondRF();
+			immeuble.setId(94949L);
+			immeuble.setIdRF("39393");
+			immeuble.setEgrid("CH28282");
+			immeuble.addSituation(situation);
+
+			final PersonneMoraleRF tiers = new PersonneMoraleRF();
+			tiers.setId(281819L);
+			tiers.setRaisonSociale("Ma moyenne entreprise");
+			tiers.setNumeroRC(null);    // <---- ici !
+
+			final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
+			droit.setImmeuble(immeuble);
+			droit.setAyantDroit(tiers);
+
+			EvenementFiscalDroitPropriete event = new EvenementFiscalDroitPropriete(RegDate.get(2017, 1, 1), droit, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE);
+			event.setId(1234L);
+
+			evenementFiscalV5Factory.setRegistreFoncierService(new MockRegistreFoncierService() {
+				@Override
+				@Nullable
+				public Long getContribuableIdFor(@NotNull TiersRF tiersRF) {
+					return null;
+				}
+			});
+
+			// Envoi du message
+			sender.sendEvent(event);
+
+			// On vérifie que l'on a bien envoyé le message (= pas d'erreur de validation)
+			final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fisc-evt-5:fiscalEvent xmlns:fisc-evt-5=\"http://www.vd.ch/fiscalite/unireg/event/fiscal/5\" xmlns:common-2=\"http://www.vd.ch/fiscalite/unireg/common/2\" xmlns:corp-5=\"http://www.vd.ch/fiscalite/unireg/party/corporation/5\" xmlns:land-1=\"http://www.vd.ch/fiscalite/unireg/party/landregistry/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"fisc-evt-5:landOwnershipRightStartEventType\">" +
+					"<fisc-evt-5:date><common-2:year>2017</common-2:year><common-2:month>1</common-2:month><common-2:day>1</common-2:day></fisc-evt-5:date>" +
+					"<fisc-evt-5:rightHolder>" +
+					"<land-1:identity xsi:type=\"land-1:corporationIdentityType\">" +
+					"<land-1:id>0</land-1:id>" +
+					"<land-1:name>Ma moyenne entreprise</land-1:name>" +
+					"<land-1:commercialRegisterNumber/>" +
+					"<land-1:padding>0</land-1:padding>" +
+					"</land-1:identity>" +
+					"<land-1:padding>0</land-1:padding>" +
+					"</fisc-evt-5:rightHolder>" +
+					"<fisc-evt-5:immovablePropertyId>94949</fisc-evt-5:immovablePropertyId>" +
+					"<fisc-evt-5:padding>0</fisc-evt-5:padding>" +
+					"</fisc-evt-5:fiscalEvent>";
+			assertTextMessage(OUTPUT_QUEUE, texte);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
+	}
 }

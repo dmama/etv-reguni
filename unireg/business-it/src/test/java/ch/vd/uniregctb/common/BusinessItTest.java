@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.common;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
@@ -76,6 +80,27 @@ public abstract class BusinessItTest extends AbstractBusinessTest {
 		}
 		else {
 			return StringUtils.trimToNull(valiPattern.matcher(string).replaceAll(""));
+		}
+	}
+
+	/**
+	 * Construit un validateur qui référence des XSDs définis par leurs classpaths. Les wildcards (*) sont supportés.
+	 */
+	public static EsbMessageValidator buildEsbMessageValidator(String[] locationPatterns) throws Exception {
+		final Resource[] resources = Arrays.stream(locationPatterns)
+				.map(BusinessItTest::resolvePattern)
+				.flatMap(Stream::of)
+				.toArray(Resource[]::new);
+		return buildEsbMessageValidator(resources);
+	}
+
+	private static Resource[] resolvePattern(String pattern) {
+		final PathMatchingResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+		try {
+			return resourcePatternResolver.getResources(pattern);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
