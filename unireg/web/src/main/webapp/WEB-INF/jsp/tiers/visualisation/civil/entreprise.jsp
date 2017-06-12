@@ -455,8 +455,8 @@
 		}
 
 		// on rafraîchit toutes les tables une première fois à l'affichage de la page
-		refreshRaisonSocialeTable($('#raisonSociale'));
-		refreshNomsAdditionnelsTable($('#nomsAdditionnels'));
+		refreshRaisonSocialeTable($('#showRaisonSocialeHisto'));
+		refreshNomsAdditionnelsTable($('#showNomsAdditionnelsHisto'));
 		refreshSiegesTable($('#showSiegesHisto'));
 		refreshFormesJuridiquesTable($('#showFormesJuridiquesHisto'));
 		refreshCapitauxTable($('#showCapitauxHisto'));
