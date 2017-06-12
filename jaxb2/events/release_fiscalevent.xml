@@ -1,6 +1,6 @@
 <assembly>
 	<!-- BEGIN_LVERSION -->
-	<id>FiscalEvents_6.5-SNAPSHOT</id>
+	<id>FiscalEvents_6.5</id>
 	<!-- END_LVERSION -->
 	<formats>
 		<format>zip</format>
