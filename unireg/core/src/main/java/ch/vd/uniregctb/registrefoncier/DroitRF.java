@@ -56,13 +56,13 @@ public abstract class DroitRF extends HibernateDateRangeEntity implements Linked
 	private String versionIdRF;
 
 	/**
-	 * La date de début du droit telle que renseignée dans le registre foncier (la date de début normale est une date technique qui correspond à la date d'import de la donnée).
+	 * La date de début du droit telle que calculée par Unireg (droits de propriété) ou  ou renseignée dans le RF (servitudes).
 	 */
 	@Nullable
 	private RegDate dateDebutMetier;
 
 	/**
-	 * La date de fin de droit telle que calculée par Unireg (droits normaux) ou renseignée dans le RF (servitudes).
+	 * La date de fin de droit telle que calculée par Unireg (droits de propriété) ou renseignée dans le RF (servitudes).
 	 */
 	@Nullable
 	private RegDate dateFinMetier;

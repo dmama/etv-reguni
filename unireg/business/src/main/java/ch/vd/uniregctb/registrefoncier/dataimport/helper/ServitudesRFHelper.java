@@ -115,8 +115,10 @@ public class ServitudesRFHelper {
 	private static boolean equalsServitude(@NotNull ServitudeRF left, @NotNull ServitudeRF right) {
 		return Objects.equals(left.getIdentifiantDroit(), right.getIdentifiantDroit()) &&
 				numeroAffaireEquals(left.getNumeroAffaire(), right.getNumeroAffaire()) &&
+				left.getDateDebutMetier() == right.getDateDebutMetier() &&
 				left.getDateFinMetier() == right.getDateFinMetier() &&
-				DroitRFHelper.equalsDroit(left, right);
+				Objects.equals(left.getMotifDebut(), right.getMotifDebut()) &&
+				Objects.equals(left.getMotifFin(), right.getMotifFin());
 	}
 
 	@NotNull

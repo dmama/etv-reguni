@@ -35,6 +35,7 @@ import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
 public abstract class DroitRFHelper {
@@ -79,7 +80,11 @@ public abstract class DroitRFHelper {
 	}
 
 	public static boolean dataEquals(DroitProprieteRF droitRF, EigentumAnteil eigentumAnteil) {
-		return dataEquals(droitRF, get(eigentumAnteil, DroitRFHelper::simplisticAyantDroitProvider, DroitRFHelper::simplisticCommunauteProvider, DroitRFHelper::simplisticImmeubleProvider));
+		return dataEquals(droitRF, get(eigentumAnteil,
+		                               DroitRFHelper::simplisticAyantDroitProvider,
+		                               DroitRFHelper::simplisticCommunauteProvider,
+		                               DroitRFHelper::simplisticImmeubleProvider,
+		                               DroitRFHelper::simplisticDroitPrecedentProvider));
 	}
 
 	/**
@@ -115,6 +120,11 @@ public abstract class DroitRFHelper {
 		final CommunauteRF c = new CommunauteRF();
 		c.setIdRF(idRf);
 		return c;
+	}
+
+	@Nullable
+	private static DroitProprieteRF simplisticDroitPrecedentProvider(@NotNull DroitRFKey key) {
+		return null;
 	}
 
 	public static boolean masterIdAndVersionIdEquals(@NotNull DroitRF left, @NotNull DroitRF right) {
@@ -172,14 +182,8 @@ public abstract class DroitRFHelper {
 				immeubleEquals(left.getImmeuble(), right.getImmeuble()) &&
 				partEquals(left.getPart(), right.getPart()) &&
 				left.getRegime() == right.getRegime() &&
-				RaisonAcquisitionRFHelper.dataEquals(left.getRaisonsAcquisition(), right.getRaisonsAcquisition()) &&
-				equalsDroit(left, right);
-	}
-
-	public static boolean equalsDroit(@NotNull DroitRF left, @NotNull DroitRF right) {
-		return left.getDateDebutMetier() == right.getDateDebutMetier() &&
-				// la date de fin métier n'est pas renseignée dans le fichier d'entrée, on ne la compare pas
-				Objects.equals(left.getMotifDebut(), right.getMotifDebut());
+				// note : les dates métiers et les motifs sont déduits des raisons d'acquisition, on ne les compare pas.
+				RaisonAcquisitionRFHelper.dataEquals(left.getRaisonsAcquisition(), right.getRaisonsAcquisition());
 	}
 
 	public static GenrePropriete getRegime(@Nullable PersonEigentumsform form) {
@@ -282,11 +286,11 @@ public abstract class DroitRFHelper {
 		}
 	}
 
-	@NotNull
 	public static DroitProprieteRF newDroitRF(@NotNull EigentumAnteil eigentumAnteil,
 	                                          @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
 	                                          @NotNull Function<String, CommunauteRF> communauteProvider,
-	                                          @NotNull Function<String, ImmeubleRF> immeubleProvider) {
+	                                          @NotNull Function<String, ImmeubleRF> immeubleProvider,
+	                                          @NotNull Function<DroitRFKey, DroitProprieteRF> droitPrecedentProvider) {
 
 		final DroitProprieteRF droit;
 		if (eigentumAnteil instanceof PersonEigentumAnteil) {
@@ -359,7 +363,7 @@ public abstract class DroitRFHelper {
 			throw new IllegalArgumentException("Type de droit inconnu = [" + eigentumAnteil.getClass().getSimpleName() + "]");
 		}
 
-		droit.calculateDateEtMotifDebut();
+		droit.calculateDateEtMotifDebut(droitPrecedentProvider);
 		return droit;
 	}
 
@@ -385,15 +389,15 @@ public abstract class DroitRFHelper {
 		}
 	}
 
-	@Nullable
 	public static DroitProprieteRF get(@Nullable EigentumAnteil eigentumAnteil,
 	                                   @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
 	                                   @NotNull Function<String, CommunauteRF> communauteProvider,
-	                                   @NotNull Function<String, ImmeubleRF> immeubleProvider) {
+	                                   @NotNull Function<String, ImmeubleRF> immeubleProvider,
+	                                   @NotNull Function<DroitRFKey, DroitProprieteRF> droitPrecedentProvider) {
 		if (eigentumAnteil == null) {
 			return null;
 		}
-		return newDroitRF(eigentumAnteil, ayantDroitProvider, communauteProvider, immeubleProvider);
+		return newDroitRF(eigentumAnteil, ayantDroitProvider, communauteProvider, immeubleProvider, droitPrecedentProvider);
 	}
 
 	public static class DroitIntersection implements DateRange {

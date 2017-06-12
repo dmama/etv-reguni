@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 
@@ -48,6 +49,11 @@ public class MockDroitRFDAO implements DroitRFDAO {
 				.filter(a -> a.isValidAt(RegDate.get()))
 				.map(DroitRFKey::new)
 				.collect(Collectors.toSet());
+	}
+
+	@Override
+	public @Nullable DroitProprieteRF findDroitPrecedent(@NotNull DroitRFKey key) {
+		throw new NotImplementedException();
 	}
 
 	@Override

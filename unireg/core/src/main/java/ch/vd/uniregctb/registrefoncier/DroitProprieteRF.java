@@ -19,14 +19,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Contribuable;
 
@@ -122,10 +128,6 @@ public abstract class DroitProprieteRF extends DroitRF {
 		raisonsAcquisition.add(raison);
 	}
 
-	public boolean removeRaisonAcquisition(RaisonAcquisitionRF raison) {
-		return raisonsAcquisition != null && raisonsAcquisition.remove(raison);
-	}
-
 	@NotNull
 	@Transient
 	@Override
@@ -208,24 +210,45 @@ public abstract class DroitProprieteRF extends DroitRF {
 
 	/**
 	 * Calcule la date de début métier et le motif d'acquisition à partir de l'historique des raisons d'acquisition.
+	 * @param droitPrecedentProvider un provider qui retourne le droit précédent chronologiquement) avec le même masterId qui spécifié.
 	 */
-	public void calculateDateEtMotifDebut() {
+	public void calculateDateEtMotifDebut(@NotNull Function<DroitRFKey, DroitProprieteRF> droitPrecedentProvider) {
 		if (raisonsAcquisition == null || raisonsAcquisition.isEmpty()) {
-			this.setDateDebutMetier(null);
-			this.setMotifDebut(null);
+			setDebutRaisonAcquisition(null);
 		}
 		else {
-			final RaisonAcquisitionRF first = raisonsAcquisition.stream()
-					.min(Comparator.naturalOrder())
-					.orElse(null);
-			if (first == null) {
-				this.setDateDebutMetier(null);
-				this.setMotifDebut(null);
+			final DroitProprieteRF precedent = droitPrecedentProvider.apply(new DroitRFKey(getMasterIdRF(), getVersionIdRF()));
+			if (precedent == null || precedent.getRaisonsAcquisition() == null) {
+				// il n'y a pas de droit précédent : on prend la raison d'acquisition la plus vieille comme référence
+				final RaisonAcquisitionRF first = raisonsAcquisition.stream()
+						.min(Comparator.naturalOrder())
+						.orElse(null);
+				setDebutRaisonAcquisition(first);
 			}
 			else {
-				this.setDateDebutMetier(first.getDateAcquisition());
-				this.setMotifDebut(first.getMotifAcquisition());
+				// il y a bien un droit précédent : on prend la nouvelle raison d'acquisition comme référence
+				final RegDate derniereDate = precedent.getRaisonsAcquisition().stream()
+						.map(RaisonAcquisitionRF::getDateAcquisition)
+						.max(Comparator.naturalOrder())
+						.orElse(null);
+				final RaisonAcquisitionRF nouvelle = raisonsAcquisition.stream()
+						.filter(r -> RegDateHelper.isAfter(r.getDateAcquisition(), derniereDate, NullDateBehavior.EARLIEST))
+						.min(Comparator.naturalOrder())
+						.orElse(null);
+				setDebutRaisonAcquisition(nouvelle);
 			}
+		}
+	}
+
+	@Transient
+	private void setDebutRaisonAcquisition(@Nullable RaisonAcquisitionRF raison) {
+		if (raison == null) {
+			setDateDebutMetier(null);
+			setMotifDebut(null);
+		}
+		else {
+			setDateDebutMetier(raison.getDateAcquisition());
+			setMotifDebut(raison.getMotifAcquisition());
 		}
 	}
 }
