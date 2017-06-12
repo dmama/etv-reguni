@@ -70,7 +70,7 @@ public class CommunityOfOwnersBuilderTest {
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Succession", new IdentifiantAffaireRF(21, 2016, 322, 3)));
 		droit.setAyantDroit(communaute);
 		droit.setImmeuble(immeuble);
-		droit.calculateDateEtMotifDebut();
+		droit.calculateDateEtMotifDebut(p -> null);
 		communaute.addDroitPropriete(droit);
 
 		final CommunauteRFMembreInfo membreInfo = new CommunauteRFMembreInfo(4, Collections.singletonList(2727272L), Arrays.asList(ppRF, pmRF, collRF));

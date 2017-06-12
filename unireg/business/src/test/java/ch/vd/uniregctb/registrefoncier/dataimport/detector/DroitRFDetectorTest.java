@@ -533,7 +533,7 @@ public class DroitRFDetectorTest {
 		droitPP1.setPart(new Fraction(1, 2));
 		droitPP1.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP1.calculateDateEtMotifDebut();
+		droitPP1.calculateDateEtMotifDebut(p -> null);
 		pp1.addDroitPropriete(droitPP1);
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
@@ -547,7 +547,7 @@ public class DroitRFDetectorTest {
 		droitPP2.setPart(new Fraction(1, 2));
 		droitPP2.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP2.calculateDateEtMotifDebut();
+		droitPP2.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP2);
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
@@ -561,7 +561,7 @@ public class DroitRFDetectorTest {
 		droitPP3.setPart(new Fraction(1, 1));
 		droitPP3.setRegime(GenrePropriete.INDIVIDUELLE);
 		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
-		droitPP3.calculateDateEtMotifDebut();
+		droitPP3.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP3);
 
 		final DroitProprieteImmeubleRF droitImm4 = new DroitProprieteImmeubleRF();
@@ -574,7 +574,7 @@ public class DroitRFDetectorTest {
 		droitImm4.setPart(new Fraction(1,14));
 		droitImm4.setRegime(GenrePropriete.PPE);
 		droitImm4.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 4), "Constitution de PPE", new IdentifiantAffaireRF(6, 2014, 203, 0)));
-		droitImm4.calculateDateEtMotifDebut();
+		droitImm4.calculateDateEtMotifDebut(p -> null);
 		ib3.addDroitPropriete(droitImm4);
 
 		// un mock avec les ayants-droits.
@@ -768,7 +768,7 @@ public class DroitRFDetectorTest {
 		droitPP1.setPart(new Fraction(1, 2));
 		droitPP1.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP1.calculateDateEtMotifDebut();
+		droitPP1.calculateDateEtMotifDebut(p -> null);
 		pp1.addDroitPropriete(droitPP1);
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
@@ -782,7 +782,7 @@ public class DroitRFDetectorTest {
 		droitPP2.setPart(new Fraction(1, 2));
 		droitPP2.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP2.calculateDateEtMotifDebut();
+		droitPP2.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP2);
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
@@ -796,7 +796,7 @@ public class DroitRFDetectorTest {
 		droitPP3.setPart(new Fraction(1, 1));
 		droitPP3.setRegime(GenrePropriete.INDIVIDUELLE);
 		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
-		droitPP3.calculateDateEtMotifDebut();
+		droitPP3.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP3);
 
 		final DroitProprieteImmeubleRF droitImm4 = new DroitProprieteImmeubleRF();
@@ -809,7 +809,7 @@ public class DroitRFDetectorTest {
 		droitImm4.setPart(new Fraction(1,14));
 		droitImm4.setRegime(GenrePropriete.PPE);
 		droitImm4.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 4), "Constitution de PPE", new IdentifiantAffaireRF(6, 2014, 203, 0)));
-		droitImm4.calculateDateEtMotifDebut();
+		droitImm4.calculateDateEtMotifDebut(p -> null);
 		ib3.addDroitPropriete(droitImm4);
 
 		// un mock avec les deux ayants-droits.
@@ -886,7 +886,7 @@ public class DroitRFDetectorTest {
 		droitPP1.setPart(new Fraction(1, 2));
 		droitPP1.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP1.calculateDateEtMotifDebut();
+		droitPP1.calculateDateEtMotifDebut(p -> null);
 		pp1.addDroitPropriete(droitPP1);
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
@@ -900,7 +900,7 @@ public class DroitRFDetectorTest {
 		droitPP2.setPart(new Fraction(1, 2));
 		droitPP2.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP2.calculateDateEtMotifDebut();
+		droitPP2.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP2);
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
@@ -914,7 +914,7 @@ public class DroitRFDetectorTest {
 		droitPP3.setPart(new Fraction(1, 1));
 		droitPP3.setRegime(GenrePropriete.INDIVIDUELLE);
 		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
-		droitPP3.calculateDateEtMotifDebut();
+		droitPP3.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP3);
 
 		final DroitProprieteImmeubleRF droitImm4 = new DroitProprieteImmeubleRF();
@@ -927,7 +927,7 @@ public class DroitRFDetectorTest {
 		droitImm4.setPart(new Fraction(1,14));
 		droitImm4.setRegime(GenrePropriete.PPE);
 		droitImm4.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 4), "Constitution de PPE", new IdentifiantAffaireRF(6, 2014, 203, 0)));
-		droitImm4.calculateDateEtMotifDebut();
+		droitImm4.calculateDateEtMotifDebut(p -> null);
 		ib3.addDroitPropriete(droitImm4);
 
 		// un mock avec les deux ayants-droits.

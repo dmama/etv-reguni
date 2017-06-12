@@ -85,7 +85,7 @@ public class DroitRFHelperTest {
 			droitPP1.setPart(new Fraction(1, 2));
 			droitPP1.setRegime(GenrePropriete.COPROPRIETE);
 			droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
-			droitPP1.calculateDateEtMotifDebut();
+			droitPP1.calculateDateEtMotifDebut(p -> null);
 		}
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
@@ -106,7 +106,7 @@ public class DroitRFHelperTest {
 			droitPP2.setPart(new Fraction(1, 1));
 			droitPP2.setRegime(GenrePropriete.INDIVIDUELLE);
 			droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2013, 8, 22), "Héritage", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-			droitPP2.calculateDateEtMotifDebut();
+			droitPP2.calculateDateEtMotifDebut(p -> null);
 		}
 
 		final DroitProprieteImmeubleRF droitImm3 = new DroitProprieteImmeubleRF();
@@ -127,7 +127,7 @@ public class DroitRFHelperTest {
 			droitImm3.setPart(new Fraction(1, 14));
 			droitImm3.setRegime(GenrePropriete.COPROPRIETE);
 			droitImm3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2015,2,10), "Constitution de parts de copropriété", new IdentifiantAffaireRF(6, 2015, 3400, 1)));
-			droitImm3.calculateDateEtMotifDebut();
+			droitImm3.calculateDateEtMotifDebut(p -> null);
 		}
 
 		final PersonEigentumAnteil eigentumAnteil1 = new PersonEigentumAnteil();
@@ -217,7 +217,7 @@ public class DroitRFHelperTest {
 		droitPP.setPart(new Fraction(1, 2));
 		droitPP.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
-		droitPP.calculateDateEtMotifDebut();
+		droitPP.calculateDateEtMotifDebut(p -> null);
 
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(RegDate.get(2010, 4, 23));
@@ -261,7 +261,7 @@ public class DroitRFHelperTest {
 		droitPM.setPart(new Fraction(1, 2));
 		droitPM.setRegime(GenrePropriete.INDIVIDUELLE);
 		droitPM.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
-		droitPM.calculateDateEtMotifDebut();
+		droitPM.calculateDateEtMotifDebut(p -> null);
 
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(RegDate.get(2010, 4, 23));
@@ -304,7 +304,7 @@ public class DroitRFHelperTest {
 		droitComm.setPart(new Fraction(1, 2));
 		droitComm.setRegime(GenrePropriete.COMMUNE);
 		droitComm.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
-		droitComm.calculateDateEtMotifDebut();
+		droitComm.calculateDateEtMotifDebut(p -> null);
 
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(RegDate.get(2010, 4, 23));
@@ -348,7 +348,7 @@ public class DroitRFHelperTest {
 		droitImm.setPart(new Fraction(1, 14));
 		droitImm.setRegime(GenrePropriete.COPROPRIETE);
 		droitImm.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2015,2,10), "Constitution de parts de copropriété", new IdentifiantAffaireRF(6, 2015, 3400, 1)));
-		droitImm.calculateDateEtMotifDebut();
+		droitImm.calculateDateEtMotifDebut(p -> null);
 
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(RegDate.get(2015, 2, 10));

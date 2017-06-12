@@ -325,7 +325,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit1.setRegime(GenrePropriete.INDIVIDUELLE);
 				// motif différent
 				droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2007, 2, 7), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0)));
-				droit1.calculateDateEtMotifDebut();
+				droit1.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit1);
 
 				BienFondRF immeuble2 = new BienFondRF();
@@ -342,7 +342,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit2.setPart(new Fraction(1, 2));
 				droit2.setRegime(GenrePropriete.COPROPRIETE);
 				droit2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2014, 12, 23), "Achat", new IdentifiantAffaireRF(6, 2014, 9593, 0)));
-				droit2.calculateDateEtMotifDebut();
+				droit2.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit2);
 			}
 		});
@@ -590,7 +590,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit1.setPart(new Fraction(1, 1));
 				droit1.setRegime(GenrePropriete.INDIVIDUELLE);
 				droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2007, 2, 7), "Donation", new IdentifiantAffaireRF(13, 2007, 173, 0)));
-				droit1.calculateDateEtMotifDebut();
+				droit1.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit1);
 
 				BienFondRF immeuble2 = new BienFondRF();
@@ -607,7 +607,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit2.setRegime(GenrePropriete.COPROPRIETE);
 				droit2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2003, 1, 1), "Succession", new IdentifiantAffaireRF(6, 2003, 9593, 0)));
 				droit2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2014, 12, 23), "Achat", new IdentifiantAffaireRF(6, 2014, 9593, 0)));
-				droit2.calculateDateEtMotifDebut();
+				droit2.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit2);
 			}
 		});

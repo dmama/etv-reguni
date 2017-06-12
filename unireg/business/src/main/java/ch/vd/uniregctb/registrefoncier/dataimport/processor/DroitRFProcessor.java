@@ -35,6 +35,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigen
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.RaisonAcquisitionRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
+import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.masterIdAndVersionIdEquals;
@@ -110,7 +111,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 		// on crée les droits en mémoire
 		final List<DroitProprieteRF> droits = droitList.stream()
-				.map(e -> DroitRFHelper.newDroitRF(e, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble))
+				.map(e -> DroitRFHelper.newDroitRF(e, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble, this::findDroitPrecedent))
 				.collect(Collectors.toList());
 
 		// on les insère en DB
@@ -144,6 +145,11 @@ public class DroitRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] est radié, il ne devrait plus changer.");
 		}
 		return immeuble;
+	}
+
+	@Nullable
+	private DroitProprieteRF findDroitPrecedent(@NotNull DroitRFKey key) {
+		return droitRFDAO.findDroitPrecedent(key);
 	}
 
 	@Nullable
@@ -244,7 +250,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 		// on ajoute toutes les nouvelles raisons
 		toAdd.forEach(persisted::addRaisonAcquisition);
-		persisted.calculateDateEtMotifDebut();
+		persisted.calculateDateEtMotifDebut(this::findDroitPrecedent);
 
 		// on publie l'événement fiscal correspondant
 		evenementFiscalService.publierModificationDroitPropriete(persisted.getDateDebutMetier(), persisted);

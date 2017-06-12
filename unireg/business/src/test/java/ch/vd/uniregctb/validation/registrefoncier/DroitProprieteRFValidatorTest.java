@@ -107,7 +107,7 @@ public class DroitProprieteRFValidatorTest {
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1990, 1, 1), "Succession", null));
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Vente forcée", new IdentifiantAffaireRF(12, "2000/22/0")));
 			assertErrors(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
-					                                       "une date de début métier () différente de la date de la première raison d'acquisition (01.01.1990)"), validator.validate(droit));
+					                                       "une date de début métier () et un motif (Succession) qui ne correspondent à aucune des raisons d'acquisition"), validator.validate(droit));
 		}
 
 		// un droit sans motif de début
@@ -120,7 +120,7 @@ public class DroitProprieteRFValidatorTest {
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1990, 1, 1), "Succession", null));
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Vente forcée", new IdentifiantAffaireRF(12, "2000/22/0")));
 			assertErrors(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
-					                                       "un motif de début (null) différent du motif de la première raison d'acquisition (Succession)"), validator.validate(droit));
+					                                       "une date de début métier (01.01.1990) et un motif (null) qui ne correspondent à aucune des raisons d'acquisition"), validator.validate(droit));
 		}
 	}
 

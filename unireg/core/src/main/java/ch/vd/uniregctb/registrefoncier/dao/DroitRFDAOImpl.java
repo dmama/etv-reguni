@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BaseDAOImpl;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 
@@ -95,5 +96,18 @@ public class DroitRFDAOImpl extends BaseDAOImpl<DroitRF, Long> implements DroitR
 		}
 
 		return set;
+	}
+
+	@Override
+	public @Nullable DroitProprieteRF findDroitPrecedent(@NotNull DroitRFKey key) {
+		// on veut retourner le droit immédiatement précédant le droit spécifié par la clé. Il faut donc :
+		//  - filtrer sur le même masterIdRF
+		//  - exclure le droit courant (= celui qui correspond au versionIdRF de la clé)
+		//  - retourner le droit le plus récemment créé (= tri sur les ids, car on ne peut pas se baser sur les versionIdRF qui sont des codes de hashage sans valeur d'ordonnancement)
+		final Query query = getCurrentSession().createQuery("from DroitProprieteRF where annulationDate is null and masterIdRF = :masterIdRF and versionIdRF != :versionIdRF order by id desc");
+		query.setParameter("masterIdRF", key.getMasterIdRF());
+		query.setParameter("versionIdRF", key.getVersionIdRF());
+		query.setMaxResults(1);
+		return (DroitProprieteRF) query.uniqueResult();
 	}
 }

@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
@@ -64,19 +65,20 @@ public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF
 				}
 			}
 			else {
-				if (entity.getDateDebutMetier() != premiereRaison.getDateAcquisition()) {
-					results.addError(String.format("%s %s possède une date de début métier (%s) différente de la date de la première raison d'acquisition (%s)",
-					                               getEntityCategoryName(),
-					                               getEntityDisplayString(entity),
-					                               RegDateHelper.dateToDisplayString(entity.getDateDebutMetier()),
-					                               RegDateHelper.dateToDisplayString(premiereRaison.getDateAcquisition())));
-				}
-				if (!Objects.equals(entity.getMotifDebut(), premiereRaison.getMotifAcquisition())) {
-					results.addError(String.format("%s %s possède un motif de début (%s) différent du motif de la première raison d'acquisition (%s)",
-					                               getEntityCategoryName(),
-					                               getEntityDisplayString(entity),
-					                               entity.getMotifDebut(),
-					                               premiereRaison.getMotifAcquisition()));
+				if (entity.getDateDebutMetier() != premiereRaison.getDateAcquisition() || !Objects.equals(entity.getMotifDebut(), premiereRaison.getMotifAcquisition())) {
+					// [SIFISC-24987] Il arrive dans certains cas qu'un droit de propriété évolue (même masterIdRF mais versionIdRF différent entre deux imports),
+					//                à ce moment-là, la date et le motif de début ne sont pas forcément tirés de la première raison d'acquisition. Il n'est pas
+					//                possible de déterminer ici (= il manque le context) la raison d'acquisition précise, alors on vérifie au minimum que la
+					//                date et le motif de début sont bien tirés d'une des raisons d'acquisition.
+					if (raisons.stream()
+							.filter(AnnulableHelper::nonAnnule)
+							.noneMatch(r -> entity.getDateDebutMetier() == r.getDateAcquisition() && Objects.equals(entity.getMotifDebut(), r.getMotifAcquisition()))) {
+						results.addError(String.format("%s %s possède une date de début métier (%s) et un motif (%s) qui ne correspondent à aucune des raisons d'acquisition",
+						                               getEntityCategoryName(),
+						                               getEntityDisplayString(entity),
+						                               RegDateHelper.dateToDisplayString(entity.getDateDebutMetier()),
+						                               entity.getMotifDebut()));
+					}
 				}
 			}
 		}
