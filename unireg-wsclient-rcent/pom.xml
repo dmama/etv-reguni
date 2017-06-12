@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-rcent</artifactId>
-			<version>6.5-SNAPSHOT</version>
+			<version>6.5</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.shared</groupId>
