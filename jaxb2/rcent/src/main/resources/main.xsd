@@ -8,4 +8,7 @@
 
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0023/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0023/3/eVD-0023-3-3.xsd" />
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0024/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0024/3/eVD-0024-3-4.xsd" />
+
+	<xs:import namespace="http://vd.ch/rcent/unireg/unpairingree" schemaLocation="http://vd.ch/rcent/unireg/unpairingree/unpairing.xsd" />
+
 </xs:schema>

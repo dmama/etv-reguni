@@ -229,6 +229,7 @@
 		<value>ch.vd.uniregctb.document.FinsDeDroitRFRapport</value>
 		<value>ch.vd.uniregctb.document.InitialisationIFoncRapport</value>
 		<value>ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport</value>
+		<value>ch.vd.uniregctb.document.DesappariementREERapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
 		<value>ch.vd.uniregctb.registrefoncier.RapprochementRF</value>

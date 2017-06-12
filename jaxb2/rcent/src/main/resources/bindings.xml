@@ -67,4 +67,15 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<!-- Données de désappariement REE SIFISC-24852 -->
+
+	<jxb:bindings schemaLocation="http://vd.ch/rcent/unireg/unpairingree/unpairing.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.rcent.unireg.unpairingree" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="unpairingree" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>

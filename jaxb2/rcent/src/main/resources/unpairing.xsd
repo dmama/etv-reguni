@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://vd.ch/rcent/unireg/unpairingree" xmlns="http://vd.ch/rcent/unireg/unpairingree">
+	<xs:complexType name="unpairingType">
+		<xs:sequence>
+			<xs:element name="initialLoadDate" type="xs:date"/><!-- Date valeur de l'ancien chargement initial 16L1 (celui que l'on cherche à désapparier) -->
+			<xs:element name="currentValueDate" type="xs:date"/><!-- Date valeur du chargement actuel 17L2 (valeur actuelle donnée par le fichier unpairing) -->
+			<xs:element name="organisationLocation" type="organisationLocationType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="organisationLocationType">
+		<xs:sequence>
+			<xs:element name="cantonalId" type="xs:int"/><!-- Identifiant cantonal de l'établissement -->
+			<xs:element name="localUnitId" type="xs:int"/><!-- Identifiant REE de l'unité locale -->
+			<xs:element name="enterpriseUnitId" type="xs:int"/><!-- Identifiant REE de l'entreprise -->
+			<xs:element name="name" type="xs:string"/><!-- Nom de l'établissement -->
+			<xs:element name="main" type="xs:boolean"/><!-- Si "true" indique un établissement principal. Sinon indique un établissement secondaire -->
+			<xs:element name="legalForm" type="xs:string"/><!-- Forme juridique -->
+			<xs:element name="municipality" type="xs:int"/><!-- Commune -->
+			<xs:element name="address" type="addressType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="addressType">
+		<xs:sequence>
+			<xs:element name="addressLine1" type="xs:string" minOccurs="0"/><!-- Complément d'adresse -->
+			<xs:element name="street" type="xs:string" minOccurs="0"/><!-- Rue -->
+			<xs:element name="houseNumber" type="xs:string" minOccurs="0"/><!-- Numéro de maison -->
+			<xs:element name="town" type="xs:string"/><!-- Localité postale -->
+			<xs:element name="swissZipCode" type="xs:int"/><!-- Numéro postal d'achemeinement (NPA) -->
+			<xs:element name="swissZipCodeAddOn" type="xs:int" minOccurs="0"/><!-- Complément au numéro postal d'achemeinement -->
+			<xs:element name="country" type="xs:string"/><!-- Pays -->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="unpairing" type="unpairingType"/>
+</xs:schema>
