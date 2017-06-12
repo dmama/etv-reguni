@@ -430,7 +430,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 				final MovingWindow.Snapshot<Action> snap = wndActions.next();
 				final Action current = snap.getCurrent();
 				if (current.isSeparator()) {
-					if (snap.getPrevious() == null || snap.getPrevious().isSeparator() || snap.getNext() == null) {
+					if (snap.getPrevious() == null || snap.getPrevious().isSeparator() || snap.getNext() == null || snap.getNext().isSeparator()) {
 						wndActions.remove();
 					}
 				}
