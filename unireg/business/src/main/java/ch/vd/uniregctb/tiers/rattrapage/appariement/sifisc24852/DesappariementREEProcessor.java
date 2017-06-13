@@ -25,7 +25,9 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * @author Raphaël Marmier, 2017-06-06, <raphael.marmier@vd.ch>
@@ -113,7 +115,15 @@ public class DesappariementREEProcessor {
 		LOGGER.debug("Trouvé l'établissement n°" + etablissement.getNumero());
 
 		final RegDate aujourdhui = RegDate.get();
-		final Entreprise entreprise = tiersService.getEntreprise(etablissement, aujourdhui);
+		Entreprise entreprise = tiersService.getEntreprise(etablissement, aujourdhui);
+		// Le rapport entre tiers peut avoir été fermé. Dans ce cas, on recherchera en fonction du dernier rapport entre tiers.
+		if (entreprise == null) {
+			final RapportEntreTiers rapportEntreTiers = etablissement.getDernierRapportObjet(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
+			if (rapportEntreTiers == null) {
+				throw new RuntimeException(String.format("Impossible de trouver l'entreprise de l'établissement n°%s.", etablissement.getNumero()));
+			}
+			entreprise = (Entreprise) tiersService.getTiers(rapportEntreTiers.getSujetId());
+		}
 		final Etablissement etablissementPrincipal = tiersService.getEtablissementPrincipal(entreprise, aujourdhui);
 		if (etablissement.getNumero().equals(etablissementPrincipal.getNumero())) {
 			throw new UnsupportedOperationException("Le désappariement des établissements principaux n'est pas supporté à ce stade.");
