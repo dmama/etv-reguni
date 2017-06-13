@@ -222,4 +222,14 @@ public class DroitProprieteRFValidatorTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-25030] Vérifie que le validateur ne crashe pas (NPE) si un droit ne possède pas d'ayant-droit.
+	 */
+	@Test
+	public void testDroitSansAyantDroit() throws Exception {
+		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setMasterIdRF("438934978348934");
+		droit.setVersionIdRF("1");
+		assertErrors(Collections.singletonList("Le droit masterIdRF=[438934978348934] versionIdRF=[1] ne possède pas d'ayant-droit"), validator.validate(droit));
+	}
 }

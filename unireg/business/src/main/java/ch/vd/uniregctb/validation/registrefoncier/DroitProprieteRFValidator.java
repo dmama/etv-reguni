@@ -85,20 +85,25 @@ public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF
 
 		// [SIFISC-23895] les régimes de propriété dépendent du type de propriétaire
 		final AyantDroitRF ayantDroit = entity.getAyantDroit();
-		final Set<GenrePropriete> genreProprietesAutorises;
-		if (ayantDroit instanceof TiersRF || ayantDroit instanceof CommunauteRF) {
-			genreProprietesAutorises = GENRE_PROPRIETES_TIERS;
-		}
-		else if (ayantDroit instanceof ImmeubleBeneficiaireRF) {
-			genreProprietesAutorises = GENRE_PROPRIETES_IMMEUBLES;
+		if (ayantDroit == null) {
+			results.addError("Le droit masterIdRF=[" + entity.getMasterIdRF() + "] versionIdRF=[" + entity.getVersionIdRF()+ "] ne possède pas d'ayant-droit");
 		}
 		else {
-			throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + ayantDroit.getClass().getSimpleName() + "]");
-		}
-		if (!genreProprietesAutorises.contains(entity.getRegime())) {
-			results.addError("Le droit masterIdRF=[" + entity.getMasterIdRF() + "] versionIdRF=[" + entity.getVersionIdRF()+ "] " +
-					                 "sur le tiers RF (" + ayantDroit.getClass().getSimpleName() + ") idRF=[" + ayantDroit.getIdRF() + "] " +
-					                 "possède un régime de propriété [" + entity.getRegime() + "] invalide");
+			final Set<GenrePropriete> genreProprietesAutorises;
+			if (ayantDroit instanceof TiersRF || ayantDroit instanceof CommunauteRF) {
+				genreProprietesAutorises = GENRE_PROPRIETES_TIERS;
+			}
+			else if (ayantDroit instanceof ImmeubleBeneficiaireRF) {
+				genreProprietesAutorises = GENRE_PROPRIETES_IMMEUBLES;
+			}
+			else {
+				throw new IllegalArgumentException("Type d'ayant-droit inconnu = [" + ayantDroit.getClass().getSimpleName() + "]");
+			}
+			if (!genreProprietesAutorises.contains(entity.getRegime())) {
+				results.addError("Le droit masterIdRF=[" + entity.getMasterIdRF() + "] versionIdRF=[" + entity.getVersionIdRF() + "] " +
+						                 "sur le tiers RF (" + ayantDroit.getClass().getSimpleName() + ") idRF=[" + ayantDroit.getIdRF() + "] " +
+						                 "possède un régime de propriété [" + entity.getRegime() + "] invalide");
+			}
 		}
 
 		return results;
