@@ -291,6 +291,12 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			}
 			final int periodeFiscale = periodeFiscaleConfirmee.intValue();
 
+			// [SIFISC-25066] Si le droit est clôturé avant le début de la période pour laquelle on veut envoyer un formulaire, ce n'est pas la peine de l'envoyer...
+			if (droit.getDateFinMetier() != null && droit.getDateFinMetier().year() < periodeFiscale) {
+				rapport.addDroitClotureAvantDebutPeriodeVisee(entreprise, immeuble, droit.getDateFinMetier(), periodeFiscale);
+				continue;
+			}
+
 			// [SIFISC-23163] s'il y a un formulaire de demande qui a déjà été envoyé pour une PF entre les années suivant le début de droit et suivant la dernière estimation fiscale et l'année
 			// prochaine (= année de la date de traitement + 1), alors on n'en renvoie pas de nouvelle, ça ne sert à rien
 			final Optional<DemandeDegrevementICI> demandePourPfDejaEnvoyeeSuffisante = demandesDejaEnvoyeesSurImmeuble.stream()

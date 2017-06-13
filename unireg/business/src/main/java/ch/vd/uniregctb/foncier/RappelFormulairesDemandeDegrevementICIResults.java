@@ -22,7 +22,8 @@ public class RappelFormulairesDemandeDegrevementICIResults extends AbstractJobRe
 	public enum RaisonIgnorement {
 		FORMULAIRE_DEJA_RETOURNE("Le formulaire de demande de dégrèvement a déjà été retourné."),
 		FORMULAIRE_DEJA_RAPPELE("Un rappel a déjà eu lieu."),
-		DELAI_ADMINISTRATIF_NON_ECHU("Délai administratif non-échu.")
+		DELAI_ADMINISTRATIF_NON_ECHU("Délai administratif non-échu."),
+		DROIT_CLOTURE("Droit maintenant clôturé avant le début de la PF")
 		;
 
 		public final String libelle;
