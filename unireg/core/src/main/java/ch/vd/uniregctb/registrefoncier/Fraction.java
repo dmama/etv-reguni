@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
@@ -22,6 +23,7 @@ public class Fraction implements Comparable<Fraction> {
 		this.denominateur = denominateur;
 	}
 
+	@Column(name = "NUMERATEUR", nullable = false)
 	public int getNumerateur() {
 		return numerateur;
 	}
@@ -30,6 +32,7 @@ public class Fraction implements Comparable<Fraction> {
 		this.numerateur = numerateur;
 	}
 
+	@Column(name = "DENOMINATEUR", nullable = false)
 	public int getDenominateur() {
 		return denominateur;
 	}

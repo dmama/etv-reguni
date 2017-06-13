@@ -4,6 +4,7 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -76,6 +77,7 @@ public class QuotePartRF extends HibernateDateRangeEntity implements LinkedEntit
 		this.id = id;
 	}
 
+	@Embedded
 	@AttributeOverrides({
 			@AttributeOverride(name = "numerateur", column = @Column(name = "QUOTE_PART_NUM", nullable = false)),
 			@AttributeOverride(name = "denominateur", column = @Column(name = "QUOTE_PART_DENOM", nullable = false))

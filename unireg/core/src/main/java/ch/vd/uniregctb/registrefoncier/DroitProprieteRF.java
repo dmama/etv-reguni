@@ -4,6 +4,7 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -86,6 +87,7 @@ public abstract class DroitProprieteRF extends DroitRF {
 	}
 
 
+	@Embedded
 	@AttributeOverrides({
 			@AttributeOverride(name = "numerateur", column = @Column(name = "PART_PROP_NUM")),
 			@AttributeOverride(name = "denominateur", column = @Column(name = "PART_PROP_DENOM"))

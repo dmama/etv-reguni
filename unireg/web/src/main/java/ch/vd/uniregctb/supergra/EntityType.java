@@ -39,6 +39,8 @@ public enum EntityType {
 	AyantDroitRF(ch.vd.uniregctb.registrefoncier.AyantDroitRF.class, "ayant-droit", "l'ayant-droit", "de l'ayant-droit"),
 	DroitRF(ch.vd.uniregctb.registrefoncier.DroitRF.class, "droit", "le droit", "du droit"),
 	ImmeubleRF(ch.vd.uniregctb.registrefoncier.ImmeubleRF.class, "immeuble", "l'immeuble", "de l'immeuble"),
+	RaisonAcquisitionRF(ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF.class, "raison d'acquisition", "la raison d'acquisition", "de la raison d'acquisition"),
+	QuotePartRF(ch.vd.uniregctb.registrefoncier.QuotePartRF.class, "quote-part", "la quote-part", "de la quote-part"),
 	CommuneRF(ch.vd.uniregctb.registrefoncier.CommuneRF.class, "commune", "la commune", "de la commune"),
 	SituationRF(ch.vd.uniregctb.registrefoncier.SituationRF.class, "situation", "la situation", "de la situation"),
 	SurfaceTotaleRF(ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF.class, "surface totale", "la surface totale", "de la surface totale"),
