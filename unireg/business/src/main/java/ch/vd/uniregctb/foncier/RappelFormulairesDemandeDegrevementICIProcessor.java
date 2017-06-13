@@ -25,6 +25,7 @@ import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
@@ -108,17 +109,30 @@ public class RappelFormulairesDemandeDegrevementICIProcessor {
 				rapport.addRappelErreur(entreprise.getNumero(), demande.getPeriodeFiscale(), situation, commune, demande.getId(), "Etat de lettre inconnu : " + demande.getEtat());
 			}
 			else {
-				// vérfication du délai administratif
-				final RegDate delaiEffectif = delaisService.getFinDelai(demande.getDelaiRetour(), parametreAppService.getDelaiEnvoiRappelDemandeDegrevementICI());
-				if (rapport.dateTraitement.isBeforeOrEqual(delaiEffectif)) {
-					rapport.addFormulaireIgnore(entreprise.getNumero(), demande.getPeriodeFiscale(), situation, commune, demande.getId(), demande.getDateEnvoi(), RappelFormulairesDemandeDegrevementICIResults.RaisonIgnorement.DELAI_ADMINISTRATIF_NON_ECHU);
+				// [SIFISC-25066] la demande est émise... s'il n'existe aucun droit de propriété valide (selon ses dates métier) au 1er janvier de la PF du formulaire,
+				// alors on n'envoie pas de rappel, car en fait la demande n'aurait pas dû être envoyée
+				final boolean aucunDroit = registreFoncierService.getDroitsForCtb(entreprise, false).stream()
+						.filter(DroitProprieteRF.class::isInstance)
+						.map(DroitProprieteRF.class::cast)
+						.filter(droit -> droit.getImmeuble() == immeuble)
+						.noneMatch(droit -> droit.getRangeMetier().isValidAt(RegDate.get(demande.getPeriodeFiscale(), 1, 1)));
+				if (aucunDroit) {
+					rapport.addFormulaireIgnore(entreprise.getNumero(), demande.getPeriodeFiscale(), situation, commune, demande.getId(), demande.getDateEnvoi(), RappelFormulairesDemandeDegrevementICIResults.RaisonIgnorement.DROIT_CLOTURE);
 				}
 				else {
-					// tout est bon, on peut envoyer la sauce
-					final RegDate dateEnvoiRappel = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(rapport.dateTraitement);
-					demande.setDateRappel(dateEnvoiRappel);
-					autreDocumentFiscalService.envoyerRappelFormulaireDemandeDegrevementICIBatch(demande, rapport.dateTraitement);
-					rapport.addRappelEnvoye(entreprise.getNumero(), demande.getPeriodeFiscale(), situation, commune, demande.getId(), demande.getDateEnvoi());
+					// vérfication du délai administratif
+					final RegDate delaiEffectif = delaisService.getFinDelai(demande.getDelaiRetour(), parametreAppService.getDelaiEnvoiRappelDemandeDegrevementICI());
+					if (rapport.dateTraitement.isBeforeOrEqual(delaiEffectif)) {
+						rapport.addFormulaireIgnore(entreprise.getNumero(), demande.getPeriodeFiscale(), situation, commune, demande.getId(), demande.getDateEnvoi(),
+						                            RappelFormulairesDemandeDegrevementICIResults.RaisonIgnorement.DELAI_ADMINISTRATIF_NON_ECHU);
+					}
+					else {
+						// tout est bon, on peut envoyer la sauce
+						final RegDate dateEnvoiRappel = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(rapport.dateTraitement);
+						demande.setDateRappel(dateEnvoiRappel);
+						autreDocumentFiscalService.envoyerRappelFormulaireDemandeDegrevementICIBatch(demande, rapport.dateTraitement);
+						rapport.addRappelEnvoye(entreprise.getNumero(), demande.getPeriodeFiscale(), situation, commune, demande.getId(), demande.getDateEnvoi());
+					}
 				}
 			}
 

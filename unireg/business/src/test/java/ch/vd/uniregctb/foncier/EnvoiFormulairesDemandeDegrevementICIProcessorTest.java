@@ -2648,7 +2648,95 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 				}
 			}
 		});
+	}
 
+	/**
+	 * [SIFISC-25066] Apparemment un formulaire a été envoyé en juin 2017 alors que le droit a été clôturé en décembre 2016
+	 */
+	@Test
+	public void testNonEmissionSiDroitCloture() throws Exception {
+
+		final RegDate dateDebutEntreprise = date(1990, 4, 1);
+		final RegDate dateDebutDroit = date(2010, 1, 4);
+		final RegDate dateClotureDroit = date(2016, 12, 23);
+		final RegDate dateTraitement = RegDate.get();
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		final class Ids {
+			long idContribuable;
+			long idImmeuble;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Mon entreprise");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+			final PersonneMoraleRF rf = addPersonneMoraleRF("Mon entreprise", null, "48514s66fss", 445198L, null);
+			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
+			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			addEstimationFiscale(date(2016, 12, 1), null, null, false, 93000L, "2016", immeuble);
+
+			addDroitPersonneMoraleRF(date(2017, 3, 15), dateDebutDroit, date(2017, 3, 22), dateClotureDroit, "Achat", "Revente", "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
+
+			final Ids identifiants = new Ids();
+			identifiants.idContribuable = entreprise.getNumero();
+			identifiants.idImmeuble = immeuble.getId();
+			return identifiants;
+		});
+
+		// lancement du processus
+		final EnvoiFormulairesDemandeDegrevementICIResults results = processor.run(1, null, dateTraitement, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.getNbDroitsInspectes());
+		Assert.assertEquals(1, results.getNbDroitsIgnores());
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(0, results.getEnvois().size());
+		Assert.assertEquals(1, results.getIgnores().size());
+
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
+			Assert.assertNotNull(ignore);
+			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeuble,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   112,
+			                   null,
+			                   null,
+			                   null,
+			                   RaisonIgnorance.DROIT_CLOTURE,
+			                   "Droit clôturé au 23.12.2016, avant le début de la PF 2017",
+			                   immeubleInfos.get(0));
+		}
+
+		// vérification en base...
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+				Assert.assertNotNull(e);
+
+				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+				Assert.assertNotNull(demandes);
+				Assert.assertEquals(0, demandes.size());
+			}
+		});
 	}
 
 	private static void assertImmeubleInfo(Long idImmeuble,

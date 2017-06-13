@@ -270,7 +270,8 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		DEMANDE_DEGREVEMENT_ULTERIEURE_DEJA_PRESENTE("Demande de dégrèvement déjà présente pour une période postérieure à la période visée"),
 		ESTIMATION_FISCALE_ABSENTE_OU_ZERO("Estimation fiscale absente ou égale à zéro"),
 		DATE_MUTATION_AVANT_SEUIL("Date de mutation antérieure au seuil paramétré"),
-		DROIT_USUFRUIT_OU_HABITATION("Droit d'usufruit ou d'habitation");
+		DROIT_USUFRUIT_OU_HABITATION("Droit d'usufruit ou d'habitation"),
+		DROIT_CLOTURE("Droit de propriété clôturé");
 
 		public final String description;
 
@@ -390,6 +391,19 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		                                                  String.format("Demande émise le %s pour la PF %d",
 		                                                                RegDateHelper.dateToDisplayString(demandeDegrevement.getDateEnvoi()),
 		                                                                anneeSuivantDebutDroit)));
+		++ this.nbDroitsInspectes;
+		++ this.nbDroitsIgnores;
+	}
+
+	public void addDroitClotureAvantDebutPeriodeVisee(Entreprise entreprise, ImmeubleRF immeuble, RegDate dateClotureDroit, int periodeVisee) {
+		this.ignores.add(new DemandeDegrevementNonEnvoyee(entreprise,
+		                                                  immeuble,
+		                                                  dateTraitement,
+		                                                  RaisonIgnorance.DROIT_CLOTURE,
+		                                                  String.format("Droit clôturé au %s, avant le début de la PF %d",
+		                                                                RegDateHelper.dateToDisplayString(dateClotureDroit),
+		                                                                periodeVisee)));
+
 		++ this.nbDroitsInspectes;
 		++ this.nbDroitsIgnores;
 	}
