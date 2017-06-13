@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.docsortant;
 
 import noNamespace.InfoArchivageDocument;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.editique.unireg.CTypeInfoArchivage;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -45,7 +46,7 @@ public interface EvenementDocumentSortantService {
 	
 	void signaleRappelLettreBienvenue(LettreBienvenue lettre, CTypeInfoArchivage infoArchivage, boolean local);
 
-	void signaleDeclarationImpot(DeclarationImpotOrdinairePP di, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
+	void signaleDeclarationImpot(DeclarationImpotOrdinairePP di, @Nullable TypeDocument typeDocumentOverride, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
 
 	void signaleAnnexeImmeuble(InformationsDocumentAdapter infoDocument, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
 

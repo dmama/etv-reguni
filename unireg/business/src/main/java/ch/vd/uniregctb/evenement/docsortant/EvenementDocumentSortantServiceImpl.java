@@ -272,8 +272,8 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	@Override
-	public void signaleDeclarationImpot(DeclarationImpotOrdinairePP di, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local) {
-		final TypeDocument typeDocument = di.getModeleDocument().getTypeDocument();
+	public void signaleDeclarationImpot(DeclarationImpotOrdinairePP di, @Nullable TypeDocument typeDocumentOverride, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local) {
+		final TypeDocument typeDocument = typeDocumentOverride != null ? typeDocumentOverride : di.getModeleDocument().getTypeDocument();
 		signaleDocumentSortant("DI",
 		                       TYPE_DI_PP_SORTANTE.get(typeDocument),
 		                       di.getTiers(),

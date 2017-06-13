@@ -350,7 +350,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final InfoArchivageDocument.InfoArchivage infoArchivage = documents[0].getInfoArchivage();
 		final boolean withArchivage = infoArchivage != null;
 		if (withArchivage) {
-			evenementDocumentSortantService.signaleDeclarationImpot(declaration, infoArchivage, true);
+			evenementDocumentSortantService.signaleDeclarationImpot(declaration, typeDocument, infoArchivage, true);
 		}
 
 		final String description = String.format("Document '%s %d' du contribuable %s",
@@ -402,7 +402,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final InfoArchivageDocument.InfoArchivage infoArchivage = documents[0].getInfoArchivage();
 		final boolean withArchivage = infoArchivage != null;
 		if (withArchivage) {
-			evenementDocumentSortantService.signaleDeclarationImpot(declaration, infoArchivage, false);
+			evenementDocumentSortantService.signaleDeclarationImpot(declaration, null, infoArchivage, false);
 		}
 
 		final String nomDocument = impressionDIPPHelper.construitIdDocument(declaration);
