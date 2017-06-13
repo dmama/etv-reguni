@@ -8,6 +8,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
+import ch.vd.uniregctb.scheduler.JobParamFile;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
 
@@ -48,7 +50,7 @@ public class DesappariementREEJob extends JobDefinition {
 	private static final String PARAM_SIMULATION = "SIMULATION";
 
 	private static final String UNPAIRING_XSD_PATH = "unpairing.xsd";
-	private static final String UNPAIRING_REE_XML_PATH = "/sifisc-24852/unpairing-ree.xml";
+	private static final String UNPAIRING_REE_XML = "LISTE_ETAB";
 
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
@@ -87,18 +89,27 @@ public class DesappariementREEJob extends JobDefinition {
 			param.setType(new JobParamBoolean());
 			addParameterDefinition(param, Boolean.TRUE);
 		}
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Fichier XML des établissements secondaires REE à désapparier");
+			param.setName(UNPAIRING_REE_XML);
+			param.setMandatory(true);
+			param.setType(new JobParamFile());
+			addParameterDefinition(param, null);
+		}
 	}
 
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		final boolean simulation = getBooleanValue(params, PARAM_SIMULATION);
+		final byte[] listeEtab = getFileContent(params, UNPAIRING_REE_XML);
 
 		try {
 
 			AuthenticationHelper.pushPrincipal(AuthenticationHelper.getCurrentPrincipal());
 
 			// Récupération des données sources
-			final Unpairing unpairing = parse(new StreamSource(this.getClass().getResourceAsStream(UNPAIRING_REE_XML_PATH)));
+			final Unpairing unpairing = parse(new StreamSource(new ByteArrayInputStream(listeEtab)));
 
 			final List<OrganisationLocation> organisationLocations = new ArrayList<>(unpairing.getOrganisationLocation().size());
 			organisationLocations.addAll(unpairing.getOrganisationLocation());
