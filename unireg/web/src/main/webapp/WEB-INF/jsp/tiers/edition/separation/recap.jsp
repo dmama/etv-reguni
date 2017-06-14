@@ -11,25 +11,14 @@
 	    </li>
 	</tiles:put>
   	<tiles:put name="body">
-
-	  	<form:form method="post" id="formRecapSeparation"  name="formRecapSeparation">
-			<jsp:include page="../../../general/tiers.jsp">
-				<jsp:param name="page" value="couple" />
-				<jsp:param name="path" value="couple" />
-			</jsp:include>
+	    <unireg:bandeauTiers numero="${idMenage}" showValidation="true" showEvenementsCivils="true" showLinks="false"/>
+	  	<form:form method="post" id="formRecapSeparation"  name="formRecapSeparation" commandName="separationCommand" action="commit.do">
+		    <form:hidden path="idMenage"/>
 			<jsp:include page="rapport.jsp" />
 			<!-- Debut Boutons -->
 			<unireg:RetourButton link="list.do" message="Voulez-vous vraiment quitter cette page sans sauver?"/>
-			<input type="button" value="<fmt:message key="label.bouton.sauver"/>" onclick="return Page_sauverSeparation();" />
+			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onclick="return confirm('Voulez-vous vraiment séparer ces deux personnes ?');" />
 			<!-- Fin Boutons -->
 		</form:form>
-		<script type="text/javascript" language="Javascript">
-			function Page_sauverSeparation() {
-				if (confirm('Voulez-vous vraiment séparer ces deux personnes ?')) {
-					$('#formRecapSeparation').submit();
-			 	}
-			 	return false;
-			}
-		</script>
 	</tiles:put>
 </tiles:insert>

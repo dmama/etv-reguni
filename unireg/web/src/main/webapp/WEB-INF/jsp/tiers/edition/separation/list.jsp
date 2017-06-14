@@ -15,9 +15,12 @@
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRechercheMenageCommun">
+	    <form:form method="post" id="formRechercheMenageCommun" commandName="searchCommand">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
+				<c:if test="${searchError != null}">
+					<span class="error"><c:out value="${searchError}"/></span>
+				</c:if>
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="separation" />
