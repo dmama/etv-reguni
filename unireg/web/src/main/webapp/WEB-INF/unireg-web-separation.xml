@@ -23,29 +23,12 @@
 		<property name="validatorHelper" ref="validatorHelper" />
 	</bean>
 
-	<bean id="annulationSeparationListController" class="ch.vd.uniregctb.annulation.separation.AnnulationSeparationListController" parent="abstractTiersListController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="annulation/separation/list" />
-		<property name="successView" value="list.do" />
-		<property name="validator" ref="tiersCriteriaValidator" />
-		<property name="annulationSeparationRecapManager" ref="annulationSeparationRecapManager" />
-	</bean>
-
-	<bean id="annulationSeparationRecapController" class="ch.vd.uniregctb.annulation.separation.AnnulationSeparationRecapController" parent="abstractSimpleFormController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.annulation.separation.view.AnnulationSeparationRecapView" />
-		<property name="commandName" value="command" />
-		<property name="annulationSeparationRecapManager" ref="annulationSeparationRecapManager" />
-		<property name="formView" value="annulation/separation/recap" />
-		<property name="successView" value="/tiers/visu.do" />
-	</bean>
-	
-	<bean id="annulationSeparationRecapManager" class="ch.vd.uniregctb.annulation.separation.manager.AnnulationSeparationRecapManagerImpl"  >
-		<property name="metierService" ref="metierService" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+	<bean id="annulationSeparationController" class="ch.vd.uniregctb.annulation.separation.AnnulationSeparationController">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="messageSource" ref="messageSource"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="metierService" ref="metierService"/>
 	</bean>
 
 </beans>
