@@ -21,11 +21,13 @@ import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -36,20 +38,25 @@ public class DesappariementREEProcessor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DesappariementREEProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
-	public static final double MIN_JARO_WINKLER_DISTANCE = 0.85;
-	public static final String SIFISC_24852_USER = "JOB-SIFISC-24852";
+	private static final double MIN_JARO_WINKLER_DISTANCE = 0.85;
+	private static final String SIFISC_24852_USER = "JOB-SIFISC-24852";
+
+	private final boolean simulation;
 
 	private final PlatformTransactionManager transactionManager;
 	private final TiersService tiersService;
 	private final DataEventService dataEventService;
+	private final GlobalTiersIndexer indexer;
 
-	public DesappariementREEProcessor(PlatformTransactionManager transactionManager, TiersService tiersService, DataEventService dataEventService) {
+	public DesappariementREEProcessor(boolean simulation, PlatformTransactionManager transactionManager, TiersService tiersService, DataEventService dataEventService, GlobalTiersIndexer indexer) {
+		this.simulation = simulation;
 		this.transactionManager = transactionManager;
 		this.tiersService = tiersService;
 		this.dataEventService = dataEventService;
+		this.indexer = indexer;
 	}
 
-	public DesappariementREEResults run(final List<OrganisationLocation> aDesapparier, RegDate dateCharchementInitial, RegDate dateValeurDonneesCiviles, StatusManager s, boolean simulation) {
+	public DesappariementREEResults run(final List<OrganisationLocation> aDesapparier, RegDate dateCharchementInitial, RegDate dateValeurDonneesCiviles, StatusManager s) {
 
 		final StatusManager status = (s != null ? s : new LoggingStatusManager(LOGGER));
 
@@ -61,9 +68,12 @@ public class DesappariementREEProcessor {
 		final BatchTransactionTemplateWithResults<OrganisationLocation, DesappariementREEResults> template = new BatchTransactionTemplateWithResults<>(aDesapparier, BATCH_SIZE,
 		                                                                                                                                               Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
 		template.execute(rapportFinal, new BatchWithResultsCallback<OrganisationLocation, DesappariementREEResults>() {
+			private ThreadLocal<List<Entreprise>> aInvaliderReindexer = ThreadLocal.withInitial(ArrayList::new);
 
 			@Override
 			public void afterTransactionStart(TransactionStatus status) {
+				super.afterTransactionStart(status);
+
 				if (simulation) {
 					status.setRollbackOnly();
 				}
@@ -77,8 +87,28 @@ public class DesappariementREEProcessor {
 			@Override
 			public boolean doInTransaction(List<OrganisationLocation> aDesapparier, DesappariementREEResults results) throws Exception {
 				status.setMessage("Traitement du batch [" + aDesapparier.get(0).getCantonalId() + "; " + aDesapparier.get(aDesapparier.size() - 1).getCantonalId() + "] ...", progressMonitor.getProgressInPercent());
-				traiterBatch(aDesapparier, results);
+				aInvaliderReindexer.set(traiterBatch(aDesapparier, results));
 				return true;
+			}
+
+			@Override
+			public void afterTransactionCommit() {
+				super.afterTransactionCommit();
+				final List<Entreprise> entreprisesAInvaliderReindexer = aInvaliderReindexer.get();
+				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+				transactionTemplate.execute(session -> {
+					for (final Entreprise entreprise : entreprisesAInvaliderReindexer) {
+						invaliderReindexer(entreprise);
+					}
+					return null;
+				});
+				aInvaliderReindexer.remove();
+			}
+
+			@Override
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				super.afterTransactionRollback(e, willRetry);
+				aInvaliderReindexer.remove();
 			}
 		}, progressMonitor);
 
@@ -87,15 +117,27 @@ public class DesappariementREEProcessor {
 		return rapportFinal;
 	}
 
-	private void traiterBatch(final List<OrganisationLocation> aDesapparier, DesappariementREEResults r) {
-
-		for (final OrganisationLocation organisationLocation : aDesapparier) {
-			desapparier(organisationLocation, r);
+	private void invaliderReindexer(Entreprise entreprise) {
+		if (!simulation) {
+			dataEventService.onOrganisationChange(entreprise.getNumeroEntreprise());
+			indexer.schedule(entreprise.getNumero());
 		}
-
 	}
 
-	private void desapparier(OrganisationLocation organisationLocation, DesappariementREEResults r) {
+	private List<Entreprise> traiterBatch(final List<OrganisationLocation> aDesapparier, DesappariementREEResults r) {
+
+		List<Entreprise> entreprisesAInvaliderReindexer = new ArrayList<>();
+		for (final OrganisationLocation organisationLocation : aDesapparier) {
+			final Entreprise entreprise = desapparier(organisationLocation, r);
+			if (entreprise != null) {
+				entreprisesAInvaliderReindexer.add(entreprise);
+			}
+		}
+
+		return entreprisesAInvaliderReindexer;
+	}
+
+	private Entreprise desapparier(OrganisationLocation organisationLocation, DesappariementREEResults r) {
 
 		DesappariementREEResults.TypeResultat resultat = DesappariementREEResults.TypeResultat.SUCCES;
 		final List<String> msgs = new ArrayList<>();
@@ -163,19 +205,6 @@ public class DesappariementREEProcessor {
 			}
 		}
 
-		// Désapparier l'établissement
-		if (resultat != DesappariementREEResults.TypeResultat.ECHEC) {
-			// Invalider le cache RCEnt
-			dataEventService.onOrganisationChange(entreprise.getNumeroEntreprise());
-
-			// Désapparier
-			etablissement.setNumeroEtablissement(null);
-			domicileAtCutoff.setAnnulationDate(aujourdhui.asJavaDate());
-			domicileAtCutoff.setAnnulationUser(SIFISC_24852_USER);
-			etablissement.addDomicile(new DomicileEtablissement(domicileAtCutoff.getDateDebut(), null, domicileAtCutoff.getTypeAutoriteFiscale(), domicileAtCutoff.getNumeroOfsAutoriteFiscale(), etablissement));
-
-		}
-
 		// Ajouter le résultat
 		final DesappariementREEResults.Desappariement desappariement = new DesappariementREEResults.Desappariement(resultat, organisationLocation, null, null, etablissement.getNumero());
 		desappariement.setRaisonSociale(raisonSocialeFiscale);
@@ -183,6 +212,20 @@ public class DesappariementREEProcessor {
 		desappariement.setNoOFSCommune(domicileAtCutoff.getNumeroOfsAutoriteFiscale());
 		desappariement.setMessage(StringUtils.join(msgs, " "));
 		r.addDesappariement(desappariement);
+
+		// En cas d'echec, plus rien à faire.
+		if (resultat == DesappariementREEResults.TypeResultat.ECHEC) {
+			return null;
+		}
+
+		// Désapparier l'établissement
+		etablissement.setNumeroEtablissement(null);
+		domicileAtCutoff.setAnnulationDate(aujourdhui.asJavaDate());
+		domicileAtCutoff.setAnnulationUser(SIFISC_24852_USER);
+		etablissement.addDomicile(new DomicileEtablissement(domicileAtCutoff.getDateDebut(), null, domicileAtCutoff.getTypeAutoriteFiscale(), domicileAtCutoff.getNumeroOfsAutoriteFiscale(), etablissement));
+
+		// Retourner l'entreprise pour invalidation de la cache RCEnt et réindexation.
+		return entreprise;
 	}
 
 	private DesappariementREEResults.TypeResultat toVerifier(DesappariementREEResults.TypeResultat resultat) {

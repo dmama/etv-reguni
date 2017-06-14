@@ -30,6 +30,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.document.DesappariementREERapport;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -53,6 +54,7 @@ public class DesappariementREEJob extends JobDefinition {
 
 	private PlatformTransactionManager transactionManager;
 	private DataEventService dataEventService;
+	private GlobalTiersIndexer indexer;
 	private TiersService tiersService;
 	private RapportService rapportService;
 
@@ -62,6 +64,10 @@ public class DesappariementREEJob extends JobDefinition {
 
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
+	}
+
+	public void setIndexer(GlobalTiersIndexer indexer) {
+		this.indexer = indexer;
 	}
 
 	public void setTiersService(TiersService tiersService) {
@@ -135,8 +141,8 @@ public class DesappariementREEJob extends JobDefinition {
 					});
 
 			final StatusManager status = getStatusManager();
-			final DesappariementREEProcessor desappariementREEProcessor = new DesappariementREEProcessor(transactionManager, tiersService, dataEventService);
-			final DesappariementREEResults results = desappariementREEProcessor.run(organisationLocations, unpairing.getInitialLoadDate(), unpairing.getCurrentValueDate(), status, simulation);
+			final DesappariementREEProcessor desappariementREEProcessor = new DesappariementREEProcessor(simulation, transactionManager, tiersService, dataEventService, indexer);
+			final DesappariementREEResults results = desappariementREEProcessor.run(organisationLocations, unpairing.getInitialLoadDate(), unpairing.getCurrentValueDate(), status);
 
 			results.getDesappariements().sort((d1, d2) -> {
 				if (compareJaroWinkler(d1, d2)) {
