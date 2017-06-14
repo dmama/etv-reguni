@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -172,4 +173,17 @@ public class Mandat extends RapportEntreTiers implements MandatOuAssimile {
 		return new Mandat(this);
 	}
 
+	/**
+	 * @param autre au rapport entre tiers
+	 * @return si le rapport est un Mandat de dates, parties prenantes, type et genre d'impôt équivalents (= doublon...)
+	 */
+	@Override
+	public boolean equalsTo(RapportEntreTiers autre) {
+		final boolean baseEqualsTo = super.equalsTo(autre);
+		if (baseEqualsTo && autre instanceof Mandat) {
+			final Mandat autreMandat = (Mandat) autre;
+			return typeMandat == autreMandat.typeMandat && Objects.equals(codeGenreImpot, autreMandat.codeGenreImpot);
+		}
+		return baseEqualsTo;
+	}
 }
