@@ -771,8 +771,7 @@
 	<bean id="desapparierREEJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.appariement.sifisc24852.DesappariementREEJob">
 		<constructor-arg value="716"/>
 		<constructor-arg value="Désappariement des entreprises et établissements REE chargés à tort le 12.05.2016."/>
-		<property name="appariementService" ref="appariementService"/>
-		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="dataEventService" ref="dataEventService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="rapportService" ref="rapportService"/>

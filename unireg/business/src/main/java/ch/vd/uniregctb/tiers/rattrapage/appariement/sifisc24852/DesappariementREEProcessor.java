@@ -17,11 +17,10 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
 import ch.vd.shared.batchtemplate.StatusManager;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -40,16 +39,14 @@ public class DesappariementREEProcessor {
 	public static final double MIN_JARO_WINKLER_DISTANCE = 0.85;
 	public static final String SIFISC_24852_USER = "JOB-SIFISC-24852";
 
-	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
 	private final TiersService tiersService;
-	private final AdresseService adresseService;
+	private final DataEventService dataEventService;
 
-	public DesappariementREEProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService) {
-		this.hibernateTemplate = hibernateTemplate;
+	public DesappariementREEProcessor(PlatformTransactionManager transactionManager, TiersService tiersService, DataEventService dataEventService) {
 		this.transactionManager = transactionManager;
 		this.tiersService = tiersService;
-		this.adresseService = adresseService;
+		this.dataEventService = dataEventService;
 	}
 
 	public DesappariementREEResults run(final List<OrganisationLocation> aDesapparier, RegDate dateCharchementInitial, RegDate dateValeurDonneesCiviles, StatusManager s, boolean simulation) {
@@ -168,10 +165,15 @@ public class DesappariementREEProcessor {
 
 		// Désapparier l'établissement
 		if (resultat != DesappariementREEResults.TypeResultat.ECHEC) {
+			// Invalider le cache RCEnt
+			dataEventService.onOrganisationChange(entreprise.getNumeroEntreprise());
+
+			// Désapparier
 			etablissement.setNumeroEtablissement(null);
 			domicileAtCutoff.setAnnulationDate(aujourdhui.asJavaDate());
 			domicileAtCutoff.setAnnulationUser(SIFISC_24852_USER);
 			etablissement.addDomicile(new DomicileEtablissement(domicileAtCutoff.getDateDebut(), null, domicileAtCutoff.getTypeAutoriteFiscale(), domicileAtCutoff.getNumeroOfsAutoriteFiscale(), etablissement));
+
 		}
 
 		// Ajouter le résultat

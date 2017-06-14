@@ -28,8 +28,8 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.document.DesappariementREERapport;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -37,7 +37,6 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamFile;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.rattrapage.appariement.AppariementService;
 
 /**
  * @author Raphaël Marmier, 2017-06-01, <raphael.marmier@vd.ch>
@@ -53,8 +52,7 @@ public class DesappariementREEJob extends JobDefinition {
 	private static final String UNPAIRING_REE_XML = "LISTE_ETAB";
 
 	private PlatformTransactionManager transactionManager;
-	private HibernateTemplate hibernateTemplate;
-	private AppariementService appariementService;
+	private DataEventService dataEventService;
 	private TiersService tiersService;
 	private RapportService rapportService;
 
@@ -62,12 +60,8 @@ public class DesappariementREEJob extends JobDefinition {
 		this.transactionManager = transactionManager;
 	}
 
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
-	}
-
-	public void setAppariementService(AppariementService appariementService) {
-		this.appariementService = appariementService;
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	public void setTiersService(TiersService tiersService) {
@@ -141,7 +135,7 @@ public class DesappariementREEJob extends JobDefinition {
 					});
 
 			final StatusManager status = getStatusManager();
-			final DesappariementREEProcessor desappariementREEProcessor = new DesappariementREEProcessor(hibernateTemplate, transactionManager, tiersService, null);
+			final DesappariementREEProcessor desappariementREEProcessor = new DesappariementREEProcessor(transactionManager, tiersService, dataEventService);
 			final DesappariementREEResults results = desappariementREEProcessor.run(organisationLocations, unpairing.getInitialLoadDate(), unpairing.getCurrentValueDate(), status, simulation);
 
 			results.getDesappariements().sort((d1, d2) -> {
