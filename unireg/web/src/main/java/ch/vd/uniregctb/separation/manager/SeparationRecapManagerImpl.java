@@ -4,10 +4,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.separation.view.SeparationRecapView;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -48,42 +46,17 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 		this.tiersGeneralManager = tiersGeneralManager;
 	}
 
-	/**
-	 * Alimente la vue SeparationRecapView
-	 *
-	 * @param numero
-	 * @return
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public SeparationRecapView get(Long numero) {
-		SeparationRecapView separationRecapView =  new SeparationRecapView();
-		//FIXME (CGD) impléementer Ifosec
-		MenageCommun menage = (MenageCommun) tiersService.getTiers(numero);
-		TiersGeneralView menageView = tiersGeneralManager.getTiers(menage, true);
-		separationRecapView.setCouple(menageView);
-		separationRecapView.setEtatCivil(EtatCivil.DIVORCE);
-
-		return separationRecapView;
-	}
-
-	/**
-	 * Persiste le rapport
-	 *
-	 * @param separationRecapView
-	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void save(SeparationRecapView separationRecapView) throws MetierServiceException {
-		final MenageCommun menage = (MenageCommun) tiersService.getTiers(separationRecapView.getCouple().getNumero());
-		final RegDate dateSeparation = separationRecapView.getDateSeparation();
+	public void separeCouple(long idMenage, RegDate dateSeparation, EtatCivil etatCivil, String commentaire) throws MetierServiceException {
+		final MenageCommun menage = (MenageCommun) tiersService.getTiers(idMenage);
 
 		// détermination de l'état civil du couple (MARIE, PACS)
 		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menage, dateSeparation);
 		final boolean memeSexe = tiersService.isMemeSexe(couple.getPrincipal(), couple.getConjoint());
 
-		EtatCivil etatCivilFamille = separationRecapView.getEtatCivil();
-		switch (separationRecapView.getEtatCivil()) {
+		final EtatCivil etatCivilFamille;
+		switch (etatCivil) {
 		case DIVORCE:
 			etatCivilFamille = memeSexe ? EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT : EtatCivil.DIVORCE;
 			break;
@@ -95,9 +68,12 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 			// car l'état civil NON_MARIE n'existe pas dans le registre civil
 			etatCivilFamille = EtatCivil.NON_MARIE;
 			break;
+		default:
+			etatCivilFamille = etatCivil;
+			break;
 		}
 
-		metierService.separe(menage, dateSeparation, separationRecapView.getRemarque(), etatCivilFamille, null);
+		metierService.separe(menage, dateSeparation, commentaire, etatCivilFamille, null);
 	}
 
 	@Override

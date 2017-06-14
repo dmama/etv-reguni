@@ -2,29 +2,18 @@ package ch.vd.uniregctb.separation.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.separation.view.SeparationRecapView;
+import ch.vd.uniregctb.type.EtatCivil;
 
 
 public interface SeparationRecapManager {
 
 	/**
-	 * Alimente la vue SeparationRecapView
-	 *
-	 * @param numero
-	 * @return
-	 */
-	@Transactional(readOnly = true)
-	SeparationRecapView get(Long numero);
-
-
-	/**
-	 * Persiste le rapport
-	 *
-	 * @param separationRecapView
+	 * Crée une séparation sur le ménage commun indiqué, à la date donnée...
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void save(SeparationRecapView separationRecapView) throws MetierServiceException;
+	void separeCouple(long idMenage, RegDate dateSeparation, EtatCivil etatCivil, String commentaire) throws MetierServiceException;
 
 	/**
 	 * @param noTiers le numéro du tiers dont on veut connaître l'activité au niveau des fors principaux

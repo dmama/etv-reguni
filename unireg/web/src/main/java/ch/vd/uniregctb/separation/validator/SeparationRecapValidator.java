@@ -78,7 +78,7 @@ public class SeparationRecapValidator implements Validator {
 
 		if (dateSeparation != null) {
 			//Validation de la séparation
-			final MenageCommun menage = (MenageCommun) tiersService.getTiers(separationRecapView.getCouple().getNumero());
+			final MenageCommun menage = (MenageCommun) tiersService.getTiers(separationRecapView.getIdMenage());
 			final ValidationResults results = new ValidationResults();
 
 			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menage, dateSeparation);
@@ -92,8 +92,6 @@ public class SeparationRecapValidator implements Validator {
 
 			final List<String> validationErrors = results.getErrors();
 			ValidatorUtils.rejectErrors(validationErrors, errors);
-			// mise à jour des warnings pour les afficher dans la page résultante
-			separationRecapView.setWarnings(results.getWarnings());
 		}
 	}
 }

@@ -13,19 +13,12 @@ import ch.vd.uniregctb.fusion.NonHabitantListController;
 import ch.vd.uniregctb.rapport.RapportListController;
 import ch.vd.uniregctb.rt.DebiteurListController;
 import ch.vd.uniregctb.rt.SourcierListController;
-import ch.vd.uniregctb.separation.SeparationListController;
 
 /**
  * Contrôleur qui regroupe les actions /reset-search.do des contrôleurs pas encore passés en Spring 3+
  */
 @Controller
 public class SearchCriteriaRemovalController {
-
-	@RequestMapping(value = "/separation/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheSeparation(HttpSession session) {
-		session.removeAttribute(SeparationListController.SEPARATION_CRITERIA_NAME);
-		return "redirect:/separation/list.do";
-	}
 
 	@RequestMapping(value = "/annulation/separation/reset-search.do", method = RequestMethod.GET)
 	public String effacerCriteresRechercheAnnulationSeparation(HttpSession session) {

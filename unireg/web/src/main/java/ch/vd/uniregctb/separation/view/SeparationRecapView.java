@@ -1,34 +1,37 @@
 package ch.vd.uniregctb.separation.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AbstractRecapView;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.type.EtatCivil;
 
-public class SeparationRecapView extends AbstractRecapView {
+public class SeparationRecapView {
 
+	private Long idMenage;
 	private RegDate dateSeparation;
-
 	private EtatCivil etatCivil;
-	
-	private TiersGeneralView couple;
-
 	private String remarque;
-	
+
+	public SeparationRecapView(long idMenage) {
+		this.idMenage = idMenage;
+		this.etatCivil = EtatCivil.DIVORCE;
+	}
+
+	public SeparationRecapView() {
+	}
+
+	public Long getIdMenage() {
+		return idMenage;
+	}
+
+	public void setIdMenage(Long idMenage) {
+		this.idMenage = idMenage;
+	}
+
 	public RegDate getDateSeparation() {
 		return dateSeparation;
 	}
 
 	public void setDateSeparation(RegDate dateSeparation) {
 		this.dateSeparation = dateSeparation;
-	}
-
-	public TiersGeneralView getCouple() {
-		return couple;
-	}
-
-	public void setCouple(TiersGeneralView couple) {
-		this.couple = couple;
 	}
 
 	public EtatCivil getEtatCivil() {
