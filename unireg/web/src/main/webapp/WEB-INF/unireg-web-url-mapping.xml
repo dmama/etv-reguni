@@ -52,10 +52,6 @@
 			<map>
 				<!-- Mapping des beans de remoting -->
 				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
-
-				<!-- Annulation Separation -->
-				<entry key="/annulation/separation/list.do" value-ref="annulationSeparationListController" />
-				<entry key="/annulation/separation/recap.do" value-ref="annulationSeparationRecapController" />
 			</map>
 		</property>
 	</bean>

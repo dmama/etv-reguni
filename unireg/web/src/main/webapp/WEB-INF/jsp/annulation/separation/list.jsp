@@ -13,9 +13,12 @@
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRecherchePP">
+	    <form:form method="post" id="formRecherchePP" commandName="searchCommand">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
+				<c:if test="${searchError != null}">
+					<span class="error"><c:out value="${searchError}"/></span>
+				</c:if>
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="annulationSeparation" />
@@ -31,7 +34,7 @@
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.menages.communs.trouves" /></span></display:setProperty>
 
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-				<a href="recap.do?numero=${row.numero}"><unireg:numCTB numero="${row.numero}" /></a>
+				<a href="recap.do?numeroCple=${row.numero}"><unireg:numCTB numero="${row.numero}" /></a>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.prenom.nom" >
 				<c:out value="${row.nom1}" />

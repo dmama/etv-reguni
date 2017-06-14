@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.uniregctb.annulation.separation.AnnulationSeparationListController;
 import ch.vd.uniregctb.fusion.HabitantListController;
 import ch.vd.uniregctb.fusion.NonHabitantListController;
 import ch.vd.uniregctb.rapport.RapportListController;
@@ -19,12 +18,6 @@ import ch.vd.uniregctb.rt.SourcierListController;
  */
 @Controller
 public class SearchCriteriaRemovalController {
-
-	@RequestMapping(value = "/annulation/separation/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheAnnulationSeparation(HttpSession session) {
-		session.removeAttribute(AnnulationSeparationListController.ANNULATION_SEPARATION_CRITERIA_NAME);
-		return "redirect:/annulation/separation/list.do";
-	}
 
 	@RequestMapping(value = "/contribuable-associe/reset-search.do", method = RequestMethod.GET)
 	public String effacerCriteresRechercheContribuableAssocie(HttpSession session, @RequestParam("numeroDpi") long dpi) {
