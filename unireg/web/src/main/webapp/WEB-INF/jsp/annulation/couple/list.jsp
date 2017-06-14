@@ -18,7 +18,10 @@
 	    <form:form method="post" id="formRechercheMenageCommun" commandName="searchCommand">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
-				<form:errors  cssClass="error"/>
+				<c:if test="${searchError != null}">
+					<span class="error"><c:out value="${searchError}"/></span>
+				</c:if>
+				<form:errors cssClass="error"/>
 				<jsp:include page="../../tiers/recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="annulationCouple" />
 					<jsp:param name="prefixeEffacer" value="/annulation/couple" />
