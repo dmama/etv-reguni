@@ -190,8 +190,8 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				.orElseThrow(() -> new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] ne contient pas de situation dans la DB."));
 
 		final EstimationRF persistedEstimation = persisted.getEstimations().stream()
-				.filter(AnnulableHelper::nonAnnule)
-				.max(new DateRangeComparator<>())   // les estimations fiscales se suivent sans discontinuer dans le temps, on va donc chercher la dernière valide.
+				.filter(s -> s.isValidAt(null))
+				.findFirst()
 				.orElse(null);
 
 		final SurfaceTotaleRF persistedSurfaceTotale = persisted.getSurfacesTotales().stream()
