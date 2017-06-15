@@ -23,7 +23,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
@@ -175,14 +175,14 @@ public class BatimentRFProcessorTest extends MutationRFProcessorTestCase {
 		doInNewTransaction(status -> {
 			assertEquals(0, evenementFiscalDAO.getAll().size());
 
-			BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond = (BienFondRF) immeubleRFDAO.save(bienFond);
+			BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds = (BienFondsRF) immeubleRFDAO.save(bienFonds);
 
 			BatimentRF batiment = new BatimentRF();
 			batiment.setMasterIdRF("1f109152381026b50138102aa28557e0");
 			batiment.addDescription(new DescriptionBatimentRF("Habitation", null, dateImportInitial, null));
-			batiment.addImplantation(new ImplantationRF(100, bienFond, dateImportInitial, null));
+			batiment.addImplantation(new ImplantationRF(100, bienFonds, dateImportInitial, null));
 
 			batimentRFDAO.save(batiment);
 			return null;
@@ -271,13 +271,13 @@ public class BatimentRFProcessorTest extends MutationRFProcessorTestCase {
 		doInNewTransaction(status -> {
 			assertEquals(0, evenementFiscalDAO.getAll().size());
 
-			BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond = (BienFondRF) immeubleRFDAO.save(bienFond);
+			BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds = (BienFondsRF) immeubleRFDAO.save(bienFonds);
 
 			BatimentRF batiment = new BatimentRF();
 			batiment.setMasterIdRF("1f109152381026b50138102aa28557e0");
-			batiment.addImplantation(new ImplantationRF(100, bienFond, dateImportInitial, null));
+			batiment.addImplantation(new ImplantationRF(100, bienFonds, dateImportInitial, null));
 			batiment.addDescription(new DescriptionBatimentRF("Habitation", 100, dateImportInitial, null));
 
 			batimentRFDAO.save(batiment);

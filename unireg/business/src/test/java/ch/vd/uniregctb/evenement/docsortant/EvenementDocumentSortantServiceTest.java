@@ -27,7 +27,7 @@ import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
@@ -178,7 +178,7 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
 				final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
-				final BienFondRF immeuble = addBienFondRF("85343fldfg", null, commune, 42);
+				final BienFondsRF immeuble = addBienFondsRF("85343fldfg", null, commune, 42);
 
 				final PersonneMoraleRF pmRF = addPersonneMoraleRF("Machin truc", null, "87553zhgfsjh", 35623, null);
 				addDroitPersonneMoraleRF(null, dateDebut, null, null, "Achat", null, "578567fdbdfbsd", "578567fdbdfbsc", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
@@ -283,7 +283,7 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
 
 				final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
-				final BienFondRF immeuble = addBienFondRF("85343fldfg", null, commune, 42);
+				final BienFondsRF immeuble = addBienFondsRF("85343fldfg", null, commune, 42);
 
 				final PersonneMoraleRF pmRF = addPersonneMoraleRF("Machin truc", null, "87553zhgfsjh", 35623, null);
 				addDroitPersonneMoraleRF(null, dateDebut, null, null, "Achat", null, "578567fdbdfbsd", "578567fdbdfbsc", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);

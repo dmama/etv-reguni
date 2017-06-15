@@ -21,7 +21,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
@@ -103,11 +103,11 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
 				ids.pp2 = pp2.getId();
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF("_8af806fc4a35927c014ae2a6e76041b8");
 				immeubleRFDAO.save(immeuble1);
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF("_1f109152381009be0138100ba7e31031");
 				immeubleRFDAO.save(immeuble2);
 
@@ -310,9 +310,9 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
 				ids.pp2 = pp2.getId();
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF("_1f109152381009be0138100ba7e31031");
-				immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+				immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
 				// on droit différent de celui qui arrive dans le fichier XML
 				final DroitProprietePersonnePhysiqueRF droit1 = new DroitProprietePersonnePhysiqueRF();
@@ -328,9 +328,9 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit1.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit1);
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF("_8af806fc4a35927c014ae2a6e76041b8");
-				immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+				immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 				// on droit identique à celui qui arrive dans le fichier XML
 				final DroitProprietePersonnePhysiqueRF droit2 = new DroitProprietePersonnePhysiqueRF();
@@ -577,9 +577,9 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
 				ids.pp2 = pp2.getId();
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF("_1f109152381009be0138100ba7e31031");
-				immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+				immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
 				final DroitProprietePersonnePhysiqueRF droit1 = new DroitProprietePersonnePhysiqueRF();
 				droit1.setMasterIdRF("1f109152381009be0138100c87000000");
@@ -593,9 +593,9 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit1.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit1);
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF("_8af806fc4a35927c014ae2a6e76041b8");
-				immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+				immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 				final DroitProprietePersonnePhysiqueRF droit2 = new DroitProprietePersonnePhysiqueRF();
 				droit2.setMasterIdRF("8af806fa4a4dd302014b16fc17266a0b");

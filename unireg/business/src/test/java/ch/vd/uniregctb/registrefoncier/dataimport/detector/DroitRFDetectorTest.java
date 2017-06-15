@@ -37,7 +37,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -513,10 +513,10 @@ public class DroitRFDetectorTest {
 		final ImmeubleBeneficiaireRF ib3 = new ImmeubleBeneficiaireRF();
 		ib3.setIdRF("48238919011");
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("382929efa218");
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("202930c0e0f3");
 
 		final ProprieteParEtageRF immeuble3 = new ProprieteParEtageRF();
@@ -748,10 +748,10 @@ public class DroitRFDetectorTest {
 		final ImmeubleBeneficiaireRF ib3 = new ImmeubleBeneficiaireRF();
 		ib3.setIdRF("48238919011");
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("382929efa218");
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("202930c0e0f3");
 
 		final ProprieteParEtageRF immeuble3 = new ProprieteParEtageRF();
@@ -866,10 +866,10 @@ public class DroitRFDetectorTest {
 		final ImmeubleBeneficiaireRF ib3 = new ImmeubleBeneficiaireRF();
 		ib3.setIdRF("48238919011");
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("382929efa218");
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("202930c0e0f3");
 
 		final ProprieteParEtageRF immeuble3 = new ProprieteParEtageRF();

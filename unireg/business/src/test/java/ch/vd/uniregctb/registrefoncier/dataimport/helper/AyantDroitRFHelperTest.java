@@ -12,7 +12,7 @@ import ch.vd.capitastra.grundstueck.NatuerlichePersonstamm;
 import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
@@ -398,10 +398,10 @@ public class AyantDroitRFHelperTest {
 		final UnbekanntesGrundstueck grundstueck = new UnbekanntesGrundstueck();
 		grundstueck.setGrundstueckID("48349384890202");
 
-		final BienFondRF bienFond = new BienFondRF();
-		bienFond.setIdRF("48349384890202");
+		final BienFondsRF bienFonds = new BienFondsRF();
+		bienFonds.setIdRF("48349384890202");
 
-		final ImmeubleBeneficiaireRF imm = (ImmeubleBeneficiaireRF) AyantDroitRFHelper.newAyantDroitRF(grundstueck, idRF -> bienFond);
+		final ImmeubleBeneficiaireRF imm = (ImmeubleBeneficiaireRF) AyantDroitRFHelper.newAyantDroitRF(grundstueck, idRF -> bienFonds);
 		assertEquals("48349384890202", imm.getIdRF());
 		assertEquals("48349384890202", imm.getImmeuble().getIdRF());
 	}

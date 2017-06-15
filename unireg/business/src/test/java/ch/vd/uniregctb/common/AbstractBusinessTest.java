@@ -63,7 +63,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
@@ -426,7 +426,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return droit;
 	}
 
-	protected DroitProprieteCommunauteRF addDroitPropriete(CommunauteRF communaute, BienFondRF immeuble, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin,
+	protected DroitProprieteCommunauteRF addDroitPropriete(CommunauteRF communaute, BienFondsRF immeuble, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin,
 	                                                       String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF, String versionIdRF) {
 		DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
 		droit.setRegime(regime);
@@ -500,12 +500,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	@NotNull
-	protected BienFondRF addBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle) {
-		return addBienFondRF(idRF, egrid, commune, noParcelle, null, null, null);
+	protected BienFondsRF addBienFondsRF(String idRF, String egrid, CommuneRF commune, int noParcelle) {
+		return addBienFondsRF(idRF, egrid, commune, noParcelle, null, null, null);
 	}
 
 	@NotNull
-	protected BienFondRF addBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
+	protected BienFondsRF addBienFondsRF(String idRF, String egrid, CommuneRF commune, int noParcelle, @Nullable Integer index1, @Nullable Integer index2, @Nullable Integer index3) {
 		final SituationRF situation = new SituationRF();
 		situation.setDateDebut(RegDate.get(2000, 1, 1));
 		situation.setNoParcelle(noParcelle);
@@ -514,7 +514,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		situation.setIndex3(index3);
 		situation.setCommune(commune);
 
-		final BienFondRF im0 = new BienFondRF();
+		final BienFondsRF im0 = new BienFondsRF();
 		im0.setIdRF(idRF);
 		im0.setEgrid(egrid);
 		im0.addSituation(situation);

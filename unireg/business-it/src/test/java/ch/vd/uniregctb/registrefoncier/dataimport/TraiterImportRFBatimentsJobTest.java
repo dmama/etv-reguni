@@ -23,7 +23,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
@@ -274,16 +274,17 @@ public class TraiterImportRFBatimentsJobTest extends ImportRFTestClass {
 				final CommuneRF oron = communeRFDAO.save(newCommuneRF(294, "Oron", 5555));
 
 				// données équivalentes au fichier export_batiments_rf_hebdo.xml
-				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.save(newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", 1993, null, RegDate.get(1993, 1, 1), false, false, RegDate.get(2010, 1, 1), 707));
+				final BienFondsRF
+						bienFonds = (BienFondsRF) immeubleRFDAO.save(newBienFondsRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", 1993, null, RegDate.get(1993, 1, 1), false, false, RegDate.get(2010, 1, 1), 707));
 
 				final BatimentRF batiment1 = newBatimentRF("1f109152381026b50138102aa28557e0");
 				batiment1.addDescription(newDescriptionBatiment("Habitation", null, dateImportInitial, null));
-				batiment1.addImplantation(newImplantationRF(bienFond, 104, dateImportInitial, null));
+				batiment1.addImplantation(newImplantationRF(bienFonds, 104, dateImportInitial, null));
 				batimentRFDAO.save(batiment1);
 
 				final BatimentRF batiment2 = newBatimentRF("1f10915238102ecd01381032b52802a1");
 				batiment2.addDescription(newDescriptionBatiment("Garage", null, dateImportInitial, null));
-				batiment2.addImplantation(newImplantationRF(bienFond, 36, dateImportInitial, null));
+				batiment2.addImplantation(newImplantationRF(bienFonds, 36, dateImportInitial, null));
 				batimentRFDAO.save(batiment2);
 			}
 		});
@@ -363,26 +364,26 @@ public class TraiterImportRFBatimentsJobTest extends ImportRFTestClass {
 				final CommuneRF oron = communeRFDAO.save(newCommuneRF(294, "Oron", 5555));
 
 				// données équivalentes au fichier export_batiments_rf_hebdo.xml
-				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.save(newBienFondRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", 1993, null,
-				                                                                          RegDate.get(1993,1,1), false, false, RegDate.get(2010, 1, 1), 707));
+				final BienFondsRF bienFonds = (BienFondsRF) immeubleRFDAO.save(newBienFondsRF("_1f109152381026b501381028a73d1852", "CH938391457759", oron, 5089, 260000L, "RG93", 1993, null,
+				                                                                             RegDate.get(1993,1,1), false, false, RegDate.get(2010, 1, 1), 707));
 
 				final BatimentRF batiment1 = newBatimentRF("1f109152381026b50138102aa28557e0");
 				batiment1.addDescription(newDescriptionBatiment("Habitation", null, dateImportInitial, null));
 
 				// - surface différente
-				batiment1.addImplantation(newImplantationRF(bienFond, 140, dateImportInitial, null));
+				batiment1.addImplantation(newImplantationRF(bienFonds, 140, dateImportInitial, null));
 				batimentRFDAO.save(batiment1);
 
 				// - pas de changement sur le garage
 				final BatimentRF batiment2 = newBatimentRF("1f10915238102ecd01381032b52802a1");
 				batiment2.addDescription(newDescriptionBatiment("Garage", null, dateImportInitial, null));
-				batiment2.addImplantation(newImplantationRF(bienFond, 36, dateImportInitial, null));
+				batiment2.addImplantation(newImplantationRF(bienFonds, 36, dateImportInitial, null));
 				batimentRFDAO.save(batiment2);
 
 				// - disparition de la volière
 				final BatimentRF batiment3 = newBatimentRF("1f10915238102ecd01381032b52802cc");
 				batiment3.addDescription(newDescriptionBatiment("Vollière", null, dateImportInitial, null));
-				batiment3.addImplantation(newImplantationRF(bienFond, 4, dateImportInitial, null));
+				batiment3.addImplantation(newImplantationRF(bienFonds, 4, dateImportInitial, null));
 				batimentRFDAO.save(batiment3);
 
 			}

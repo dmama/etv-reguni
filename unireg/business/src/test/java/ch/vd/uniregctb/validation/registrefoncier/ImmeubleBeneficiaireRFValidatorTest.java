@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -63,18 +63,18 @@ public class ImmeubleBeneficiaireRFValidatorTest extends AbstractValidatorTest<I
 				commune.setNoOfs(66666);
 				commune = communeRFDAO.save(commune);
 
-				final BienFondRF bienFond = new BienFondRF();
-				bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-				bienFond.setEgrid("CH938391457759");
-				bienFond.setCfa(false);
+				final BienFondsRF bienFonds = new BienFondsRF();
+				bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+				bienFonds.setEgrid("CH938391457759");
+				bienFonds.setCfa(false);
 
 				final SituationRF situation = new SituationRF();
 				situation.setDateDebut(RegDate.get(1988, 1, 1));
 				situation.setCommune(commune);
 				situation.setNoParcelle(5089);
-				bienFond.addSituation(situation);
+				bienFonds.addSituation(situation);
 
-				final ImmeubleRF immeuble = immeubleRFDAO.save(bienFond);
+				final ImmeubleRF immeuble = immeubleRFDAO.save(bienFonds);
 
 				ImmeubleBeneficiaireRF bene = new ImmeubleBeneficiaireRF();
 				bene.setIdRF("383823828");
@@ -99,18 +99,18 @@ public class ImmeubleBeneficiaireRFValidatorTest extends AbstractValidatorTest<I
 			commune.setNoOfs(66666);
 			commune = communeRFDAO.save(commune);
 
-			final BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond.setEgrid("CH938391457759");
-			bienFond.setCfa(false);
+			final BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds.setEgrid("CH938391457759");
+			bienFonds.setCfa(false);
 
 			final SituationRF situation = new SituationRF();
 			situation.setDateDebut(RegDate.get(1988, 1, 1));
 			situation.setCommune(commune);
 			situation.setNoParcelle(5089);
-			bienFond.addSituation(situation);
+			bienFonds.addSituation(situation);
 
-			final ImmeubleRF immeuble = immeubleRFDAO.save(bienFond);
+			final ImmeubleRF immeuble = immeubleRFDAO.save(bienFonds);
 
 			ImmeubleBeneficiaireRF bene = new ImmeubleBeneficiaireRF();
 			bene.setIdRF("_1f109152381026b501381028a73d1852");

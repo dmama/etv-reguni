@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 
 import ch.vd.capitastra.grundstueck.GrundstueckZuGebaeude;
 import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 
@@ -41,13 +41,13 @@ public class ImplantationRFHelperTest {
 	@Test
 	public void testDataEqualsList() throws Exception {
 
-		final ImmeubleRF immeuble1 = new BienFondRF();
+		final ImmeubleRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("7388991");
 
-		final ImmeubleRF immeuble2 = new BienFondRF();
+		final ImmeubleRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("0e0912a");
 
-		final ImmeubleRF immeuble3 = new BienFondRF();
+		final ImmeubleRF immeuble3 = new BienFondsRF();
 		immeuble3.setIdRF("482e2ea");
 
 		final ImplantationRF implantation1 = new ImplantationRF();
@@ -83,7 +83,7 @@ public class ImplantationRFHelperTest {
 	@Test
 	public void testDataEqualsNullity() throws Exception {
 
-		final ImmeubleRF immeuble1 = new BienFondRF();
+		final ImmeubleRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("7388991");
 
 		final ImplantationRF implantation1 = new ImplantationRF();
@@ -104,10 +104,10 @@ public class ImplantationRFHelperTest {
 	@Test
 	public void testDataEquals() throws Exception {
 
-		final ImmeubleRF immeuble1 = new BienFondRF();
+		final ImmeubleRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("7388991");
 
-		final ImmeubleRF immeuble2 = new BienFondRF();
+		final ImmeubleRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("0e0912a");
 
 		final ImplantationRF implantation1 = new ImplantationRF();

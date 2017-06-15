@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import ch.vd.capitastra.grundstueck.Bodenbedeckung;
 import ch.vd.capitastra.grundstueck.CapiCode;
 import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.key.SurfaceAuSolRFKey;
@@ -47,7 +47,7 @@ public class SurfaceAuSolRFHelperTest {
 	@Test
 	public void testDataEqualsList() throws Exception {
 
-		final ImmeubleRF immeuble1 = new BienFondRF();
+		final ImmeubleRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("3737628");
 
 		final SurfaceAuSolRF surface1 = new SurfaceAuSolRF();

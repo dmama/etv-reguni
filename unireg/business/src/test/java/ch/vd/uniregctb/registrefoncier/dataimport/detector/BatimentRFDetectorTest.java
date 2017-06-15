@@ -26,7 +26,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
@@ -171,10 +171,10 @@ public class BatimentRFDetectorTest {
 	@Test
 	public void testBatimentsModifies() throws Exception {
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("48e89c9a9");
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("78238e8323");
 
 		final BatimentRF batiment1 = new BatimentRF();
@@ -279,7 +279,7 @@ public class BatimentRFDetectorTest {
 	@Test
 	public void testBatimentsModifiesTypeDifferents() throws Exception {
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("48e89c9a9");
 
 		final BatimentRF batiment1 = new BatimentRF();
@@ -339,10 +339,10 @@ public class BatimentRFDetectorTest {
 	@Test
 	public void testBatimentsIdentiques() throws Exception {
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("48e89c9a9");
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("78238e8323");
 
 		final BatimentRF batiment1 = new BatimentRF();
@@ -395,10 +395,10 @@ public class BatimentRFDetectorTest {
 	@Test
 	public void testSuppressionDeBatiments() throws Exception {
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("48e89c9a9");
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("78238e8323");
 
 		final BatimentRF batiment1 = new BatimentRF();

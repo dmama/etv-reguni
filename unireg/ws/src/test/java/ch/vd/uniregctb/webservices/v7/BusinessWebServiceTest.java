@@ -169,7 +169,7 @@ import ch.vd.uniregctb.etiquette.EtiquetteService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -2975,7 +2975,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 				// un droit de propriété sur un immeuble
 				final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-				final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+				final BienFondsRF immeuble = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
 				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 15615151L, null);
 				addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", "48390a0e043",
 				                           new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble, null);
@@ -4696,7 +4696,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// on ajoute un immeuble dans la base
 		final Long id = doInNewTransaction(status -> {
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
 			return immeuble.getId();
 		});
 
@@ -4731,7 +4731,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		// on ajoute un immeuble dans la base
 		final Ids ids = doInNewTransaction(status -> {
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
 			final BatimentRF batiment = addBatimentRF("483838ace8e8");
 			addDescriptionBatimentRF(RegDate.get(2000, 1, 1), null, "Centrale électrique", 300, batiment);
 			addImplantationRF(RegDate.get(2000, 1, 1), null, 310, immeuble, batiment);
@@ -4777,7 +4777,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			// un immeuble
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF immeuble = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
 			ids.immeuble = immeuble.getId();
 
 			// deux tiers RF et une communauté

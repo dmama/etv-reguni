@@ -24,7 +24,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
@@ -190,7 +190,7 @@ public class LandRightBuilderTest {
 		beneficiaire.setIdRF(dominant.getIdRF());
 		beneficiaire.setImmeuble(dominant);
 
-		final BienFondRF servant = new BienFondRF();
+		final BienFondsRF servant = new BienFondsRF();
 		servant.setIdRF("42432234");
 		servant.setId(servantId);
 
@@ -262,7 +262,7 @@ public class LandRightBuilderTest {
 		beneficiaire0.setIdRF(immeuble0.getIdRF());
 		beneficiaire0.setImmeuble(immeuble0);
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("42432234");
 		immeuble1.setId(servantId);
 
@@ -350,7 +350,7 @@ public class LandRightBuilderTest {
 		communaute.setIdRF("388289282");
 		communaute.setType(TypeCommunaute.INDIVISION);
 
-		final BienFondRF servant = new BienFondRF();
+		final BienFondsRF servant = new BienFondsRF();
 		servant.setIdRF("42432234");
 		servant.setId(servantId);
 
@@ -415,13 +415,13 @@ public class LandRightBuilderTest {
 		final PersonnePhysiqueRF ppRF2 = new PersonnePhysiqueRF();
 		ppRF2.setId(ctbId2);
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("a8388e8e83");
 		immeuble1.setId(123456L);
 		immeuble1.setDroitsPropriete(Collections.emptySet());
 		immeuble1.setServitudes(Collections.emptySet());
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("a26271e8e2");
 		immeuble2.setId(4783711L);
 		immeuble2.setDroitsPropriete(Collections.emptySet());
@@ -506,13 +506,13 @@ public class LandRightBuilderTest {
 		final PersonnePhysiqueRF ppRF2 = new PersonnePhysiqueRF();
 		ppRF2.setId(ctbId2);
 
-		final BienFondRF immeuble0 = new BienFondRF();
+		final BienFondsRF immeuble0 = new BienFondsRF();
 		immeuble0.setIdRF("a8388e8e83");
 		immeuble0.setId(123456L);
 		immeuble0.setDroitsPropriete(Collections.emptySet());
 		immeuble0.setServitudes(Collections.emptySet());
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("a26271e8e2");
 		immeuble1.setId(4783711L);
 		immeuble1.setDroitsPropriete(Collections.emptySet());
@@ -619,13 +619,13 @@ public class LandRightBuilderTest {
 		final PersonnePhysiqueRF ppRF2 = new PersonnePhysiqueRF();
 		ppRF2.setId(ctbId2);
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("a8388e8e83");
 		immeuble1.setId(123456L);
 		immeuble1.setDroitsPropriete(Collections.emptySet());
 		immeuble1.setServitudes(Collections.emptySet());
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("a26271e8e2");
 		immeuble2.setId(4783711L);
 		immeuble2.setDroitsPropriete(Collections.emptySet());

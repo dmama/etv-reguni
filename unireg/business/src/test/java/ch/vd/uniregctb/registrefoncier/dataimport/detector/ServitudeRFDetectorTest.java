@@ -24,7 +24,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
@@ -261,10 +261,10 @@ public class ServitudeRFDetectorTest {
 		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
 		pp2.setIdRF("_1f109152380ffd8901380ffda8131c65");
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("_1f109152380ffd8901380ffe090827e1");
 
 		final UsufruitRF usufruit1 = new UsufruitRF();
@@ -479,10 +479,10 @@ public class ServitudeRFDetectorTest {
 		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
 		pp2.setIdRF("_1f109152380ffd8901380ffda8131c65");
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("_1f109152380ffd8901380ffe090827e1");
 
 		final UsufruitRF usufruit1 = new UsufruitRF();
@@ -614,10 +614,10 @@ public class ServitudeRFDetectorTest {
 		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
 		pp2.setIdRF("_1f109152380ffd8901380ffda8131c65");
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("_1f109152380ffd8901380ffe090827e1");
 
 		final UsufruitRF usufruit1 = new UsufruitRF();

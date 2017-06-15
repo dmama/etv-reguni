@@ -17,7 +17,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroit;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
@@ -61,16 +61,16 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 		// un immeuble avec deux droits dont les dates métier sont renseignées
 		final Long id = doInNewTransaction(status -> {
 			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF bienFond = addBienFondRF("38383838", "CHE478391947", commune, 234);
+			final BienFondsRF bienFonds = addBienFondsRF("38383838", "CHE478391947", commune, 234);
 			final PersonnePhysiqueRF jean = addPersonnePhysiqueRF("02893039", "Jean", "Routourne", RegDate.get(1962, 9, 12));
 			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
-			addDroitPropriete(jean, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
+			addDroitPropriete(jean, bienFonds, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), "Achat", "Vente",
 			                  new IdentifiantAffaireRF(8, 1990, 3, 0), "473839273923", "473839273922");
-			addDroitPropriete(jacques, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
+			addDroitPropriete(jacques, bienFonds, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null,
 			                  new IdentifiantAffaireRF(8, 2003, 21, 0), "45838923783", "45838923782");
-			return bienFond.getId();
+			return bienFonds.getId();
 		});
 
 		// on détecte les dates métiers manquantes sur les droits
@@ -109,13 +109,13 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 		// un immeuble avec juste une servitude
 		final Long id = doInNewTransaction(status -> {
 			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF bienFond = addBienFondRF("38383838", "CHE478391947", commune, 234);
+			final BienFondsRF bienFonds = addBienFondsRF("38383838", "CHE478391947", commune, 234);
 			final PersonnePhysiqueRF jean = addPersonnePhysiqueRF("02893039", "Jean", "Routourne", RegDate.get(1962, 9, 12));
 			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
 			addUsufruitRF(null, RegDate.get(1990, 3, 1), RegDate.get(2017,1,13), null, null, null, "32727817", "1",
 			              new IdentifiantAffaireRF(8, 1990, 3, 0), new IdentifiantDroitRF(8, 1990, 3),
-			              Arrays.asList(jean, jacques), Collections.singletonList(bienFond));
-			return bienFond.getId();
+			              Arrays.asList(jean, jacques), Collections.singletonList(bienFonds));
+			return bienFonds.getId();
 		});
 
 		// on démarre le batch
@@ -158,16 +158,16 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 		// un immeuble avec deux droits correspondant à la vente/achat de celui-li
 		final Long id = doInNewTransaction(status -> {
 			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF bienFond = addBienFondRF("38383838", "CHE478391947", commune, 234);
+			final BienFondsRF bienFonds = addBienFondsRF("38383838", "CHE478391947", commune, 234);
 			final PersonnePhysiqueRF jean = addPersonnePhysiqueRF("02893039", "Jean", "Routourne", RegDate.get(1962, 9, 12));
 			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
-			addDroitPropriete(jean, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
+			addDroitPropriete(jean, bienFonds, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), null, "Achat", null,
 			                  new IdentifiantAffaireRF(8, 1990, 3, 0), "473839273923", "473839273922");
-			addDroitPropriete(jacques, bienFond, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
+			addDroitPropriete(jacques, bienFonds, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null,
 			                  new IdentifiantAffaireRF(8, 2003, 21, 0), "45838923783", "45838923782");
-			return bienFond.getId();
+			return bienFonds.getId();
 		});
 
 		// on détecte les dates métiers manquantes sur les droits
@@ -220,29 +220,29 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 		// un immeuble avec des droits correspondants à la vente/achat qui s'étendent sur plusieurs années
 		doInNewTransaction(status -> {
 			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF bienFond = addBienFondRF("38383838", "CHE478391947", commune, 234);
+			final BienFondsRF bienFonds = addBienFondsRF("38383838", "CHE478391947", commune, 234);
 
 			final PersonnePhysiqueRF jean = addPersonnePhysiqueRF("02893039", "Jean", "Routourne", RegDate.get(1962, 9, 12));
 			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
-			ids.immeuble = bienFond.getId();
+			ids.immeuble = bienFonds.getId();
 			ids.jean = jean.getId();
 			ids.jacques = jacques.getId();
 
 			// import inital du 31.12.2016
-			addDroitPropriete(jean, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
+			addDroitPropriete(jean, bienFonds, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 			                  null, RegDate.get(2017, 1, 6), RegDate.get(1997, 4, 21), null, "Succession", null,
 			                  new IdentifiantAffaireRF(5, null, 151264, null), "473839273923", "473839273922");
 			// second import du 07.02.2017
-			addDroitPropriete(jean, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
+			addDroitPropriete(jean, bienFonds, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 			                  RegDate.get(2017, 1, 7), null, RegDate.get(2001, 9, 4), null, "Succession", null,
 			                  new IdentifiantAffaireRF(5, 2001, 2174, 0), "2929181981818", "2929181981817");
 
 			// import inital du 31.12.2016
-			addDroitPropriete(jacques, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
+			addDroitPropriete(jacques, bienFonds, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 			                  null, RegDate.get(2017, 1, 6), RegDate.get(2012, 3, 6), null, "Succession", null,
 			                  new IdentifiantAffaireRF(5, 2012, 617, 0), "45838923783", "45838923782");
 			// second import du 07.02.2017
-			addDroitPropriete(jacques, bienFond, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
+			addDroitPropriete(jacques, bienFonds, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),
 			                  RegDate.get(2017, 1, 7), null, RegDate.get(2013, 5, 31), null, "Succession", null,
 			                  new IdentifiantAffaireRF(5, 2012, 617, 0), "3838929217821", "3838929217820");
 
@@ -315,9 +315,9 @@ public class DateFinDroitsRFProcessorTest extends MutationRFProcessorTestCase {
 				final PersonnePhysiqueRF pp0 = addPersonnePhysiqueRF(idPPRF1, "Isabelle", "Tissot", RegDate.get(1900, 1, 1));
 				final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF(idPPRF2, "Simone", "Tissot", RegDate.get(1900, 1, 1));
 
-				BienFondRF immeuble = new BienFondRF();
+				BienFondsRF immeuble = new BienFondsRF();
 				immeuble.setIdRF(idImmeubleRF1);
-				immeuble = (BienFondRF) immeubleRFDAO.save(immeuble);
+				immeuble = (BienFondsRF) immeubleRFDAO.save(immeuble);
 
 				// import inital du 31.12.2016
 				addDroitPropriete(pp0, immeuble, null, GenrePropriete.COPROPRIETE, new Fraction(1, 2),

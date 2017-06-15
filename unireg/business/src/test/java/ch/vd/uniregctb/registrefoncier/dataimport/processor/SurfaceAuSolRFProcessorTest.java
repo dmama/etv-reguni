@@ -20,7 +20,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -176,9 +176,9 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 		// précondition : il y a déjà un immeuble dans la base avec deux surfaces au sol
 		final Long immeubleId = doInNewTransaction(status -> {
 
-			BienFondRF immeuble = new BienFondRF();
+			BienFondsRF immeuble = new BienFondsRF();
 			immeuble.setIdRF(idImmeubleRF);
-			immeuble = (BienFondRF) immeubleRFDAO.save(immeuble);
+			immeuble = (BienFondsRF) immeubleRFDAO.save(immeuble);
 
 			final SurfaceAuSolRF surface0 = new SurfaceAuSolRF();
 			surface0.setDateDebut(dateImportInitial);
@@ -282,9 +282,9 @@ public class SurfaceAuSolRFProcessorTest extends MutationRFProcessorTestCase {
 		// précondition : il y a déjà un immeuble dans la base avec deux surfaces au sol
 		final Long immeubleId = doInNewTransaction(status -> {
 
-			BienFondRF immeuble = new BienFondRF();
+			BienFondsRF immeuble = new BienFondsRF();
 			immeuble.setIdRF(idImmeubleRF);
-			immeuble = (BienFondRF) immeubleRFDAO.save(immeuble);
+			immeuble = (BienFondsRF) immeubleRFDAO.save(immeuble);
 
 			final SurfaceAuSolRF surface0 = new SurfaceAuSolRF();
 			surface0.setDateDebut(dateImportInitial);

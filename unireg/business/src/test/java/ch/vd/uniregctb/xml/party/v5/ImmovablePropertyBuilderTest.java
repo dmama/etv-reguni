@@ -30,7 +30,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
 import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
@@ -402,29 +402,29 @@ public class ImmovablePropertyBuilderTest {
 		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
 		pp.setNom("Ramon");
 
-		final BienFondRF bienFond = new BienFondRF();
-		bienFond.setId(48383L);
-		bienFond.setIdRF("7d7e7a7f7");
-		bienFond.setEgrid("rhoooo");
-		bienFond.setUrlIntercapi(null);
-		bienFond.addSituation(situation);
-		bienFond.addSurfaceTotale(surfaceTotale);
-		bienFond.setSurfacesAuSol(new HashSet<>(Arrays.asList(surfaceAuSol0, surfaceAuSol1)));
-		bienFond.addEstimation(estimation0);
-		bienFond.addEstimation(estimation1);
-		bienFond.setImplantations(Collections.singleton(implantation));
-		implantation.setImmeuble(bienFond);
-		bienFond.setDateRadiation(null);
+		final BienFondsRF bienFonds = new BienFondsRF();
+		bienFonds.setId(48383L);
+		bienFonds.setIdRF("7d7e7a7f7");
+		bienFonds.setEgrid("rhoooo");
+		bienFonds.setUrlIntercapi(null);
+		bienFonds.addSituation(situation);
+		bienFonds.addSurfaceTotale(surfaceTotale);
+		bienFonds.setSurfacesAuSol(new HashSet<>(Arrays.asList(surfaceAuSol0, surfaceAuSol1)));
+		bienFonds.addEstimation(estimation0);
+		bienFonds.addEstimation(estimation1);
+		bienFonds.setImplantations(Collections.singleton(implantation));
+		implantation.setImmeuble(bienFonds);
+		bienFonds.setDateRadiation(null);
 
-		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, bienFond);
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, bienFonds);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
 		pp.setServitudes(Collections.emptySet());
-		bienFond.setDroitsPropriete(Collections.singleton(droit));
-		bienFond.setServitudes(Collections.emptySet());
+		bienFonds.setDroitsPropriete(Collections.singleton(droit));
+		bienFonds.setServitudes(Collections.emptySet());
 
 		// conversion core -> ws
-		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFond, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
+		final RealEstate realEstate = (RealEstate) ImmovablePropertyBuilder.newImmovableProperty(bienFonds, ImmovablePropertyBuilderTest::getCapitastraUrl, ImmovablePropertyBuilderTest::getCtbId, dummyRightHolderComparator);
 		assertEquals(48383L, realEstate.getId());
 		assertEquals("rhoooo", realEstate.getEgrid());
 		assertEquals("http://capitastra/48383", realEstate.getUrlIntercapi());
@@ -472,8 +472,8 @@ public class ImmovablePropertyBuilderTest {
 		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
 		pp.setNom("Ramon");
 
-		final BienFondRF bienFond = new BienFondRF();
-		bienFond.setId(723721L);
+		final BienFondsRF bienFonds = new BienFondsRF();
+		bienFonds.setId(723721L);
 
 		final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
 		ppe.setId(48383L);
@@ -494,11 +494,11 @@ public class ImmovablePropertyBuilderTest {
 		ppe.setEquivalentBeneficiaire(beneficiaire);
 
 		// la PPE possède une part du bien-fonds
-		final DroitProprieteImmeubleRF droit0 = newDroitProprieteImm("0293929", new Fraction(1, 30), GenrePropriete.PPE, RegDate.get(1993, 5, 13), "Consitution de PPE", beneficiaire, bienFond);
+		final DroitProprieteImmeubleRF droit0 = newDroitProprieteImm("0293929", new Fraction(1, 30), GenrePropriete.PPE, RegDate.get(1993, 5, 13), "Consitution de PPE", beneficiaire, bienFonds);
 		beneficiaire.setDroitsPropriete(Collections.singleton(droit0));
 		beneficiaire.setServitudes(Collections.emptySet());
-		bienFond.setDroitsPropriete(Collections.singleton(droit0));
-		bienFond.setServitudes(Collections.emptySet());
+		bienFonds.setDroitsPropriete(Collections.singleton(droit0));
+		bienFonds.setServitudes(Collections.emptySet());
 
 		// la personne physique possède la PPE
 		final DroitProprietePersonnePhysiqueRF droit1 = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);

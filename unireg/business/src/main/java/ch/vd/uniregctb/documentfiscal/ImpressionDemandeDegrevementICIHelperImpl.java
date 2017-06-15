@@ -31,7 +31,7 @@ import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -60,7 +60,7 @@ public class ImpressionDemandeDegrevementICIHelperImpl extends EditiqueAbstractH
 		map.put(ProprieteParEtageRF.class, "PPE");
 		map.put(DroitDistinctEtPermanentRF.class, "DDP");
 		map.put(MineRF.class, "Mine");
-		map.put(BienFondRF.class, "Bien-fonds");
+		map.put(BienFondsRF.class, "Bien-fonds");
 		map.put(PartCoproprieteRF.class, "Copropriété");
 		return map;
 	}

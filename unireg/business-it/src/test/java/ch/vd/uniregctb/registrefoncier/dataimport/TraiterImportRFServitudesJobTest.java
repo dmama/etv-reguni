@@ -23,7 +23,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
@@ -565,13 +565,13 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 
 				// données équivalentes au fichier export_servitudes_rf.xml
-				BienFondRF bienFond1 = new BienFondRF();
-				bienFond1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
-				bienFond1 = (BienFondRF) immeubleRFDAO.save(bienFond1);
+				BienFondsRF bienFonds1 = new BienFondsRF();
+				bienFonds1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
+				bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
 
-				BienFondRF bienFond2 = new BienFondRF();
-				bienFond2.setIdRF("_1f109152380ffd8901380ffe090827e1");
-				bienFond2 = (BienFondRF) immeubleRFDAO.save(bienFond2);
+				BienFondsRF bienFonds2 = new BienFondsRF();
+				bienFonds2.setIdRF("_1f109152380ffd8901380ffe090827e1");
+				bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
 
 				PersonnePhysiqueRF pp1 = newPersonnePhysique("_1f109152380ffd8901380ffdabcc2441", 0L, 10386724L, "Gaillard", "Roger", RegDate.get(1938, 2, 2));
 				pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
@@ -583,9 +583,9 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
 				// les servitudes
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFonds1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
 				                                new IdentifiantDroitRF(8, 2005, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
+				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFonds2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
 				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
 				droitRFDAO.save(usu1);
 				droitRFDAO.save(usu2);
@@ -666,13 +666,13 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
 
 				// données équivalentes au fichier export_servitudes_rf.xml
-				BienFondRF bienFond1 = new BienFondRF();
-				bienFond1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
-				bienFond1 = (BienFondRF) immeubleRFDAO.save(bienFond1);
+				BienFondsRF bienFonds1 = new BienFondsRF();
+				bienFonds1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
+				bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
 
-				BienFondRF bienFond2 = new BienFondRF();
-				bienFond2.setIdRF("_1f109152380ffd8901380ffe090827e1");
-				bienFond2 = (BienFondRF) immeubleRFDAO.save(bienFond2);
+				BienFondsRF bienFonds2 = new BienFondsRF();
+				bienFonds2.setIdRF("_1f109152380ffd8901380ffe090827e1");
+				bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
 
 				PersonnePhysiqueRF pp1 = newPersonnePhysique("_1f109152380ffd8901380ffdabcc2441", 0L, 10386724L, "Gaillard", "Roger", RegDate.get(1938, 2, 2));
 				pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
@@ -684,10 +684,10 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
 				// identifiant du droit différent
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFonds1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
 				                                new IdentifiantDroitRF(8, 2002, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
 				// index non-renseigné
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30),
+				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFonds2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30),
 				                                null, null, new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, null));
 				droitRFDAO.save(usu1);
 				droitRFDAO.save(usu2);
@@ -899,13 +899,13 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 
 				// données équivalentes au fichier export_servitudes_rf.xml
-				BienFondRF bienFond1 = new BienFondRF();
-				bienFond1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
-				bienFond1 = (BienFondRF) immeubleRFDAO.save(bienFond1);
+				BienFondsRF bienFonds1 = new BienFondsRF();
+				bienFonds1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
+				bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
 
-				BienFondRF bienFond2 = new BienFondRF();
-				bienFond2.setIdRF("_1f109152380ffd8901380ffe090827e1");
-				bienFond2 = (BienFondRF) immeubleRFDAO.save(bienFond2);
+				BienFondsRF bienFonds2 = new BienFondsRF();
+				bienFonds2.setIdRF("_1f109152380ffd8901380ffe090827e1");
+				bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
 
 				PersonnePhysiqueRF pp1 = newPersonnePhysique("_1f109152380ffd8901380ffdabcc2441", 0L, 10386724L, "Gaillard", "Roger", RegDate.get(1938, 2, 2));
 				pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
@@ -917,9 +917,9 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 				pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
 
 				// les servitudes
-				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFond1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
+				UsufruitRF usu1 = newUsufruitRF("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", bienFonds1, pp1, dateImportInitial, RegDate.get(2002, 9, 2), null, null,
 				                                new IdentifiantDroitRF(8, 2005, 699), new IdentifiantAffaireRF(8, 2002, 392, null));
-				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFond2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
+				UsufruitRF usu2 = newUsufruitRF("1f109152380ffd8901380ffefad54360", "1f109152380ffd8901380ffefad64374", Collections.singletonList(bienFonds2), Arrays.asList(pp2, pp3), dateImportInitial, RegDate.get(2006, 6, 30), null, null,
 				                                new IdentifiantDroitRF(8, 2006, 361), new IdentifiantAffaireRF(8, 2006, 285, 0));
 				droitRFDAO.save(usu1);
 				droitRFDAO.save(usu2);

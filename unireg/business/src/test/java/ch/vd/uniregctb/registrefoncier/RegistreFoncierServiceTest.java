@@ -88,8 +88,8 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "some egrid", gland, 4298);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "some egrid", gland, 4298);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
 
@@ -190,8 +190,8 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec deux immeubles + un lien de propriété entre les deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "some egrid", gland, 4298);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "some egrid", gland, 4298);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
 
@@ -312,12 +312,12 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "some egrid", gland, 4298);
-			final BienFondRF immeuble2 = addBienFondRF("03faeee", "some egrid", laSarraz, 580);
-			final BienFondRF immeuble3 = addBienFondRF("04faeee", "some egrid", gland, 4299);
-			final BienFondRF immeuble4 = addBienFondRF("05faeee", "some egrid", laSarraz, 581);
-			final BienFondRF immeuble5 = addBienFondRF("06faeee", "some egrid", gland, 4300);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "some egrid", gland, 4298);
+			final BienFondsRF immeuble2 = addBienFondsRF("03faeee", "some egrid", laSarraz, 580);
+			final BienFondsRF immeuble3 = addBienFondsRF("04faeee", "some egrid", gland, 4299);
+			final BienFondsRF immeuble4 = addBienFondsRF("05faeee", "some egrid", laSarraz, 581);
+			final BienFondsRF immeuble5 = addBienFondsRF("06faeee", "some egrid", gland, 4300);
 
 			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
 
@@ -477,8 +477,8 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", gland, 4298);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "CHE1", gland, 4298);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
 
@@ -577,8 +577,8 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec deux immeubles ayant un lien entre eux
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", gland, 4298);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "CHE1", gland, 4298);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
 
@@ -703,9 +703,9 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 			// un tiers RF avec deux immeubles ayant un lien entre eux
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", laSarraz, 4298);
-			final BienFondRF immeuble2 = addBienFondRF("03faeee", "CHE2", laSarraz, 4299);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "CHE1", laSarraz, 4298);
+			final BienFondsRF immeuble2 = addBienFondsRF("03faeee", "CHE2", laSarraz, 4299);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
 
@@ -860,9 +860,9 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 			// un tiers RF avec deux immeubles ayant un lien entre eux
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", laSarraz, 4298);
-			final BienFondRF immeuble2 = addBienFondRF("03faeee", "CHE2", laSarraz, 4299);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "CHE1", laSarraz, 4298);
+			final BienFondsRF immeuble2 = addBienFondsRF("03faeee", "CHE2", laSarraz, 4299);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
 
@@ -997,8 +997,8 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 			// un tiers RF avec un immeuble qui fait partie d'un cycle de possession avec un autre immeuble.
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", laSarraz, 4298);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "CHE1", laSarraz, 4298);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
 
@@ -1114,8 +1114,8 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec un usufruit sur deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", gland, 4298);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "CHE1", gland, 4298);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
 
@@ -1198,9 +1198,9 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec un usufruit sur deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", gland, 4298);
-			final BienFondRF immeuble2 = addBienFondRF("03faeee", "CHE2", gland, 4298);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "CHE1", gland, 4298);
+			final BienFondsRF immeuble2 = addBienFondsRF("03faeee", "CHE2", gland, 4298);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
 
@@ -1317,9 +1317,9 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec un usufruit sur deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "CHE0", laSarraz, 579);
-			final BienFondRF immeuble1 = addBienFondRF("02faeee", "CHE1", gland, 4298);
-			final BienFondRF immeuble2 = addBienFondRF("03faeee", "CHE2", gland, 4298);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "CHE1", gland, 4298);
+			final BienFondsRF immeuble2 = addBienFondsRF("03faeee", "CHE2", gland, 4298);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("78838e838ca92", "Charles-Jean", "Widmer", date(1970, 1, 2));
 
@@ -1417,7 +1417,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	public void testGetCapitastraURL() throws Exception {
 
 		class Ids {
-			long bienFond;
+			long bienFonds;
 			long ppe;
 		}
 		final Ids ids = new Ids();
@@ -1428,10 +1428,10 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
 			final ProprieteParEtageRF immeuble1 = addProprieteParEtageRF("02faeee", "some egrid", new Fraction(1, 4), gland, 4298, 3, null, null);
 
-			ids.bienFond = immeuble0.getId();
+			ids.bienFonds = immeuble0.getId();
 			ids.ppe = immeuble1.getId();
 			return null;
 		});
@@ -1440,7 +1440,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFond));
+				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
 				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
 			}
 		});
@@ -1453,7 +1453,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	public void testGetCapitastraURLDerniereSituationFermee() throws Exception {
 
 		class Ids {
-			long bienFond;
+			long bienFonds;
 			long ppe;
 		}
 		final Ids ids = new Ids();
@@ -1464,11 +1464,11 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			// un tiers RF avec deux immeubles
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondRF immeuble0 = addBienFondRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
 			immeuble0.getSituations().iterator().next().setDateFin(RegDate.get(2015, 12, 31));
 			final ProprieteParEtageRF immeuble1 = addProprieteParEtageRF("02faeee", "some egrid", new Fraction(1, 4), gland, 4298, 3, null, null);
 
-			ids.bienFond = immeuble0.getId();
+			ids.bienFonds = immeuble0.getId();
 			ids.ppe = immeuble1.getId();
 			return null;
 		});
@@ -1477,7 +1477,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus transactionStatus) throws Exception {
-				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFond));
+				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=61&kr=0&n1=579&n2=&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.bienFonds));
 				assertEquals("https://secure.vd.ch/territoire/intercapi/faces?bfs=242&kr=0&n1=4298&n2=3&n3=&n4=&type=grundstueck_grundbuch_auszug", serviceRF.getCapitastraURL(ids.ppe));
 			}
 		});
@@ -1488,7 +1488,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		// mise en place fiscale
 		final long idImmeuble = doInNewTransactionAndSession(status -> {
 			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			final BienFondsRF immeuble = addBienFondsRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
 			return immeuble.getId();
 		});
 
@@ -1525,7 +1525,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		// mise en place fiscale
 		final long idImmeuble = doInNewTransactionAndSession(status -> {
 			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			final BienFondsRF immeuble = addBienFondsRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
 			return immeuble.getId();
 		});
 
@@ -1563,7 +1563,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		// mise en place fiscale
 		final long idImmeuble = doInNewTransactionAndSession(status -> {
 			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			final BienFondsRF immeuble = addBienFondsRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
 			return immeuble.getId();
 		});
 

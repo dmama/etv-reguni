@@ -10,7 +10,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
@@ -60,10 +60,10 @@ public class DroitRFDAOTest extends CoreDAOTest {
 			ids.evelyne = evelyne.getId();
 
 			// on crée quelques immeubles qui appartiennent tous à Bernard
-			final BienFondRF immeuble1 = addImmeubleRF("382929efa218");
+			final BienFondsRF immeuble1 = addImmeubleRF("382929efa218");
 			ids.immeuble1 = immeuble1.getId();
 
-			final BienFondRF immeuble2 = addImmeubleRF("14524242172");
+			final BienFondsRF immeuble2 = addImmeubleRF("14524242172");
 			ids.immeuble2 = immeuble2.getId();
 
 			final IdentifiantAffaireRF affaireAchat = new IdentifiantAffaireRF(123, 1995, 23, 3);

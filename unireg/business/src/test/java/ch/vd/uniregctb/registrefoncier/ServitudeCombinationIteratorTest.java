@@ -268,7 +268,7 @@ public class ServitudeCombinationIteratorTest {
 
 	@NotNull
 	private static ImmeubleRF newImmeuble(String grundstueckIDREF) {
-		final ImmeubleRF grundstueck = new BienFondRF();
+		final ImmeubleRF grundstueck = new BienFondsRF();
 		grundstueck.setIdRF(grundstueckIDREF);
 		return grundstueck;
 	}

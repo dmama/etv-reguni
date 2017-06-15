@@ -12,7 +12,7 @@ public class ImmeubleHelperTest {
 
 	@Test
 	public void testGetNatureImmeubleSansImplantationNiSurfaceAuSol() throws Exception {
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setSurfacesAuSol(Collections.emptySet());
 		immeuble.setImplantations(Collections.emptySet());
 		Assert.assertNull(ImmeubleHelper.getNatureImmeuble(immeuble, RegDate.get(), 100));
@@ -20,7 +20,7 @@ public class ImmeubleHelperTest {
 
 	@Test
 	public void testGetNatureImmeubleAvecUneSurfaceAuSol() throws Exception {
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		final SurfaceAuSolRF surface = new SurfaceAuSolRF();
 		surface.setImmeuble(immeuble);
 		surface.setSurface(42);
@@ -33,7 +33,7 @@ public class ImmeubleHelperTest {
 
 	@Test
 	public void testGetNatureImmeubleAvecUneImplantation() throws Exception {
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 
 		final DescriptionBatimentRF description = new DescriptionBatimentRF();
 		description.setSurface(10000);
@@ -58,7 +58,7 @@ public class ImmeubleHelperTest {
 
 	@Test
 	public void testGetNatureImmeubleAvecDeuxSurfacesAuSolDeMemeNature() throws Exception {
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setImplantations(Collections.emptySet());
 		immeuble.setSurfacesAuSol(new HashSet<>());
 		{
@@ -81,7 +81,7 @@ public class ImmeubleHelperTest {
 
 	@Test
 	public void testGetNatureImmeubleAvecDeuxSurfacesAuSolDeNaturesDifferentes() throws Exception {
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setImplantations(Collections.emptySet());
 		immeuble.setSurfacesAuSol(new HashSet<>());
 		{
@@ -104,7 +104,7 @@ public class ImmeubleHelperTest {
 
 	@Test
 	public void testGetNatureImmeubleAvecImplantationsEtSurfacesAuSol() throws Exception {
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setSurfacesAuSol(new HashSet<>());
 		immeuble.setImplantations(new HashSet<>());
 
@@ -161,7 +161,7 @@ public class ImmeubleHelperTest {
 
 	@Test
 	public void testGetNatureImmeubleAvecPlusieursSurfacesEtGrandeNatureResultante() throws Exception {
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setImplantations(Collections.emptySet());
 		immeuble.setSurfacesAuSol(new HashSet<>());
 		{
@@ -207,7 +207,7 @@ public class ImmeubleHelperTest {
 
 	@Test
 	public void testGetNatureImmeubleAvecUneSurfaceAuSolDeGrandeNature() throws Exception {
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		final SurfaceAuSolRF surface = new SurfaceAuSolRF();
 		surface.setImmeuble(immeuble);
 		surface.setSurface(42);

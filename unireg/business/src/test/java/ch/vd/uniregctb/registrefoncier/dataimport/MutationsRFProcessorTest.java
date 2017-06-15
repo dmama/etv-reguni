@@ -15,7 +15,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.AyantDroitRFProcessor;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.BatimentRFProcessor;
@@ -205,7 +205,7 @@ public class MutationsRFProcessorTest extends BusinessTest {
 
 		// on ajoute un immeuble
 		doInNewTransaction(status -> {
-			final BienFondRF immeuble = new BienFondRF();
+			final BienFondsRF immeuble = new BienFondsRF();
 			immeuble.setIdRF("783782372");
 			immeubleRFDAO.save(immeuble);
 			return null;

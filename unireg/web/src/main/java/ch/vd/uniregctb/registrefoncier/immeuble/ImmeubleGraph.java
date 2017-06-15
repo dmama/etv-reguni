@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
@@ -57,7 +57,7 @@ public class ImmeubleGraph {
 					.orElseThrow(IllegalArgumentException::new);
 
 			final String type;
-			if (immeuble instanceof BienFondRF) {
+			if (immeuble instanceof BienFondsRF) {
 				type = "BF";
 			}
 			else if (immeuble instanceof DroitDistinctEtPermanentRF) {

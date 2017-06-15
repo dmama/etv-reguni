@@ -23,7 +23,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -137,7 +137,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
 			assertEquals(1, immeubles.size());
 
-			final BienFondRF immeuble0 = (BienFondRF) immeubles.get(0);
+			final BienFondsRF immeuble0 = (BienFondsRF) immeubles.get(0);
 			assertEquals("_1f109152381026b501381028a73d1852", immeuble0.getIdRF());
 			assertEquals("CH938391457759", immeuble0.getEgrid());
 			assertFalse(immeuble0.isCfa());
@@ -263,16 +263,16 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			commune.setNoOfs(66666);
 			commune = communeRFDAO.save(commune);
 
-			final BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond.setEgrid("CH938391457759");
-			bienFond.setCfa(false);
+			final BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds.setEgrid("CH938391457759");
+			bienFonds.setCfa(false);
 
 			final SituationRF situation = new SituationRF();
 			situation.setDateDebut(RegDate.get(1988, 1, 1));
 			situation.setCommune(commune);
 			situation.setNoParcelle(5089);
-			bienFond.addSituation(situation);
+			bienFonds.addSituation(situation);
 
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -281,14 +281,14 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			estimation.setAnneeReference(1988);
 			estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
 			estimation.setEnRevision(false);
-			bienFond.addEstimation(estimation);
+			bienFonds.addEstimation(estimation);
 
 			final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 			surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
 			surfaceTotale.setSurface(707);
-			bienFond.addSurfaceTotale(surfaceTotale);
+			bienFonds.addSurfaceTotale(surfaceTotale);
 
-			immeubleRFDAO.save(bienFond);
+			immeubleRFDAO.save(bienFonds);
 			assertEquals(1, immeubleRFDAO.getAll().size());
 			return null;
 		});
@@ -407,16 +407,16 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			commune.setNoOfs(66666);
 			commune = communeRFDAO.save(commune);
 
-			final BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond.setEgrid("CH938391457759");
-			bienFond.setCfa(false);
+			final BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds.setEgrid("CH938391457759");
+			bienFonds.setCfa(false);
 
 			final SituationRF situation = new SituationRF();
 			situation.setDateDebut(RegDate.get(1988, 1, 1));
 			situation.setCommune(commune);
 			situation.setNoParcelle(5089);
-			bienFond.addSituation(situation);
+			bienFonds.addSituation(situation);
 
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -425,14 +425,14 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			estimation.setAnneeReference(1988);
 			estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
 			estimation.setEnRevision(false);
-			bienFond.addEstimation(estimation);
+			bienFonds.addEstimation(estimation);
 
 			final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 			surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
 			surfaceTotale.setSurface(707);
-			bienFond.addSurfaceTotale(surfaceTotale);
+			bienFonds.addSurfaceTotale(surfaceTotale);
 
-			immeubleRFDAO.save(bienFond);
+			immeubleRFDAO.save(bienFonds);
 			assertEquals(1, immeubleRFDAO.getAll().size());
 			return null;
 		});
@@ -507,16 +507,16 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			commune.setNoOfs(66666);
 			commune = communeRFDAO.save(commune);
 
-			final BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond.setEgrid("CH938391457759");
-			bienFond.setCfa(false);
+			final BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds.setEgrid("CH938391457759");
+			bienFonds.setCfa(false);
 
 			final SituationRF situation = new SituationRF();
 			situation.setDateDebut(RegDate.get(1988, 1, 1));
 			situation.setCommune(commune);
 			situation.setNoParcelle(5089);
-			bienFond.addSituation(situation);
+			bienFonds.addSituation(situation);
 
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -525,14 +525,14 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			estimation.setAnneeReference(1993);
 			estimation.setDateDebutMetier(RegDate.get(1993, 1, 1));
 			estimation.setEnRevision(false);
-			bienFond.addEstimation(estimation);
+			bienFonds.addEstimation(estimation);
 
 			final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 			surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
 			surfaceTotale.setSurface(707);
-			bienFond.addSurfaceTotale(surfaceTotale);
+			bienFonds.addSurfaceTotale(surfaceTotale);
 
-			immeubleRFDAO.save(bienFond);
+			immeubleRFDAO.save(bienFonds);
 			assertEquals(1, immeubleRFDAO.getAll().size());
 			return null;
 		});
@@ -630,16 +630,16 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			commune.setNoOfs(66666);
 			commune = communeRFDAO.save(commune);
 
-			final BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond.setEgrid("CH938391457759");
-			bienFond.setCfa(false);
+			final BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds.setEgrid("CH938391457759");
+			bienFonds.setCfa(false);
 
 			final SituationRF situation = new SituationRF();
 			situation.setDateDebut(RegDate.get(1988, 1, 1));
 			situation.setCommune(commune);
 			situation.setNoParcelle(5089);
-			bienFond.addSituation(situation);
+			bienFonds.addSituation(situation);
 
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -648,14 +648,14 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			estimation.setAnneeReference(2015);
 			estimation.setDateDebutMetier(RegDate.get(2015, 1, 1));
 			estimation.setEnRevision(true);
-			bienFond.addEstimation(estimation);
+			bienFonds.addEstimation(estimation);
 
 			final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 			surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
 			surfaceTotale.setSurface(707);
-			bienFond.addSurfaceTotale(surfaceTotale);
+			bienFonds.addSurfaceTotale(surfaceTotale);
 
-			immeubleRFDAO.save(bienFond);
+			immeubleRFDAO.save(bienFonds);
 			assertEquals(1, immeubleRFDAO.getAll().size());
 			return null;
 		});
@@ -753,16 +753,16 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			commune.setNoOfs(66666);
 			commune = communeRFDAO.save(commune);
 
-			final BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond.setEgrid("CH938391457759");
-			bienFond.setCfa(false);
+			final BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds.setEgrid("CH938391457759");
+			bienFonds.setCfa(false);
 
 			final SituationRF situation = new SituationRF();
 			situation.setDateDebut(RegDate.get(1988, 1, 1));
 			situation.setCommune(commune);
 			situation.setNoParcelle(5089);
-			bienFond.addSituation(situation);
+			bienFonds.addSituation(situation);
 
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -773,14 +773,14 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			estimation.setDateDebutMetier(RegDate.get(1993, 1, 1));
 			estimation.setDateFinMetier(RegDate.get(2016, 7, 1));
 			estimation.setEnRevision(false);
-			bienFond.addEstimation(estimation);
+			bienFonds.addEstimation(estimation);
 
 			final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 			surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
 			surfaceTotale.setSurface(707);
-			bienFond.addSurfaceTotale(surfaceTotale);
+			bienFonds.addSurfaceTotale(surfaceTotale);
 
-			immeubleRFDAO.save(bienFond);
+			immeubleRFDAO.save(bienFonds);
 			assertEquals(1, immeubleRFDAO.getAll().size());
 			return null;
 		});
@@ -880,16 +880,16 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			commune.setNoOfs(66666);
 			commune = communeRFDAO.save(commune);
 
-			final BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond.setEgrid("CH938391457759");
-			bienFond.setCfa(false);
+			final BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds.setEgrid("CH938391457759");
+			bienFonds.setCfa(false);
 
 			final SituationRF situation = new SituationRF();
 			situation.setDateDebut(RegDate.get(1988, 1, 1));
 			situation.setCommune(commune);
 			situation.setNoParcelle(5089);
-			bienFond.addSituation(situation);
+			bienFonds.addSituation(situation);
 
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -898,14 +898,14 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			estimation.setAnneeReference(1993);
 			estimation.setDateDebutMetier(RegDate.get(1993, 1, 1));
 			estimation.setEnRevision(false);
-			bienFond.addEstimation(estimation);
+			bienFonds.addEstimation(estimation);
 
 			final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 			surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
 			surfaceTotale.setSurface(532);
-			bienFond.addSurfaceTotale(surfaceTotale);
+			bienFonds.addSurfaceTotale(surfaceTotale);
 
-			immeubleRFDAO.save(bienFond);
+			immeubleRFDAO.save(bienFonds);
 			assertEquals(1, immeubleRFDAO.getAll().size());
 			return null;
 		});
@@ -1015,20 +1015,20 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			commune.setNoOfs(66666);
 			commune = communeRFDAO.save(commune);
 
-			final BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond.setEgrid("CH938391457759");
-			bienFond.setCfa(false);
-			bienFond.setDateRadiation(dateRadiation);   // <---- immeuble radié
+			final BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds.setEgrid("CH938391457759");
+			bienFonds.setCfa(false);
+			bienFonds.setDateRadiation(dateRadiation);   // <---- immeuble radié
 
 			final SituationRF situation = new SituationRF();
 			situation.setDateDebut(RegDate.get(1988, 1, 1));
 			situation.setDateFin(dateRadiation);
 			situation.setCommune(commune);
 			situation.setNoParcelle(5089);
-			bienFond.addSituation(situation);
+			bienFonds.addSituation(situation);
 
-			immeubleRFDAO.save(bienFond);
+			immeubleRFDAO.save(bienFonds);
 			assertEquals(1, immeubleRFDAO.getAll().size());
 			return null;
 		});
@@ -1306,17 +1306,17 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			commune.setNoOfs(66666);
 			commune = communeRFDAO.save(commune);
 
-			final BienFondRF bienFond = new BienFondRF();
-			bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-			bienFond.setEgrid("CH938391457759");
-			bienFond.setCfa(false);
+			final BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds.setEgrid("CH938391457759");
+			bienFonds.setCfa(false);
 
 			final SituationRF situation = new SituationRF();
 			situation.setDateDebut(RegDate.get(1988, 1, 1));
 			situation.setDateFin(veilleImport); // on pré-renseigne la date de fermeture pour que la validation de l'immeuble passe (on ne veut tester que la mutation sur l'immeuble)
 			situation.setCommune(commune);
 			situation.setNoParcelle(5089);
-			bienFond.addSituation(situation);
+			bienFonds.addSituation(situation);
 
 			final EstimationRF estimation = new EstimationRF();
 			estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -1325,15 +1325,15 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 			estimation.setReference("RG93");
 			estimation.setAnneeReference(1993);
 			estimation.setEnRevision(false);
-			bienFond.addEstimation(estimation);
+			bienFonds.addEstimation(estimation);
 
 			final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 			surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
 			surfaceTotale.setDateFin(veilleImport);
 			surfaceTotale.setSurface(532);
-			bienFond.addSurfaceTotale(surfaceTotale);
+			bienFonds.addSurfaceTotale(surfaceTotale);
 
-			immeubleRFDAO.save(bienFond);
+			immeubleRFDAO.save(bienFonds);
 			assertEquals(1, immeubleRFDAO.getAll().size());
 			return null;
 		});

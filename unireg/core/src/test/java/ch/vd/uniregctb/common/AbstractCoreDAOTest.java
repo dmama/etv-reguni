@@ -76,7 +76,7 @@ import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
@@ -1604,8 +1604,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return saved;
 	}
 
-	protected BienFondRF addImmeubleRF(String idRF) {
-		final BienFondRF immeuble = new BienFondRF();
+	protected BienFondsRF addImmeubleRF(String idRF) {
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF(idRF);
 		return merge(immeuble);
 	}
@@ -1711,7 +1711,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected DroitProprieteImmeubleRF addDroitImmeubleRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin,
 	                                                      String masterIdRF, String versionIdRF, IdentifiantAffaireRF numeroAffaire,
 	                                                      Fraction part, GenrePropriete regime,
-	                                                      ImmeubleBeneficiaireRF beneficiaire, BienFondRF immeuble) {
+	                                                      ImmeubleBeneficiaireRF beneficiaire, BienFondsRF immeuble) {
 		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
 		droit.setImmeuble(immeuble);
 		droit.setAyantDroit(beneficiaire);
@@ -1737,7 +1737,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected UsufruitRF addUsufruitRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF, IdentifiantAffaireRF numeroAffaire,
 	                                   IdentifiantDroitRF identifiantDroitRF,
-	                                   TiersRF tiersRF, BienFondRF immeuble) {
+	                                   TiersRF tiersRF, BienFondsRF immeuble) {
 		final UsufruitRF usufruit = new UsufruitRF();
 		usufruit.addImmeuble(immeuble);
 		usufruit.addAyantDroit(tiersRF);
@@ -1786,7 +1786,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected DroitHabitationRF addDroitHabitationRF(RegDate dateDebut, RegDate dateDebutMetier, RegDate dateFin, RegDate dateFinMetier, String motifDebut, String motifFin, String masterIdRF, String versionIdRF,
 	                                                 IdentifiantAffaireRF numeroAffaire, IdentifiantDroitRF identifiantDroitRF,
-	                                                 TiersRF tiersRF, BienFondRF immeuble) {
+	                                                 TiersRF tiersRF, BienFondsRF immeuble) {
 		final DroitHabitationRF droitHabitation = new DroitHabitationRF();
 		droitHabitation.addImmeuble(immeuble);
 		droitHabitation.addAyantDroit(tiersRF);

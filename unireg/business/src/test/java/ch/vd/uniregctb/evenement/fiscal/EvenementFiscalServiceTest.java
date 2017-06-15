@@ -22,7 +22,7 @@ import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImplantat
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -283,7 +283,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 			assertEquals(0, evenementFiscalDAO.getAll().size());
 
 			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
-			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
+			final BienFondsRF immeuble = addBienFondsRF("39393", "CH28282", commune, 212);
 			final PersonnePhysiqueRF pp = addPersonnePhysiqueRF("383883", "Jean", "Jean", RegDate.get(1970, 1, 1));
 			final DroitProprietePersonnePhysiqueRF droit =
 					addDroitPropriete(pp, immeuble, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
@@ -332,7 +332,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 			assertEquals(0, evenementFiscalDAO.getAll().size());
 
 			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
-			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
+			final BienFondsRF immeuble = addBienFondsRF("39393", "CH28282", commune, 212);
 			final PersonnePhysiqueRF pp = addPersonnePhysiqueRF("383883", "Jean", "Jean", RegDate.get(1970, 1, 1));
 
 			final UsufruitRF usufruit = addUsufruitRF(RegDate.get(2000, 1, 1), RegDate.get(2000, 1, 1), null, null, "Convention", null,
@@ -380,7 +380,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 			assertEquals(0, evenementFiscalDAO.getAll().size());
 
 			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
-			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
+			final BienFondsRF immeuble = addBienFondsRF("39393", "CH28282", commune, 212);
 
 			evenementFiscalService.publierCreationImmeuble(RegDate.get(2000, 1, 1), immeuble);
 
@@ -414,7 +414,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 			assertEquals(0, evenementFiscalDAO.getAll().size());
 
 			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
-			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
+			final BienFondsRF immeuble = addBienFondsRF("39393", "CH28282", commune, 212);
 			final EstimationRF estimation = addEstimationFiscale(RegDate.get(2000, 1, 1), RegDate.get(2000, 1, 1), null, false, 100_000L, "2017", immeuble);
 
 			evenementFiscalService.publierDebutEstimationFiscalImmeuble(RegDate.get(2000, 1, 1), estimation);
@@ -459,7 +459,7 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 			assertEquals(0, evenementFiscalDAO.getAll().size());
 
 			final CommuneRF commune = addCommuneRF(12, "Echallens", 2322);
-			final BienFondRF immeuble = addBienFondRF("39393", "CH28282", commune, 212);
+			final BienFondsRF immeuble = addBienFondsRF("39393", "CH28282", commune, 212);
 			BatimentRF batiment = addBatimentRF("32099903");
 			addImplantationRF(RegDate.get(2000, 1, 1), null, 100, immeuble, batiment);
 

@@ -22,7 +22,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
@@ -336,22 +336,22 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				final CommuneRF penthalaz = communeRFDAO.save(newCommuneRF(71, "Penthalaz", 5556));
 
 				// données équivalentes au fichier export_surfaceausol_rf_hebdo.xml
-				BienFondRF bienFond1 = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
-				BienFondRF bienFond2 = newBienFondRF("_1f109152381037590138103b73cf579a", "CH344583712491", penthalaz, 428, 14000L, "EF01", 2001, null, RegDate.get(2001, 1, 1), false, false, dateImportInitial, 17814);
-				bienFond1 = (BienFondRF) immeubleRFDAO.save(bienFond1);
-				bienFond2 = (BienFondRF) immeubleRFDAO.save(bienFond2);
+				BienFondsRF bienFonds1 = newBienFondsRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
+				BienFondsRF bienFonds2 = newBienFondsRF("_1f109152381037590138103b73cf579a", "CH344583712491", penthalaz, 428, 14000L, "EF01", 2001, null, RegDate.get(2001, 1, 1), false, false, dateImportInitial, 17814);
+				bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
+				bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
 
 				// quelques données historiques (qui doivent être ignorées)
-				SurfaceAuSolRF surface1_1 = newSurfaceAuSol(bienFond1, "Pâturage pluvial", 1125519, dateImportInitial, dateSecondImport.getOneDayBefore());
-				SurfaceAuSolRF surface2_1 = newSurfaceAuSol(bienFond1, "Pré-champ", 270, dateImportInitial, dateSecondImport.getOneDayBefore());
-				SurfaceAuSolRF surface3_1 = newSurfaceAuSol(bienFond2, "Pré-champ-cathédrale", 17814, dateImportInitial, dateSecondImport.getOneDayBefore());
+				SurfaceAuSolRF surface1_1 = newSurfaceAuSol(bienFonds1, "Pâturage pluvial", 1125519, dateImportInitial, dateSecondImport.getOneDayBefore());
+				SurfaceAuSolRF surface2_1 = newSurfaceAuSol(bienFonds1, "Pré-champ", 270, dateImportInitial, dateSecondImport.getOneDayBefore());
+				SurfaceAuSolRF surface3_1 = newSurfaceAuSol(bienFonds2, "Pré-champ-cathédrale", 17814, dateImportInitial, dateSecondImport.getOneDayBefore());
 				surfaceAuSolRFDAO.save(surface1_1);
 				surfaceAuSolRFDAO.save(surface2_1);
 				surfaceAuSolRFDAO.save(surface3_1);
 
-				SurfaceAuSolRF surface1_2 = newSurfaceAuSol(bienFond1, "Pâturage", 1125519, dateSecondImport, null);
-				SurfaceAuSolRF surface2_2 = newSurfaceAuSol(bienFond1, "Pré-champ", 570, dateSecondImport, null);
-				SurfaceAuSolRF surface3_2 = newSurfaceAuSol(bienFond2, "Pré-champ", 17814, dateSecondImport, null);
+				SurfaceAuSolRF surface1_2 = newSurfaceAuSol(bienFonds1, "Pâturage", 1125519, dateSecondImport, null);
+				SurfaceAuSolRF surface2_2 = newSurfaceAuSol(bienFonds1, "Pré-champ", 570, dateSecondImport, null);
+				SurfaceAuSolRF surface3_2 = newSurfaceAuSol(bienFonds2, "Pré-champ", 17814, dateSecondImport, null);
 				surfaceAuSolRFDAO.save(surface1_2);
 				surfaceAuSolRFDAO.save(surface2_2);
 				surfaceAuSolRFDAO.save(surface3_2);
@@ -434,17 +434,17 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				final CommuneRF penthalaz = communeRFDAO.save(newCommuneRF(71, "Penthalaz", 5556));
 
 				// données partiellement différentes de celles du fichier export_surfaceausol_rf_hebdo.xml
-				BienFondRF bienFond1 = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
-				BienFondRF bienFond2 = newBienFondRF("_1f109152381037590138103b73cf579a", "CH344583712491", penthalaz, 428, 14000L, "EF01", 2001, null, RegDate.get(2001, 1, 1), false, false, dateImportInitial, 17814);
-				bienFond1 = (BienFondRF) immeubleRFDAO.save(bienFond1);
-				bienFond2 = (BienFondRF) immeubleRFDAO.save(bienFond2);
+				BienFondsRF bienFonds1 = newBienFondsRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
+				BienFondsRF bienFonds2 = newBienFondsRF("_1f109152381037590138103b73cf579a", "CH344583712491", penthalaz, 428, 14000L, "EF01", 2001, null, RegDate.get(2001, 1, 1), false, false, dateImportInitial, 17814);
+				bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
+				bienFonds2 = (BienFondsRF) immeubleRFDAO.save(bienFonds2);
 
 				// - surface différente
-				SurfaceAuSolRF surface1 = newSurfaceAuSol(bienFond1, "Pâturage", 660066, dateImportInitial, null);
+				SurfaceAuSolRF surface1 = newSurfaceAuSol(bienFonds1, "Pâturage", 660066, dateImportInitial, null);
 				// (identique)
-				SurfaceAuSolRF surface2 = newSurfaceAuSol(bienFond1, "Pré-champ", 570, dateImportInitial, null);
+				SurfaceAuSolRF surface2 = newSurfaceAuSol(bienFonds1, "Pré-champ", 570, dateImportInitial, null);
 				// - désignation différente
-				SurfaceAuSolRF surface3 = newSurfaceAuSol(bienFond2, "Décharge nucléaire", 17814, dateImportInitial, null);
+				SurfaceAuSolRF surface3 = newSurfaceAuSol(bienFonds2, "Décharge nucléaire", 17814, dateImportInitial, null);
 				surfaceAuSolRFDAO.save(surface1);
 				surfaceAuSolRFDAO.save(surface2);
 				surfaceAuSolRFDAO.save(surface3);
@@ -571,11 +571,11 @@ public class TraiterImportRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
 
 				// un immeuble avec deux surfaces au sol actives
-				BienFondRF bienFond1 = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
-				bienFond1 = (BienFondRF) immeubleRFDAO.save(bienFond1);
+				BienFondsRF bienFonds1 = newBienFondsRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
+				bienFonds1 = (BienFondsRF) immeubleRFDAO.save(bienFonds1);
 
-				SurfaceAuSolRF surface1 = newSurfaceAuSol(bienFond1, "Pâturage", 660066, dateImportInitial, null);
-				SurfaceAuSolRF surface2 = newSurfaceAuSol(bienFond1, "Pré-champ", 570, dateImportInitial, null);
+				SurfaceAuSolRF surface1 = newSurfaceAuSol(bienFonds1, "Pâturage", 660066, dateImportInitial, null);
+				SurfaceAuSolRF surface2 = newSurfaceAuSol(bienFonds1, "Pré-champ", 570, dateImportInitial, null);
 				surfaceAuSolRFDAO.save(surface1);
 				surfaceAuSolRFDAO.save(surface2);
 			}

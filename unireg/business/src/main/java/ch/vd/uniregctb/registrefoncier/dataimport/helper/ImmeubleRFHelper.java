@@ -15,7 +15,7 @@ import ch.vd.capitastra.grundstueck.Liegenschaft;
 import ch.vd.capitastra.grundstueck.SDR;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -60,15 +60,15 @@ public abstract class ImmeubleRFHelper {
 		// [blindage] les valeurs suivantes ne doivent jamais changer (le modèle est construit sur ce prédicat)
 		if (immeuble instanceof MineRF && !(grundstueck instanceof BergwerkElement) ||
 				immeuble instanceof PartCoproprieteRF && !(grundstueck instanceof GewoehnlichesMiteigentum) ||
-				immeuble instanceof BienFondRF && !(grundstueck instanceof Liegenschaft) ||
+				immeuble instanceof BienFondsRF && !(grundstueck instanceof Liegenschaft) ||
 				immeuble instanceof DroitDistinctEtPermanentRF && !(grundstueck instanceof SDR) ||
 				immeuble instanceof ProprieteParEtageRF && !(grundstueck instanceof StockwerksEinheit)) {
 			throw new IllegalArgumentException("Le type de l'immeuble idRF=[" + immeuble.getIdRF() + "] a changé.");
 		}
-		if (immeuble instanceof BienFondRF) {
-			final BienFondRF bienFond = (BienFondRF) immeuble;
+		if (immeuble instanceof BienFondsRF) {
+			final BienFondsRF bienFonds = (BienFondsRF) immeuble;
 			final String ligUnterartEnum = ((Liegenschaft) grundstueck).getLigUnterartEnum();
-			if (bienFond.isCfa() != (ligUnterartEnum != null && ligUnterartEnum.contains("cfa"))) {
+			if (bienFonds.isCfa() != (ligUnterartEnum != null && ligUnterartEnum.contains("cfa"))) {
 				throw new IllegalArgumentException("Le flag CFA de l'immeuble idRF=[" + immeuble.getIdRF() + "] a changé.");
 			}
 		}
@@ -174,10 +174,10 @@ public abstract class ImmeubleRFHelper {
 		}
 		else if (grundstueck instanceof Liegenschaft) {
 			final Liegenschaft liegenschaft =(Liegenschaft) grundstueck;
-			final BienFondRF bienFond = new BienFondRF();
+			final BienFondsRF bienFonds = new BienFondsRF();
 			final String ligUnterartEnum = liegenschaft.getLigUnterartEnum();
-			bienFond.setCfa(ligUnterartEnum != null && ligUnterartEnum.contains("cfa"));
-			immeuble = bienFond;
+			bienFonds.setCfa(ligUnterartEnum != null && ligUnterartEnum.contains("cfa"));
+			immeuble = bienFonds;
 		}
 		else if (grundstueck instanceof SDR) {
 			immeuble = new DroitDistinctEtPermanentRF();

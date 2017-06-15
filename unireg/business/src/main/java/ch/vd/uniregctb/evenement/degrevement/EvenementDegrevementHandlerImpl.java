@@ -39,7 +39,7 @@ import ch.vd.uniregctb.foncier.DonneesLoiLogement;
 import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -69,7 +69,7 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 		map.put(ProprieteParEtageRF.class, TypImmeuble.PPE);
 		map.put(DroitDistinctEtPermanentRF.class, TypImmeuble.DDP);
 		map.put(MineRF.class, TypImmeuble.MINE);
-		map.put(BienFondRF.class, TypImmeuble.B_F);
+		map.put(BienFondsRF.class, TypImmeuble.B_F);
 		map.put(PartCoproprieteRF.class, TypImmeuble.COP);
 		return map;
 	}

@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("BienFond")
-public class BienFondRF extends ImmeubleRF {
+public class BienFondsRF extends ImmeubleRF {
 
 	/**
 	 * Vrai si l'immeuble est une construction sur fond d'autrui (CFA).

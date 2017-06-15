@@ -21,7 +21,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
@@ -98,9 +98,9 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		return implantation;
 	}
 
-	protected static BienFondRF newBienFondRF(String idRF, String egrid, CommuneRF commune, int noParcelle,
-	                                          Long montantEstimation, String referenceEstimation, Integer anneeReference, RegDate dateInscription,
-	                                          RegDate dateDebutMetier, boolean enRevision, boolean cfa, RegDate dateValeur, int surface) {
+	protected static BienFondsRF newBienFondsRF(String idRF, String egrid, CommuneRF commune, int noParcelle,
+	                                            Long montantEstimation, String referenceEstimation, Integer anneeReference, RegDate dateInscription,
+	                                            RegDate dateDebutMetier, boolean enRevision, boolean cfa, RegDate dateValeur, int surface) {
 
 		final SituationRF situation = new SituationRF();
 		situation.setCommune(commune);
@@ -120,7 +120,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 		surfaceTotale.setDateDebut(dateValeur);
 		surfaceTotale.setSurface(surface);
 
-		final BienFondRF immeuble = new BienFondRF();
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF(idRF);
 		immeuble.setCfa(cfa);
 		immeuble.setEgrid(egrid);
@@ -263,7 +263,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	public static UsufruitRF newUsufruitRF(String masterIdRF,
-	                                       String versionIdRf, BienFondRF immeuble,
+	                                       String versionIdRf, BienFondsRF immeuble,
 	                                       PersonnePhysiqueRF personne,
 	                                       RegDate dateDebut,
 	                                       RegDate dateDebutMetier,
@@ -299,7 +299,7 @@ public abstract class ImportRFTestClass extends BusinessItTest {
 	}
 
 	@NotNull
-	protected static SurfaceAuSolRF newSurfaceAuSol(BienFondRF immeuble, String type, int surface, RegDate dateDebut, RegDate dateFin) {
+	protected static SurfaceAuSolRF newSurfaceAuSol(BienFondsRF immeuble, String type, int surface, RegDate dateDebut, RegDate dateFin) {
 		final SurfaceAuSolRF sur = new SurfaceAuSolRF();
 		sur.setImmeuble(immeuble);
 		sur.setType(type);

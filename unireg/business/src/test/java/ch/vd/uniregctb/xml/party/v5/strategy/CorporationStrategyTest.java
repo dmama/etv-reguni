@@ -23,7 +23,7 @@ import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -55,13 +55,13 @@ public class CorporationStrategyTest extends BusinessTest {
 	@Test
 	public void testInitLandTaxLightenings() throws Exception {
 
-		final BienFondRF immeuble0 = new BienFondRF();
+		final BienFondsRF immeuble0 = new BienFondsRF();
 		immeuble0.setId(0L);
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setId(1L);
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setId(2L);
 
 
@@ -149,7 +149,7 @@ public class CorporationStrategyTest extends BusinessTest {
 		return demande;
 	}
 
-	private static DegrevementICI newDegrevement(RegDate dateDebut, RegDate dateFin, BienFondRF immeuble) {
+	private static DegrevementICI newDegrevement(RegDate dateDebut, RegDate dateFin, BienFondsRF immeuble) {
 		final DegrevementICI deg = new DegrevementICI();
 		deg.setDateDebut(dateDebut);
 		deg.setDateFin(dateFin);
@@ -157,7 +157,7 @@ public class CorporationStrategyTest extends BusinessTest {
 		return deg;
 	}
 
-	private static ExonerationIFONC newExoneration(RegDate dateDebut, RegDate dateFin, BienFondRF immeuble) {
+	private static ExonerationIFONC newExoneration(RegDate dateDebut, RegDate dateFin, BienFondsRF immeuble) {
 		final ExonerationIFONC exo0 = new ExonerationIFONC();
 		exo0.setDateDebut(dateDebut);
 		exo0.setDateFin(dateFin);

@@ -18,7 +18,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
@@ -110,7 +110,7 @@ public abstract class MutationRFProcessorTestCase extends BusinessTest {
 		return doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				BienFondRF immeuble = new BienFondRF();
+				BienFondsRF immeuble = new BienFondsRF();
 				immeuble.setIdRF(idImmeubleRF);
 				return immeubleRFDAO.save(immeuble).getId();
 			}

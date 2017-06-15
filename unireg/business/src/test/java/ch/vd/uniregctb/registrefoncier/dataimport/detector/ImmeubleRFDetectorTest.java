@@ -33,7 +33,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -152,9 +152,9 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie deux nouveaux immeubles
-		final Liegenschaft bienfond = newBienFond(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891", true);
+		final Liegenschaft bienfonds = newBienFonds(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "382929efa218", "CH282891891", true);
 		final StockwerksEinheit ppe = newPPE(238, "Lausanne", 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, "23af3efe44", "CH8383820002", new Fraction(1, 1));
-		final List<Grundstueck> immeubles = Arrays.asList(bienfond, ppe);
+		final List<Grundstueck> immeubles = Arrays.asList(bienfonds, ppe);
 		detector.processImmeubles(IMPORT_ID, 2, immeubles.iterator(), null);
 
 		// on devrait avoir deux événements de mutation de type CREATION à l'état A_TRAITER dans la base
@@ -250,8 +250,8 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie un immeuble blacklisté
-		final Liegenschaft bienfond = newBienFond(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "_1f1091523810108101381012b3d64cb4", "CH282891891", true);
-		final List<Grundstueck> immeubles = Collections.singletonList(bienfond);
+		final Liegenschaft bienfonds = newBienFonds(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), true, "_1f1091523810108101381012b3d64cb4", "CH282891891", true);
+		final List<Grundstueck> immeubles = Collections.singletonList(bienfonds);
 		detector.processImmeubles(IMPORT_ID, 2, immeubles.iterator(), null);
 
 		// on ne devrait pas avoir de mutations
@@ -265,11 +265,11 @@ public class ImmeubleRFDetectorTest {
 	@Test
 	public void testImmeublesModifies() throws Exception {
 
-		final String idRfBienFond = "382929efa218";
+		final String idRfBienFonds = "382929efa218";
 		final String idRfPPE = "23af3efe44";
 
 		// un mock de DAO qui simule l'existence des deux immeubles
-		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAODeuxImmeubles(idRfBienFond, idRfPPE);
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAODeuxImmeubles(idRfBienFonds, idRfPPE);
 
 		// un mock de DAO avec un import du registre foncier
 		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
@@ -288,10 +288,10 @@ public class ImmeubleRFDetectorTest {
 
 		// on envoie les immeubles avec des modifications
 		// - nouvelle estimation fiscale
-		final Liegenschaft bienfondImport = newBienFond(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), false, idRfBienFond, "CH282891891", true);
+		final Liegenschaft bienfondsImport = newBienFonds(2233, "Le-gros-du-lac", 109, 17, 500000L, "2016", RegDate.get(2016, 1, 1), false, idRfBienFonds, "CH282891891", true);
 		// - changement de numéro de parcelle
 		final StockwerksEinheit ppeImport = newPPE(273, "Thierrens", 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
-		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
+		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondsImport, ppeImport);
 		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
 
 		// on devrait avoir deux événements de mutation de type MODIFICATION à l'état A_TRAITER dans la base
@@ -362,11 +362,11 @@ public class ImmeubleRFDetectorTest {
 	@Test
 	public void testImmeublesEtCommunesIdentiques() throws Exception {
 
-		final String idRfBienFond = "382929efa218";
+		final String idRfBienFonds = "382929efa218";
 		final String idRfPPE = "23af3efe44";
 
 		// un mock de DAO qui simule l'existence des deux immeubles
-		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAODeuxImmeubles(idRfBienFond, idRfPPE);
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAODeuxImmeubles(idRfBienFonds, idRfPPE);
 
 		// un mock de DAO avec un import du registre foncier
 		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
@@ -384,9 +384,9 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie les immeubles avec les mêmes données que celles dans la DB
-		final Liegenschaft bienfondImport = newBienFond(2233, "Le-gros-du-lac", 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
+		final Liegenschaft bienfondsImport = newBienFonds(2233, "Le-gros-du-lac", 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFonds, "CH282891891", true);
 		final StockwerksEinheit ppeImport = newPPE(273, "Thierrens", 46, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
-		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
+		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondsImport, ppeImport);
 		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
 
 		// on ne devrait pas avoir de mutation
@@ -400,13 +400,13 @@ public class ImmeubleRFDetectorTest {
 	@Test
 	public void testImmeublesRadies() throws Exception {
 
-		final BienFondRF bienFond = new BienFondRF();
-		bienFond.setIdRF("382929efa218");
+		final BienFondsRF bienFonds = new BienFondsRF();
+		bienFonds.setIdRF("382929efa218");
 		final ProprieteParEtageRF ppe = new ProprieteParEtageRF();
 		ppe.setIdRF("23af3efe44");
 
 		// un mock de DAO qui simule l'existence des deux immeubles
-		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO(bienFond, ppe);
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO(bienFonds, ppe);
 
 		// un mock de DAO avec un import du registre foncier
 		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
@@ -485,7 +485,7 @@ public class ImmeubleRFDetectorTest {
 	@Test
 	public void testNouvellesCommunes() throws Exception {
 
-		final String idRfBienFond = "382929efa218";
+		final String idRfBienFonds = "382929efa218";
 		final String idRfPPE = "23af3efe44";
 
 		// des mocks de DAO qui simulent une base vide
@@ -514,9 +514,9 @@ public class ImmeubleRFDetectorTest {
 		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
 
 		// on envoie deux nouveaux immeubles sur deux nouvelles communes
-		final Liegenschaft bienfondImport = newBienFond(2233, "Le-gros-du-lac", 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
+		final Liegenschaft bienfondsImport = newBienFonds(2233, "Le-gros-du-lac", 109, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFonds, "CH282891891", true);
 		final StockwerksEinheit ppeImport = newPPE(273, "Thierrens", 46, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
-		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
+		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondsImport, ppeImport);
 		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
 
 		// on devrait avoir quatre événements de mutation de type CREATION à l'état A_TRAITER dans la base (deux pour les immeubles et deux pour les communes)
@@ -613,11 +613,11 @@ public class ImmeubleRFDetectorTest {
 	@Test
 	public void testCommunesModifiees() throws Exception {
 
-		final String idRfBienFond = "382929efa218";
+		final String idRfBienFonds = "382929efa218";
 		final String idRfPPE = "23af3efe44";
 
 		// un mock de DAO qui simule l'existence des deux immeubles
-		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAODeuxImmeubles(idRfBienFond, idRfPPE);
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAODeuxImmeubles(idRfBienFonds, idRfPPE);
 
 		// un mock de DAO avec un import du registre foncier
 		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
@@ -636,10 +636,10 @@ public class ImmeubleRFDetectorTest {
 
 		// on envoie les immeubles
 		// - fusion de commune (Le-gros-du-lac -> Lac-Amour *avec* réutilisation du numéro de commune) et changement de numéro de parcelle
-		final Liegenschaft bienfondImport = newBienFond(2233, "Lac-Amour", 2304, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFond, "CH282891891", true);
+		final Liegenschaft bienfondsImport = newBienFonds(2233, "Lac-Amour", 2304, 17, 450000, "2015", RegDate.get(2015, 7, 1), false, idRfBienFonds, "CH282891891", true);
 		// - fusion de commune (Thierrens -> Montanair *sans* réutilisation du numéro de commune) et changement de numéro de parcelle
 		final StockwerksEinheit ppeImport = newPPE(108, "Montanair", 1022, null, 250000, "RG97", RegDate.get(1997, 1, 1), false, idRfPPE, "CH8383820002", new Fraction(1, 1));
-		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondImport, ppeImport);
+		final List<Grundstueck> immeublesImport = Arrays.asList(bienfondsImport, ppeImport);
 		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
 
 		// on devrait avoir quatre événements de mutation de type MODIFICATION à l'état A_TRAITER dans la base (deux sur les immeubles et deux autres sur les communes)
@@ -731,8 +731,8 @@ public class ImmeubleRFDetectorTest {
 	}
 
 	@NotNull
-	private static BienFondRF newBienFondRFGrosDuLac(String idRfBienFond) {
-		final BienFondRF bienFond = new BienFondRF();
+	private static BienFondsRF newBienFondsRFGrosDuLac(String idRfBienFonds) {
+		final BienFondsRF bienFonds = new BienFondsRF();
 		{
 			final CommuneRF commune = new CommuneRF();
 			commune.setNoRf(2233);
@@ -751,20 +751,20 @@ public class ImmeubleRFDetectorTest {
 			estimation.setEnRevision(false);
 			estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
-			bienFond.setIdRF(idRfBienFond);
-			bienFond.setCfa(true);
-			bienFond.setEgrid("CH282891891");
-			bienFond.addSituation(situation);
-			bienFond.addEstimation(estimation);
-			bienFond.setSurfacesTotales(Collections.emptySet());
+			bienFonds.setIdRF(idRfBienFonds);
+			bienFonds.setCfa(true);
+			bienFonds.setEgrid("CH282891891");
+			bienFonds.addSituation(situation);
+			bienFonds.addEstimation(estimation);
+			bienFonds.setSurfacesTotales(Collections.emptySet());
 		}
-		return bienFond;
+		return bienFonds;
 	}
 
 	@NotNull
-	private static Liegenschaft newBienFond(int noRfCommune, String nomCommune, int noParcelle, Integer index1,
-	                                        long estimationFiscale, String referenceEstimation, RegDate dateInscription,
-	                                        boolean enRevision, String idRF, String egrid, boolean cfa) {
+	private static Liegenschaft newBienFonds(int noRfCommune, String nomCommune, int noParcelle, Integer index1,
+	                                         long estimationFiscale, String referenceEstimation, RegDate dateInscription,
+	                                         boolean enRevision, String idRF, String egrid, boolean cfa) {
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
 		grundstueckNummer.setBfsNr(noRfCommune);
 		grundstueckNummer.setGemeindenamen(nomCommune);
@@ -841,23 +841,23 @@ public class ImmeubleRFDetectorTest {
 
 	private class MockImmeubleRFDAODeuxImmeubles extends MockImmeubleRFDAO {
 
-		private final BienFondRF bienFond;
+		private final BienFondsRF bienFonds;
 		private final ProprieteParEtageRF ppe;
-		private final String idRfBienFond;
+		private final String idRfBienFonds;
 		private final String idRfPPE;
 
-		public MockImmeubleRFDAODeuxImmeubles(String idRfBienFond, String idRfPPE) {
-			this.idRfBienFond = idRfBienFond;
+		public MockImmeubleRFDAODeuxImmeubles(String idRfBienFonds, String idRfPPE) {
+			this.idRfBienFonds = idRfBienFonds;
 			this.idRfPPE = idRfPPE;
-			this.bienFond = newBienFondRFGrosDuLac(idRfBienFond);
+			this.bienFonds = newBienFondsRFGrosDuLac(idRfBienFonds);
 			this.ppe = newProprieteParEtageRFThierrens(idRfPPE);
 		}
 
 		@Nullable
 		@Override
 		public ImmeubleRF find(@NotNull ImmeubleRFKey key, @Nullable FlushMode flushModeOverride) {
-			if (key.getIdRF().equals(idRfBienFond)) {
-				return bienFond;
+			if (key.getIdRF().equals(idRfBienFonds)) {
+				return bienFonds;
 			}
 			else if (key.getIdRF().equals(idRfPPE)) {
 				return ppe;

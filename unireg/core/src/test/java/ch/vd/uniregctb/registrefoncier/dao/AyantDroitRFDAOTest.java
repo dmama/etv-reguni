@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -82,7 +82,7 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 			addRapprochementRF(null, null, TypeRapprochementRF.MANUEL, evelyneUnireg, evelyneRf, false);
 
 			// on crée l'immeuble et les droits associés
-			final BienFondRF immeuble = addImmeubleRF("382929efa218");
+			final BienFondsRF immeuble = addImmeubleRF("382929efa218");
 			ids.immeuble = immeuble.getId();
 
 			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 1995, 23, 3);
@@ -144,7 +144,7 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 			addRapprochementRF(null, null, TypeRapprochementRF.MANUEL, evelyneUnireg, evelyneRf, false);
 
 			// on crée l'immeuble et les droits associés
-			final BienFondRF immeuble = addImmeubleRF("382929efa218");
+			final BienFondsRF immeuble = addImmeubleRF("382929efa218");
 			ids.immeuble = immeuble.getId();
 
 			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 1995, 23, 3);
@@ -191,7 +191,7 @@ public class AyantDroitRFDAOTest extends CoreDAOTest {
 			final PersonnePhysiqueRF evelyneRf = addPersonnePhysiqueRF("Evelyne", "Fondu", RegDate.get(1944, 12, 12), idRfEvelyne, 9239L, null);
 
 			// on crée l'immeuble
-			final BienFondRF immeuble = addImmeubleRF("382929efa218");
+			final BienFondsRF immeuble = addImmeubleRF("382929efa218");
 
 			// on crée un droit de propriété pour Arnold
 			final IdentifiantAffaireRF affaireAchat = new IdentifiantAffaireRF(123, 1995, 23, 3);

@@ -31,7 +31,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFImportDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.MockEvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -219,7 +219,7 @@ public class SurfaceAuSolRFDetectorTest {
 	@Test
 	public void testSurfacesModifiees() throws Exception {
 
-		final BienFondRF immeuble = new BienFondRF();
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("382929efa218");
 
 		final SurfaceAuSolRF s1 = new SurfaceAuSolRF();
@@ -305,7 +305,7 @@ public class SurfaceAuSolRFDetectorTest {
 	@Test
 	public void testSurfacesIdentiques() throws Exception {
 
-		final BienFondRF immeuble = new BienFondRF();
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("382929efa218");
 
 		final SurfaceAuSolRF s1 = new SurfaceAuSolRF();
@@ -364,7 +364,7 @@ public class SurfaceAuSolRFDetectorTest {
 	@Test
 	public void testSurfacesSupprimees() throws Exception {
 
-		final BienFondRF immeuble = new BienFondRF();
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("382929efa218");
 
 		final SurfaceAuSolRF s1 = new SurfaceAuSolRF();

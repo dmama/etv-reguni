@@ -10,7 +10,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingDescription;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.xml.DataHelper;
@@ -66,21 +66,21 @@ public class BuildingBuilderTest {
 	@Test
 	public void testBuildingWithSetting() throws Exception {
 
-		final BienFondRF bienFond0 = new BienFondRF();
-		bienFond0.setId(303L);
+		final BienFondsRF bienFonds0 = new BienFondsRF();
+		bienFonds0.setId(303L);
 
-		final BienFondRF bienFond1 = new BienFondRF();
-		bienFond1.setId(404L);
+		final BienFondsRF bienFonds1 = new BienFondsRF();
+		bienFonds1.setId(404L);
 
 		final ImplantationRF impl0 = new ImplantationRF();
 		impl0.setSurface(234);
-		impl0.setImmeuble(bienFond0);
+		impl0.setImmeuble(bienFonds0);
 		impl0.setDateDebut(RegDate.get(2004, 5, 13));
 		impl0.setDateFin(null);
 
 		final ImplantationRF impl1 = new ImplantationRF();
 		impl1.setSurface(null);
-		impl1.setImmeuble(bienFond1);
+		impl1.setImmeuble(bienFonds1);
 		impl1.setDateDebut(RegDate.get(1950, 11, 1));
 		impl1.setDateFin(null);
 

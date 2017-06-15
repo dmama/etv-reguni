@@ -69,7 +69,7 @@ public class FichierImmeublesRFParserTest {
 		final List<Grundstueck> immeubles = callback.getImmeubles();
 		assertEquals(4, immeubles.size());
 
-		// un immeuble de type bien-fond
+		// un immeuble de type bien-fonds
 		final Liegenschaft im0 = (Liegenschaft) immeubles.get(0);
 		assertEquals("_1f109152381026b501381028a73d1852", im0.getGrundstueckID());
 		assertEquals("CH938391457759", im0.getEGrid());

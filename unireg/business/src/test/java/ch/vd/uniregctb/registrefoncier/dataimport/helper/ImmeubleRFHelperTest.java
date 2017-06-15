@@ -18,7 +18,7 @@ import ch.vd.capitastra.grundstueck.StammGrundstueck;
 import ch.vd.capitastra.grundstueck.StockwerksEinheit;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -65,7 +65,7 @@ public class ImmeubleRFHelperTest {
 		final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 		surfaceTotale.setSurface(1329);
 
-		final BienFondRF immeuble = new BienFondRF();
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("382929efa218");
 		immeuble.setCfa(true);
 		immeuble.setEgrid("CH282891891");
@@ -122,7 +122,7 @@ public class ImmeubleRFHelperTest {
 		final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 		surfaceTotale.setSurface(1329);
 
-		final BienFondRF immeuble = new BienFondRF();
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("382929efa218");
 		immeuble.setCfa(true);
 		immeuble.setEgrid("CH282891891");
@@ -178,7 +178,7 @@ public class ImmeubleRFHelperTest {
 		estimation.setEnRevision(false);
 		estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
-		final BienFondRF immeuble = new BienFondRF();
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("382929efa218");
 		immeuble.setCfa(true);
 		immeuble.setEgrid("CH282891891");
@@ -226,7 +226,7 @@ public class ImmeubleRFHelperTest {
 		estimation.setEnRevision(false);
 		estimation.setDateDebut(RegDate.get(2000, 1, 1));
 
-		final BienFondRF immeuble = new BienFondRF();
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("382929efa218");
 		immeuble.setCfa(true);
 		immeuble.setEgrid("CH282891891");
@@ -278,7 +278,7 @@ public class ImmeubleRFHelperTest {
 		final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 		surfaceTotale.setSurface(1329);
 
-		final BienFondRF immeuble = new BienFondRF();
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("382929efa218");
 		immeuble.setCfa(true);
 		immeuble.setEgrid("CH282891891");
@@ -325,7 +325,7 @@ public class ImmeubleRFHelperTest {
 		situation.setNoParcelle(109);
 		situation.setIndex1(17);
 
-		final BienFondRF immeuble = new BienFondRF();
+		final BienFondsRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("382929efa218");
 		immeuble.setCfa(true);
 		immeuble.setEgrid("CH282891891");
@@ -546,7 +546,7 @@ public class ImmeubleRFHelperTest {
 	}
 
 	@Test
-	public void testNewImmeubleRFBienFond() throws Exception {
+	public void testNewImmeubleRFBienFonds() throws Exception {
 
 		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
 		grundstueckNummer.setBfsNr(2233);
@@ -573,14 +573,14 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setGrundstueckFlaeche(flaeche);
 
 		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
-		assertEquals(BienFondRF.class, immeuble.getClass());
+		assertEquals(BienFondsRF.class, immeuble.getClass());
 
-		final BienFondRF bienFond = (BienFondRF) immeuble;
-		assertEquals("382929efa218", bienFond.getIdRF());
-		assertTrue(bienFond.isCfa());
-		assertEquals("CH282891891", bienFond.getEgrid());
+		final BienFondsRF bienFonds = (BienFondsRF) immeuble;
+		assertEquals("382929efa218", bienFonds.getIdRF());
+		assertTrue(bienFonds.isCfa());
+		assertEquals("CH282891891", bienFonds.getEgrid());
 
-		final Set<SituationRF> situations = bienFond.getSituations();
+		final Set<SituationRF> situations = bienFonds.getSituations();
 		assertEquals(1, situations.size());
 		final SituationRF situation = situations.iterator().next();
 		assertEquals(2233, situation.getCommune().getNoRf());
@@ -589,7 +589,7 @@ public class ImmeubleRFHelperTest {
 		assertEquals(Integer.valueOf(37823), situation.getIndex2());
 		assertEquals(Integer.valueOf(82), situation.getIndex3());
 
-		final Set<EstimationRF> estimations = bienFond.getEstimations();
+		final Set<EstimationRF> estimations = bienFonds.getEstimations();
 		assertEquals(1, estimations.size());
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
@@ -600,7 +600,7 @@ public class ImmeubleRFHelperTest {
 		assertNull(estimation.getDateFinMetier());
 		assertFalse(estimation.isEnRevision());
 
-		final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
+		final Set<SurfaceTotaleRF> surfacesTotales = bienFonds.getSurfacesTotales();
 		assertEquals(1, surfacesTotales.size());
 		final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
 		assertEquals(322, surfaceTotale.getSurface());
@@ -792,14 +792,14 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setGrundstueckFlaeche(flaeche);
 
 		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
-		assertEquals(BienFondRF.class, immeuble.getClass());
+		assertEquals(BienFondsRF.class, immeuble.getClass());
 
-		final BienFondRF bienFond = (BienFondRF) immeuble;
-		assertEquals("382929efa218", bienFond.getIdRF());
-		assertTrue(bienFond.isCfa());
-		assertEquals("CH282891891", bienFond.getEgrid());
+		final BienFondsRF bienFonds = (BienFondsRF) immeuble;
+		assertEquals("382929efa218", bienFonds.getIdRF());
+		assertTrue(bienFonds.isCfa());
+		assertEquals("CH282891891", bienFonds.getEgrid());
 
-		final Set<EstimationRF> estimations = bienFond.getEstimations();
+		final Set<EstimationRF> estimations = bienFonds.getEstimations();
 		assertEquals(1, estimations.size());
 		final EstimationRF estimation = estimations.iterator().next();
 		assertEquals(Long.valueOf(500000L), estimation.getMontant());
@@ -831,9 +831,9 @@ public class ImmeubleRFHelperTest {
 		grundstueck.setLigUnterartEnum("cfa");
 
 		final ImmeubleRF immeuble = ImmeubleRFHelper.newImmeubleRF(grundstueck, ImmeubleRFHelperTest::simplisticCommuneProvider);
-		assertEquals(BienFondRF.class, immeuble.getClass());
+		assertEquals(BienFondsRF.class, immeuble.getClass());
 
-		final BienFondRF bf = (BienFondRF) immeuble;
+		final BienFondsRF bf = (BienFondsRF) immeuble;
 		assertEquals("_8af806fc3971fea40139902846c13c38", bf.getIdRF());
 		assertNull(bf.getEgrid());
 

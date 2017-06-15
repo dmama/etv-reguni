@@ -13,7 +13,7 @@ import ch.vd.uniregctb.foncier.migration.DonneesFusionsCommunes;
 import ch.vd.uniregctb.foncier.migration.MigrationDonneesFoncieresJob;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
@@ -105,7 +105,7 @@ public class MigrationDDImporterITTest extends BusinessItTest {
 		situation.setIndex3(index3);
 		situation.setCommune(commune);
 
-		ImmeubleRF im0 = new BienFondRF();
+		ImmeubleRF im0 = new BienFondsRF();
 		im0.setIdRF(idRF);
 		im0.addSituation(situation);
 		return im0;

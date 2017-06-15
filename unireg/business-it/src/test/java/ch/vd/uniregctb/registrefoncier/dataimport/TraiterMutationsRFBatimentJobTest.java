@@ -22,7 +22,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
@@ -73,11 +73,11 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				importEvent.setFileUrl("http://turlututu");
 				importEvent = evenementRFImportDAO.save(importEvent);
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF("_1f109152381026b501381028a73d1852");
 				immeubleRFDAO.save(immeuble1);
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF("_1f10915238106bdc0138106ff6d3305d");
 				immeubleRFDAO.save(immeuble2);
 
@@ -219,11 +219,11 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 				importEvent.setFileUrl("http://turlututu");
 				importEvent = evenementRFImportDAO.save(importEvent);
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF("_8af80e6254709f68015476fecb1f0e0b");
 				immeubleRFDAO.save(immeuble1);
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF("_1f109152381026b501381028bb23779a");
 				immeubleRFDAO.save(immeuble2);
 
@@ -358,13 +358,13 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF("_1f109152381026b501381028a73d1852");
-				immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+				immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF("_1f10915238106bdc0138106ff6d3305d");
-				immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+				immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 				BatimentRF batiment1 = new BatimentRF();
 				batiment1.setMasterIdRF("1f109152381026b50138102aa28557e0");
@@ -547,13 +547,13 @@ public class TraiterMutationsRFBatimentJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF("_1f109152381026b501381028a73d1852");
-				immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+				immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF("_1f10915238106bdc0138106ff6d3305d");
-				immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+				immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 				BatimentRF batiment1 = new BatimentRF();
 				batiment1.setMasterIdRF("1f109152381026b50138102aa28557e0");

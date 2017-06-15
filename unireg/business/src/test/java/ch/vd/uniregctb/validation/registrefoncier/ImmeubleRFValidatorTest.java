@@ -6,7 +6,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -49,16 +49,16 @@ public class ImmeubleRFValidatorTest extends AbstractValidatorTest<ImmeubleRF> {
 				commune.setNoOfs(66666);
 				commune = communeRFDAO.save(commune);
 
-				final BienFondRF bienFond = new BienFondRF();
-				bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-				bienFond.setEgrid("CH938391457759");
-				bienFond.setCfa(false);
+				final BienFondsRF bienFonds = new BienFondsRF();
+				bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+				bienFonds.setEgrid("CH938391457759");
+				bienFonds.setCfa(false);
 
 				final SituationRF situation = new SituationRF();
 				situation.setDateDebut(RegDate.get(1988, 1, 1));
 				situation.setCommune(commune);
 				situation.setNoParcelle(5089);
-				bienFond.addSituation(situation);
+				bienFonds.addSituation(situation);
 
 				final EstimationRF estimation = new EstimationRF();
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -66,14 +66,14 @@ public class ImmeubleRFValidatorTest extends AbstractValidatorTest<ImmeubleRF> {
 				estimation.setReference("RG93");
 				estimation.setAnneeReference(1993);
 				estimation.setEnRevision(false);
-				bienFond.addEstimation(estimation);
+				bienFonds.addEstimation(estimation);
 
 				final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 				surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
 				surfaceTotale.setSurface(532);
-				bienFond.addSurfaceTotale(surfaceTotale);
+				bienFonds.addSurfaceTotale(surfaceTotale);
 
-				immeubleRFDAO.save(bienFond);
+				immeubleRFDAO.save(bienFonds);
 				return null;
 			}
 		});
@@ -96,18 +96,18 @@ public class ImmeubleRFValidatorTest extends AbstractValidatorTest<ImmeubleRF> {
 				commune.setNoOfs(66666);
 				commune = communeRFDAO.save(commune);
 
-				final BienFondRF bienFond = new BienFondRF();
-				bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-				bienFond.setEgrid("CH938391457759");
-				bienFond.setCfa(false);
-				bienFond.setDateRadiation(dateRadiation);
+				final BienFondsRF bienFonds = new BienFondsRF();
+				bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+				bienFonds.setEgrid("CH938391457759");
+				bienFonds.setCfa(false);
+				bienFonds.setDateRadiation(dateRadiation);
 
 				final SituationRF situation = new SituationRF();
 				situation.setDateDebut(RegDate.get(1988, 1, 1));
 				situation.setDateFin(dateRadiation);
 				situation.setCommune(commune);
 				situation.setNoParcelle(5089);
-				bienFond.addSituation(situation);
+				bienFonds.addSituation(situation);
 
 				final EstimationRF estimation = new EstimationRF();
 				estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -116,15 +116,15 @@ public class ImmeubleRFValidatorTest extends AbstractValidatorTest<ImmeubleRF> {
 				estimation.setReference("RG93");
 				estimation.setAnneeReference(1993);
 				estimation.setEnRevision(false);
-				bienFond.addEstimation(estimation);
+				bienFonds.addEstimation(estimation);
 
 				final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 				surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
 				surfaceTotale.setDateFin(dateRadiation);
 				surfaceTotale.setSurface(532);
-				bienFond.addSurfaceTotale(surfaceTotale);
+				bienFonds.addSurfaceTotale(surfaceTotale);
 
-				immeubleRFDAO.save(bienFond);
+				immeubleRFDAO.save(bienFonds);
 				return null;
 			}
 		});
@@ -147,18 +147,18 @@ public class ImmeubleRFValidatorTest extends AbstractValidatorTest<ImmeubleRF> {
 					commune.setNoOfs(66666);
 					commune = communeRFDAO.save(commune);
 
-					final BienFondRF bienFond = new BienFondRF();
-					bienFond.setIdRF("_1f109152381026b501381028a73d1852");
-					bienFond.setEgrid("CH938391457759");
-					bienFond.setCfa(false);
-					bienFond.setDateRadiation(dateRadiation);
+					final BienFondsRF bienFonds = new BienFondsRF();
+					bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+					bienFonds.setEgrid("CH938391457759");
+					bienFonds.setCfa(false);
+					bienFonds.setDateRadiation(dateRadiation);
 
 					final SituationRF situation = new SituationRF();
 					situation.setDateDebut(RegDate.get(1988, 1, 1));
 					situation.setDateFin(dateRadiation);
 					situation.setCommune(commune);
 					situation.setNoParcelle(5089);
-					bienFond.addSituation(situation);
+					bienFonds.addSituation(situation);
 
 					final EstimationRF estimation = new EstimationRF();
 					estimation.setDateDebut(RegDate.get(1988, 1, 1));
@@ -167,15 +167,15 @@ public class ImmeubleRFValidatorTest extends AbstractValidatorTest<ImmeubleRF> {
 					estimation.setReference("RG93");
 					estimation.setAnneeReference(1993);
 					estimation.setEnRevision(false);
-					bienFond.addEstimation(estimation);
+					bienFonds.addEstimation(estimation);
 
 					final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
 					surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
 					surfaceTotale.setDateFin(dateRadiation);
 					surfaceTotale.setSurface(532);
-					bienFond.addSurfaceTotale(surfaceTotale);
+					bienFonds.addSurfaceTotale(surfaceTotale);
 
-					immeubleRFDAO.save(bienFond);
+					immeubleRFDAO.save(bienFonds);
 					return null;
 				}
 			});

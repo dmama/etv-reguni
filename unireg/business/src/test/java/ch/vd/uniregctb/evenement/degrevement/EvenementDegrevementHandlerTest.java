@@ -38,7 +38,7 @@ import ch.vd.uniregctb.foncier.DonneesLoiLogement;
 import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -152,7 +152,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 		    final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
+		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
 		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
@@ -236,7 +236,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
+		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
 		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
@@ -373,7 +373,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
+		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
 		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
@@ -490,7 +490,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
+		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
 		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
@@ -619,7 +619,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
+		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
 		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
@@ -748,7 +748,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
+		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
 		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
@@ -986,7 +986,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondRF immeuble = addBienFondRF("478235z32hf", null, communeRF, 1423);
+		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
 		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
 		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
 		                             new Fraction(1, 1),
@@ -1109,7 +1109,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		Assert.assertEquals(TypImmeuble.PPE, EvenementDegrevementHandlerImpl.getTypeImmeuble(new ProprieteParEtageRF()));
 		Assert.assertEquals(TypImmeuble.DDP, EvenementDegrevementHandlerImpl.getTypeImmeuble(new DroitDistinctEtPermanentRF()));
 		Assert.assertEquals(TypImmeuble.MINE, EvenementDegrevementHandlerImpl.getTypeImmeuble(new MineRF()));
-		Assert.assertEquals(TypImmeuble.B_F, EvenementDegrevementHandlerImpl.getTypeImmeuble(new BienFondRF()));
+		Assert.assertEquals(TypImmeuble.B_F, EvenementDegrevementHandlerImpl.getTypeImmeuble(new BienFondsRF()));
 		Assert.assertEquals(TypImmeuble.COP, EvenementDegrevementHandlerImpl.getTypeImmeuble(new PartCoproprieteRF()));
 	}
 }

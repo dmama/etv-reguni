@@ -14,7 +14,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
@@ -157,7 +157,7 @@ public class AyantDroitRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				assertEquals(0, ayantDroitRFDAO.getAll().size());
-				final ImmeubleRF immeuble = new BienFondRF();
+				final ImmeubleRF immeuble = new BienFondsRF();
 				immeuble.setIdRF("48238919011");
 				immeubleRFDAO.save(immeuble);
 			}

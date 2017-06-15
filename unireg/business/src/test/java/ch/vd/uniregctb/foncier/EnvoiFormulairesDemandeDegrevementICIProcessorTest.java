@@ -26,7 +26,7 @@ import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -158,8 +158,8 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(pm2, rfPM2, null, null, TypeRapprochementRF.AUTO);
 
 			// deux immeubles
-			final BienFondRF imm1 = addImmeubleRF("jkbgbjfwbfhqlb");
-			final BienFondRF imm2 = addImmeubleRF("fjewh32z35g2");
+			final BienFondsRF imm1 = addImmeubleRF("jkbgbjfwbfhqlb");
+			final BienFondsRF imm2 = addImmeubleRF("fjewh32z35g2");
 
 			// des droits sur les immeubles
 			addDroitPersonnePhysiqueRF(date(2010, 1, 1), date(2010, 1, 1), date(2013, 5, 2), date(2013, 5, 2), "Achat", "Vente", "5413fshsguhsghs", "5413fshsguhsghr", null, new Fraction(1, 1000), GenrePropriete.COPROPRIETE, rfPP, imm1, null);
@@ -266,7 +266,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 424242L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -363,7 +363,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112);
 			addEstimationFiscale(date(1993, 12, 1), null, null, false, 424242L, "1993", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -448,7 +448,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 424242L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -546,7 +546,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
@@ -629,7 +629,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 0L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -713,7 +713,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 484541745L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -806,7 +806,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2013, 12, 1), null, null, false, 484541745L, "2013", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -916,7 +916,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 484541745L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -1004,7 +1004,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2015, 12, 1), null, date(2016, 12, 31), false, 484541745L, "RG2015", immeuble);
 			addEstimationFiscale(date(2017, 1, 6), date(2017, 1, 1), null, false, 46512165L, "2017", immeuble);
 
@@ -1115,7 +1115,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2010, 12, 1), null, date(2014, 12, 31), false, 484541745L, "2010", immeuble);
 			addEstimationFiscale(date(2015, 12, 1), date(2015, 1, 1), null, false, 454545445L, "2015", immeuble);
 
@@ -1203,7 +1203,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 484541745L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -1289,7 +1289,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 484541745L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -1385,7 +1385,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 484541745L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -1480,7 +1480,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 484541745L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -1576,12 +1576,12 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune1 = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble1 = addBienFondRF("4545841dfsshdas", null, commune1, 112);
+			final BienFondsRF immeuble1 = addBienFondsRF("4545841dfsshdas", null, commune1, 112);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 424242L, "2015", immeuble1);
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble1, null);
 
 			final CommuneRF commune2 = addCommuneRF(56251, "Yverdon", MockCommune.YverdonLesBains.getNoOFS());
-			final BienFondRF immeuble2 = addBienFondRF("hjsgfsgfsle4753", null, commune2, 142);
+			final BienFondsRF immeuble2 = addBienFondsRF("hjsgfsgfsle4753", null, commune2, 142);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 87454L, "2015", immeuble2);
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "sdfe7to34z57", "sdfe7to34z56", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble2, null);
 
@@ -1705,12 +1705,12 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune1 = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble1 = addBienFondRF("4545841dfsshdas", null, commune1, 112);
+			final BienFondsRF immeuble1 = addBienFondsRF("4545841dfsshdas", null, commune1, 112);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 424242L, "2015", immeuble1);
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble1, null);
 
 			final CommuneRF commune2 = addCommuneRF(56251, "Yverdon", MockCommune.YverdonLesBains.getNoOFS());
-			final BienFondRF immeuble2 = addBienFondRF("hjsgfsgfsle4753", null, commune2, 142);
+			final BienFondsRF immeuble2 = addBienFondsRF("hjsgfsgfsle4753", null, commune2, 142);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 87454L, "2015", immeuble2);
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "sdfe7to34z57", "sdfe7to34z56", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble2, null);
 
@@ -1834,12 +1834,12 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune1 = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble1 = addBienFondRF("4545841dfsshdas", null, commune1, 112);
+			final BienFondsRF immeuble1 = addBienFondsRF("4545841dfsshdas", null, commune1, 112);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 424242L, "2015", immeuble1);
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble1, null);
 
 			final CommuneRF commune2 = addCommuneRF(56251, "Yverdon", MockCommune.YverdonLesBains.getNoOFS());
-			final BienFondRF immeuble2 = addBienFondRF("hjsgfsgfsle4753", null, commune2, 142);
+			final BienFondsRF immeuble2 = addBienFondsRF("hjsgfsgfsle4753", null, commune2, 142);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 87454L, "2015", immeuble2);
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "sdfe7to34z57", "sdfe7to34z56", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble2, null);
 
@@ -1934,7 +1934,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 424242L, "2015", immeuble);
 
 			addUsufruitRF(null, dateDebutDroit, null, null, "Achat", null, "74i6783", "74i6782", new IdentifiantAffaireRF(51, null, null, null), new IdentifiantDroitRF(41, 2001, 4), rf, immeuble);
@@ -2100,7 +2100,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112);
 			addEstimationFiscale(date(2010, 12, 1), null, null, false, 424242L, "2010", immeuble);
 			addEstimationFiscale(date(2014, 12, 1), null, null, false, 424242L, "2014", immeuble);      // même montant 4 ans plus tard
 
@@ -2192,7 +2192,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 424242L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -2332,7 +2332,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
-			final BienFondRF immeuble = addBienFondRF("46782362387i", null, commune, 579);
+			final BienFondsRF immeuble = addBienFondsRF("46782362387i", null, commune, 579);
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "b,deb4z754", "b,deb4z753", new IdentifiantAffaireRF(74, dateDebutDroit.year(), 78, 4), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 			addEstimationFiscale(null, null, null, false, 285000L, "RG94", immeuble);
 
@@ -2414,7 +2414,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("46782362387i", null, commune, 579);
+			final BienFondsRF immeuble = addBienFondsRF("46782362387i", null, commune, 579);
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "b,deb4z754", "b,deb4z753", new IdentifiantAffaireRF(74, dateDebutDroit.year(), 78, 4), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 			addEstimationFiscale(null, null, null, false, 285000L, "RG94", immeuble);
 
@@ -2499,7 +2499,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 484541745L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -2587,7 +2587,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112, null, null, null);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, null, null, null);
 			addEstimationFiscale(date(2015, 12, 1), null, null, false, 484541745L, "2015", immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
@@ -2686,7 +2686,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("4545841dfsshdas", null, commune, 112);
+			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112);
 			addEstimationFiscale(date(2016, 12, 1), null, null, false, 93000L, "2016", immeuble);
 
 			addDroitPersonneMoraleRF(date(2017, 3, 15), dateDebutDroit, date(2017, 3, 22), dateClotureDroit, "Achat", "Revente", "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);

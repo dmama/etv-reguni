@@ -30,7 +30,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
@@ -256,13 +256,13 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 			pp2.setDateNaissance(RegDate.get(1900, 1, 1));
 			ayantDroitRFDAO.save(pp2);
 
-			BienFondRF immeuble1 = new BienFondRF();
+			BienFondsRF immeuble1 = new BienFondsRF();
 			immeuble1.setIdRF(idImmeubleRF1);
-			immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-			BienFondRF immeuble2 = new BienFondRF();
+			BienFondsRF immeuble2 = new BienFondsRF();
 			immeuble2.setIdRF(idImmeubleRF2);
-			immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 			// un usufruit différent de celui qui arrive dans le fichier XML
 			final UsufruitRF usu0 = new UsufruitRF();
@@ -400,13 +400,13 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 			pp2.setDateNaissance(RegDate.get(1900, 1, 1));
 			pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
 
-			BienFondRF immeuble1 = new BienFondRF();
+			BienFondsRF immeuble1 = new BienFondsRF();
 			immeuble1.setIdRF(idImmeubleRF1);
-			immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-			BienFondRF immeuble2 = new BienFondRF();
+			BienFondsRF immeuble2 = new BienFondsRF();
 			immeuble2.setIdRF(idImmeubleRF2);
-			immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 			final UsufruitRF usu0 = new UsufruitRF();
 			usu0.setMasterIdRF("1f1091523810375901381044fa823515");

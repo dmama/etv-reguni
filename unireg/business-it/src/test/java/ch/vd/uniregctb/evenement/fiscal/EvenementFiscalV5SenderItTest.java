@@ -17,7 +17,7 @@ import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroit;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.MockRegistreFoncierService;
@@ -201,7 +201,7 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			situation.setNoParcelle(212);
 			situation.setCommune(commune);
 
-			final BienFondRF immeuble = new BienFondRF();
+			final BienFondsRF immeuble = new BienFondsRF();
 			immeuble.setId(94949L);
 			immeuble.setIdRF("39393");
 			immeuble.setEgrid("CH28282");
@@ -238,7 +238,7 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			situation.setNoParcelle(212);
 			situation.setCommune(commune);
 
-			final BienFondRF immeuble = new BienFondRF();
+			final BienFondsRF immeuble = new BienFondsRF();
 			immeuble.setId(94949L);
 			immeuble.setIdRF("39393");
 			immeuble.setEgrid("CH28282");
@@ -291,7 +291,7 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			situation.setNoParcelle(212);
 			situation.setCommune(commune);
 
-			final BienFondRF immeuble = new BienFondRF();
+			final BienFondsRF immeuble = new BienFondsRF();
 			immeuble.setId(94949L);
 			immeuble.setIdRF("39393");
 			immeuble.setEgrid("CH28282");

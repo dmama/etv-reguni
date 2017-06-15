@@ -5,7 +5,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
@@ -49,7 +49,7 @@ public class MutationsRFDetectorTest extends BusinessTest {
 
 		// on ajoute un immeuble
 		doInNewTransaction(status -> {
-			final BienFondRF immeuble = new BienFondRF();
+			final BienFondsRF immeuble = new BienFondsRF();
 			immeuble.setIdRF("783782372");
 			immeubleRFDAO.save(immeuble);
 			return null;
@@ -67,7 +67,7 @@ public class MutationsRFDetectorTest extends BusinessTest {
 
 		// précondition: une base avec un immeuble, une personne et un droit, mais pas d'usufruit
 		doInNewTransaction(status -> {
-			final BienFondRF immeuble = new BienFondRF();
+			final BienFondsRF immeuble = new BienFondsRF();
 			immeuble.setIdRF("232323");
 			immeubleRFDAO.save(immeuble);
 
@@ -90,9 +90,9 @@ public class MutationsRFDetectorTest extends BusinessTest {
 
 		// on ajoute un usufruit
 		doInNewTransaction(status -> {
-			BienFondRF immeuble = new BienFondRF();
+			BienFondsRF immeuble = new BienFondsRF();
 			immeuble.setIdRF("783782372");
-			immeuble = (BienFondRF) immeubleRFDAO.save(immeuble);
+			immeuble = (BienFondsRF) immeubleRFDAO.save(immeuble);
 
 			PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
 			pp.setIdRF("3478934789");

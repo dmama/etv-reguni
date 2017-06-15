@@ -30,8 +30,8 @@ public class IdentificationImmeubleHelperTest extends BusinessTest {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final CommuneRF commune = addCommuneRF(15451, MockCommune.Lausanne.getNomOfficiel(), MockCommune.Lausanne.getNoOFS());
-				addBienFondRF("4783424LJD", null, commune, 1234, 2, null, null);
-				addBienFondRF("58658dkf", null, commune, 1234, 1, null, null);
+				addBienFondsRF("4783424LJD", null, commune, 1234, 2, null, null);
+				addBienFondsRF("58658dkf", null, commune, 1234, 1, null, null);
 			}
 		});
 
@@ -54,8 +54,8 @@ public class IdentificationImmeubleHelperTest extends BusinessTest {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final CommuneRF commune = addCommuneRF(15451, MockCommune.Lausanne.getNomOfficiel(), MockCommune.Lausanne.getNoOFS());
-				addBienFondRF("4783424LJD", null, commune, 1234, 2, null, null);
-				addBienFondRF("6487426s", null, commune, 1234, 1, null, null);
+				addBienFondsRF("4783424LJD", null, commune, 1234, 2, null, null);
+				addBienFondsRF("6487426s", null, commune, 1234, 1, null, null);
 			}
 		});
 
@@ -82,8 +82,8 @@ public class IdentificationImmeubleHelperTest extends BusinessTest {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
 				final CommuneRF commune = addCommuneRF(15451, MockCommune.Lausanne.getNomOfficiel(), MockCommune.Lausanne.getNoOFS());
-				addBienFondRF("4783424LJD", null, commune, 1234, null, null, null);
-				addBienFondRF("4783295dh", null, commune, 1235, null, null, null);
+				addBienFondsRF("4783424LJD", null, commune, 1234, null, null, null);
+				addBienFondsRF("4783295dh", null, commune, 1235, null, null, null);
 			}
 		});
 

@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -150,7 +150,7 @@ public class DroitProprieteRFValidatorTest {
 
 		final ImmeubleBeneficiaireRF beneficiaire = new ImmeubleBeneficiaireRF();
 		beneficiaire.setIdRF("38383838");
-		final ImmeubleRF servant = new BienFondRF();
+		final ImmeubleRF servant = new BienFondsRF();
 
 		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
 		droit.setAyantDroit(beneficiaire);
@@ -190,7 +190,7 @@ public class DroitProprieteRFValidatorTest {
 
 		final TiersRF tiers = new PersonneMoraleRF();
 		tiers.setIdRF("38383838");
-		final ImmeubleRF servant = new BienFondRF();
+		final ImmeubleRF servant = new BienFondsRF();
 
 		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
 		droit.setAyantDroit(tiers);

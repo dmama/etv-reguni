@@ -19,7 +19,7 @@ import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.capitastra.rechteregister.NatuerlichePersonGb;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
@@ -60,10 +60,10 @@ public class ServitudesRFHelperTest {
 	@Test
 	public void testDataEqualsList() throws Exception {
 
-		final ImmeubleRF immeuble1 = new BienFondRF();
+		final ImmeubleRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
 
-		final ImmeubleRF immeuble2 = new BienFondRF();
+		final ImmeubleRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("_1f109152380ffd8901380ffe090827e1");
 
 		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
@@ -98,7 +98,7 @@ public class ServitudesRFHelperTest {
 	@Test
 	public void testEqualsUsufruit() throws Exception {
 
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("_1f109152380ffd8901380ffe15bb729c");
 
 		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
@@ -118,7 +118,7 @@ public class ServitudesRFHelperTest {
 	@Test
 	public void testEqualsDroitHabitation() throws Exception {
 
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("_1f109152380ffd8901380ffe15bb729c");
 
 		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
@@ -138,7 +138,7 @@ public class ServitudesRFHelperTest {
 	@Test
 	public void testNewServitudeRFUsufruit() throws Exception {
 
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("_1f109152380ffd8901380ffe15bb729c");
 
 		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
@@ -172,7 +172,7 @@ public class ServitudesRFHelperTest {
 	@Test
 	public void testNewServitudeRFDroitHabitation() throws Exception {
 
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("_1f109152380ffd8901380ffe15bb729c");
 
 		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
@@ -206,7 +206,7 @@ public class ServitudesRFHelperTest {
 	@Test
 	public void testNewServitudeRFUsufruitAvecCommunaute() throws Exception {
 
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("_1f109152380ffd8901380ffe15bb729c");
 
 		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();

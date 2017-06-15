@@ -26,7 +26,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
@@ -405,15 +405,15 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
 				assertEquals(1, immeubles.size());
 
-				final BienFondRF bienFond = (BienFondRF) immeubles.get(0);
-				assertNotNull(bienFond);
+				final BienFondsRF bienFonds = (BienFondsRF) immeubles.get(0);
+				assertNotNull(bienFonds);
 				{
-					assertEquals("_1f10915238100390013810052537624b", bienFond.getIdRF());
-					assertEquals("CH507045198314", bienFond.getEgrid());
-					assertFalse(bienFond.isCfa());
-					assertNull(bienFond.getDateRadiation());
+					assertEquals("_1f10915238100390013810052537624b", bienFonds.getIdRF());
+					assertEquals("CH507045198314", bienFonds.getEgrid());
+					assertFalse(bienFonds.isCfa());
+					assertNull(bienFonds.getDateRadiation());
 
-					final Set<SituationRF> situations = bienFond.getSituations();
+					final Set<SituationRF> situations = bienFonds.getSituations();
 					assertEquals(1, situations.size());
 
 					final SituationRF situation = situations.iterator().next();
@@ -425,7 +425,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertNull(situation.getIndex2());
 					assertNull(situation.getIndex3());
 
-					final Set<EstimationRF> estimations = bienFond.getEstimations();
+					final Set<EstimationRF> estimations = bienFonds.getEstimations();
 					assertEquals(1, estimations.size());
 
 					final EstimationRF estimation = estimations.iterator().next();
@@ -439,7 +439,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertNull(estimation.getDateFinMetier());
 					assertFalse(estimation.isEnRevision());
 
-					final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
+					final Set<SurfaceTotaleRF> surfacesTotales = bienFonds.getSurfacesTotales();
 					assertEquals(1, surfacesTotales.size());
 
 					final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();
@@ -730,15 +730,15 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
 				assertEquals(1, immeubles.size());
 
-				final BienFondRF bienFond = (BienFondRF) immeubles.get(0);
-				assertNotNull(bienFond);
+				final BienFondsRF bienFonds = (BienFondsRF) immeubles.get(0);
+				assertNotNull(bienFonds);
 				{
-					assertEquals("_1f10915238100390013810052537624b", bienFond.getIdRF());
-					assertEquals("CH507045198314", bienFond.getEgrid());
-					assertFalse(bienFond.isCfa());
-					assertEquals(dateSecondImport.getOneDayBefore(), bienFond.getDateRadiation());
+					assertEquals("_1f10915238100390013810052537624b", bienFonds.getIdRF());
+					assertEquals("CH507045198314", bienFonds.getEgrid());
+					assertFalse(bienFonds.isCfa());
+					assertEquals(dateSecondImport.getOneDayBefore(), bienFonds.getDateRadiation());
 
-					final Set<SituationRF> situations = bienFond.getSituations();
+					final Set<SituationRF> situations = bienFonds.getSituations();
 					assertEquals(1, situations.size());
 
 					final SituationRF situation = situations.iterator().next();
@@ -750,7 +750,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertNull(situation.getIndex2());
 					assertNull(situation.getIndex3());
 
-					final Set<EstimationRF> estimations = bienFond.getEstimations();
+					final Set<EstimationRF> estimations = bienFonds.getEstimations();
 					assertEquals(1, estimations.size());
 
 					final EstimationRF estimation = estimations.iterator().next();
@@ -764,7 +764,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 					assertEquals(dateSecondImport.getOneDayBefore(), estimation.getDateFinMetier());
 					assertFalse(estimation.isEnRevision());
 
-					final Set<SurfaceTotaleRF> surfacesTotales = bienFond.getSurfacesTotales();
+					final Set<SurfaceTotaleRF> surfacesTotales = bienFonds.getSurfacesTotales();
 					assertEquals(1, surfacesTotales.size());
 
 					final SurfaceTotaleRF surfaceTotale = surfacesTotales.iterator().next();

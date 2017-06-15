@@ -18,7 +18,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalServiceImpl;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -106,7 +106,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			addRapprochementRF(entreprise, pmrf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(12321, MockCommune.Lausanne.getNomOfficiel(), MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("dfgszbsl3342", null, commune, 84165);
+			final BienFondsRF immeuble = addBienFondsRF("dfgszbsl3342", null, commune, 84165);
 			addDroitPersonneMoraleRF(dateDebut, dateDebut, null, null, "Achat", null, "4637210tre", "4637210trd", new IdentifiantAffaireRF(784, "SSP"), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmrf, immeuble, null);
 
 			final DemandeDegrevementICI retournee = addDemandeDegrevementICI(entreprise,
@@ -196,7 +196,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			addRapprochementRF(entreprise, pmrf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(12321, MockCommune.Lausanne.getNomOfficiel(), MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("dfgszbsl3342", null, commune, 84165);
+			final BienFondsRF immeuble = addBienFondsRF("dfgszbsl3342", null, commune, 84165);
 			addDroitPersonneMoraleRF(dateDebut, dateDebut, null, null, "Achat", null, "4637210tre", "4637210trd", new IdentifiantAffaireRF(784, "SSP"), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmrf, immeuble, null);
 
 			final DemandeDegrevementICI retournee = addDemandeDegrevementICI(entreprise,
@@ -392,7 +392,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			addRapprochementRF(entreprise, pmrf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(12321, MockCommune.Lausanne.getNomOfficiel(), MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("dfgszbsl3342", null, commune, 84165);
+			final BienFondsRF immeuble = addBienFondsRF("dfgszbsl3342", null, commune, 84165);
 			final DroitProprietePersonneMoraleRF droit = addDroitPersonneMoraleRF(dateDebut, dateDebut, null, null, "Achat", null, "4637210tre", "4637210trd",
 			                                                                      new IdentifiantAffaireRF(784, "SSP"), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmrf, immeuble, null);
 
@@ -503,7 +503,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			addRapprochementRF(entreprise, pmrf, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF commune = addCommuneRF(12321, MockCommune.Lausanne.getNomOfficiel(), MockCommune.Lausanne.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("dfgszbsl3342", null, commune, 84165);
+			final BienFondsRF immeuble = addBienFondsRF("dfgszbsl3342", null, commune, 84165);
 			final DroitProprietePersonneMoraleRF droit = addDroitPersonneMoraleRF(dateDebut, dateDebut, null, null, "Achat", null, "4637210tre", "4637210trd",
 			                                                                      new IdentifiantAffaireRF(784, "SSP"), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmrf, immeuble, null);
 

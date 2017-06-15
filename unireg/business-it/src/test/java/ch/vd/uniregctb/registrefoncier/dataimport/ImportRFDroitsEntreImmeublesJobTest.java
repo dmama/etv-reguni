@@ -22,7 +22,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -327,10 +327,10 @@ public class ImportRFDroitsEntreImmeublesJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				final BienFondRF bienFond = (BienFondRF) immeubleRFDAO.find(new ImmeubleRFKey("_1f1091523810912201381096f5f65a60"), null);
-				assertNotNull(bienFond);
-				assertEquals("_1f1091523810912201381096f5f65a60", bienFond.getIdRF());
-				assertEquals("CH774575838377", bienFond.getEgrid());
+				final BienFondsRF bienFonds = (BienFondsRF) immeubleRFDAO.find(new ImmeubleRFKey("_1f1091523810912201381096f5f65a60"), null);
+				assertNotNull(bienFonds);
+				assertEquals("_1f1091523810912201381096f5f65a60", bienFonds.getIdRF());
+				assertEquals("CH774575838377", bienFonds.getEgrid());
 
 				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubleRFDAO.find(new ImmeubleRFKey("_1f1091523810912201381096f93f6bfe"), null);
 				assertNotNull(ppe);

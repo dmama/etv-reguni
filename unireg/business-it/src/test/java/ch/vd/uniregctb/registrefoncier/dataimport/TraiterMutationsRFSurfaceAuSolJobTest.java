@@ -20,7 +20,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -76,11 +76,11 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 				importEvent.setFileUrl("http://turlututu");
 				importEvent = evenementRFImportDAO.save(importEvent);
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF("382929efa218");
 				ids.immeuble1 = immeubleRFDAO.save(immeuble1).getId();
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF("58390029228");
 				ids.immeuble2 = immeubleRFDAO.save(immeuble2).getId();
 
@@ -226,14 +226,14 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF("382929efa218");
-				immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+				immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 				ids.immeuble1 = immeuble1.getId();
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF("58390029228");
-				immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+				immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 				ids.immeuble2 = immeuble2.getId();
 
 				final SurfaceAuSolRF surface10 = new SurfaceAuSolRF();
@@ -432,14 +432,14 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF("382929efa218");
-				immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+				immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 				ids.immeuble1 = immeuble1.getId();
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF("58390029228");
-				immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+				immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 				ids.immeuble2 = immeuble2.getId();
 
 				final SurfaceAuSolRF surface10 = new SurfaceAuSolRF();

@@ -21,7 +21,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeImportRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -357,8 +357,8 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
 
 				// données équivalentes au fichier export_droits_rf_hebdo.xml
-				BienFondRF bienFond = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
-				bienFond = (BienFondRF) immeubleRFDAO.save(bienFond);
+				BienFondsRF bienFonds = newBienFondsRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
+				bienFonds = (BienFondsRF) immeubleRFDAO.save(bienFonds);
 
 				PersonnePhysiqueRF pp1 = newPersonnePhysique("029191d4fec44", 123344L, 238282L, "Peuplu", "Jean", RegDate.get(1955, 5, 15));
 				pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
@@ -371,13 +371,13 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 
 				// quelques données historiques (qui doivent être ignorées)
 				final DroitProprietePersonnePhysiqueRF droit1_1 =
-						newDroitPP("328282782", "328282781", pp1, bienFond, communaute, new Fraction(3, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("328282782", "328282781", pp1, bienFonds, communaute, new Fraction(3, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", dateSecondImport.getOneDayBefore());
 				final DroitProprietePersonnePhysiqueRF droit2_1 =
-						newDroitPP("47237819", "47237818", pp2, bienFond, communaute, new Fraction(4, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("47237819", "47237818", pp2, bienFonds, communaute, new Fraction(4, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", dateSecondImport.getOneDayBefore());
 				final DroitProprieteCommunauteRF droit3_1 =
-						newDroitColl("3478382", "3478381", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
+						newDroitColl("3478382", "3478381", communaute, bienFonds, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
 						             new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Vol à main armée", dateSecondImport.getOneDayBefore());
 				droitRFDAO.save(droit1_1);
 				droitRFDAO.save(droit2_1);
@@ -385,13 +385,13 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 
 				// les données courantes
 				final DroitProprietePersonnePhysiqueRF droit1_2 =
-						newDroitPP("9a9c9e94923", "9a9c9e94922", pp1, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("9a9c9e94923", "9a9c9e94922", pp1, bienFonds, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateSecondImport, "Héritage", null);
 				final DroitProprietePersonnePhysiqueRF droit2_2 =
-						newDroitPP("45729cd9e20", "45729cd9e19", pp2, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("45729cd9e20", "45729cd9e19", pp2, bienFonds, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateSecondImport, "Héritage", null);
 				final DroitProprieteCommunauteRF droit3_2 =
-						newDroitColl("38458fa0ac3", "38458fa0ac2", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
+						newDroitColl("38458fa0ac3", "38458fa0ac2", communaute, bienFonds, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
 						             new IdentifiantAffaireRF(6, 2013, 33, 1), dateSecondImport, "Héritage", null);
 				droitRFDAO.save(droit1_2);
 				droitRFDAO.save(droit2_2);
@@ -474,8 +474,8 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
 
 				// données partiellement différentes de celles du fichier export_droits_rf_hebdo.xml
-				BienFondRF bienFond = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
-				bienFond = (BienFondRF) immeubleRFDAO.save(bienFond);
+				BienFondsRF bienFonds = newBienFondsRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
+				bienFonds = (BienFondsRF) immeubleRFDAO.save(bienFonds);
 
 				PersonnePhysiqueRF pp1 = newPersonnePhysique("029191d4fec44", 123344L, 238282L, "Peuplu", "Jean", RegDate.get(1955, 5, 15));
 				pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
@@ -488,15 +488,15 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 
 				// - part différente
 				final DroitProprietePersonnePhysiqueRF droit1_2 =
-						newDroitPP("9a9c9e94923", "9a9c9e94922", pp1, bienFond, communaute, new Fraction(3, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("9a9c9e94923", "9a9c9e94922", pp1, bienFonds, communaute, new Fraction(3, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
 				// - part différente
 				final DroitProprietePersonnePhysiqueRF droit2_2 =
-						newDroitPP("45729cd9e20", "45729cd9e19", pp2, bienFond, communaute, new Fraction(4, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("45729cd9e20", "45729cd9e19", pp2, bienFonds, communaute, new Fraction(4, 7), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
 				// - numéro d'affaire différent
 				final DroitProprieteCommunauteRF droit3_2 =
-						newDroitColl("38458fa0ac3", "38458fa0ac2", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
+						newDroitColl("38458fa0ac3", "38458fa0ac2", communaute, bienFonds, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
 						             new IdentifiantAffaireRF(6, 2013, 1, 14), dateImportInitial, "Vol à main armée", null);
 				droitRFDAO.save(droit1_2);
 				droitRFDAO.save(droit2_2);
@@ -676,8 +676,8 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				final CommuneRF rances = communeRFDAO.save(newCommuneRF(273, "Rances", 5555));
 
 				// données équivalentes au fichier export_droits_rf_hebdo.xml
-				BienFondRF bienFond = newBienFondRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
-				bienFond = (BienFondRF) immeubleRFDAO.save(bienFond);
+				BienFondsRF bienFonds = newBienFondsRF("_1f109152381009be0138100bc9f139e0", "CH938383459516", rances, 3, 1100000L, "RG96", 1996, null, RegDate.get(1996, 1, 1), false, false, dateImportInitial, 2969451);
+				bienFonds = (BienFondsRF) immeubleRFDAO.save(bienFonds);
 
 				PersonnePhysiqueRF pp1 = newPersonnePhysique("029191d4fec44", 123344L, 238282L, "Peuplu", "Jean", RegDate.get(1955, 5, 15));
 				pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
@@ -690,13 +690,13 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 
 				// les données courantes
 				final DroitProprietePersonnePhysiqueRF droit1 =
-						newDroitPP("9a9c9e94923", "9a9c9e94922", pp1, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("9a9c9e94923", "9a9c9e94922", pp1, bienFonds, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
 				final DroitProprietePersonnePhysiqueRF droit2 =
-						newDroitPP("45729cd9e20", "45729cd9e19", pp2, bienFond, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
+						newDroitPP("45729cd9e20", "45729cd9e19", pp2, bienFonds, communaute, new Fraction(1, 2), GenrePropriete.COPROPRIETE, RegDate.get(2010, 4, 23),
 						           new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
 				final DroitProprieteCommunauteRF droit3 =
-						newDroitColl("38458fa0ac3", "38458fa0ac2", communaute, bienFond, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
+						newDroitColl("38458fa0ac3", "38458fa0ac2", communaute, bienFonds, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2010, 4, 23),
 						             new IdentifiantAffaireRF(6, 2013, 33, 1), dateImportInitial, "Héritage", null);
 				droitRFDAO.save(droit1);
 				droitRFDAO.save(droit2);

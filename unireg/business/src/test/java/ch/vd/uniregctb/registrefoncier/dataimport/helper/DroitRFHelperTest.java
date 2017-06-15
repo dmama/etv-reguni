@@ -20,7 +20,7 @@ import ch.vd.capitastra.grundstueck.Quote;
 import ch.vd.capitastra.grundstueck.Rechtsgrund;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.UniregJUnit4Runner;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
@@ -72,7 +72,7 @@ public class DroitRFHelperTest {
 			final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
 			pp.setIdRF("34838282030");
 
-			final ImmeubleRF immeuble = new BienFondRF();
+			final ImmeubleRF immeuble = new BienFondsRF();
 			immeuble.setIdRF("ae93920bc34");
 
 			droitPP1.setMasterIdRF("9a9c9e94923");
@@ -93,7 +93,7 @@ public class DroitRFHelperTest {
 			final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
 			pp.setIdRF("574737237");
 
-			final ImmeubleRF immeuble = new BienFondRF();
+			final ImmeubleRF immeuble = new BienFondsRF();
 			immeuble.setIdRF("5848cd8483");
 
 			droitPP2.setMasterIdRF("4848d8e83");
@@ -114,7 +114,7 @@ public class DroitRFHelperTest {
 			final ImmeubleBeneficiaireRF beneficiaire1 = new ImmeubleBeneficiaireRF();
 			beneficiaire1.setIdRF("5848cd8483");
 
-			final ImmeubleRF immeuble2 = new BienFondRF();
+			final ImmeubleRF immeuble2 = new BienFondsRF();
 			immeuble2.setIdRF("ae93920bc34");
 
 			droitImm3.setMasterIdRF("029382719");
@@ -203,7 +203,7 @@ public class DroitRFHelperTest {
 		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
 		pp.setIdRF("34838282030");
 
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("ae93920bc34");
 
 		final DroitProprietePersonnePhysiqueRF droitPP = new DroitProprietePersonnePhysiqueRF();
@@ -247,7 +247,7 @@ public class DroitRFHelperTest {
 		final PersonneMoraleRF pm = new PersonneMoraleRF();
 		pm.setIdRF("34838282030");
 
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("ae93920bc34");
 
 		final DroitProprietePersonneMoraleRF droitPM = new DroitProprietePersonneMoraleRF();
@@ -291,7 +291,7 @@ public class DroitRFHelperTest {
 		final CommunauteRF communaute = new CommunauteRF();
 		communaute.setIdRF("34838282030");
 
-		final ImmeubleRF immeuble = new BienFondRF();
+		final ImmeubleRF immeuble = new BienFondsRF();
 		immeuble.setIdRF("ae93920bc34");
 
 		final DroitProprieteCommunauteRF droitComm = new DroitProprieteCommunauteRF();
@@ -334,7 +334,7 @@ public class DroitRFHelperTest {
 		final ImmeubleBeneficiaireRF beneficiaire1 = new ImmeubleBeneficiaireRF();
 		beneficiaire1.setIdRF("5848cd8483");
 
-		final ImmeubleRF immeuble2 = new BienFondRF();
+		final ImmeubleRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("ae93920bc34");
 
 		final DroitProprieteImmeubleRF droitImm = new DroitProprieteImmeubleRF();

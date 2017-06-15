@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
@@ -50,7 +50,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 		// mise en place fiscale
 		final Ids ids = doInNewTransactionAndSession(status -> {
 			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			final BienFondsRF immeuble = addBienFondsRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
 
 			final PersonnePhysique proprio = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
 			final PersonnePhysiqueRF proprioRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
@@ -241,7 +241,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 		// mise en place fiscale
 		final Ids ids = doInNewTransactionAndSession(status -> {
 			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			final BienFondsRF immeuble = addBienFondsRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
 
 			final CommunauteRF communaute = addCommunauteRF("285t378og43t", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
 
@@ -369,7 +369,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 		// mise en place fiscale
 		final Ids ids = doInNewTransactionAndSession(status -> {
 			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			final BienFondsRF immeuble = addBienFondsRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
 
 			final PersonnePhysique proprio = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
 			final PersonnePhysiqueRF proprioRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
@@ -377,7 +377,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 
 			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeuble, null);
 
-			final BienFondRF immeubleSansDroit = addBienFondRF("5378gwfbs", "Autre EGRID", commune, 471, 3, null, null);
+			final BienFondsRF immeubleSansDroit = addBienFondsRF("5378gwfbs", "Autre EGRID", commune, 471, 3, null, null);
 
 			final Ids res = new Ids();
 			res.idProprietaire = proprio.getNumero();
@@ -456,7 +456,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 		// mise en place fiscale
 		final Ids ids = doInNewTransactionAndSession(status -> {
 			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
-			final BienFondRF immeuble = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			final BienFondsRF immeuble = addBienFondsRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
 
 			final PersonnePhysique proprio = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
 			final PersonnePhysiqueRF proprioRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
@@ -464,7 +464,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 
 			addDroitPersonnePhysiqueRF(null, date(2015, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeuble, null);
 
-			final BienFondRF immeubleSansDroit = addBienFondRF("5378gwfbs", "Autre EGRID", commune, 471, 3, null, null);
+			final BienFondsRF immeubleSansDroit = addBienFondsRF("5378gwfbs", "Autre EGRID", commune, 471, 3, null, null);
 			addDroitPersonnePhysiqueRF(null, date(2015, 1, 2), date(2017, 1,4), date(2016, 12, 21), "Achat", "Vente", "rqz7i3uf", "rqz7i3ue", new IdentifiantAffaireRF(213, "78rgfse"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeubleSansDroit, null);
 
 			final Ids res = new Ids();
@@ -536,8 +536,8 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 		final Ids ids = doInNewTransactionAndSession(status -> {
 
 			final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
-			final BienFondRF immeublePossede = addBienFondRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
-			final BienFondRF immeubleBeneficiaire = addBienFondRF("4678536545hjksdf", "CDGHJSFDG", commune, 48415, 6, 1, 7);
+			final BienFondsRF immeublePossede = addBienFondsRF("r385hgjbahkl", "CHEGRID", commune, 4514, 4, 2, 1);
+			final BienFondsRF immeubleBeneficiaire = addBienFondsRF("4678536545hjksdf", "CDGHJSFDG", commune, 48415, 6, 1, 7);
 
 			final ImmeubleBeneficiaireRF ayantDroit = addImmeubleBeneficiaireRF(immeubleBeneficiaire);
 			addDroitImmeubleRF(null, date(2014, 6, 12), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.FONDS_DOMINANT, ayantDroit, immeublePossede);

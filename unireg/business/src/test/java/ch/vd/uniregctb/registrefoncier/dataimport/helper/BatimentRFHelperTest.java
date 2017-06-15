@@ -17,7 +17,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.common.UniregJUnit4Runner;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
@@ -167,13 +167,13 @@ public class BatimentRFHelperTest {
 	@Test
 	public void testCurrentDataEqualsOnImplantation() throws Exception {
 
-		final ImmeubleRF immeuble1 = new BienFondRF();
+		final ImmeubleRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("78238e8323");
 
-		final ImmeubleRF immeuble2 = new BienFondRF();
+		final ImmeubleRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("48e89c9a9");
 
-		final ImmeubleRF immeuble3 = new BienFondRF();
+		final ImmeubleRF immeuble3 = new BienFondsRF();
 		immeuble3.setIdRF("02389349aaa");
 
 		// même implantation
@@ -217,10 +217,10 @@ public class BatimentRFHelperTest {
 	@Test
 	public void testNewBatimentRF() throws Exception {
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("3738728228");
 
-		final BienFondRF immeuble2 = new BienFondRF();
+		final BienFondsRF immeuble2 = new BienFondsRF();
 		immeuble2.setIdRF("a8280ec000");
 
 		final Gebaeude gebaeude = new Gebaeude();
@@ -269,7 +269,7 @@ public class BatimentRFHelperTest {
 	@Test
 	public void testNewBatimentRFTypeTexteLibre() throws Exception {
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("_8af80e6254709f68015476fecb1f0e0b");
 
 		final Gebaeude gebaeude = new Gebaeude();
@@ -301,7 +301,7 @@ public class BatimentRFHelperTest {
 	@Test
 	public void testNewBatimentRFSansType() throws Exception {
 
-		final BienFondRF immeuble1 = new BienFondRF();
+		final BienFondsRF immeuble1 = new BienFondsRF();
 		immeuble1.setIdRF("_1f109152381026b501381028bb23779a");
 
 		final Gebaeude gebaeude = new Gebaeude();

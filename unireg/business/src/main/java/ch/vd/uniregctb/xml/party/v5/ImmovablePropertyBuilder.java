@@ -23,7 +23,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.RealEstate;
 import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
 import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
 import ch.vd.uniregctb.common.AnnulableHelper;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
@@ -71,7 +71,7 @@ public abstract class ImmovablePropertyBuilder {
 		strategies.put(PartCoproprieteRF.class, (i, u, p, c) -> newCoOwnershipShare((PartCoproprieteRF) i, u, p, c));
 		strategies.put(DroitDistinctEtPermanentRF.class, (i, u, p, c) -> newDistinctAndPermanentRight((DroitDistinctEtPermanentRF) i, u, p, c));
 		strategies.put(MineRF.class, (i, u, p, c) -> newMine((MineRF) i, u, p, c));
-		strategies.put(BienFondRF.class, (i, u, p, c) -> newRealEstate((BienFondRF) i, u, p, c));
+		strategies.put(BienFondsRF.class, (i, u, p, c) -> newRealEstate((BienFondsRF) i, u, p, c));
 	}
 
 	public static ImmovableProperty newImmovableProperty(@NotNull ImmeubleRF immeuble, @NotNull CapitastraURLProvider capitastraUrlProvider, RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
@@ -137,11 +137,11 @@ public abstract class ImmovablePropertyBuilder {
 		return m;
 	}
 
-	private static RealEstate newRealEstate(@NotNull BienFondRF bienFond, @NotNull CapitastraURLProvider capitastraUrlProvider, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
+	private static RealEstate newRealEstate(@NotNull BienFondsRF bienFonds, @NotNull CapitastraURLProvider capitastraUrlProvider, @NotNull RightHolderBuilder.ContribuableIdProvider contribuableIdProvider,
 	                                        @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final RealEstate estate = new RealEstate();
-		fillBase(estate, bienFond, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
-		estate.setCfa(bienFond.isCfa());
+		fillBase(estate, bienFonds, capitastraUrlProvider, contribuableIdProvider, rightHolderComparator);
+		estate.setCfa(bienFonds.isCfa());
 		return estate;
 	}
 

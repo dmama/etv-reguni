@@ -28,14 +28,14 @@ public class FichierImmeublesRFParser {
 	public static final String GRUNDSTUECK_NAMESPACE = "http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck";
 
 	private static final String LIST_IMMEUBLES = "GrundstueckList";
-	private static final String BIEN_FOND = "Liegenschaft";
+	private static final String BIEN_FONDS = "Liegenschaft";
 	private static final String DDP = "Sdr";    // droit distinct et permanent
 	private static final String PPE = "StockwerksEinheit";
 	private static final String COOPERATIVE = "GewoehnlichesMiteigentum";
 	private static final String FOLIO = "Folio";
 	private static final String MINE = "Bergwerk";
 	private static final String TERRAIN_INCONNU = "UnbekanntesGrundstueck";
-	private static final Set<String> TYPES_IMMEUBLES = new HashSet<>(Arrays.asList(BIEN_FOND, DDP, PPE, COOPERATIVE, FOLIO, MINE, TERRAIN_INCONNU));
+	private static final Set<String> TYPES_IMMEUBLES = new HashSet<>(Arrays.asList(BIEN_FONDS, DDP, PPE, COOPERATIVE, FOLIO, MINE, TERRAIN_INCONNU));
 
 	private static final String LIST_DROITS = "EigentumList";
 	private static final String DROIT_PROPRIETE_PERSONNEL = "PersonEigentumAnteil";

@@ -23,7 +23,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
@@ -305,13 +305,13 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			pp.setDateNaissance(RegDate.get(1900, 1, 1));
 			pp = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp);
 
-			BienFondRF immeuble1 = new BienFondRF();
+			BienFondsRF immeuble1 = new BienFondsRF();
 			immeuble1.setIdRF(idImmeubleRF1);
-			immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-			BienFondRF immeuble2 = new BienFondRF();
+			BienFondsRF immeuble2 = new BienFondsRF();
 			immeuble2.setIdRF(idImmeubleRF2);
-			immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 			// on droit différent de celui qui arrive dans le fichier XML
 			final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
@@ -463,13 +463,13 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		// précondition : il y a déjà un droit entre immeubles dans la base de données
 		final Long immId = doInNewTransaction(status -> {
 
-			BienFondRF immeuble1 = new BienFondRF();
+			BienFondsRF immeuble1 = new BienFondsRF();
 			immeuble1.setIdRF(idImmeubleRF1);
-			immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-			BienFondRF immeuble2 = new BienFondRF();
+			BienFondsRF immeuble2 = new BienFondsRF();
 			immeuble2.setIdRF(idImmeubleRF2);
-			immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 			ImmeubleBeneficiaireRF imm = new ImmeubleBeneficiaireRF();
 			imm.setIdRF(idImmeubleRF1);
@@ -592,13 +592,13 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		// précondition : il y a déjà un droit entre immeubles dans la base de données
 		final Long immId = doInNewTransaction(status -> {
 
-			BienFondRF immeuble1 = new BienFondRF();
+			BienFondsRF immeuble1 = new BienFondsRF();
 			immeuble1.setIdRF(idImmeubleRF1);
-			immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-			BienFondRF immeuble2 = new BienFondRF();
+			BienFondsRF immeuble2 = new BienFondsRF();
 			immeuble2.setIdRF(idImmeubleRF2);
-			immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 			ImmeubleBeneficiaireRF imm = new ImmeubleBeneficiaireRF();
 			imm.setIdRF(idImmeubleRF1);
@@ -723,13 +723,13 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		// précondition : il y a déjà un droit entre immeubles dans la base de données
 		final Long immId = doInNewTransaction(status -> {
 
-			BienFondRF immeuble1 = new BienFondRF();
+			BienFondsRF immeuble1 = new BienFondsRF();
 			immeuble1.setIdRF(idImmeubleRF1);
-			immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-			BienFondRF immeuble2 = new BienFondRF();
+			BienFondsRF immeuble2 = new BienFondsRF();
 			immeuble2.setIdRF(idImmeubleRF2);
-			immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 			ImmeubleBeneficiaireRF imm = new ImmeubleBeneficiaireRF();
 			imm.setIdRF(idImmeubleRF1);
@@ -861,13 +861,13 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			pp.setDateNaissance(RegDate.get(1900, 1, 1));
 			pp = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp);
 
-			BienFondRF immeuble1 = new BienFondRF();
+			BienFondsRF immeuble1 = new BienFondsRF();
 			immeuble1.setIdRF(idImmeubleRF1);
-			immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-			BienFondRF immeuble2 = new BienFondRF();
+			BienFondsRF immeuble2 = new BienFondsRF();
 			immeuble2.setIdRF(idImmeubleRF2);
-			immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 			// on droit différent de celui qui arrive dans le fichier XML
 			final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
@@ -1005,9 +1005,9 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			pp.setDateNaissance(RegDate.get(1900, 1, 1));
 			pp = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp);
 
-			BienFondRF immeuble1 = new BienFondRF();
+			BienFondsRF immeuble1 = new BienFondsRF();
 			immeuble1.setIdRF(idImmeubleRF1);
-			immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
 			// on droit différent de celui qui arrive dans le fichier XML
 			final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
@@ -1107,13 +1107,13 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			pp.setDateNaissance(RegDate.get(1900, 1, 1));
 			pp = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp);
 
-			BienFondRF immeuble1 = new BienFondRF();
+			BienFondsRF immeuble1 = new BienFondsRF();
 			immeuble1.setIdRF(idImmeubleRF1);
-			immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-			BienFondRF immeuble2 = new BienFondRF();
+			BienFondsRF immeuble2 = new BienFondsRF();
 			immeuble2.setIdRF(idImmeubleRF2);
-			immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 			final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
 			droit0.setMasterIdRF("1f109152381009be0138100c87276e68");
@@ -1236,13 +1236,13 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
-				BienFondRF immeuble1 = new BienFondRF();
+				BienFondsRF immeuble1 = new BienFondsRF();
 				immeuble1.setIdRF(idImmeubleRF1);
-				immeuble1 = (BienFondRF) immeubleRFDAO.save(immeuble1);
+				immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
 
-				BienFondRF immeuble2 = new BienFondRF();
+				BienFondsRF immeuble2 = new BienFondsRF();
 				immeuble2.setIdRF(idImmeubleRF2);
-				immeuble2 = (BienFondRF) immeubleRFDAO.save(immeuble2);
+				immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
 				ImmeubleBeneficiaireRF imm = new ImmeubleBeneficiaireRF();
 				imm.setIdRF(idImmeubleRF1);

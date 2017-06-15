@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.registrefoncier.BienFondRF;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.MineRF;
 import ch.vd.uniregctb.registrefoncier.PartCoproprieteRF;
@@ -17,7 +17,7 @@ public class ImpressionDemandeDegrevementICIHelperTest extends WithoutSpringTest
 		Assert.assertEquals("PPE", ImpressionDemandeDegrevementICIHelperImpl.getTypeImmeuble(new ProprieteParEtageRF()));
 		Assert.assertEquals("DDP", ImpressionDemandeDegrevementICIHelperImpl.getTypeImmeuble(new DroitDistinctEtPermanentRF()));
 		Assert.assertEquals("Mine", ImpressionDemandeDegrevementICIHelperImpl.getTypeImmeuble(new MineRF()));
-		Assert.assertEquals("Bien-fonds", ImpressionDemandeDegrevementICIHelperImpl.getTypeImmeuble(new BienFondRF()));
+		Assert.assertEquals("Bien-fonds", ImpressionDemandeDegrevementICIHelperImpl.getTypeImmeuble(new BienFondsRF()));
 		Assert.assertEquals("Copropriété", ImpressionDemandeDegrevementICIHelperImpl.getTypeImmeuble(new PartCoproprieteRF()));
 	}
 }
