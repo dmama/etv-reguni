@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -36,13 +35,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.HttpHelper;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.servlet.ActionExceptionFilter;
 import ch.vd.uniregctb.supergra.delta.AddSubEntity;
 import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 import ch.vd.uniregctb.supergra.delta.Delta;
@@ -458,8 +457,7 @@ public class SuperGraController {
 		final Delta action = session.removeDelta(index);
 		Flash.message("L'action \"" + action + "\" a été supprimée.");
 
-		final String referer = getReferrer(request);
-		return "redirect:" + referer;
+		return HttpHelper.getRedirectPagePrecedente(request);
 	}
 
 	@RequestMapping(value = "/supergra/actions/rollback.do", method = RequestMethod.POST)
@@ -474,8 +472,7 @@ public class SuperGraController {
 		session.clearDeltas();
 		Flash.message("Toutes les actions ont été supprimées.");
 
-		final String referer = getReferrer(request);
-		return "redirect:" + referer;
+		return HttpHelper.getRedirectPagePrecedente(request);
 	}
 
 	@RequestMapping(value = "/supergra/actions/commit.do", method = RequestMethod.POST)
@@ -517,8 +514,7 @@ public class SuperGraController {
 			}
 		}
 
-		final String referer = getReferrer(request);
-		return "redirect:" + referer;
+		return HttpHelper.getRedirectPagePrecedente(request);
 	}
 
 	/**
@@ -555,8 +551,7 @@ public class SuperGraController {
 
 		Flash.message("Les détails sont maintenant " + (showDetails ? "visibles" : "masqués") + '.');
 
-		final String referer = getReferrer(request);
-		return "redirect:" + referer;
+		return HttpHelper.getRedirectPagePrecedente(request);
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -574,19 +569,5 @@ public class SuperGraController {
 			request.getSession().setAttribute("superGraSession", session);
 		}
 		return session;
-	}
-
-	/**
-	 * Retourne la dernière URL de type <i>GET</i> connue.
-	 *
-	 * @param request la requête http
-	 * @return l'URL demandée
-	 */
-	private static String getReferrer(HttpServletRequest request) {
-		String referrer = (String) request.getSession().getAttribute(ActionExceptionFilter.LAST_GET_URL);
-		if (StringUtils.isBlank(referrer)) {
-			referrer = request.getHeader("referer"); // Yes, with the legendary misspelling.
-		}
-		return referrer;
 	}
 }

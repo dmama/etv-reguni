@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.HttpHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
@@ -197,13 +197,8 @@ public class ImportRFController {
 			Flash.error("Le job n'a pas pu être démarré pour la raison suivante :" + e.getMessage());
 		}
 
-		final String referrer = request.getHeader("referer");
-		if (StringUtils.isNotBlank(referrer)) { // on redirige vers la page courante, pour garder les filtres et la pagination
-			return "redirect:" + referrer;
-		}
-		else {
-			return "redirect:/registrefoncier/import/list.do";
-		}
+		// on redirige vers la page courante, pour garder les filtres et la pagination
+		return HttpHelper.getRedirectPagePrecedenteOuDefaut(request, "/registrefoncier/import/list.do");
 	}
 
 	@SecurityCheck(rolesToCheck = {Role.SUIVI_IMPORT_RF}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
@@ -223,13 +218,8 @@ public class ImportRFController {
 
 		Flash.message("La mutation n°" + mutId + " a été forcée.");
 
-		final String referrer = request.getHeader("referer");
-		if (StringUtils.isNotBlank(referrer)) { // on redirige vers la page courante, pour garder les filtres et la pagination
-			return "redirect:" + referrer;
-		}
-		else {
-			return "redirect:/registrefoncier/import/show.do?importId=" + mutation.getParentImport().getId();
-		}
+		// on redirige vers la page courante, pour garder les filtres et la pagination
+		return HttpHelper.getRedirectPagePrecedenteOuDefaut(request, () -> "/registrefoncier/import/show.do?importId=" + mutation.getParentImport().getId());
 	}
 
 	@SecurityCheck(rolesToCheck = {Role.SUIVI_IMPORT_RF}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
@@ -244,13 +234,8 @@ public class ImportRFController {
 
 		Flash.message("Les mutations du job n°" + importId + " on été forcées.");
 
-		final String referrer = request.getHeader("referer");
-		if (StringUtils.isNotBlank(referrer)) { // on redirige vers la page courante, pour garder les filtres et la pagination
-			return "redirect:" + referrer;
-		}
-		else {
-			return "redirect:/registrefoncier/import/list.do";
-		}
+		// on redirige vers la page courante, pour garder les filtres et la pagination
+ 		return HttpHelper.getRedirectPagePrecedenteOuDefaut(request, "/registrefoncier/import/list.do");
 	}
 
 	@RequestMapping(value = "/import/stats.do", method = RequestMethod.GET)

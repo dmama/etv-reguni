@@ -1,21 +1,26 @@
 package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.servlet.ActionExceptionFilter;
 
 public abstract class HttpHelper {
 
-	public static String getRedirectPagePrecedente(HttpServletRequest request) {
+	public static String getRedirectPagePrecedenteOuDefaut(HttpServletRequest request, @NotNull Supplier<String> defaultUrlSupplier) {
 		final String referrer = getReferrer(request);
-		if (StringUtils.isNotBlank(referrer)) {
-			return String.format("redirect:%s", referrer);
-		}
-		else {
-			return "redirect:/404.do";
-		}
+		return "redirect:" + (StringUtils.isBlank(referrer) ? defaultUrlSupplier.get() : referrer);
+	}
+
+	public static String getRedirectPagePrecedenteOuDefaut(HttpServletRequest request, String defaultUrl) {
+		return getRedirectPagePrecedenteOuDefaut(request, () -> defaultUrl);
+	}
+
+	public static String getRedirectPagePrecedente(HttpServletRequest request) {
+		return getRedirectPagePrecedenteOuDefaut(request, "/404.do");
 	}
 
 	public static String getReferrer(HttpServletRequest request) {
