@@ -82,7 +82,7 @@ function submit(url, methodType, delegateName){
 					<unireg:document doc="${file}" />
 				</display:column>
 				<display:column titleKey="label.export.DBUnit.filename" >
-					<unireg:linkTo name="${file.nom}" action="/common/docs/download.do" params="{id:${file.id}}"/>
+					<unireg:linkTo name="${file.nom}" action="/common/docs/download.do" params="{id:${file.id},url_memorize:false}"/>
 				</display:column>
 				<display:column titleKey="label.export.DBUnit.nbTiers" >
 					<c:out value="${file.nbTiers}" />

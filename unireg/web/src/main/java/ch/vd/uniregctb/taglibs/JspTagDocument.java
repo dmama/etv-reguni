@@ -44,12 +44,12 @@ public class JspTagDocument extends BodyTagSupport {
 		HtmlTextWriter writer = new HtmlTextWriter(w);
 
 		// Un lien permettant de télécharger le document
-		String href = request.getContextPath() + "/common/docs/download.do?id=" + doc.getId();
+		final String href = request.getContextPath() + "/common/docs/download.do?id=" + doc.getId() + "&url_memorize=false";
 		writer.addAttribute(HtmlTextWriterAttribute.Href, href);
 		writer.renderBeginTag(HtmlTextWriterTag.A);
 		{
 			// Un image représentant le type de document
-			String src = request.getContextPath() + "/images/" + doc.getFileExtension() + "_icon.png";
+			final String src = request.getContextPath() + "/images/" + doc.getFileExtension() + "_icon.png";
 			writer.addAttribute(HtmlTextWriterAttribute.Src, src);
 			writer.addAttribute(HtmlTextWriterAttribute.Align, "top");
 			writer.addAttribute(HtmlTextWriterAttribute.Id, "IMG_DOC_" + doc.getId());
