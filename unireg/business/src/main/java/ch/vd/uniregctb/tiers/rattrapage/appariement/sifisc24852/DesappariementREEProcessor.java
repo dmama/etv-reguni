@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.tiers.rattrapage.appariement.sifisc24852;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -68,7 +70,7 @@ public class DesappariementREEProcessor {
 		final BatchTransactionTemplateWithResults<OrganisationLocation, DesappariementREEResults> template = new BatchTransactionTemplateWithResults<>(aDesapparier, BATCH_SIZE,
 		                                                                                                                                               Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
 		template.execute(rapportFinal, new BatchWithResultsCallback<OrganisationLocation, DesappariementREEResults>() {
-			private ThreadLocal<List<Entreprise>> aInvaliderReindexer = ThreadLocal.withInitial(ArrayList::new);
+			private ThreadLocal<Set<Entreprise>> aInvaliderReindexer = ThreadLocal.withInitial(HashSet::new);
 
 			@Override
 			public void afterTransactionStart(TransactionStatus status) {
@@ -87,28 +89,32 @@ public class DesappariementREEProcessor {
 			@Override
 			public boolean doInTransaction(List<OrganisationLocation> aDesapparier, DesappariementREEResults results) throws Exception {
 				status.setMessage("Traitement du batch [" + aDesapparier.get(0).getCantonalId() + "; " + aDesapparier.get(aDesapparier.size() - 1).getCantonalId() + "] ...", progressMonitor.getProgressInPercent());
-				aInvaliderReindexer.set(traiterBatch(aDesapparier, results));
+				aInvaliderReindexer.get().addAll(traiterBatch(aDesapparier, results));
 				return true;
 			}
 
 			@Override
 			public void afterTransactionCommit() {
-				super.afterTransactionCommit();
-				final List<Entreprise> entreprisesAInvaliderReindexer = aInvaliderReindexer.get();
-				final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-				transactionTemplate.execute(session -> {
-					for (final Entreprise entreprise : entreprisesAInvaliderReindexer) {
-						invaliderReindexer(entreprise);
-					}
-					return null;
-				});
-				aInvaliderReindexer.remove();
+				try {
+					super.afterTransactionCommit();
+					final Set<Entreprise> entreprisesAInvaliderReindexer = aInvaliderReindexer.get();
+					final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+					transactionTemplate.execute(session -> {
+						for (final Entreprise entreprise : entreprisesAInvaliderReindexer) {
+							invaliderReindexer(entreprise);
+						}
+						return null;
+					});
+				}
+				finally {
+					aInvaliderReindexer.remove();
+				}
 			}
 
 			@Override
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
-				super.afterTransactionRollback(e, willRetry);
 				aInvaliderReindexer.remove();
+				super.afterTransactionRollback(e, willRetry);
 			}
 		}, progressMonitor);
 
@@ -220,9 +226,11 @@ public class DesappariementREEProcessor {
 
 		// Désapparier l'établissement
 		etablissement.setNumeroEtablissement(null);
-		domicileAtCutoff.setAnnulationDate(aujourdhui.asJavaDate());
-		domicileAtCutoff.setAnnulationUser(SIFISC_24852_USER);
-		etablissement.addDomicile(new DomicileEtablissement(domicileAtCutoff.getDateDebut(), null, domicileAtCutoff.getTypeAutoriteFiscale(), domicileAtCutoff.getNumeroOfsAutoriteFiscale(), etablissement));
+
+		final DomicileEtablissement duplicate = domicileAtCutoff.duplicate();
+		duplicate.setDateFin(null);
+		domicileAtCutoff.setAnnule(true);
+		etablissement.addDomicile(duplicate);
 
 		// Retourner l'entreprise pour invalidation de la cache RCEnt et réindexation.
 		return entreprise;
