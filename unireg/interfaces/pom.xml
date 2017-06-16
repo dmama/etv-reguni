@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-wsclient-rcent</artifactId>
-			<version>1.12</version>
+			<version>3.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
