@@ -34,10 +34,10 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
-import ch.vd.uniregctb.adapter.rcent.model.BurRegistrationData;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
-import ch.vd.uniregctb.adapter.rcent.model.RCRegistrationData;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.BurRegistrationData;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationFunction;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationLocation;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.RCRegistrationData;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 

@@ -29,10 +29,10 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationConstants;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationEvent;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.service.RCEntAdapter;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent;
-import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 
 public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
@@ -49,7 +49,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	@Override
 	public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
 		try {
-			final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getOrganisationHistory(noOrganisation);
+			final ch.vd.unireg.interfaces.organisation.rcent.adapter.model.Organisation received = adapter.getOrganisationHistory(noOrganisation);
 			if (received == null) {
 				return null;
 			}
@@ -64,7 +64,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	@Override
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
 		try {
-			final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getLocation(noSite);
+			final ch.vd.unireg.interfaces.organisation.rcent.adapter.model.Organisation received = adapter.getLocation(noSite);
 			if (received == null) {
 				return null;
 			}
@@ -78,12 +78,12 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	@Override
 	public Identifiers getOrganisationByNoIde(String noide) throws ServiceOrganisationException {
 		try {
-			final ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getOrganisationByNoIde(noide, null);
+			final ch.vd.unireg.interfaces.organisation.rcent.adapter.model.Organisation received = adapter.getOrganisationByNoIde(noide, null);
 			if (received == null) {
 				return null;
 			}
 
-			for (ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation location : received.getLocationData()) {
+			for (ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationLocation location : received.getLocationData()) {
 				final List<DateRangeHelper.Ranged<String>> candidatsIde = location.getIdentifiers().get(OrganisationConstants.CLE_IDE);
 				if (candidatsIde != null) {
 					for (DateRangeHelper.Ranged<String> candidatIde : candidatsIde) {
@@ -106,12 +106,12 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	@Override
 	public Map<Long, ServiceOrganisationEvent> getOrganisationEvent(long noEvenement) throws ServiceOrganisationException {
 		try {
-			final Map<Long, ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent> received = adapter.getOrganisationEvent(noEvenement);
+			final Map<Long, ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationEvent> received = adapter.getOrganisationEvent(noEvenement);
 			if (received == null || received.isEmpty()) {
 				return Collections.emptyMap();
 			}
 			final Map<Long, ServiceOrganisationEvent> result = new HashMap<>(received.size());
-			for (Map.Entry<Long, ch.vd.uniregctb.adapter.rcent.model.OrganisationEvent> orgEntry : received.entrySet()) {
+			for (Map.Entry<Long, ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationEvent> orgEntry : received.entrySet()) {
 				final OrganisationEvent organisationEvent = orgEntry.getValue();
 				final ServiceOrganisationEvent serviceOrganisationEvent = new ServiceOrganisationEvent(
 						organisationEvent.getEventNumber(),

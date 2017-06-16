@@ -8,7 +8,7 @@ import ch.vd.evd0022.v3.DissolutionReason;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeDissolutionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.uniregctb.adapter.rcent.model.RCRegistrationData;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.RCRegistrationData;
 
 public class CommercialRegisterRegistrationDataConverter extends BaseConverter<RCRegistrationData, InscriptionRC> {
 

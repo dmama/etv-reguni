@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.organisation.data.DonneesREERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationLocation;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverters;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.BurRegistrationDataConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.BusinessPublicationConverter;
@@ -25,7 +26,6 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.TypeOfLocationConve
 import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterDeregistrationReasonConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterStatusConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterTypeOfOrganisationConverter;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 
 public class RCEntSiteOrganisationHelper {
 

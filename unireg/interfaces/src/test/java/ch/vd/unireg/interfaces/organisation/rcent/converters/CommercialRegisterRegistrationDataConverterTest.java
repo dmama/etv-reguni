@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.RaisonDeDissolutionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
-import ch.vd.uniregctb.adapter.rcent.model.RCRegistrationData;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.RCRegistrationData;
 
 public class CommercialRegisterRegistrationDataConverterTest {
 

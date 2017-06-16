@@ -8,11 +8,11 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationLocation;
 
 public class RCEntOrganisationHelper {
 
-	public static Organisation get(ch.vd.uniregctb.adapter.rcent.model.Organisation organisation, ServiceInfrastructureRaw infraService) {
+	public static Organisation get(ch.vd.unireg.interfaces.organisation.rcent.adapter.model.Organisation organisation, ServiceInfrastructureRaw infraService) {
 		return new OrganisationRCEnt(
 				organisation.getCantonalId(),
 				RCEntHelper.convert(organisation.getOrganisationIdentifiers()),

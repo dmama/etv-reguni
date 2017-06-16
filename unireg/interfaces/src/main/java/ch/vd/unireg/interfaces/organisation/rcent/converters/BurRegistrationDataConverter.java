@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.evd0022.v3.BurLocalUnitStatus;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionREE;
 import ch.vd.unireg.interfaces.organisation.data.StatusREE;
-import ch.vd.uniregctb.adapter.rcent.model.BurRegistrationData;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.BurRegistrationData;
 
 public class BurRegistrationDataConverter extends BaseConverter<BurRegistrationData, InscriptionREE> {
 

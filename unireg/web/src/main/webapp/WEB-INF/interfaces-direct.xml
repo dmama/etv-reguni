@@ -65,9 +65,9 @@
 
 	<!-- Adapteur RCEnt -->
 
-	<bean id="organisationHistorizer" class="ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer"/>
+	<bean id="organisationHistorizer" class="ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.OrganisationHistorizer"/>
 
-	<bean id="rcEntAdapter" class="ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter">
+	<bean id="rcEntAdapter" class="ch.vd.unireg.interfaces.organisation.rcent.adapter.service.RCEntAdapter">
 		<constructor-arg ref="rcEntClientRaw"/>
 		<constructor-arg ref="organisationHistorizer"/>
 	</bean>

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.organisation.data.Autorisation;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationFunction;
 
 public class OrganisationFunctionConverter extends BaseConverter<OrganisationFunction, FonctionOrganisation> {
 
