@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.RandomAccess;
-import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -242,7 +241,7 @@ public abstract class CollectionsUtils {
 	 */
 	public static <T> void removeCommonElements(@NotNull Collection<? extends T> left,
 	                                            @NotNull Collection<? extends T> right,
-	                                            @Nullable BiPredicate<T, T> equalityFunctor) {
+	                                            @Nullable Equalator<T> equalityFunctor) {
 
 		if (left == right) {
 			// pas besoin de se casser la tête
@@ -291,7 +290,7 @@ public abstract class CollectionsUtils {
 	 */
 	public static <T> List<Pair<T, T>> extractCommonElements(@NotNull Collection<? extends T> left,
 	                                                         @NotNull Collection<? extends T> right,
-	                                                         @Nullable BiPredicate<T, T> equalityFunctor) {
+	                                                         @Nullable Equalator<T> equalityFunctor) {
 
 		if (equalityFunctor == null) {
 			equalityFunctor = T::equals;

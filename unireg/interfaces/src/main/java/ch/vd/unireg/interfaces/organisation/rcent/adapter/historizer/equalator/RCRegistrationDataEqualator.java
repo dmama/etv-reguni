@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator;
 import java.util.Objects;
 
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.RCRegistrationData;
+import ch.vd.uniregctb.common.Equalator;
 
 public class RCRegistrationDataEqualator implements Equalator<RCRegistrationData> {
 

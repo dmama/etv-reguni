@@ -25,7 +25,7 @@ import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.collector.M
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.collector.SingleValueDataCollector;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.collector.SingleValueIndexedDataCollector;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.container.Keyed;
-import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator.Equalator;
+import ch.vd.uniregctb.common.Equalator;
 
 public class HistorizerTest {
 

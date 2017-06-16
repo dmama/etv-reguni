@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator.Equalator;
+import ch.vd.uniregctb.common.Equalator;
 
 /**
  * Classe de base des collecteurs de données

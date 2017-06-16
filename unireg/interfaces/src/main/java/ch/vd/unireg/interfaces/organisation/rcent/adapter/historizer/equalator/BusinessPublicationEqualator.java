@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator;
 
 import ch.vd.evd0022.v3.BusinessPublication;
 import ch.vd.evd0022.v3.SwissGazetteOfCommercePublication;
+import ch.vd.uniregctb.common.Equalator;
 
 public class BusinessPublicationEqualator implements Equalator<BusinessPublication> {
 

@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,6 +47,7 @@ import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.EntrepriseNotFoundException;
+import ch.vd.uniregctb.common.Equalator;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
@@ -99,10 +99,10 @@ public class DegrevementExonerationController {
 			.thenComparing(Comparator.comparing(ImmeubleView::getIndex2, Comparator.nullsFirst(Comparator.naturalOrder())))
 			.thenComparing(Comparator.comparing(ImmeubleView::getIndex3, Comparator.nullsFirst(Comparator.naturalOrder())));
 
-	private static final BiPredicate<Integer, Integer> INTEGER_EQUALATOR = Objects::equals;
-	private static final BiPredicate<RegDate, RegDate> DATE_EQUALATOR = Objects::equals;
-	private static final BiPredicate<Boolean, Boolean> BOOLEAN_EQUALATOR = Objects::equals;
-	private static final BiPredicate<BigDecimal, BigDecimal> BIGDECIMAL_EQUALATOR = (d1, d2) -> Objects.equals(d1, d2) || (d1 != null && d2 != null && d1.compareTo(d2) == 0);
+	private static final Equalator<Integer> INTEGER_EQUALATOR = Objects::equals;
+	private static final Equalator<RegDate> DATE_EQUALATOR = Objects::equals;
+	private static final Equalator<Boolean> BOOLEAN_EQUALATOR = Objects::equals;
+	private static final Equalator<BigDecimal> BIGDECIMAL_EQUALATOR = (d1, d2) -> Objects.equals(d1, d2) || (d1 != null && d2 != null && d1.compareTo(d2) == 0);
 
 	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
 		this.registreFoncierService = registreFoncierService;

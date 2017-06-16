@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator;
 
 import ch.vd.evd0022.v3.Function;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.OrganisationFunction;
+import ch.vd.uniregctb.common.Equalator;
 
 public class OrganisationFunctionEqualator implements Equalator<Function> {
 

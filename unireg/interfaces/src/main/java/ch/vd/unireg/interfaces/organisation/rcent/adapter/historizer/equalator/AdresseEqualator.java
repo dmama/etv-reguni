@@ -5,6 +5,7 @@ import ch.ech.ech0010.v6.AddressInformation;
 import ch.ech.ech0010.v6.Country;
 
 import ch.vd.evd0022.v3.Address;
+import ch.vd.uniregctb.common.Equalator;
 
 public class AdresseEqualator implements Equalator<Address> {
 

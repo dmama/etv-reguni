@@ -34,7 +34,6 @@ import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.collector.S
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator.AdresseEqualator;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator.BURRegistrationDataEqualator;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator.CapitalEqualator;
-import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator.Equalator;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator.NamedOrganisationIdEqualator;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.equalator.RCRegistrationDataEqualator;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.extractor.AdressesCasePostaleIdeExtractor;
@@ -61,6 +60,7 @@ import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.extractor.U
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.extractor.UidRegistrationStatusExtractor;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.BurRegistrationData;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.RCRegistrationData;
+import ch.vd.uniregctb.common.Equalator;
 
 public class OrganisationHistorizer {
 
