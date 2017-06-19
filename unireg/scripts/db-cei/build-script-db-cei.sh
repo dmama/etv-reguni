@@ -20,6 +20,7 @@ shift 3		# comme ça, tous les paramètres restants sont des noms de scripts SQL
 
 if [ -z "$NOM_APPLICATION" -o -z "$NOM_PACKAGE" -o -z "$NOM_SCHEMA" -o "$#" -lt 1 ]; then
 	echo "Syntaxe : $(basename "$0") nom-application nom-schéma nom-package script1.sql [script2.sql...]" >&2
+	echo "Exemple : $(basename "$0") unireg-web UNIREG mon-prod-travaux script1.sql [script2.sql...]" >&2
 	exit 1
 fi
 
