@@ -317,7 +317,9 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 					return comparison;
 				}
 			}
-			return 0;
+
+			// on compare les messages additionnels
+			return Comparator.nullsLast(Comparator.<String>naturalOrder()).compare(this.messageAdditionnel, o.messageAdditionnel);
 		}
 	}
 

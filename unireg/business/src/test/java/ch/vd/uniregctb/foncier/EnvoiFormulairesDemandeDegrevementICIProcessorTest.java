@@ -1970,7 +1970,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			                   null,
 			                   null,
 			                   RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION,
-			                   UsufruitRF.class.getSimpleName(),
+			                   DroitHabitationRF.class.getSimpleName(),
 			                   immeubleInfos.get(0));
 		}
 		{
@@ -1988,7 +1988,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			                   null,
 			                   null,
 			                   RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION,
-			                   DroitHabitationRF.class.getSimpleName(),
+			                   UsufruitRF.class.getSimpleName(),
 			                   immeubleInfos.get(0));
 		}
 
