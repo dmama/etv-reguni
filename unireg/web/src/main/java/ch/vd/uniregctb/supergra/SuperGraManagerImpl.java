@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -27,8 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -411,12 +408,9 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 */
 	private <T> T simulate(final HibernateCallback<T> action) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return template.execute(new TransactionCallback<T>() {
-			@Override
-			public T doInTransaction(TransactionStatus status) {
-				status.setRollbackOnly();
-				return hibernateTemplate.execute(action);
-			}
+		return template.execute(status -> {
+			status.setRollbackOnly();
+			return hibernateTemplate.execute(action);
 		});
 	}
 
@@ -430,12 +424,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		AuthenticationHelper.pushPrincipal(getSuperGraPrincipalName());
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			return template.execute(new TransactionCallback<T>() {
-				@Override
-				public T doInTransaction(TransactionStatus status) {
-					return hibernateTemplate.execute(action);
-				}
-			});
+			return template.execute(status -> hibernateTemplate.execute(action));
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
@@ -445,28 +434,25 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	@Override
 	public void fillView(final EntityKey key, final EntityView view, final SuperGraSession session) {
 
-		simulate(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session s) throws HibernateException, SQLException {
+		simulate(s -> {
 
-				// Reconstruit l'état en cours de modification des entités
-				final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor);
-				applyDeltas(session.getDeltas(), context);
-				refreshEntityStates(session, context);
+			// Reconstruit l'état en cours de modification des entités
+			final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor);
+			applyDeltas(session.getDeltas(), context);
+			refreshEntityStates(session, context);
 
-				view.setKey(key);
+			view.setKey(key);
 
-				final HibernateEntity entity = context.getEntity(key);
-				if (entity != null) {
-					fillView(entity, view, context);
+			final HibernateEntity entity = context.getEntity(key);
+			if (entity != null) {
+				fillView(entity, view, context);
 
-					if (TOP_ENTITY_TYPES.contains(key.getType()) && !context.isNewlyCreated(key)) {
-						// si on affiche une top entité, on en profite pour mémoriser sa clé de manière à pouvoir revenir sur elle après le commit
-						session.setLastKnownTopEntity(key);
-					}
+				if (TOP_ENTITY_TYPES.contains(key.getType()) && !context.isNewlyCreated(key)) {
+					// si on affiche une top entité, on en profite pour mémoriser sa clé de manière à pouvoir revenir sur elle après le commit
+					session.setLastKnownTopEntity(key);
 				}
-				return null;
 			}
+			return null;
 		});
 	}
 
@@ -658,39 +644,36 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	@Override
 	public void fillView(final EntityKey key, final String collName, final CollectionView view, final SuperGraSession session) {
 
-		simulate(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session s) throws HibernateException, SQLException {
+		simulate(s -> {
 
-				// Reconstruit l'état en cours de modification des entités
-				final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor);
-				applyDeltas(session.getDeltas(), context);
-				refreshEntityStates(session, context);
+			// Reconstruit l'état en cours de modification des entités
+			final SuperGraContext context = new SuperGraContext(s, false, validationInterceptor);
+			applyDeltas(session.getDeltas(), context);
+			refreshEntityStates(session, context);
 
-				view.setKey(key);
-				view.setName(collName);
+			view.setKey(key);
+			view.setName(collName);
 
-				final HibernateEntity entity = context.getEntity(key);
-				if (entity != null) {
-					//noinspection unchecked
-					final Collection<HibernateEntity> coll = (Collection<HibernateEntity>) getCollection(collName, entity);
+			final HibernateEntity entity = context.getEntity(key);
+			if (entity != null) {
+				//noinspection unchecked
+				final Collection<HibernateEntity> coll = (Collection<HibernateEntity>) getCollection(collName, entity);
 
-					if (coll != null) {
-						final List<EntityView> entities = buildEntities(coll, context);
-						final CollMetaData collData = analyzeCollection(entity, collName, coll, session);
+				if (coll != null) {
+					final List<EntityView> entities = buildEntities(coll, context);
+					final CollMetaData collData = analyzeCollection(entity, collName, coll, session);
 
-						final EntityType keyType = EntityType.fromHibernateClass(collData.getPrimaryKeyType());
-						final List<Class<? extends HibernateEntity>> concreteClasses = concreteClassByType.get(keyType);
+					final EntityType keyType = EntityType.fromHibernateClass(collData.getPrimaryKeyType());
+					final List<Class<? extends HibernateEntity>> concreteClasses = concreteClassByType.get(keyType);
 
-						view.setPrimaryKeyAtt(collData.getPrimaryKey().getName());
-						view.setPrimaryKeyType(keyType);
-						view.setEntities(entities);
-						view.setAttributeNames(collData.getAttributeNames());
-						view.setConcreteEntityClasses(concreteClasses);
-					}
+					view.setPrimaryKeyAtt(collData.getPrimaryKey().getName());
+					view.setPrimaryKeyType(keyType);
+					view.setEntities(entities);
+					view.setAttributeNames(collData.getAttributeNames());
+					view.setConcreteEntityClasses(concreteClasses);
 				}
-				return null;
 			}
+			return null;
 		});
 	}
 
@@ -823,12 +806,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			fillView(e, v, context);
 			entities.add(v);
 		}
-		entities.sort(new Comparator<EntityView>() {
-			@Override
-			public int compare(EntityView o1, EntityView o2) {
-				return Long.compare(o1.getKey().getId(), o2.getKey().getId());
-			}
-		});
+		entities.sort((o1, o2) -> Long.compare(o1.getKey().getId(), o2.getKey().getId()));
 
 		return entities;
 	}
@@ -857,35 +835,29 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	public Long nextId(final Class<? extends HibernateEntity> clazz) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return template.execute(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				try {
-					final MetaEntity m = MetaEntity.determine(clazz);
-					final Sequence sequence = m.getSequence();
-					Assert.notNull(sequence);
+		return template.execute(status -> {
+			try {
+				final MetaEntity m = MetaEntity.determine(clazz);
+				final Sequence sequence = m.getSequence();
+				Assert.notNull(sequence);
 
-					final Number id = (Number) sequence.nextValue(dialect, hibernateTemplate, clazz.newInstance());
-					return id.longValue();
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+				final Number id = (Number) sequence.nextValue(dialect, hibernateTemplate, clazz.newInstance());
+				return id.longValue();
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
 			}
 		});
 	}
 
 	@Override
 	public void commitDeltas(final List<Delta> deltas) {
-		execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				// Reconstruit l'état en cours de modification des entités
-				final SuperGraContext context = new SuperGraContext(session, true, validationInterceptor);
-				applyDeltas(deltas, context);
-				context.finish();
-				return null; // la transaction est committé automatiquement par le template
-			}
+		execute(session -> {
+			// Reconstruit l'état en cours de modification des entités
+			final SuperGraContext context = new SuperGraContext(session, true, validationInterceptor);
+			applyDeltas(deltas, context);
+			context.finish();
+			return null; // la transaction est committé automatiquement par le template
 		});
 	}
 
@@ -973,38 +945,35 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	@Override
 	public void transformMc2Pp(final long mcId, final long indNo) {
 
-		execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		execute(session -> {
 
-				final String user = AuthenticationHelper.getCurrentPrincipal();
+			final String user = AuthenticationHelper.getCurrentPrincipal();
 
-				// Transformation du ménage commun en personne physique
-				final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='PersonnePhysique', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, INDEX_DIRTY=" +
-						                                               dialect.toBooleanValueString(true) + " WHERE NUMERO=:id AND TIERS_TYPE='MenageCommun'");
-				query0.setParameter("id", mcId);
-				query0.setParameter("muser", user);
-				query0.executeUpdate();
+			// Transformation du ménage commun en personne physique
+			final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='PersonnePhysique', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, INDEX_DIRTY=" +
+					                                               dialect.toBooleanValueString(true) + " WHERE NUMERO=:id AND TIERS_TYPE='MenageCommun'");
+			query0.setParameter("id", mcId);
+			query0.setParameter("muser", user);
+			query0.executeUpdate();
 
-				final SQLQuery query1 = session.createSQLQuery("DELETE FROM SITUATION_FAMILLE WHERE CTB_ID=:id");
-				query1.setParameter("id", mcId);
-				query1.executeUpdate();
+			final SQLQuery query1 = session.createSQLQuery("DELETE FROM SITUATION_FAMILLE WHERE CTB_ID=:id");
+			query1.setParameter("id", mcId);
+			query1.executeUpdate();
 
-				final SQLQuery query2 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_OBJET_ID=:id AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'");
-				query2.setParameter("id", mcId);
-				query2.executeUpdate();
+			final SQLQuery query2 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_OBJET_ID=:id AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'");
+			query2.setParameter("id", mcId);
+			query2.executeUpdate();
 
-				// Association de la personne physique avec l'individu
-				final SQLQuery query3 = session.createSQLQuery("UPDATE TIERS SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, PP_HABITANT=" +
-						                                               dialect.toBooleanValueString(true) + ", NUMERO_INDIVIDU=:indNo, INDEX_DIRTY=" +
-						                                               dialect.toBooleanValueString(true) + " WHERE NUMERO=:id");
-				query3.setParameter("muser", user);
-				query3.setParameter("id", mcId);
-				query3.setParameter("indNo", indNo);
-				query3.executeUpdate();
+			// Association de la personne physique avec l'individu
+			final SQLQuery query3 = session.createSQLQuery("UPDATE TIERS SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, PP_HABITANT=" +
+					                                               dialect.toBooleanValueString(true) + ", NUMERO_INDIVIDU=:indNo, INDEX_DIRTY=" +
+					                                               dialect.toBooleanValueString(true) + " WHERE NUMERO=:id");
+			query3.setParameter("muser", user);
+			query3.setParameter("id", mcId);
+			query3.setParameter("indNo", indNo);
+			query3.executeUpdate();
 
-				return null;
-			}
+			return null;
 		});
 
 		// on demande une réindexation du tiers modifié (+ réindexation implicite des tiers liés)
@@ -1076,72 +1045,42 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		addRapportEntreTiersBuilder(builders, TransfertPatrimoine.class, "entreprise émettrice", Entreprise.class, "entreprise réceptrice", Entreprise.class);
 
 		// Situation de famille ménage-commun
-		builders.put(new AttributeKey(SituationFamilleMenageCommun.class, "contribuablePrincipalId"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-				return new AttributeView(p.getName(), "contribuable principal", PersonnePhysique.class, entity, false, false, false);
-			}
+		builders.put(new AttributeKey(SituationFamilleMenageCommun.class, "contribuablePrincipalId"), (p, value, context) -> {
+			final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+			return new AttributeView(p.getName(), "contribuable principal", PersonnePhysique.class, entity, false, false, false);
 		});
 
 		// Adresse autre tiers
-		builders.put(new AttributeKey(AdresseAutreTiers.class, "autreTiersId"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-				return new AttributeView(p.getName(), "autre tiers", Tiers.class, entity, false, false, false);
-			}
+		builders.put(new AttributeKey(AdresseAutreTiers.class, "autreTiersId"), (p, value, context) -> {
+			final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+			return new AttributeView(p.getName(), "autre tiers", Tiers.class, entity, false, false, false);
 		});
 
 		// Déclaration impôt ordinaire
-		builders.put(new AttributeKey(DeclarationImpotOrdinaire.class, "retourCollectiviteAdministrativeId"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-				return new AttributeView(p.getName(), "retour collectivité administrative", CollectiviteAdministrative.class, entity, false, false, false);
-			}
+		builders.put(new AttributeKey(DeclarationImpotOrdinaire.class, "retourCollectiviteAdministrativeId"), (p, value, context) -> {
+			final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+			return new AttributeView(p.getName(), "retour collectivité administrative", CollectiviteAdministrative.class, entity, false, false, false);
 		});
 
 		// [SIFISC-927] auto-completion du numéro d'ordre poste dans les adresses suisses.
-		builders.put(new AttributeKey(AdresseSuisse.class, "numeroOrdrePoste"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				return new AttributeView("localite", p.getName(), "localité", Integer.class, value, InfraCategory.LOCALITE, false);
-			}
-		});
+		builders.put(new AttributeKey(AdresseSuisse.class, "numeroOrdrePoste"), (p, value, context) -> new AttributeView("localite", p.getName(), "localité", Integer.class, value, InfraCategory.LOCALITE, false));
 
 		// [SIFISC-927] auto-completion du numéro de rue dans les adresses suisses.
-		builders.put(new AttributeKey(AdresseSuisse.class, "numeroRue"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				return new AttributeView("rue", p.getName(), "rue", Integer.class, value, InfraCategory.RUE, false);
-			}
-		});
+		builders.put(new AttributeKey(AdresseSuisse.class, "numeroRue"), (p, value, context) -> new AttributeView("rue", p.getName(), "rue", Integer.class, value, InfraCategory.RUE, false));
 
 		// [SIFISC-12519] le texte des remarques des tiers est éditable dans une textarea
-		builders.put(new AttributeKey(Remarque.class, "texte"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				return new AttributeView("texte", MultilineString.class, value, false, false, false);
-			}
-		});
+		builders.put(new AttributeKey(Remarque.class, "texte"), (p, value, context) -> new AttributeView("texte", MultilineString.class, value, false, false, false));
 
 		// collectivité administrative associée à une étiquette
-		builders.put(new AttributeKey(Etiquette.class, "collectiviteAdministrative"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
-				return new AttributeView(p.getName(), "collectivité administrative associée", CollectiviteAdministrative.class, entity, false, false, false);
-			}
+		builders.put(new AttributeKey(Etiquette.class, "collectiviteAdministrative"), (p, value, context) -> {
+			final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+			return new AttributeView(p.getName(), "collectivité administrative associée", CollectiviteAdministrative.class, entity, false, false, false);
 		});
 
 		// instance d'étiquette associée au lien daté avec le tiers
-		builders.put(new AttributeKey(EtiquetteTiers.class, "etiquette"), new AttributeBuilder() {
-			@Override
-			public AttributeView build(Property p, Object value, SuperGraContext context) {
-				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Etiquette, (Long) value)));
-				return new AttributeView(p.getName(), "étiquette", Etiquette.class, entity, false, false, false);
-			}
+		builders.put(new AttributeKey(EtiquetteTiers.class, "etiquette"), (p, value, context) -> {
+			final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Etiquette, (Long) value)));
+			return new AttributeView(p.getName(), "étiquette", Etiquette.class, entity, false, false, false);
 		});
 
 		return builders;
