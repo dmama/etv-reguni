@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -74,11 +73,7 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		this.dateAnnonce = dateAnnonce;
 		this.utilisateur = utilisateur;
 		this.typeDeSite = typeDeSite;
-		if (statut != null) {
-			this.statut = statut;
-		} else {
-			new StatutImpl(StatutAnnonce.A_TRANSMETTRE, dateAnnonce, Collections.emptyList());
-		}
+		this.statut = statut;
 		this.infoServiceIDEObligEtendues = infoServiceIDEObligEtendues;
 	}
 
