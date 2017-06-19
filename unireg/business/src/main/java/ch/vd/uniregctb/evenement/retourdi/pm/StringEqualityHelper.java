@@ -15,6 +15,7 @@ public abstract class StringEqualityHelper {
 	 * @return <code>true</code> si les deux chaînes doivent être considérées comme identiques
 	 */
 	public static boolean equals(String one, String two) {
+		//noinspection StringEquality
 		if (one == two) {
 			return true;
 		}

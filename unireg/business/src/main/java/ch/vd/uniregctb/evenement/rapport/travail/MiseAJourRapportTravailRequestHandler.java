@@ -425,10 +425,11 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	}
 
 	private void loggerModification(String modification, RapportPrestationImposable rapportAModifier) {
-		String message = String.format(modification + " pour le rapport de travail commençant le '%s' pour le debiteur %s et le sourcier %s.",
-				RegDateHelper.dateToDisplayString(rapportAModifier.getDateDebut()),
-				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getObjetId()),
-				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getSujetId()));
+		String message = String.format("%s pour le rapport de travail commençant le '%s' pour le debiteur %s et le sourcier %s.",
+		                               modification,
+		                               RegDateHelper.dateToDisplayString(rapportAModifier.getDateDebut()),
+		                               FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getObjetId()),
+		                               FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getSujetId()));
 		LOGGER.info(message);
 	}
 

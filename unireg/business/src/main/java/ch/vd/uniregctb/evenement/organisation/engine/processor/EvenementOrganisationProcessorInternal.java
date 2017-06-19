@@ -96,7 +96,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	 * {@inheritDoc}
 	 */
 	public boolean processEventAndDoPostProcessingOnError(EvenementOrganisationBasicInfo evt, List<EvenementOrganisationBasicInfo> evts, int pointer) {
-		AuthenticationHelper.pushPrincipal(String.format(EVT_ORGANISATION_PRINCIPAL + "-%d", evt.getNoEvenement()));
+		AuthenticationHelper.pushPrincipal(String.format("%s-%d", EVT_ORGANISATION_PRINCIPAL, evt.getNoEvenement()));
 		try {
 			final boolean success = processEvent(evt, false);
 			if (!success) {
