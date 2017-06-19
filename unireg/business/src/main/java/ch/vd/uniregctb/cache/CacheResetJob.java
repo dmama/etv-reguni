@@ -2,7 +2,6 @@ package ch.vd.uniregctb.cache;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class CacheResetJob extends JobDefinition {
 		// On construit la liste des paramètres dynamiquement en fonction des caches enregistrés dans le manager
 
 		final List<UniregCacheInterface> caches = new ArrayList<>(manager.getCaches());
-		Collections.sort(caches, Comparator.comparing(UniregCacheInterface::getName));
+		caches.sort(Comparator.comparing(UniregCacheInterface::getName));
 
 		final List<Pair<JobParam, ?>> params = new ArrayList<>();
 		for (UniregCacheInterface c : caches) {

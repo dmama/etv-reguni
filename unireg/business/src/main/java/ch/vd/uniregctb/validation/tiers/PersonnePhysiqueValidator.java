@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -94,7 +93,7 @@ public class PersonnePhysiqueValidator extends ContribuableImpositionPersonnesPh
 				}
 			}
 		}
-		Collections.sort(rapportsMenages, new DateRangeComparator<>());
+		rapportsMenages.sort(new DateRangeComparator<>());
 		final List<DateRange> periodes = DateRangeHelper.collateRange(rapportsMenages);
 
 		// Vérifie que chaque for est entièrement compris à l'extérieur d'une période de validité

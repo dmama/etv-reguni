@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.registrefoncier.processor;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -219,9 +218,9 @@ public class RapprochementTiersRFResults extends JobResults<Long, RapprochementT
 
 	@Override
 	public void end() {
-		Collections.sort(nouveauxRapprochements, Comparator.comparingLong(r -> r.noRF));
-		Collections.sort(nonIdentifications, Comparator.comparingLong(r -> r.noRF));
-		Collections.sort(erreurs, Comparator.comparingLong(e -> e.idTiersRF));
+		nouveauxRapprochements.sort(Comparator.comparingLong(r -> r.noRF));
+		nonIdentifications.sort(Comparator.comparingLong(r -> r.noRF));
+		erreurs.sort(Comparator.comparingLong(e -> e.idTiersRF));
 		super.end();
 	}
 

@@ -424,7 +424,7 @@ public class SpecificiteFiscaleController {
 		for (AllegementFiscal af : afs) {
 			views.add(new AllegementFiscalView(af));
 		}
-		Collections.sort(views, AllegementFiscalView.DEFAULT_COMPARATOR);
+		views.sort(AllegementFiscalView.DEFAULT_COMPARATOR);
 		return views;
 	}
 
@@ -573,7 +573,7 @@ public class SpecificiteFiscaleController {
 				views.add(new FlagEntrepriseView(flag));
 			}
 		}
-		Collections.sort(views, new AnnulableHelper.AnnulableDateRangeComparator<>(true));
+		views.sort(new AnnulableHelper.AnnulableDateRangeComparator<>(true));
 		return views;
 	}
 

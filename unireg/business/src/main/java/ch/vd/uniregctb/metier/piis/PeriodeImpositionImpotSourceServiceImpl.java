@@ -76,7 +76,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 				}
 			}
 			liste = new ArrayList<>(tempList);
-			Collections.sort(liste, new DateRangeComparator<>());
+			liste.sort(new DateRangeComparator<>());
 		}
 		else {
 			liste = Collections.emptyList();
@@ -123,7 +123,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		}
 
 		// il est important que les fors soient triés y compris si plusieurs contribuables sont impliqués
-		Collections.sort(fors, new DateRangeComparator<ForFiscalPrincipal>());
+		fors.sort(new DateRangeComparator<ForFiscalPrincipal>());
 		ForFiscalPrincipal previous = null;
 		for (ForFiscalPrincipal ffp : fors) {
 			// il y a chevauchement de fors (ce qui est normalement interdit sur les fors principaux) si la date de début du for courant

@@ -229,7 +229,7 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 				throw new IllegalArgumentException("Impossible d'accéder aux propriétés de la classe " + RapportEntreTiers.class.getSimpleName());
 			}
 		}
-		Collections.sort(tous, comparateurAsc);
+		tous.sort(comparateurAsc);
 		if (!pagination.getSorting().isAscending()) {
 			Collections.reverse(tous);
 		}

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.di.view;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,7 +58,7 @@ public class ImprimerDuplicataDeclarationImpotView {
 
 				// [SIFISC-2066] on trie les feuilles dans l'ordre spécifié dans la paramétrisation
 				final List<ModeleFeuilleDocument> modelesFeuilleDocument = new ArrayList<>(modele.getModelesFeuilleDocument());
-				Collections.sort(modelesFeuilleDocument, new ModeleFeuilleDocumentComparator());
+				modelesFeuilleDocument.sort(new ModeleFeuilleDocumentComparator());
 
 				final List<ModeleFeuilleDocumentEditique> modelesFeuilleDocumentView = new ArrayList<>();
 				for (ModeleFeuilleDocument modeleFeuilleDocument : modelesFeuilleDocument) {

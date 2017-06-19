@@ -701,7 +701,7 @@ public class ProduireRolesProcessor {
 			// on va boucler sur tous les OIDs connus dans l'ordre des numéro de collectivité administrative
 			final List<OfficeImpot> oids = infraService.getOfficesImpot();
 			final List<OfficeImpot> oidsTries = new ArrayList<>(oids);
-			Collections.sort(oidsTries, Comparator.comparingInt(OfficeImpot::getNoColAdm));
+			oidsTries.sort(Comparator.comparingInt(OfficeImpot::getNoColAdm));
 
 			// on commence enfin la boucle
 			int index = 0;
@@ -1098,7 +1098,7 @@ public class ProduireRolesProcessor {
 		ForFiscalRevenuFortune candidatRetenu = forFiscal;
 		while (candidatRetenu.getDateFin() != null) {
 			final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(candidatRetenu.getDateFin().getOneDayAfter());
-			Collections.sort(fors, new DateRangeComparator<>());       // [SIFISC-13803] l'ordre ne change rien pour le traitement, mais permet de stabiliser les choses
+			fors.sort(new DateRangeComparator<>());       // [SIFISC-13803] l'ordre ne change rien pour le traitement, mais permet de stabiliser les choses
 			ForFiscalRevenuFortune nouveauCandidat = null;
 			for (ForFiscal candidat : fors) {
 				if (candidat instanceof ForFiscalRevenuFortune &&

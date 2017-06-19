@@ -438,7 +438,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 		if (forsFictifs != null) {
 			forsPrincipaux.addAll(forsFictifs);
-			Collections.sort(forsPrincipaux, new DateRangeComparator<ForFiscalPrincipal>());
+			forsPrincipaux.sort(new DateRangeComparator<ForFiscalPrincipal>());
 		}
 	}
 
@@ -1496,7 +1496,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 			}
 		}
 
-		Collections.sort(domicile, new DateRangeComparator<>());
+		domicile.sort(new DateRangeComparator<>());
 	}
 
 	private static List<Assujettissement> instanciate(ContribuableImpositionPersonnesPhysiques ctb, List<Data> all) {

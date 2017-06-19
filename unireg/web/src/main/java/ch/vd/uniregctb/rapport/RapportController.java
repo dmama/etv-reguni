@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -288,7 +287,7 @@ public class RapportController {
 		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, showHisto, types, pagination, true);
 
 		if (annulesEnDernier) {
-			Collections.sort(rapports, new Comparator<RapportEntreTiers>() {
+			rapports.sort(new Comparator<RapportEntreTiers>() {
 				@Override
 				public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
 					// on garde l'ordre fourni par la base en plaçant les éléments annulés à la fin

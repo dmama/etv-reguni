@@ -2,7 +2,6 @@ package ch.vd.uniregctb.declaration.ordinaire.pp;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -120,7 +119,7 @@ public class ImportCodesSegmentJob extends JobDefinition {
 
 		// récupération dans une liste et tri dans l'ordre croissant des numéros de contribuables
 		final List<ContribuableAvecCodeSegment> listeSansDoublons = new ArrayList<>(sansDoublons);
-		Collections.sort(listeSansDoublons, Comparator.comparing(ContribuableAvecCodeSegment::getNoContribuable));
+		listeSansDoublons.sort(Comparator.comparing(ContribuableAvecCodeSegment::getNoContribuable));
 
 		if (nbrLignesLues != null) {
 			nbrLignesLues.setValue(lignesCtbLues);

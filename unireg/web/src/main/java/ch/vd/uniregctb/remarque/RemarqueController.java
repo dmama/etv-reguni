@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.remarque;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -76,7 +75,7 @@ public class RemarqueController {
 		final List<Remarque> remarques = remarqueDAO.getRemarques(tiersId);
 
 		// On affiche les remarques les plus récentes en premier
-		Collections.sort(remarques, new Comparator<Remarque>() {
+		remarques.sort(new Comparator<Remarque>() {
 			@Override
 			public int compare(Remarque o1, Remarque o2) {
 				return o2.getLogCreationDate().compareTo(o1.getLogCreationDate());

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.tiers.rattrapage.etatdeclaration;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -99,7 +98,7 @@ public class CorrectionEtatDeclarationResults extends JobResults<Long, Correctio
 
 	@Override
 	public void end() {
-		Collections.sort(doublons, new Comparator<Doublon>() {
+		doublons.sort(new Comparator<Doublon>() {
 			@Override
 			public int compare(Doublon o1, Doublon o2) {
 				if (o1.ctbId.equals(o2.ctbId)) {

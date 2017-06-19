@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.reqdes.pdf;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -85,7 +84,7 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 
 		// données des parties prenantes
 		final List<PartiePrenante> sortedPartiesPrenantes = new ArrayList<>(ut.getPartiesPrenantes());
-		Collections.sort(sortedPartiesPrenantes, Comparator.comparing(PartiePrenante::getId));
+		sortedPartiesPrenantes.sort(Comparator.comparing(PartiePrenante::getId));
 		for (PartiePrenante pp : sortedPartiesPrenantes) {
 			addEntete(doc, "Partie prenante");
 
@@ -230,7 +229,7 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 			tableRoles.addCell(new Phrase(new Chunk("Commune", TABLE_HEADER_FONT)));
 
 			final List<RolePartiePrenante> sortedRoles = new ArrayList<>(pp.getRoles());
-			Collections.sort(sortedRoles, new Comparator<RolePartiePrenante>() {
+			sortedRoles.sort(new Comparator<RolePartiePrenante>() {
 				@Override
 				public int compare(RolePartiePrenante o1, RolePartiePrenante o2) {
 					int comparison = compareNullableValues(o1.getRole(), o2.getRole());

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire.pp;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -151,7 +150,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 		Audit.info("Nombre de contribuables lus dans le fichier : " + ctbsLus);
 
 		// tri dans l'ordre croissant des numéros de contribuables
-		Collections.sort(listeCtb, Comparator.comparing(ContribuableAvecImmeuble::getNumeroContribuable));
+		listeCtb.sort(Comparator.comparing(ContribuableAvecImmeuble::getNumeroContribuable));
 
 		return listeCtb;
 	}

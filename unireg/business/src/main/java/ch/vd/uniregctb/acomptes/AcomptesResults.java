@@ -349,8 +349,8 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
     @Override
     public void sort() {
         super.sort();
-        Collections.sort(this.contribuablesAssujettis, Comparator.comparing(InfoContribuableAssujetti::getNumeroCtb));
-	    Collections.sort(this.contribuablesIgnores, Comparator.comparing(InfoContribuableIgnore::getNumeroCtb));
+        this.contribuablesAssujettis.sort(Comparator.comparing(InfoContribuableAssujetti::getNumeroCtb));
+	    this.contribuablesIgnores.sort(Comparator.comparing(InfoContribuableIgnore::getNumeroCtb));
     }
 
     public List<InfoContribuableAssujetti> getListeContribuablesAssujettis() {

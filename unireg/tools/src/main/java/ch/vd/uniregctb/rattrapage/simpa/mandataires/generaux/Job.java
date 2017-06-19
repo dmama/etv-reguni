@@ -119,7 +119,7 @@ public class Job {
 
 		// on veut traiter les clôtures d'abord...
 		final List<ExtractionSimpa> mandatsTries = new ArrayList<>(mandats);
-		Collections.sort(mandatsTries, new Comparator<ExtractionSimpa>() {
+		mandatsTries.sort(new Comparator<ExtractionSimpa>() {
 			@Override
 			public int compare(ExtractionSimpa o1, ExtractionSimpa o2) {
 				return NullDateBehavior.LATEST.compare(o1.getDateResiliation(), o2.getDateResiliation());

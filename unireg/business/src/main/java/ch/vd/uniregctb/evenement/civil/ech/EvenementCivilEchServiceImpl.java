@@ -59,7 +59,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	public void afterPropertiesSet() throws Exception {
 		if (LOGGER.isInfoEnabled()) {
 			final List<TypeEvenementCivilEch> all = new ArrayList<>(Arrays.asList(TypeEvenementCivilEch.values()));
-			Collections.sort(all, TYPE_PRIORITY_COMPARATOR);
+			all.sort(TYPE_PRIORITY_COMPARATOR);
 			StringBuilder b = new StringBuilder("A date égale, les événements civils e-CH seront traités dans l'ordre suivant : ");
 			boolean first = true;
 			for (TypeEvenementCivilEch type : all) {
@@ -73,7 +73,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 			}
 			LOGGER.info(b.toString());
 			final List<ActionEvenementCivilEch> allActions = new ArrayList<>(Arrays.asList(ActionEvenementCivilEch.values()));
-			Collections.sort(allActions, ACTION_PRIORITY_COMPARATOR);
+			allActions.sort(ACTION_PRIORITY_COMPARATOR);
 			b = new StringBuilder("A date égale, et priorité de type égale, les événements civils e-CH seront traités dans l'ordre suivant : ");
 			first = true;
 			for (ActionEvenementCivilEch action : allActions) {
@@ -107,7 +107,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	public List<EvenementCivilEchBasicInfo> buildLotEvenementsCivilsNonTraites(long noIndividu) {
 		final List<EvenementCivilEchBasicInfo> infos = buildListeEvenementsCivilsNonTraitesPourIndividuAvecReferences(noIndividu);
 		if (infos != null && infos.size() > 1) {
-			Collections.sort(infos, EVT_CIVIL_COMPARATOR);
+			infos.sort(EVT_CIVIL_COMPARATOR);
 		}
 		return infos;
 	}

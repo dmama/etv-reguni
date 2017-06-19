@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.snc;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,9 +100,9 @@ public class EnvoiQuestionnairesSNCEnMasseResults extends AbstractJobResults<Lon
 	@Override
 	public void end() {
 		final Comparator<Info> comparateur = Comparator.comparingLong(i -> i.noCtb);
-		Collections.sort(envoyes, comparateur);
-		Collections.sort(ignores, comparateur);
-		Collections.sort(erreurs, comparateur);
+		envoyes.sort(comparateur);
+		ignores.sort(comparateur);
+		erreurs.sort(comparateur);
 		super.end();
 	}
 

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.listes.listesnominatives;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -287,7 +286,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
     @Override
     public void sort() {
         super.sort();
-        Collections.sort(this.tiers, Comparator.comparingLong(info -> info.numeroTiers));
+        this.tiers.sort(Comparator.comparingLong(info -> info.numeroTiers));
     }
 
 	public TypeAdresse getTypeAdressesIncluses() {

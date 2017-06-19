@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.rf;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.LinkedList;
@@ -82,7 +81,7 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 	@Override
 	public void end() {
 		super.end();
-		Collections.sort(listeRapproche, Comparator.comparingLong(ProprietaireRapproche::getNumeroRegistreFoncier));
+		listeRapproche.sort(Comparator.comparingLong(ProprietaireRapproche::getNumeroRegistreFoncier));
 	}
 
 	/**

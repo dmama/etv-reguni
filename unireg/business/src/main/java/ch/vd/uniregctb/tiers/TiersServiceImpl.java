@@ -380,7 +380,7 @@ public class TiersServiceImpl implements TiersService {
 
 		if (avecTri) {
 			final List<DateRanged<Etablissement>> tries = new ArrayList<>(etablissements);
-			Collections.sort(tries, new DateRangeComparator<>());
+			tries.sort(new DateRangeComparator<>());
 			return tries;
 		}
 		else {
@@ -494,7 +494,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final List<DateRanged<Contribuable>> tries = new ArrayList<>(entites);
-		Collections.sort(tries, new DateRangeComparator<>());
+		tries.sort(new DateRangeComparator<>());
 		return tries;
 	}
 
@@ -2135,7 +2135,7 @@ public class TiersServiceImpl implements TiersService {
         }
 
         //[SIFISC-2703] tri des enfants par date de naissance croissante
-        Collections.sort(listeEnfants, (pp1, pp2) -> NullDateBehavior.EARLIEST.compare(getDateNaissance(pp1), getDateNaissance(pp2)));
+        listeEnfants.sort((pp1, pp2) -> NullDateBehavior.EARLIEST.compare(getDateNaissance(pp1), getDateNaissance(pp2)));
         return listeEnfants;
     }
 
@@ -2545,7 +2545,7 @@ public class TiersServiceImpl implements TiersService {
                 // Le for ouvert est dans la période courante, on verifie que le contribuable n'ait pas une DI libre
                 final List<DeclarationImpotOrdinairePP> dis = contribuable.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, RegDate.get().year(), false);
                 if (dis != null && !dis.isEmpty()) {
-                    Collections.sort(dis, new DateRangeComparator<>());
+                    dis.sort(new DateRangeComparator<>());
                     final DeclarationImpotOrdinairePP di = dis.get(dis.size() - 1);
                     // Le contribuable a une DI libre, on ajuste la periode d'imposition
                     di.setDateFin(forFiscalPrincipal.getDateDebut());
@@ -4280,21 +4280,22 @@ public class TiersServiceImpl implements TiersService {
 
                 if (forGestion == null) {
                     // [UNIREG-1029] On trie les fors secondaires restants par ordre alphabétique du nom de la commune, et on prend le premier.
-                    Collections.sort(forsSecondaires, new Comparator<ForFiscal>() {
-                        @Override
-                        public int compare(ForFiscal o1, ForFiscal o2) {
-                            final Integer ofs1 = o1.getNumeroOfsAutoriteFiscale();
-                            final Integer ofs2 = o2.getNumeroOfsAutoriteFiscale();
-                            try {
-                                Commune c1 = serviceInfra.getCommuneByNumeroOfs(ofs1, o1.getDateFin());
-                                Commune c2 = serviceInfra.getCommuneByNumeroOfs(ofs2, o2.getDateFin());
-                                return c1.getNomOfficiel().compareTo(c2.getNomOfficiel());
-                            } catch (ServiceInfrastructureException e) {
-                                LOGGER.warn("Impossible de trier les communes ofs=" + ofs1 + " et ofs=" + ofs2
-                                        + " par nom, on trie sur le numéro Ofs à la place", e);
-                                return ofs1.compareTo(ofs2);
-                            }
-                        }
+                    forsSecondaires.sort(new Comparator<ForFiscal>() {
+	                    @Override
+	                    public int compare(ForFiscal o1, ForFiscal o2) {
+		                    final Integer ofs1 = o1.getNumeroOfsAutoriteFiscale();
+		                    final Integer ofs2 = o2.getNumeroOfsAutoriteFiscale();
+		                    try {
+			                    Commune c1 = serviceInfra.getCommuneByNumeroOfs(ofs1, o1.getDateFin());
+			                    Commune c2 = serviceInfra.getCommuneByNumeroOfs(ofs2, o2.getDateFin());
+			                    return c1.getNomOfficiel().compareTo(c2.getNomOfficiel());
+		                    }
+		                    catch (ServiceInfrastructureException e) {
+			                    LOGGER.warn("Impossible de trier les communes ofs=" + ofs1 + " et ofs=" + ofs2
+					                                + " par nom, on trie sur le numéro Ofs à la place", e);
+			                    return ofs1.compareTo(ofs2);
+		                    }
+	                    }
                     });
                     forGestion = (ForFiscalRevenuFortune) forsSecondaires.get(0);
                 }
@@ -6180,7 +6181,7 @@ public class TiersServiceImpl implements TiersService {
 				}
 			}
 		}
-		Collections.sort(mandatsConnusMemeType, new DateRangeComparator<>());
+		mandatsConnusMemeType.sort(new DateRangeComparator<>());
 
 		// maintenant, on fait de la place
 		final List<RapportEntreTiers> aAjouter = computeNewEntitieForRoomMaking(mandat, mandatsConnusMemeType);
@@ -6208,7 +6209,7 @@ public class TiersServiceImpl implements TiersService {
 				}
 			}
 		}
-		Collections.sort(connuesMemeType, new DateRangeComparator<>());
+		connuesMemeType.sort(new DateRangeComparator<>());
 
 		// maintenant, on fait de la place
 		final List<AdresseMandataire> aAjouter = computeNewEntitieForRoomMaking(mandat, connuesMemeType);
@@ -6359,7 +6360,7 @@ public class TiersServiceImpl implements TiersService {
 			final Organisation org = getOrganisation(entreprise);
 			final List<DateRanged<String>> liste = org.getNumeroIDE();
 			if (liste != null && ! liste.isEmpty()) {
-				Collections.sort(liste, new DateRangeComparator<>());
+				liste.sort(new DateRangeComparator<>());
 				DateRanged<String> last = CollectionsUtils.getLastElement(liste);
 				if (last != null) {
 					return last.getPayload();
@@ -6370,7 +6371,7 @@ public class TiersServiceImpl implements TiersService {
 			if (identificationEntreprises != null && !identificationEntreprises.isEmpty()) {
 				List<IdentificationEntreprise> ident = AnnulableHelper.sansElementsAnnules(identificationEntreprises);
 
-				Collections.sort(ident, Comparator.comparing(IdentificationEntreprise::getLogCreationDate));
+				ident.sort(Comparator.comparing(IdentificationEntreprise::getLogCreationDate));
 				return CollectionsUtils.getLastElement(ident).getNumeroIde();
 			}
 		}
@@ -6384,7 +6385,7 @@ public class TiersServiceImpl implements TiersService {
 		if (site != null) {
 			final List<DateRanged<String>> liste = site.getNumeroIDE();
 			if (liste != null && ! liste.isEmpty()) {
-				Collections.sort(liste, new DateRangeComparator<>());
+				liste.sort(new DateRangeComparator<>());
 				DateRanged<String> last = CollectionsUtils.getLastElement(liste);
 				if (last != null) {
 					return last.getPayload();
@@ -6394,7 +6395,7 @@ public class TiersServiceImpl implements TiersService {
 		Set<IdentificationEntreprise> identificationEntreprises = etablissement.getIdentificationsEntreprise();
 		if (identificationEntreprises != null && ! identificationEntreprises.isEmpty()) {
 			List<IdentificationEntreprise> ident = new ArrayList<>(identificationEntreprises);
-			Collections.sort(ident, Comparator.comparing(IdentificationEntreprise::getLogCreationDate));
+			ident.sort(Comparator.comparing(IdentificationEntreprise::getLogCreationDate));
 			return CollectionsUtils.getLastElement(ident).getNumeroIde();
 		}
 		return null;
@@ -6482,7 +6483,7 @@ public class TiersServiceImpl implements TiersService {
 			for (DateRanged<FormeLegale> formeLegale: formeLegalesCiviles) {
 				formes.add(new FormeLegaleHisto(formeLegale));
 			}
-			Collections.sort(formes, new DateRangeComparator<>());
+			formes.sort(new DateRangeComparator<>());
 			return formes;
 		}
 		return Collections.emptyList();
@@ -6548,7 +6549,7 @@ public class TiersServiceImpl implements TiersService {
 			for (DateRanged<String> raisonSociale : nomsCivils) {
 				raisonsSociales.add(new RaisonSocialeHisto(raisonSociale));
 			}
-			Collections.sort(raisonsSociales, new DateRangeComparator<>());
+			raisonsSociales.sort(new DateRangeComparator<>());
 			return raisonsSociales;
 		}
 		return Collections.emptyList();
@@ -6589,7 +6590,7 @@ public class TiersServiceImpl implements TiersService {
 			for (Domicile siege: organisation.getSiegesPrincipaux()) {
 				sieges.add(new DomicileHisto(siege));
 			}
-			Collections.sort(sieges, new DateRangeComparator<>());
+			sieges.sort(new DateRangeComparator<>());
 			return sieges;
 		}
 		return Collections.emptyList();
@@ -6602,7 +6603,7 @@ public class TiersServiceImpl implements TiersService {
 		for (DomicileEtablissement domicile: domicileEtablissements) {
 			liste.add(new DomicileHisto(domicile));
 		}
-		Collections.sort(liste, new DateRangeComparator<>());
+		liste.sort(new DateRangeComparator<>());
 		return liste;
 	}
 
@@ -6683,7 +6684,7 @@ public class TiersServiceImpl implements TiersService {
 		for (Domicile domicile : domicilesCivils) {
 			domiciles.add(new DomicileHisto(domicile));
 		}
-		Collections.sort(domiciles, new DateRangeComparator<>());
+		domiciles.sort(new DateRangeComparator<>());
 		return domiciles;
 	}
 
@@ -6698,7 +6699,7 @@ public class TiersServiceImpl implements TiersService {
 				domiciles.add(new DomicileHisto(domicile));
 			}
 		}
-		Collections.sort(domiciles, new DateRangeComparator<>());
+		domiciles.sort(new DateRangeComparator<>());
 		return domiciles;
 	}
 
@@ -6726,7 +6727,7 @@ public class TiersServiceImpl implements TiersService {
 				}
 			}
 		}
-		Collections.sort(domiciles, new DateRangeComparator<>());
+		domiciles.sort(new DateRangeComparator<>());
 		return domiciles;
 	}
 

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -304,7 +303,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			return null;
 		}
 		final List<Map.Entry<K, V>> content = new ArrayList<>(source.entrySet());
-		Collections.sort(content, new Comparator<Map.Entry<K, V>>() {
+		content.sort(new Comparator<Map.Entry<K, V>>() {
 			@Override
 			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
 				return valueComparator.compare(o1.getValue(), o2.getValue());

@@ -148,7 +148,7 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 		// fusion des deux composantes "virtuelles" en enlevant la partie déjà couverte par la composante "directe"
 		for (Map.Entry<Etiquette, List<DateRange>> entry : virtuellesParEtiquette.entrySet()) {
 			final List<DateRange> ranges = entry.getValue();
-			Collections.sort(ranges, DateRangeComparator::compareRanges);
+			ranges.sort(DateRangeComparator::compareRanges);
 			final List<DateRange> rangesFusionnes = DateRangeHelper.merge(ranges);
 
 			final List<DateRange> dejaCouverts = Optional.of(entry.getKey())

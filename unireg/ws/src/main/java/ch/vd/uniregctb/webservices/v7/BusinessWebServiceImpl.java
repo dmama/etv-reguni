@@ -1012,7 +1012,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				}
 				else {
 					sortedList = AnnulableHelper.sansElementsAnnules(evts);     // on n'est jamais trop prudent...
-					Collections.sort(sortedList, new Comparator<EvenementFiscal>() {
+					sortedList.sort(new Comparator<EvenementFiscal>() {
 						@Override
 						public int compare(EvenementFiscal o1, EvenementFiscal o2) {
 							int comparison = NullDateBehavior.EARLIEST.compare(o1.getDateValeur(), o2.getDateValeur());

@@ -133,7 +133,7 @@ public class ExerciceCommercialController {
 
 		// dans quel sens les données doivent-elles être triées ?
 		if (reversed) {
-			Collections.sort(views, Collections.reverseOrder(new DateRangeComparator<>()));
+			views.sort(Collections.reverseOrder(new DateRangeComparator<>()));
 		}
 		return views;
 	}

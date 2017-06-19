@@ -573,7 +573,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 		// on trie la liste par ordre alphabetique du nom du batch
 		// (car jconsole montre les attributs par ordre alphabétique quel que soit l'ordre d'apparition
 		// dans le tableau fourni ici)
-		Collections.sort(shownJobs, Comparator.comparing(JobDefinition::getName));
+		shownJobs.sort(Comparator.comparing(JobDefinition::getName));
 		final MBeanAttributeInfo[] attrs = new MBeanAttributeInfo[shownJobs.size()];
 		final MBeanOperationInfo[] operations = new MBeanOperationInfo[shownJobs.size() + 1];
 

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.tiers.timeline;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -56,7 +55,7 @@ public class TimelineTable {
 		}
 
 		// tri des lignes selon l'ordre qui va bien
-		Collections.sort(rows, new Comparator<TimelineRow>() {
+		rows.sort(new Comparator<TimelineRow>() {
 			@Override
 			public int compare(TimelineRow o1, TimelineRow o2) {
 				return DateRangeComparator.compareRanges(o1.getPeriode(), o2.getPeriode()) * (invertedTime ? -1 : 1);

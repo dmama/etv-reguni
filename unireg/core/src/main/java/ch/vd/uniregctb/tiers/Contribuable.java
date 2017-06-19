@@ -310,7 +310,7 @@ public abstract class Contribuable extends Tiers {
 					decisions.add(decisionAci);
 				}
 			}
-			Collections.sort(decisions, new DateRangeComparator<DecisionAci>() {
+			decisions.sort(new DateRangeComparator<DecisionAci>() {
 				@Override
 				public int compare(DecisionAci o1, DecisionAci o2) {
 					int comparisonDates = super.compare(o1, o2);

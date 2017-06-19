@@ -329,7 +329,7 @@ public abstract class OrganisationHelper {
 	 */
 	public static RegDate connuAuCivilDepuis(SiteOrganisation site) {
 		final List<DateRanged<String>> nom = site.getNom();
-		Collections.sort(nom, new DateRangeComparator<>());
+		nom.sort(new DateRangeComparator<>());
 		return nom.get(0).getDateDebut();
 	}
 
@@ -935,7 +935,7 @@ public abstract class OrganisationHelper {
 				}
 			}
 		}
-		Collections.sort(extracted, new DateRangeComparator<>());
+		extracted.sort(new DateRangeComparator<>());
 		return extracted;
 	}
 
@@ -957,7 +957,7 @@ public abstract class OrganisationHelper {
 				}
 			}
 		}
-		Collections.sort(extracted, new DateRangeComparator<>());
+		extracted.sort(new DateRangeComparator<>());
 		return extracted;
 	}
 

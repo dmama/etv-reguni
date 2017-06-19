@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -65,7 +64,7 @@ public class MenageCommunValidator extends ContribuableImpositionPersonnesPhysiq
 		        }
 		    }
 		}
-		Collections.sort(rapportsMenages, new DateRangeComparator<>());
+		rapportsMenages.sort(new DateRangeComparator<>());
 		final List<DateRange> periodes = DateRangeHelper.collateRange(rapportsMenages);
 
 		// Vérifie que chaque for est entièrement défini à l'intérieur d'une période de validité

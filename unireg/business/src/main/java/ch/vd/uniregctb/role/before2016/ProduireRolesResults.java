@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.role.before2016;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -183,8 +182,8 @@ public abstract class ProduireRolesResults<T extends ProduireRolesResults<T>> ex
 	public void end() {
 		// tri des erreurs et des contribuables ignorés
 		final Comparator<Info> comparator = new CtbComparator<>();
-		Collections.sort(ctbsEnErrors, comparator);
-		Collections.sort(ctbsIgnores, comparator);
+		ctbsEnErrors.sort(comparator);
+		ctbsIgnores.sort(comparator);
 
 		super.end();
 	}

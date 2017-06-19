@@ -89,6 +89,6 @@ public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResu
 		super.sort();
 
 		Collections.sort(contribuablesIdentifies);
-		Collections.sort(contribuablesIgnores, Comparator.comparingLong(c -> c.ctbId));
+		contribuablesIgnores.sort(Comparator.comparingLong(c -> c.ctbId));
 	}
 }

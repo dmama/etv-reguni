@@ -169,7 +169,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			// du tiers et dans le web service
 			if (annuleeAllowed) {
 				resultat.addAll(situationsFiscalesAnnulees);
-				Collections.sort(resultat, new DateRangeComparator<>());
+				resultat.sort(new DateRangeComparator<>());
 			}
 		}
 		else {
@@ -308,7 +308,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			}
 
 			// tri
-			Collections.sort(tries, new DateRangeComparator<>());
+			tries.sort(new DateRangeComparator<>());
 			return tries;
 		}
 

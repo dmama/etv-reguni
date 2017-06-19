@@ -2,7 +2,6 @@ package ch.vd.uniregctb.role.before2016;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -186,7 +185,7 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 		}
 		else {
 			final List<InfoFor> aTrier = new ArrayList<>(fors);
-			Collections.sort(aTrier, comparator);
+			aTrier.sort(comparator);
 			infoFor = aTrier.get(0);
 		}
 		return infoFor;

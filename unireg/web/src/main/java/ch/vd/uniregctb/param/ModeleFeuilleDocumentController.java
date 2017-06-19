@@ -2,7 +2,6 @@ package ch.vd.uniregctb.param;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -152,7 +151,7 @@ public class ModeleFeuilleDocumentController {
 
 		// on construit la liste des feuilles telle qu'ordonnée actuellement
 		final List<ModeleFeuilleDocument> list = new ArrayList<>(modele.getModelesFeuilleDocument());
-		Collections.sort(list, new ModeleFeuilleDocumentComparator());
+		list.sort(new ModeleFeuilleDocumentComparator());
 
 		// on décale d'un cran vers le haut ou le bas la feuille spécifiée
 		for (int i = 0; i < list.size(); i++) {

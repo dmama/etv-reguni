@@ -105,7 +105,7 @@ public class Etablissement extends Contribuable {
 		}
 
 		// ... puis tri (les annulés à la fin, sinon par dates)
-		Collections.sort(liste, new DateRangeComparator<DomicileEtablissement>() {
+		liste.sort(new DateRangeComparator<DomicileEtablissement>() {
 			@Override
 			public int compare(DomicileEtablissement o1, DomicileEtablissement o2) {
 				int comparison = Boolean.compare(o1.isAnnule(), o2.isAnnule());

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.xml.party.v5.strategy;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -600,7 +599,7 @@ public abstract class PartyStrategy<T extends Party> {
 			for (ch.vd.uniregctb.tiers.ForFiscalPrincipal forFiscal : forsVirtuels) {
 				party.getMainTaxResidences().add(TaxResidenceBuilder.newMainTaxResidence(forFiscal, true));
 			}
-			Collections.sort(party.getMainTaxResidences(), new ForFiscalComparator());
+			party.getMainTaxResidences().sort(new ForFiscalComparator());
 		}
 	}
 

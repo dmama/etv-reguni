@@ -177,7 +177,7 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 
 		// tri par ordre croissant
 		final List<DelaiDeclaration> list = new ArrayList<>(delais);
-		Collections.sort(list, new DelaiDeclaration.Comparator());
+		list.sort(new DelaiDeclaration.Comparator());
 
 		return list;
 	}
@@ -354,7 +354,7 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 				list.add(delai);
 			}
 		}
-		Collections.sort(list, new DelaiDeclaration.Comparator());
+		list.sort(new DelaiDeclaration.Comparator());
 		return list.isEmpty() ? null : list.get(list.size() - 1);
 	}
 

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.reqdes;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class ReqDesUniteTraitementListView extends ReqDesUniteTraitementAbstract
 		super(ut);
 
 		final List<PartiePrenante> partiesPrenantes = new ArrayList<>(ut.getPartiesPrenantes());
-		Collections.sort(partiesPrenantes, new Comparator<PartiePrenante>() {
+		partiesPrenantes.sort(new Comparator<PartiePrenante>() {
 			@Override
 			public int compare(PartiePrenante o1, PartiePrenante o2) {
 				return Long.compare(o1.getId(), o2.getId());

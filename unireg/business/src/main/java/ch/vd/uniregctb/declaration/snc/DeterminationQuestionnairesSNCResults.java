@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.snc;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -145,9 +144,9 @@ public class DeterminationQuestionnairesSNCResults extends JobResults<Long, Dete
 	@Override
 	public void end() {
 		final CtbComparator<Info> comparator = new CtbComparator<>();
-		Collections.sort(ignores, comparator);
-		Collections.sort(erreurs, comparator);
-		Collections.sort(traites, comparator);
+		ignores.sort(comparator);
+		erreurs.sort(comparator);
+		traites.sort(comparator);
 		super.end();
 	}
 

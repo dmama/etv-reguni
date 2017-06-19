@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.reqdes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -104,7 +103,7 @@ public class PartiePrenanteView implements Serializable {
 			rolesSet.add(new RolePartiePrenanteView(roleSource));
 		}
 		this.roles = new ArrayList<>(rolesSet);
-		Collections.sort(this.roles, new Comparator<RolePartiePrenanteView>() {
+		this.roles.sort(new Comparator<RolePartiePrenanteView>() {
 			@Override
 			public int compare(RolePartiePrenanteView o1, RolePartiePrenanteView o2) {
 				int comparison = compareNullableValues(o1.getType(), o2.getType());

@@ -9,7 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -223,7 +222,7 @@ public class DebiteurPrestationImposable extends Tiers {
 				list.add(p);
 			}
 		}
-		Collections.sort(list, new DateRangeComparator<>());
+		list.sort(new DateRangeComparator<>());
 		return list;
 	}
 
@@ -265,7 +264,7 @@ public class DebiteurPrestationImposable extends Tiers {
 			}
 		}
 		if (sort) {
-			Collections.sort(periodicitesNonAnnulees, new DateRangeComparator<>());
+			periodicitesNonAnnulees.sort(new DateRangeComparator<>());
 		}
 		return periodicitesNonAnnulees;
 	}

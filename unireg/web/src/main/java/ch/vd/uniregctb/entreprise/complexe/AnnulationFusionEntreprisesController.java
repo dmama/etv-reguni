@@ -75,7 +75,7 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 				for (Pair<RegDate, RegDate> pair : dates) {
 					datesBilans.add(pair.getLeft());
 				}
-				Collections.sort(datesBilans, Collections.<RegDate>reverseOrder());
+				datesBilans.sort(Collections.<RegDate>reverseOrder());
 				return datesBilans;
 			}
 		});
@@ -102,7 +102,7 @@ public class AnnulationFusionEntreprisesController extends AbstractProcessusComp
 				final List<RegDate> contrats;
 				if (contratsPourBilan != null) {
 					contrats = new ArrayList<>(contratsPourBilan);
-					Collections.sort(contrats, Collections.<RegDate>reverseOrder());
+					contrats.sort(Collections.<RegDate>reverseOrder());
 				}
 				else {
 					contrats = Collections.emptyList();

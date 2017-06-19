@@ -162,7 +162,7 @@ public class ForsController {
 			list.add(new MotifForView(motifFor, getLabelOuverture(motifFor)));
 		}
 
-		Collections.sort(list, new Comparator<MotifForView>() {
+		list.sort(new Comparator<MotifForView>() {
 			@Override
 			public int compare(MotifForView o1, MotifForView o2) {
 				return o1.getLabel().compareTo(o2.getLabel());
@@ -204,7 +204,7 @@ public class ForsController {
 			list.add(new MotifForView(oldMotif, getLabelFermeture(oldMotif)));
 		}
 
-		Collections.sort(list, new Comparator<MotifForView>() {
+		list.sort(new Comparator<MotifForView>() {
 			@Override
 			public int compare(MotifForView o1, MotifForView o2) {
 				return o1.getLabel().compareTo(o2.getLabel());

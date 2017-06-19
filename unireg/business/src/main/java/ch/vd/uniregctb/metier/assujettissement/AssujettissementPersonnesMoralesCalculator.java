@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -895,7 +894,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 			}
 		}
 
-		Collections.sort(fusion, new DateRangeComparator<>());
+		fusion.sort(new DateRangeComparator<>());
 		return fusion;
 	}
 

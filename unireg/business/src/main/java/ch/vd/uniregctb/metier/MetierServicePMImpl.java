@@ -1160,7 +1160,7 @@ public class MetierServicePMImpl implements MetierServicePM {
 		}
 
 		// on met le dernier rapport d'activité en premier dans la collection
-		Collections.sort(activitesEconomiquesPrincipales, new DateRangeComparator<>(DateRangeComparator.CompareOrder.DESCENDING));
+		activitesEconomiquesPrincipales.sort(new DateRangeComparator<>(DateRangeComparator.CompareOrder.DESCENDING));
 		final ActiviteEconomique dernierLienActiviteEconomique = activitesEconomiquesPrincipales.get(0);
 		if (dernierLienActiviteEconomique.getDateFin() == null) {
 			final RapportEntreTiers reouvert = dernierLienActiviteEconomique.duplicate();

@@ -40,7 +40,7 @@ public class PermisListImpl implements PermisList, Serializable {
 	}
 
 	protected void sort(List<Permis> list) {
-		Collections.sort(list, COMPARATOR_PERMIS);
+		list.sort(COMPARATOR_PERMIS);
 	}
 
 	@Override

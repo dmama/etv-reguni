@@ -131,7 +131,7 @@ public class AjustementForsSecondairesEtablissementHelper {
 						}
 					});
 					forCandidatsPourCommune.addAll(nonCouverts);
-					Collections.sort(forCandidatsPourCommune, new DateRangeComparator<>());
+					forCandidatsPourCommune.sort(new DateRangeComparator<>());
 
 					// Les non couverts sont aussi retournés séparément
 					nonCouvertsPourCommune.addAll(nonCouverts);
@@ -269,7 +269,7 @@ public class AjustementForsSecondairesEtablissementHelper {
 				}
 			}));
 		}
-		Collections.sort(resultat, new DateRangeComparator<>(DateRangeComparator.CompareOrder.ASCENDING));
+		resultat.sort(new DateRangeComparator<>(DateRangeComparator.CompareOrder.ASCENDING));
 		return resultat;
 	}
 

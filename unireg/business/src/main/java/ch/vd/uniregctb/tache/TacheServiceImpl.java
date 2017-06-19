@@ -210,7 +210,7 @@ public class TacheServiceImpl implements TacheService {
 
 				// trie la liste par OID
 				List<Map.Entry<Integer, TacheStats>> list = new ArrayList<>(stats.entrySet());
-				Collections.sort(list, Comparator.comparing(Map.Entry::getKey));
+				list.sort(Comparator.comparing(Map.Entry::getKey));
 
 				for (Map.Entry<Integer, TacheStats> e : list) {
 					final TacheStats ts = e.getValue();

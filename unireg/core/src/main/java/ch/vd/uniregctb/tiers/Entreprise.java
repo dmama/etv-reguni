@@ -123,7 +123,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@NotNull
 	public List<RegimeFiscal> getRegimesFiscauxNonAnnulesTries() {
 		final List<RegimeFiscal> nonAnnules = AnnulableHelper.sansElementsAnnules(regimesFiscaux);
-		Collections.sort(nonAnnules, REGIME_FISCAL_COMPARATOR);
+		nonAnnules.sort(REGIME_FISCAL_COMPARATOR);
 		return nonAnnules;
 	}
 
@@ -178,7 +178,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 				}
 			}
 			if (!list.isEmpty() && triees) {
-				Collections.sort(list, new DateRangeComparator<>());
+				list.sort(new DateRangeComparator<>());
 			}
 		}
 		else {
@@ -287,7 +287,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@NotNull
 	public List<AllegementFiscal> getAllegementsFiscauxNonAnnulesTries() {
 		final List<AllegementFiscal> nonAnnules = AnnulableHelper.sansElementsAnnules(allegementsFiscaux);
-		Collections.sort(nonAnnules, ALLEGEMENT_FISCAL_COMPARATOR);
+		nonAnnules.sort(ALLEGEMENT_FISCAL_COMPARATOR);
 		return nonAnnules;
 	}
 
@@ -360,7 +360,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@Transient
 	public List<FlagEntreprise> getFlagsNonAnnulesTries() {
 		final List<FlagEntreprise> nonAnnules = AnnulableHelper.sansElementsAnnules(flags);
-		Collections.sort(nonAnnules, new DateRangeComparator<>());
+		nonAnnules.sort(new DateRangeComparator<>());
 		return nonAnnules;
 	}
 
@@ -487,7 +487,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 			}
 		}
 		if (sorted && liste.size() > 1) {
-			Collections.sort(liste, new Comparator<T>() {
+			liste.sort(new Comparator<T>() {
 				@Override
 				public int compare(T o1, T o2) {
 					int compare = NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());

@@ -141,10 +141,10 @@ public abstract class IndividuComparisonHelper {
 			}
 			else {
 				final List<T> sl1 = new ArrayList<>(c1 != null ? c1 : Collections.emptyList());
-				Collections.sort(sl1, comparator);
+				sl1.sort(comparator);
 
 				final List<T> sl2 = new ArrayList<>(c2 != null ? c2 : Collections.emptyList());
-				Collections.sort(sl2, comparator);
+				sl2.sort(comparator);
 
 				for (int i = 0 ; i < sl1.size() ; ++ i) {
 					final T o1 = sl1.get(i);

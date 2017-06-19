@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.activation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -351,7 +350,7 @@ public class ActivationServiceImpl implements ActivationService {
 			final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxNonAnnules(false);
 
 			// le tri s'effectue maintenant, en faisant passer les fors principaux devant (toujours!)
-			Collections.sort(forsFiscaux, new DateRangeComparator<ForFiscal>() {
+			forsFiscaux.sort(new DateRangeComparator<ForFiscal>() {
 				@Override
 				public int compare(ForFiscal o1, ForFiscal o2) {
 					final boolean isPrincipal1 = o1 instanceof ForFiscalPrincipal;
@@ -456,7 +455,7 @@ public class ActivationServiceImpl implements ActivationService {
 			final DateRange plageNouveauLien = new DateRangeHelper.Range(dateReactivation, null);
 
 			// on valide que le nouveau lien ne serait pas en conflit avec un lien existant...
-			Collections.sort(liensNonAnnules, new DateRangeComparator<>());
+			liensNonAnnules.sort(new DateRangeComparator<>());
 			final List<DateRange> plageLiensNonAnnules = DateRangeHelper.merge(liensNonAnnules);
 			if (plageLiensNonAnnules != null && DateRangeHelper.intersect(plageNouveauLien, plageLiensNonAnnules)) {
 				throw new ActivationServiceException(String.format("La date de réactivation au %s entre en conflit avec un lien d'activité économique non-annulé existant.",

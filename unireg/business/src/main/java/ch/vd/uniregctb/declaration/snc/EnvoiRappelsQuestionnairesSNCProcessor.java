@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.declaration.snc;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -88,7 +87,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 				// pour les tests de limitations, on aime bien que les questionnaires soient toujours traités dans le même ordre,
 				// (= le même ordre que celui des données d'entrée)
 				final List<QuestionnaireSNC> questionnairesTries = new ArrayList<>(questionnaires);
-				Collections.sort(questionnairesTries, SNC_COMPARATOR);
+				questionnairesTries.sort(SNC_COMPARATOR);
 
 				for (QuestionnaireSNC questionnaire : questionnairesTries) {
 					traiterQuestionnaire(questionnaire, dateTraitement, rapport);

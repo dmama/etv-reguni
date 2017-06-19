@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.rf;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -161,7 +160,7 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 		}
 
 		// tri de la liste par numéro du registre foncier
-		Collections.sort(listeProprio, Comparator.comparingLong(ProprietaireFoncier::getNumeroRegistreFoncier));
+		listeProprio.sort(Comparator.comparingLong(ProprietaireFoncier::getNumeroRegistreFoncier));
 
 		Audit.info("Nombre de propriétaires lus dans le fichier : " + proprietairesLus);
 		return listeProprio;

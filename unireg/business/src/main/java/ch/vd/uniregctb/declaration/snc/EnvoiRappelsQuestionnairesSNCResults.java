@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.snc;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,9 +110,9 @@ public class EnvoiRappelsQuestionnairesSNCResults extends AbstractJobResults<Ide
 			}
 			return comparison;
 		};
-		Collections.sort(emis, comparatorEmis);
-		Collections.sort(ignores, comparator);
-		Collections.sort(erreurs, comparator);
+		emis.sort(comparatorEmis);
+		ignores.sort(comparator);
+		erreurs.sort(comparator);
 		super.end();
 	}
 

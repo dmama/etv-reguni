@@ -80,22 +80,22 @@ public class ForsParType {
 
 		if (sort) {
 			if (principauxPP != Collections.EMPTY_LIST) {
-				Collections.sort(principauxPP, new DateRangeComparator<>());
+				principauxPP.sort(new DateRangeComparator<>());
 			}
 			if (principauxPM != Collections.EMPTY_LIST) {
-				Collections.sort(principauxPM, new DateRangeComparator<>());
+				principauxPM.sort(new DateRangeComparator<>());
 			}
 			if (secondaires != Collections.EMPTY_LIST) {
-				Collections.sort(secondaires, new DateRangeComparator<>());
+				secondaires.sort(new DateRangeComparator<>());
 			}
 			if (dpis != Collections.EMPTY_LIST) {
-				Collections.sort(dpis, new DateRangeComparator<>());
+				dpis.sort(new DateRangeComparator<>());
 			}
 			if (autreElementImpot != Collections.EMPTY_LIST) {
-				Collections.sort(autreElementImpot, new DateRangeComparator<>());
+				autreElementImpot.sort(new DateRangeComparator<>());
 			}
 			if (autresImpots != Collections.EMPTY_LIST) {
-				Collections.sort(autresImpots, new DateRangeComparator<>());
+				autresImpots.sort(new DateRangeComparator<>());
 			}
 		}
 	}

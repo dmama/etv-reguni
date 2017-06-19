@@ -2,7 +2,6 @@ package ch.vd.uniregctb.rapport;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -94,7 +93,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 
 		// trie par ordre croissant selon l'ordre naturel de la clé
 		final List<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>> list = new ArrayList<>(results.stats.entrySet());
-		Collections.sort(list, Comparator.comparing(Map.Entry::getKey));
+		list.sort(Comparator.comparing(Map.Entry::getKey));
 
 		int size = list.size();
 		if (size > 0) {

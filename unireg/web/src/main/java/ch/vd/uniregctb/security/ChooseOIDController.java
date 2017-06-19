@@ -5,7 +5,6 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -67,7 +66,7 @@ public class ChooseOIDController {
 		if (list != null && list.size() > 1) {
 			// recopie dans une autre liste, au cas où host-interface choisit un jour de nous renvoyer une collection immutable
 			list = new ArrayList<>(list);
-			Collections.sort(list, new Comparator<CollectiviteAdministrative>() {
+			list.sort(new Comparator<CollectiviteAdministrative>() {
 				@Override
 				public int compare(CollectiviteAdministrative o1, CollectiviteAdministrative o2) {
 					return o1.getNomCourt().compareTo(o2.getNomCourt());

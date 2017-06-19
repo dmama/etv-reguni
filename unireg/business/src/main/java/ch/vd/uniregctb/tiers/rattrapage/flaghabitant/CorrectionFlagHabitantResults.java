@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -139,9 +138,9 @@ public class CorrectionFlagHabitantResults extends JobResults<Long, CorrectionFl
 	}
 
 	public void sort() {
-		Collections.sort(nouveauxHabitants, COMPARATOR);
-		Collections.sort(nouveauxNonHabitants, COMPARATOR);
-		Collections.sort(erreurs, COMPARATOR);
+		nouveauxHabitants.sort(COMPARATOR);
+		nouveauxNonHabitants.sort(COMPARATOR);
+		erreurs.sort(COMPARATOR);
 	}
 
 	public final int getNombrePPInspectees() {

@@ -440,7 +440,7 @@ public class AppariementServiceImpl implements AppariementService {
 			return Collections.emptyMap();
 		}
 
-		Collections.sort(liste, new Comparator<Pair<Etablissement, DateRange>>() {
+		liste.sort(new Comparator<Pair<Etablissement, DateRange>>() {
 			@Override
 			public int compare(Pair<Etablissement, DateRange> o1, Pair<Etablissement, DateRange> o2) {
 				int comparison = Long.compare(o1.getLeft().getNumero(), o2.getLeft().getNumero());

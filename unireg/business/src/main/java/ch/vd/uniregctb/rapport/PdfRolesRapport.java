@@ -148,7 +148,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		}
 
 		if (triAlphabetique) {
-			Collections.sort(listCommunes, Comparator.comparing(Commune::getNomOfficiel));
+			listCommunes.sort(Comparator.comparing(Commune::getNomOfficiel));
 		}
 
 		return listCommunes;

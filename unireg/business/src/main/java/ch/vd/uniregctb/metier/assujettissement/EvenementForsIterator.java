@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -94,7 +93,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 				fors.add(f);
 			}
 		}
-		Collections.sort(fors, (f1, f2) -> NullDateBehavior.LATEST.compare(f1.getDateFin(), f2.getDateFin()));
+		fors.sort((f1, f2) -> NullDateBehavior.LATEST.compare(f1.getDateFin(), f2.getDateFin()));
 		return fors;
 	}
 
@@ -114,7 +113,7 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 				fors.add(f);
 			}
 		}
-		Collections.sort(fors, (f1, f2) -> NullDateBehavior.EARLIEST.compare(f1.getDateDebut(), f2.getDateDebut()));
+		fors.sort((f1, f2) -> NullDateBehavior.EARLIEST.compare(f1.getDateDebut(), f2.getDateDebut()));
 		return fors;
 	}
 

@@ -435,7 +435,7 @@ public class IndividuRCPers implements Individu, Serializable {
 			for (List<Residence> list : adressesParCommune.values()) {
 
 				// [SIREF-1794] les résidences doivent être triées par date d'arrivée croissant, puis par date de déménagement croissant
-				Collections.sort(list, new Comparator<Residence>() {
+				list.sort(new Comparator<Residence>() {
 					@Override
 					public int compare(Residence o1, Residence o2) {
 						// on trie par date d'arrivée dans la commune
@@ -474,7 +474,7 @@ public class IndividuRCPers implements Individu, Serializable {
 			fillHoles(adresses);
 		}
 
-		Collections.sort(adresses, new DateRangeComparator<>());
+		adresses.sort(new DateRangeComparator<>());
 		return adresses;
 	}
 

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.interfaces;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -162,7 +161,7 @@ public abstract class IndividuDumper {
 		}
 
 		final List<Origine> list = new ArrayList<>(coll);
-		Collections.sort(list, Comparator.comparing(Origine::getNomLieu));
+		list.sort(Comparator.comparing(Origine::getNomLieu));
 
 		StringBuilder s = new StringBuilder();
 		s.append("[");
@@ -201,7 +200,7 @@ public abstract class IndividuDumper {
 		}
 
 		final List<Nationalite> list = new ArrayList<>(coll);
-		Collections.sort(list, (o1, o2) -> {
+		list.sort((o1, o2) -> {
 			int compare = NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
 			if (compare == 0) {
 				compare = Integer.compare(o1.getPays().getNoOFS(), o2.getPays().getNoOFS());
@@ -344,7 +343,7 @@ public abstract class IndividuDumper {
 
 		// on trie les adresses pour pouvoir plus facilement les comparer
 		final ArrayList<Adresse> adresses = new ArrayList<>(list);
-		Collections.sort(adresses, (o1, o2) -> {
+		adresses.sort((o1, o2) -> {
 			if (o1.getTypeAdresse() == o2.getTypeAdresse()) {
 				return DateRangeComparator.compareRanges(o1, o2);
 			}

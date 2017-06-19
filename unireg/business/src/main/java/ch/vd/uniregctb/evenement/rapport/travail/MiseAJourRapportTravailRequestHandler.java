@@ -102,7 +102,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		// qu'on ne devra pas fusionner des groupes (si un élément n'intersecte pas un groupe déjà formé, l'élément suivant ne pourra pas non-plus
 		// intersecter l'un de ces groupes)
 		final List<RapportPrestationImposable> listeTriee = new ArrayList<>(anciensRapports);
-		Collections.sort(listeTriee, new DateRangeComparator<>());
+		listeTriee.sort(new DateRangeComparator<>());
 
 		// constitution des groupes
 		final List<List<RapportPrestationImposable>> groupes = new ArrayList<>(anciensRapports.size());
@@ -269,7 +269,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		if (rapportsConcernes.size() > 1) {
 
 			//on orddonnes les rapports;
-			Collections.sort(rapportsConcernes, new DateRangeComparator<>());
+			rapportsConcernes.sort(new DateRangeComparator<>());
 
 			//On prépare la date de début et la date de fin du rapport
 			RegDate dateDebutNouveauRapport = rapportsConcernes.get(0).getDateDebut();

@@ -37,7 +37,7 @@ public class DeclarationImpotListView {
 		for (DeclarationImpotOrdinaire declaration : declarations) {
 			views.add(new DeclarationImpotView(declaration, infraService, messageSource));
 		}
-		Collections.sort(views, new Comparator<DeclarationImpotView>() {
+		views.sort(new Comparator<DeclarationImpotView>() {
 			@Override
 			public int compare(DeclarationImpotView o1, DeclarationImpotView o2) {
 				if (o1.isAnnule() && !o2.isAnnule()) {

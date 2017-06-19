@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
 
@@ -130,7 +129,7 @@ public class PerfsAccessFile {
 		}
 
 		// les temps d'accès dans le fichier ne sont pas forcément triés, on le fait maintenant
-		Collections.sort(calls, new Comparator<Call>() {
+		calls.sort(new Comparator<Call>() {
 			@Override
 			public int compare(Call o1, Call o2) {
 				if (o1.getMillisecondes() < o2.getMillisecondes()) {

@@ -57,7 +57,7 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 
 	private List<EvenementOrganisation> arrangeAndSort(List<EvenementOrganisation> evts) {
 		if (evts != null && evts.size() > 0) {
-			Collections.sort(evts, EVT_ORGANISATION_COMPARATOR);
+			evts.sort(EVT_ORGANISATION_COMPARATOR);
 			return evts;
 		} else {
 			return Collections.emptyList();

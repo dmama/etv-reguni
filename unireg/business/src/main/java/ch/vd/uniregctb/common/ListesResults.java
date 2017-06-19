@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.common;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -113,7 +112,7 @@ public abstract class ListesResults<T extends ListesResults<T>> extends JobResul
     }
 
     public void sort() {
-        Collections.sort(this.tiersErreur, Comparator.comparingLong(e -> e.noCtb));
+        this.tiersErreur.sort(Comparator.comparingLong(e -> e.noCtb));
     }
 
 	public int getNombreThreads() {

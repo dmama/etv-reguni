@@ -3,7 +3,6 @@ package ch.vd.uniregctb.rapport;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -526,7 +525,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
 			// tri des lignes dans l'ordre décroissant des nombres d'occurrence
 			final List<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>> stats = new ArrayList<>(map.entrySet());
-			Collections.sort(stats, Comparator.comparingInt(entry -> entry.getValue().intValue()));
+			stats.sort(Comparator.comparingInt(entry -> entry.getValue().intValue()));
 
 			// touche finale : remplissage de la chaîne de caractères qui finira dans le fichier CSV
 			contenu = CsvHelper.asCsvTemporaryFile(stats, fileName, statusManager, new CsvHelper.FileFiller<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>>() {

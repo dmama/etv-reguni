@@ -161,10 +161,10 @@ public class EnvoiAnnexeImmeubleResults extends JobResults<ContribuableAvecImmeu
 		super.end();
 		Collections.sort(ctbsTraites);
 		final CtbComparator<Info> comparator = new CtbComparator<>();
-		Collections.sort(infoCtbTraites, comparator);
+		infoCtbTraites.sort(comparator);
 		// tri des erreurs et des contribuables ignorés
-		Collections.sort(ctbsEnErrors, comparator);
-		Collections.sort(ctbsIgnores, comparator);
+		ctbsEnErrors.sort(comparator);
+		ctbsIgnores.sort(comparator);
 
 	}
 }

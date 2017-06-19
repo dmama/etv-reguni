@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +76,7 @@ public class ModeleDocumentDAOImpl extends BaseDAOImpl<ModeleDocument, Long> imp
 	public List<ModeleDocument> getByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		final List<ModeleDocument> list = find("FROM ModeleDocument m WHERE m.periodeFiscale = :pf", buildNamedParameters(Pair.of("pf", periodeFiscale)), null);
 
-		Collections.sort(list, new Comparator<ModeleDocument>() {
+		list.sort(new Comparator<ModeleDocument>() {
 			@Override
 			public int compare(ModeleDocument o1, ModeleDocument o2) {
 				return o1.getTypeDocument().compareTo(o2.getTypeDocument());

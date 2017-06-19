@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.interfaces.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -72,10 +71,10 @@ public class AdressesCivilesHistoriques {
 	 */
 	private void sort() {
 		final Comparator<Adresse> comparator = (a1, a2) -> NullDateBehavior.EARLIEST.compare(a1.getDateDebut(), a2.getDateDebut());
-		Collections.sort(principales, comparator);
-		Collections.sort(courriers, comparator);
-		Collections.sort(secondaires, comparator);
-		Collections.sort(tutelles, comparator);
+		principales.sort(comparator);
+		courriers.sort(comparator);
+		secondaires.sort(comparator);
+		tutelles.sort(comparator);
 	}
 
 	/**

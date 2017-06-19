@@ -39,7 +39,7 @@ public class ReqDesUniteTraitementDetailedView extends ReqDesUniteTraitementAbst
 			for (PartiePrenante pp : ut.getPartiesPrenantes()) {
 				this.partiesPrenantes.add(new PartiePrenanteView(pp));
 			}
-			Collections.sort(this.partiesPrenantes, new Comparator<PartiePrenanteView>() {
+			this.partiesPrenantes.sort(new Comparator<PartiePrenanteView>() {
 				@Override
 				public int compare(PartiePrenanteView o1, PartiePrenanteView o2) {
 					return Long.compare(o1.getId(), o2.getId());

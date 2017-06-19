@@ -3,7 +3,6 @@ package ch.vd.uniregctb.param;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -132,7 +131,7 @@ public class ParamPeriodeController {
 		model.addAttribute("parametrePeriodeFiscaleEmomulementSommationDIPP", manager.getEmolumentSommationDIPPByPeriodeFiscale(periodeSelectionnee));
 
 		final List<ModeleDocument> modeles = new ArrayList<>(manager.getModeleDocuments(periodeSelectionnee));
-		Collections.sort(modeles, new Comparator<ModeleDocument>() {
+		modeles.sort(new Comparator<ModeleDocument>() {
 			@Override
 			public int compare(ModeleDocument o1, ModeleDocument o2) {
 				if (o1.getTypeDocument() == null && o2.getTypeDocument() == null) {
@@ -155,7 +154,7 @@ public class ParamPeriodeController {
 		model.addAttribute("modeleSelectionne", modeleSelectionne);
 		if (modeleSelectionne != null) {
 			final List<ModeleFeuilleDocument> feuilles = new ArrayList<>(manager.getModeleFeuilleDocuments(modeleSelectionne));
-			Collections.sort(feuilles, new ModeleFeuilleDocumentComparator());
+			feuilles.sort(new ModeleFeuilleDocumentComparator());
 			model.addAttribute("feuilles", feuilles);
 		}
 		else {
