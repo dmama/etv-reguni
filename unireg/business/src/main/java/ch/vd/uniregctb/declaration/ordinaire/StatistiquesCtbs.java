@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -109,10 +111,10 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 		 * Ordre de tri naturel: oid, commune et typeCtb.
 		 */
 		@Override
-		public int compareTo(Key o) {
+		public int compareTo(@NotNull Key o) {
 
 			if (oid != null && o.oid != null && !oid.equals(o.oid)) {
-				return oid - o.oid;
+				return Integer.compare(oid, o.oid);
 			}
 			else if (oid == null && o.oid != null) {
 				return 1;
@@ -163,7 +165,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 	public void addStats(Integer oid, Commune commune, TypeContribuable typeCtb) {
 		final Key key = new Key(oid, commune, typeCtb);
 		final Value value = stats.computeIfAbsent(key, k -> new Value());
-		++ value.nombre;
+		++value.nombre;
 	}
 
 	public void addErrorException(Contribuable ctb, Exception e) {

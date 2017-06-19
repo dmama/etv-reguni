@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
@@ -96,10 +98,10 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 		 * Ordre de tri naturel: oid, typeCtb et etat.
 		 */
 		@Override
-		public int compareTo(Key o) {
+		public int compareTo(@NotNull Key o) {
 
 			if (oid != o.oid) {
-				return oid - o.oid;
+				return Integer.compare(oid, o.oid);
 			}
 
 			if (typeCtb != o.typeCtb) {

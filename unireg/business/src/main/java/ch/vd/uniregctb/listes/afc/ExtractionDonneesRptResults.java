@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -48,8 +49,8 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		}
 
 		@Override
-		public int compareTo(T o) {
-			return (int) (noCtb - o.noCtb);
+		public int compareTo(@NotNull T o) {
+			return Long.compare(noCtb, o.noCtb);
 		}
 
 		public abstract String[] getNomsColonnes();
@@ -126,7 +127,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		}
 
 		@Override
-		public int compareTo(InfoPeriodeImposition o) {
+		public int compareTo(@NotNull InfoPeriodeImposition o) {
 			int comparison = super.compareTo(o);
 			if (comparison == 0) {
 				// on compare ensuite la date de début de la période d'assujettissement

@@ -113,7 +113,7 @@ public class PartiePrenanteView implements Serializable {
 					if (comparison == 0) {
 						comparison = compareNullableValues(o1.getTypeInscription(), o2.getTypeInscription());
 						if (comparison == 0) {
-							comparison = o1.getOfsCommune() - o2.getOfsCommune();
+							comparison = Integer.compare(o1.getOfsCommune(), o2.getOfsCommune());
 						}
 					}
 				}

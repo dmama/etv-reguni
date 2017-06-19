@@ -22,6 +22,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -348,8 +349,8 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	}
 
 	@Override
-	public int compareTo(JobDefinition arg) {
-		return getSortOrder() - arg.getSortOrder();
+	public int compareTo(@NotNull JobDefinition arg) {
+		return Integer.compare(getSortOrder(), arg.getSortOrder());
 	}
 
 	@Override

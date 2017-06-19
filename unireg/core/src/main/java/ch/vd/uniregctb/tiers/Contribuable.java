@@ -316,7 +316,7 @@ public abstract class Contribuable extends Tiers {
 					int comparisonDates = super.compare(o1, o2);
 					if (comparisonDates == 0) {
 						// à dates égales, il faut comparer selon le type d'autorité fiscale
-						return o1.getTypeAutoriteFiscale().ordinal() - o2.getTypeAutoriteFiscale().ordinal();
+						return Integer.compare(o1.getTypeAutoriteFiscale().ordinal(), o2.getTypeAutoriteFiscale().ordinal());
 					}
 					else {
 						return comparisonDates;

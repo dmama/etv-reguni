@@ -39,7 +39,7 @@ public final class GentilComparator<T> implements Comparator<T> {
 				return -1;
 			}
 			else {
-				return idx1 - idx2;
+				return Integer.compare(idx1 , idx2);
 			}
 		}
 	}

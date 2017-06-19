@@ -241,7 +241,7 @@ public class UniteTraitementPdfDocumentGenerator extends ReqDesPdfDocumentGenera
 						if (comparison == 0) {
 							comparison = compareNullableValues(ti1.getTypeInscription(), ti2.getTypeInscription());
 							if (comparison == 0) {
-								comparison = ti1.getOfsCommune() - ti2.getOfsCommune();
+								comparison = Integer.compare(ti1.getOfsCommune(), ti2.getOfsCommune());
 							}
 						}
 					}

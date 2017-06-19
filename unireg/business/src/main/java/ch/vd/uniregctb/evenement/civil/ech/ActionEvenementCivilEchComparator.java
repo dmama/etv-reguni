@@ -13,7 +13,7 @@ class ActionEvenementCivilEchComparator implements Comparator<ActionEvenementCiv
 
 	@Override
 	public int compare(ActionEvenementCivilEch o1, ActionEvenementCivilEch o2) {
-		return (o1.getPriorite() - o2.getPriorite());
+		return Integer.compare(o1.getPriorite(), o2.getPriorite());
 	}
 
 }

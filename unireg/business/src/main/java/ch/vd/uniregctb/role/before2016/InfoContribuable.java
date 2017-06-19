@@ -161,7 +161,7 @@ public abstract class InfoContribuable<T extends InfoContribuable<T>> implements
 		public int compare(InfoFor o1, InfoFor o2) {
 			int compare = - NullDateBehavior.LATEST.compare(o1.dateFin, o2.dateFin);
 			if (compare == 0) {
-				compare = - (o1.typeAssujettissement.ordinal() - o2.typeAssujettissement.ordinal());
+				compare = - Integer.compare(o1.typeAssujettissement.ordinal() , o2.typeAssujettissement.ordinal());
 				if (compare == 0) {
 					compare = - Boolean.valueOf(o1.forPrincipal).compareTo(o2.forPrincipal);        // principal avant non-principal
 					if (compare == 0) {

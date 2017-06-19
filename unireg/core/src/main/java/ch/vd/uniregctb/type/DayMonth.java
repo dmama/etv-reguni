@@ -160,7 +160,7 @@ public final class DayMonth implements Serializable, Comparable<DayMonth> {
 
 	@Override
 	public int compareTo(@NotNull DayMonth o) {
-		return index() - o.index();
+		return Integer.compare(index(), o.index());
 	}
 
 	/**

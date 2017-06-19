@@ -79,8 +79,8 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 		}
 
 		@Override
-		public int compareTo(T o) {
-			return (idDebiteur == o.idDebiteur ? 0 : Long.signum(idDebiteur - o.idDebiteur));
+		public int compareTo(@NotNull T o) {
+			return Long.compare(idDebiteur, o.idDebiteur);
 		}
 
 	}
@@ -196,7 +196,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 		}
 
 		@Override
-		public int compareTo(ResultLrEchue o) {
+		public int compareTo(@NotNull ResultLrEchue o) {
 			int compare = super.compareTo(o);
 			if (compare == 0) {
 				compare = debutPeriode.compareTo(o.debutPeriode);

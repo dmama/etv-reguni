@@ -107,7 +107,7 @@ public class EnvoiRappelsQuestionnairesSNCResults extends AbstractJobResults<Ide
 		final Comparator<RappelEmis> comparatorEmis = (o1, o2) -> {
 			int comparison = Long.compare(o1.noCtb, o2.noCtb);
 			if (comparison == 0) {
-				comparison = o1.pf - o2.pf;
+				comparison = Integer.compare(o1.pf, o2.pf);
 			}
 			return comparison;
 		};

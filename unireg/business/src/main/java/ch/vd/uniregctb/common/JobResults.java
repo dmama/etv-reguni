@@ -45,7 +45,7 @@ public abstract class JobResults<E, R extends JobResults<E, R>> extends Abstract
 	public static class CtbComparator<T extends Info> implements Comparator<T> {
 		@Override
 		public int compare(T o1, T o2) {
-			return (int) (o1.noCtb - o2.noCtb);
+			return Long.compare(o1.noCtb, o2.noCtb);
 		}
 	}
 

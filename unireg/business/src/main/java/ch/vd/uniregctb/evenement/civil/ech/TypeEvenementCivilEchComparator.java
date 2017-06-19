@@ -22,7 +22,7 @@ class TypeEvenementCivilEchComparator implements Comparator<TypeEvenementCivilEc
 			comp = -1;
 		}
 		else {
-			comp = myPrio - otherPrio;
+			comp = Integer.compare(myPrio, otherPrio);
 		}
 		return comp;
 	}
