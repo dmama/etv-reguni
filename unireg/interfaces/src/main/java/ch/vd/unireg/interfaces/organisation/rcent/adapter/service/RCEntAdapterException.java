@@ -7,4 +7,8 @@ public class RCEntAdapterException extends RuntimeException {
 	public RCEntAdapterException(String message) {
 		super(message);
 	}
+
+	public RCEntAdapterException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

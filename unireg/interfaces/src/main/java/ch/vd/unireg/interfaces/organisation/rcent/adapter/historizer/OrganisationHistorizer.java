@@ -60,6 +60,7 @@ import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.extractor.U
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.historizer.extractor.UidRegistrationStatusExtractor;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.BurRegistrationData;
 import ch.vd.unireg.interfaces.organisation.rcent.adapter.model.RCRegistrationData;
+import ch.vd.unireg.interfaces.organisation.rcent.adapter.service.RCEntAdapterException;
 import ch.vd.uniregctb.common.Equalator;
 
 public class OrganisationHistorizer {
@@ -76,9 +77,18 @@ public class OrganisationHistorizer {
 		// Entreprise
 
 		// d'abord, on transforme cette liste en map de snapshots indexés par date
-		final Map<RegDate, Organisation> organisationMap = snapshots.stream().collect(Collectors.toMap(OrganisationSnapshot::getBeginValidityDate,
-		                                                                                               OrganisationSnapshot::getOrganisation)
-		);
+		final Map<RegDate, Organisation> organisationMap;
+		try {
+			organisationMap = snapshots.stream().collect(Collectors.toMap(OrganisationSnapshot::getBeginValidityDate, OrganisationSnapshot::getOrganisation));
+		}
+		catch (IllegalArgumentException e) {
+			// Reconnaître lorsqu'il y a duplication de snapshot (SIFISC-25252).
+			if (e.getMessage().startsWith("Duplicate key Organisation")) {
+				String noOrganisation = snapshots.isEmpty() ? "" : snapshots.get(0).getOrganisation().getCantonalId().toString();
+				throw new RCEntAdapterException(String.format("Deux snapshots pour la même date ont été trouvés dans les données RCEnt de l'organisation n°%s. Impossible de générer son historique civil!", noOrganisation), e);
+			}
+			throw e;
+		}
 
 		// on enregistre les data collectors au niveau de l'organisation faîtière (= l'entreprise)
 		final ListDataCollector<Organisation, NamedOrganisationId> organisationIdentifiersCollector = new MultiValueDataCollector<>(o -> o.getIdentifier().stream(),
