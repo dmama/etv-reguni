@@ -13,6 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
@@ -33,7 +34,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	private TacheService tacheService;
 	private TiersService tiersService;
 
-	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = ThreadLocal.withInitial(HashSet::new);
+	private final StackedThreadLocal<Set<Long>> modifiedCtbIds = new StackedThreadLocal<>(HashSet::new);
 
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
 
@@ -68,6 +69,16 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	}
 
 	@Override
+	public void suspendTransaction() {
+		modifiedCtbIds.pushState();
+	}
+
+	@Override
+	public void resumeTransaction() {
+		modifiedCtbIds.popState();
+	}
+
+	@Override
 	public void preTransactionCommit() {
 		// rien à faire ici
 	}
@@ -75,7 +86,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	@Override
 	public void postTransactionCommit() {
 
-		final HashSet<Long> set = getModifiedCtbIds();
+		final Set<Long> set = getModifiedCtbIds();
 		if (set.isEmpty()) {
 			return; // rien à faire
 		}
@@ -112,7 +123,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 
 	@Override
 	public void postTransactionRollback() {
-		final HashSet<Long> set = getModifiedCtbIds();
+		final Set<Long> set = getModifiedCtbIds();
 		set.clear();
 	}
 
@@ -141,7 +152,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		}
 	}
 
-	private HashSet<Long> getModifiedCtbIds() {
+	private Set<Long> getModifiedCtbIds() {
 		return modifiedCtbIds.get();
 	}
 

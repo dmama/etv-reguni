@@ -1719,6 +1719,14 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 			}
 
 			@Override
+			public void suspendTransaction() {
+			}
+
+			@Override
+			public void resumeTransaction() {
+			}
+
+			@Override
 			public void preTransactionCommit() {
 			}
 

@@ -325,6 +325,7 @@
 
 	<bean id="modificationInterceptor" class="ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor">
 		<property name="chainingInterceptor" ref="chainingInterceptor" />
+		<property name="synchronizationRegistrar" ref="transactionSynchronizationRegistrar"/>
 	</bean>
 
 	<bean id="fakeInterceptorHibernate" class="ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor" />

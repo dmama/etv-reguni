@@ -15,16 +15,16 @@ public class AbstractLinkedInterceptor implements LinkedInterceptor, Initializin
 	public void setChainingInterceptor(ChainingInterceptor chainedInterceptor) {
 		this.chainingInterceptor = chainedInterceptor;
 	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		chainingInterceptor.register(this);
 	}
 
-	
-	
 	@Override
 	public void afterTransactionBegin(Transaction tx) {
 	}
+
 	@Override
 	public void afterTransactionCompletion(Transaction tx) {
 	}
@@ -37,10 +37,12 @@ public class AbstractLinkedInterceptor implements LinkedInterceptor, Initializin
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException {
 		return false;
 	}
+
 	@Override
 	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
 		return false;
 	}
+
 	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
 		return false;
@@ -49,8 +51,8 @@ public class AbstractLinkedInterceptor implements LinkedInterceptor, Initializin
 	@Override
 	public void postFlush(Iterator<?> entities) throws CallbackException {
 	}
+
 	@Override
 	public void preFlush(Iterator<?> entities) throws CallbackException {
 	}
-
 }

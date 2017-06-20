@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import ch.vd.unireg.xml.event.data.v1.BatimentChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.DataEvent;
@@ -34,20 +34,27 @@ import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSender;
+import ch.vd.uniregctb.transaction.TransactionSynchronizationRegistrar;
+import ch.vd.uniregctb.transaction.TransactionSynchronizationSupplier;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class ConcentratingDataEventJmsSender implements InitializingBean, DisposableBean, EvenementFiscalSender, DataEventListener {
+public class ConcentratingDataEventJmsSender implements InitializingBean, DisposableBean, EvenementFiscalSender, DataEventListener, TransactionSynchronizationSupplier {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConcentratingDataEventJmsSender.class);
 
 	/**
 	 * Les données collectées sur la transaction en cours
 	 */
-	private final ThreadLocal<TransactionCollectedData> transactionCollectedData = ThreadLocal.withInitial(TransactionCollectedData::new);
+	private final ThreadLocal<TransactionCollectedData> transactionCollectedData = new ThreadLocal<>();
 
+	private TransactionSynchronizationRegistrar synchronizationRegistrar;
 	private DataEventSender sender;
 	private DataEventService parentService;
 	private boolean evenementsFiscauxActives;
+
+	public void setSynchronizationRegistrar(TransactionSynchronizationRegistrar synchronizationRegistrar) {
+		this.synchronizationRegistrar = synchronizationRegistrar;
+	}
 
 	public void setSender(DataEventSender sender) {
 		this.sender = sender;
@@ -266,13 +273,11 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 		private final List<DataEvent> evenementsNotification = new LinkedList<>();
 		private final AlreadySentData alreadySentNotifications = new AlreadySentData();
 
-		public TransactionCollectedData() {
-			if (!TransactionSynchronizationManager.isActualTransactionActive()) {
-				throw new IllegalStateException("Une transaction est sensée être en cours...");
-			}
+		private TransactionCollectedData(Consumer<TransactionSynchronization> collector) {
 
-			// on se lie à la transaction courante...
-			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+			// enregistrement de la synchronisation dans le système
+			collector.accept(new TransactionSynchronizationAdapter() {
+
 				@Override
 				public void beforeCommit(boolean readOnly) {
 					super.beforeCommit(readOnly);
@@ -422,11 +427,18 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		parentService.register(this);
+		synchronizationRegistrar.registerSynchronizationSupplier(this);
 	}
 
 	@Override
 	public void destroy() throws Exception {
+		synchronizationRegistrar.unregisterSynchronizationSupplier(this);
 		parentService.unregister(this);
+	}
+
+	@Override
+	public void registerSynchronizations(Consumer<TransactionSynchronization> collector) {
+		transactionCollectedData.set(new TransactionCollectedData(collector));
 	}
 
 	private void reallySendEvents(List<EvenementFiscal> evenementsFiscaux, List<DataEvent> evenementsNotification) {

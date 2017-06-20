@@ -25,6 +25,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
@@ -47,7 +48,7 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 	private PlatformTransactionManager transactionManager;
 	private Dialect dialect;
 
-	private final ThreadLocal<HashSet<Long>> modifiedNosEntreprises = ThreadLocal.withInitial(HashSet::new);
+	private final StackedThreadLocal<Set<Long>> modifiedNosEntreprises = new StackedThreadLocal<>(HashSet::new);
 
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
 
@@ -79,6 +80,16 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 	@Override
 	public void postFlush() throws CallbackException {
 		// rien à faire ici
+	}
+
+	@Override
+	public void suspendTransaction() {
+		modifiedNosEntreprises.pushState();
+	}
+
+	@Override
+	public void resumeTransaction() {
+		modifiedNosEntreprises.popState();
 	}
 
 	@Override
@@ -114,13 +125,12 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
-		template.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Switchable interceptor = (Switchable) sessionFactory.getSessionFactoryOptions().getInterceptor();
-				final boolean enabled = interceptor.isEnabled();
-				interceptor.setEnabled(false);
-				try {
+		final boolean enabled = parent.isEnabledForThread();
+		parent.setEnabledForThread(false);
+		try {
+			template.execute(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
 					final Session session = sessionFactory.openSession();
 					try {
 						final SQLQuery query = session.createSQLQuery("update TIERS set IDE_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
@@ -139,13 +149,13 @@ public class AnnonceIDEHibernateInterceptor implements ModificationSubIntercepto
 					finally {
 						session.close();
 					}
+					return null;
 				}
-				finally {
-					interceptor.setEnabled(enabled);
-				}
-				return null;
-			}
-		});
+			});
+		}
+		finally {
+			parent.setEnabledForThread(enabled);
+		}
 
 		ids.clear();
 

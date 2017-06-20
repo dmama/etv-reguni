@@ -337,6 +337,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 		@Override
 		public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException {
+			// rien à faire ici
 			return false;
 		}
 
@@ -350,15 +351,28 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 
 		@Override
+		public void suspendTransaction() {
+			// rien à faire ici
+		}
+
+		@Override
+		public void resumeTransaction() {
+			// rien à faire ici
+		}
+
+		@Override
 		public void preTransactionCommit() {
+			// rien à faire ici
 		}
 
 		@Override
 		public void postTransactionCommit() {
+			// rien à faire ici
 		}
 
 		@Override
 		public void postTransactionRollback() {
+			// rien à faire ici
 		}
 	}
 

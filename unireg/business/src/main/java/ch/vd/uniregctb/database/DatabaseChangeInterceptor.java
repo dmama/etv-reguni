@@ -128,6 +128,16 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	}
 
 	@Override
+	public void suspendTransaction() {
+		// rien à faire ici
+	}
+
+	@Override
+	public void resumeTransaction() {
+		// rien à faire ici
+	}
+
+	@Override
 	public void preTransactionCommit() {
 		// rien à faire ici
 	}

@@ -20,6 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
@@ -42,7 +43,7 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 
 	private final Random randomGenerator = new Random();
 
-	private final ThreadLocal<HashSet<Long>> modifiedNosIndividus = ThreadLocal.withInitial(HashSet::new);
+	private final StackedThreadLocal<Set<Long>> modifiedNosIndividus = new StackedThreadLocal<>(HashSet::new);
 
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
 
@@ -74,6 +75,16 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 	@Override
 	public void postFlush() throws CallbackException {
 		// rien à faire ici
+	}
+
+	@Override
+	public void suspendTransaction() {
+		modifiedNosIndividus.pushState();
+	}
+
+	@Override
+	public void resumeTransaction() {
+		modifiedNosIndividus.popState();
 	}
 
 	@Override

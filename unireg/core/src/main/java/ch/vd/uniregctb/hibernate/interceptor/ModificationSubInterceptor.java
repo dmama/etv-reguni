@@ -39,6 +39,18 @@ public interface ModificationSubInterceptor {
 	void postFlush() throws CallbackException;
 
 	/**
+	 * Méthode appelée quand la transaction actuellement en cours est suspendue au profit d'une autre (RequiresNew pour l'insertion d'une ligne d'audit, par exemple)
+	 * @see #resumeTransaction()
+	 */
+	void suspendTransaction();
+
+	/**
+	 * Méthode appelée quand la transaction précédemment suspendue reprend son cours
+	 * @see #suspendTransaction()
+	 */
+	void resumeTransaction();
+
+	/**
 	 * Cette méthode est appelée par le transaction manager juste avant le commit de la transaction. Cet appel est exécuté dans le context de la transaction qui est entrain d'être committée.
 	 */
 	void preTransactionCommit();
