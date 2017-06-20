@@ -134,7 +134,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor implement
 
 	@Override
 	public void postFlush(Iterator<?> entities) throws CallbackException {
-		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postFlush));
+		forEachSubInterceptor(ModificationSubInterceptor::postFlush);
 	}
 
 	private boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
@@ -175,65 +175,75 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor implement
 		// si la date d'annulation était nulle et qu'elle ne l'est plus, alors on affaire à une annulation
 		return index >= 0 && previousState[index] == null && currentState[index] != null;
 	}
+
+	private void forEachSubInterceptor(Consumer<ModificationSubInterceptor> action) {
+		lockHelper.doInReadLock(() -> subInterceptors.forEach(action));
+	}
 	
 	private void suspendTransaction() {
-		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::suspendTransaction));
+		forEachSubInterceptor(ModificationSubInterceptor::suspendTransaction);
 	}
 
 	private void resumeTransaction() {
-		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::resumeTransaction));
+		forEachSubInterceptor(ModificationSubInterceptor::resumeTransaction);
 	}
 
 	private void preTransactionCommit() {
-		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::preTransactionCommit));
+		forEachSubInterceptor(ModificationSubInterceptor::preTransactionCommit);
 	}
 
 	private void postTransactionCommit() {
-		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postTransactionCommit));
+		forEachSubInterceptor(ModificationSubInterceptor::postTransactionCommit);
 	}
 
 	private void postTransactionRollback() {
-		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postTransactionRollback));
+		forEachSubInterceptor(ModificationSubInterceptor::postTransactionRollback);
+	}
+
+	/**
+	 * Classe de synchronisation qui appelle les callbacks
+	 */
+	private final class TransactionSync extends TransactionSynchronizationAdapter {
+
+		@Override
+		public void suspend() {
+			suspendTransaction();
+			super.suspend();
+		}
+
+		@Override
+		public void resume() {
+			super.resume();
+			resumeTransaction();
+		}
+
+		@Override
+		public void beforeCommit(boolean readOnly) {
+			super.beforeCommit(readOnly);
+			preTransactionCommit();
+		}
+
+		@Override
+		public void afterCompletion(int status) {
+			super.afterCompletion(status);
+
+			switch (status) {
+			case TransactionSynchronization.STATUS_COMMITTED:
+				postTransactionCommit();
+				break;
+			case TransactionSynchronization.STATUS_ROLLED_BACK:
+				postTransactionRollback();
+				break;
+			default:
+				throw new IllegalStateException("Transaction ni committée, ni annulée...");
+			}
+		}
 	}
 
 	@Override
 	public void registerSynchronizations(Consumer<TransactionSynchronization> collector) {
 		if (isEnabledForThread()) {
-			collector.accept(new TransactionSynchronizationAdapter() {
-				@Override
-				public void beforeCommit(boolean readOnly) {
-					super.beforeCommit(readOnly);
-					preTransactionCommit();
-				}
-
-				@Override
-				public void suspend() {
-					super.suspend();
-					suspendTransaction();
-				}
-
-				@Override
-				public void resume() {
-					super.resume();
-					resumeTransaction();
-				}
-
-				@Override
-				public void afterCompletion(int status) {
-					super.afterCompletion(status);
-
-					switch (status) {
-					case TransactionSynchronization.STATUS_COMMITTED:
-						postTransactionCommit();
-						break;
-					case TransactionSynchronization.STATUS_ROLLED_BACK:
-						postTransactionRollback();
-						break;
-					default:
-						throw new IllegalStateException("Transaction ni committée, ni annulée...");
-					}
-				}
-			});
+			collector.accept(new TransactionSync());
 		}
 	}
 }
