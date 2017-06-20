@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
@@ -29,7 +30,7 @@ public class MessageIdentificationIndexerHibernateInterceptor implements Modific
 
 	private final ThreadSwitch enabled = new ThreadSwitch(true);
 
-	private final ThreadLocal<Set<Long>> modifiedEntities = ThreadLocal.withInitial(HashSet::new);
+	private final StackedThreadLocal<Set<Long>> modifiedEntities = new StackedThreadLocal<>(HashSet::new);
 
 	private Set<Long> getModifiedEntities() {
 		return modifiedEntities.get();
@@ -90,6 +91,16 @@ public class MessageIdentificationIndexerHibernateInterceptor implements Modific
 	}
 
 	@Override
+	public void suspendTransaction() {
+		modifiedEntities.pushState();
+	}
+
+	@Override
+	public void resumeTransaction() {
+		modifiedEntities.popState();
+	}
+
+	@Override
 	public void preTransactionCommit() {
 		// rien à faire
 	}
@@ -114,18 +125,21 @@ public class MessageIdentificationIndexerHibernateInterceptor implements Modific
 	 * doit forcer la ré-indexation de l'entité
 	 */
 	private void indexModifiedEntities() {
-		if (isEnabled() && !getModifiedEntities().isEmpty()) {
-			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.setReadOnly(true);
-			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-			template.execute(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					for (Long id : getModifiedEntities()) {
-						indexer.reindex(id);
+		if (isEnabled()) {
+			final Set<Long> ids = getModifiedEntities();
+			if (!ids.isEmpty()) {
+				final TransactionTemplate template = new TransactionTemplate(transactionManager);
+				template.setReadOnly(true);
+				template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+				template.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						for (Long id : ids) {
+							indexer.reindex(id);
+						}
 					}
-				}
-			});
+				});
+			}
 		}
 	}
 

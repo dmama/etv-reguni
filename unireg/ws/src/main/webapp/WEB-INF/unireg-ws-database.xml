@@ -67,6 +67,8 @@
 		<property name="userTransaction" ref="userTransaction"/>
 	</bean>
 
+	<alias alias="transactionSynchronizationRegistrar" name="transactionManager"/>
+
 	<!-- JDBC datasource -->
 
 	<bean id="xaDataSource" class="ch.vd.uniregctb.datasource.OracleXADataSourceFactory">

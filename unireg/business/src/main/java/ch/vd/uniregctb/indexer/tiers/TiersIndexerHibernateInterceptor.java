@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.CallbackException;
 import org.hibernate.SQLQuery;
@@ -25,8 +26,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.LinkedEntity;
@@ -42,7 +43,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	private PlatformTransactionManager transactionManager;
 	private Dialect dialect;
 
-	private final ThreadLocal<HashSet<Long>> modifiedEntities = ThreadLocal.withInitial(HashSet::new);
+	private final StackedThreadLocal<Set<Long>> modifiedEntities = new StackedThreadLocal<>(HashSet::new);
 
 	/**
 	 * Cette méthode est appelé lorsque une entité hibernate est modifié/sauvé.
@@ -79,6 +80,16 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	@Override
 	public void postFlush() throws CallbackException {
 		// rien à faire ici
+	}
+
+	@Override
+	public void suspendTransaction() {
+		modifiedEntities.pushState();
+	}
+
+	@Override
+	public void resumeTransaction() {
+		modifiedEntities.popState();
 	}
 
 	@Override
@@ -123,7 +134,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		}
 	}
 
-	private HashSet<Long> getModifiedTiersIds() {
+	private Set<Long> getModifiedTiersIds() {
 		return modifiedEntities.get();
 	}
 
@@ -132,7 +143,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	 */
 	private void indexModifiedTiers() {
 		
-		final HashSet<Long> ids = getModifiedTiersIds();
+		final Set<Long> ids = getModifiedTiersIds();
 		if (ids.isEmpty()) {
 			return;
 		}
@@ -152,7 +163,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	 */
 	private void setDirtyModifiedTiers() {
 
-		final HashSet<Long> ids = getModifiedTiersIds();
+		final Set<Long> ids = getModifiedTiersIds();
 		if (ids.isEmpty()) {
 			return;
 		}
@@ -164,13 +175,12 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
-		template.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Switchable interceptor = (Switchable) sessionFactory.getSessionFactoryOptions().getInterceptor();
-				final boolean enabled = interceptor.isEnabled();
-				interceptor.setEnabled(false);
-				try {
+		final boolean enabled = parent.isEnabledForThread();
+		parent.setEnabledForThread(false);
+		try {
+			template.execute(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
 					final Session session = sessionFactory.openSession();
 					try {
 						final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
@@ -189,13 +199,13 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 					finally {
 						session.close();
 					}
+					return null;
 				}
-				finally {
-					interceptor.setEnabled(enabled);
-				}
-				return null;
-			}
-		});
+			});
+		}
+		finally {
+			parent.setEnabledForThread(enabled);
+		}
 
 		ids.clear();
 

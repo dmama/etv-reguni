@@ -4,19 +4,23 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.hibernate.CallbackException;
 import org.hibernate.collection.internal.AbstractPersistentCollection;
 import org.hibernate.type.Type;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LockHelper;
 import ch.vd.uniregctb.common.ThreadSwitch;
+import ch.vd.uniregctb.transaction.TransactionSynchronizationRegistrar;
+import ch.vd.uniregctb.transaction.TransactionSynchronizationSupplier;
 
 /**
  * Intercepteur hibernate qui détecte lorsqu'une entité hibernate (HibernateEntity) est ajoutée ou modifiée dans la base de données, et
@@ -24,12 +28,28 @@ import ch.vd.uniregctb.common.ThreadSwitch;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ModificationInterceptor extends AbstractLinkedInterceptor {
+public class ModificationInterceptor extends AbstractLinkedInterceptor implements TransactionSynchronizationSupplier, InitializingBean, DisposableBean {
 
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
 	private final LockHelper lockHelper = new LockHelper();
-	private final ThreadLocal<TransactionInterceptor> transactions = ThreadLocal.withInitial(TransactionInterceptor::new);
 	private final List<ModificationSubInterceptor> subInterceptors = new ArrayList<>();
+
+	private TransactionSynchronizationRegistrar synchronizationRegistrar;
+
+	public void setSynchronizationRegistrar(TransactionSynchronizationRegistrar synchronizationRegistrar) {
+		this.synchronizationRegistrar = synchronizationRegistrar;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		super.afterPropertiesSet();
+		synchronizationRegistrar.registerSynchronizationSupplier(this);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		synchronizationRegistrar.unregisterSynchronizationSupplier(this);
+	}
 
 	public void register(ModificationSubInterceptor sub) {
 		lockHelper.doInWriteLock(() -> subInterceptors.add(sub));
@@ -92,9 +112,6 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
 	@Override
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException {
-
-		registerSynchronisationOnCurrentTransaction();
-
 		boolean modified = false;
 
 		if (entity instanceof HibernateEntity && entityChanged(propertyNames, currentState, previousState)) {
@@ -106,9 +123,6 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
 	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] currentState, String[] propertyNames, Type[] types) throws CallbackException {
-
-		registerSynchronisationOnCurrentTransaction();
-
 		boolean modified = false;
 
 		if (entity instanceof HibernateEntity) {
@@ -120,7 +134,6 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
 	@Override
 	public void postFlush(Iterator<?> entities) throws CallbackException {
-		registerSynchronisationOnCurrentTransaction();
 		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postFlush));
 	}
 
@@ -162,6 +175,14 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 		// si la date d'annulation était nulle et qu'elle ne l'est plus, alors on affaire à une annulation
 		return index >= 0 && previousState[index] == null && currentState[index] != null;
 	}
+	
+	private void suspendTransaction() {
+		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::suspendTransaction));
+	}
+
+	private void resumeTransaction() {
+		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::resumeTransaction));
+	}
 
 	private void preTransactionCommit() {
 		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::preTransactionCommit));
@@ -175,92 +196,44 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 		lockHelper.doInReadLock(() -> subInterceptors.forEach(ModificationSubInterceptor::postTransactionRollback));
 	}
 
-	private void registerSynchronisationOnCurrentTransaction() {
-		// si l'objet n'existe pas encore pour la transaction courante, on le crée et on l'enregistre dans la transaction
-		// (s'il existe déjà, on ne fait rien...)
-		transactions.get();
-	}
+	@Override
+	public void registerSynchronizations(Consumer<TransactionSynchronization> collector) {
+		if (isEnabledForThread()) {
+			collector.accept(new TransactionSynchronizationAdapter() {
+				@Override
+				public void beforeCommit(boolean readOnly) {
+					super.beforeCommit(readOnly);
+					preTransactionCommit();
+				}
 
-	private void unregisterSynchronisation() {
-		// Il est particulièrement important d'effacer la donnée dans le ThreadLocal afin que la déréférence suivante
-		// de la donnée force une nouvelle instanciation de l'objet et donc son inscription dans la transaction courante
-		// (y compris le nettoyage final)
-		transactions.remove();
-	}
+				@Override
+				public void suspend() {
+					super.suspend();
+					suspendTransaction();
+				}
 
-	/**
-	 * Objet interne qui s'enregistre dans la transaction courante au moment de son instanciation et fait en sorte
-	 * que les callbacks des sub-intercepteurs soient appelés au bon moment vis-à-vis de cette transaction.
-	 * <br/>
-	 * Une fois la transaction terminée, l'instance se retire d'elle même pour laisser la place pour la prochaine transaction
-	 * (au travers du {@link ThreadLocal} {@link #transactions})
-	 */
-	private class TransactionInterceptor {
+				@Override
+				public void resume() {
+					super.resume();
+					resumeTransaction();
+				}
 
-		public TransactionInterceptor() {
+				@Override
+				public void afterCompletion(int status) {
+					super.afterCompletion(status);
 
-			if (!TransactionSynchronizationManager.isActualTransactionActive()) {
-				throw new IllegalStateException("Une transaction est sensée être en cours...");
-			}
-
-			final TransactionSynchronization synchronization;
-
-			// ce constructeur est appelé dans le thread de la transaction, et il peut-être sans
-			// effet si tel est le souhait du développeur...
-			if (isEnabledForThread()) {
-
-				// synchronisation qui appelle les callbacks
-				synchronization = new TransactionSynchronizationAdapter() {
-					@Override
-					public void beforeCommit(boolean readOnly) {
-						super.beforeCommit(readOnly);
-						preTransactionCommit();
+					switch (status) {
+					case TransactionSynchronization.STATUS_COMMITTED:
+						postTransactionCommit();
+						break;
+					case TransactionSynchronization.STATUS_ROLLED_BACK:
+						postTransactionRollback();
+						break;
+					default:
+						throw new IllegalStateException("Transaction ni committée, ni annulée...");
 					}
-
-					@Override
-					public void afterCompletion(int status) {
-						try {
-							super.afterCompletion(status);
-						}
-						finally {
-							// transaction committée ou annulée, il faut tout nettoyer...
-							// (et tant qu'à faire, avant les appels aux postTransaction... au cas où ceux-ci
-							// ré-ouvriraient une transaction...)
-							unregisterSynchronisation();
-						}
-
-						switch (status) {
-						case TransactionSynchronization.STATUS_COMMITTED:
-							postTransactionCommit();
-							break;
-						case TransactionSynchronization.STATUS_ROLLED_BACK:
-							postTransactionRollback();
-							break;
-						default:
-							throw new IllegalStateException("Transaction ni committée, ni annulée...");
-						}
-					}
-				};
-			}
-			else {
-
-				// synchronisation qui ne fait rien (si ce n'est se dés-enregistrer à la fin de la transaction...)
-				synchronization = new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCompletion(int status) {
-						try {
-							super.afterCompletion(status);
-						}
-						finally {
-							// transaction committée ou annulée, il faut tout nettoyer...
-							unregisterSynchronisation();
-						}
-					}
-				};
-			}
-
-			// on lie la synchronisation à la transaction courante...
-			TransactionSynchronizationManager.registerSynchronization(synchronization);
+				}
+			});
 		}
 	}
 }

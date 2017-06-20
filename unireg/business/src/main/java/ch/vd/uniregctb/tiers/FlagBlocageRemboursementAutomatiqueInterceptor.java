@@ -15,6 +15,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -31,7 +32,7 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FlagBlocageRemboursementAutomatiqueInterceptor.class);
 
-	private final ThreadLocal<Set<Long>> idsTiersFlagACalculer = ThreadLocal.withInitial(HashSet::new);
+	private final StackedThreadLocal<Set<Long>> idsTiersFlagACalculer = new StackedThreadLocal<>(HashSet::new);
 
 	private ModificationInterceptor parent;
 	private TiersDAO tiersDAO;
@@ -71,7 +72,8 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 
 	@Override
 	public void enregistrerDemandeRecalcul(long tiersId) {
-		idsTiersFlagACalculer.get().add(tiersId);
+		final Set<Long> ids = idsTiersFlagACalculer.get();
+		ids.add(tiersId);
 	}
 
 	@Override
@@ -174,6 +176,16 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 	}
 
 	@Override
+	public void suspendTransaction() {
+		idsTiersFlagACalculer.pushState();
+	}
+
+	@Override
+	public void resumeTransaction() {
+		idsTiersFlagACalculer.popState();
+	}
+
+	@Override
 	public void preTransactionCommit() {
 	}
 
@@ -188,6 +200,7 @@ public class FlagBlocageRemboursementAutomatiqueInterceptor implements Modificat
 	}
 
 	private void cleanup() {
-		idsTiersFlagACalculer.remove();
+		final Set<Long> ids = idsTiersFlagACalculer.get();
+		ids.clear();
 	}
 }

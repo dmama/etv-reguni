@@ -19,6 +19,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.transaction.TransactionSynchronizationRegistrar;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -30,6 +31,7 @@ public class ConcentratingDataEventJmsSenderTest extends BusinessTest {
 		final ConcentratingDataEventJmsSender concentrator = new ConcentratingDataEventJmsSender();
 		concentrator.setEvenementsFiscauxActives(enabled);
 		concentrator.setParentService(getBean(DataEventService.class, "dataEventService"));
+		concentrator.setSynchronizationRegistrar(getBean(TransactionSynchronizationRegistrar.class, "transactionSynchronizationRegistrar"));
 		concentrator.setSender(sender);
 		concentrator.afterPropertiesSet();
 		this.concentrator = concentrator;
