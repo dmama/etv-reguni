@@ -94,7 +94,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
 				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
+				assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
 				assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il n'y a pas d'import principal RF à la même date.", importEvent.getErrorMessage());
 				assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il n'y a pas d'import principal RF à la même date."));
 			}
@@ -130,7 +130,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
 				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
+				assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
 				assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car l'import principal RF à la même date n'est pas traité.", importEvent.getErrorMessage());
 				assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car l'import principal RF à la même date n'est pas traité."));
 			}
@@ -191,7 +191,7 @@ public class TraiterImportRFServitudesJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(servitudes);
 				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
+				assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
 				assertEquals("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il y a encore 2 mutations à traiter sur l'import principal RF à la même date.", importEvent.getErrorMessage());
 				assertTrue(importEvent.getCallstack().contains("L'import des servitudes RF avec la date valeur = [01.09.2016] ne peut pas être traité car il y a encore 2 mutations à traiter sur l'import principal RF à la même date."));
 			}

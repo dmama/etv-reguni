@@ -162,7 +162,7 @@ public class MutationsRFDetector {
 		// l'import ne doit pas être déjà traité
 		if (event.getEtat() != EtatEvenementRF.A_TRAITER && event.getEtat() != EtatEvenementRF.EN_ERREUR) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] a déjà été traité.");
-			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
+			updateEvent(importId, event.getEtat(), exception);  // on ne change pas l'état
 			throw exception;
 		}
 
@@ -180,7 +180,7 @@ public class MutationsRFDetector {
 		final EvenementRFImport nextToProcess = getNextImportToProcess(event.getType());
 		if (!Objects.equals(importId, nextToProcess.getId())) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] doit être traité après l'import RF avec l'id = [" + nextToProcess.getId() + "].");
-			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
+			updateEvent(importId, event.getEtat(), exception);  // on ne change pas l'état pour permettre de le lancer plus tard
 			throw exception;
 		}
 
@@ -188,7 +188,7 @@ public class MutationsRFDetector {
 		final Long unprocessedImport = findOldestImportWithUnprocessedMutations(importId, event.getType());
 		if (unprocessedImport != null) {
 			final IllegalArgumentException exception = new IllegalArgumentException("L'import RF avec l'id = [" + importId + "] ne peut être traité car des mutations de l'import RF avec l'id = [" + unprocessedImport + "] n'ont pas été traitées.");
-			updateEvent(importId, EtatEvenementRF.EN_ERREUR, exception);
+			updateEvent(importId, event.getEtat(), exception);  // on ne change pas l'état pour permettre de le lancer plus tard
 			throw exception;
 		}
 
@@ -197,7 +197,7 @@ public class MutationsRFDetector {
 				checkPreconditionsServitudes(event);
 			}
 			catch (IllegalArgumentException e) {
-				updateEvent(importId, EtatEvenementRF.EN_ERREUR, e);
+				updateEvent(importId, event.getEtat(), e);  // on ne change pas l'état pour permettre de le lancer plus tard
 				throw e;
 			}
 		}

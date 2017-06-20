@@ -72,7 +72,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(importId);
 				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
+				assertEquals(EtatEvenementRF.TRAITE, importEvent.getEtat());
 				assertEquals("L'import RF avec l'id = [" + importId + "] a déjà été traité.", importEvent.getErrorMessage());
 				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + importId + "] a déjà été traité."));
 			}
@@ -107,7 +107,7 @@ public class TraiterImportRFJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final EvenementRFImport importEvent = evenementRFImportDAO.get(suivant);
 				assertNotNull(importEvent);
-				assertEquals(EtatEvenementRF.EN_ERREUR, importEvent.getEtat());
+				assertEquals(EtatEvenementRF.A_TRAITER, importEvent.getEtat());
 				assertEquals("L'import RF avec l'id = [" + suivant + "] doit être traité après l'import RF avec l'id = [" + precedent + "].", importEvent.getErrorMessage());
 				assertTrue(importEvent.getCallstack().contains("L'import RF avec l'id = [" + suivant + "] doit être traité après l'import RF avec l'id = [" + precedent + "]."));
 			}
