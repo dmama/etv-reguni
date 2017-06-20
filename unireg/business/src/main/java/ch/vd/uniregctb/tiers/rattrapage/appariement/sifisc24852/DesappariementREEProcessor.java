@@ -212,7 +212,7 @@ public class DesappariementREEProcessor {
 		}
 
 		// Ajouter le résultat
-		final DesappariementREEResults.Desappariement desappariement = new DesappariementREEResults.Desappariement(resultat, organisationLocation, null, null, etablissement.getNumero());
+		final DesappariementREEResults.Desappariement desappariement = new DesappariementREEResults.Desappariement(resultat, organisationLocation, entreprise.getNumero(), entreprise.getNumeroEntreprise(), etablissement.getNumero());
 		desappariement.setRaisonSociale(raisonSocialeFiscale);
 		desappariement.setRaisonsSocialesJaroWinker(jaroWinklerDistance);
 		desappariement.setNoOFSCommune(domicileAtCutoff.getNumeroOfsAutoriteFiscale());
