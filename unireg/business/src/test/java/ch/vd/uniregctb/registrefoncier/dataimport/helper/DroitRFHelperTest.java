@@ -76,6 +76,7 @@ public class DroitRFHelperTest {
 			immeuble.setIdRF("ae93920bc34");
 
 			droitPP1.setMasterIdRF("9a9c9e94923");
+			droitPP1.setVersionIdRF("1");
 			droitPP1.setAyantDroit(pp);
 			droitPP1.setImmeuble(immeuble);
 			droitPP1.setCommunaute(null);
@@ -97,6 +98,7 @@ public class DroitRFHelperTest {
 			immeuble.setIdRF("5848cd8483");
 
 			droitPP2.setMasterIdRF("4848d8e83");
+			droitPP2.setVersionIdRF("1");
 			droitPP2.setAyantDroit(pp);
 			droitPP2.setImmeuble(immeuble);
 			droitPP2.setCommunaute(null);
@@ -118,6 +120,7 @@ public class DroitRFHelperTest {
 			immeuble2.setIdRF("ae93920bc34");
 
 			droitImm3.setMasterIdRF("029382719");
+			droitImm3.setVersionIdRF("1");
 			droitImm3.setAyantDroit(beneficiaire1);
 			droitImm3.setImmeuble(immeuble2);
 			droitImm3.setDateDebut(RegDate.get(2015, 3, 27));
@@ -145,6 +148,7 @@ public class DroitRFHelperTest {
 			natuerliche.getRechtsgruende().add(recht);
 
 			eigentumAnteil1.setMasterID("9a9c9e94923");
+			eigentumAnteil1.setVersionID("1");
 			eigentumAnteil1.setNatuerlichePersonGb(natuerliche);
 			eigentumAnteil1.setBelastetesGrundstueckIDREF("ae93920bc34");
 			eigentumAnteil1.setQuote(new Quote(1L, 2L, null, null));
@@ -166,6 +170,7 @@ public class DroitRFHelperTest {
 			natuerliche.getRechtsgruende().add(recht);
 
 			eigentumAnteil2.setMasterID("4848d8e83");
+			eigentumAnteil2.setVersionID("1");
 			eigentumAnteil2.setNatuerlichePersonGb(natuerliche);
 			eigentumAnteil2.setBelastetesGrundstueckIDREF("5848cd8483");
 			eigentumAnteil2.setQuote(new Quote(1L, 1L, null, null));
@@ -183,6 +188,7 @@ public class DroitRFHelperTest {
 			recht.setRechtsgrundCode(new CapiCode(null, "Constitution de parts de copropriété"));
 
 			eigentumAnteil3.setMasterID("029382719");
+			eigentumAnteil3.setVersionID("1");
 			eigentumAnteil3.setBerechtigtesGrundstueckIDREF("5848cd8483");
 			eigentumAnteil3.setBelastetesGrundstueckIDREF("ae93920bc34");
 			eigentumAnteil3.setQuote(new Quote(1L, 14L, null, null));
@@ -208,6 +214,7 @@ public class DroitRFHelperTest {
 
 		final DroitProprietePersonnePhysiqueRF droitPP = new DroitProprietePersonnePhysiqueRF();
 		droitPP.setMasterIdRF("9a9c9e94923");
+		droitPP.setVersionIdRF("1");
 		droitPP.setAyantDroit(pp);
 		droitPP.setImmeuble(immeuble);
 		droitPP.setCommunaute(null);
@@ -233,6 +240,7 @@ public class DroitRFHelperTest {
 
 		final PersonEigentumAnteil eigentumAnteil = new PersonEigentumAnteil();
 		eigentumAnteil.setMasterID("9a9c9e94923");
+		eigentumAnteil.setVersionID("1");
 		eigentumAnteil.setNatuerlichePersonGb(natuerliche);
 		eigentumAnteil.setBelastetesGrundstueckIDREF("ae93920bc34");
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
@@ -252,6 +260,7 @@ public class DroitRFHelperTest {
 
 		final DroitProprietePersonneMoraleRF droitPM = new DroitProprietePersonneMoraleRF();
 		droitPM.setMasterIdRF("9a9c9e94923");
+		droitPM.setVersionIdRF("1");
 		droitPM.setAyantDroit(pm);
 		droitPM.setImmeuble(immeuble);
 		droitPM.setCommunaute(null);
@@ -277,6 +286,7 @@ public class DroitRFHelperTest {
 
 		final PersonEigentumAnteil eigentumAnteil = new PersonEigentumAnteil();
 		eigentumAnteil.setMasterID("9a9c9e94923");
+		eigentumAnteil.setVersionID("1");
 		eigentumAnteil.setJuristischePersonGb(juristiche);
 		eigentumAnteil.setBelastetesGrundstueckIDREF("ae93920bc34");
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
@@ -296,6 +306,7 @@ public class DroitRFHelperTest {
 
 		final DroitProprieteCommunauteRF droitComm = new DroitProprieteCommunauteRF();
 		droitComm.setMasterIdRF("9a9c9e94923");
+		droitComm.setVersionIdRF("1");
 		droitComm.setAyantDroit(communaute);
 		droitComm.setImmeuble(immeuble);
 		droitComm.setDateDebut(RegDate.get(2010, 6, 1));
@@ -320,6 +331,7 @@ public class DroitRFHelperTest {
 
 		final PersonEigentumAnteil eigentumAnteil = new PersonEigentumAnteil();
 		eigentumAnteil.setMasterID("9a9c9e94923");
+		eigentumAnteil.setVersionID("1");
 		eigentumAnteil.setGemeinschaft(gemeinschaft);
 		eigentumAnteil.setBelastetesGrundstueckIDREF("ae93920bc34");
 		eigentumAnteil.setQuote(new Quote(1L, 2L, null, null));
@@ -339,6 +351,7 @@ public class DroitRFHelperTest {
 
 		final DroitProprieteImmeubleRF droitImm = new DroitProprieteImmeubleRF();
 		droitImm.setMasterIdRF("029382719");
+		droitImm.setVersionIdRF("1");
 		droitImm.setAyantDroit(beneficiaire1);
 		droitImm.setImmeuble(immeuble2);
 		droitImm.setDateDebut(RegDate.get(2015, 3, 27));
@@ -360,6 +373,7 @@ public class DroitRFHelperTest {
 
 		final GrundstueckEigentumAnteil eigentumAnteil = new GrundstueckEigentumAnteil();
 		eigentumAnteil.setMasterID("029382719");
+		eigentumAnteil.setVersionID("1");
 		eigentumAnteil.setBerechtigtesGrundstueckIDREF("5848cd8483");
 		eigentumAnteil.setBelastetesGrundstueckIDREF("ae93920bc34");
 		eigentumAnteil.setQuote(new Quote(1L, 14L, null, null));

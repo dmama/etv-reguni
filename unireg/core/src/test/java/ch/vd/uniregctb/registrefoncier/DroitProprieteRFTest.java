@@ -21,6 +21,8 @@ public class DroitProprieteRFTest {
 	@Test
 	public void testCalculateDateEtMotifDebutUneRaisonAcquisition() throws Exception {
 		final DroitProprieteRF d = new DroitProprietePersonnePhysiqueRF();
+		d.setMasterIdRF("28288228");
+		d.setVersionIdRF("1");
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 3, 23), "Achat", null));
 		d.calculateDateEtMotifDebut(p -> null);
 		assertEquals(RegDate.get(2000, 3, 23), d.getDateDebutMetier());
@@ -30,6 +32,8 @@ public class DroitProprieteRFTest {
 	@Test
 	public void testCalculateDateEtMotifDebutUneRaisonAcquisitionDateNulle() throws Exception {
 		final DroitProprieteRF d = new DroitProprietePersonnePhysiqueRF();
+		d.setMasterIdRF("28288228");
+		d.setVersionIdRF("1");
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(null, "Achat", null));
 		d.calculateDateEtMotifDebut(p -> null);
 		assertNull(d.getDateDebutMetier());
@@ -39,6 +43,8 @@ public class DroitProprieteRFTest {
 	@Test
 	public void testCalculateDateEtMotifDebutPlusieursRaisonsAcquisition() throws Exception {
 		final DroitProprieteRF d = new DroitProprietePersonnePhysiqueRF();
+		d.setMasterIdRF("28288228");
+		d.setVersionIdRF("1");
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 3, 23), "Succession", null));
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1996, 10, 1), "Achat", null));
 		d.calculateDateEtMotifDebut(p -> null);
@@ -49,6 +55,8 @@ public class DroitProprieteRFTest {
 	@Test
 	public void testCalculateDateEtMotifDebutPlusieursRaisonsAcquisitionDateNulle() throws Exception {
 		final DroitProprieteRF d = new DroitProprietePersonnePhysiqueRF();
+		d.setMasterIdRF("28288228");
+		d.setVersionIdRF("1");
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 3, 23), "Succession", null));
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(null, "Achat", null));
 		d.calculateDateEtMotifDebut(p -> null);
@@ -62,10 +70,14 @@ public class DroitProprieteRFTest {
 	@Test
 	public void testCalculateDateEtMotifDebutAvecDroitPrecedent() throws Exception {
 		final DroitProprieteRF precedent = new DroitProprietePersonnePhysiqueRF();
+		precedent.setMasterIdRF("28288228");
+		precedent.setVersionIdRF("1");
 		precedent.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 3, 23), "Achat", null));
 		precedent.calculateDateEtMotifDebut(p -> null);
 
 		final DroitProprieteRF nouveau = new DroitProprietePersonnePhysiqueRF();
+		nouveau.setMasterIdRF("28288228");
+		nouveau.setVersionIdRF("2");
 		nouveau.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 3, 23), "Achat", null));
 		nouveau.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 8, 2), "Remaniement PPE", null));
 		nouveau.calculateDateEtMotifDebut(p -> precedent);

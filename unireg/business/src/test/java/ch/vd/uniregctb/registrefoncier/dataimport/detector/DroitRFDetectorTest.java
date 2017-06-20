@@ -108,9 +108,9 @@ public class DroitRFDetectorTest {
 		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie trois nouveaux droits sur deux propriétaires qui concernent deux immeubles
-		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "37838sc9d94de", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
-		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "029191d4fec44", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
-		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "029191d4fec44", "202930c0e0f3", new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
+		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
+		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "1", "029191d4fec44", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
+		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "1", "029191d4fec44", "202930c0e0f3", new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
 
 		final List<EigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
 		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
@@ -128,7 +128,7 @@ public class DroitRFDetectorTest {
 		assertEquals("029191d4fec44", mut0.getIdRF());  // le premier propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				             "    <PersonEigentumAnteil MasterID=\"45729cd9e20\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"45729cd9e20\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>2</AnteilNenner>\n" +
@@ -147,7 +147,7 @@ public class DroitRFDetectorTest {
 				             "        </NatuerlichePersonGb>\n" +
 				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "    <PersonEigentumAnteil MasterID=\"38458fa0ac3\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"38458fa0ac3\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>1</AnteilNenner>\n" +
@@ -176,7 +176,7 @@ public class DroitRFDetectorTest {
 		assertEquals("37838sc9d94de", mut1.getIdRF());  // le second propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				             "    <PersonEigentumAnteil MasterID=\"9a9c9e94923\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"9a9c9e94923\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>2</AnteilNenner>\n" +
@@ -226,9 +226,9 @@ public class DroitRFDetectorTest {
 		final String idRFCommunaute = "72828ce8f830a";
 
 		// on envoie trois nouveaux droits sur deux propriétaires et une communaué qui concernent un immeuble
-		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", idRfPP1, idRfImmeuble, new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Héritage");
+		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", idRfPP1, idRfImmeuble, new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Héritage");
 		droit1.getNatuerlichePersonGb().setGemeinschatIDREF(idRFCommunaute);
-		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", idRfPP2, idRfImmeuble, new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Héritage");
+		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "1", idRfPP2, idRfImmeuble, new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Héritage");
 		droit2.getNatuerlichePersonGb().setGemeinschatIDREF(idRFCommunaute);
 		final PersonEigentumAnteil droit3 =
 				newDroitColl("38458fa0ac3", idRFCommunaute, idRfImmeuble, GemeinschaftsArt.ERBENGEMEINSCHAFT, new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Héritage");
@@ -271,7 +271,7 @@ public class DroitRFDetectorTest {
 		assertEquals(idRfPP1, mut1.getIdRF());  // le premier propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				             "    <PersonEigentumAnteil MasterID=\"9a9c9e94923\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"9a9c9e94923\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>2</AnteilNenner>\n" +
@@ -301,7 +301,7 @@ public class DroitRFDetectorTest {
 		assertEquals(idRfPP2, mut2.getIdRF());  // le deuxième propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				             "    <PersonEigentumAnteil MasterID=\"45729cd9e20\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"45729cd9e20\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>2</AnteilNenner>\n" +
@@ -377,7 +377,7 @@ public class DroitRFDetectorTest {
 		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie un nouveau droit entre deux immeubles
-		final GrundstueckEigentumAnteil droit1 = newDroitImm("3838292", "48238919011", "202930c0e0f3", new Fraction(1, 1), GrundstueckEigentumsform.DOMINIERENDES_GRUNDSTUECK, RegDate.get(2010, 4, 11), new IdentifiantAffaireRF(6, 2013, 17, 0), "Constitution de PPE");
+		final GrundstueckEigentumAnteil droit1 = newDroitImm("3838292", "1", "48238919011", "202930c0e0f3", new Fraction(1, 1), GrundstueckEigentumsform.DOMINIERENDES_GRUNDSTUECK, RegDate.get(2010, 4, 11), new IdentifiantAffaireRF(6, 2013, 17, 0), "Constitution de PPE");
 
 		final List<EigentumAnteil> droits = Collections.singletonList(droit1);
 		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
@@ -407,7 +407,7 @@ public class DroitRFDetectorTest {
 		assertEquals("48238919011", mut1.getIdRF());  // l'immeuble dominant (= ayant-droit)
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				             "    <GrundstueckEigentumAnteil MasterID=\"3838292\">\n" +
+				             "    <GrundstueckEigentumAnteil VersionID=\"1\" MasterID=\"3838292\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>1</AnteilNenner>\n" +
@@ -450,7 +450,7 @@ public class DroitRFDetectorTest {
 		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie un nouveau droit qui concerne un immeuble blacklisté
-		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "37838sc9d94de", "_1f1091523810108101381012b3d64cb4", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
+		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", "_1f1091523810108101381012b3d64cb4", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
 
 		final List<EigentumAnteil> droits = Collections.singletonList(droit1);
 		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
@@ -483,7 +483,7 @@ public class DroitRFDetectorTest {
 		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie un nouveau droit entre deux immeubles avec l'immeuble dominant blacklisté
-		final GrundstueckEigentumAnteil droit1 = newDroitImm("3838292", "_1f1091523810190f0138101cd6404148", "202930c0e0f3",
+		final GrundstueckEigentumAnteil droit1 = newDroitImm("3838292", "1", "_1f1091523810190f0138101cd6404148", "202930c0e0f3",
 		                                                     new Fraction(1, 1), GrundstueckEigentumsform.DOMINIERENDES_GRUNDSTUECK, RegDate.get(2010, 4, 11),
 		                                                     new IdentifiantAffaireRF(6, 2013, 17, 0), "Constitution de PPE");
 
@@ -524,6 +524,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprietePersonnePhysiqueRF droitPP1 = new DroitProprietePersonnePhysiqueRF();
 		droitPP1.setMasterIdRF("9a9c9e94923");
+		droitPP1.setVersionIdRF("1");
 		droitPP1.setAyantDroit(pp1);
 		droitPP1.setImmeuble(immeuble1);
 		droitPP1.setCommunaute(null);
@@ -538,6 +539,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
 		droitPP2.setMasterIdRF("45729cd9e20");
+		droitPP2.setVersionIdRF("1");
 		droitPP2.setAyantDroit(pp2);
 		droitPP2.setImmeuble(immeuble1);
 		droitPP2.setCommunaute(null);
@@ -552,6 +554,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
 		droitPP3.setMasterIdRF("38458fa0ac3");
+		droitPP3.setVersionIdRF("1");
 		droitPP3.setAyantDroit(pp2);
 		droitPP3.setImmeuble(immeuble2);
 		droitPP3.setCommunaute(null);
@@ -566,6 +569,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprieteImmeubleRF droitImm4 = new DroitProprieteImmeubleRF();
 		droitImm4.setMasterIdRF("282002020");
+		droitImm4.setVersionIdRF("1");
 		droitImm4.setAyantDroit(ib3);
 		droitImm4.setImmeuble(immeuble1);
 		droitImm4.setDateDebut(dateImportInitial);
@@ -600,19 +604,19 @@ public class DroitRFDetectorTest {
 
 		// on envoie trois droits différents sur les mêmes propriétaires et immeubles
 		//  - part différente
-		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "37838sc9d94de", "382929efa218",
+		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", "382929efa218",
 		                                               new Fraction(2, 5), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23),
 		                                               new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
 		//  - motif différent
-		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "029191d4fec44", "382929efa218",
+		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "1", "029191d4fec44", "382929efa218",
 		                                               new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23),
 		                                               new IdentifiantAffaireRF(6, 2013, 33, 1), "Vol autorisé");
 		//  - type de propriété différent
-		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "029191d4fec44", "202930c0e0f3",
+		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "1", "029191d4fec44", "202930c0e0f3",
 		                                               new Fraction(1, 1), PersonEigentumsform.GESAMTEIGENTUM, RegDate.get(2010, 3, 28),
 		                                               new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
 		//  - raison d'acquisition différente
-		final GrundstueckEigentumAnteil droit4 = newDroitImm("282002020", "48238919011", "382929efa218",
+		final GrundstueckEigentumAnteil droit4 = newDroitImm("282002020", "1", "48238919011", "382929efa218",
 		                                                     new Fraction(1, 14), GrundstueckEigentumsform.STOCKWERK, RegDate.get(2016, 4, 4),
 		                                                     new IdentifiantAffaireRF(6, 2016, 1, 0), "Remaniement parcellaire");
 
@@ -632,7 +636,7 @@ public class DroitRFDetectorTest {
 		assertEquals("029191d4fec44", mut0.getIdRF());  // le premier propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				             "    <PersonEigentumAnteil MasterID=\"45729cd9e20\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"45729cd9e20\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>2</AnteilNenner>\n" +
@@ -651,7 +655,7 @@ public class DroitRFDetectorTest {
 				             "        </NatuerlichePersonGb>\n" +
 				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "    <PersonEigentumAnteil MasterID=\"38458fa0ac3\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"38458fa0ac3\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>1</AnteilNenner>\n" +
@@ -680,7 +684,7 @@ public class DroitRFDetectorTest {
 		assertEquals("37838sc9d94de", mut1.getIdRF());  // le second propriétaire
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				             "    <PersonEigentumAnteil MasterID=\"9a9c9e94923\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"9a9c9e94923\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>2</AnteilZaehler>\n" +
 				             "            <AnteilNenner>5</AnteilNenner>\n" +
@@ -709,7 +713,7 @@ public class DroitRFDetectorTest {
 		assertEquals("48238919011", mut2.getIdRF());  // l'immeuble dominant
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				             "    <GrundstueckEigentumAnteil MasterID=\"282002020\">\n" +
+				             "    <GrundstueckEigentumAnteil VersionID=\"1\" MasterID=\"282002020\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>14</AnteilNenner>\n" +
@@ -759,6 +763,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprietePersonnePhysiqueRF droitPP1 = new DroitProprietePersonnePhysiqueRF();
 		droitPP1.setMasterIdRF("9a9c9e94923");
+		droitPP1.setVersionIdRF("1");
 		droitPP1.setAyantDroit(pp1);
 		droitPP1.setImmeuble(immeuble1);
 		droitPP1.setCommunaute(null);
@@ -773,6 +778,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
 		droitPP2.setMasterIdRF("45729cd9e20");
+		droitPP2.setVersionIdRF("1");
 		droitPP2.setAyantDroit(pp2);
 		droitPP2.setImmeuble(immeuble1);
 		droitPP2.setCommunaute(null);
@@ -787,6 +793,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
 		droitPP3.setMasterIdRF("38458fa0ac3");
+		droitPP3.setVersionIdRF("1");
 		droitPP3.setAyantDroit(pp2);
 		droitPP3.setImmeuble(immeuble2);
 		droitPP3.setCommunaute(null);
@@ -801,6 +808,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprieteImmeubleRF droitImm4 = new DroitProprieteImmeubleRF();
 		droitImm4.setMasterIdRF("282002020");
+		droitImm4.setVersionIdRF("1");
 		droitImm4.setAyantDroit(ib3);
 		droitImm4.setImmeuble(immeuble1);
 		droitImm4.setDateDebut(dateImportInitial);
@@ -834,10 +842,10 @@ public class DroitRFDetectorTest {
 		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie les trois mêmes droits sur les mêmes propriétaires et immeubles
-		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "37838sc9d94de", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
-		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "029191d4fec44", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
-		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "029191d4fec44", "202930c0e0f3", new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
-		final GrundstueckEigentumAnteil droit4 = newDroitImm("282002020", "48238919011", "382929efa218", new Fraction(1, 14), GrundstueckEigentumsform.STOCKWERK, RegDate.get(2010, 4, 4), new IdentifiantAffaireRF(6, 2014, 203, 0), "Constitution de PPE");
+		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
+		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "1", "029191d4fec44", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
+		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "1", "029191d4fec44", "202930c0e0f3", new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
+		final GrundstueckEigentumAnteil droit4 = newDroitImm("282002020", "1", "48238919011", "382929efa218", new Fraction(1, 14), GrundstueckEigentumsform.STOCKWERK, RegDate.get(2010, 4, 4), new IdentifiantAffaireRF(6, 2014, 203, 0), "Constitution de PPE");
 
 		final List<EigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3, droit4);
 		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
@@ -877,6 +885,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprietePersonnePhysiqueRF droitPP1 = new DroitProprietePersonnePhysiqueRF();
 		droitPP1.setMasterIdRF("9a9c9e94923");
+		droitPP1.setVersionIdRF("1");
 		droitPP1.setAyantDroit(pp1);
 		droitPP1.setImmeuble(immeuble1);
 		droitPP1.setCommunaute(null);
@@ -891,6 +900,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
 		droitPP2.setMasterIdRF("45729cd9e20");
+		droitPP2.setVersionIdRF("1");
 		droitPP2.setAyantDroit(pp2);
 		droitPP2.setImmeuble(immeuble1);
 		droitPP2.setCommunaute(null);
@@ -905,6 +915,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
 		droitPP3.setMasterIdRF("38458fa0ac3");
+		droitPP3.setVersionIdRF("1");
 		droitPP3.setAyantDroit(pp2);
 		droitPP3.setImmeuble(immeuble2);
 		droitPP3.setCommunaute(null);
@@ -919,6 +930,7 @@ public class DroitRFDetectorTest {
 
 		final DroitProprieteImmeubleRF droitImm4 = new DroitProprieteImmeubleRF();
 		droitImm4.setMasterIdRF("282002020");
+		droitImm4.setVersionIdRF("1");
 		droitImm4.setAyantDroit(ib3);
 		droitImm4.setImmeuble(immeuble1);
 		droitImm4.setDateDebut(dateImportInitial);
@@ -984,8 +996,8 @@ public class DroitRFDetectorTest {
 		assertNull(mut2.getXmlContent());
 	}
 
-	@NotNull
-	private static PersonEigentumAnteil newDroitPP(String idRfDroit, String idRfPP, String idRfImmeuble, Fraction part, PersonEigentumsform typePropriete, RegDate dateDebutEffective, IdentifiantAffaireRF affaire, String motifDebut) {
+	private static PersonEigentumAnteil newDroitPP(String idRfDroit, String versionIdDroit, String idRfPP, String idRfImmeuble, Fraction part, PersonEigentumsform typePropriete, RegDate dateDebutEffective, IdentifiantAffaireRF affaire,
+	                                               String motifDebut) {
 
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(dateDebutEffective);
@@ -999,6 +1011,7 @@ public class DroitRFDetectorTest {
 
 		final PersonEigentumAnteil droit = new PersonEigentumAnteil();
 		droit.setMasterID(idRfDroit);
+		droit.setVersionID(versionIdDroit);
 		droit.setNatuerlichePersonGb(natuerliche);
 		droit.setBelastetesGrundstueckIDREF(idRfImmeuble);
 		droit.setQuote(new Quote((long) part.getNumerateur(), (long) part.getDenominateur(), null, null));
@@ -1007,8 +1020,8 @@ public class DroitRFDetectorTest {
 		return droit;
 	}
 
-	@NotNull
-	private static GrundstueckEigentumAnteil newDroitImm(String idRfDroit, String idRfImmeubleDominant, String idRfImmeubleServant, Fraction part, GrundstueckEigentumsform typePropriete, RegDate dateDebutEffective, IdentifiantAffaireRF affaire, String motifDebut) {
+	private static GrundstueckEigentumAnteil newDroitImm(String idRfDroit, String versionIdDroit, String idRfImmeubleDominant, String idRfImmeubleServant, Fraction part, GrundstueckEigentumsform typePropriete, RegDate dateDebutEffective,
+	                                                     IdentifiantAffaireRF affaire, String motifDebut) {
 
 		final Rechtsgrund recht = new Rechtsgrund();
 		recht.setBelegDatum(dateDebutEffective);
@@ -1018,6 +1031,7 @@ public class DroitRFDetectorTest {
 
 		final GrundstueckEigentumAnteil droit = new GrundstueckEigentumAnteil();
 		droit.setMasterID(idRfDroit);
+		droit.setVersionID(versionIdDroit);
 		droit.setBerechtigtesGrundstueckIDREF(idRfImmeubleDominant);
 		droit.setBelastetesGrundstueckIDREF(idRfImmeubleServant);
 		droit.setQuote(new Quote((long) part.getNumerateur(), (long) part.getDenominateur(), null, null));
