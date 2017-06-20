@@ -181,7 +181,8 @@ public class DesappariementREEProcessor {
 		// Raison sociale fiscale
 		final String raisonSocialeFiscale = etablissement.getRaisonSociale();
 
-		final double jaroWinklerDistance = StringUtils.getJaroWinklerDistance(raisonSocialeFiscale, organisationLocation.getName());
+		final String raisonSocialeCivile = organisationLocation.getName();
+		final double jaroWinklerDistance = StringUtils.getJaroWinklerDistance(raisonSocialeFiscale, raisonSocialeCivile);
 		if (jaroWinklerDistance < MIN_JARO_WINKLER_DISTANCE) {
 			resultat = toVerifier(resultat);
 			msgs.add("La raison sociale a peut-être changé.");
@@ -231,6 +232,10 @@ public class DesappariementREEProcessor {
 		duplicate.setDateFin(null);
 		domicileAtCutoff.setAnnule(true);
 		etablissement.addDomicile(duplicate);
+
+		// Préserver l'ancienne raison sociale dans l'enseigne et assigner la raison sociale civile actuelle, plus fidèle à la réalité.
+		etablissement.setEnseigne(etablissement.getRaisonSociale());
+		etablissement.setRaisonSociale(raisonSocialeCivile);
 
 		// Retourner l'entreprise pour invalidation de la cache RCEnt et réindexation.
 		return entreprise;
