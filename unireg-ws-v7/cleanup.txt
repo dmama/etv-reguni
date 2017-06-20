@@ -12,6 +12,7 @@ Cleanup à faire pour une éventuelle version 8 du web-service
 - remonter les éléments 'contactPerson' et 'contactPhoneNumber' de 'specialAgentType' et 'generalAgentType' à 'agentType'
 - faire la distinction entre les LiabilityChangeReason utilisée pour les fors (TaxResidence - MotifFor) et assujettissements (TaxLiability - MotifAssujettissement)
 - exposer les rapports entre tiers de type Héritage (a priori deux parts distinctes, dans une seule collection, comme pour PARENTS/CHILDREN, puisque défunts et héritiers sont des personnes physiques)
+- passer à xs:long les éléments 'income', 'volume' et 'area' du type 'useDataType' (voir SIFISC-24752)
 
 Reprise du contenu du cleanup précédent
 ------------------------------------------------------------
