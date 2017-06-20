@@ -10,6 +10,7 @@ import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,7 @@ import ch.vd.evd0022.v3.Notice;
 import ch.vd.evd0022.v3.NoticeOrganisation;
 import ch.vd.evd0022.v3.NoticeRequestIdentification;
 import ch.vd.evd0022.v3.OrganisationsOfNotice;
+import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -43,6 +45,7 @@ import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 /**
@@ -277,26 +280,48 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 
 		final List<NoticeOrganisation> organisation = notice.getOrganisation();
 		for (NoticeOrganisation org : organisation) {
-			final EvenementOrganisation e = new EvenementOrganisation(
+			final EvenementOrganisation evt = new EvenementOrganisation(
 					noEvenement,
 					type,
 					noticeDate,
 					org.getOrganisation().getCantonalId().longValue(),
 					EtatEvenementOrganisation.A_TRAITER
 			);
+			// Enregistrer la forme juridique
+			final FormeJuridiqueEntreprise formeJuridique = extractFormeJuridique(org);
+			if (formeJuridique != null) {
+				evt.setFormeJuridique(formeJuridique);
+			}
 			// Préserver le businessId
-			e.setBusinessId(businessId);
+			evt.setBusinessId(businessId);
 			// On a un retour d'annonce à l'IDE. Il faut rechercher sa référence et l'attacher à l'événement.
 			if (noAnnonceIDE != null) {
 				final ReferenceAnnonceIDE referencesAnnonceIDE = referenceAnnonceIDEDAO.get(noAnnonceIDE);
 				if (referencesAnnonceIDE == null) {
 					throw createEsbBusinessException(String.format("Impossible de trouver la référence en base pour le numéro d'annonce à l'IDE %d indiqué dans l'événement RCEnt.", noAnnonceIDE));
 				}
-				e.setReferenceAnnonceIDE(referencesAnnonceIDE);
+				evt.setReferenceAnnonceIDE(referencesAnnonceIDE);
 			}
-			evts.add(e);
+			evts.add(evt);
 		}
 		return evts;
+	}
+
+	private FormeJuridiqueEntreprise extractFormeJuridique(NoticeOrganisation org) {
+		final Optional<String> codeFormeLegale =
+				org.getOrganisation().getOrganisationLocation().stream()
+						.filter(site -> site.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL && site.getLegalForm() != null)
+						.map(f -> f.getLegalForm().value())
+						.findFirst();
+		if (codeFormeLegale.isPresent()) {
+			try {
+				return FormeJuridiqueEntreprise.fromCode(codeFormeLegale.get());
+			}
+			catch (IllegalArgumentException e) {
+				LOGGER.info(String.format("Impossible d'identifier la forme juridique de l'organisation n°%s: %s.", org.getOrganisation().getCantonalId().longValue(), e.getMessage()));
+			}
+		}
+		return null;
 	}
 
 	/*
