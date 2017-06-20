@@ -138,7 +138,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 		this.civilite = civilite;
 	}
 
-	@Column(name = "NOM_DESTINATAIRE", length = LengthConstants.ADRESSE_NOM)
+	@Column(name = "NOM_DESTINATAIRE", length = LengthConstants.ADRESSE_NOM_DESTINATAIRE)
 	public String getNomDestinataire() {
 		return nomDestinataire;
 	}
