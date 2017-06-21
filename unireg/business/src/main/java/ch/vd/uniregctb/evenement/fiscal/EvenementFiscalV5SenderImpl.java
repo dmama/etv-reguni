@@ -10,13 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.xml.event.fiscal.v5.FiscalEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.ObjectFactory;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.utils.LogLevel;
 
@@ -71,9 +69,6 @@ public class EvenementFiscalV5SenderImpl implements EvenementFiscalSender, Initi
 			throw new IllegalArgumentException("Argument evenement ne peut être null.");
 		}
 
-		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
-
 		final FiscalEvent event = evenementFiscalV5Factory.buildOutputData(evenement);
 		if (event == null) {
 			// mapping inexistant pour le canal v5 -> on abandonne
@@ -93,7 +88,7 @@ public class EvenementFiscalV5SenderImpl implements EvenementFiscalSender, Initi
 
 			final EsbMessage m = EsbMessageFactory.createMessage();
 			m.setBusinessId(String.valueOf(evenement.getId()));
-			m.setBusinessUser(principal);
+			m.setBusinessUser(evenement.getLogCreationUser());
 			m.setServiceDestination(serviceDestination);
 			m.setContext("fiscalEvent.v5");
 			m.addHeader(VERSION_ATTRIBUTE, "5");

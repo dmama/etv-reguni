@@ -83,10 +83,11 @@ public class EvenementFiscalV1SenderItTest extends EvenementTest {
 		AuthenticationHelper.pushPrincipal("EvenementFiscalSenderTest");
 		try {
 			// Création du message
-			ContribuableImpositionPersonnesPhysiques pp = new PersonnePhysique(false);
+			final ContribuableImpositionPersonnesPhysiques pp = new PersonnePhysique(false);
 			pp.setNumero(NUMERO_CONTRIBUABLE);
-			EvenementFiscalSituationFamille event = new EvenementFiscalSituationFamille(RegDate.get(2009, 12, 9), pp);
+			final EvenementFiscalSituationFamille event = new EvenementFiscalSituationFamille(RegDate.get(2009, 12, 9), pp);
 			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
 
 			// Envoi du message
 			sender.sendEvent(event);
@@ -110,8 +111,9 @@ public class EvenementFiscalV1SenderItTest extends EvenementTest {
 			final ForFiscalPrincipal ffp =
 					new ForFiscalPrincipalPP(RegDate.get(2009, 12, 9), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			pp.addForFiscal(ffp);
-			EvenementFiscalFor event = new EvenementFiscalFor(RegDate.get(2009, 12, 9), ffp, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
+			final EvenementFiscalFor event = new EvenementFiscalFor(RegDate.get(2009, 12, 9), ffp, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
 			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
 
 			// Envoi du message
 			sender.sendEvent(event);

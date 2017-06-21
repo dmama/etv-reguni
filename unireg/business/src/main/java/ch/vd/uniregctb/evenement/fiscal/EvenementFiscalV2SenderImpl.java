@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -44,7 +43,6 @@ import ch.vd.unireg.xml.event.fiscal.v2.OuvertureFor;
 import ch.vd.unireg.xml.event.fiscal.v2.OuvertureRegimeFiscal;
 import ch.vd.unireg.xml.event.fiscal.v2.TypeEvenementFiscalDeclaration;
 import ch.vd.unireg.xml.event.fiscal.v2.TypeInformationComplementaire;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -150,9 +148,6 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 
 		final EvenementFiscalTiers evenementTiers = (EvenementFiscalTiers) evenement;
 
-		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
-
 		final ch.vd.unireg.xml.event.fiscal.v2.EvenementFiscal event = buildOutputData(evenement);
 		if (event == null) {
 			// mapping inexistant pour le canal v2 -> on abandonne
@@ -172,7 +167,7 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 
 			final EsbMessage m = EsbMessageFactory.createMessage();
 			m.setBusinessId(String.valueOf(evenement.getId()));
-			m.setBusinessUser(principal);
+			m.setBusinessUser(evenement.getLogCreationUser());
 			m.setServiceDestination(serviceDestination);
 			m.setContext("evenementFiscal.v2");
 			m.addHeader(VERSION_ATTRIBUTE, "2");

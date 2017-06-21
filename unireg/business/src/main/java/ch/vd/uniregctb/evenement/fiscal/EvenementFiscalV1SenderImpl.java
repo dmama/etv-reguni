@@ -26,11 +26,9 @@ import ch.vd.fiscalite.registre.evenementFiscalV1.ModeImpositionEnumType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.MotifForEnumType;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -81,9 +79,6 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 
 		final EvenementFiscalTiers evenementTiers = (EvenementFiscalTiers) evenement;
 
-		final String principal = AuthenticationHelper.getCurrentPrincipal();
-		Assert.notNull(principal);
-
 		// Crée la représentation XML de l'événement
 		final XmlObject document = core2xml(evenement);
 		if (document == null) {
@@ -98,7 +93,7 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 		try {
 			final EsbMessage m = EsbMessageFactory.createMessage();
 			m.setBusinessId(String.valueOf(evenement.getId()));
-			m.setBusinessUser(principal);
+			m.setBusinessUser(evenement.getLogCreationUser());
 			m.setServiceDestination(serviceDestination);
 			m.setContext("evenementFiscal.v1");
 			m.addHeader(VERSION_ATTRIBUTE, "1");

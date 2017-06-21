@@ -75,10 +75,11 @@ public class EvenementFiscalV4SenderItTest extends EvenementTest {
 		AuthenticationHelper.pushPrincipal("EvenementFiscalSenderTest");
 		try {
 			// Création du message
-			ContribuableImpositionPersonnesPhysiques pp = new PersonnePhysique(false);
+			final ContribuableImpositionPersonnesPhysiques pp = new PersonnePhysique(false);
 			pp.setNumero(NUMERO_CONTRIBUABLE);
-			EvenementFiscalImpressionFourreNeutre event = new EvenementFiscalImpressionFourreNeutre(pp,2015,RegDate.get(2017, 01, 20));
+			final EvenementFiscalImpressionFourreNeutre event = new EvenementFiscalImpressionFourreNeutre(pp,2015,RegDate.get(2017, 01, 20));
 			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
 
 			// Envoi du message
 			sender.sendEvent(event);

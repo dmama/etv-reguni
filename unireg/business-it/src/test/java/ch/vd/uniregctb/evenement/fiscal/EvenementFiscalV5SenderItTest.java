@@ -105,10 +105,11 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 		AuthenticationHelper.pushPrincipal("EvenementFiscalSenderTest");
 		try {
 			// Création du message
-			ContribuableImpositionPersonnesPhysiques pp = new PersonnePhysique(false);
+			final ContribuableImpositionPersonnesPhysiques pp = new PersonnePhysique(false);
 			pp.setNumero(NUMERO_CONTRIBUABLE);
-			EvenementFiscalSituationFamille event = new EvenementFiscalSituationFamille(RegDate.get(2009, 12, 9), pp);
+			final EvenementFiscalSituationFamille event = new EvenementFiscalSituationFamille(RegDate.get(2009, 12, 9), pp);
 			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
 
 			// Envoi du message
 			sender.sendEvent(event);
@@ -136,8 +137,9 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			pp.setNumero(NUMERO_CONTRIBUABLE);
 			final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(RegDate.get(2009, 12, 9), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			pp.addForFiscal(ffp);
-			EvenementFiscalFor event = new EvenementFiscalFor(RegDate.get(2009, 12, 9), ffp, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
+			final EvenementFiscalFor event = new EvenementFiscalFor(RegDate.get(2009, 12, 9), ffp, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
 			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
 
 			// Envoi du message
 			sender.sendEvent(event);
@@ -165,10 +167,11 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 		AuthenticationHelper.pushPrincipal("EvenementFiscalSenderTest");
 		try {
 			// Création du message
-			ContribuableImpositionPersonnesPhysiques pp = new PersonnePhysique(false);
+			final ContribuableImpositionPersonnesPhysiques pp = new PersonnePhysique(false);
 			pp.setNumero(NUMERO_CONTRIBUABLE);
-			EvenementFiscalImpressionFourreNeutre event = new EvenementFiscalImpressionFourreNeutre(pp,2015,RegDate.get(2017, 1, 20));
+			final EvenementFiscalImpressionFourreNeutre event = new EvenementFiscalImpressionFourreNeutre(pp,2015,RegDate.get(2017, 1, 20));
 			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
 
 			// Envoi du message
 			sender.sendEvent(event);
@@ -207,8 +210,9 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			immeuble.setEgrid("CH28282");
 			immeuble.addSituation(situation);
 
-			EvenementFiscalImmeuble event = new EvenementFiscalImmeuble(RegDate.get(2017, 1, 1), immeuble, EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.CREATION);
+			final EvenementFiscalImmeuble event = new EvenementFiscalImmeuble(RegDate.get(2017, 1, 1), immeuble, EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.CREATION);
 			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
 
 			// Envoi du message
 			sender.sendEvent(event);
@@ -251,8 +255,9 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			servitude.addImmeuble(immeuble);
 			servitude.addAyantDroit(tiers);
 
-			EvenementFiscalServitude event = new EvenementFiscalServitude(RegDate.get(2017, 1, 1), servitude, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE);
+			final EvenementFiscalServitude event = new EvenementFiscalServitude(RegDate.get(2017, 1, 1), servitude, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE);
 			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
 
 			evenementFiscalV5Factory.setRegistreFoncierService(new MockRegistreFoncierService() {
 				@Override
@@ -306,8 +311,9 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 			droit.setImmeuble(immeuble);
 			droit.setAyantDroit(tiers);
 
-			EvenementFiscalDroitPropriete event = new EvenementFiscalDroitPropriete(RegDate.get(2017, 1, 1), droit, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE);
+			final EvenementFiscalDroitPropriete event = new EvenementFiscalDroitPropriete(RegDate.get(2017, 1, 1), droit, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE);
 			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
 
 			evenementFiscalV5Factory.setRegistreFoncierService(new MockRegistreFoncierService() {
 				@Override
