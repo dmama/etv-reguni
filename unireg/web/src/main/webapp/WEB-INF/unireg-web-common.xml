@@ -54,7 +54,8 @@
 	<bean id="authenticationController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
 		<property name="viewName" value="security/authenticationFailed" />
 	</bean>
-	<bean id="logoutController" class="ch.vd.uniregctb.common.LogoutController">
+
+	<bean id="logoutController" class="ch.vd.uniregctb.LogoutController">
 		<property name="uniregProperties" ref="uniregExternalProperties" />
 	</bean>
 
