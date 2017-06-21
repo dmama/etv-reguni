@@ -68,7 +68,6 @@
 		<property name="urlMap">
 			<map>
 				<!-- Base -->
-				<entry key="/index.do" value-ref="indexController" />
 				<entry key="/authenticationFailed.do" value-ref="authenticationController" />
 				<entry key="/404.do" value-ref="notFoundController" />
 				<entry key="/403.do" value-ref="page403Controller" />

@@ -43,9 +43,7 @@
 		<property name="viewName" value="errors/error" />
 	</bean>
 
-	<bean id="indexController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-		<property name="viewName" value="redirect:/tiers/list.do" />
-	</bean>
+	<bean id="indexController" class="ch.vd.uniregctb.IndexController" />
 
 	<bean id="oidController" class="ch.vd.uniregctb.security.ChooseOIDController">
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
