@@ -58,13 +58,13 @@ public class UniregJtaTransactionManager extends JtaTransactionManager implement
 
 	@Override
 	public void registerSynchronizationSupplier(TransactionSynchronizationSupplier supplier) {
-		Objects.nonNull(supplier);
+		Objects.requireNonNull(supplier, "Supplier is not expected to be null");
 		lockHelper.doInWriteLock(() -> synchronizationSuppliers.add(new IdentityKey<>(supplier)));
 	}
 
 	@Override
 	public void unregisterSynchronizationSupplier(TransactionSynchronizationSupplier supplier) {
-		Objects.nonNull(supplier);
+		Objects.requireNonNull(supplier, "Supplier is not expected to be null");
 		lockHelper.doInWriteLock(() -> synchronizationSuppliers.remove(new IdentityKey<>(supplier)));
 	}
 

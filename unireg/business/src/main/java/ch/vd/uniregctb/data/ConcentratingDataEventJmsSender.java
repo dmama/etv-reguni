@@ -308,7 +308,7 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 					super.afterCompletion(status);
 
 					// transaction committée ou annulée, il faut tout nettoyer...
-					transactionCollectedData.set(null);
+					transactionCollectedData.reset();
 				}
 			});
 		}
@@ -448,7 +448,10 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 
 	@Override
 	public void registerSynchronizations(Consumer<TransactionSynchronization> collector) {
-		transactionCollectedData.set(new TransactionCollectedData(collector));
+		// on n'enregistre une synchronisation que si elle n'est pas déjà enregistrée
+		if (transactionCollectedData.get() == null) {
+			transactionCollectedData.set(new TransactionCollectedData(collector));
+		}
 	}
 
 	private void reallySendEvents(List<EvenementFiscal> evenementsFiscaux, List<DataEvent> evenementsNotification) {

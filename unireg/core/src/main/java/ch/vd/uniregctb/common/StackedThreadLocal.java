@@ -52,13 +52,16 @@ public class StackedThreadLocal<T> {
 	 */
 	private Deque<Object> newStack() {
 		final Deque<Object> stack = new ArrayDeque<>();
-		stack.push(newElement());
+		push(stack, newEncodedElement());
 		return stack;
 	}
 
-	private Object newElement() {
-		final T fromSupplier = supplier.get();
-		return encodeElement(fromSupplier);
+	private T newElement() {
+		return supplier.get();
+	}
+
+	private Object newEncodedElement() {
+		return encodeElement(newElement());
 	}
 
 	@NotNull
@@ -85,7 +88,7 @@ public class StackedThreadLocal<T> {
 	 * Mise de côté du contenu actuel et initialisation d'un nouveau contexte
 	 */
 	public void pushState() {
-		push(getStack(), newElement());
+		push(getStack(), newEncodedElement());
 	}
 
 	private static <T> void push(Deque<T> stack, T value) {
@@ -122,5 +125,12 @@ public class StackedThreadLocal<T> {
 		final Deque<Object> stack = getStack();
 		pop(stack, true);
 		push(stack, encodeElement(value));
+	}
+
+	/**
+	 * Ré-assignation explicite du contenu à la valeur par défaut fournie par le fournisseur officiel
+	 */
+	public void reset() {
+		set(newElement());
 	}
 }

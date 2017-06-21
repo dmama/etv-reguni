@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LockHelper;
+import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.transaction.TransactionSynchronizationRegistrar;
 import ch.vd.uniregctb.transaction.TransactionSynchronizationSupplier;
@@ -30,10 +31,29 @@ import ch.vd.uniregctb.transaction.TransactionSynchronizationSupplier;
  */
 public class ModificationInterceptor extends AbstractLinkedInterceptor implements TransactionSynchronizationSupplier, InitializingBean, DisposableBean {
 
+	/**
+	 * Switch qui détermine si l'intercepteur est actif dans la transaction
+	 */
 	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
+
+	/**
+	 * Flag qui conserve l'information de si la synchronisation a déjà été enregistrée dans la transaction courante
+	 */
+	private final StackedThreadLocal<Boolean> synchronisationRegistrationFlag = new StackedThreadLocal<>(() -> Boolean.FALSE);
+
+	/**
+	 * Verrou d'accès à la liste des sub-intercepteurs
+	 */
 	private final LockHelper lockHelper = new LockHelper();
+
+	/**
+	 * Sub-intercepteurs enregistrés
+	 */
 	private final List<ModificationSubInterceptor> subInterceptors = new ArrayList<>();
 
+	/**
+	 * Entité qu'il faut contacter pour enregistrer ses propres synchronisations de transaction
+	 */
 	private TransactionSynchronizationRegistrar synchronizationRegistrar;
 
 	public void setSynchronizationRegistrar(TransactionSynchronizationRegistrar synchronizationRegistrar) {
@@ -207,6 +227,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor implement
 
 		@Override
 		public void suspend() {
+			synchronisationRegistrationFlag.pushState();
 			suspendTransaction();
 			super.suspend();
 		}
@@ -215,6 +236,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor implement
 		public void resume() {
 			super.resume();
 			resumeTransaction();
+			synchronisationRegistrationFlag.popState();
 		}
 
 		@Override
@@ -226,6 +248,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor implement
 		@Override
 		public void afterCompletion(int status) {
 			super.afterCompletion(status);
+			synchronisationRegistrationFlag.reset();
 
 			switch (status) {
 			case TransactionSynchronization.STATUS_COMMITTED:
@@ -242,8 +265,10 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor implement
 
 	@Override
 	public void registerSynchronizations(Consumer<TransactionSynchronization> collector) {
-		if (isEnabledForThread()) {
+		// on n'enregistre une synchronisation que si elle n'est pas déjà enregistrée
+		if (isEnabledForThread() && !synchronisationRegistrationFlag.get()) {
 			collector.accept(new TransactionSync());
+			synchronisationRegistrationFlag.set(Boolean.TRUE);
 		}
 	}
 }
