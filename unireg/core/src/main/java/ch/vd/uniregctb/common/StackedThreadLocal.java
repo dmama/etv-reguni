@@ -5,6 +5,7 @@ import java.util.Deque;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Classe utilitaire qui permet de gérer une donnée en {@link ThreadLocal} sur plusieurs niveaux, par exemple
@@ -19,7 +20,14 @@ public class StackedThreadLocal<T> {
 	 */
 	private static final Object NULL_REPLACEMENT = new Object();
 
+	/**
+	 * {@link ThreadLocal} à qui est déléguée la partie "valeur différente pour chaque threads"
+	 */
 	private final ThreadLocal<Deque<Object>> stacks = ThreadLocal.withInitial(this::newStack);
+
+	/**
+	 * Récupérateur de nouvel élément
+	 */
 	private final Supplier<? extends T> supplier;
 
 	/**
@@ -53,11 +61,14 @@ public class StackedThreadLocal<T> {
 		return encodeElement(fromSupplier);
 	}
 
-	private Object encodeElement(T element) {
+	@NotNull
+	private Object encodeElement(@Nullable T element) {
 		return element != null ? element : NULL_REPLACEMENT;
 	}
 
+	@Nullable
 	private T decodeElement(Object element) {
+		//noinspection unchecked
 		return element == NULL_REPLACEMENT ? null : (T) element;
 	}
 
