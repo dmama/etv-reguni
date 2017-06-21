@@ -95,4 +95,21 @@ public class StackedThreadLocalTest extends WithoutSpringTest {
 		final Set<Long> set = tl.get();
 		Assert.assertSame(data, set);
 	}
+
+	@Test
+	public void testSetNull() throws Exception {
+		final StackedThreadLocal<Set<Long>> tl = new StackedThreadLocal<>(HashSet::new);
+		tl.set(null);
+		tl.pushState();
+		tl.popState();
+		final Set<Long> set = tl.get();
+		Assert.assertNull(set);
+	}
+
+	@Test
+	public void testDefaultConstructor() throws Exception {
+		final StackedThreadLocal<Set<Long>> tl = new StackedThreadLocal<>();
+		final Set<Long> set = tl.get();
+		Assert.assertNull(set);
+	}
 }

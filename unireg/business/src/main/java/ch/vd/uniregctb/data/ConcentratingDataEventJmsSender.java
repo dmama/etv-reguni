@@ -30,6 +30,7 @@ import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.Relationship;
 import ch.vd.unireg.xml.event.data.v1.TiersChangeEvent;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalException;
@@ -45,7 +46,7 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 	/**
 	 * Les données collectées sur la transaction en cours
 	 */
-	private final ThreadLocal<TransactionCollectedData> transactionCollectedData = new ThreadLocal<>();
+	private final StackedThreadLocal<TransactionCollectedData> transactionCollectedData = new StackedThreadLocal<>();
 
 	private TransactionSynchronizationRegistrar synchronizationRegistrar;
 	private DataEventSender sender;
@@ -279,6 +280,18 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 			collector.accept(new TransactionSynchronizationAdapter() {
 
 				@Override
+				public void suspend() {
+					transactionCollectedData.pushState();
+					super.suspend();
+				}
+
+				@Override
+				public void resume() {
+					super.resume();
+					transactionCollectedData.popState();
+				}
+
+				@Override
 				public void beforeCommit(boolean readOnly) {
 					super.beforeCommit(readOnly);
 					if (!readOnly) {
@@ -295,10 +308,7 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 					super.afterCompletion(status);
 
 					// transaction committée ou annulée, il faut tout nettoyer...
-					// Il est particulièrement important d'effacer la donnée dans le ThreadLocal afin que la déréférence suivante
-					// de la donnée force une nouvelle instanciation de l'objet et donc son inscription dans la transaction courante
-					// (y compris le nettoyage final)
-					transactionCollectedData.remove();
+					transactionCollectedData.set(null);
 				}
 			});
 		}
