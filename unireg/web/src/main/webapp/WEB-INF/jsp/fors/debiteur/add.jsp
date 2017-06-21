@@ -130,7 +130,7 @@
 				<tr>
 					<td width="25%">&nbsp;</td>
 					<td width="25%"><input type="submit" value="<fmt:message key="label.bouton.ajouter" />"></td>
-					<td width="25%"><unireg:buttonTo name="Retour" action="/fiscal/edit-for-debiteur.do" params="{id:${command.tiersId}}" method="GET"/></td>
+					<td width="25%"><unireg:buttonTo name="Retour" action="/fors/debiteur/list.do" params="{id:${command.tiersId}}" method="GET"/></td>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>

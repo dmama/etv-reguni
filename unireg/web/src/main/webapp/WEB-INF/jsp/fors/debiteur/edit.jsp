@@ -95,7 +95,7 @@
 				<tr>
 					<td width="25%">&nbsp;</td>
 					<td width="25%"><input type="submit" value="<fmt:message key="label.bouton.mettre.a.jour" />"></td>
-					<td width="25%"><unireg:buttonTo name="Annuler" action="/fiscal/edit-for-debiteur.do" method="GET" params="{id:${command.tiersId}}"/></td>
+					<td width="25%"><unireg:buttonTo name="Annuler" action="/fors/debiteur/list.do" method="GET" params="{id:${command.tiersId}}"/></td>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>

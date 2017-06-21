@@ -73,7 +73,6 @@
 				<entry key="/fiscal/situation-famille.do" value-ref="tiersSituationFamilleController" />
 
 				<entry key="/fiscal/edit.do" value-ref="fiscalEditController" />
-				<entry key="/fiscal/edit-for-debiteur.do" value-ref="fiscalEditForDebiteurController" />
 				<entry key="/dossiers-apparentes/edit.do" value-ref="dossiersApparentesEditController" />
 				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
 				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />

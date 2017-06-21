@@ -11,14 +11,6 @@
 		<property name="situationFamilleManager" ref="situationFamilleManager" />
 	</bean>
 
-	<bean id="fiscalEditForDebiteurController" class="ch.vd.uniregctb.tiers.FiscalEditForDebiteurController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
-		<property name="formView" value="tiers/edition/fiscal/edit-for-debiteur" />
-		<property name="tiersEditManager" ref="tiersEditManager" />
-		<property name="forFiscalManager" ref="forFiscalManager" />
-	</bean>
-
 	<bean id="forFiscalManager" class="ch.vd.uniregctb.tiers.manager.ForFiscalManagerImpl"  parent="tiersManager">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />

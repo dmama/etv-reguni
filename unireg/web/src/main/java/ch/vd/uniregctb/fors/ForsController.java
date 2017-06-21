@@ -35,6 +35,7 @@ import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -62,6 +63,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
+import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -822,6 +824,37 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
 	}
 
+	@RequestMapping(value = "/debiteur/list.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String listDebiteur(@RequestParam("id") long id, Model model) {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les fors fiscaux d'un débiteur");
+		}
+
+		controllerUtils.checkAccesDossierEnLecture(id);
+
+		final DebiteurPrestationImposable dpi = getDebiteurPrestationImposable(id);
+		final List<ForFiscalView> forsView = ForFiscalView.getList(dpi, null);
+		model.addAttribute("id", id);
+		model.addAttribute("fors", forsView);
+
+		return "fors/debiteur/list";
+	}
+
+	@NotNull
+	private DebiteurPrestationImposable getDebiteurPrestationImposable(long id) {
+		final Tiers tiers = tiersDAO.get(id);
+		if (tiers == null) {
+			throw new TiersNotFoundException(id);
+		}
+		if (!(tiers instanceof DebiteurPrestationImposable)) {
+			throw new ObjectNotFoundException("Le tiers n°" + id + " n'est pas un débiteur de prestations imposables.");
+		}
+
+		return (DebiteurPrestationImposable) tiers;
+	}
+
 	@RequestMapping(value = "/debiteur/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addDebiteur(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
@@ -861,7 +894,7 @@ public class ForsController {
 
 		tiersService.addForDebiteur(debiteur, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
 
-		return "redirect:/fiscal/edit-for-debiteur.do?id=" + dpiId;
+		return "redirect:/fors/debiteur/list.do?id=" + dpiId;
 	}
 
 	@RequestMapping(value = "/debiteur/datesFermeture.do", method = RequestMethod.GET)
@@ -926,7 +959,7 @@ public class ForsController {
 
 		tiersService.updateForDebiteur(fdpi, view.getDateFin(), view.getMotifFin());
 
-		return "redirect:/fiscal/edit-for-debiteur.do?id=" + dpiId;
+		return "redirect:/fors/debiteur/list.do?id=" + dpiId;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -946,7 +979,7 @@ public class ForsController {
 
 		tiersService.annuleForFiscal(forFiscal);
 
-		return "redirect:/fiscal/edit-for-debiteur.do?id=" + tiers.getId();
+		return "redirect:/fors/debiteur/list.do?id=" + tiers.getId();
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -966,7 +999,7 @@ public class ForsController {
 
 		tiersService.reouvrirForDebiteur(forFiscal);
 
-		return "redirect:/fiscal/edit-for-debiteur.do?id=" + tiers.getId();
+		return "redirect:/fors/debiteur/list.do?id=" + tiers.getId();
 	}
 
 	private Map<GenreImpot, String> getGenresImpotPourForAutreImpot() {
