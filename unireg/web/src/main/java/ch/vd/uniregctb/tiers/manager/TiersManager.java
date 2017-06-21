@@ -110,7 +110,6 @@ import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -136,9 +135,7 @@ import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.tiers.view.EtiquetteTiersView;
 import ch.vd.uniregctb.tiers.view.FlagEntrepriseView;
-import ch.vd.uniregctb.tiers.view.ForDebiteurViewComparator;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
-import ch.vd.uniregctb.tiers.view.ForFiscalViewComparator;
 import ch.vd.uniregctb.tiers.view.LogicielView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteViewComparator;
@@ -867,48 +864,24 @@ public class TiersManager implements MessageSourceAware {
 	 * Met a jour les fors fiscaux
 	 */
 	protected void setForsFiscaux(TiersView tiersView, Contribuable contribuable) {
-		final ForGestion forGestion = tiersService.getDernierForGestionConnu(contribuable, null);
-		final ForFiscalPrincipal dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
-		final ForFiscal forPrincipalActif = contribuable.getForFiscalPrincipalAt(null);
-		final List<ForFiscal> forsFiscaux = contribuable.getForsFiscauxSorted();
-
-		final List<ForFiscalView> forsFiscauxView = new ArrayList<>();
-		if (forsFiscaux != null) {
-			ForFiscalView forPrincipalViewActif = null;
-			for (ForFiscal forFiscal : forsFiscaux) {
-
-				final boolean isForGestion = forGestion != null && forGestion.getSousjacent() == forFiscal;
-				final boolean isDernierForPrincipal = (dernierForPrincipal == forFiscal);
-
-				final ForFiscalView forFiscalView = new ForFiscalView(forFiscal, isForGestion, isDernierForPrincipal);
-
-				if (forPrincipalActif == forFiscal) {
-					forPrincipalViewActif = forFiscalView;
-				}
-
-				forsFiscauxView.add(forFiscalView);
-			}
-			forsFiscauxView.sort(new ForFiscalViewComparator());
-			tiersView.setForsPrincipalActif(forPrincipalViewActif);
-			tiersView.setForsFiscaux(forsFiscauxView);
-		}
+		final List<ForFiscalView> forsFiscauxView = ForFiscalView.getList(contribuable, tiersService::getDernierForGestionConnu);
+		tiersView.setForsPrincipalActif(forsFiscauxView.stream()
+				                                .filter(ForFiscalView::isPrincipalActif)
+				                                .findFirst()
+				                                .orElse(null));
+		tiersView.setForsFiscaux(forsFiscauxView);
 	}
 
 	/**
 	 * Met a jour les fors fiscaux pour le dpi
 	 */
 	protected void setForsFiscauxDebiteur(TiersView tiersView, DebiteurPrestationImposable dpi) {
-		final List<ForFiscalView> forsFiscauxView = new ArrayList<>();
-		final Set<ForFiscal> forsFiscaux = dpi.getForsFiscaux();
-		if (forsFiscaux != null) {
-			for (ForFiscal forFiscal : forsFiscaux) {
-				final boolean dernierFor = !forFiscal.isAnnule() && (forFiscal.getDateFin() == null || dpi.getForDebiteurPrestationImposableAfter(forFiscal.getDateFin()) == null);
-				final ForFiscalView forFiscalView = new ForFiscalView(forFiscal, false, dernierFor);
-				forsFiscauxView.add(forFiscalView);
-			}
-			forsFiscauxView.sort(new ForDebiteurViewComparator());
-			tiersView.setForsFiscaux(forsFiscauxView);
-		}
+		final List<ForFiscalView> forsFiscauxView = ForFiscalView.getList(dpi, tiersService::getDernierForGestionConnu);
+		tiersView.setForsPrincipalActif(forsFiscauxView.stream()
+				                                .filter(ForFiscalView::isPrincipalActif)
+				                                .findFirst()
+				                                .orElse(null));
+		tiersView.setForsFiscaux(forsFiscauxView);
 	}
 
 	/**

@@ -1,19 +1,31 @@
 package ch.vd.uniregctb.tiers.view;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.NatureTiers;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -61,10 +73,11 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	private String libPays;
 
 	private boolean annule;
-
 	private String natureForFiscal;
 
 	private NatureTiers natureTiers;
+
+	private final boolean isPrincipalActif;
 
 	private boolean dernierForPrincipalOuDebiteur;
 
@@ -80,7 +93,54 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 
 	private final boolean secondaire;
 
-	public ForFiscalView(ForFiscal forFiscal, boolean isForGestion, boolean dernierForPrincipalOuDebiteur) {
+	/**
+	 * Construit la vue des fors fiscaux d'un contribuable.
+	 *
+	 * @param tiers              un contribuable
+	 * @param dernierForGestionProvider une fonction qui retourne le dernier for de gestion
+	 * @return la vue des fors fiscaux.
+	 */
+	@NotNull
+	public static List<ForFiscalView> getList(@NotNull Tiers tiers, @Nullable BiFunction<Contribuable, RegDate, ForGestion> dernierForGestionProvider) {
+
+		final List<ForFiscal> forsFiscauxSorted = tiers.getForsFiscauxSorted();
+		if (forsFiscauxSorted == null || forsFiscauxSorted.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final ForGestion forGestion;
+		final ForFiscal forPrincipalActif;
+		final ForFiscal dernierForPrincipalOuDebiteur;
+		final Comparator<ForFiscalView> comparator;
+
+		if (tiers instanceof DebiteurPrestationImposable) {
+			forGestion = null;
+			forPrincipalActif = null;
+			dernierForPrincipalOuDebiteur = tiers.getDernierForDebiteur();
+			comparator = new ForDebiteurViewComparator();
+		}
+		else {
+			forGestion = (dernierForGestionProvider == null ? null : dernierForGestionProvider.apply((Contribuable) tiers, null));
+			forPrincipalActif = tiers.getForFiscalPrincipalAt(null);
+			dernierForPrincipalOuDebiteur = tiers.getDernierForFiscalPrincipal();
+			comparator = new ForFiscalViewComparator();
+		}
+
+		return forsFiscauxSorted.stream()
+				.map(f -> get(f, forGestion, forPrincipalActif, dernierForPrincipalOuDebiteur))
+				.sorted(comparator)
+				.collect(Collectors.toList());
+	}
+
+	private static ForFiscalView get(@NotNull ForFiscal forFiscal, @Nullable ForGestion forGestion, @Nullable ForFiscal forPrincipalActif, @Nullable ForFiscal dernierForPrincipalOuDebiteur) {
+		final boolean isForGestion = forGestion != null && forGestion.getSousjacent() == forFiscal;
+		final boolean isPrincipalActif = (forPrincipalActif == forFiscal);
+		final boolean isDernierForPrincipalOuDebiteur = (dernierForPrincipalOuDebiteur == forFiscal);
+
+		return new ForFiscalView(forFiscal, isForGestion, isPrincipalActif, isDernierForPrincipalOuDebiteur);
+	}
+
+	public ForFiscalView(ForFiscal forFiscal, boolean isForGestion, boolean isPrincipalActif, boolean dernierForPrincipalOuDebiteur) {
 		this.id = forFiscal.getId();
 		this.numeroCtb = forFiscal.getTiers().getNumero();
 		this.genreImpot = forFiscal.getGenreImpot();
@@ -122,6 +182,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 			this.modeImposition = forFiscalPrincipal.getModeImposition();
 		}
 
+		this.isPrincipalActif = isPrincipalActif;
 		this.dernierForPrincipalOuDebiteur = dernierForPrincipalOuDebiteur;
 		this.natureForFiscal = forFiscal.getClass().getSimpleName();
 
@@ -455,6 +516,10 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 
 	public void setNatureTiers(NatureTiers natureTiers) {
 		this.natureTiers = natureTiers;
+	}
+
+	public boolean isPrincipalActif() {
+		return isPrincipalActif;
 	}
 
 	public boolean isDernierForPrincipalOuDebiteur() {
