@@ -128,19 +128,6 @@ public class TiersEditManagerTest extends WebTest {
 	}
 
 	/**
-	 * Teste la methode creeDebiteur
-	 */
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testCreeDebiteur() throws Exception{
-
-		TiersEditView view = tiersEditManager.creeDebiteur(new Long(6789));
-		Tiers tiers = view.getTiers();
-		DebiteurPrestationImposable debiteurPrestationImposable = (DebiteurPrestationImposable) tiers;
-		assertNotNull(debiteurPrestationImposable);
-	}
-
-	/**
 	 * Teste la methode save
 	 */
 	@Test

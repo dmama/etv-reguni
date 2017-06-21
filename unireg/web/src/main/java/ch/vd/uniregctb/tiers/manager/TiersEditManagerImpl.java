@@ -16,18 +16,15 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -41,7 +38,6 @@ import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -341,57 +337,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		TiersEditView tiersView = new TiersEditView();
 		AutreCommunaute autreCommunaute = new AutreCommunaute();
 		tiersView.setTiers(autreCommunaute);
-		return tiersView;
-	}
-
-	/**
-	 * Cree une nouvelle instance de TiersView correspondant a un debiteur
-	 *
-	 * @return un objet TiersView
-	 * @throws AdressesResolutionException
-	 */
-	@Override
-	public TiersEditView creeDebiteur(Long numeroCtbAssocie) throws AdressesResolutionException {
-		final TiersEditView tiersView = new TiersEditView();
-		final DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
-		final Contribuable ctbAssocie = tiersDAO.getContribuableByNumero(numeroCtbAssocie);
-		if (ctbAssocie instanceof PersonnePhysique) {
-			final PersonnePhysique pp = (PersonnePhysique) ctbAssocie;
-			final String nomPrenom = tiersService.getNomPrenom(pp);
-			debiteur.setNom1(nomPrenom);
-			debiteur.setNom2(pp.getComplementNom());
-		}
-		else if (ctbAssocie instanceof MenageCommun) {
-			final MenageCommun menage = (MenageCommun) ctbAssocie;
-			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, null);
-
-			final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
-			if (principal != null) {
-				final String nomPrenom = tiersService.getNomPrenom(principal);
-				debiteur.setNom1(nomPrenom);
-			}
-
-			final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
-			if (conjoint != null) {
-				final String nomPrenom2 = tiersService.getNomPrenom(conjoint);
-				debiteur.setNom2(nomPrenom2);
-			}
-		}
-		else if (ctbAssocie instanceof AutreCommunaute) {
-			final AutreCommunaute autreCommunaute =(AutreCommunaute) ctbAssocie;
-			debiteur.setNom1(autreCommunaute.getNom());
-		}
-		else if (ctbAssocie instanceof Entreprise) {
-			final Entreprise entreprise = (Entreprise) ctbAssocie;
-			final EntrepriseView entrepriseView = getEntrepriseService().getEntreprise(entreprise);
-			debiteur.setNom1(CollectionsUtils.getLastElement(entrepriseView.getRaisonsSociales()).getRaisonSociale());
-		}
-	
-		debiteur.setModeCommunication(ModeCommunication.PAPIER);	
-		debiteur.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
-		setPeriodiciteCourante(tiersView, debiteur);
-		tiersView.setTiers(debiteur);
-		tiersView.setNumeroCtbAssocie(numeroCtbAssocie);
 		return tiersView;
 	}
 

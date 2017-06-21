@@ -90,14 +90,6 @@ public interface TiersEditManager {
 	TiersEditView creeOrganisation();
 
 	/**
-	 * Cree une nouvelle instance de TiersView correspondant a un debiteur
-	 *
-	 * @return un objet TiersView
-	 */
-	@Transactional(readOnly = true)
-	TiersEditView creeDebiteur(Long numeroCtbAssocie) throws AdressesResolutionException;
-
-	/**
 	 * Sauvegarde du tiers en base et mise a jour de l'indexeur
 	 *
 	 * @param tiersEditView
