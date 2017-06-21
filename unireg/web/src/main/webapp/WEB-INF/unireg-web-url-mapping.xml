@@ -67,9 +67,6 @@
 		</property>
 		<property name="urlMap">
 			<map>
-				<!-- Base -->
-				<entry key="/authenticationFailed.do" value-ref="authenticationController" />
-
 				<!-- Tiers - display -->
 				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
 				<entry key="/tiers/rapport.do" value-ref="tiersRapportController" />
@@ -96,7 +93,7 @@
 				<entry key="/fusion/recap.do" value-ref="fusionRecapController" />
 				-->
 
-				<!-- ATTENTION ! NE PAS UTILISER CE MAPPER POUR DE NOUVEAUX CONTROLEURS !! Veuillez utiliser le 'mainUrlMapper' (sans le openSessionInViewInterceptor) -->
+				<!-- ATTENTION ! NE PAS UTILISER CE MAPPER POUR DE NOUVEAUX CONTROLEURS !!  -->
 			</map>
 		</property>
 	</bean>
