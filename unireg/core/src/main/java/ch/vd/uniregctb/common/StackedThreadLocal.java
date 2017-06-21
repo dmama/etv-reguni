@@ -14,7 +14,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class StackedThreadLocal<T> {
 
-	private final ThreadLocal<Deque<T>> stacks = ThreadLocal.withInitial(this::newStack);
+	/**
+	 * Un objet qui sera utilisé dans les stacks comme remplaçant de "null", car cette valeur n'est pas acceptée dans les ArrayDeque...
+	 */
+	private static final Object NULL_REPLACEMENT = new Object();
+
+	private final ThreadLocal<Deque<Object>> stacks = ThreadLocal.withInitial(this::newStack);
 	private final Supplier<? extends T> supplier;
 
 	/**
@@ -26,13 +31,34 @@ public class StackedThreadLocal<T> {
 	}
 
 	/**
+	 * Constructeur par défaut, qui initialise la donnée du ThreadLocal équivalent à <code>null</code>
+	 * (et suppose plus ou moins l'utilisation de la méthode {@link #set})
+	 */
+	public StackedThreadLocal() {
+		this(() -> null);
+	}
+
+	/**
 	 * Construction d'une nouvelle stack pour le thread courant
 	 * @return la nouvelle stack
 	 */
-	private Deque<T> newStack() {
-		final Deque<T> stack = new ArrayDeque<>();
-		stack.push(supplier.get());
+	private Deque<Object> newStack() {
+		final Deque<Object> stack = new ArrayDeque<>();
+		stack.push(newElement());
 		return stack;
+	}
+
+	private Object newElement() {
+		final T fromSupplier = supplier.get();
+		return encodeElement(fromSupplier);
+	}
+
+	private Object encodeElement(T element) {
+		return element != null ? element : NULL_REPLACEMENT;
+	}
+
+	private T decodeElement(Object element) {
+		return element == NULL_REPLACEMENT ? null : (T) element;
 	}
 
 	/**
@@ -40,7 +66,7 @@ public class StackedThreadLocal<T> {
 	 * @return la stack du thread courant, éventuellement instanciée à la demande
 	 */
 	@NotNull
-	private Deque<T> getStack() {
+	private Deque<Object> getStack() {
 		return stacks.get();
 	}
 
@@ -48,7 +74,7 @@ public class StackedThreadLocal<T> {
 	 * Mise de côté du contenu actuel et initialisation d'un nouveau contexte
 	 */
 	public void pushState() {
-		push(getStack(), supplier.get());
+		push(getStack(), newElement());
 	}
 
 	private static <T> void push(Deque<T> stack, T value) {
@@ -74,7 +100,7 @@ public class StackedThreadLocal<T> {
 	 * @return le contenu du {@link ThreadLocal}
 	 */
 	public T get() {
-		return getStack().peek();
+		return decodeElement(getStack().peek());
 	}
 
 	/**
@@ -82,8 +108,8 @@ public class StackedThreadLocal<T> {
 	 * @param value la valeur explicite à assigner
 	 */
 	public void set(T value) {
-		final Deque<T> stack = getStack();
+		final Deque<Object> stack = getStack();
 		pop(stack, true);
-		push(stack, value);
+		push(stack, encodeElement(value));
 	}
 }
