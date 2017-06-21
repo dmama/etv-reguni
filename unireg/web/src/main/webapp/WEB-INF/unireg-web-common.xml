@@ -30,18 +30,7 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<bean id="notFoundController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-		<property name="viewName" value="errors/404" />
-	</bean>
-
-
-	<bean id="page403Controller" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-		<property name="viewName" value="errors/403" />
-	</bean>
-
-	<bean id="errorController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-		<property name="viewName" value="errors/error" />
-	</bean>
+	<bean id="errorsController" class="ch.vd.uniregctb.errors.ErrorsController" />
 
 	<bean id="indexController" class="ch.vd.uniregctb.IndexController" />
 
