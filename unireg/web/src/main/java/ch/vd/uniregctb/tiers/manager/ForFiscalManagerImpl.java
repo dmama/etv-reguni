@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -21,10 +19,8 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 * Charge les informations dans TiersView
 	 * @param numero un numéro de tiers
 	 * @return un objet TiersView
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 
@@ -36,26 +32,27 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		if (tiers == null) {
 			throw new TiersNotFoundException(numero);
 		}
-		if (tiers != null) {
-			setTiersGeneralView(tiersEditView, tiers);
-			tiersEditView.setTiers(tiers);
-			if (tiers instanceof Contribuable) {
-				final Contribuable contribuable = (Contribuable) tiers;
-				setForsFiscaux(tiersEditView, contribuable);
-				try {
-					setSituationsFamille(tiersEditView, contribuable);
-				}
-				catch (InterfaceDataException e) {
-					LOGGER.warn(String.format("Exception lors de la récupération des situations de familles du contribuable %d", numero), e);
-					tiersEditView.setSituationsFamilleEnErreurMessage(e.getMessage());
-				}
-				setDecisionAciView(tiersEditView,contribuable);
+
+		setTiersGeneralView(tiersEditView, tiers);
+		tiersEditView.setTiers(tiers);
+
+		if (tiers instanceof Contribuable) {
+			final Contribuable contribuable = (Contribuable) tiers;
+			setForsFiscaux(tiersEditView, contribuable);
+			try {
+				setSituationsFamille(tiersEditView, contribuable);
 			}
-			if (tiers instanceof DebiteurPrestationImposable) {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-				setForsFiscauxDebiteur(tiersEditView, dpi);
-				setPeriodiciteCourante(tiersEditView, dpi);
+			catch (InterfaceDataException e) {
+				LOGGER.warn(String.format("Exception lors de la récupération des situations de familles du contribuable %d", numero), e);
+				tiersEditView.setSituationsFamilleEnErreurMessage(e.getMessage());
 			}
+			setDecisionAciView(tiersEditView,contribuable);
+		}
+
+		if (tiers instanceof DebiteurPrestationImposable) {
+			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+			setForsFiscauxDebiteur(tiersEditView, dpi);
+			setPeriodiciteCourante(tiersEditView, dpi);
 		}
 
 		return tiersEditView;

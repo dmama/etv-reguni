@@ -71,7 +71,6 @@
 				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
 				<entry key="/tiers/rapport.do" value-ref="tiersRapportController" />
 
-				<entry key="/fiscal/edit.do" value-ref="fiscalEditController" />
 				<entry key="/dossiers-apparentes/edit.do" value-ref="dossiersApparentesEditController" />
 				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
 				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />

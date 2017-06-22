@@ -2,11 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="fiscalEditController" class="ch.vd.uniregctb.tiers.FiscalEditController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
-		<property name="formView" value="tiers/edition/fiscal/edit" />
-		<property name="tiersEditManager" ref="tiersEditManager" />
+	<bean id="fiscalEditController" class="ch.vd.uniregctb.tiers.FiscalEditController">
+		<property name="controllerUtils" ref="controllerUtils" />
 		<property name="forFiscalManager" ref="forFiscalManager" />
 	</bean>
 
