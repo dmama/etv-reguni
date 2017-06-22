@@ -347,10 +347,9 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 					entreprise = (Entreprise) tiers;
 					final RaisonSocialeFiscaleEntreprise raisonSocialeFiscaleEntreprise = DateRangeHelper.rangeAt(entreprise.getRaisonsSocialesNonAnnuleesTriees(), event.getDateEvenement());
 
-					final String raisonSocialeFiscale = raisonSocialeFiscaleEntreprise == null ? "" : raisonSocialeFiscaleEntreprise.getRaisonSociale();
 					final String message = String.format("Entreprise n°%s%s identifiée sur la base de ses attributs civils [%s].",
 					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-					                                     raisonSocialeFiscale != null ? " (" + raisonSocialeFiscale + ")" : "",
+					                                     raisonSocialeFiscaleEntreprise.getRaisonSociale() != null ? " (" + raisonSocialeFiscaleEntreprise.getRaisonSociale() + ")" : "",
 					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
 					Audit.info(event.getNoEvenement(), message);
 					evenements.add(new MessageSuiviPreExecution(event, organisation, entreprise, context, options, message));
@@ -371,7 +370,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 						                                          organisation.getNumeroOrganisation(),
 						                                          formeLegale != null ? " (" + formeLegale + ")" : "",
 						                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-						                                          raisonSocialeFiscaleEntreprise != null ? " (" + raisonSocialeFiscale + ")" : "",
+						                                          raisonSocialeFiscaleEntreprise != null ? " (" + raisonSocialeFiscaleEntreprise.getRaisonSociale() + ")" : "",
 						                                          formeJuridiqueFiscaleEntreprise != null ? " (" + formeJuridiqueFiscaleEntreprise.getFormeJuridique().getLibelle() + ")" : "",
 						                                          attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil)
 						                            )
