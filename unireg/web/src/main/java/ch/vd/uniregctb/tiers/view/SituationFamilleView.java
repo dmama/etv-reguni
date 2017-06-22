@@ -1,9 +1,6 @@
 package ch.vd.uniregctb.tiers.view;
 
-import java.util.Date;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.TarifImpotSource;
@@ -62,7 +59,7 @@ public class SituationFamilleView implements Comparable<SituationFamilleView>, A
 		this.nomCourrier = nomCourrier;
 	}
 
-	public RegDate getRegDateDebut() {
+	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
@@ -70,28 +67,12 @@ public class SituationFamilleView implements Comparable<SituationFamilleView>, A
 		this.dateDebut = dateDebut;
 	}
 
-	public RegDate getRegDateFin() {
+	public RegDate getDateFin() {
 		return dateFin;
 	}
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
-	}
-
-	public Date getDateDebut() {
-		return RegDate.asJavaDate(dateDebut);
-	}
-
-	public void setDateDebut(Date dateDebut) {
-		this.dateDebut = RegDateHelper.get(dateDebut);
-	}
-
-	public Date getDateFin() {
-		return RegDate.asJavaDate(dateFin);
-	}
-
-	public void setDateFin(Date dateFin) {
-		this.dateFin = RegDateHelper.get(dateFin);
 	}
 
 	public Integer getNombreEnfants() {

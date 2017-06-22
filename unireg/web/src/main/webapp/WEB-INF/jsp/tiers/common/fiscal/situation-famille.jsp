@@ -32,10 +32,10 @@
 		</c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
-		<fmt:formatDate value="${situationFamille.dateDebut}" pattern="dd.MM.yyyy"/>
+		<unireg:regdate regdate="${situationFamille.dateDebut}"/>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
-		<fmt:formatDate value="${situationFamille.dateFin}" pattern="dd.MM.yyyy"/>
+		<unireg:regdate regdate="${situationFamille.dateFin}"/>
 	</display:column>
 	<display:column titleKey="label.situationfamille.source">
 		<c:if test="${situationFamille.source != null}">

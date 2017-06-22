@@ -11,7 +11,7 @@
 	<c:if test="${command.situationsFamilleEnErreurMessage == null}">
 		<table border="0">
 			<tr><td>
-				<a href="situation-famille.do?numero=<c:out value="${command.tiers.numero}"></c:out>" class="add" title="Ajouter situation famille"><fmt:message key="label.bouton.ajouter"/></a>
+				<unireg:linkTo name="Ajouter" action="/situationfamille/add.do" method="get" params="{tiersId:${command.tiers.numero}}" title="Ajouter situation famille" link_class="add noprint"/>
 			</td></tr>
 		</table>
 		<jsp:include page="../../common/fiscal/situation-famille.jsp">

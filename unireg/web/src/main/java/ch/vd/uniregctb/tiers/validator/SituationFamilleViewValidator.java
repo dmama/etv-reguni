@@ -4,7 +4,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -47,7 +46,7 @@ public class SituationFamilleViewValidator implements Validator {
 		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiersDAO.get(situationFamilleView.getNumeroCtb());
 		final SituationFamille situationFamille = ctb.getSituationFamilleActive();
 		if ((situationFamille != null) && (situationFamilleView.getDateDebut() != null)) {
-			if (situationFamilleView.getDateDebut().before(RegDate.asJavaDate(situationFamille.getDateDebut()))) {
+			if (situationFamilleView.getDateDebut().isBefore(situationFamille.getDateDebut())) {
 				errors.rejectValue("dateDebut", "error.date.debut.anterieure");
 			}
 		}

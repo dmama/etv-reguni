@@ -8,7 +8,7 @@ import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 
 
 /**
- * Service à disposition du controller TiersSituationFamilleController
+ * Service à disposition du controller SituationFamilleController
  *
  * @author xcifde
  *

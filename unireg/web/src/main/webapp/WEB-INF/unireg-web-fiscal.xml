@@ -16,14 +16,12 @@
 		<property name="tiersService" ref="tiersService" />
 	</bean>
 
-	<bean id="tiersSituationFamilleController" class="ch.vd.uniregctb.tiers.TiersSituationFamilleController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.SituationFamilleView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="tiers/edition/fiscal/situation-famille-edit" />
-		<property name="successView" value="common/refresh-parent" />
-		<property name="situationFamilleManager" ref="situationFamilleManager" />
-		<property name="validator" ref="situationFamilleViewValidator" />
+	<bean id="situationFamilleController" class="ch.vd.uniregctb.situationfamille.SituationFamilleController">
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="situationFamilleManager" ref="situationFamilleManager"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="validator" ref="situationFamilleViewValidator"/>
 	</bean>
 
 	<bean id="situationFamilleManager" class="ch.vd.uniregctb.tiers.manager.SituationFamilleManagerImpl" parent="tiersManager">

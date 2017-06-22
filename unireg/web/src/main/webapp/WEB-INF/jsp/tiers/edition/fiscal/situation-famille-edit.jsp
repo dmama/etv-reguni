@@ -11,7 +11,14 @@
 
 	<tiles:put name="body">
 		<form:form name="formSituationFamille" id="formSituationFamille">
-		<fieldset><legend><span><fmt:message key="label.situation.famille.fiscale" /></span></legend>		
+		<fieldset><legend><span><fmt:message key="label.situation.famille.fiscale" /></span></legend>
+			<form:hidden path="numeroCtb"/>
+			<form:hidden path="natureSituationFamille"/>
+			<form:hidden path="numeroTiers1"/>
+			<form:hidden path="numeroTiers2"/>
+			<form:hidden path="nomCourrier1Tiers1"/>
+			<form:hidden path="nomCourrier1Tiers2"/>
+			<form:hidden path="editable"/>
 		<table border="0">
 			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.date.debut" />&nbsp;:</td>
