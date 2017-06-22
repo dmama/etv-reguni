@@ -345,12 +345,26 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			if (tiers != null) {
 				if (tiers instanceof Entreprise) {
 					entreprise = (Entreprise) tiers;
-					final RaisonSocialeFiscaleEntreprise raisonSocialeFiscaleEntreprise = DateRangeHelper.rangeAt(entreprise.getRaisonsSocialesNonAnnuleesTriees(), event.getDateEvenement());
-
-					final String message = String.format("Entreprise n°%s%s identifiée sur la base de ses attributs civils [%s].",
-					                                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-					                                     raisonSocialeFiscaleEntreprise.getRaisonSociale() != null ? " (" + raisonSocialeFiscaleEntreprise.getRaisonSociale() + ")" : "",
-					                                     attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
+					final String raisonSociale = determineRaisonSocialeFiscaleEntreprise(event, entreprise);
+					final String message;
+					// Cas nominal, l'entreprise n'est pas déjà appariée.
+					if (entreprise.getNumeroEntreprise() == null) {
+						message = String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s].",
+						                        FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+						                        raisonSociale,
+						                        attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil));
+					}
+					// Le tiers entreprise trouvé est déjà apparié à une autre organisation. Causé soit par un doublon dans RCEnt, soit par une grande similitude des attributs civils.
+					else {
+						final Organisation organisationDejaAppariee = serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
+						message = String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s], mais déjà rattachée à l'organisation n°%s (%s). Potentiel doublon au civil. Traitement manuel.",
+						                        FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
+						                        raisonSociale,
+						                        attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil),
+						                        entreprise.getNumeroEntreprise(),
+						                        organisationDejaAppariee == null ? "<introuvable au civil>" : attributsCivilsAffichage(organisationDejaAppariee.getNom(event.getDateEvenement()), organisationDejaAppariee.getNumeroIDE(event.getDateEvenement())));
+						return new TraitementManuel(event, organisation, null, context, options, message);
+					}
 					Audit.info(event.getNoEvenement(), message);
 					evenements.add(new MessageSuiviPreExecution(event, organisation, entreprise, context, options, message));
 
@@ -365,12 +379,12 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 						final FormeLegale formeLegale = organisation.getFormeLegale(event.getDateEvenement());
 						return new TraitementManuel(event, organisation, entreprise, context, options,
-						                            String.format("Impossible de rattacher l'organisation n°%d%s à l'entreprise n°%s%s%s " +
+						                            String.format("Impossible de rattacher l'organisation n°%d%s à l'entreprise n°%s (%s)%s " +
 								                                          "identifiée sur la base de ses attributs civils [%s]: les formes juridiques ne correspondent pas. Arrêt du traitement.",
 						                                          organisation.getNumeroOrganisation(),
 						                                          formeLegale != null ? " (" + formeLegale + ")" : "",
 						                                          FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-						                                          raisonSocialeFiscaleEntreprise != null ? " (" + raisonSocialeFiscaleEntreprise.getRaisonSociale() + ")" : "",
+						                                          raisonSociale,
 						                                          formeJuridiqueFiscaleEntreprise != null ? " (" + formeJuridiqueFiscaleEntreprise.getFormeJuridique().getLibelle() + ")" : "",
 						                                          attributsCivilsAffichage(raisonSocialeCivile, noIdeCivil)
 						                            )
@@ -457,6 +471,21 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		}
 
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
+	}
+
+	private String determineRaisonSocialeFiscaleEntreprise(EvenementOrganisation event, Entreprise entreprise) {
+		String raisonSociale = "<raison sociale introuvable>";
+		final List<RaisonSocialeFiscaleEntreprise> raisonsSocialesNonAnnuleesTriees = entreprise.getRaisonsSocialesNonAnnuleesTriees();
+		if (!raisonsSocialesNonAnnuleesTriees.isEmpty()) {
+			final RaisonSocialeFiscaleEntreprise raisonSocialeFiscaleEntreprise = DateRangeHelper.rangeAt(raisonsSocialesNonAnnuleesTriees, event.getDateEvenement());
+			if (raisonSocialeFiscaleEntreprise != null) {
+				raisonSociale = raisonSocialeFiscaleEntreprise.getRaisonSociale();
+			}
+			else {
+				raisonSociale = CollectionsUtils.getLastElement(raisonsSocialesNonAnnuleesTriees).getRaisonSociale();
+			}
+		}
+		return raisonSociale;
 	}
 
 	/**
