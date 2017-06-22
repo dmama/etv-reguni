@@ -869,7 +869,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
-				                             Assert.assertEquals("Refus de créer dans Unireg l'établissement Synergy Renens SA actuellement à Renens VD (n°102202101 civil) dont la fondation / déménagement remonte à 24.06.2010, 1837 jours avant la date de l'événement. La tolérance étant de 15 jours. Il y a probablement une erreur d'identification ou un problème de date.",
+				                             Assert.assertEquals("Refus de créer dans Unireg l'établissement n°102202101 (Synergy Renens SA, à Renens VD, IDE: CHE-999.999.997) dont la fondation / déménagement remonte à 24.06.2010, 1837 jours avant la date de l'événement. La tolérance étant de 15 jours. Il y a probablement une erreur d'identification ou un problème de date.",
 				                                                 evt.getErreurs().get(3).getMessage());
 				                             return null;
 			                             }

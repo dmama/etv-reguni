@@ -991,6 +991,10 @@ public abstract class EvenementOrganisationInterne {
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
+	protected String afficheAttributsSite(@Nullable SiteOrganisation site, @Nullable RegDate date) {
+		return getContext().getServiceOrganisation().afficheAttributsSite(site, date);
+	}
+
 	protected static class SurchargeCorrectiveRange extends DateRangeHelper.Range {
 
 		public SurchargeCorrectiveRange(RegDate debut, RegDate fin) {

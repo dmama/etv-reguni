@@ -335,7 +335,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 					                             Assert.assertEquals(date(2015, 7, 4), eff.getForFiscal().getDateDebut());
 				                             }
 */
-				                             Assert.assertEquals("L'établissement secondaire civil n°103202100 n'est pas une succursale ou est une succursale radiée du RC et ne sera donc pas créé dans Unireg.",
+				                             Assert.assertEquals("L'établissement secondaire civil n°103202100 (Synergy Aubonne SA, à Aubonne (VD)) n'est pas une succursale ou est une succursale radiée du RC et ne sera donc pas créé dans Unireg.",
 				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }
@@ -748,7 +748,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 
 				                             final List<EvenementOrganisationErreur> evtErreurs = evt.getErreurs();
 				                             Assert.assertEquals(3, evtErreurs.size());
-				                             Assert.assertEquals(String.format("Nouvel établissement secondaire civil n°%d déjà connu de Unireg en tant que tiers n°%s. Ne sera pas créé.",
+				                             Assert.assertEquals(String.format("Nouvel établissement secondaire civil n°%d (Synergy Aubonne SA, à Aubonne (VD), IDE: CHE-999.999.996) déjà connu de Unireg en tant que tiers n°%s. Ne sera pas créé.",
 				                                                               noSite2, FormatNumeroHelper.numeroCTBToDisplay(etablissement2Id)),
 				                                                 evtErreurs.get(2).getMessage());
 
@@ -1915,7 +1915,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-				                             Assert.assertEquals("L'arrivée HC/HS d'une succursale n'est pas censé se produire.", evt.getErreurs().get(0).getMessage());
+				                             Assert.assertEquals("L'arrivée HC/HS d'une succursale [n°1012221, Synergy Conception Succursale SA, à Cheseaux-sur-Lausanne (VD), IDE: CHE-999.999.996] n'est pas censé se produire.", evt.getErreurs().get(0).getMessage());
 
 /* Code conservé dans l'éventualité que finallement, cette situation se produit bel et bien.
 
@@ -2061,7 +2061,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             final EvenementOrganisation evt = getUniqueEvent(noEvenement);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-				                             Assert.assertEquals("Le déménagement HC/HS d'une succursale n'est pas censé se produire.", evt.getErreurs().get(0).getMessage());
+				                             Assert.assertEquals("Le déménagement HC/HS d'une succursale [n°1012221, Synergy Conception Succursale SA, à Zurich (ZH), IDE: CHE-999.999.997] n'est pas censé se produire.", evt.getErreurs().get(0).getMessage());
 
 /* Code conservé dans l'éventualité que finallement, cette situation se produit bel et bien.
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
@@ -2620,7 +2620,7 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 				                             Assert.assertEquals(0, evtsFiscaux.size()); // aucun for secondaire créé
 
 				                             Assert.assertEquals(3, evt.getErreurs().size());
-				                             Assert.assertEquals("L'établissement secondaire civil n°103202100 n'est pas une succursale ou est une succursale radiée du RC et ne sera donc pas créé dans Unireg.",
+				                             Assert.assertEquals("L'établissement secondaire civil n°103202100 (Synergy Aubonne SA, à Aubonne (VD), IDE: CHE-999.999.997) n'est pas une succursale ou est une succursale radiée du RC et ne sera donc pas créé dans Unireg.",
 				                                                 evt.getErreurs().get(2).getMessage());
 
 				                             return null;

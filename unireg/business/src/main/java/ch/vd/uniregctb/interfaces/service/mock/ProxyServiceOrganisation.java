@@ -17,6 +17,7 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl;
@@ -102,6 +103,11 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	public String createOrganisationDescription(Organisation organisation, RegDate date) {
 		assertTargetNotNull();
 		return service.createOrganisationDescription(organisation, date);
+	}
+
+	@Override
+	public String afficheAttributsSite(@Nullable SiteOrganisation site, @Nullable RegDate date) {
+		return service.afficheAttributsSite(site, date);
 	}
 
 	private void assertTargetNotNull() {

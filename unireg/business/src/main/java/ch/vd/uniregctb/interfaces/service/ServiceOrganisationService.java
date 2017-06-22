@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.organisation.data.AnnonceIDEQuery;
 import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 
 public interface ServiceOrganisationService {
@@ -111,4 +112,6 @@ public interface ServiceOrganisationService {
 
 	@NotNull
 	String createOrganisationDescription(Organisation organisation, RegDate date);
+
+	String afficheAttributsSite(@Nullable SiteOrganisation site, @Nullable RegDate date);
 }

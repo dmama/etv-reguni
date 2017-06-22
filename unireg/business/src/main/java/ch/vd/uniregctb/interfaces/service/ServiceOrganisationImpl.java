@@ -173,4 +173,29 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		                     StringUtils.defaultIfBlank(FormatNumeroHelper.formatNumIDE(ide), "[inconnu]"),
 		                     formeLegale != null ? formeLegale : "[inconnue]");
 	}
+
+	/**
+	 * Produire un résumé affichable des attributs civil d'un site RCEnt. La raison sociale, le lieu et le numéro IDE si existant sont affichés. Si des données manquent,
+	 * un message explicatif est rendu à la place.
+	 * @param site Le site RCEnt
+	 * @param date La date de validité demandée pour la recherche des attributs
+	 * @return Une synthèse des principaux attributs civils.
+	 */
+	@Override
+	public String afficheAttributsSite(@Nullable SiteOrganisation site, @Nullable RegDate date) {
+		if (site == null) {
+			return "<site introuvable>";
+		}
+		final RegDate dateToUse = date == null ? RegDate.get() : date;
+		final String raisonSociale = site.getNom(dateToUse);
+		final String numeroIDE = site.getNumeroIDE(dateToUse);
+		final Domicile domicile = site.getDomicile(dateToUse);
+		final Integer noOfsDomicile = domicile.getNumeroOfsAutoriteFiscale();
+		final Commune commune = serviceInfra.getCommuneByNumeroOfs(noOfsDomicile, dateToUse);
+		return String.format("%s, à %s%s",
+		                     raisonSociale == null ? "<raison sociale introuvable>" : raisonSociale,
+		                     commune == null ? "<commune introuvable pour le numéro OFS " + noOfsDomicile + ">" : commune.getNomOfficielAvecCanton(),
+		                     numeroIDE != null ? ", IDE: " + FormatNumeroHelper.formatNumIDE(numeroIDE) : StringUtils.EMPTY);
+	}
+
 }
