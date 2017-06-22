@@ -30,11 +30,12 @@
 			</table>
 		</c:if>
 
-		<c:if test="${not empty command.mandatairesCourrier}">
-			<input class="noprint" name="courrier_histo"  id="isCourrierHisto" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('courrier','isCourrierHisto', 'histo-only');"/>
-			<label class="noprint" for="isCourrierHisto"><fmt:message key="label.historique" /></label>
+		<input class="noprint" name="courrier_histo" <c:if test="${command.mandatairesCourrierHisto}">checked</c:if> id="isCourrierHisto" type="checkbox" onClick="window.location.href = App.toggleBooleanParam(window.location, 'mandatairesCourrierHisto', true);"/>
+		<label class="noprint" for="isCourrierHisto"><fmt:message key="label.historique" /></label>
 
-			<display:table name="${command.mandatairesCourrier}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
+		<c:if test="${not empty command.mandatairesCourrier}">
+
+			<display:table name="${command.mandatairesCourrier}" id="courrier" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 				<display:column titleKey="label.type" style="width: 30ex;">
 					<fmt:message key="option.mandat.type.${courrier.typeMandat}"/>
 					<c:if test="${courrier.libelleGenreImpot != null}">
@@ -78,11 +79,6 @@
 				</display:column>
 			</display:table>
 
-			<script type="application/javascript">
-				$(function() {
-					Histo.toggleRowsIsHistoFromClass('courrier', 'isCourrierHisto', 'histo-only');
-				});
-			</script>
 		</c:if>
 	</fieldset>
 </c:if>
@@ -102,11 +98,12 @@
 			</table>
 		</c:if>
 
-		<c:if test="${not empty command.mandatairesPerception}">
-			<input class="noprint" name="perception_histo"  id="isPerceptionHisto" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('mandatperc','isPerceptionHisto', 'histo-only');"/>
-			<label class="noprint" for="isPerceptionHisto"><fmt:message key="label.historique" /></label>
+		<input class="noprint" name="perception_histo" <c:if test="${command.mandatairesPerceptionHisto}">checked</c:if> id="isPerceptionHisto" type="checkbox" onClick="window.location.href = App.toggleBooleanParam(window.location, 'mandatairesPerceptionHisto', true);"/>
+		<label class="noprint" for="isPerceptionHisto"><fmt:message key="label.historique" /></label>
 
-			<display:table name="${command.mandatairesPerception}" id="mandatperc" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
+		<c:if test="${not empty command.mandatairesPerception}">
+
+			<display:table name="${command.mandatairesPerception}" id="mandatperc" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 				<display:column titleKey="label.date.debut" style="width: 12ex;">
 					<unireg:regdate regdate="${mandatperc.dateDebut}"/>
 				</display:column>
@@ -127,11 +124,6 @@
 				</display:column>
 			</display:table>
 
-			<script type="application/javascript">
-				$(function() {
-					Histo.toggleRowsIsHistoFromClass('mandatperc', 'isPerceptionHisto', 'histo-only');
-				});
-			</script>
 		</c:if>
 	</fieldset>
 </c:if>

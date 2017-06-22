@@ -1,94 +1,115 @@
 package ch.vd.uniregctb.tiers.view;
 
+import ch.vd.uniregctb.tiers.HistoFlag;
+import ch.vd.uniregctb.tiers.HistoFlags;
+import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
+
 /**
  * Structure model pour l'ecran de visualisation des Tiers
- *
- * @author xcikce
- *
  */
 public class TiersVisuView extends TiersView {
 
-	private boolean adressesHisto;
+	/**
+	 * Les différents flags de visualisation d'historique demandés
+	 */
+	private final HistoFlags histoFlags;
 
-	private boolean adressesHistoCiviles;
+	public TiersVisuView(HistoFlags histoFlags) {
+		this.histoFlags = histoFlags;
+	}
 
-	private boolean adressesHistoCivilesConjoint;
-
-	private boolean raisonsSocialesHisto;
-	private boolean nomsAdditionnelsHisto;
-	private boolean siegesHisto;
-	private boolean formesJuridiquesHisto;
-	private boolean capitauxHisto;
-	private boolean domicilesHisto;
+	private boolean hasFlag(HistoFlag flag) {
+		return histoFlags.hasHistoFlag(flag);
+	}
 
 	public boolean isAdressesHisto() {
-		return adressesHisto;
+		return hasFlag(HistoFlag.ADRESSES);
 	}
 
-	public void setAdressesHisto(boolean adressesHisto) {
-		this.adressesHisto = adressesHisto;
-	}
-
-	public void setAdressesHistoCiviles(boolean adressesHistoCiviles) {
-		this.adressesHistoCiviles = adressesHistoCiviles;
-	}
 	public boolean isAdressesHistoCiviles() {
-		return adressesHistoCiviles;
-	}
-
-	public void setAdressesHistoCivilesConjoint(boolean adressesHistoCivilesConjoint) {
-		this.adressesHistoCivilesConjoint = adressesHistoCivilesConjoint;
+		return hasFlag(HistoFlag.ADRESSES_CIVILES);
 	}
 
 	public boolean isAdressesHistoCivilesConjoint() {
-		return adressesHistoCivilesConjoint;
+		return hasFlag(HistoFlag.ADRESSES_CIVILES_CONJOINT);
+	}
+
+	public boolean isRapportsPrestationHisto() {
+		return hasFlag(HistoFlag.RAPPORTS_PRESTATION);
+	}
+
+	public boolean isCtbAssocieHisto() {
+		return hasFlag(HistoFlag.CTB_ASSOCIE);
 	}
 
 	public boolean isRaisonsSocialesHisto() {
-		return raisonsSocialesHisto;
-	}
-
-	public void setRaisonsSocialesHisto(boolean raisonsSocialesHisto) {
-		this.raisonsSocialesHisto = raisonsSocialesHisto;
+		return hasFlag(HistoFlag.RAISONS_SOCIALES);
 	}
 
 	public boolean isNomsAdditionnelsHisto() {
-		return nomsAdditionnelsHisto;
-	}
-
-	public void setNomsAdditionnelsHisto(boolean nomsAdditionnelsHisto) {
-		this.nomsAdditionnelsHisto = nomsAdditionnelsHisto;
+		return hasFlag(HistoFlag.NOMS_ADDITIONNELS);
 	}
 
 	public boolean isSiegesHisto() {
-		return siegesHisto;
-	}
-
-	public void setSiegesHisto(boolean siegesHisto) {
-		this.siegesHisto = siegesHisto;
+		return hasFlag(HistoFlag.SIEGES);
 	}
 
 	public boolean isFormesJuridiquesHisto() {
-		return formesJuridiquesHisto;
-	}
-
-	public void setFormesJuridiquesHisto(boolean formesJuridiquesHisto) {
-		this.formesJuridiquesHisto = formesJuridiquesHisto;
+		return hasFlag(HistoFlag.FORMES_JURIDIQUES);
 	}
 
 	public boolean isCapitauxHisto() {
-		return capitauxHisto;
-	}
-
-	public void setCapitauxHisto(boolean capitauxHisto) {
-		this.capitauxHisto = capitauxHisto;
+		return hasFlag(HistoFlag.CAPITAUX);
 	}
 
 	public boolean isDomicilesHisto() {
-		return domicilesHisto;
+		return hasFlag(HistoFlag.DOMICILES);
 	}
 
-	public void setDomicilesHisto(boolean domicilesHisto) {
-		this.domicilesHisto = domicilesHisto;
+	public boolean isFlagsEntrepriseHisto(GroupeFlagsEntreprise groupe) {
+		switch (groupe) {
+		case LIBRE:
+			return hasFlag(HistoFlag.FLAGS_ENTREPRISE_LIBRE);
+		case SI_SERVICE_UTILITE_PUBLIQUE:
+			return hasFlag(HistoFlag.FLAGS_ENTREPRISE_SISUP);
+		default:
+			throw new IllegalArgumentException("Group de flags d'entreprise inconnu ici : " + groupe);
+		}
+	}
+
+	public boolean isLabelsHisto() {
+		return hasFlag(HistoFlag.LABELS);
+	}
+
+	public boolean isLabelsConjointHisto() {
+		return hasFlag(HistoFlag.LABELS_CONJOINT);
+	}
+
+	public boolean isMandatairesCourrierHisto() {
+		return hasFlag(HistoFlag.MANDATAIRES_COURRIER);
+	}
+
+	public boolean isMandatairesPerceptionHisto() {
+		return hasFlag(HistoFlag.MANDATAIRES_PERCEPTION);
+	}
+
+	public boolean isRegimesFiscauxCHHisto() {
+		return hasFlag(HistoFlag.REGIMES_FISCAUX_CH);
+	}
+
+	public boolean isRegimesFiscauxVDHisto() {
+		return hasFlag(HistoFlag.REGIMES_FISCAUX_VD);
+	}
+
+	public boolean isSituationsFamilleHisto() {
+		return hasFlag(HistoFlag.SITUATIONS_FAMILLE);
+	}
+
+	public boolean isAllegementsFiscauxHisto() {
+		return hasFlag(HistoFlag.ALLEGEMENTS_FISCAUX);
+	}
+
+	public boolean isPeriodicitesHisto() {
+		return hasFlag(HistoFlag.PERIODICITES_HISTO);
 	}
 }

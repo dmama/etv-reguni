@@ -6,6 +6,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.tiers.HistoFlags;
 import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 
@@ -21,10 +22,7 @@ public interface TiersVisuManager {
 	 * Charge les informations de visualisation d'un tiers
 	 *
 	 * @param numero                  le numéro du tiers dont on veut afficher le détails
-	 * @param adressesHisto           <b>vrai</b> s'il faut charger tout l'historique des adresses
-	 * @param adressesHistoCiviles
-	 * @param adressesHistoCivilesConjoint
-	 * @param rapportsPrestationHisto <b>vrai</b> s'il faut charger tout l'historique des rapports de prestation entre débiteur et sourciers
+	 * @param histoFlags              les flags "histo" demandés
 	 * @param modeImpression
 	 * @param forsPrincipauxPagines <b>vrai</b> s'il faut paginer les fors principaux (et donc <b>faux</b> si on veut la vue complète)
 	 * @param forsSecondairesPagines <b>vrai</b> s'il faut paginer les fors secondaires (et donc <b>faux</b> si on veut la vue complète)
@@ -37,10 +35,7 @@ public interface TiersVisuManager {
 	 *          en cas de problème de résolution des adresses
 	 */
 	@Transactional(readOnly = true)
-	TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint,
-	                      boolean raisonsSocialesCivileHistoParam, boolean nomsAdditionnelsHistoParam, boolean siegesCivilHistoParam, boolean formesJuridiquesCivileHistoParam, boolean capitauxCivileHistoParam, boolean domicilesHistoParam,
-	                      boolean rapportsPrestationHisto, boolean ctbAssocieHisto, boolean modeImpression,
-	                      boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination)
+	TiersVisuView getView(Long numero, HistoFlags histoFlags, boolean modeImpression, boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination)
 			throws AdresseException, ServiceInfrastructureException, DonneesCivilesException;
 
 	/**

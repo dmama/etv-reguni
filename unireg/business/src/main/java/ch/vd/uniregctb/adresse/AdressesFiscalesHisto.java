@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.adresse;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -94,5 +97,31 @@ public class AdressesFiscalesHisto {
 			}
 		}
 		return adresses;
+	}
+
+	/**
+	 * @param predicate prédicat de filtrage sur les adresses
+	 * @return une nouvelle instance d'AdressesFiscalesHisto basée sur les adresses filtrées de l'instance courante
+	 */
+	public AdressesFiscalesHisto filter(Predicate<? super AdresseGenerique> predicate) {
+		final AdressesFiscalesHisto filtered = new AdressesFiscalesHisto();
+		filter(courrier, list -> filtered.courrier = list, predicate);
+		filter(representation, list -> filtered.representation = list, predicate);
+		filter(domicile, list -> filtered.domicile = list, predicate);
+		filter(poursuite, list -> filtered.poursuite = list, predicate);
+		filter(poursuiteAutreTiers, list -> filtered.poursuiteAutreTiers = list, predicate);
+		return filtered;
+	}
+
+	private static void filter(List<AdresseGenerique> source, Consumer<List<AdresseGenerique>> setter, Predicate<? super AdresseGenerique> predicate) {
+		if (source == null || source.isEmpty()) {
+			setter.accept(source);
+		}
+		else {
+			final List<AdresseGenerique> filtered = source.stream()
+					.filter(predicate)
+					.collect(Collectors.toList());
+			setter.accept(filtered);
+		}
 	}
 }

@@ -149,7 +149,11 @@ fieldset legend {
 }
 
 select {
-	min-width: 146px;
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	border: none;
+	width: 120%;
 }
 
 .select-with-errors {

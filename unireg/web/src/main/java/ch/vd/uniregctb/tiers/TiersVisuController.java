@@ -36,18 +36,9 @@ public class TiersVisuController extends AbstractTiersController {
 	protected final Logger LOGGER = LoggerFactory.getLogger(TiersVisuController.class);
 
 	public static final String BUTTON_ANNULER_TIERS = "annulerTiers";
-	private static final String ADRESSES_HISTO_PARAM = "adressesHisto";
-	private static final String ADRESSES_CIVILES_HISTO_PARAM = "adressesHistoCiviles";
-	private static final String ADRESSES_CIVILES_HISTO_CONJ_PARAM = "adressesHistoCivilesConjoint";
-	private static final String RAISONS_SOCIALES_HISTO_PARAM = "raisonsSocialesHisto";
-	private static final String NOMS_ADDITIONNELS_HISTO_PARAM = "nomsAdditionnelsHisto";
-	private static final String SIEGES_HISTO_PARAM = "siegesHisto";
-	private static final String FORMES_JURIDIQUES_HISTO_PARAM = "formesJuridiquesHisto";
-	private static final String CAPITAUX_HISTO_PARAM = "capitauxHisto";
-	private static final String DOMICILES_HISTO_PARAM = "domicilesHisto";
+
 	private static final String TACHE_ID_TRAITE_PARAM = "idTacheTraite";
-	private static final String RAPPORTS_PREST_HISTO_PARAM = "rapportsPrestationHisto";
-	private static final String CTB_ASSOCIE_HISTO_PARAM = "ctbAssocieHisto";
+
 	private static final String MODE_IMPRESSION = "printview";
 
 	private TiersEditManager tiersEditManager;
@@ -68,18 +59,9 @@ public class TiersVisuController extends AbstractTiersController {
 		TiersVisuView tiersVisuView = null;
 
 		final String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
-		final boolean adrHistoParam = getBooleanParam(request, ADRESSES_HISTO_PARAM);
-		final boolean adrCivileHistoParam = getBooleanParam(request, ADRESSES_CIVILES_HISTO_PARAM);
-		final boolean adrCivileHistoConjParam = getBooleanParam(request, ADRESSES_CIVILES_HISTO_CONJ_PARAM);
-		final boolean raisonsSocialesHistoParam = getBooleanParam(request, RAISONS_SOCIALES_HISTO_PARAM);
-		final boolean nomsAdditionnelsHistoParam = getBooleanParam(request, NOMS_ADDITIONNELS_HISTO_PARAM);
-		final boolean siegesHistoParam = getBooleanParam(request, SIEGES_HISTO_PARAM);
-		final boolean formesJuridiquesHistoParam = getBooleanParam(request, FORMES_JURIDIQUES_HISTO_PARAM);
-		final boolean capitauxHistoParam = getBooleanParam(request, CAPITAUX_HISTO_PARAM);
-		final boolean domicilesHistoParam = getBooleanParam(request, DOMICILES_HISTO_PARAM);
 		final String idTacheTraiteParam = request.getParameter(TACHE_ID_TRAITE_PARAM);
-		final boolean rapportsPrestationHisto = getBooleanParam(request, RAPPORTS_PREST_HISTO_PARAM);
-		final boolean ctbAssocieHisto = getBooleanParam(request, CTB_ASSOCIE_HISTO_PARAM);
+
+		final HistoFlags histoFlags = new HistoFlags(request);
 		final boolean modeImpression = getBooleanParam(request, MODE_IMPRESSION);
 
 		@SuppressWarnings("ConstantConditions") final boolean forsPrincipauxPagines = HttpSessionUtils.getFromSession(request.getSession(), HttpSessionConstants.FORS_PRINCIPAUX_PAGINES, Boolean.class, Boolean.TRUE, getOptionalBooleanParam(request, HttpSessionConstants.FORS_PRINCIPAUX_PAGINES));
@@ -93,10 +75,7 @@ public class TiersVisuController extends AbstractTiersController {
 			checkAccesDossierEnLecture(id);
 
 			final WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
-			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam,
-			                                         raisonsSocialesHistoParam, nomsAdditionnelsHistoParam, siegesHistoParam, formesJuridiquesHistoParam, capitauxHistoParam, domicilesHistoParam,
-			                                         rapportsPrestationHisto, ctbAssocieHisto,
-			                                         modeImpression, forsPrincipauxPagines, forsSecondairesPagines, autresForsPrincipauxPagines, pagination);
+			tiersVisuView = tiersVisuManager.getView(id, histoFlags, modeImpression, forsPrincipauxPagines, forsSecondairesPagines, autresForsPrincipauxPagines, pagination);
 
 			//vérification des droits de visualisation
 			boolean isAllowed = true;
@@ -141,7 +120,8 @@ public class TiersVisuController extends AbstractTiersController {
 		mav.addObject("warnings", warnings);
 		session.removeAttribute("warnings");
 
-		final boolean rapportsPrestationHisto = getBooleanParam(request, RAPPORTS_PREST_HISTO_PARAM);
+		final HistoFlags histoFlags = new HistoFlags(request);
+		final boolean rapportsPrestationHisto = histoFlags.hasHistoFlag(HistoFlag.RAPPORTS_PRESTATION);
 
 		mav.addObject(URL_RETOUR_SESSION_NAME, session.getAttribute(URL_RETOUR_SESSION_NAME));
 		mav.addObject(PAGE_SIZE_NAME, PAGE_SIZE);

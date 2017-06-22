@@ -83,10 +83,6 @@ public class TiersView {
 	private List<RapportView> dossiersApparentes;
 	private List<RapportPrestationView> rapportsPrestation;
 
-	private boolean rapportsPrestationHisto;
-
-	private boolean ctbAssocieHisto;
-
 	private Set<DebiteurView> debiteurs;
 
 	private List<RapportView> contribuablesAssocies;
@@ -103,8 +99,8 @@ public class TiersView {
 
 	private PeriodiciteView periodicite;
 
+	private boolean withSituationsFamille;
 	private List<SituationFamilleView> situationsFamille;
-
 	private String situationsFamilleEnErreurMessage;
 
 	private List<MouvementDetailView> mouvements;
@@ -308,14 +304,6 @@ public class TiersView {
 		this.rapportsPrestation = rapportsPrestation;
 	}
 
-	public boolean isRapportsPrestationHisto() {
-		return rapportsPrestationHisto;
-	}
-
-	public void setRapportsPrestationHisto(boolean rapportsPrestationHisto) {
-		this.rapportsPrestationHisto = rapportsPrestationHisto;
-	}
-
 	public List<ListeRecapitulativeView> getLrs() {
 		return lrs;
 	}
@@ -473,6 +461,14 @@ public class TiersView {
 	public boolean isWithForIBC() {
 		final List<ForFiscalView> forsIBC = extract(forsFiscaux, ff -> !ff.isAnnule() && ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL);
 		return !forsIBC.isEmpty();
+	}
+
+	public boolean isWithSituationsFamille() {
+		return withSituationsFamille;
+	}
+
+	public void setWithSituationsFamille(boolean withSituationsFamille) {
+		this.withSituationsFamille = withSituationsFamille;
 	}
 
 	public List<SituationFamilleView> getSituationsFamille() {
@@ -649,14 +645,6 @@ public class TiersView {
 
 	public void setDecisionRecente(boolean decisionRecente) {
 		this.decisionRecente = decisionRecente;
-	}
-
-	public boolean isCtbAssocieHisto() {
-		return ctbAssocieHisto;
-	}
-
-	public void setCtbAssocieHisto(boolean ctbAssocieHisto) {
-		this.ctbAssocieHisto = ctbAssocieHisto;
 	}
 
 	public int getNombreElementsTable() {

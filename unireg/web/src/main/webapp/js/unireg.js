@@ -1132,6 +1132,8 @@ var Histo = {
 
 				tbl.rows[i].style.display = (visible ? '' : 'none');
 			}
+
+			this.computeEvenOdd(tbl);
 		}
 	},
 
@@ -1200,11 +1202,7 @@ var Histo = {
 			}
 
 			// reset odd/even classes
-			var rows = $('#' + tableId + ' tr:visible');
-			rows.removeClass('odd');
-			rows.removeClass('even');
-			$('#' + tableId + ' tr:visible:even').addClass('even');
-			$('#' + tableId + ' tr:visible:odd').addClass('odd');
+			this.computeEvenOdd(tbl);
 		}
 	},
 
@@ -1855,32 +1853,30 @@ var App = {
     },
 
 	toggleBooleanParam: function(url, name, default_value){
-		var regexp = new RegExp(name + "=([a-z]*)", "i");
-		var match = regexp.exec(url);
-		if (match == null) {
+		const regexp = new RegExp(name + "=(true|false)", "i");
+		const match = regexp.exec(url);
+		var newUrl;
+		if (match === null) {
 			// le paramètre n'existe pas, on l'ajoute
-			var newUrl = new String(url);
-
-			if (newUrl.charAt(newUrl.length - 1) == '#') { // supprime le trailing # si nécessaire
+			newUrl = String(url.href);
+			if (newUrl.endsWith('#')) { // supprime le trailing # si nécessaire
 				newUrl = newUrl.substr(0, newUrl.length - 1);
 			}
-			return newUrl + '&' + name + '=' + default_value;
+			newUrl += '&' + name + '=' + default_value;
 		}
 		else {
 			// le paramètre existe, on toggle sa valeur
-			var oldvalue = (match[1] == 'true');
-			var newvalue = !oldvalue;
-			var param = name + "=" + newvalue;
-			var newUrl = new String(url);
-			newUrl = newUrl.replace(regexp, param);
+			const oldvalue = (match[1] === 'true');
+			const newvalue = !oldvalue;
+			const param = name + "=" + newvalue;
+			newUrl = url.href.replace(regexp, param);
 
 			if (!newvalue) {
 				// on recommence à la première page lorsqu'on passe de la liste complète à la liste partielle
 				newUrl = newUrl.replace(/-p=[0-9]*/, "-p=1");
 			}
-
-			return newUrl;
 		}
+		return newUrl;
 	}
 };
 

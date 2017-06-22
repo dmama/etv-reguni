@@ -45,6 +45,7 @@ import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DecisionAciView;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.HistoFlags;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -83,25 +84,11 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint,
-	                             boolean raisonsSocialesHistoParam, boolean nomsAdditionnelsHistoParam, boolean siegesHistoParam, boolean formesJuridiquesHistoParam, boolean capitauxHistoParam, boolean domicilesHistoParam,
-	                             boolean rapportsPrestationHisto, boolean ctbAssocieHisto, boolean modeImpression,
-	                             boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination)
+	public TiersVisuView getView(Long numero, HistoFlags histoFlags,
+	                             boolean modeImpression, boolean forsPrincipauxPagines, boolean forsSecondairesPagines, boolean autresForsPagines, WebParamPagination webParamPagination)
 			throws AdresseException, ServiceInfrastructureException, DonneesCivilesException {
 
-		final TiersVisuView tiersVisuView = new TiersVisuView();
-		tiersVisuView.setAdressesHisto(adressesHisto);
-		tiersVisuView.setAdressesHistoCiviles(adressesHistoCiviles);
-		tiersVisuView.setRapportsPrestationHisto(rapportsPrestationHisto);
-		tiersVisuView.setCtbAssocieHisto(ctbAssocieHisto);
-		tiersVisuView.setAdressesHistoCivilesConjoint(adressesHistoCivilesConjoint);
-		tiersVisuView.setRaisonsSocialesHisto(raisonsSocialesHistoParam);
-		tiersVisuView.setNomsAdditionnelsHisto(nomsAdditionnelsHistoParam);
-		tiersVisuView.setSiegesHisto(siegesHistoParam);
-		tiersVisuView.setFormesJuridiquesHisto(formesJuridiquesHistoParam);
-		tiersVisuView.setCapitauxHisto(capitauxHistoParam);
-		tiersVisuView.setDomicilesHisto(domicilesHistoParam);
-
+		final TiersVisuView tiersVisuView = new TiersVisuView(histoFlags);
 
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
@@ -119,7 +106,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			else {
 				tiersVisuView.setTiers(pp);
 			}
-			tiersVisuView.setEtiquettes(getEtiquettes(tiers));
+			tiersVisuView.setEtiquettes(getEtiquettes(tiers, tiersVisuView.isLabelsHisto()));
 		}
 		else if (tiers instanceof MenageCommun) {
 			final MenageCommun menageCommun = (MenageCommun) tiers;
@@ -135,8 +122,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-			setDebiteurPrestationImposable(tiersVisuView, dpi, rapportsPrestationHisto, webParamPagination);
-			setContribuablesAssocies(tiersVisuView, dpi, ctbAssocieHisto);
+			setDebiteurPrestationImposable(tiersVisuView, dpi, tiersVisuView.isRapportsPrestationHisto(), webParamPagination);
+			setContribuablesAssocies(tiersVisuView, dpi, tiersVisuView.isCtbAssocieHisto());
 			setForsFiscauxDebiteur(tiersVisuView, dpi);
 			setPeriodicitesView(tiersVisuView, dpi);
 			setLogicielView(tiersVisuView, dpi);
@@ -173,12 +160,18 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			resolveAdressesHisto(new AdressesResolverCallback() {
 				@Override
 				public AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException {
-					return service.getAdressesFiscalHisto(tiers, false);
+					final AdressesFiscalesHisto histo = service.getAdressesFiscalHisto(tiers, false);
+					if (tiersVisuView.isAdressesHisto()) {
+						return histo;
+					}
+					else {
+						return histo.filter(TiersVisuManagerImpl::isAlwaysShown);
+					}
 				}
 
 				@Override
 				public void setAdressesView(List<AdresseView> adresses) {
-					List<AdresseView> adressesResultat = removeAdresseFromCivil(adresses);
+					final List<AdresseView> adressesResultat = removeAdresseFromCivil(adresses);
 					tiersVisuView.setHistoriqueAdresses(adressesResultat);
 				}
 
@@ -191,28 +184,33 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 			if (tiers instanceof MenageCommun) {
 				assignHistoriqueAddressesCiviles(tiersVisuView.getTiersPrincipal(),
+				                                 tiersVisuView.isAdressesHistoCiviles(),
 				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCiviles,
 				                                 tiersVisuView::setExceptionAdresseCiviles);
 				assignHistoriqueAddressesCiviles(tiersVisuView.getTiersConjoint(),
+				                                 tiersVisuView.isAdressesHistoCivilesConjoint(),
 				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCivilesConjoint,
 				                                 tiersVisuView::setExceptionAdresseCivilesConjoint);
 			}
 			else if (tiers instanceof PersonnePhysique) {
 				assignHistoriqueAddressesCiviles((PersonnePhysique) tiers,
+				                                 tiersVisuView.isAdressesHistoCiviles(),
 				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCiviles,
 				                                 tiersVisuView::setExceptionAdresseCiviles);
 			}
 			else if (tiers instanceof Etablissement) {
 				assignHistoriqueAddressesCiviles((Etablissement) tiers,
+				                                 tiersVisuView.isAdressesHistoCiviles(),
 				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCiviles,
 				                                 tiersVisuView::setExceptionAdresseCiviles);
 			}
 			else if (tiers instanceof Entreprise) {
 				assignHistoriqueAddressesCiviles((Entreprise) tiers,
+				                                 tiersVisuView.isAdressesHistoCiviles(),
 				                                 this::getAdressesHistoriquesCiviles,
 				                                 tiersVisuView::setHistoriqueAdressesCiviles,
 				                                 tiersVisuView::setExceptionAdresseCiviles);
@@ -232,13 +230,26 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	}
 
 	private static <T extends Contribuable> void assignHistoriqueAddressesCiviles(T ctb,
+	                                                                              boolean showHisto,
 	                                                                              HistoriqueAdressesCivilesCalculator<? super T> adressesCivilesGetter,
 	                                                                              Consumer<List<AdresseCivilView>> viewSetter,
 	                                                                              Consumer<String> exceptionSetter) {
 		if (ctb != null) {
 			try {
 				final List<AdresseCivilView> views = adressesCivilesGetter.get(ctb);
-				viewSetter.accept(views);
+				final List<AdresseCivilView> kept;
+				if (showHisto || views.isEmpty()) {
+					kept = views;
+				}
+				else {
+					kept = new ArrayList<>(views.size());
+					for (AdresseCivilView view : views) {
+						if (isAlwaysShown(view)) {
+							kept.add(view);
+						}
+					}
+				}
+				viewSetter.accept(kept);
 			}
 			catch (Exception e) {
 				exceptionSetter.accept(e.getMessage());

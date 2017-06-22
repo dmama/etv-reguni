@@ -27,6 +27,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.common.Adresse;
@@ -46,6 +47,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdresseTiersDAO;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -143,6 +145,7 @@ import ch.vd.uniregctb.tiers.view.RegimeFiscalView;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersView;
+import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -221,7 +224,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Alimente List&lt;EtiquetteTiersView&gt;
 	 */
-	protected List<EtiquetteTiersView> getEtiquettes(Tiers tiers) {
+	protected List<EtiquetteTiersView> getEtiquettes(Tiers tiers, boolean histo) {
 		final List<EtiquetteTiersView> views;
 		final Set<EtiquetteTiers> db = tiers.getEtiquettes();
 		if (db == null || db.isEmpty()) {
@@ -229,6 +232,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 		else {
 			views = db.stream()
+					.filter(e -> histo || isAlwaysShown(e))
 					.map(EtiquetteTiersView::new)
 					.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(EtiquetteTiersView::getDateDebut).reversed()))
 					.collect(Collectors.toList());
@@ -563,8 +567,10 @@ public class TiersManager implements MessageSourceAware {
 				tiersView.setIndividu(individu);
 			}
 
-			// étiquettes
-			tiersView.setEtiquettes(getEtiquettes(tiersPrincipal));
+			// étiquettes (seulement en visualisation)
+			if (tiersView instanceof TiersVisuView) {
+				tiersView.setEtiquettes(getEtiquettes(tiersPrincipal, ((TiersVisuView) tiersView).isLabelsHisto()));
+			}
 		}
 
 		/* 2eme tiers */
@@ -577,12 +583,14 @@ public class TiersManager implements MessageSourceAware {
 				tiersView.setIndividuConjoint(individu);
 			}
 
-			// étiquettes
-			tiersView.setEtiquettesConjoint(getEtiquettes(tiersConjoint));
+			// étiquettes (seulement en visualisation)
+			if (tiersView instanceof TiersVisuView) {
+				tiersView.setEtiquettesConjoint(getEtiquettes(tiersConjoint, ((TiersVisuView) tiersView).isLabelsConjointHisto()));
+			}
 		}
 	}
 
-	protected void setMandataires(TiersView tiersView, Contribuable contribuable) {
+	protected void setMandataires(TiersVisuView tiersView, Contribuable contribuable) {
 
 		final List<MandataireCourrierView> mandatairesCourrier = new LinkedList<>();
 		final List<MandatairePerceptionView> mandatairesPerception = new LinkedList<>();
@@ -598,17 +606,17 @@ public class TiersManager implements MessageSourceAware {
 						final Mandat mandat = (Mandat) ret;
 						switch (mandat.getTypeMandat()) {
 						case TIERS:
-							if (accesMandataire.hasTiersPerception()) {
+							if (accesMandataire.hasTiersPerception() && (tiersView.isMandatairesPerceptionHisto() || isAlwaysShown(mandat))) {
 								mandatairesPerception.add(new MandatairePerceptionView(mandat, tiersService));
 							}
 							break;
 						case GENERAL:
-							if (accesMandataire.hasGeneral()) {
+							if (accesMandataire.hasGeneral() && (tiersView.isMandatairesCourrierHisto() || isAlwaysShown(mandat))) {
 								mandatairesCourrier.add(new MandataireCourrierView(mandat, tiersService, serviceInfrastructureService));
 							}
 							break;
 						case SPECIAL:
-							if (accesMandataire.hasSpecial(mandat.getCodeGenreImpot())) {
+							if (accesMandataire.hasSpecial(mandat.getCodeGenreImpot()) && (tiersView.isMandatairesCourrierHisto() || isAlwaysShown(mandat))) {
 								mandatairesCourrier.add(new MandataireCourrierView(mandat, tiersService, serviceInfrastructureService));
 							}
 							break;
@@ -622,7 +630,9 @@ public class TiersManager implements MessageSourceAware {
 			if (adressesMandataires != null && !adressesMandataires.isEmpty()) {
 				for (AdresseMandataire adresse : adressesMandataires) {
 					if ((adresse.getTypeMandat() == TypeMandat.GENERAL && accesMandataire.hasGeneral()) || (adresse.getTypeMandat() == TypeMandat.SPECIAL && accesMandataire.hasSpecial(adresse.getCodeGenreImpot()))) {
-						mandatairesCourrier.add(new MandataireCourrierView(adresse, serviceInfrastructureService));
+						if (tiersView.isMandatairesCourrierHisto() || isAlwaysShown(adresse)) {
+							mandatairesCourrier.add(new MandataireCourrierView(adresse, serviceInfrastructureService));
+						}
 					}
 				}
 			}
@@ -638,9 +648,19 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
+	 * Détermine si un élément annulable et localisable dans le temps est visible toujours (= true) ou seulement si l'historique est activé (= false)
+	 * @param data élément à tester
+	 * @param <T> type de cet élément
+	 * @return <code>true</code> si l'élément doit être toujours affiché, <code>false</code> s'il ne doit l'être
+	 */
+	protected static <T extends Annulable & DateRange> boolean isAlwaysShown(T data) {
+		return !data.isAnnule() && RegDateHelper.isAfterOrEqual(data.getDateFin(), RegDate.get(), NullDateBehavior.LATEST);
+	}
+
+	/**
 	 * Met a jour la vue en fonction de l'entreprise
 	 */
-	protected void setEntreprise(TiersView tiersView, Entreprise entreprise) {
+	protected void setEntreprise(TiersVisuView tiersView, Entreprise entreprise) {
 		tiersView.setTiers(entreprise);
 
 		// map des régimes fiscaux existants indexés par code
@@ -658,10 +678,14 @@ public class TiersManager implements MessageSourceAware {
 			for (RegimeFiscal regime : regimes) {
 				final RegimeFiscalView rfView = new RegimeFiscalView(regime.getId(), regime.isAnnule(), regime.getDateDebut(), regime.getDateFin(), mapRegimesParCode.get(regime.getCode()));
 				if (regime.getPortee() == RegimeFiscal.Portee.VD) {
-					vd.add(rfView);
+					if (tiersView.isRegimesFiscauxVDHisto() || isAlwaysShown(regime)) {
+						vd.add(rfView);
+					}
 				}
 				else if (regime.getPortee() == RegimeFiscal.Portee.CH) {
-					ch.add(rfView);
+					if (tiersView.isRegimesFiscauxCHHisto() || isAlwaysShown(regime)) {
+						ch.add(rfView);
+					}
 				}
 				else {
 					throw new IllegalArgumentException("Portée inconnue sur un régime fiscal : " + regime.getPortee());
@@ -681,8 +705,10 @@ public class TiersManager implements MessageSourceAware {
 		if (allegements != null) {
 			final List<AllegementFiscalView> views = new ArrayList<>(allegements.size());
 			for (AllegementFiscal af : allegements) {
-				final AllegementFiscalView afView = new AllegementFiscalView(af);
-				views.add(afView);
+				if (tiersView.isAllegementsFiscauxHisto() || isAlwaysShown(af)) {
+					final AllegementFiscalView afView = new AllegementFiscalView(af);
+					views.add(afView);
+				}
 			}
 
 			views.sort(AllegementFiscalView.DEFAULT_COMPARATOR);
@@ -698,8 +724,10 @@ public class TiersManager implements MessageSourceAware {
 		if (flags != null) {
 			final List<FlagEntrepriseView> views = new ArrayList<>(flags.size());
 			for (FlagEntreprise flag : flags) {
-				final FlagEntrepriseView view = new FlagEntrepriseView(flag);
-				views.add(view);
+				if (tiersView.isFlagsEntrepriseHisto(flag.getType().getGroupe()) || isAlwaysShown(flag)) {
+					final FlagEntrepriseView view = new FlagEntrepriseView(flag);
+					views.add(view);
+				}
 			}
 
 			views.sort(new AnnulableHelper.AnnulableDateRangeComparator<>(true));
@@ -887,20 +915,19 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Met a jour la vue periodicite avec la periodicites du debiteur
 	 */
-	protected void setPeriodicitesView(TiersView tiersView, DebiteurPrestationImposable dpi) {
-		List<PeriodiciteView> listePeriodicitesView = new ArrayList<>();
-		Set<Periodicite> setPeriodicites = dpi.getPeriodicites();
+	protected void setPeriodicitesView(TiersVisuView tiersView, DebiteurPrestationImposable dpi) {
+		final List<PeriodiciteView> listePeriodicitesView = new ArrayList<>();
+		final Set<Periodicite> setPeriodicites = dpi.getPeriodicites();
 		if (setPeriodicites != null) {
 			for (Periodicite periodicite : setPeriodicites) {
-				PeriodiciteView periodiciteView = readFromPeriodicite(periodicite);
-				listePeriodicitesView.add(periodiciteView);
+				if (tiersView.isPeriodicitesHisto() || isAlwaysShown(periodicite)) {
+					final PeriodiciteView periodiciteView = readFromPeriodicite(periodicite);
+					listePeriodicitesView.add(periodiciteView);
+				}
 			}
 			listePeriodicitesView.sort(new PeriodiciteViewComparator());
 			tiersView.setPeriodicites(listePeriodicitesView);
-
 		}
-
-
 	}
 
 	protected PeriodiciteView readFromPeriodicite(Periodicite periodicite) {
@@ -965,11 +992,14 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected void setSituationsFamille(TiersView tiersView, Contribuable contribuable) throws AdresseException {
 
-		final List<SituationFamilleView> situationsFamilleView = new ArrayList<>();
 		final List<VueSituationFamille> situationsFamille = situationFamilleService.getVueHisto(contribuable);
 		Collections.reverse(situationsFamille); // UNIREG-647
+		final List<SituationFamilleView> situationsFamilleView = new ArrayList<>(situationsFamille.size());
 
 		for (VueSituationFamille situation : situationsFamille) {
+			if (tiersView instanceof TiersVisuView && !((TiersVisuView) tiersView).isSituationsFamilleHisto() && !isAlwaysShown(situation)) {
+				continue;
+			}
 
 			final SituationFamilleView view = new SituationFamilleView();
 			view.setAnnule(situation.isAnnule());
@@ -996,11 +1026,12 @@ public class TiersManager implements MessageSourceAware {
 					view.setNomCourrier1TiersRevenuPlusEleve(nomCourrier.get(0));
 					view.setNumeroTiersRevenuPlusEleve(numeroContribuablePrincipal);
 				}
-
 			}
+
 			situationsFamilleView.add(view);
 		}
 
+		tiersView.setWithSituationsFamille(!situationsFamille.isEmpty());       // certaines de ces situations de familles ne se retrouvent pas dans la vue si l'historique n'est pas demandé
 		tiersView.setSituationsFamille(situationsFamilleView);
 	}
 

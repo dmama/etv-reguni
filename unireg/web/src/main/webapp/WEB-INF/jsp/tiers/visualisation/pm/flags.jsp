@@ -16,13 +16,13 @@
 		</table>
 	</c:if>
 
+	<input class="noprint" name="flag_histo" type="checkbox" <c:if test="${command.isFlagsEntrepriseHisto(param.group)}">checked</c:if> onClick="window.location.href = App.toggleBooleanParam(window.location, 'flagsEntrepriseHisto-${param.group}', true);" id="flag_histo-${param.group}" />
+	<label class="noprint" for="flag_histo-${param.group}"><fmt:message key="label.historique" /></label>
+
 	<c:set var="flags" value="${command.getFlags(param.group)}"/>
 	<c:if test="${not empty flags}">
 
-		<input class="noprint" name="flag_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('flag-${param.group}','flag_histo-${param.group}', 'histo-only');" id="flag_histo-${param.group}" />
-		<label class="noprint" for="flag_histo-${param.group}"><fmt:message key="label.historique" /></label>
-
-		<display:table name="${flags}" id="flag" htmlId="flag-${param.group}" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
+		<display:table name="${flags}" id="flag" htmlId="flag-${param.group}" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column titleKey="label.date.debut" style="width: 20%;" sortable="true" sortProperty="dateDebut">
 				<unireg:regdate regdate="${flag.dateDebut}"/>
 			</display:column>
@@ -38,16 +38,5 @@
 		</display:table>
 
 	</c:if>
-
-	<script type="text/javascript">
-
-		    $(function() {
-
-			    // premièr calcul des lignes à cacher par défaut
-			    Histo.toggleRowsIsHistoFromClass('flag-${param.group}','flag_histo-${param.group}', 'histo-only');
-
-		    });
-
-	</script>
 
 </fieldset>

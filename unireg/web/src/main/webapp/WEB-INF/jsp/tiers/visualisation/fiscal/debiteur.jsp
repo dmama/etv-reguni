@@ -27,10 +27,10 @@
 <fieldset>
 		<legend><span><fmt:message key="label.periodicites" /></span></legend>
 		<c:if test="${not empty command.periodicites}">
-			<input class="noprint" name="periodicites_histo"  id="isPeriodiciteHisto" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('periodicite','isPeriodiciteHisto', 'histo-only');"/>
+			<input class="noprint" name="periodicites_histo" <c:if test="${command.periodicitesHisto}">checked</c:if> id="isPeriodiciteHisto" type="checkbox" onClick="window.location.href = App.toggleBooleanParam(window.location, 'periodicitesHisto', true);"/>
 			<label class="noprint" for="isPeriodiciteHisto"><fmt:message key="label.historique" /></label>
 
-			<display:table name="command.periodicites" id="periodicite" pagesize="10" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator" sort="external">
+			<display:table name="command.periodicites" id="periodicite" pagesize="10" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="external">
 
 				<display:column titleKey="label.periodicite.decompte" style="width: 30%;">
 					<fmt:message key="option.periodicite.decompte.${periodicite.periodiciteDecompte}" />

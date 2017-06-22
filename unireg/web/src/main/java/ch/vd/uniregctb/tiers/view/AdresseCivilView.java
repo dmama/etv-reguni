@@ -7,11 +7,12 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseServiceImpl;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
-public class AdresseCivilView implements DateRange {
+public class AdresseCivilView implements DateRange, Annulable {
 
 	private TypeAdresseCivil usageCivil;
 	private RegDate dateDebut;
@@ -138,5 +139,11 @@ public class AdresseCivilView implements DateRange {
 
 	public Integer getEwid() {
 		return ewid;
+	}
+
+	@Override
+	public boolean isAnnule() {
+		// les adresses civiles ne sont jamais annulées...
+		return false;
 	}
 }

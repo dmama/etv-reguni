@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers.view;
 
 import java.util.List;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.Annulable;
@@ -10,7 +11,7 @@ import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
-public class AdresseView implements Comparable<AdresseView>, Annulable {
+public class AdresseView implements Comparable<AdresseView>, Annulable, DateRange {
 
 	private Long id;
 	private RegDate dateDebut;
@@ -112,6 +113,7 @@ public class AdresseView implements Comparable<AdresseView>, Annulable {
 	/**
 	 * @return the dateDebut
 	 */
+	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -126,6 +128,7 @@ public class AdresseView implements Comparable<AdresseView>, Annulable {
 	/**
 	 * @return the dateFin
 	 */
+	@Override
 	public RegDate getDateFin() {
 		return dateFin;
 	}

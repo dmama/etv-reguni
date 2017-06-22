@@ -16,12 +16,12 @@
 		</table>
 	</c:if>
 
+	<input class="noprint" name="allg_histo" type="checkbox" <c:if test="${command.allegementsFiscauxHisto}">checked</c:if> onClick="window.location.href = App.toggleBooleanParam(window.location, 'allegementsFiscauxHisto', true);" id="allg_histo" />
+	<label class="noprint" for="allg_histo"><fmt:message key="label.historique" /></label>
+
 	<c:if test="${not empty command.allegementsFiscaux}">
 
-		<input class="noprint" name="allg_histo" type="checkbox" onClick="Histo.toggleRowsIsHistoFromClass('allegement','allg_histo', 'histo-only');" id="allg_histo" />
-		<label class="noprint" for="allg_histo"><fmt:message key="label.historique" /></label>
-
-		<display:table name="${command.allegementsFiscaux}" id="allegement" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableAnnulableDateRangeDecorator">
+		<display:table name="${command.allegementsFiscaux}" id="allegement" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 				<unireg:regdate regdate="${allegement.dateDebut}"/>
 			</display:column>
@@ -72,11 +72,3 @@
 	</c:if>
 
 </fieldset>
-
-<script type="text/javascript">
-
-	$(function() {
-		Histo.toggleRowsIsHistoFromClass('allegement','allg_histo', 'histo-only');
-	});
-
-</script>

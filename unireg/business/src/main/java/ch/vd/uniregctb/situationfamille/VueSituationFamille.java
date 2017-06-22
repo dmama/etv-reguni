@@ -4,12 +4,13 @@ import java.util.Date;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.EtatCivil;
 
 /**
  * Vue de la situation de famille d'un contribuable telle que composée par le service corespondant.
  */
-public interface VueSituationFamille extends DateRange {
+public interface VueSituationFamille extends DateRange, Annulable {
 
 	enum Source {
 		CIVILE,

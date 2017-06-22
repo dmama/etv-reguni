@@ -1,6 +1,11 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -13,6 +18,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.tiers.HistoFlag;
+import ch.vd.uniregctb.tiers.HistoFlags;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -55,18 +62,43 @@ public class TiersVisuManagerTest extends WebTest {
 
 	}
 
+	private static HistoFlags buildHistoFlags(boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint,
+	                                          boolean raisonsSocialesCivileHistoParam, boolean nomsAdditionnelsHistoParam, boolean siegesCivilHistoParam, boolean formesJuridiquesCivileHistoParam, boolean capitauxCivileHistoParam, boolean domicilesHistoParam,
+	                                          boolean rapportsPrestationHisto, boolean ctbAssocieHisto) {
+
+		final Map<HistoFlag, Boolean> map = new EnumMap<>(HistoFlag.class);
+		map.put(HistoFlag.ADRESSES, adressesHisto);
+		map.put(HistoFlag.ADRESSES_CIVILES, adressesHistoCiviles);
+		map.put(HistoFlag.ADRESSES_CIVILES_CONJOINT, adressesHistoCivilesConjoint);
+		map.put(HistoFlag.RAISONS_SOCIALES, raisonsSocialesCivileHistoParam);
+		map.put(HistoFlag.NOMS_ADDITIONNELS, nomsAdditionnelsHistoParam);
+		map.put(HistoFlag.SIEGES, siegesCivilHistoParam);
+		map.put(HistoFlag.FORMES_JURIDIQUES, formesJuridiquesCivileHistoParam);
+		map.put(HistoFlag.CAPITAUX, capitauxCivileHistoParam);
+		map.put(HistoFlag.DOMICILES, domicilesHistoParam);
+		map.put(HistoFlag.RAPPORTS_PRESTATION, rapportsPrestationHisto);
+		map.put(HistoFlag.CTB_ASSOCIE, ctbAssocieHisto);
+
+		final Set<HistoFlag> raisedFlags = map.entrySet().stream()
+				.filter(Map.Entry::getValue)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toCollection(() -> EnumSet.noneOf(HistoFlag.class)));
+		return new HistoFlags(raisedFlags);
+	}
+
 	/**
 	 * Teste la methode getView
 	 */
-
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetViewHabitant() throws Exception{
 
-		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, true, true, true, true, true, true,true, true, false, false, true, true, true, true, webParamPagination);
-		Tiers tiers = view.getTiers();
-		PersonnePhysique hab = (PersonnePhysique) tiers;
+		final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
+		final TiersVisuView view = tiersVisuManager.getView((long) 6789,
+		                                                    buildHistoFlags(true, true, true, true, true, true, true,true, true, false, false),
+		                                                    true, true, true, true, webParamPagination);
+		final Tiers tiers = view.getTiers();
+		final PersonnePhysique hab = (PersonnePhysique) tiers;
 		assertNotNull(hab);
 		assertEquals("Bolomey", view.getIndividu().getNom());
 	}
@@ -74,10 +106,12 @@ public class TiersVisuManagerTest extends WebTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetViewNonHabitant() throws Exception {
-		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView((long) 12600002, true, true, true, true, true, true, true, true,true, false,false,true, true, true, true, webParamPagination);
-		Tiers tiers = view.getTiers();
-		PersonnePhysique nonHab = (PersonnePhysique) tiers;
+		final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
+		final TiersVisuView view = tiersVisuManager.getView((long) 12600002,
+		                                                    buildHistoFlags(true, true, true, true, true, true, true, true,true, false,false),
+		                                                    true, true, true, true, webParamPagination);
+		final Tiers tiers = view.getTiers();
+		final PersonnePhysique nonHab = (PersonnePhysique) tiers;
 		assertNotNull(nonHab);
 		assertEquals("Kamel", nonHab.getNom());
 
@@ -86,9 +120,11 @@ public class TiersVisuManagerTest extends WebTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesHistoriques() throws Exception {
-		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, true, true, true, true, true, true, true,true, false,false,true, true, true, true, webParamPagination);
-		List<AdresseView> adresses = view.getHistoriqueAdresses();
+		final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
+		final TiersVisuView view = tiersVisuManager.getView((long) 6789,
+		                                              buildHistoFlags(true, true, true, true, true, true, true, true,true, false,false),
+		                                              true, true, true, true, webParamPagination);
+		final List<AdresseView> adresses = view.getHistoriqueAdresses();
 		/*
 		 * 2 * courrier
 		 * 2 * representation (1 fiscale + 1 défaut)
@@ -142,11 +178,13 @@ public class TiersVisuManagerTest extends WebTest {
 			}
 		});
 
-		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView(numeros.numeroContribuableMenage, true, true, true, true, true, true,true, true, true, false,false,true, true, true, true, webParamPagination);
-		List<AdresseView> adressesMenage = view.getHistoriqueAdresses();
-		List<AdresseCivilView> adressesZotan = view.getHistoriqueAdressesCiviles();
-		List<AdresseCivilView> adressesMarie = view.getHistoriqueAdressesCivilesConjoint();
+		final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
+		final TiersVisuView view = tiersVisuManager.getView(numeros.numeroContribuableMenage,
+		                                              buildHistoFlags(true, true, true, true, true, true,true, true, true, false,false),
+		                                              true, true, true, true, webParamPagination);
+		final List<AdresseView> adressesMenage = view.getHistoriqueAdresses();
+		final List<AdresseCivilView> adressesZotan = view.getHistoriqueAdressesCiviles();
+		final List<AdresseCivilView> adressesMarie = view.getHistoriqueAdressesCivilesConjoint();
 
 		/*
 		 * 2 * courrier

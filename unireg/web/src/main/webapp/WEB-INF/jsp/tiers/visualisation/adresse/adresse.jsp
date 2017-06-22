@@ -52,12 +52,11 @@
 		</span>
 	</legend>
 
-	<input class="noprint" name="adrHistoCiviles" type="checkbox" <c:if test="${command.adressesHistoCiviles}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'adressesHistoCiviles', true);" id="isAdrHistoCiviles" />
+	<input class="noprint" name="adrHistoCiviles" type="checkbox" <c:if test="${adressesHistoCiviles}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'adressesHistoCiviles', true);" id="isAdrHistoCiviles" />
 	<label class="noprint" for="isAdrHistoCiviles"><fmt:message key="label.historique" /></label>
 	<jsp:include page="../../common/adresse/adresseCivile.jsp">
 		<jsp:param name="page" value="visu"/>
 		<jsp:param name="membre" value="principal"/>
-		<jsp:param name="adressesHisto" value="${adressesHistoCiviles}"/>
 	</jsp:include>
 </fieldset>
 
@@ -65,13 +64,12 @@
 <fieldset id="adrCivConjointFieldset" <c:if test="${command.tiersConjoint == null}">style="display:none"</c:if> >
 	<legend><span><fmt:message key="label.adresse.civiles.membre.couple" /><c:out value=" ${command.nomPrenomConjoint}"/></span></legend>
 
-	<input class="noprint" name="adrHistoCivilesConjoint" type="checkbox" <c:if test="${command.adressesHistoCivilesConjoint}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'adressesHistoCivilesConjoint', true);" id="isAdrHistoCivilesConjoint" />
+	<input class="noprint" name="adrHistoCivilesConjoint" type="checkbox" <c:if test="${adressesHistoCivilesConjoint}">checked</c:if> onclick="window.location = App.toggleBooleanParam(window.location, 'adressesHistoCivilesConjoint', true);" id="isAdrHistoCivilesConjoint" />
 	<label class="noprint" for="isAdrHistoCivilesConjoint"><fmt:message key="label.historique" /></label>
 
 	<jsp:include page="../../common/adresse/adresseCivile.jsp">
 		<jsp:param name="page" value="visu"/>
 		<jsp:param name="membre" value="conjoint"/>
-		<jsp:param name="adressesHisto" value="${adressesHistoCivilesConjoint}"/>
 	</jsp:include>
 </fieldset>
 
