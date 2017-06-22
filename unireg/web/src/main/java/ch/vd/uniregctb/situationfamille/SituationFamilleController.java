@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.ControllerUtils;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.manager.SituationFamilleManager;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
@@ -77,6 +79,31 @@ public class SituationFamilleController {
 
 		situationFamilleManager.save(view);
 		return "redirect:/fiscal/edit.do?id=" + id;
+	}
+
+	/**
+	 * Méthode qui annule une situation de famille.
+	 *
+	 * @param situationId l'id de la situation à annuler
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/cancel.do", method = RequestMethod.POST)
+	public String cancel(@RequestParam(value = "situationId") long situationId) throws Exception {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.SIT_FAM)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des situations de famille dans Unireg");
+		}
+		final Contribuable ctb = situationFamilleManager.getContribuableForSituation(situationId);
+		if (ctb == null) {
+			throw new ObjectNotFoundException("La situation de famille avec l'id=" + situationId + " n'existe pas.");
+		}
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getNumero());
+
+		// on annule la situation
+		situationFamilleManager.annulerSituationFamille(situationId);
+
+		// retour à la page d'édition
+		return "redirect:/fiscal/edit.do?id=" + ctb.getNumero();
 	}
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {

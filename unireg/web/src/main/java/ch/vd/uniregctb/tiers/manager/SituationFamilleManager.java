@@ -1,9 +1,10 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import org.springframework.transaction.annotation.Transactional;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 
 
@@ -20,7 +21,6 @@ public interface SituationFamilleManager {
 	 *
 	 * @param idSituationFamille
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	void annulerSituationFamille(Long idSituationFamille);
 
 	/**
@@ -30,7 +30,6 @@ public interface SituationFamilleManager {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
-	@Transactional(readOnly = true)
 	SituationFamilleView create(Long numeroCtb) throws AdresseException;
 
 	/**
@@ -38,7 +37,12 @@ public interface SituationFamilleManager {
 	 *
 	 * @param situationFamilleView
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	void save(SituationFamilleView situationFamilleView) ;
 
+	/**
+	 * @param situationId l'id d'une situation de famille
+	 * @return le contribuable associé à la situation de famille; ou <b>null</b> si la situation de famille n'existe pas.
+	 */
+	@Nullable
+	Contribuable getContribuableForSituation(long situationId);
 }

@@ -48,7 +48,8 @@
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!situationFamille.annule && situationFamille.editable}">
-				<unireg:raccourciAnnuler onClick="javascript:annulerSituationFamille(${situationFamille.id});" tooltip="Annulation de situation de famille"/>
+				<unireg:linkTo name="" title="Annulation de situation de famille" confirm="Voulez-vous vraiment annuler cette situation ?"
+				               action="/situationfamille/cancel.do" method="post" params="{situationId:${situationFamille.id}}" link_class="delete"/>
 			</c:if>
 		</c:if>
 	</display:column>

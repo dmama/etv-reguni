@@ -8,7 +8,6 @@
 		<property name="formView" value="tiers/edition/fiscal/edit" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="forFiscalManager" ref="forFiscalManager" />
-		<property name="situationFamilleManager" ref="situationFamilleManager" />
 	</bean>
 
 	<bean id="forFiscalManager" class="ch.vd.uniregctb.tiers.manager.ForFiscalManagerImpl"  parent="tiersManager">
@@ -29,6 +28,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="situationFamilleDAO" ref="situationFamilleDAO" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 

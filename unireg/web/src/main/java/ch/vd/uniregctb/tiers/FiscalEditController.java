@@ -3,13 +3,10 @@ package ch.vd.uniregctb.tiers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
-import ch.vd.uniregctb.tiers.manager.SituationFamilleManager;
 import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.utils.HttpSessionConstants;
@@ -21,18 +18,9 @@ import ch.vd.uniregctb.utils.HttpSessionUtils;
  */
 public class FiscalEditController extends AbstractTiersController {
 
-	/**
-	 * Un LOGGER.
-	 */
-	protected final Logger LOGGER = LoggerFactory.getLogger(FiscalEditController.class);
-
-	public static final String TARGET_ANNULER_SIT_FAM = "annulerSituationFamille";
-
 	private TiersEditManager tiersEditManager;
 
 	private ForFiscalManager forFiscalManager;
-
-	private SituationFamilleManager situationFamilleManager;
 
 	public void setTiersEditManager(TiersEditManager tiersEditManager) {
 		this.tiersEditManager = tiersEditManager;
@@ -40,10 +28,6 @@ public class FiscalEditController extends AbstractTiersController {
 
 	public void setForFiscalManager(ForFiscalManager forFiscalManager) {
 		this.forFiscalManager = forFiscalManager;
-	}
-
-	public void setSituationFamilleManager(SituationFamilleManager situationFamilleManager) {
-		this.situationFamilleManager = situationFamilleManager;
 	}
 
 	@Override
@@ -74,16 +58,7 @@ public class FiscalEditController extends AbstractTiersController {
 		TiersEditView bean = (TiersEditView) command;
 		checkAccesDossierEnEcriture(bean.getTiers().getId());
 
-		if (getTarget() != null) {
-			if (TARGET_ANNULER_SIT_FAM.equals(getTarget())) {
-				String idSituationFamille = getEventArgument();
-				if(idSituationFamille != null) {
-					Long idSitFam = Long.parseLong(idSituationFamille);
-					situationFamilleManager.annulerSituationFamille(idSitFam);
-				}
-			}
-		} // button retour liste
-		else if (request.getParameter(BUTTON_BACK_TO_LIST) != null) {
+		if (request.getParameter(BUTTON_BACK_TO_LIST) != null) {
 			return new ModelAndView("redirect:../tiers/list.do");
 		} // button retour visualisation
 		else if (request.getParameter(BUTTON_BACK_TO_VISU) != null) {

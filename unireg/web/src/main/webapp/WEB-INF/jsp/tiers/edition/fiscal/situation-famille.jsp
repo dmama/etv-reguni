@@ -20,11 +20,4 @@
 	</c:if>
 
 </fieldset>
-<script type="text/javascript" language="javascript1.3">
-function annulerSituationFamille(idSituationFamille) {
-	if(confirm('Voulez-vous vraiment annuler cette situation de famille ?')) {
-		Form.doPostBack("theForm", "annulerSituationFamille", idSituationFamille);
- 	}
-}
-</script>
 <!-- Fin Situation famille -->

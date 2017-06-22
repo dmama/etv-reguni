@@ -2,7 +2,7 @@ package ch.vd.uniregctb.tiers.manager;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -18,6 +18,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamilleDAO;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
@@ -34,6 +35,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 
 	private static final String SITUATION_FAMILLE_MENAGE_COMMUN = "SituationFamilleMenageCommun";
 
+	private SituationFamilleDAO situationFamilleDAO;
 	private EvenementFiscalService evenementFiscalService;
 
 	/**
@@ -42,7 +44,6 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 	 * @param idSituationFamille
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void annulerSituationFamille(Long idSituationFamille) {
 		situationFamilleService.annulerSituationFamille(idSituationFamille);
 	}
@@ -55,7 +56,6 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 	 * @throws AdressesResolutionException
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public SituationFamilleView create(Long numeroCtb) throws AdresseException {
 		final Contribuable contribuable = (Contribuable) tiersService.getTiers(numeroCtb);
 
@@ -106,7 +106,6 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 	 * @param situationFamilleView
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void save(SituationFamilleView situationFamilleView) {
 
 		final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tiersService.getTiers(situationFamilleView.getNumeroCtb());
@@ -134,7 +133,17 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 		evenementFiscalService.publierEvenementFiscalChangementSituationFamille(dateDebut, contribuable);
 	}
 
+	@Override
+	public @Nullable Contribuable getContribuableForSituation(long situationId) {
+		final SituationFamille situation= situationFamilleDAO.get(situationId);
+		return situation == null ? null : situation.getContribuable();
+	}
+
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	public void setSituationFamilleDAO(SituationFamilleDAO situationFamilleDAO) {
+		this.situationFamilleDAO = situationFamilleDAO;
 	}
 }
