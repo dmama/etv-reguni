@@ -1,31 +1,44 @@
 package ch.vd.uniregctb.rapport;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
+import ch.vd.uniregctb.rapport.view.RapportListView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -38,14 +51,20 @@ import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportEntreTiersKey;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.manager.AutorisationManager;
+import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/rapport")
 public class RapportController {
+
+	private final Logger LOGGER = LoggerFactory.getLogger(RapportController.class);
 
 	private TiersDAO tiersDAO;
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
@@ -57,6 +76,7 @@ public class RapportController {
 	private MessageSource messageSource;
 	private ControllerUtils controllerUtils;
 	private SecurityProviderInterface securityProvider;
+	private AutorisationManager autorisationManager;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -97,6 +117,10 @@ public class RapportController {
 		this.securityProvider = securityProvider;
 	}
 
+	public void setAutorisationManager(AutorisationManager autorisationManager) {
+		this.autorisationManager = autorisationManager;
+	}
+
 	private Set<RapportEntreTiersKey> getAllowedTypes() {
 		final Set<RapportEntreTiersKey> types;
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
@@ -111,15 +135,59 @@ public class RapportController {
 	private static Set<RapportEntreTiersKey> buildTypeSet(@Nullable TypeRapportEntreTiers askedFor, Set<RapportEntreTiersKey> allowed) {
 		final Set<RapportEntreTiersKey> types = new HashSet<>(allowed);
 		if (askedFor != null) {
-			final Iterator<RapportEntreTiersKey> iterator = types.iterator();
-			while (iterator.hasNext()) {
-				final RapportEntreTiersKey key = iterator.next();
-				if (key.getType() != askedFor) {
-					iterator.remove();
-				}
-			}
+			types.removeIf(key -> key.getType() != askedFor);
 		}
 		return types.isEmpty() ? allowed : types;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	@InitBinder(value = "command")
+	protected void initBinder(WebDataBinder binder) {
+		binder.setValidator(new TiersCriteriaValidator(true));
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
+	}
+
+	/**
+	 * Affiche l'écran de recherche d'un tiers à lier par un rapport-entre-tiers.
+	 */
+	@RequestMapping(value = "/search.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String search(@Valid @ModelAttribute("command") final RapportListView view, BindingResult binding, Model model) throws AdresseException {
+
+		final long tiersId = view.getTiersId();
+
+		final Tiers tiers = tiersDAO.get(tiersId);
+		if (tiers == null) {
+			throw new TiersNotFoundException(tiersId);
+		}
+		if (!autorisationManager.isEditAllowed(tiers)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur ce tiers");
+		}
+
+		if (binding.hasErrors() || view.isEmpty()) {
+			return "tiers/edition/rapport/recherche/list";
+		}
+
+		try {
+			final List<TiersIndexedDataView> list = tiersService.search(view.asCore()).stream()
+					.map(TiersIndexedDataView::new)
+					.collect(Collectors.toList());
+			model.addAttribute("list", list);
+		}
+		catch (TooManyResultsIndexerException ee) {
+			if (ee.getNbResults() > 0) {
+				binding.reject("error.preciser.recherche.trouves", new Object[]{String.valueOf(ee.getNbResults())}, null);
+			}
+			else {
+				binding.reject("error.preciser.recherche");
+			}
+		}
+		catch (IndexerException e) {
+			LOGGER.error("Exception dans l'indexer: " + e.getMessage(), e);
+			binding.reject("error.recherche");
+		}
+
+		return "tiers/edition/rapport/recherche/list";
 	}
 
 	/**

@@ -8,86 +8,66 @@
 		  	<fmt:message key="title.recherche.tiers.lie" />
   	</tiles:put>
   	<tiles:put name="body">
-  		<c:if test="${command.allowed}">
-		<jsp:include page="../../../../general/tiers.jsp" >
-			<jsp:param name="page" value="rapport" />
-			<jsp:param name="path" value="tiers" />
-		</jsp:include>
+	    <%--@elvariable id="command" type="ch.vd.uniregctb.rapport.view.RapportListView"--%>
+	    <unireg:bandeauTiers numero="${command.tiersId}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="false"/>
+
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRechercheTiers">
+	    <form:form method="get" id="formRechercheTiers">
+		    <form:hidden path="tiersId"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>
 				<jsp:include page="../../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="rapport" />
 					<jsp:param name="prefixeEffacer" value="/rapport" />
-					<jsp:param name="paramsEffacer" value="numero:${numeroTiers}"/>
+					<jsp:param name="paramsEffacer" value="tiersId:${command.tiersId}"/>
 				</jsp:include>		
 			</fieldset>
 		</form:form>
 
-		<display:table 	name="list" id="tiers" pagesize="25" requestURI="/rapport/search.do" class="display" sort="list">
+		<display:table 	name="list" id="tiers" pagesize="25" requestURI="/rapport/search.do" class="display" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.tiers.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.tiers.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.tiers.trouves" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.tiers.trouves" /></span></display:setProperty>
 
 			<display:column sortable ="true" titleKey="label.numero.tiers" sortProperty="numero" >
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<a href="edit.do?numeroTiers=${numeroTiers}&numeroTiersLie=${tiers.numero}"><unireg:numCTB numero="${tiers.numero}" /></a>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<c:set var="noctb"><unireg:numCTB numero="${tiers.numero}"/></c:set>
+				<unireg:linkTo name="${noctb}" action="/rapport/edit.do" params="{numeroTiers:${command.tiersId},numeroTiersLie:${tiers.numero}}"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.role" >
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<c:out value="${tiers.roleLigne1}" />
-					<c:if test="${tiers.roleLigne2 != null}">
-						<br><c:out value="${tiers.roleLigne2}" />
-					</c:if>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<c:out value="${tiers.roleLigne1}" />
+				<c:if test="${tiers.roleLigne2 != null}">
+					<br><c:out value="${tiers.roleLigne2}" />
+				</c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.nom.raison" >
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<c:out value="${tiers.nom1}" />
-					<c:if test="${tiers.nom2 != null}">
-						<br><c:out value="${tiers.nom2}" />
-					</c:if>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<c:out value="${tiers.nom1}" />
+				<c:if test="${tiers.nom2 != null}">
+					<br><c:out value="${tiers.nom2}" />
+				</c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissanceInscriptionRC">
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<unireg:date date="${tiers.dateNaissanceInscriptionRC}"/>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<unireg:date date="${tiers.dateNaissanceInscriptionRC}"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.localitePays" >
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<c:out value="${tiers.localiteOuPays}" />
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<c:out value="${tiers.localiteOuPays}" />
 			</display:column>
 			<display:column sortable ="true" titleKey="label.for.principal" >
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<c:out value="${tiers.forPrincipal}" />
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<c:out value="${tiers.forPrincipal}" />
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.ouverture.for" sortProperty="dateOuvertureFor">
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<fmt:formatDate value="${tiers.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<fmt:formatDate value="${tiers.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.fermeture.for" sortProperty="dateFermetureFor">
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<fmt:formatDate value="${tiers.dateFermetureFor}" pattern="dd.MM.yyyy"/>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<fmt:formatDate value="${tiers.dateFermetureFor}" pattern="dd.MM.yyyy"/>
 			</display:column>
 		</display:table>
-		</c:if>
-		<c:if test="${!command.allowed}">
-			<span class="error"><fmt:message key="error.rapport.interdit" /></span>
-		</c:if>
 
 	    <!-- Debut Bouton -->
 	    <table border="0">
 		    <tr><td>
-			    <input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../dossiers-apparentes/edit.do?id=${numeroTiers}';" />
+			    <unireg:buttonTo name="Retour" action="/dossiers-apparentes/edit.do" params="{id:${command.tiersId}}" method="GET"/>
 		    </td></tr>
 	    </table>
 	    <!-- Fin Bouton -->

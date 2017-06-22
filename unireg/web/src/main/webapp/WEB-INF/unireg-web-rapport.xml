@@ -56,19 +56,7 @@
 		<property name="messageSource" ref="messageSource" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface" />
-	</bean>
-
-	<bean id="rapportListController" class="ch.vd.uniregctb.rapport.RapportListController" parent="abstractTiersListController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.rapport.view.RapportListView" />
-		<property name="commandName" value="command" />
-		<property name="rapportListManager" ref="rapportListManager" />
-		<property name="formView" value="tiers/edition/rapport/recherche/list" />
-		<property name="successView" value="edit.do" />
-		<property name="validator" ref="tiersCriteriaValidator"/>
-	</bean>
-
-	<bean id="rapportListManager" class="ch.vd.uniregctb.rapport.manager.RapportListManagerImpl" parent="tiersManager" >
+		<property name="autorisationManager" ref="autorisationManager" />
 	</bean>
 
 	<bean id="rapportEditController" class="ch.vd.uniregctb.rapport.RapportEditController" parent="abstractRapportPrestationController">

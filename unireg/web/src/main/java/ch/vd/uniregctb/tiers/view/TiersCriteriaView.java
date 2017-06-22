@@ -27,10 +27,10 @@ public class TiersCriteriaView implements Serializable {
 	private Long numeroDebiteur;
 	private Long numeroNonHabitant;
 	private Long numeroPremierePersonne;
-	private String forAll;
 	private String modeImpositionAsString;
 
 	// Les critères utilisés pour la recherche
+	private String forAll;
 	private String numeroFormatte;
 	private final TiersCriteria criteria = new TiersCriteria();
 
@@ -153,7 +153,12 @@ public class TiersCriteriaView implements Serializable {
 	}
 
 	public void setNumeroAVS(String numeroAVS) {
-		criteria.setNumeroAVS(numeroAVS);
+		if (StringUtils.isNotBlank(numeroAVS)) {
+			criteria.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(numeroAVS));
+		}
+		else {
+			criteria.setNumeroAVS(numeroAVS);
+		}
 	}
 
 	public String getNumeroEtranger() {

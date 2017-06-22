@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.fusion.HabitantListController;
 import ch.vd.uniregctb.fusion.NonHabitantListController;
-import ch.vd.uniregctb.rapport.RapportListController;
 import ch.vd.uniregctb.rt.DebiteurListController;
 import ch.vd.uniregctb.rt.SourcierListController;
 
@@ -42,9 +41,8 @@ public class SearchCriteriaRemovalController {
 	}
 
 	@RequestMapping(value = "/rapport/reset-search.do", method = RequestMethod.GET)
-	public String effacerCriteresRechercheRapport(HttpSession session, @RequestParam("numero") long id) {
-		session.removeAttribute(RapportListController.TIERS_LIE_CRITERIA_NAME);
-		return String.format("redirect:/rapport/search.do?numero=%d", id);
+	public String effacerCriteresRechercheRapport(@RequestParam("tiersId") long id) {
+		return String.format("redirect:/rapport/search.do?tiersId=%d", id);
 	}
 
 	@RequestMapping(value = "/rt/debiteur/reset-search.do", method = RequestMethod.GET)
