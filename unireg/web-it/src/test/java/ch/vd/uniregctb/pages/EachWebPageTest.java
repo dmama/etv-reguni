@@ -135,12 +135,12 @@ public class EachWebPageTest extends WebitTest {
 	// Page de visualisation d'un rapport
 	@Test
 	public void testTiersEditSituationFamille() throws Exception {
-		assertPage("/situationfamille/add.do?numero=86006202", "Ajout d'une situation de famille du tiers 860.062.02");
+		assertPage("/situationfamille/add.do?tiersId=86006202", "Ajout d'une situation de famille du tiers 860.062.02");
 	}
 
 	@Test
 	public void testTiersEditSituationFamilleInexistante() throws Exception {
-		assertPage("/situationfamille/add.do?numero=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
+		assertPage("/situationfamille/add.do?tiersId=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	/*----------------------
