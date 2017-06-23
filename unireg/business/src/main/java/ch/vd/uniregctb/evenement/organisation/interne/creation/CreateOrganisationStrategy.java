@@ -81,10 +81,13 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 			final Commune communeDomicile = getCommuneByNumeroOfs(organisation, sitePrincipal, context, dateEvenement, domicile);
 
+			final FormeLegale formeLegale = organisation.getFormeLegale(dateEvenement);
+
 			/*
-			    Organisations qui n'existent qu'au REE (ou autre registre non utile à la fiscalité)
+			    Traitement manuel pour les organisations qui n'existent qu'au REE (ou autre registre non utile à la fiscalité).
+			    Si la forme juridique est présente dans les données RCEnt, ne pas s'occuper des entreprises individuelles et les sociétés simples qui sont ignorées plus loin (SIFISC-25308).
 			  */
-			if (organisation.getNumeroIDE(dateEvenement) == null) {
+			if (organisation.getNumeroIDE(dateEvenement) == null && formeLegale != FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE && formeLegale != FormeLegale.N_0302_SOCIETE_SIMPLE) {
 				final String message;
 
 				if (organisation.isInscriteAuRC(dateEvenement)) {
@@ -102,8 +105,6 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 				LOGGER.info(message);
 				return new TraitementManuel(event, organisation, null, context, options, message);
 			}
-
-			final FormeLegale formeLegale = getFormeLegale(organisation, dateEvenement, communeDomicile);
 
 			/*
 				Organisations à ignorer
