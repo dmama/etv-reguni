@@ -62,6 +62,8 @@ import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
@@ -120,6 +122,7 @@ import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.security.Role;
@@ -1140,4 +1143,36 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 						                                                         context.registreFoncierService::getCommunauteMembreInfo))
 						.orElse(null));
 	}
+
+	@Override
+	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
+		// TODO (msi) rendre multi-threadée cet implémentation pour améliorer la latence
+		return doInTransaction(true, status -> {
+			final List<CommunityOfOwnersEntry> entries = new HashSet<>(communityIds).stream()
+					.filter(Objects::nonNull)
+					.map(this::resolveCommunityEntry)
+					.sorted(Comparator.comparing(CommunityOfOwnersEntry::getCommunityOfOwnersId))
+					.collect(Collectors.toList());
+			return new CommunityOfOwnersList(entries);
+		});
+	}
+
+	private CommunityOfOwnersEntry resolveCommunityEntry(long communityId) {
+		try {
+			final CommunauteRF communaute = context.registreFoncierService.getCommunaute(communityId);
+			if (communaute == null) {
+				return new CommunityOfOwnersEntry(communityId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "La communauté n°[" + communityId + "] n'existe pas."));
+			}
+			else {
+				final CommunityOfOwners community = CommunityOfOwnersBuilder.newCommunity(communaute,
+				                                                                          context.registreFoncierService::getContribuableIdFor,
+				                                                                          context.registreFoncierService::getCommunauteMembreInfo);
+				return new CommunityOfOwnersEntry(communityId, community, null);
+			}
+		}
+		catch (Exception e) {
+			return new CommunityOfOwnersEntry(communityId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage()));
+		}
+	}
 }
+

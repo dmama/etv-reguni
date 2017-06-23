@@ -25,6 +25,7 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
@@ -426,6 +427,12 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			community = (CommunityOfOwners) element.getObjectValue();
 		}
 		return community;
+	}
+
+	@Override
+	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
+		// FIXME (msi) implémenter ce cache
+		return target.getCommunitiesOfOwners(user, communityIds);
 	}
 
 	/**

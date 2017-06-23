@@ -16,9 +16,12 @@ import org.springframework.http.ResponseEntity;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.xml.common.v2.Date;
+import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.landregistry.v1.AcquisitionReason;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
@@ -440,6 +443,33 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, null, null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 264822986L, landRight);
 	}
 
+	@Test
+	public void testGetCommunitiesOfOwner() throws Exception {
+
+		final int communityId = 264822986;
+		final int communauteInconnueId = -1;
+
+		final Map<String, Integer> params = new HashMap<>();
+		params.put("communityId", communityId);
+		params.put("communauteInconnueId", communauteInconnueId);
+
+		final ResponseEntity<CommunityOfOwnersList> resp = get(CommunityOfOwnersList.class,
+		                                                       MediaType.APPLICATION_XML,
+		                                                       "/landRegistry/communitiesOfOwners?communityId={communityId}&communityId={communauteInconnueId}&user=zaizzt/22",
+		                                                       params);
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		final CommunityOfOwnersList list = resp.getBody();
+		assertNotNull(list);
+
+		final List<CommunityOfOwnersEntry> entries = list.getEntries();
+		assertNotNull(entries);
+		assertEquals(2, entries.size());
+		assertEntryNotFound(communauteInconnueId, entries.get(0));
+		assertEntry(communityId, entries.get(1));
+	}
+
 	private static void assertRightHolderNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder owner) {
 		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
 		assertNotNull(identity);
@@ -640,5 +670,21 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		final Building immo = entry.getBuilding();
 		assertNotNull(immo);
 		assertEquals(buildingId, immo.getId());
+	}
+
+	private static void assertEntry(int communityId, CommunityOfOwnersEntry entry) {
+		assertNotNull(entry);
+		assertEquals(communityId, entry.getCommunityOfOwnersId());
+		final CommunityOfOwners community = entry.getCommunityOfOwners();
+		assertNotNull(community);
+		assertEquals(communityId, community.getId());
+	}
+
+	private static void assertEntryNotFound(int communityId, CommunityOfOwnersEntry entry) {
+		assertNotNull(entry);
+		assertEquals(communityId, entry.getCommunityOfOwnersId());
+		assertNull(entry.getCommunityOfOwners());
+		assertEquals(ErrorType.BUSINESS, entry.getError().getType());
+		assertEquals("La communauté n°[" + communityId + "] n'existe pas.", entry.getError().getErrorMessage());
 	}
 }

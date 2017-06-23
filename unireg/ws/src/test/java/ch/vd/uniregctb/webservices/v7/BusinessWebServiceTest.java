@@ -58,6 +58,8 @@ import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
@@ -4873,6 +4875,73 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertOwnerNaturalPerson("Attila", "Misère", RegDate.get(2002, 12, 22), members.get(1));
 	}
 
+	/**
+	 * Ce test vérifie que la méthode 'getCommunitiesOfOwners' fonctionne bien dans le cas passant.
+	 */
+	@Test
+	public void testGetCommunitiesOfOwners() throws Exception {
+
+		class Ids {
+			long pp;
+			long immeuble;
+			long communaute1;
+			long communaute2;
+		}
+		final Ids ids = new Ids();
+
+		// on crée un immeuble possédé par deux communauté dans la base
+		doInNewTransaction(status -> {
+
+			// un immeuble
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			ids.immeuble = immeuble.getId();
+
+			// trois tiers RF
+			final PersonnePhysiqueRF ericRF = addPersonnePhysiqueRF("38383830ae3ff", "Eric", "Bolomey", RegDate.get(1966,3,30));
+			final PersonnePhysiqueRF attilaRF = addPersonnePhysiqueRF("828e8a828", "Attila", "Misère", RegDate.get(2002,12,22));
+			final PersonnePhysiqueRF gudrunRF = addPersonnePhysiqueRF("0ea0e020", "Gudrun", "Chaud", RegDate.get(1996,2,4));
+
+			// deux communautés
+			final CommunauteRF communauteRF1 = addCommunauteRF("78282828", TypeCommunaute.COMMUNAUTE_DE_BIENS);
+			final CommunauteRF communauteRF2 = addCommunauteRF("20826216", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			ids.communaute1 = communauteRF1.getId();
+			ids.communaute2 = communauteRF2.getId();
+
+			// Les deux tiers RF possèdent l'immeuble à travers une communauté de biens
+			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 2004, 202, 3);
+			addDroitPropriete(ericRF, immeuble, communauteRF1, GenrePropriete.COMMUNE, new Fraction(1, 3), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "48390a0e044", "48390a0e043");
+			addDroitPropriete(attilaRF, immeuble, communauteRF1, GenrePropriete.COMMUNE, new Fraction(1, 3), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "a88e883c73", "a88e883c72");
+			addDroitPropriete(communauteRF1, immeuble, GenrePropriete.COPROPRIETE, new Fraction(1, 3), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "2890cc033a", "2890cc033b");
+
+			addDroitPropriete(ericRF, immeuble, communauteRF2, GenrePropriete.COMMUNE, new Fraction(2, 3), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Succession", null, numeroAffaire, "7833737", "47838282");
+			addDroitPropriete(gudrunRF, immeuble, communauteRF2, GenrePropriete.COMMUNE, new Fraction(2, 3), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Succession", null, numeroAffaire, "739237329", "34727222");
+			addDroitPropriete(communauteRF2, immeuble, GenrePropriete.COPROPRIETE, new Fraction(2, 3), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Succession", null, numeroAffaire, "4782372172", "9033900");
+
+			// le tiers Unireg rapproché
+			final PersonnePhysique pp = addNonHabitant("Eric", "Bolomey", RegDate.get(1966, 3, 30), Sexe.MASCULIN);
+			ids.pp = pp.getId();
+			addRapprochementRF(pp, ericRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+
+			return null;
+
+		});
+
+		// on demande trois communautés : deux existantes et une inconnue
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Long idCommunauteInconnue = -1L;
+		final CommunityOfOwnersList list = service.getCommunitiesOfOwners(user, Arrays.asList(ids.communaute1, ids.communaute2, idCommunauteInconnue));
+		Assert.assertNotNull(list);
+
+		// on vérifie qu'on reçoit bien trois réponses
+		final List<CommunityOfOwnersEntry> entries = list.getEntries();
+		Assert.assertNotNull(entries);
+		Assert.assertEquals(3, entries.size());
+		assertNotFoundEntry(idCommunauteInconnue, entries.get(0));
+		assertFoundEntry(ids.communaute1, entries.get(1));
+		assertFoundEntry(ids.communaute2, entries.get(2));
+	}
+
 	private static void assertOwnerNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder owner) {
 		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
 		Assert.assertEquals(firstName, identity.getFirstName());
@@ -4935,5 +5004,20 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNull(entry.getBuilding());
 		Assert.assertEquals(ErrorType.BUSINESS, entry.getError().getType());
 		Assert.assertEquals("Le bâtiment n°[" + buildingId + "] n'existe pas.", entry.getError().getErrorMessage());
+	}
+
+	private static void assertFoundEntry(long communityId, CommunityOfOwnersEntry entry) {
+		Assert.assertEquals(communityId, entry.getCommunityOfOwnersId());
+		final CommunityOfOwners community = entry.getCommunityOfOwners();
+		Assert.assertNotNull(community);
+		Assert.assertEquals(communityId, community.getId());
+		Assert.assertNull(entry.getError());
+	}
+
+	private static void assertNotFoundEntry(long communityId, CommunityOfOwnersEntry entry) {
+		Assert.assertEquals(communityId, entry.getCommunityOfOwnersId());
+		Assert.assertNull(entry.getCommunityOfOwners());
+		Assert.assertEquals(ErrorType.BUSINESS, entry.getError().getType());
+		Assert.assertEquals("La communauté n°[" + communityId + "] n'existe pas.", entry.getError().getErrorMessage());
 	}
 }

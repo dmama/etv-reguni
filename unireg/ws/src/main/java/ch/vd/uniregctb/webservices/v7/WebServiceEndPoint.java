@@ -39,6 +39,8 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
@@ -607,6 +609,31 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createCommunityOfOwners(community), preferred).build(), 1);
 			}
 			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		});
+	}
+
+	@Override
+	public Response getCommunitiesOfOwners(List<Long> communityId, String user) {
+		final Supplier<String> params = () -> String.format("getCommunitiesOfOwners{communityId=%s, user=%s}", WebServiceHelper.toString(communityId), WebServiceHelper.enquote(user));
+
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			try {
+				final CommunityOfOwnersList communities = target.getCommunitiesOfOwners(userLogin, communityId);
+				final int nbItems = (int) communities.getEntries().stream()
+						.map(CommunityOfOwnersEntry::getCommunityOfOwners)
+						.filter(Objects::nonNull)
+						.count();
+
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createCommunitiesOfOwners(communities), preferred).build(), nbItems);
+				}
+
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			}
+			catch (RuntimeException e) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
+			}
 		});
 	}
 }

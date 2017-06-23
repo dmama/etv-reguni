@@ -14,6 +14,7 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -223,4 +224,13 @@ public interface BusinessWebService {
 	 */
 	@Nullable
 	CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException;
+
+	/**
+	 * @param user         désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param communityIds les ids techniques Unireg des communautés de propriétaires
+	 * @return une liste de communautés de propriétaires
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de voir les immeubles.
+	 */
+	@NotNull
+	CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException;
 }
