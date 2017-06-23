@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -36,6 +37,8 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -508,10 +511,10 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	}
 
 	@Override
-	public Response getImmovableProperty(long immId, String user) {
-		final Supplier<String> params = () -> String.format("getImmovableProperty{immId=%d, user=%s}", immId, WebServiceHelper.enquote(user));
+	public Response getImmovableProperty(long immoId, String user) {
+		final Supplier<String> params = () -> String.format("getImmovableProperty{immoId=%d, user=%s}", immoId, WebServiceHelper.enquote(user));
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
-			final ImmovableProperty immovable = target.getImmovablePropery(userLogin, immId);
+			final ImmovableProperty immovable = target.getImmovableProperty(userLogin, immoId);
 			if (immovable == null) {
 				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "L'immeuble n'existe pas."));
 			}
@@ -520,6 +523,31 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createImmovableProperty(immovable), preferred).build(), 1);
 			}
 			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		});
+	}
+
+	@Override
+	public Response getImmovableProperties(List<Long> immoIds, String user) {
+		final Supplier<String> params = () -> String.format("getImmovableProperties{immoId=%s, user=%s}", WebServiceHelper.toString(immoIds), WebServiceHelper.enquote(user));
+
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			try {
+				final ImmovablePropertyList immovableProperties = target.getImmovableProperties(userLogin, immoIds);
+				final int nbItems = (int) immovableProperties.getEntries().stream()
+						.map(ImmovablePropertyEntry::getImmovableProperty)
+						.filter(Objects::nonNull)
+						.count();
+
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(landRegistryObjectFactory.createImmovableProperties(immovableProperties), preferred).build(), nbItems);
+				}
+
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			}
+			catch (RuntimeException e) {
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
+			}
 		});
 	}
 

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -22,6 +23,7 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
@@ -58,6 +60,8 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -113,6 +117,7 @@ import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -1040,14 +1045,46 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
+	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
 		return doInTransaction(true, status ->
-				Optional.ofNullable(context.registreFoncierService.getImmeuble(immId))
+				Optional.ofNullable(context.registreFoncierService.getImmeuble(immoId))
 						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble,
 						                                                                 context.registreFoncierService::getCapitastraURL,
 						                                                                 context.registreFoncierService::getContribuableIdFor,
 						                                                                 new EasementRightHolderComparator(context.tiersService)))
 						.orElse(null));
+	}
+
+	@Override
+	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
+		// TODO (msi) rendre multi-threadée cet implémentation pour améliorer la latence
+		return doInTransaction(true, status -> {
+			final List<ImmovablePropertyEntry> entries = new HashSet<>(immoIds).stream()
+					.filter(Objects::nonNull)
+					.map(this::resolveImmovablePropertyEntry)
+					.sorted(Comparator.comparing(ImmovablePropertyEntry::getImmovablePropertyId))
+					.collect(Collectors.toList());
+			return new ImmovablePropertyList(entries);
+		});
+	}
+
+	private ImmovablePropertyEntry resolveImmovablePropertyEntry(long immoId) {
+		try {
+			final ImmeubleRF immeuble = context.registreFoncierService.getImmeuble(immoId);
+			if (immeuble == null) {
+				return new ImmovablePropertyEntry(immoId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "L'immeuble n°[" + immoId+						"] n'existe pas."));
+			}
+			else {
+				final ImmovableProperty immovableProperty = ImmovablePropertyBuilder.newImmovableProperty(immeuble,
+				                                                                                          context.registreFoncierService::getCapitastraURL,
+				                                                                                          context.registreFoncierService::getContribuableIdFor,
+				                                                                                          new EasementRightHolderComparator(context.tiersService));
+				return new ImmovablePropertyEntry(immoId, immovableProperty, null);
+			}
+		}
+		catch (Exception e) {
+			return new ImmovablePropertyEntry(immoId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage()));
+		}
 	}
 
 	@Nullable

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.webservice.v7;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.xml.common.v2.Date;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.landregistry.v1.AcquisitionReason;
@@ -260,6 +263,37 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertEquals(2, reasons.size());
 		assertAcquisitionReason(RegDate.get(1981, 3, 6), "Succession", 12, null, reasons.get(0));
 		assertAcquisitionReason(RegDate.get(2014, 9, 13), "Voyage spatio-temporel", 24, "2014/12/1", reasons.get(1));
+	}
+
+	@Test
+	public void testGetImmovableProperties() throws Exception {
+
+		final int noBienFonds = 264310664;
+		final int noPPE1 = 189968987;
+		final int noPPE2 = 357426402;
+
+		final Map<String, Integer> params = new HashMap<>();
+		params.put("noBienFonds", noBienFonds);
+		params.put("noPPE1", noPPE1);
+		params.put("noPPE2", noPPE2);
+
+		// on demande les trois immeubles qui existent dans la DB
+		final ResponseEntity<ImmovablePropertyList> resp = get(ImmovablePropertyList.class, MediaType.APPLICATION_XML,
+		                                                   "/landRegistry/immovableProperties?immoId={noBienFonds}&immoId={noPPE1}&immoId={noPPE2}&user=zaizzt/22",
+		                                                   params);
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		// on vérifie qu'on a reçu les immeubles
+		final ImmovablePropertyList list = resp.getBody();
+		assertNotNull(list);
+
+		final List<ImmovablePropertyEntry> entries = list.getEntries();
+		assertNotNull(entries);
+		assertEquals(3, entries.size());
+		assertEntry(noPPE1, "CH416556658161", entries.get(0));
+		assertEntry(noBienFonds, "CH785283458046", entries.get(1));
+		assertEntry(noPPE2, "CH796577806563", entries.get(2));
 	}
 
 	/**
@@ -558,5 +592,14 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertDate(dateTo, share.getDateTo());
 		assertEquals(numerator, share.getNumerator());
 		assertEquals(denominator, share.getDenominator());
+	}
+
+	private static void assertEntry(int immoId, String egrid, ImmovablePropertyEntry entry) {
+		assertNotNull(entry);
+		assertEquals(immoId, entry.getImmovablePropertyId());
+		final ImmovableProperty immo = entry.getImmovableProperty();
+		assertNotNull(immo);
+		assertEquals(immoId, immo.getId());
+		assertEquals(egrid, immo.getEgrid());
 	}
 }

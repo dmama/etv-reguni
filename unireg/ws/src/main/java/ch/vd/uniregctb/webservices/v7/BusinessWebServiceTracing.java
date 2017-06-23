@@ -15,6 +15,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -290,18 +291,34 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
+	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getImmovablePropery(user, immId);
+			return target.getImmovableProperty(user, immoId);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getImmovablePropery", null);
+			tracing.end(time, t, "getImmovableProperty", null);
+		}
+	}
+
+	@Override
+	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getImmovableProperties(user, immoIds);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getImmovableProperties", null);
 		}
 	}
 

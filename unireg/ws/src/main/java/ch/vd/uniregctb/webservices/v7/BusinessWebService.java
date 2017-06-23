@@ -13,6 +13,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
@@ -178,13 +179,21 @@ public interface BusinessWebService {
 	FiscalEvents getFiscalEvents(UserLogin user, int partyNo) throws AccessDeniedException;
 
 	/**
-	 * @param user  désignation de l'opérateur pour le compte duquel les informations sont glânées
-	 * @param immId l'id technique Unireg de l'immeuble.
+	 * @param user   désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param immoId l'id technique Unireg de l'immeuble.
 	 * @return un immmeuble du registre foncier avec son historique; ou <b>null</b> si l'immeuble est inconnu.
 	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de voir les immeubles.
 	 */
 	@Nullable
-	ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException;
+	ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException;
+
+	/**
+	 * @param user    désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param immoIds les ids techniques Unireg des immeubles.
+	 * @return la liste des immmeubles du registre foncier avec leurs historiques.
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de voir les immeubles.
+	 */
+	ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException;
 
 	/**
 	 * @param user       désignation de l'opérateur pour le compte duquel les informations sont glânées

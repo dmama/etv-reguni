@@ -56,6 +56,8 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -4701,7 +4703,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = service.getImmovablePropery(user, id);
+		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = service.getImmovableProperty(user, id);
 		Assert.assertNotNull(immo);
 		Assert.assertTrue(immo instanceof RealEstate);
 
@@ -4714,6 +4716,36 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(1, locations.size());
 		assertLocation(RegDate.get(2000, 1, 1), null, 579, null, null, null, 5498, locations.get(0));
 	}
+
+	/**
+	 * Ce test vérifie que le WS de récupération d'un immeuble fonctionne bien dans le cas passant.
+	 */
+	@Test
+	public void testGetImmovableProperties() throws Exception {
+
+		// on ajoute deux immeubles dans la base
+		final List<Long> ids = doInNewTransaction(status -> {
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble1 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble2 = addBienFondsRF("covfefe", "other egrid", laSarraz, 580);
+			return Arrays.asList(immeuble1.getId(), immeuble2.getId());
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+
+		// on demande trois immeubles : deux existants et un inconnu
+		final long idInexistant = -1;
+		final ImmovablePropertyList immovableProperties = service.getImmovableProperties(user, Arrays.asList(ids.get(0), ids.get(1), idInexistant));
+
+		// on vérifie qu'on reçoit bien trois réponses
+		final List<ImmovablePropertyEntry> entries = immovableProperties.getEntries();
+		Assert.assertNotNull(entries);
+		Assert.assertEquals(3, entries.size());
+		assertNotFoundEntry(idInexistant, entries.get(0));
+		assertFoundEntry(ids.get(0), entries.get(1));
+		assertFoundEntry(ids.get(1), entries.get(2));
+	}
+
 
 	@Test
 	public void testGetBuilding() throws Exception {
@@ -4846,5 +4878,20 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(index2, location.getIndex2());
 		Assert.assertEquals(index3, location.getIndex3());
 		Assert.assertEquals(noOfsCommune, location.getMunicipalityFsoId());
+	}
+
+	private static void assertFoundEntry(long immoId, ImmovablePropertyEntry entry) {
+		Assert.assertEquals(immoId, entry.getImmovablePropertyId());
+		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = entry.getImmovableProperty();
+		Assert.assertNotNull(immo);
+		Assert.assertEquals(immoId, immo.getId());
+		Assert.assertNull(entry.getError());
+	}
+
+	private static void assertNotFoundEntry(long immoId, ImmovablePropertyEntry entry) {
+		Assert.assertEquals(immoId, entry.getImmovablePropertyId());
+		Assert.assertNull(entry.getImmovableProperty());
+		Assert.assertEquals(ErrorType.BUSINESS, entry.getError().getType());
+		Assert.assertEquals("L'immeuble n°[" + immoId + "] n'existe pas.", entry.getError().getErrorMessage());
 	}
 }

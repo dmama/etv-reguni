@@ -24,6 +24,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -366,18 +367,24 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
+	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
 		final ImmovableProperty immovable;
-		final GetImmovablePropertyKey key = new GetImmovablePropertyKey(immId);
+		final GetImmovablePropertyKey key = new GetImmovablePropertyKey(immoId);
 		final Element element = cache.get(key);
 		if (element == null) {
-			immovable = target.getImmovablePropery(user, immId);
+			immovable = target.getImmovableProperty(user, immoId);
 			cache.put(new Element(key, immovable));
 		}
 		else {
 			immovable = (ImmovableProperty) element.getObjectValue();
 		}
 		return immovable;
+	}
+
+	@Override
+	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
+		// FIXME (msi) implémenter ce cache
+		return target.getImmovableProperties(user, immoIds);
 	}
 
 	@Nullable
