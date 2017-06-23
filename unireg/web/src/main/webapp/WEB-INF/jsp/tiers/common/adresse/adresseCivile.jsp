@@ -6,7 +6,7 @@
 	<c:set var="url" value="visu.do" />
 	<c:choose>
 		<c:when test="${membre == 'principal'}">
-			<c:if test="${command.exceptionAdresseCiviles == null}">
+			<c:if test="${command.exceptionAdresseCiviles == null && fn:length(command.historiqueAdressesCiviles) > 0}">
 				<display:table name="${command.historiqueAdressesCiviles}" id="adresseCivile" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableAdresseCivileDecorator" sort="list">
 					<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="usage">
 						<c:choose>
@@ -63,7 +63,7 @@
 
 		</c:when>
 		<c:when test="${membre == 'conjoint'}">
-			<c:if test="${command.exceptionAdresseCivilesConjoint == null}">
+			<c:if test="${command.exceptionAdresseCivilesConjoint == null && fn:length(command.historiqueAdressesCivilesConjoint) > 0}">
 				<display:table name="${command.historiqueAdressesCivilesConjoint}" id="adresseCivileConjoint" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableAdresseCivileDecorator" sort="list">
 					<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="usage">
 						<fmt:message key="option.usage.civil.${adresseCivileConjoint.usageCivil}" />
