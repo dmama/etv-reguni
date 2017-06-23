@@ -112,4 +112,8 @@ public class TiersVisuView extends TiersView {
 	public boolean isPeriodicitesHisto() {
 		return hasFlag(HistoFlag.PERIODICITES_HISTO);
 	}
+
+	public boolean isRemarquesHisto() {
+		return hasFlag(HistoFlag.REMARQUES);
+	}
 }

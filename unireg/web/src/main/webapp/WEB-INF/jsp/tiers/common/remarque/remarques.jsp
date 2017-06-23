@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <c:set var="tiersId" value="${param.tiersId}"/>
+<c:set var="printview" value="${param.printview}"/>
 
 <!-- Debut Remarques -->
 <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
@@ -42,10 +43,10 @@
 
 	    loadRemarques: function(page) {
             $('#remarquesSpinner').show();
-            var showHisto = $('#isRemarqueHisto').attr('checked') ? 'true' : 'false';
+            var showHisto = '${command.remarquesHisto}';
 
             // get the data
-            var params = '&page=' + page + '&showHisto=' + showHisto;
+            var params = '&page=' + page + '&showHisto=' + showHisto<c:if test="${printview}"> + '&pageSize=0'</c:if>;
             $.get('<c:url value="/remarque/list.do?tiersId="/>${tiersId}' + params + '&' + new Date().getTime(),
                 function(remarquesPage) {
                     var html = '<fieldset>\n';
@@ -55,7 +56,11 @@
                     if (remarquesPage.totalCount > 0) {
                         $('#remarqueTabAnchor').text('Remarques (' + remarquesPage.totalCount + ')');
 
-                        html += Remarques.buildRemarquesPagination(remarquesPage.page, 20, remarquesPage.totalCount);
+                        <c:choose>
+                        <c:when test="${printview}">const pageSize = 0;</c:when>
+                        <c:otherwise>const pageSize = 20;</c:otherwise>
+                        </c:choose>
+                        html += Remarques.buildRemarquesPagination(remarquesPage.page, pageSize, remarquesPage.totalCount);
                         html += Remarques.buildRemarquesTable(remarquesPage.remarques) + '\n';
                     }
                     else {
@@ -72,8 +77,8 @@
 
 	    buildRemarquesOptions: function(page, showHisto) {
             var html = '<table><tr>\n';
-            html += '<td width="25%"><input class="noprint" type="checkbox" id="isRemarqueHisto"' + (showHisto ? ' checked="true"' : '') + ' onclick="return Remarques.loadRemarques(' + page + ');"> ';
-            html += '<label class="noprint" for="isRemarqueHisto">Historique</label></td>\n';
+            html += '<td width="25%"><input class="noprint" type="checkbox" id="isRemarqueHisto"' + (showHisto ? ' checked="true"' : '') + ' onclick="window.location.href = App.toggleBooleanParam(window.location, \'remarquesHisto\', true);"> ';
+            html += '<label class="noprint" for="isRemarqueHisto"><fmt:message key="label.historique"/></label></td>\n';
             html += '<td width="75%">&nbsp;</td>\n';
             html += '</tr></tbody></table>\n';
             html += '<input type="hidden" id="remarqueCurrentPage" value="' + page +'"/>\n';
@@ -102,8 +107,15 @@
                 }
                 else {
                     html += '<td class="texte">';
-                    html += '<div id="rq-short-' + i + '">' + remarque.shortHtmlText + Remarques.buildToggle(i) + '</div>';
-                    html += '<div id="rq-long-' + i + '" style="display:none;">' + remarque.htmlText + '</div>';
+                    <c:choose>
+                    <c:when test="${printview}">
+                        html += '<div id="rq-long-' + i + '">' + remarque.htmlText + '</div>';
+                    </c:when>
+                    <c:otherwise>
+                        html += '<div id="rq-short-' + i + '">' + remarque.shortHtmlText + Remarques.buildToggle(i) + '</div>';
+                        html += '<div id="rq-long-' + i + '" style="display:none;">' + remarque.htmlText + '</div>';
+                    </c:otherwise>
+                    </c:choose>
                     html += '</td>';
                 }
 

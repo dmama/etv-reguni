@@ -75,24 +75,19 @@ public class RemarqueController {
 		final List<Remarque> remarques = remarqueDAO.getRemarques(tiersId);
 
 		// On affiche les remarques les plus récentes en premier
-		remarques.sort(new Comparator<Remarque>() {
-			@Override
-			public int compare(Remarque o1, Remarque o2) {
-				return o2.getLogCreationDate().compareTo(o1.getLogCreationDate());
-			}
-		});
+		remarques.sort(Comparator.comparing(Remarque::getLogCreationDate).reversed());
 
 		final List<RemarqueView> list = new ArrayList<>();
 		for (Remarque remarque : remarques) {
 			if (showHisto || !remarque.isAnnule()) {
 				totalCount++;
 				// La liste contenue dans l'objet ne contient que les éléments de la page courante
-				if (list.size() < pageSize && totalCount > (page - 1) * pageSize) {
+				if (pageSize == 0 || (list.size() < pageSize && totalCount > (page - 1) * pageSize)) {
 					list.add(new RemarqueView(remarque));
 				}
 			}
 		}
-		page = ParamPagination.adjustPage(page, pageSize, totalCount);
+		page = pageSize == 0 ? 1 : ParamPagination.adjustPage(page, pageSize, totalCount);
 		return new RemarquesPage(tiersId, list, showHisto, page, totalCount);
 	}
 

@@ -32,6 +32,7 @@ public enum HistoFlag {
 	REGIMES_FISCAUX_VD("regimesFiscauxVDHisto"),
 	REGIMES_FISCAUX_CH("regimesFiscauxCHHisto"),
 	PERIODICITES_HISTO("periodicitesHisto"),
+	REMARQUES("remarquesHisto"),
 	;
 
 	private final String paramName;
