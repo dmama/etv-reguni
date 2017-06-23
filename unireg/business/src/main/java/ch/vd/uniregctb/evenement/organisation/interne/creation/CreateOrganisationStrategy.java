@@ -107,6 +107,18 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 			}
 
 			/*
+			    S'assurer qu'on a bien une forme juridique à ce stade.
+			  */
+			if (formeLegale == null) {
+				final String message = String.format("La forme juridique (legalForm) est introuvable dans les données civiles de l'organisation %s (civil: n°%d), domiciliée à %s, en date du %s.",
+				                                     organisation.getNom(dateEvenement),
+				                                     organisation.getNumeroOrganisation(),
+				                                     communeDomicile.getNomOfficielAvecCanton(),
+				                                     RegDateHelper.dateToDisplayString(dateEvenement));
+				return new TraitementManuel(event, organisation, null, context, options, message);
+			}
+
+			/*
 				Organisations à ignorer
 			 */
 			if (formeLegale == FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE) {
