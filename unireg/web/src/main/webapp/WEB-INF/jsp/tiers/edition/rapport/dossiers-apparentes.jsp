@@ -4,12 +4,13 @@
 <fieldset>
 	<legend><span><fmt:message key="label.dossiers.apparentes" /></span></legend>
 
+	<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.view.TiersEditView"--%>
 	<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
 	<c:if test="${autorisations.autresRapports}">
 	<table border="0">
 		<tr>
 			<td>
-				<a href="../rapport/search.do?tiersId=<c:out value="${command.tiers.numero}"></c:out>"
+				<a href="../rapport/search.do?tiersId=<c:out value="${command.tiers.numero}"/>"
 				class="add" title="Ajouter rapport"><fmt:message key="label.bouton.ajouter" /></a>
 			</td>
 		</tr>
@@ -17,7 +18,7 @@
 		<c:if test="${(command.natureTiers == 'Habitant') || (command.natureTiers == 'NonHabitant')}">
 		<tr>
 			<td>
-				<a href="../rt/list-debiteur.do?numeroSrc=<c:out value="${command.tiers.numero}"></c:out>" 
+				<a href="../rt/list-debiteur.do?numeroSrc=<c:out value="${command.tiers.numero}"/>"
 				class="add" title="Ajouter rapport de travail"><fmt:message key="label.bouton.ajouter.rt" /></a>
 			</td>
 		</tr>

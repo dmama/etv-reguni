@@ -6,6 +6,7 @@
 </c:if>
 <c:if test="${page == 'edit' }">
 	<c:set var="url" value="edit.do" />
+	<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.view.TiersVisuView"--%>
 	<unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>
 </c:if>
 
@@ -34,11 +35,11 @@
 	</display:column>
 
 	<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
-		<fmt:formatDate value="${dossierApparente.dateDebut}" pattern="dd.MM.yyyy" />
+		<unireg:regdate regdate="${dossierApparente.dateDebut}"/>
 	</display:column>
 
 	<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
-		<fmt:formatDate value="${dossierApparente.dateFin}" pattern="dd.MM.yyyy" />
+		<unireg:regdate regdate="${dossierApparente.dateFin}"/>
 	</display:column>
 
 	<display:column sortable ="true" titleKey="label.numero.tiers" sortProperty="numero" >

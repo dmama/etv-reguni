@@ -36,7 +36,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 
 
 /**
- * Claase offrant les services au controller RapportEditController
+ * Claase offrant les services au controller RapportController
  *
  * @author xcifde
  *
@@ -178,7 +178,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 			// instancie le bon rapport
 			RapportEntreTiers rapport = type.newInstance();
-			rapport.setDateDebut(rapportView.getRegDateDebut());
+			rapport.setDateDebut(rapportView.getDateDebut());
 
 			// [UNIREG-755] tenir compte de l'extension de l'exécution à la création du rapport
 			if (rapport instanceof RepresentationConventionnelle) {
@@ -202,7 +202,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 		else {
 			RapportEntreTiers rapportEntreTiers = rapportEntreTiersDAO.get(rapportView.getId());
-			rapportEntreTiers.setDateFin(rapportView.getRegDateFin());
+			rapportEntreTiers.setDateFin(rapportView.getDateFin());
 			if (rapportEntreTiers instanceof RapportPrestationImposable) {
 				RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
 			}

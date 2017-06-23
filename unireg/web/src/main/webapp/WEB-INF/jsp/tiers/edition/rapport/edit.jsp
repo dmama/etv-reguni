@@ -3,6 +3,7 @@
 <c:set var="id" value="${param.id}" />
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
+	<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.view.TiersEditView"--%>
 	<c:if test="${command.tiers != null}">
 		<tiles:put name="title">
 			<fmt:message key="title.edition.dossiers.apparentes" />

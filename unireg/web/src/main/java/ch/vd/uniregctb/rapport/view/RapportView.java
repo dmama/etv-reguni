@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.rapport.view;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.BaseComparator;
@@ -29,7 +27,7 @@ import ch.vd.uniregctb.tiers.TiersWebHelper;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
- * Classe utilisée pour le fromBackingObject du RapportEditController
+ * Classe utilisée pour le fromBackingObject du RapportController
  *
  * @author xcifde
  */
@@ -185,32 +183,20 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.activiteEconomiquePrincipale = activiteEconomiquePrincipale;
 	}
 
-	public RegDate getRegDateDebut() {
+	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
-	public RegDate getRegDateFin() {
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
+	public RegDate getDateFin() {
 		return dateFin;
 	}
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
-	}
-
-	public Date getDateDebut() {
-		return RegDate.asJavaDate(dateDebut);
-	}
-
-	public void setDateDebut(Date dateDebut) {
-		this.dateDebut = RegDateHelper.get(dateDebut);
-	}
-
-	public Date getDateFin() {
-		return RegDate.asJavaDate(dateFin);
-	}
-
-	public void setDateFin(Date dateFin) {
-		this.dateFin = RegDateHelper.get(dateFin);
 	}
 
 	/**
@@ -249,10 +235,6 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	public List<String> getNomCourrier() {
 		return nomCourrier;
-	}
-
-	public void setDateDebut(RegDate dateDebut) {
-		this.dateDebut = dateDebut;
 	}
 
 	public TiersGeneralView getTiers() {

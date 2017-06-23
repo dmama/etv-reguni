@@ -51,6 +51,7 @@
 		</table>
 	</c:if>
 
+	<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.view.TiersVisuView"--%>
 	<c:if test="${command.tiers != null}">
 
 		<unireg:nextRowClass reset="1"/>

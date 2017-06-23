@@ -43,7 +43,7 @@ public class TiersRapportController extends AbstractRapportPrestationController 
 	protected void onBindAndValidate(HttpServletRequest request, Object command, BindException errors) throws Exception {
 		super.onBindAndValidate(request, command, errors);
 		RapportView view = (RapportView) command;
-		if (view.getDateFin() != null && view.getDateDebut() != null && view.getDateFin().before(view.getDateDebut())) {
+		if (view.getDateFin() != null && view.getDateDebut() != null && view.getDateFin().isBefore(view.getDateDebut())) {
 			errors.rejectValue("dateFin", "rapport.interval.dateFin", "la date ne peut être antérieur à la date de début.");
 		}
 	}

@@ -34,12 +34,6 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
-/**
- * Classe qui gere le controller RapportEditController
- *
- * @author xcifde
- *
- */
 public class RapportPrestationEditManagerImpl implements RapportPrestationEditManager, MessageSourceAware{
 
 	private TiersService tiersService;

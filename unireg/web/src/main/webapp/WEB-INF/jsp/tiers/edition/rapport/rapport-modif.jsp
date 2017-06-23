@@ -4,9 +4,11 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
+	<%--@elvariable id="command" type="ch.vd.uniregctb.rapport.view.RapportView"--%>
 	<tiles:put name="title">
 		<fmt:message key="title.edition.rapport">
-			<fmt:param><unireg:numCTB numero="${command.numeroCourant}"/></fmt:param>
+			<fmt:param>
+			<unireg:numCTB numero="${command.numeroCourant}"/></fmt:param>
 			<fmt:param><unireg:numCTB numero="${command.numero}"/></fmt:param>
 		</fmt:message>
 	</tiles:put>
@@ -25,7 +27,7 @@
 				</td>
 				<td width="25%"><fmt:message key="label.date.debut"/>&nbsp;:</td>
 				<td width="25%">
-					<fmt:formatDate value="${command.dateDebut}" pattern="dd.MM.yyyy"/>
+					<unireg:regdate regdate="${command.dateDebut}"/>
 				</td>
 			</tr>
 			<tr class="<unireg:nextRowClass/>" >

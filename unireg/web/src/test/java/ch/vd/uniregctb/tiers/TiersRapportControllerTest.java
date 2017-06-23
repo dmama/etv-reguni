@@ -60,8 +60,8 @@ public class TiersRapportControllerTest extends WebTest {
 		final RapportView view = (RapportView) mav.getModel().get(controller.getCommandName());
 		assertNotNull(view);
 		assertEquals(jean.getNumero(), view.getNumero());
-		assertEquals(dateMariage, view.getRegDateDebut());
-		assertNull(view.getRegDateFin());
+		assertEquals(dateMariage, view.getDateDebut());
+		assertNull(view.getDateFin());
 		assertEquals("AppartenanceMenage", view.getNatureRapportEntreTiers());
 		assertFalse(view.isAllowed());
 		assertEquals(SensRapportEntreTiers.OBJET, view.getSensRapportEntreTiers());
@@ -103,8 +103,8 @@ public class TiersRapportControllerTest extends WebTest {
 			final RapportView view = (RapportView) mav.getModel().get(controller.getCommandName());
 			assertNotNull(view);
 			assertEquals(ids.marcel, view.getNumero());
-			assertEquals(date(2000, 1, 1), view.getRegDateDebut());
-			assertNull(view.getRegDateFin());
+			assertEquals(date(2000, 1, 1), view.getDateDebut());
+			assertNull(view.getDateFin());
 			assertEquals("RepresentationConventionnelle", view.getNatureRapportEntreTiers());
 			assertTrue(view.isAllowed());
 			assertEquals(SensRapportEntreTiers.OBJET, view.getSensRapportEntreTiers());

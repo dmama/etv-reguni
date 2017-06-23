@@ -57,16 +57,8 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="autorisationManager" ref="autorisationManager" />
-	</bean>
-
-	<bean id="rapportEditController" class="ch.vd.uniregctb.rapport.RapportEditController" parent="abstractRapportPrestationController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.rapport.view.RapportView" />
-		<property name="commandName" value="command" />
 		<property name="rapportEditManager" ref="rapportEditManager" />
-		<property name="formView" value="tiers/edition/rapport/recap/edit" />
-		<property name="successView" value="/tiers/visu.do" />
-		<property name="validator" ref="rapportValidator" />
+		<property name="rapportEditValidator" ref="rapportValidator" />
 	</bean>
 
 	<bean id="rapportEditManager" class="ch.vd.uniregctb.rapport.manager.RapportEditManagerImpl" parent="tiersManager">

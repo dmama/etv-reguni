@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,15 +31,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
+import ch.vd.uniregctb.rapport.manager.RapportEditManager;
 import ch.vd.uniregctb.rapport.view.RapportListView;
+import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -77,6 +80,8 @@ public class RapportController {
 	private ControllerUtils controllerUtils;
 	private SecurityProviderInterface securityProvider;
 	private AutorisationManager autorisationManager;
+	private RapportEditManager rapportEditManager;
+	private Validator rapportEditValidator;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -121,6 +126,14 @@ public class RapportController {
 		this.autorisationManager = autorisationManager;
 	}
 
+	public void setRapportEditManager(RapportEditManager rapportEditManager) {
+		this.rapportEditManager = rapportEditManager;
+	}
+
+	public void setRapportEditValidator(Validator rapportEditValidator) {
+		this.rapportEditValidator = rapportEditValidator;
+	}
+
 	private Set<RapportEntreTiersKey> getAllowedTypes() {
 		final Set<RapportEntreTiersKey> types;
 		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
@@ -142,8 +155,8 @@ public class RapportController {
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	@InitBinder(value = "command")
-	protected void initBinder(WebDataBinder binder) {
-		binder.setValidator(new TiersCriteriaValidator(true));
+	public void initBinderForSearch(WebDataBinder binder) {
+		binder.addValidators(new TiersCriteriaValidator(true));
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
 	}
 
@@ -152,7 +165,7 @@ public class RapportController {
 	 */
 	@RequestMapping(value = "/search.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String search(@Valid @ModelAttribute("command") final RapportListView view, BindingResult binding, Model model) throws AdresseException {
+	public String search(@Valid @ModelAttribute("command") final RapportListView view, BindingResult binding, Model model) {
 
 		final long tiersId = view.getTiersId();
 
@@ -160,6 +173,9 @@ public class RapportController {
 		if (tiers == null) {
 			throw new TiersNotFoundException(tiersId);
 		}
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
 		if (!autorisationManager.isEditAllowed(tiers)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur ce tiers");
 		}
@@ -188,6 +204,87 @@ public class RapportController {
 		}
 
 		return "tiers/edition/rapport/recherche/list";
+	}
+
+	/**
+	 * Affichage de l'écran de création d'un nouveau rapport-entre-tiers.
+	 *
+	 * @param numeroTiers    le tiers de départ
+	 * @param numeroTiersLie le tiers lié
+	 */
+	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String edit(@RequestParam("numeroTiers") long numeroTiers, @RequestParam("numeroTiersLie") long numeroTiersLie, Model model) throws AdressesResolutionException {
+
+		final Tiers tiers = tiersDAO.get(numeroTiers);
+		if (tiers == null) {
+			throw new TiersNotFoundException(numeroTiers);
+		}
+		final Tiers tiersLie = tiersDAO.get(numeroTiersLie);
+		if (tiersLie == null) {
+			throw new TiersNotFoundException(numeroTiersLie);
+		}
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnLecture(numeroTiers);
+		controllerUtils.checkAccesDossierEnLecture(numeroTiersLie);
+		if (!autorisationManager.isEditAllowed(tiers)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur le tiers n°" + numeroTiers);
+		}
+
+		//vérification des droits de création de rapport entre tiers non travail par rapportEditManager
+		final RapportView rapportView = rapportEditManager.get(numeroTiers, numeroTiersLie);
+		model.addAttribute("rapportView", rapportView);
+
+		return "tiers/edition/rapport/recap/edit";
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	@InitBinder(value = "rapportView")
+	public void initBinderForEdit(WebDataBinder binder) {
+		binder.addValidators(rapportEditValidator);
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
+	}
+
+	/**
+	 * Méthode de création d'un nouveau rapport-entre-tiers.
+	 */
+	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String edit(@ModelAttribute("rapportView") RapportView view, BindingResult binding) throws AdressesResolutionException {
+
+		if (binding.hasErrors()) {
+			return "tiers/edition/rapport/recap/edit";
+		}
+
+		final Long numeroTiers = view.getTiers().getNumero();
+		final Long numeroTiersLie = view.getTiersLie().getNumero();
+
+		final Tiers tiers = tiersDAO.get(numeroTiers);
+		if (tiers == null) {
+			throw new TiersNotFoundException(numeroTiers);
+		}
+		final Tiers tiersLie = tiersDAO.get(numeroTiersLie);
+		if (tiersLie == null) {
+			throw new TiersNotFoundException(numeroTiersLie);
+		}
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnEcriture(numeroTiers);
+		controllerUtils.checkAccesDossierEnEcriture(numeroTiersLie);
+		if (!autorisationManager.isEditAllowed(tiers)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur le tiers n°" + numeroTiers);
+		}
+
+		try {
+			rapportEditManager.save(view);
+		}
+		catch (Exception e) {
+			binding.reject("", e.getMessage());
+			return "tiers/edition/rapport/recap/edit";
+		}
+
+		return "redirect:/tiers/visu.do?id=" + numeroTiers;
 	}
 
 	/**

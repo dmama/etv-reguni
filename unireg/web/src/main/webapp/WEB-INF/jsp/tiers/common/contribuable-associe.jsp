@@ -7,14 +7,12 @@
 <c:if test="${page == 'edit' }">
 	<c:set var="url" value="edit.do" />
 </c:if>
+<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.view.TiersView"--%>
 <c:if test="${not empty command.contribuablesAssocies}">
 	<display:table 	name="command.contribuablesAssocies" id="contribuableAssocie" pagesize="10" 
 					requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-
-			<a href="../tiers/visu.do?id=${contribuableAssocie.numero}"><unireg:numCTB
-				numero="${contribuableAssocie.numero}"></unireg:numCTB></a>
-			<c:if test="${contribuableAssocie.annule}"></strike></c:if>
+			<a href="../tiers/visu.do?id=${contribuableAssocie.numero}"><unireg:numCTB numero="${contribuableAssocie.numero}"/></a>
 		</display:column>
 
 		<display:column sortable ="true" titleKey="label.nom.raison">
@@ -22,11 +20,11 @@
 		</display:column>
 
 		<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
-			<fmt:formatDate value="${contribuableAssocie.dateDebut}" pattern="dd.MM.yyyy" />
+			<unireg:regdate regdate="${contribuableAssocie.dateDebut}"/>
 		</display:column>
 
 		<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
-			<fmt:formatDate value="${contribuableAssocie.dateFin}" pattern="dd.MM.yyyy" />
+			<unireg:regdate regdate="${contribuableAssocie.dateFin}"/>
 		</display:column>
 
 		<display:column style="action">

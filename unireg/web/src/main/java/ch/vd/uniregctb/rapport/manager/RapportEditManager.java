@@ -11,7 +11,7 @@ import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 
 /**
- * Claase offrant les services au controller RapportEditController
+ * Claase offrant les services au controller RapportController
  *
  * @author xcifde
  *

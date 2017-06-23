@@ -6,9 +6,10 @@
 	<tiles:put name="title"><fmt:message key="title.recapitulatif.rapport.entre.tiers" /></tiles:put>
 
 	<tiles:put name="body">
-	<form:form method="post" id="formRapport">
-		<c:if test="${command.allowed}">
+	<form:form method="post" modelAttribute="rapportView" id="formRapport">
 		<unireg:nextRowClass reset="1"/>
+		<form:hidden path="tiers.numero"/>
+		<form:hidden path="tiersLie.numero"/>
 
 		<table>
 		<tr>
@@ -16,6 +17,7 @@
 				<div id="div_tiers">
 					<%-- Premier tiers --%>
 					<jsp:include page="../../../../general/tiers.jsp" >
+						<jsp:param name="commandName" value="rapportView" />
 						<jsp:param name="page" value="rapport" />
 						<jsp:param name="path" value="tiers" />
 					</jsp:include>
@@ -37,6 +39,7 @@
 				<div id="div_tiers_lie">
 					<%-- Second tiers --%>
 					<jsp:include page="../../../../general/tiers.jsp" >
+						<jsp:param name="commandName" value="rapportView" />
 						<jsp:param name="page" value="rapport" />
 						<jsp:param name="path" value="tiersLie" />
 					</jsp:include>
@@ -259,14 +262,10 @@
 		<br/>
 		
 		<!-- Debut Boutons -->
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="retourRapport(${command.tiers.numero});" />
+		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="retourRapport(${rapportView.tiers.numero});" />
 		<input type="submit" value="<fmt:message key="label.bouton.sauver" />" />
 		<form:errors cssClass="error"/>
 		<!-- Fin Boutons -->
-		</c:if>
-		<c:if test="${!command.allowed}">
-			<span class="error"><fmt:message key="error.rapport.interdit" /></span>
-		</c:if>
 		<script>
 			function retourRapport(numero) {
 				if(confirm('Voulez-vous quitter cette page sans sauver ?')) {

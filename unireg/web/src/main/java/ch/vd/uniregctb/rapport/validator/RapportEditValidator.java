@@ -14,7 +14,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 /**
- * Validateur de RapportEditController
+ * Validateur de RapportController
  *
  * @author xcifde
  *
@@ -53,7 +53,7 @@ public class RapportEditValidator implements Validator {
 				tiers = tiersDAO.get(rapportView.getTiers().getNumero());
 			}
 			try {
-				AdresseGenerique adrTuteur = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.REPRESENTATION, rapportView.getRegDateDebut(), false);
+				AdresseGenerique adrTuteur = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.REPRESENTATION, rapportView.getDateDebut(), false);
 				if (adrTuteur == null) {
 					errors.reject("error.rapport.adresse");
 				}
