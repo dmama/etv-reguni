@@ -13,6 +13,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -193,6 +194,7 @@ public interface BusinessWebService {
 	 * @return la liste des immmeubles du registre foncier avec leurs historiques.
 	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de voir les immeubles.
 	 */
+	@NotNull
 	ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException;
 
 	/**
@@ -203,6 +205,15 @@ public interface BusinessWebService {
 	 */
 	@Nullable
 	Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException;
+
+	/**
+	 * @param user        désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param buildingIds les ids techniques Unireg des bâtiments.
+	 * @return une liste de bâtiments du registre foncier avec son historique
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de voir les immeubles.
+	 */
+	@NotNull
+	BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException;
 
 	/**
 	 * @param user        désignation de l'opérateur pour le compte duquel les informations sont glânées

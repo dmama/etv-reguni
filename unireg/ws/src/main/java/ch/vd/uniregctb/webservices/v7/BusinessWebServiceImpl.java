@@ -60,6 +60,8 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
@@ -117,6 +119,7 @@ import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.security.Role;
@@ -1055,6 +1058,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 						.orElse(null));
 	}
 
+	@NotNull
 	@Override
 	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
 		// TODO (msi) rendre multi-threadée cet implémentation pour améliorer la latence
@@ -1094,6 +1098,36 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				Optional.ofNullable(context.registreFoncierService.getBatiment(buildingId))
 						.map(BuildingBuilder::newBuilding)
 						.orElse(null));
+	}
+
+	@NotNull
+	@Override
+	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
+		// TODO (msi) rendre multi-threadée cet implémentation pour améliorer la latence
+		return doInTransaction(true, status -> {
+			final List<BuildingEntry> entries = new HashSet<>(buildingIds).stream()
+					.filter(Objects::nonNull)
+					.map(this::resolveBuildingEntry)
+					.sorted(Comparator.comparing(BuildingEntry::getBuildingId))
+					.collect(Collectors.toList());
+			return new BuildingList(entries);
+		});
+	}
+
+	private BuildingEntry resolveBuildingEntry(long batimentId) {
+		try {
+			final BatimentRF batiment = context.registreFoncierService.getBatiment(batimentId);
+			if (batiment == null) {
+				return new BuildingEntry(batimentId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "Le bâtiment n°[" + batimentId + "] n'existe pas."));
+			}
+			else {
+				final Building immovableProperty = BuildingBuilder.newBuilding(batiment);
+				return new BuildingEntry(batimentId, immovableProperty, null);
+			}
+		}
+		catch (Exception e) {
+			return new BuildingEntry(batimentId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage()));
+		}
 	}
 
 	@Nullable

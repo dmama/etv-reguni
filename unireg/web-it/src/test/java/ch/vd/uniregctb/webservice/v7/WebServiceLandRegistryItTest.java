@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.xml.common.v2.Date;
@@ -381,6 +383,35 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 	}
 
 	@Test
+	public void testGetBuildings() throws Exception {
+
+		final int buildingId1 = 266023444;
+		final int buildingId2 = 348934893;
+
+		final Map<String, Integer> params = new HashMap<>();
+		params.put("buildingId1", buildingId1);
+		params.put("buildingId2", buildingId2);
+
+		// on demande les deux bâtiments qui existent dans la DB
+		final ResponseEntity<BuildingList> resp = get(BuildingList.class,
+		                                              MediaType.APPLICATION_XML,
+		                                              "/landRegistry/buildings?buildingId={buildingId1}&buildingId={buildingId2}&user=zaizzt/22",
+		                                              params);
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		// on vérifie qu'on a reçu les bâtiments
+		final BuildingList list = resp.getBody();
+		assertNotNull(list);
+
+		final List<BuildingEntry> entries = list.getEntries();
+		assertNotNull(entries);
+		assertEquals(2, entries.size());
+		assertEntry(buildingId1, entries.get(0));
+		assertEntry(buildingId2, entries.get(1));
+	}
+
+	@Test
 	public void testGetCommunityOfOwner() throws Exception {
 
 		final int communityId = 264822986;
@@ -601,5 +632,13 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertNotNull(immo);
 		assertEquals(immoId, immo.getId());
 		assertEquals(egrid, immo.getEgrid());
+	}
+
+	private static void assertEntry(int buildingId, BuildingEntry entry) {
+		assertNotNull(entry);
+		assertEquals(buildingId, entry.getBuildingId());
+		final Building immo = entry.getBuilding();
+		assertNotNull(immo);
+		assertEquals(buildingId, immo.getId());
 	}
 }

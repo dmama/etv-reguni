@@ -13,6 +13,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -142,6 +143,7 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 		return target.getImmovableProperty(user, immoId);
 	}
 
+	@NotNull
 	@Override
 	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
 		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_IMMEUBLES, Role.VISU_ALL);
@@ -153,6 +155,13 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	public Building getBuilding(@NotNull UserLogin user, long buildingId) throws AccessDeniedException {
 		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_IMMEUBLES, Role.VISU_ALL);
 		return target.getBuilding(user, buildingId);
+	}
+
+	@NotNull
+	@Override
+	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
+		WebServiceHelper.checkAnyAccess(securityProvider, user, Role.VISU_IMMEUBLES, Role.VISU_ALL);
+		return target.getBuildings(user, buildingIds);
 	}
 
 	@Nullable

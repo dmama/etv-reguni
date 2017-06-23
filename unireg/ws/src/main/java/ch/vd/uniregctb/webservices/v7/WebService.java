@@ -129,6 +129,11 @@ public interface WebService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
+	@Path("/landRegistry/buildings")
+	Response getBuildings(@QueryParam("buildingId") List<Long> buildingId, @QueryParam("user") String user);
+
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
 	@Path("/landRegistry/communityOfOwners/{communityId}")
 	Response getCommunityOfOwners(@PathParam("communityId") long communityId, @QueryParam("user") String user);
 }
