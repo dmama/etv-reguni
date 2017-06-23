@@ -884,13 +884,6 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		return (String) suiviField.get(msgSuivi);
 	}
 
-	private String getMessageFromMessageTraitementManuel(TraitementManuel traitementManuel) throws NoSuchFieldException, IllegalAccessException {
-		Class<?> spyClass = traitementManuel.getClass();
-		Field messageField = spyClass.getDeclaredField("message");
-		messageField.setAccessible(true);
-		return (String) messageField.get(traitementManuel);
-	}
-
 	@Test(timeout = 10000L)
 	public void testEntrepriseNonRapprocheeIdentifieeCorrectementAvecESPartiel() throws Exception {
 
@@ -1139,7 +1132,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		Assert.assertEquals(1, listEvtInterne.size());
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof TraitementManuel);
-			String message = getMessageFromMessageTraitementManuel((TraitementManuel) listEvtInterne.get(0));
+			String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(0));
 			Assert.assertEquals(String.format("Entreprise n°%s (%s) identifiée sur la base de ses attributs civils [%s, IDE: CHE-999.999.996], mais déjà rattachée à l'organisation n°101202100 (%s, IDE: CHE-999.999.996). Potentiel doublon au civil. Traitement manuel.", FormatNumeroHelper.numeroCTBToDisplay(noEntreprise), nom, nom, nom), message);
 		}
 
