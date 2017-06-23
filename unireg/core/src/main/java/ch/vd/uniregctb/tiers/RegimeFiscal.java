@@ -44,6 +44,12 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 		this.code = code;
 	}
 
+	private RegimeFiscal(RegimeFiscal source) {
+		super(source);
+		this.portee = source.portee;
+		this.code = source.code;
+	}
+
 	@Transient
 	@Override
 	public Object getKey() {
@@ -105,6 +111,6 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 	@Transient
 	@Override
 	public RegimeFiscal duplicate() {
-		return new RegimeFiscal(getDateDebut(), getDateFin(), portee, code);
+		return new RegimeFiscal(this);
 	}
 }
