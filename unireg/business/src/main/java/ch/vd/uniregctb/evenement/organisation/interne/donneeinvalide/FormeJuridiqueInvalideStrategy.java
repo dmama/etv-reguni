@@ -59,6 +59,11 @@ public class FormeJuridiqueInvalideStrategy extends AbstractOrganisationStrategy
 		final RegDate dateApres = event.getDateEvenement();
 
 		final FormeLegale formeLegale = organisation.getFormeLegale(dateApres);
+		if (formeLegale == null) {
+			LOGGER.info("La forme juridique (LegalForm) est absente des données civiles.");
+			return null;
+		}
+
 		if (FORMES_LEGALES_INVALIDES.contains(formeLegale)) {
 			final String message;
 			if (entreprise == null) {

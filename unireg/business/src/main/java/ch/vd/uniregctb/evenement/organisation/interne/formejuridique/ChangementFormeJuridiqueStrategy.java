@@ -31,7 +31,6 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrategy {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangementFormeJuridiqueStrategy.class);
-	private static final String MESSAGE_FORME_JURIDIQUE_MANQUANTE = "Forme juridique introuvable sur organisation %s en date du %s";
 
 	/**
 	 * @param context le context d'exécution de l'événement
@@ -66,19 +65,7 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 			final FormeLegale formeLegaleAvant = organisation.getFormeLegale(dateAvant);
 			final FormeLegale formeLegaleApres = organisation.getFormeLegale(dateApres);
 
-			if (formeLegaleAvant == null) {
-				if (isExisting(organisation, dateApres)) {
-					return new TraitementManuel(event, organisation, entreprise, context, options,
-							String.format(MESSAGE_FORME_JURIDIQUE_MANQUANTE, organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
-				}
-				LOGGER.info("Organisation nouvellement connue au civil. Pas de changement de forme juridique.");
-				return null;
-			}
-			else if (formeLegaleApres == null) {
-				return new TraitementManuel(event, organisation, entreprise, context, options,
-						String.format(MESSAGE_FORME_JURIDIQUE_MANQUANTE, organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateApres)));
-			}
-			else if (formeLegaleAvant != formeLegaleApres) {
+			if (formeLegaleAvant != null && formeLegaleApres != null && formeLegaleAvant != formeLegaleApres) { // Ce que l'on fait si la forme juridique est nulle est défini dans la stratégie idoine.
 
 				/*
 					On prend comme point de départ le type de régime fiscal du régime de portée VD de l'entreprise à la veille, s'il existe.

@@ -53,6 +53,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisatio
 import ch.vd.uniregctb.evenement.organisation.interne.decisionaci.DecisionAciStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.demenagement.DemenagementSiegeStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.donneeinvalide.FormeJuridiqueInvalideStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.donneeinvalide.FormeJuridiqueManquanteStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEntrepriseRemplacanteStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEntrepriseRemplaceeParStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEtablissementStrategy;
@@ -153,6 +154,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		/*
 			L'ordre des stratégies est important.
 		 */
+		strategies.add(new FormeJuridiqueManquanteStrategy(context, options));
 		strategies.add(new FormeJuridiqueInvalideStrategy(context, options));
 		strategies.add(new DecisionAciStrategy(context, options));
 		strategies.add(new CreateOrganisationStrategy(context, options));
@@ -596,10 +598,21 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 						              event.getNoEvenement(), RegDateHelper.dateToDisplayString(dateEvenement),
 						              RegDateHelper.dateToDisplayString(noms.get(0).getDateDebut()), organisation.getNumeroOrganisation(), noms.get(0).getPayload()));
 			}
+			final Domicile siegePrincipal = organisation.getSiegePrincipal(dateEvenement);
+			if (siegePrincipal == null) {
+				throw new EvenementOrganisationException(
+						String.format("Donnée RCEnt invalide: Site principal introuvable pour l'organisation no civil: %d",
+						              organisation.getNumeroOrganisation()));
+			}
 			StringBuilder champs = new StringBuilder();
 			FormeLegale formeLegale = organisation.getFormeLegale(dateEvenement);
-			// SIFISC-19766 - Une forme juridique null est possible, dans le cas ou le RC et l'IDE ne sont pas impliqués.
-			if (formeLegale == null && (organisation.isInscriteAuRC(dateEvenement) || organisation.isInscriteIDE(dateEvenement))) {
+			/*
+			    SIFISC-19766 - Une forme juridique null est possible, dans le cas seulement ou l'organisation n'est pas inscrite au RC.
+
+			    L'IDE n'étant de toute manière pas très digne de foi en terme de forme juridique, il y a toujours un contrôle derrière. On peut donc laisser passer les cas de forme juridique vide,
+			    et épargner à l'ACI des événements non forçables sur les entités battardes que l'IDE inscrit et diffuse régulièrement en tant qu'entreprise.
+			  */
+			if (formeLegale == null && (organisation.isInscriteAuRC(dateEvenement))) {
 				champs.append("[legalForm] ");
 			}
 			for (SiteOrganisation site : organisation.getDonneesSites()) {
@@ -609,7 +622,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 				}
 			}
 			if (champs.length() > 0) {
-				throw new EvenementOrganisationException(String.format("Donnée RCEnt invalide, champ(s) nécessaires manquant(s): %s.", champs));
+				throw new EvenementOrganisationException(String.format("Données RCEnt invalides pour l'organisation n°%d, champ(s) nécessaire(s) manquant(s): %s.", organisation.getNumeroOrganisation(), champs));
 			}
 		} else {
 			throw new EvenementOrganisationException(

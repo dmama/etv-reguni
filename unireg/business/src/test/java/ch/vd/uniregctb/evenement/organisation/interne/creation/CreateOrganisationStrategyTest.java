@@ -189,7 +189,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		tryCreationEventAndCheckResult(101220441L, CreateEntrepriseVD.class);
 
 		createAddOrg(101220441L, RegDate.get(2015, 9, 7), null, Lausanne);
-		tryCreationEventAndCheckResult(101220441L, TraitementManuel.class);
+		tryCreationAndExpectNull(101220441L);
 	}
 
 	@Test
@@ -212,8 +212,8 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		tryCreationAndExpectNull(222222001L);
 
 		// Avec commune forme juridique inconnue
-		addOrg(MockOrganisationFactory.createOrganisation(222222003L, 222222003L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), null, null, null, null, "CHE999999994"));
-		tryCreationEventAndCheckResult(222222003L, TraitementManuel.class);
+		addOrg(MockOrganisationFactory.createOrganisation(222222003L, 222222003L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), StatusInscriptionRC.ACTIF, date(2015, 06, 24), null, null, "CHE999999994"));
+		tryCreationAndExpectNull(222222003L);
 
 		// TODO: A bien vérifier ce qu'on doit faire lorsque le siege n'est pas connu.
 		// Avec commune inconnue (pas de no ofs dans le siege)

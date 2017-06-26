@@ -1905,21 +1905,21 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		// Verification de l'événement interne créé
 		List<EvenementOrganisationInterne> listEvtInterne = getListeEvtInternesCrees(translator);
-		Assert.assertEquals(4, listEvtInterne.size());
+		Assert.assertEquals(5, listEvtInterne.size());
 		{
 			Assert.assertTrue(listEvtInterne.get(0) instanceof MessageSuiviPreExecution);
 			String message = getMessageFromMessageSuiviPreExecution((MessageSuiviPreExecution) listEvtInterne.get(0));
 			Assert.assertEquals(String.format("Aucune entreprise identifiée pour le numéro civil %d ou les attributs civils [%s].", noOrganisation, nom), message);
 		}
-		Assert.assertTrue(listEvtInterne.get(1) instanceof ValideurDebutDeTraitement);
+		Assert.assertTrue(listEvtInterne.get(2) instanceof ValideurDebutDeTraitement);
 		{
-			Assert.assertTrue(listEvtInterne.get(2) instanceof TraitementManuel);
-			String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(2));
+			Assert.assertTrue(listEvtInterne.get(3) instanceof TraitementManuel);
+			String message = getMessageFromTraitementManuel((TraitementManuel) listEvtInterne.get(3));
 			Assert.assertEquals(
 					String.format("L'organisation Synergy SA (civil: n°%d), domiciliée à Lausanne (VD), n'existe pas à l'IDE ni au RC. Pas de création automatique.",
 					              noOrganisation), message);
 		}
-		Assert.assertTrue(listEvtInterne.get(3) instanceof Indexation);
+		Assert.assertTrue(listEvtInterne.get(4) instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
