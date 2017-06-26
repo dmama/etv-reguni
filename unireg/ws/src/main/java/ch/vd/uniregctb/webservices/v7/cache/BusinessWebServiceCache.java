@@ -27,6 +27,7 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
@@ -503,8 +504,42 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@Override
 	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
-		// FIXME (msi) implémenter ce cache
-		return target.getCommunitiesOfOwners(user, communityIds);
+
+		final List<Long> elementsToFetch = new ArrayList<>();
+		final List<CommunityOfOwnersEntry> cached = new ArrayList<>();
+
+		// on récupère tout ce qu'on peut dans le cache
+		for (Long communityId : communityIds) {
+			final Element element = cache.get(new GetCommunityOfOwnersKey(communityId));
+			if (element == null) {
+				elementsToFetch.add(communityId);
+			}
+			else {
+				final CommunityOfOwners building = (CommunityOfOwners) element.getObjectValue();
+				final Error error = building == null ? new Error(ErrorType.BUSINESS, "La communauté n°[" + communityId + "] n'existe pas.") : null;
+				cached.add(new CommunityOfOwnersEntry(communityId, building, error));
+			}
+		}
+
+		// on récupère tout ce qui manque dans le service
+		final CommunityOfOwnersList list;
+		if (elementsToFetch.isEmpty()) {
+			list = new CommunityOfOwnersList();
+		}
+		else {
+			list = target.getCommunitiesOfOwners(user, elementsToFetch);
+		}
+
+		// on met-à-jour le cache
+		list.getEntries().forEach(e -> cache.put(new Element(new GetCommunityOfOwnersKey(e.getCommunityOfOwnersId()), e.getCommunityOfOwners())));
+
+		// on fusionne les deux listes
+		if (!cached.isEmpty()) {
+			list.getEntries().addAll(cached);
+			list.getEntries().sort(Comparator.comparing(CommunityOfOwnersEntry::getCommunityOfOwnersId));
+		}
+
+		return list;
 	}
 
 	/**

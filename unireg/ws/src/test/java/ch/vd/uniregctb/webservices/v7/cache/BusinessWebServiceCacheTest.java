@@ -47,6 +47,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -79,11 +80,13 @@ import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
@@ -145,6 +148,10 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		public Long batiment0;
 		public Long batiment1;
 		public Long batiment2;
+
+		public Long communaute0;
+		public Long communaute1;
+		public Long communaute2;
 	}
 
 	private final Ids ids = new Ids();
@@ -269,6 +276,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				ids.batiment1 = batiment1.getId();
 				ids.batiment2 = batiment2.getId();
 
+				final CommunauteRF communaute0 = addCommunauteRF("228833", TypeCommunaute.COMMUNAUTE_DE_BIENS);
+				final CommunauteRF communaute1 = addCommunauteRF("900022", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+				final CommunauteRF communaute2 = addCommunauteRF("11187282", TypeCommunaute.INDIVISION);
+				ids.communaute0 = communaute0.getId();
+				ids.communaute1 = communaute1.getId();
+				ids.communaute2 = communaute2.getId();
+
 				// un droit de propriété
 				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 216451157465L, null);
 				addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", "48390a0e043",
@@ -390,6 +404,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@SuppressWarnings("unchecked")
 	private static List<Long> getLastCallParametersToGetBuildings(Map<String, List<Object[]>> calls) {
 		final Object[] lastCall = getLastCallParameters(calls, "getBuildings");
+		assertEquals(2, lastCall.length);
+		return (List<Long>) lastCall[1];
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<Long> getLastCallParametersToGetCommunitiesOfOwners(Map<String, List<Object[]>> calls) {
+		final Object[] lastCall = getLastCallParameters(calls, "getCommunitiesOfOwners");
 		assertEquals(2, lastCall.length);
 		return (List<Long>) lastCall[1];
 	}
@@ -1833,6 +1854,43 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertFoundEntry(ids.batiment2, list3.getEntries().get(2));
 
 		// tous les bâtiments étaient dans le cache, on ne doit donc voir aucun appel
+		assertTrue(calls.isEmpty());
+	}
+
+	@Test
+	public void testGetCommunitiesOfOwners() throws Exception {
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
+
+		// 1er appel : on demande les communautés 0 et 1
+		calls.clear();
+		final CommunityOfOwnersList list1 = cache.getCommunitiesOfOwners(userLogin, Arrays.asList(ids.communaute0, ids.communaute1));
+		assertEquals(2, list1.getEntries().size());
+		assertFoundEntry(ids.communaute0, list1.getEntries().get(0));
+		assertFoundEntry(ids.communaute1, list1.getEntries().get(1));
+
+		// les communautés n'étaient pas dans le cache, on doit donc voir l'appel sur le service
+		assertEquals(Arrays.asList(ids.communaute0, ids.communaute1), getLastCallParametersToGetCommunitiesOfOwners(calls));
+
+		// 2ème appel : on demande les communautés 1 et 2
+		calls.clear();
+		final CommunityOfOwnersList list2 = cache.getCommunitiesOfOwners(userLogin, Arrays.asList(ids.communaute1, ids.communaute2));
+		assertEquals(2, list2.getEntries().size());
+		assertFoundEntry(ids.communaute1, list2.getEntries().get(0));
+		assertFoundEntry(ids.communaute2, list2.getEntries().get(1));
+
+		// l'communaute 1 était dans le cache, on doit donc uniquement voir l'appel sur le communaute 2
+		assertEquals(Collections.singletonList(ids.communaute2), getLastCallParametersToGetCommunitiesOfOwners(calls));
+
+		// 3ème appel : on demande toutes les communautés
+		calls.clear();
+		final CommunityOfOwnersList list3 = cache.getCommunitiesOfOwners(userLogin, Arrays.asList(ids.communaute0, ids.communaute1, ids.communaute2));
+		assertEquals(3, list3.getEntries().size());
+		assertFoundEntry(ids.communaute0, list3.getEntries().get(0));
+		assertFoundEntry(ids.communaute1, list3.getEntries().get(1));
+		assertFoundEntry(ids.communaute2, list3.getEntries().get(2));
+
+		// toutes les communautés étaient dans le cache, on ne doit donc voir aucun appel
 		assertTrue(calls.isEmpty());
 	}
 
