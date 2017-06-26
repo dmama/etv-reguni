@@ -25,6 +25,7 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
@@ -446,8 +447,42 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	@NotNull
 	@Override
 	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
-		// FIXME (msi) implémenter ce cache
-		return target.getBuildings(user, buildingIds);
+
+		final List<Long> elementsToFetch = new ArrayList<>();
+		final List<BuildingEntry> cached = new ArrayList<>();
+
+		// on récupère tout ce qu'on peut dans le cache
+		for (Long buildingId : buildingIds) {
+			final Element element = cache.get(new GetBuildingKey(buildingId));
+			if (element == null) {
+				elementsToFetch.add(buildingId);
+			}
+			else {
+				final Building building = (Building) element.getObjectValue();
+				final Error error = building == null ? new Error(ErrorType.BUSINESS, "Le bâtiment n°[" + buildingId + "] n'existe pas.") : null;
+				cached.add(new BuildingEntry(buildingId, building, error));
+			}
+		}
+
+		// on récupère tout ce qui manque dans le service
+		final BuildingList list;
+		if (elementsToFetch.isEmpty()) {
+			list = new BuildingList();
+		}
+		else {
+			list = target.getBuildings(user, elementsToFetch);
+		}
+
+		// on met-à-jour le cache
+		list.getEntries().forEach(e -> cache.put(new Element(new GetBuildingKey(e.getBuildingId()), e.getBuilding())));
+
+		// on fusionne les deux listes
+		if (!cached.isEmpty()) {
+			list.getEntries().addAll(cached);
+			list.getEntries().sort(Comparator.comparing(BuildingEntry::getBuildingId));
+		}
+
+		return list;
 	}
 
 	@Nullable

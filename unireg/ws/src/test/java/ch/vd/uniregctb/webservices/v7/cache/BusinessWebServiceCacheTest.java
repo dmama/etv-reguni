@@ -46,6 +46,7 @@ import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureServic
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -76,6 +77,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -139,6 +141,10 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		public Long immeuble0;
 		public Long immeuble1;
 		public Long immeuble2;
+
+		public Long batiment0;
+		public Long batiment1;
+		public Long batiment2;
 	}
 
 	private final Ids ids = new Ids();
@@ -247,18 +253,27 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				// une adresse mandataire
 				addAdresseMandataireSuisse(eric, date(2009, 5, 1), null, TypeMandat.GENERAL, "Mon mandataire à moi", MockRue.Bex.CheminDeLaForet);
 
-				// quelques droits de propriété
+				// quelques immeubles, bâtiments, etc...
 				final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 				final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
 				final ProprieteParEtageRF immeuble1 = addProprieteParEtageRF("3893882", "other egrid", new Fraction(1, 3), laSarraz, 579, 11, null, null);
 				final BienFondsRF immeuble2 = addBienFondsRF("93352512", "trois egrid", laSarraz, 12);
+				ids.immeuble0 = immeuble0.getId();
+				ids.immeuble1 = immeuble1.getId();
+				ids.immeuble2 = immeuble2.getId();
+
+				final BatimentRF batiment0 = addBatimentRF("3838");
+				final BatimentRF batiment1 = addBatimentRF("8482");
+				final BatimentRF batiment2 = addBatimentRF("8929");
+				ids.batiment0 = batiment0.getId();
+				ids.batiment1 = batiment1.getId();
+				ids.batiment2 = batiment2.getId();
+
+				// un droit de propriété
 				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 216451157465L, null);
 				addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", "48390a0e043",
 				                           new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble0, null);
 				addRapprochementRF(eric, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
-				ids.immeuble0 = immeuble0.getId();
-				ids.immeuble1 = immeuble1.getId();
-				ids.immeuble2 = immeuble2.getId();
 
 				return null;
 			}
@@ -368,6 +383,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	@SuppressWarnings("unchecked")
 	private static List<Long> getLastCallParametersToGetImmovableProperties(Map<String, List<Object[]>> calls) {
 		final Object[] lastCall = getLastCallParameters(calls, "getImmovableProperties");
+		assertEquals(2, lastCall.length);
+		return (List<Long>) lastCall[1];
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<Long> getLastCallParametersToGetBuildings(Map<String, List<Object[]>> calls) {
+		final Object[] lastCall = getLastCallParameters(calls, "getBuildings");
 		assertEquals(2, lastCall.length);
 		return (List<Long>) lastCall[1];
 	}
@@ -1774,6 +1796,43 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertFoundEntry(ids.immeuble2, list3.getEntries().get(2));
 
 		// tous les immeubles étaient dans le cache, on ne doit donc voir aucun appel
+		assertTrue(calls.isEmpty());
+	}
+
+	@Test
+	public void testGetBuildings() throws Exception {
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
+
+		// 1er appel : on demande les bâtiments 0 et 1
+		calls.clear();
+		final BuildingList list1 = cache.getBuildings(userLogin, Arrays.asList(ids.batiment0, ids.batiment1));
+		assertEquals(2, list1.getEntries().size());
+		assertFoundEntry(ids.batiment0, list1.getEntries().get(0));
+		assertFoundEntry(ids.batiment1, list1.getEntries().get(1));
+
+		// les bâtiments n'étaient pas dans le cache, on doit donc voir l'appel sur le service
+		assertEquals(Arrays.asList(ids.batiment0, ids.batiment1), getLastCallParametersToGetBuildings(calls));
+
+		// 2ème appel : on demande les bâtiments 1 et 2
+		calls.clear();
+		final BuildingList list2 = cache.getBuildings(userLogin, Arrays.asList(ids.batiment1, ids.batiment2));
+		assertEquals(2, list2.getEntries().size());
+		assertFoundEntry(ids.batiment1, list2.getEntries().get(0));
+		assertFoundEntry(ids.batiment2, list2.getEntries().get(1));
+
+		// l'batiment 1 était dans le cache, on doit donc uniquement voir l'appel sur le batiment 2
+		assertEquals(Collections.singletonList(ids.batiment2), getLastCallParametersToGetBuildings(calls));
+
+		// 3ème appel : on demande tous les bâtiments
+		calls.clear();
+		final BuildingList list3 = cache.getBuildings(userLogin, Arrays.asList(ids.batiment0, ids.batiment1, ids.batiment2));
+		assertEquals(3, list3.getEntries().size());
+		assertFoundEntry(ids.batiment0, list3.getEntries().get(0));
+		assertFoundEntry(ids.batiment1, list3.getEntries().get(1));
+		assertFoundEntry(ids.batiment2, list3.getEntries().get(2));
+
+		// tous les bâtiments étaient dans le cache, on ne doit donc voir aucun appel
 		assertTrue(calls.isEmpty());
 	}
 

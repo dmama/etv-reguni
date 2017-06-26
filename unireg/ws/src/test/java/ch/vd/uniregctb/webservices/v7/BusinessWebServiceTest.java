@@ -4991,7 +4991,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals("L'immeuble n°[" + immoId + "] n'existe pas.", entry.getError().getErrorMessage());
 	}
 
-	private static void assertFoundEntry(long buildingId, BuildingEntry entry) {
+	public static void assertFoundEntry(long buildingId, BuildingEntry entry) {
 		Assert.assertEquals(buildingId, entry.getBuildingId());
 		final Building building = entry.getBuilding();
 		Assert.assertNotNull(building);
@@ -5006,7 +5006,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals("Le bâtiment n°[" + buildingId + "] n'existe pas.", entry.getError().getErrorMessage());
 	}
 
-	private static void assertFoundEntry(long communityId, CommunityOfOwnersEntry entry) {
+	public static void assertFoundEntry(long communityId, CommunityOfOwnersEntry entry) {
 		Assert.assertEquals(communityId, entry.getCommunityOfOwnersId());
 		final CommunityOfOwners community = entry.getCommunityOfOwners();
 		Assert.assertNotNull(community);
