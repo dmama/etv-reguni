@@ -20,7 +20,8 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -88,6 +89,7 @@ import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.avatar.ImageData;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -176,7 +178,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	private final Context context = new Context();
 	private GlobalTiersSearcher tiersSearcher;
-	private ExecutorService threadPool;
+	private ForkJoinPool forkJoinPool;
 	private AvatarService avatarService;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
@@ -263,8 +265,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		context.eFactureService = eFactureService;
 	}
 
-	public void setThreadPool(ExecutorService threadPool) {
-		this.threadPool = threadPool;
+	public void setForkJoinPool(ForkJoinPool forkJoinPool) {
+		this.forkJoinPool = forkJoinPool;
 	}
 
 	public void setAvatarService(AvatarService avatarService) {
@@ -942,7 +944,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		// on envoie la sauce sur plusieurs threads
-		final ExecutorCompletionService<Parties> executor = new ExecutorCompletionService<>(threadPool);
+		final ExecutorCompletionService<Parties> executor = new ExecutorCompletionService<>(forkJoinPool);
 		final BatchIterator<Integer> iterator = new StandardBatchIterator<>(nos, PARTIES_BATCH_SIZE);
 		int nbRemainingTasks = 0;
 		while (iterator.hasNext()) {
@@ -1064,22 +1066,37 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	@NotNull
 	@Override
 	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
-		// TODO (msi) rendre multi-threadée cet implémentation pour améliorer la latence
-		return doInTransaction(true, status -> {
+
+		if (immoIds.size() > MAX_BATCH_SIZE) {
+			throw new BadRequestException("Le nombre d'immeubles demandés ne peut dépasser " + MAX_BATCH_SIZE);
+		}
+
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		// on charge les données sur plusieurs threads
+		final ForkJoinTask<ImmovablePropertyList> task = forkJoinPool.submit(() -> {
 			final List<ImmovablePropertyEntry> entries = new HashSet<>(immoIds).stream()
+					.parallel()
 					.filter(Objects::nonNull)
-					.map(this::resolveImmovablePropertyEntry)
+					.map((Long immoId) -> executeInTx(currentPrincipal, currentOID, status -> resolveImmovablePropertyEntry(immoId)))
 					.sorted(Comparator.comparing(ImmovablePropertyEntry::getImmovablePropertyId))
 					.collect(Collectors.toList());
 			return new ImmovablePropertyList(entries);
 		});
+
+		return task.join();
 	}
 
+	@NotNull
 	private ImmovablePropertyEntry resolveImmovablePropertyEntry(long immoId) {
 		try {
 			final ImmeubleRF immeuble = context.registreFoncierService.getImmeuble(immoId);
 			if (immeuble == null) {
-				return new ImmovablePropertyEntry(immoId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "L'immeuble n°[" + immoId+						"] n'existe pas."));
+				return new ImmovablePropertyEntry(immoId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "L'immeuble n°[" + immoId + "] n'existe pas."));
 			}
 			else {
 				final ImmovableProperty immovableProperty = ImmovablePropertyBuilder.newImmovableProperty(immeuble,
@@ -1106,15 +1123,29 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	@NotNull
 	@Override
 	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
-		// TODO (msi) rendre multi-threadée cet implémentation pour améliorer la latence
-		return doInTransaction(true, status -> {
+
+		if (buildingIds.size() > MAX_BATCH_SIZE) {
+			throw new BadRequestException("Le nombre de bâtiments demandés ne peut dépasser " + MAX_BATCH_SIZE);
+		}
+
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		// on charge les données sur plusieurs threads
+		final ForkJoinTask<BuildingList> task = forkJoinPool.submit(() -> {
 			final List<BuildingEntry> entries = new HashSet<>(buildingIds).stream()
+					.parallel()
 					.filter(Objects::nonNull)
-					.map(this::resolveBuildingEntry)
+					.map((Long buildingId) -> executeInTx(currentPrincipal, currentOID, status -> resolveBuildingEntry(buildingId)))
 					.sorted(Comparator.comparing(BuildingEntry::getBuildingId))
 					.collect(Collectors.toList());
 			return new BuildingList(entries);
 		});
+
+		return task.join();
 	}
 
 	private BuildingEntry resolveBuildingEntry(long batimentId) {
@@ -1146,15 +1177,29 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Override
 	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
-		// TODO (msi) rendre multi-threadée cet implémentation pour améliorer la latence
-		return doInTransaction(true, status -> {
+
+		if (communityIds.size() > MAX_BATCH_SIZE) {
+			throw new BadRequestException("Le nombre de communautés demandées ne peut dépasser " + MAX_BATCH_SIZE);
+		}
+
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		// on charge les données sur plusieurs threads
+		final ForkJoinTask<CommunityOfOwnersList> task = forkJoinPool.submit(() -> {
 			final List<CommunityOfOwnersEntry> entries = new HashSet<>(communityIds).stream()
+					.parallel()
 					.filter(Objects::nonNull)
-					.map(this::resolveCommunityEntry)
+					.map((Long communityId) -> executeInTx(currentPrincipal, currentOID, status -> resolveCommunityEntry(communityId)))
 					.sorted(Comparator.comparing(CommunityOfOwnersEntry::getCommunityOfOwnersId))
 					.collect(Collectors.toList());
 			return new CommunityOfOwnersList(entries);
 		});
+
+		return task.join();
 	}
 
 	private CommunityOfOwnersEntry resolveCommunityEntry(long communityId) {
@@ -1172,6 +1217,16 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 		catch (Exception e) {
 			return new CommunityOfOwnersEntry(communityId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage()));
+		}
+	}
+
+	private <T> T executeInTx(@NotNull String currentPrincipal, int currentOID, TransactionCallback<@NotNull T> callback) {
+		AuthenticationHelper.pushPrincipal(currentPrincipal, currentOID);
+		try {
+			return doInTransaction(true, callback);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 	}
 }
