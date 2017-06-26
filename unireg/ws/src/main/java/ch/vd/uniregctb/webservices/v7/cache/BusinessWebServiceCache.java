@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.v7.cache;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -26,11 +27,13 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
 import ch.vd.unireg.ws.landregistry.v7.BuildingList;
 import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
+import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
@@ -386,8 +389,42 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	@NotNull
 	@Override
 	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
-		// FIXME (msi) implémenter ce cache
-		return target.getImmovableProperties(user, immoIds);
+
+		final List<Long> elementsToFetch = new ArrayList<>();
+		final List<ImmovablePropertyEntry> cached = new ArrayList<>();
+
+		// on récupère tout ce qu'on peut dans le cache
+		for (Long immoId : immoIds) {
+			final Element element = cache.get(new GetImmovablePropertyKey(immoId));
+			if (element == null) {
+				elementsToFetch.add(immoId);
+			}
+			else {
+				final ImmovableProperty immovableProperty = (ImmovableProperty) element.getObjectValue();
+				final Error error = immovableProperty == null ? new Error(ErrorType.BUSINESS, "L'immeuble n°[" + immoId + "] n'existe pas.") : null;
+				cached.add(new ImmovablePropertyEntry(immoId, immovableProperty, error));
+			}
+		}
+
+		// on récupère tout ce qui manque dans le service
+		final ImmovablePropertyList list;
+		if (elementsToFetch.isEmpty()) {
+			list = new ImmovablePropertyList();
+		}
+		else {
+			list = target.getImmovableProperties(user, elementsToFetch);
+		}
+
+		// on met-à-jour le cache
+		list.getEntries().forEach(e -> cache.put(new Element(new GetImmovablePropertyKey(e.getImmovablePropertyId()), e.getImmovableProperty())));
+
+		// on fusionne les deux listes
+		if (!cached.isEmpty()) {
+			list.getEntries().addAll(cached);
+			list.getEntries().sort(Comparator.comparing(ImmovablePropertyEntry::getImmovablePropertyId));
+		}
+
+		return list;
 	}
 
 	@Nullable

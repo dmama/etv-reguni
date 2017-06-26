@@ -4976,7 +4976,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(noOfsCommune, location.getMunicipalityFsoId());
 	}
 
-	private static void assertFoundEntry(long immoId, ImmovablePropertyEntry entry) {
+	public static void assertFoundEntry(long immoId, ImmovablePropertyEntry entry) {
 		Assert.assertEquals(immoId, entry.getImmovablePropertyId());
 		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = entry.getImmovableProperty();
 		Assert.assertNotNull(immo);
