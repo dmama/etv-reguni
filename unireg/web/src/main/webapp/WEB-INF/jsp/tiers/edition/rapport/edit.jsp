@@ -40,12 +40,12 @@
 			</c:if>
 			<c:if test="${autorisations.rapportsEtablissements}">
 				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
-					<jsp:include page="../etablissement/etablissements.jsp" />
+					<jsp:include page="etablissements.jsp" />
 				</div>
 			</c:if>
 			<c:if test="${autorisations.debiteurs}">
 				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
-					<jsp:include page="../debiteur/debiteur.jsp" />
+					<jsp:include page="debiteur.jsp" />
 				</div>
 			</c:if>
 			</div>
