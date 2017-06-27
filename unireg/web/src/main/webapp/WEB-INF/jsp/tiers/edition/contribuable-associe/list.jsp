@@ -43,50 +43,34 @@
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.tiers.trouves" /></span></display:setProperty>
 
 			<display:column sortable ="true" titleKey="label.numero.tiers" sortProperty="numero" >
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<a href="edit.do?numeroDpi=${command.numeroDpi}&numeroContribuable=${tiers.numero}"><unireg:numCTB numero="${tiers.numero}" /></a>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<a href="edit.do?numeroDpi=${command.numeroDpi}&numeroContribuable=${tiers.numero}"><unireg:numCTB numero="${tiers.numero}" /></a>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.role" >
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<c:out value="${tiers.roleLigne1}" />
-					<c:if test="${tiers.roleLigne2 != null}">
-						<br><c:out value="${tiers.roleLigne2}" />
-					</c:if>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<c:out value="${tiers.roleLigne1}" />
+				<c:if test="${tiers.roleLigne2 != null}">
+					<br><c:out value="${tiers.roleLigne2}" />
+				</c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.nom.raison" >
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<c:out value="${tiers.nom1}" />
-					<c:if test="${tiers.nom2 != null}">
-						<br><c:out value="${tiers.nom2}" />
-					</c:if>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<c:out value="${tiers.nom1}" />
+				<c:if test="${tiers.nom2 != null}">
+					<br><c:out value="${tiers.nom2}" />
+				</c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.naissance.ou.rc" sortProperty="dateNaissanceInscriptionRC">
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<unireg:date date="${tiers.dateNaissanceInscriptionRC}"/>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<unireg:date date="${tiers.dateNaissanceInscriptionRC}"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.localitePays" >
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<c:out value="${tiers.localiteOuPays}" />
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<c:out value="${tiers.localiteOuPays}" />
 			</display:column>
 			<display:column sortable ="true" titleKey="label.for.principal" >
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<c:out value="${tiers.forPrincipal}" />
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<c:out value="${tiers.forPrincipal}" />
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.ouverture.for" sortProperty="dateOuvertureFor">
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<fmt:formatDate value="${tiers.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<fmt:formatDate value="${tiers.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.fermeture.for" sortProperty="dateFermetureFor">
-				<c:if test="${tiers.annule}"><strike></c:if>
-					<fmt:formatDate value="${tiers.dateFermetureFor}" pattern="dd.MM.yyyy"/>
-				<c:if test="${tiers.annule}"></strike></c:if>
+				<fmt:formatDate value="${tiers.dateFermetureFor}" pattern="dd.MM.yyyy"/>
 			</display:column>
 		</display:table>
 		
