@@ -38,6 +38,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DebiteurPrestationImposableNotFoundException;
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
+import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
 import ch.vd.uniregctb.common.TicketService;
@@ -316,8 +317,9 @@ public class ListeRecapitulativeController {
 		final DebiteurPrestationImposable dpi = getDebiteurPrestationImposable(idDebiteur);
 		final List<ForFiscal> forsFiscauxNonAnnules = dpi.getForsFiscauxNonAnnules(false);
 		if (forsFiscauxNonAnnules == null || forsFiscauxNonAnnules.isEmpty()) {
-			//la dpi ne possède pas de for => création LR interdite
-			throw new ActionException("Impossible de créer une liste récapitulative pour un débiteur de prestation imposable sans for");
+			// le dpi ne possède pas de for => création LR interdite
+			Flash.error("Impossible de créer une liste récapitulative pour un débiteur de prestations imposables sans for !");
+			return "redirect:edit-debiteur.do?numero=" + idDebiteur;
 		}
 
 		final DateRange range = findNextAvailableLRSlot(dpi);
