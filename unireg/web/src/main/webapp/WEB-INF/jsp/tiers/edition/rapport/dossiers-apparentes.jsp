@@ -10,7 +10,7 @@
 	<table border="0">
 		<tr>
 			<td>
-				<a href="../rapport/search.do?tiersId=<c:out value="${command.tiers.numero}"/>"
+				<a href="../rapport/add-search.do?tiersId=<c:out value="${command.tiers.numero}"/>"
 				class="add" title="Ajouter rapport"><fmt:message key="label.bouton.ajouter" /></a>
 			</td>
 		</tr>

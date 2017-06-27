@@ -42,7 +42,7 @@ public class SearchCriteriaRemovalController {
 
 	@RequestMapping(value = "/rapport/reset-search.do", method = RequestMethod.GET)
 	public String effacerCriteresRechercheRapport(@RequestParam("tiersId") long id) {
-		return String.format("redirect:/rapport/search.do?tiersId=%d", id);
+		return String.format("redirect:/rapport/add-search.do?tiersId=%d", id);
 	}
 
 	@RequestMapping(value = "/rt/debiteur/reset-search.do", method = RequestMethod.GET)

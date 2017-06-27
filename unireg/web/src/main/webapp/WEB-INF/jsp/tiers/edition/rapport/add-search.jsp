@@ -17,7 +17,7 @@
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>
-				<jsp:include page="../../../recherche/form.jsp">
+				<jsp:include page="../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="rapport" />
 					<jsp:param name="prefixeEffacer" value="/rapport" />
 					<jsp:param name="paramsEffacer" value="tiersId:${command.tiersId}"/>
@@ -25,7 +25,7 @@
 			</fieldset>
 		</form:form>
 
-		<display:table 	name="list" id="tiers" pagesize="25" requestURI="/rapport/search.do" class="display" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table 	name="list" id="tiers" pagesize="25" requestURI="/rapport/add-search.do" class="display" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.tiers.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.tiers.trouve" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.tiers.trouves" /></span></display:setProperty>
@@ -33,7 +33,7 @@
 
 			<display:column sortable ="true" titleKey="label.numero.tiers" sortProperty="numero" >
 				<c:set var="noctb"><unireg:numCTB numero="${tiers.numero}"/></c:set>
-				<unireg:linkTo name="${noctb}" action="/rapport/edit.do" params="{numeroTiers:${command.tiersId},numeroTiersLie:${tiers.numero}}"/>
+				<unireg:linkTo name="${noctb}" action="/rapport/add.do" params="{numeroTiers:${command.tiersId},numeroTiersLie:${tiers.numero}}"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.role" >
 				<c:out value="${tiers.roleLigne1}" />

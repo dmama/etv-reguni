@@ -81,7 +81,7 @@ public class RapportController {
 	private SecurityProviderInterface securityProvider;
 	private AutorisationManager autorisationManager;
 	private RapportEditManager rapportEditManager;
-	private Validator rapportEditValidator;
+	private Validator rapportAddValidator;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -130,8 +130,8 @@ public class RapportController {
 		this.rapportEditManager = rapportEditManager;
 	}
 
-	public void setRapportEditValidator(Validator rapportEditValidator) {
-		this.rapportEditValidator = rapportEditValidator;
+	public void setRapportAddValidator(Validator rapportAddValidator) {
+		this.rapportAddValidator = rapportAddValidator;
 	}
 
 	private Set<RapportEntreTiersKey> getAllowedTypes() {
@@ -163,9 +163,9 @@ public class RapportController {
 	/**
 	 * Affiche l'écran de recherche d'un tiers à lier par un rapport-entre-tiers.
 	 */
-	@RequestMapping(value = "/search.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/add-search.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String search(@Valid @ModelAttribute("command") final RapportListView view, BindingResult binding, Model model) {
+	public String addSearch(@Valid @ModelAttribute("command") final RapportListView view, BindingResult binding, Model model) {
 
 		final long tiersId = view.getTiersId();
 
@@ -181,7 +181,7 @@ public class RapportController {
 		}
 
 		if (binding.hasErrors() || view.isEmpty()) {
-			return "tiers/edition/rapport/recherche/list";
+			return "tiers/edition/rapport/add-search";
 		}
 
 		try {
@@ -203,7 +203,7 @@ public class RapportController {
 			binding.reject("error.recherche");
 		}
 
-		return "tiers/edition/rapport/recherche/list";
+		return "tiers/edition/rapport/add-search";
 	}
 
 	/**
@@ -212,9 +212,9 @@ public class RapportController {
 	 * @param numeroTiers    le tiers de départ
 	 * @param numeroTiersLie le tiers lié
 	 */
-	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String edit(@RequestParam("numeroTiers") long numeroTiers, @RequestParam("numeroTiersLie") long numeroTiersLie, Model model) throws AdressesResolutionException {
+	public String add(@RequestParam("numeroTiers") long numeroTiers, @RequestParam("numeroTiersLie") long numeroTiersLie, Model model) throws AdressesResolutionException {
 
 		final Tiers tiers = tiersDAO.get(numeroTiers);
 		if (tiers == null) {
@@ -233,28 +233,28 @@ public class RapportController {
 		}
 
 		//vérification des droits de création de rapport entre tiers non travail par rapportEditManager
-		final RapportView rapportView = rapportEditManager.get(numeroTiers, numeroTiersLie);
-		model.addAttribute("rapportView", rapportView);
+		final RapportView rapportAddView = rapportEditManager.get(numeroTiers, numeroTiersLie);
+		model.addAttribute("rapportAddView", rapportAddView);
 
-		return "tiers/edition/rapport/recap/edit";
+		return "tiers/edition/rapport/add";
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	@InitBinder(value = "rapportView")
-	public void initBinderForEdit(WebDataBinder binder) {
-		binder.addValidators(rapportEditValidator);
+	@InitBinder(value = "rapportAddView")
+	public void initBinderForAdd(WebDataBinder binder) {
+		binder.addValidators(rapportAddValidator);
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
 	}
 
 	/**
 	 * Méthode de création d'un nouveau rapport-entre-tiers.
 	 */
-	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/add.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
-	public String edit(@ModelAttribute("rapportView") RapportView view, BindingResult binding) throws AdressesResolutionException {
+	public String add(@ModelAttribute("rapportAddView") RapportView view, BindingResult binding) throws AdressesResolutionException {
 
 		if (binding.hasErrors()) {
-			return "tiers/edition/rapport/recap/edit";
+			return "tiers/edition/rapport/add";
 		}
 
 		final Long numeroTiers = view.getTiers().getNumero();
@@ -281,7 +281,7 @@ public class RapportController {
 		}
 		catch (Exception e) {
 			binding.reject("", e.getMessage());
-			return "tiers/edition/rapport/recap/edit";
+			return "tiers/edition/rapport/add";
 		}
 
 		return "redirect:/tiers/visu.do?id=" + numeroTiers;

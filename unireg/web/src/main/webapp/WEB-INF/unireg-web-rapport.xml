@@ -58,7 +58,7 @@
 		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="autorisationManager" ref="autorisationManager" />
 		<property name="rapportEditManager" ref="rapportEditManager" />
-		<property name="rapportEditValidator" ref="rapportValidator" />
+		<property name="rapportAddValidator" ref="rapportAddValidator" />
 	</bean>
 
 	<bean id="rapportEditManager" class="ch.vd.uniregctb.rapport.manager.RapportEditManagerImpl" parent="tiersManager">
@@ -68,7 +68,7 @@
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 	</bean>
 
-	<bean id="rapportValidator" class="ch.vd.uniregctb.rapport.validator.RapportEditValidator" >
+	<bean id="rapportAddValidator" class="ch.vd.uniregctb.rapport.validator.RapportAddValidator" >
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>

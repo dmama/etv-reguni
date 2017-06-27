@@ -19,7 +19,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
  * @author xcifde
  *
  */
-public class RapportEditValidator implements Validator {
+public class RapportAddValidator implements Validator {
 
 	private TiersDAO tiersDAO;
 

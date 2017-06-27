@@ -195,29 +195,29 @@ public class EachWebPageTest extends WebitTest {
 	 -----------------------*/
 	// Rapport entre tiers - Page de recherche des tiers
 	@Test
-	public void testRapportSearch() throws Exception {
-		assertPage("/rapport/search.do?tiersId=86006202", "Recherche du tiers à lier");
+	public void testRapportAddSearch() throws Exception {
+		assertPage("/rapport/add-search.do?tiersId=86006202", "Recherche du tiers à lier");
 	}
 
 	@Test
-	public void testRapportSearchInexistant() throws Exception {
-		assertPage("/rapport/search.do?tiersId=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
+	public void testRapportAddSearchInexistant() throws Exception {
+		assertPage("/rapport/add-search.do?tiersId=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	// Rapport entre tiers - Page d'édition
 	@Test
-	public void testRapportEdit() throws Exception {
-		assertPage("/rapport/edit.do?numeroTiers=86006202&numeroTiersLie=12900001", "Récapitulatif du rapport entre tiers");
+	public void testRapportAdd() throws Exception {
+		assertPage("/rapport/add.do?numeroTiers=86006202&numeroTiersLie=12900001", "Récapitulatif du rapport entre tiers");
 	}
 
 	@Test
-	public void testRapportEditTiersInexistant() throws Exception {
-		assertPage("/rapport/edit.do?numeroTiers=12345678&numeroTiersLie=12900001", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
+	public void testRapportAddTiersInexistant() throws Exception {
+		assertPage("/rapport/add.do?numeroTiers=12345678&numeroTiersLie=12900001", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	@Test
-	public void testRapportEditTiersLieInexistant() throws Exception {
-		assertPage("/rapport/edit.do?numeroTiers=86006202&numeroTiersLie=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
+	public void testRapportAddTiersLieInexistant() throws Exception {
+		assertPage("/rapport/add.do?numeroTiers=86006202&numeroTiersLie=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	/*----------------------

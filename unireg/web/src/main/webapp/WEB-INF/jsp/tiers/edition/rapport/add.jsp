@@ -6,7 +6,7 @@
 	<tiles:put name="title"><fmt:message key="title.recapitulatif.rapport.entre.tiers" /></tiles:put>
 
 	<tiles:put name="body">
-	<form:form method="post" modelAttribute="rapportView" id="formRapport">
+	<form:form method="post" modelAttribute="rapportAddView" id="formRapport">
 		<unireg:nextRowClass reset="1"/>
 		<form:hidden path="tiers.numero"/>
 		<form:hidden path="tiersLie.numero"/>
@@ -16,8 +16,8 @@
 			<td id="td_tiers_gauche">
 				<div id="div_tiers">
 					<%-- Premier tiers --%>
-					<jsp:include page="../../../../general/tiers.jsp" >
-						<jsp:param name="commandName" value="rapportView" />
+					<jsp:include page="../../../general/tiers.jsp" >
+						<jsp:param name="commandName" value="rapportAddView" />
 						<jsp:param name="page" value="rapport" />
 						<jsp:param name="path" value="tiers" />
 					</jsp:include>
@@ -38,8 +38,8 @@
 			<td id="td_tiers_droite">
 				<div id="div_tiers_lie">
 					<%-- Second tiers --%>
-					<jsp:include page="../../../../general/tiers.jsp" >
-						<jsp:param name="commandName" value="rapportView" />
+					<jsp:include page="../../../general/tiers.jsp" >
+						<jsp:param name="commandName" value="rapportAddView" />
 						<jsp:param name="page" value="rapport" />
 						<jsp:param name="path" value="tiersLie" />
 					</jsp:include>
@@ -262,14 +262,14 @@
 		<br/>
 		
 		<!-- Debut Boutons -->
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="retourRapport(${rapportView.tiers.numero});" />
+		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="retourRapport(${rapportAddView.tiers.numero});" />
 		<input type="submit" value="<fmt:message key="label.bouton.sauver" />" />
 		<form:errors cssClass="error"/>
 		<!-- Fin Boutons -->
 		<script>
 			function retourRapport(numero) {
 				if(confirm('Voulez-vous quitter cette page sans sauver ?')) {
-					document.location.href='search.do?tiersId=' + numero ;
+					document.location.href='add-search.do?tiersId=' + numero ;
 				}
 			}
 		</script>
