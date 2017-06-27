@@ -2327,7 +2327,7 @@ var Batch = {
 		form.ajaxSubmit({
 			success: function(responseText) {
 				if (responseText) {
-					responseText = responseText.replace(/(<pre>|<\/pre>)/ig, ''); // enlève les éventuelles balises <pre> qui apparaissent des fois avec Firefox et IE
+					responseText = responseText.replace(/(<pre([^<>]*)>|<\/pre>)/ig, ''); // enlève les éventuelles balises <pre> qui apparaissent des fois avec Firefox et IE (& Chrome...)
 				}
 				if (responseText) {
 					alert(responseText);
