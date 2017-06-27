@@ -1,22 +1,15 @@
 package ch.vd.uniregctb.rt.view;
 
-import java.util.Date;
 import java.util.List;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.BaseComparator;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class RapportPrestationView implements Comparable<RapportPrestationView> {
-
-	private static final BaseComparator<RapportPrestationView> comparator = new BaseComparator<>(new String[] {
-			"annule", "dateDebut"
-	}, new Boolean[] {
-			true, true
-	});
+public class RapportPrestationView implements Annulable, DateRange {
 
 	private Long id;
 
@@ -44,6 +37,7 @@ public class RapportPrestationView implements Comparable<RapportPrestationView> 
 
 	private boolean annule;
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}
@@ -60,7 +54,8 @@ public class RapportPrestationView implements Comparable<RapportPrestationView> 
 		this.id = id;
 	}
 
-	public RegDate getRegDateDebut() {
+	@Override
+	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
@@ -68,28 +63,13 @@ public class RapportPrestationView implements Comparable<RapportPrestationView> 
 		this.dateDebut = dateDebut;
 	}
 
-	public RegDate getRegDateFin() {
+	@Override
+	public RegDate getDateFin() {
 		return dateFin;
 	}
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
-	}
-
-	public Date getDateDebut() {
-		return RegDate.asJavaDate(dateDebut);
-	}
-
-	public void setDateDebut(Date dateDebut) {
-		this.dateDebut = RegDateHelper.get(dateDebut);
-	}
-
-	public Date getDateFin() {
-		return RegDate.asJavaDate(dateFin);
-	}
-
-	public void setDateFin(Date dateFin) {
-		this.dateFin = RegDateHelper.get(dateFin);
 	}
 
 	public TiersGeneralView getDebiteur() {
@@ -164,8 +144,4 @@ public class RapportPrestationView implements Comparable<RapportPrestationView> 
 		this.numeroAVS = numeroAVS;
 	}
 
-	@Override
-	public int compareTo(RapportPrestationView o) {
-		return comparator.compare(this, o);
-	}
 }

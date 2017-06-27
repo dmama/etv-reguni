@@ -18,102 +18,134 @@ public class TiersVisuView extends TiersView {
 		this.histoFlags = histoFlags;
 	}
 
-	private boolean hasFlag(HistoFlag flag) {
+	private boolean hasHistoFlag(HistoFlag flag) {
 		return histoFlags.hasHistoFlag(flag);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isAdressesHisto() {
-		return hasFlag(HistoFlag.ADRESSES);
+		return hasHistoFlag(HistoFlag.ADRESSES);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isAdressesHistoCiviles() {
-		return hasFlag(HistoFlag.ADRESSES_CIVILES);
+		return hasHistoFlag(HistoFlag.ADRESSES_CIVILES);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isAdressesHistoCivilesConjoint() {
-		return hasFlag(HistoFlag.ADRESSES_CIVILES_CONJOINT);
+		return hasHistoFlag(HistoFlag.ADRESSES_CIVILES_CONJOINT);
 	}
 
+	@SuppressWarnings("unused")
+	public boolean isRapportsEntreTiersHisto() {
+		return hasHistoFlag(HistoFlag.RAPPORTS_ENTRE_TIERS);
+	}
+
+	@SuppressWarnings("unused")
+	public boolean isEtablissementsHisto() {
+		return hasHistoFlag(HistoFlag.ETABLISSEMENTS);
+	}
+
+	@SuppressWarnings("unused")
 	public boolean isRapportsPrestationHisto() {
-		return hasFlag(HistoFlag.RAPPORTS_PRESTATION);
+		return hasHistoFlag(HistoFlag.RAPPORTS_PRESTATION);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isCtbAssocieHisto() {
-		return hasFlag(HistoFlag.CTB_ASSOCIE);
+		return hasHistoFlag(HistoFlag.CTB_ASSOCIE);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isRaisonsSocialesHisto() {
-		return hasFlag(HistoFlag.RAISONS_SOCIALES);
+		return hasHistoFlag(HistoFlag.RAISONS_SOCIALES);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isNomsAdditionnelsHisto() {
-		return hasFlag(HistoFlag.NOMS_ADDITIONNELS);
+		return hasHistoFlag(HistoFlag.NOMS_ADDITIONNELS);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isSiegesHisto() {
-		return hasFlag(HistoFlag.SIEGES);
+		return hasHistoFlag(HistoFlag.SIEGES);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isFormesJuridiquesHisto() {
-		return hasFlag(HistoFlag.FORMES_JURIDIQUES);
+		return hasHistoFlag(HistoFlag.FORMES_JURIDIQUES);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isCapitauxHisto() {
-		return hasFlag(HistoFlag.CAPITAUX);
+		return hasHistoFlag(HistoFlag.CAPITAUX);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isDomicilesHisto() {
-		return hasFlag(HistoFlag.DOMICILES);
+		return hasHistoFlag(HistoFlag.DOMICILES);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isFlagsEntrepriseHisto(GroupeFlagsEntreprise groupe) {
 		switch (groupe) {
 		case LIBRE:
-			return hasFlag(HistoFlag.FLAGS_ENTREPRISE_LIBRE);
+			return hasHistoFlag(HistoFlag.FLAGS_ENTREPRISE_LIBRE);
 		case SI_SERVICE_UTILITE_PUBLIQUE:
-			return hasFlag(HistoFlag.FLAGS_ENTREPRISE_SISUP);
+			return hasHistoFlag(HistoFlag.FLAGS_ENTREPRISE_SISUP);
 		default:
 			throw new IllegalArgumentException("Group de flags d'entreprise inconnu ici : " + groupe);
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isLabelsHisto() {
-		return hasFlag(HistoFlag.LABELS);
+		return hasHistoFlag(HistoFlag.LABELS);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isLabelsConjointHisto() {
-		return hasFlag(HistoFlag.LABELS_CONJOINT);
+		return hasHistoFlag(HistoFlag.LABELS_CONJOINT);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isMandatairesCourrierHisto() {
-		return hasFlag(HistoFlag.MANDATAIRES_COURRIER);
+		return hasHistoFlag(HistoFlag.MANDATAIRES_COURRIER);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isMandatairesPerceptionHisto() {
-		return hasFlag(HistoFlag.MANDATAIRES_PERCEPTION);
+		return hasHistoFlag(HistoFlag.MANDATAIRES_PERCEPTION);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isRegimesFiscauxCHHisto() {
-		return hasFlag(HistoFlag.REGIMES_FISCAUX_CH);
+		return hasHistoFlag(HistoFlag.REGIMES_FISCAUX_CH);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isRegimesFiscauxVDHisto() {
-		return hasFlag(HistoFlag.REGIMES_FISCAUX_VD);
+		return hasHistoFlag(HistoFlag.REGIMES_FISCAUX_VD);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isSituationsFamilleHisto() {
-		return hasFlag(HistoFlag.SITUATIONS_FAMILLE);
+		return hasHistoFlag(HistoFlag.SITUATIONS_FAMILLE);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isAllegementsFiscauxHisto() {
-		return hasFlag(HistoFlag.ALLEGEMENTS_FISCAUX);
+		return hasHistoFlag(HistoFlag.ALLEGEMENTS_FISCAUX);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isPeriodicitesHisto() {
-		return hasFlag(HistoFlag.PERIODICITES_HISTO);
+		return hasHistoFlag(HistoFlag.PERIODICITES_HISTO);
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isRemarquesHisto() {
-		return hasFlag(HistoFlag.REMARQUES);
+		return hasHistoFlag(HistoFlag.REMARQUES);
 	}
 }

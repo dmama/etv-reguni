@@ -87,32 +87,32 @@ public class TiersManagerTest extends WebTest {
 					Assert.assertNotNull(view);
 					Assert.assertEquals((Long) ids.habitantOk, view.getNumero());
 					Assert.assertEquals(Collections.singletonList("Julien Sorel"), view.getNomCourrier());
-					Assert.assertEquals(date(2010, 1, 1), view.getRegDateDebut());
-					Assert.assertEquals(date(2011, 12, 31), view.getRegDateFin());
+					Assert.assertEquals(date(2010, 1, 1), view.getDateDebut());
+					Assert.assertEquals(date(2011, 12, 31), view.getDateFin());
 				}
 				{
 					final RapportPrestationView view = rapports.get(1);
 					Assert.assertNotNull(view);
 					Assert.assertEquals((Long) ids.habitantNotOk, view.getNumero());
 					Assert.assertNull(view.getNomCourrier());
-					Assert.assertEquals(date(2011, 1, 1), view.getRegDateDebut());
-					Assert.assertNull(view.getRegDateFin());
+					Assert.assertEquals(date(2011, 1, 1), view.getDateDebut());
+					Assert.assertNull(view.getDateFin());
 				}
 				{
 					final RapportPrestationView view = rapports.get(2);
 					Assert.assertNotNull(view);
 					Assert.assertEquals((Long) ids.habitantMine, view.getNumero());
 					Assert.assertNull(view.getNomCourrier());
-					Assert.assertEquals(date(2012, 1, 1), view.getRegDateDebut());
-					Assert.assertEquals(date(2012, 6, 30), view.getRegDateFin());
+					Assert.assertEquals(date(2012, 1, 1), view.getDateDebut());
+					Assert.assertEquals(date(2012, 6, 30), view.getDateFin());
 				}
 				{
 					final RapportPrestationView view = rapports.get(3);
 					Assert.assertNotNull(view);
 					Assert.assertEquals((Long) ids.habitantOk, view.getNumero());
 					Assert.assertEquals(Collections.singletonList("Julien Sorel"), view.getNomCourrier());
-					Assert.assertEquals(date(2013, 1, 1), view.getRegDateDebut());
-					Assert.assertNull(view.getRegDateFin());
+					Assert.assertEquals(date(2013, 1, 1), view.getDateDebut());
+					Assert.assertNull(view.getDateFin());
 				}
 				return null;
 			}

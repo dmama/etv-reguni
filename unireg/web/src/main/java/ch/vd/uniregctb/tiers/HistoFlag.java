@@ -19,6 +19,8 @@ public enum HistoFlag {
 	FORMES_JURIDIQUES("formesJuridiquesHisto"),
 	CAPITAUX("capitauxHisto"),
 	DOMICILES("domicilesHisto"),
+	RAPPORTS_ENTRE_TIERS("rapportsEntreTiersHisto"),
+	ETABLISSEMENTS("etablissementsHisto"),
 	RAPPORTS_PRESTATION("rapportsPrestationHisto"),
 	CTB_ASSOCIE("ctbAssocieHisto"),
 	LABELS("labelsHisto"),

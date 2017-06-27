@@ -44,7 +44,7 @@
 
 	    loadRapports: function(page) {
             $('#rapportsSpinner').show();
-            var showHisto = $('#isRapportHisto').attr('checked') ? 'true' : 'false';
+            var showHisto = '${command.rapportsEntreTiersHisto}';
             var type = $('#typeRapportId').val();
             var sortField = $('#rapportSortField').val() || 'dateDebut';
             var sortOrder = $('#rapportSortOrder').val() || 'DESC';
@@ -74,8 +74,8 @@
 
 	    buildRapportsOptions: function(page, showHisto, typeSelectionne, typesRapportEntreTiers, sortField, sortOrder) {
             var html = '<table><tr>\n';
-            html += '<td width="25%"><input class="noprint" type="checkbox" id="isRapportHisto"' + (showHisto ? ' checked="true"' : '') + ' onclick="return DossiersApparentes.loadRapports(' + page + ');"> ';
-            html += '<label class="noprint" for="isRapportHisto">Historique</label></td>\n';
+            html += '<td width="25%"><input class="noprint" type="checkbox" id="isRapportHisto"' + (showHisto ? ' checked="true"' : '') + ' onclick="window.location.href = App.toggleBooleanParam(window.location, \'rapportsEntreTiersHisto\', true);"> ';
+            html += '<label class="noprint" for="isRapportHisto"><fmt:message key="label.historique"/></label></td>\n';
             html += '<td width="75%">&nbsp;</td>\n';
             html += '</tr><tr>\n';
             html += '<td width="25%">Type de rapport entre tiers&nbsp;:</td>\n';
@@ -302,7 +302,7 @@
 
         loadEtablissements: function(page) {
             $('#etablissementsSpinner').show();
-            var showHisto = $('#isEtablissementHisto').attr('checked') ? 'true' : 'false';
+            var showHisto = '${command.etablissementsHisto}';
             var sortField = $('#etablissementSortField').val() || '';
             var sortOrder = $('#etablissementSortOrder').val() || '';
 
@@ -329,8 +329,8 @@
 
         buildEtablissementsOptions: function(page, showHisto, sortField, sortOrder) {
             var html = '<table><tr>\n';
-            html += '<td width="25%"><input class="noprint" type="checkbox" id="isEtablissementHisto"' + (showHisto ? ' checked="true"' : '') + ' onclick="return DossiersApparentes.loadEtablissements(' + page + ');"> ';
-            html += '<label class="noprint" for="isEtablissementHisto">Historique</label></td>\n';
+            html += '<td width="25%"><input class="noprint" type="checkbox" id="isEtablissementHisto"' + (showHisto ? ' checked="true"' : '') + ' onclick="window.location.href = App.toggleBooleanParam(window.location, \'etablissementsHisto\', true);"> ';
+            html += '<label class="noprint" for="isEtablissementHisto"><fmt:message key="label.historique"/></label></td>\n';
             html += '<td width="75%">&nbsp;</td>\n';
             html += '</tr></tbody></table>\n';
             html += '<input type="hidden" id="etablissementSortField" value="' + sortField +'"/>';

@@ -173,13 +173,13 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 		final List<RapportPrestationImposable> existants = tiersService.getAllRapportPrestationImposable(debiteur, sourcier, true, true);
 		if (existants != null && !existants.isEmpty()) {
-			final DateRange newRange = new DateRangeHelper.Range(rapportView.getRegDateDebut(), null);
+			final DateRange newRange = new DateRangeHelper.Range(rapportView.getDateDebut(), null);
 			if (DateRangeHelper.intersect(newRange, existants)) {
 				throw new ActionException("Un rapport de travail existe déjà entre ces mêmes débiteur et sourcier sur une période d'au moins un jour après le " + RegDateHelper.dateToDisplayString(newRange.getDateDebut()));
 			}
 		}
 
-		tiersService.addRapportPrestationImposable(sourcier, debiteur, rapportView.getRegDateDebut(), null);
+		tiersService.addRapportPrestationImposable(sourcier, debiteur, rapportView.getDateDebut(), null);
 	}
 
 	/**

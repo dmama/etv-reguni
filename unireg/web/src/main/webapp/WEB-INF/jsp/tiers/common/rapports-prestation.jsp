@@ -9,33 +9,22 @@
 </c:if>
 <c:if test="${not empty command.rapportsPrestation}">
 		<display:table 	name="command.rapportsPrestation" id="rapportPrestation" pagesize="${pageSize}" 
-						requestURI="${url}" class="display"
+						requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator"
 						sort="external" partialList="true" size="resultSize">
 			<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut" sortName="dateDebut">
-				<c:if test="${rapportPrestation.annule}"><strike></c:if>
-					<fmt:formatDate value="${rapportPrestation.dateDebut}" pattern="dd.MM.yyyy"/>
-				<c:if test="${rapportPrestation.annule}"></strike></c:if>
+				<unireg:regdate regdate="${rapportPrestation.dateDebut}" format="dd.MM.yyyy"/>
 			</display:column>
-			
 			<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin" sortName="dateFin">
-				<c:if test="${rapportPrestation.annule}"><strike></c:if>
-					<fmt:formatDate value="${rapportPrestation.dateFin}" pattern="dd.MM.yyyy"/>
-				<c:if test="${rapportPrestation.annule}"></strike></c:if>
+				<unireg:regdate regdate="${rapportPrestation.dateFin}" format="dd.MM.yyyy"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.numero.contribuable" sortProperty="sujetId" sortName="sujetId" >
-				<c:if test="${rapportPrestation.annule}"><strike></c:if>
-					<a href="../tiers/visu.do?id=${rapportPrestation.numero}"><unireg:numCTB numero="${rapportPrestation.numero}"></unireg:numCTB></a>
-				<c:if test="${rapportPrestation.annule}"></strike></c:if>
+				<a href="../tiers/visu.do?id=${rapportPrestation.numero}"><unireg:numCTB numero="${rapportPrestation.numero}"/></a>
 			</display:column>
 			<display:column titleKey="label.nom.prenom" >
-				<c:if test="${rapportPrestation.annule}"><strike></c:if>
-					<unireg:multiline lines="${rapportPrestation.nomCourrier}"/>
-				<c:if test="${rapportPrestation.annule}"></strike></c:if>
+				<unireg:multiline lines="${rapportPrestation.nomCourrier}"/>
 			</display:column>
 			<display:column titleKey="label.numero.avs" >
-				<c:if test="${rapportPrestation.annule}"><strike></c:if>
-					${rapportPrestation.numeroAVS}
-				<c:if test="${rapportPrestation.annule}"></strike></c:if>
+				<c:out value="${rapportPrestation.numeroAVS}"/>
 			</display:column>
 			<display:column style="action">
 				<c:if test="${page == 'visu' }">
