@@ -31,10 +31,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ControllerUtils;
+import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -60,6 +63,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
+import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
@@ -151,6 +155,22 @@ public class RapportController {
 			types.removeIf(key -> key.getType() != askedFor);
 		}
 		return types.isEmpty() ? allowed : types;
+	}
+
+	/**
+	 * Affiche qui liste les rapports-entre-tiers d'un tiers pour l'édition.
+	 */
+	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String list(@RequestParam("id") long tiersId, Model model) throws AdresseException {
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
+
+		final TiersEditView tiersView = rapportEditManager.getView(tiersId);
+		model.addAttribute("command", tiersView);
+
+		return "tiers/edition/rapport/list";
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -285,6 +305,51 @@ public class RapportController {
 		}
 
 		return "redirect:/tiers/visu.do?id=" + numeroTiers;
+	}
+
+	/**
+	 * Méthode d'annulation d'un rapport-entre-tiers.
+	 */
+	@RequestMapping(value = "/cancel.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String cancel(@RequestParam("id") long rapportId) throws AdressesResolutionException {
+
+		final RapportEntreTiers rapport = rapportEntreTiersDAO.get(rapportId);
+		if (rapport == null) {
+			throw new ObjectNotFoundException("Le rapport n°" + rapportId + " n'existe pas.");
+		}
+
+		final Long sujetId = rapport.getSujetId();
+		final Long objetId = rapport.getObjetId();
+
+		final Tiers sujet = tiersDAO.get(sujetId);
+		if (sujet == null) {
+			throw new TiersNotFoundException(sujetId);
+		}
+		final Tiers objet = tiersDAO.get(objetId);
+		if (objet == null) {
+			throw new TiersNotFoundException(objetId);
+		}
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnEcriture(sujetId);
+		controllerUtils.checkAccesDossierEnEcriture(objetId);
+		if (!autorisationManager.isEditAllowed(sujet)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur le tiers n°" + sujetId);
+		}
+		if (!autorisationManager.isEditAllowed(objet)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur le tiers n°" + objetId);
+		}
+
+		// annulation du rapport
+		try {
+			rapportEditManager.annulerRapport(rapportId);
+		}
+		catch (Exception e) {
+			Flash.error("Impossible d'annuler le rapport n°" + rapportId + " pour la raison suivante: " + e.getMessage());
+		}
+
+		return "redirect:/rapport/list.do?id=" + sujetId;
 	}
 
 	/**

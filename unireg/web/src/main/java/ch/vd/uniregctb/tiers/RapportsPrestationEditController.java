@@ -22,10 +22,8 @@ import ch.vd.uniregctb.tiers.view.TiersEditView;
  *
  */
 public class RapportsPrestationEditController extends AbstractTiersController {
-	/**
-	 * Un LOGGER.
-	 */
-	protected final Logger LOGGER = LoggerFactory.getLogger(DossiersApparentesEditController.class);
+
+	protected final Logger LOGGER = LoggerFactory.getLogger(RapportsPrestationEditController.class);
 
 	public static final String TARGET_ANNULER_RAPPORT = "annulerRapport";
 
@@ -36,15 +34,11 @@ public class RapportsPrestationEditController extends AbstractTiersController {
 
 	private TiersEditManager tiersEditManager;
 	private RapportEditManager rapportEditManager;
-	public TiersEditManager getTiersEditManager() {
-		return tiersEditManager;
-	}
+
 	public void setTiersEditManager(TiersEditManager tiersEditManager) {
 		this.tiersEditManager = tiersEditManager;
 	}
-	public RapportEditManager getRapportEditManager() {
-		return rapportEditManager;
-	}
+
 	public void setRapportEditManager(RapportEditManager rapportEditManager) {
 		this.rapportEditManager = rapportEditManager;
 	}
@@ -88,7 +82,7 @@ public class RapportsPrestationEditController extends AbstractTiersController {
 		String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
 		if (idParam != null && !idParam.isEmpty()) {
 			Long numeroDebiteur = Long.parseLong(idParam);
-			mav.addObject(RESULT_SIZE_NAME, getTiersEditManager().countRapportsPrestationImposable(numeroDebiteur, true));
+			mav.addObject(RESULT_SIZE_NAME, tiersEditManager.countRapportsPrestationImposable(numeroDebiteur, true));
 		}
 		return mav;
 	}

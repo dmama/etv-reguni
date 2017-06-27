@@ -34,18 +34,18 @@
 				<!-- Fin Caracteristiques generales -->
 			<unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>
 			<c:if test="${autorisations.rapports}">
-				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
-					<jsp:include page="dossiers-apparentes.jsp" />
+				<div class="visuTiers">
+					<jsp:include page="list-rapports.jsp" />
 				</div>
 			</c:if>
 			<c:if test="${autorisations.rapportsEtablissements}">
-				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
-					<jsp:include page="etablissements.jsp" />
+				<div class="visuTiers">
+					<jsp:include page="list-etablissements.jsp" />
 				</div>
 			</c:if>
 			<c:if test="${autorisations.debiteurs}">
-				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
-					<jsp:include page="debiteur.jsp" />
+				<div class="visuTiers">
+					<jsp:include page="list-debiteur.jsp" />
 				</div>
 			</c:if>
 			</div>

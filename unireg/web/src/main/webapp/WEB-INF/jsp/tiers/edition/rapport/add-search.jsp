@@ -67,7 +67,7 @@
 	    <!-- Debut Bouton -->
 	    <table border="0">
 		    <tr><td>
-			    <unireg:buttonTo name="Retour" action="/dossiers-apparentes/edit.do" params="{id:${searchView.tiersId}}" method="GET"/>
+			    <unireg:buttonTo name="Retour" action="/rapport/list.do" params="{id:${searchView.tiersId}}" method="GET"/>
 		    </td></tr>
 	    </table>
 	    <!-- Fin Bouton -->

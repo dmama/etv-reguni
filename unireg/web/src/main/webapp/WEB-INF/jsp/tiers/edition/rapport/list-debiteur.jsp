@@ -14,7 +14,7 @@
 	</table>
 
 	<c:if test="${not empty command.debiteurs}">
-		<display:table 	name="command.debiteurs" id="debiteur" pagesize="10" requestURI="edit.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table 	name="command.debiteurs" id="debiteur" pagesize="10" requestURI="list.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column sortable ="true" titleKey="label.numero.debiteur" href="visu.do" paramId="id" paramProperty="numero" sortProperty="numero" >
 				<a href="../tiers/visu.do?id=${debiteur.numero}"><unireg:numCTB numero="${debiteur.numero}"/></a>
 			</display:column>

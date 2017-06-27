@@ -40,7 +40,7 @@
 			</c:if>
 		</c:forEach>
 
-		<display:table name="command.dossiersApparentes" id="dossierApparente" pagesize="10" requestURI="edit.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="command.dossiersApparentes" id="dossierApparente" pagesize="10" requestURI="list.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column sortable ="true" titleKey="label.rapport.tiers">
 				<fmt:message key="option.rapport.entre.tiers.${dossierApparente.sensRapportEntreTiers}.${dossierApparente.typeRapportEntreTiers}" />
 				<c:if test="${dossierApparente.toolTipMessage != null}">
@@ -91,9 +91,10 @@
 					<c:if test="${((dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE') && (autorisations.rapportsDeTravail)) ||
 			((dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE') && (dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE') && (autorisations.autresRapports))  && (dossierApparente.id != null)}">
 						<unireg:raccourciModifier
-								link="../tiers/rapport.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&viewRetour=%2Fdossiers-apparentes%2Fedit.do%3Fid%3D${tiersGeneral.numero}"
+								link="../tiers/rapport.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&viewRetour=%2Frapport%2Flist.do%3Fid%3D${tiersGeneral.numero}"
 								tooltip="Edition de rapport"/>
-						<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${dossierApparente.id});" tooltip="Annuler"/>
+						<unireg:linkTo name="" action="/rapport/cancel.do" method="POST" params="{id:${dossierApparente.id}}" link_class="delete"
+						               title="Annulation du rapport-entre-tiers" confirm="Voulez-vous vraiment annuler ce rapport-entre-tiers ?"/>
 					</c:if>
 				</c:if>
 			</display:column>
