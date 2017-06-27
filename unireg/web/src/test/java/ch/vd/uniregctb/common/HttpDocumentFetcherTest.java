@@ -22,7 +22,7 @@ public class HttpDocumentFetcherTest extends WebTest {
 
 	@Test
 	public void testCodeRetour404() throws Exception {
-		final URL bidon = new URL("http://spip/tubidu");
+		final URL bidon = new URL("http://www.vd.ch/tubidu");
 		try (HttpDocumentFetcher.HttpDocument doc = fetcher.fetch(bidon, null)) {
 			Assert.fail("Cette URL existe mainenant ?");
 		}
@@ -34,7 +34,7 @@ public class HttpDocumentFetcherTest extends WebTest {
 
 	@Test
 	public void testCodeRetour200() throws Exception {
-		final URL blog = new URL("http://spip");
+		final URL blog = new URL("http://www.vd.ch");
 		try (HttpDocumentFetcher.HttpDocument doc = fetcher.fetch(blog, null)) {
 			Assert.assertEquals("text/html; charset=UTF-8", doc.getContentType());
 			Assert.assertNotNull(doc.getContent());
