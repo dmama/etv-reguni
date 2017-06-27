@@ -70,10 +70,10 @@
 				<c:out value="${row.forPrincipal}" />
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.ouverture.for" sortProperty="dateOuvertureFor">
-				<fmt:formatDate value="${row.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
+				<unireg:regdate regdate="${row.dateOuvertureFor}" format="dd.MM.yyyy"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.fermeture.for" sortProperty="dateFermetureFor">
-				<fmt:formatDate value="${row.dateFermetureFor}" pattern="dd.MM.yyyy"/>
+				<unireg:regdate regdate="${row.dateFermetureFor}" format="dd.MM.yyyy"/>
 			</display:column>
 		</display:table>
 	</tiles:put>

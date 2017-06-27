@@ -75,10 +75,10 @@
 						<c:out value="${tiers.forPrincipal}" />
 					</display:column>
 					<display:column sortable="true" titleKey="label.date.ouverture.for.vd" sortProperty="dateOuvertureForVd">
-						<fmt:formatDate value="${tiers.dateOuvertureForVd}" pattern="dd.MM.yyyy"/>
+						<unireg:regdate regdate="${tiers.dateOuvertureForVd}" format="dd.MM.yyyy"/>
 					</display:column>
 					<display:column sortable="true" titleKey="label.date.fermeture.for.vd" sortProperty="dateFermetureForVd">
-						<fmt:formatDate value="${tiers.dateFermetureForVd}" pattern="dd.MM.yyyy"/>
+						<unireg:regdate regdate="${tiers.dateFermetureForVd}" format="dd.MM.yyyy"/>
 					</display:column>
 
 					<display:column sortable="false" titleKey="label.ouvrir.vers">

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -111,19 +110,19 @@ public class TiersIndexedDataView implements Annulable {
 		return data.getForPrincipal();
 	}
 
-	public Date getDateOuvertureFor() {
+	public RegDate getDateOuvertureFor() {
 		return data.getDateOuvertureFor();
 	}
 
-	public Date getDateFermetureFor() {
+	public RegDate getDateFermetureFor() {
 		return data.getDateFermetureFor();
 	}
 
-	public Date getDateOuvertureForVd() {
+	public RegDate getDateOuvertureForVd() {
 		return data.getDateOuvertureForVd();
 	}
 
-	public Date getDateFermetureForVd() {
+	public RegDate getDateFermetureForVd() {
 		return data.getDateFermetureForVd();
 	}
 

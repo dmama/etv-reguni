@@ -90,7 +90,7 @@
 						    </c:when>
 						    <c:otherwise>
 							    <display:column sortable ="true" titleKey="label.nom.prenom" >
-									<span class="civTip" id="civildata" name="${personne.numero}">
+									<span class="civTip" id="civildata">
 										<c:out value="${personne.nom1}" />
 										<c:if test="${personne.nom2 != null}">
 											<br><c:out value="${personne.nom2}" />
@@ -104,7 +104,7 @@
 								    <c:out value="${personne.npa}" />
 							    </display:column>
 							    <display:column sortable ="true" titleKey="label.localitePays" >
-									<span  class="adrTip" id="adressedata" name="${personne.numero}">
+									<span  class="adrTip" id="adressedata">
 										<c:out value="${personne.localiteOuPays}" />
 									</span>
 							    </display:column>
@@ -112,10 +112,10 @@
 								    <c:out value="${personne.forPrincipal}" />
 							    </display:column>
 							    <display:column sortable ="true" titleKey="label.date.ouverture.for" sortProperty="dateOuvertureFor">
-								    <fmt:formatDate value="${personne.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
+								    <unireg:regdate regdate="${personne.dateOuvertureFor}" format="dd.MM.yyyy"/>
 							    </display:column>
 							    <display:column sortable ="true" titleKey="label.date.fermeture.for" sortProperty="dateFermetureFor">
-								    <fmt:formatDate value="${personne.dateFermetureFor}" pattern="dd.MM.yyyy"/>
+								    <unireg:regdate regdate="${personne.dateFermetureFor}" format="dd.MM.yyyy"/>
 							    </display:column>
 						    </c:otherwise>
 					    </c:choose>

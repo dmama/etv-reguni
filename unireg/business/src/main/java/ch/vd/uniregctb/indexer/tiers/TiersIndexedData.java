@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.avatar.TypeAvatar;
@@ -35,10 +33,10 @@ public class TiersIndexedData implements Serializable {
 	private final String navs13_2;
 	private final String roleLigne1;
 	private final String roleLigne2;
-	private final Date dateOuvertureFor;
-	private final Date dateFermetureFor;
-	private final Date dateOuvertureForVd;
-	private final Date dateFermetureForVd;
+	private final RegDate dateOuvertureFor;
+	private final RegDate dateFermetureFor;
+	private final RegDate dateOuvertureForVd;
+	private final RegDate dateFermetureForVd;
 	private final String rue;
 	private final String npa;
 	private final String localite;
@@ -73,10 +71,10 @@ public class TiersIndexedData implements Serializable {
 		navs13_2 = DocumentExtractorHelper.getDocValue(TiersIndexableData.NAVS13_2, doc);
 		roleLigne1 = DocumentExtractorHelper.getDocValue(TiersIndexableData.ROLE_LIGNE1, doc);
 		roleLigne2 = DocumentExtractorHelper.getDocValue(TiersIndexableData.ROLE_LIGNE2, doc);
-		dateOuvertureFor = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR, doc));
-		dateFermetureFor = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR, doc));
-		dateOuvertureForVd = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR_VD, doc));
-		dateFermetureForVd = DateHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR_VD, doc));
+		dateOuvertureFor = DocumentExtractorHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR, doc), false);
+		dateFermetureFor = DocumentExtractorHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR, doc), false);
+		dateOuvertureForVd = DocumentExtractorHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR_VD, doc), false);
+		dateFermetureForVd = DocumentExtractorHelper.indexStringToDate(DocumentExtractorHelper.getDocValue(TiersIndexableData.DATE_FERMETURE_FOR_VD, doc), false);
 		rue = DocumentExtractorHelper.getDocValue(TiersIndexableData.RUE, doc);
 		npa = DocumentExtractorHelper.getDocValue(TiersIndexableData.NPA_COURRIER, doc);
 		localite = DocumentExtractorHelper.getDocValue(TiersIndexableData.LOCALITE, doc);
@@ -160,19 +158,19 @@ public class TiersIndexedData implements Serializable {
 		return roleLigne2;
 	}
 
-	public Date getDateOuvertureFor() {
+	public RegDate getDateOuvertureFor() {
 		return dateOuvertureFor;
 	}
 
-	public Date getDateFermetureFor() {
+	public RegDate getDateFermetureFor() {
 		return dateFermetureFor;
 	}
 
-	public Date getDateOuvertureForVd() {
+	public RegDate getDateOuvertureForVd() {
 		return dateOuvertureForVd;
 	}
 
-	public Date getDateFermetureForVd() {
+	public RegDate getDateFermetureForVd() {
 		return dateFermetureForVd;
 	}
 
