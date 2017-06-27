@@ -154,7 +154,7 @@ public class RapportController {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	@InitBinder(value = "command")
+	@InitBinder(value = "searchView")
 	public void initBinderForSearch(WebDataBinder binder) {
 		binder.addValidators(new TiersCriteriaValidator(true));
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
@@ -165,7 +165,7 @@ public class RapportController {
 	 */
 	@RequestMapping(value = "/add-search.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String addSearch(@Valid @ModelAttribute("command") final RapportListView view, BindingResult binding, Model model) {
+	public String addSearch(@Valid @ModelAttribute("searchView") final RapportListView view, BindingResult binding, Model model) {
 
 		final long tiersId = view.getTiersId();
 

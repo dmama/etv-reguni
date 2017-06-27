@@ -8,11 +8,11 @@
 		  	<fmt:message key="title.recherche.tiers.lie" />
   	</tiles:put>
   	<tiles:put name="body">
-	    <%--@elvariable id="command" type="ch.vd.uniregctb.rapport.view.RapportListView"--%>
-	    <unireg:bandeauTiers numero="${command.tiersId}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="false"/>
+	    <%--@elvariable id="searchView" type="ch.vd.uniregctb.rapport.view.RapportListView"--%>
+	    <unireg:bandeauTiers numero="${searchView.tiersId}" showAvatar="true" showValidation="false" showEvenementsCivils="false" showLinks="false" showComplements="false"/>
 
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="get" id="formRechercheTiers">
+	    <form:form method="get" commandName="searchView" id="formRechercheTiers">
 		    <form:hidden path="tiersId"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
@@ -20,7 +20,7 @@
 				<jsp:include page="../../recherche/form.jsp">
 					<jsp:param name="typeRecherche" value="rapport" />
 					<jsp:param name="prefixeEffacer" value="/rapport" />
-					<jsp:param name="paramsEffacer" value="tiersId:${command.tiersId}"/>
+					<jsp:param name="paramsEffacer" value="tiersId:${searchView.tiersId}"/>
 				</jsp:include>		
 			</fieldset>
 		</form:form>
@@ -33,7 +33,7 @@
 
 			<display:column sortable ="true" titleKey="label.numero.tiers" sortProperty="numero" >
 				<c:set var="noctb"><unireg:numCTB numero="${tiers.numero}"/></c:set>
-				<unireg:linkTo name="${noctb}" action="/rapport/add.do" params="{numeroTiers:${command.tiersId},numeroTiersLie:${tiers.numero}}"/>
+				<unireg:linkTo name="${noctb}" action="/rapport/add.do" params="{numeroTiers:${searchView.tiersId},numeroTiersLie:${tiers.numero}}"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.role" >
 				<c:out value="${tiers.roleLigne1}" />
@@ -67,7 +67,7 @@
 	    <!-- Debut Bouton -->
 	    <table border="0">
 		    <tr><td>
-			    <unireg:buttonTo name="Retour" action="/dossiers-apparentes/edit.do" params="{id:${command.tiersId}}" method="GET"/>
+			    <unireg:buttonTo name="Retour" action="/dossiers-apparentes/edit.do" params="{id:${searchView.tiersId}}" method="GET"/>
 		    </td></tr>
 	    </table>
 	    <!-- Fin Bouton -->
