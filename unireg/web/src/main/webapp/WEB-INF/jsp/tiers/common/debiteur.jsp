@@ -9,25 +9,19 @@
 </c:if>
 <c:if test="${not empty command.debiteurs}">
 <display:table 	name="command.debiteurs" id="debiteur" 
-				pagesize="10" 
+				pagesize="10" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator"
 				requestURI="${url}" class="display">
 	<display:column sortable ="true" titleKey="label.numero.debiteur" href="visu.do" paramId="id" paramProperty="numero" sortProperty="numero" >
-		<c:if test="${debiteur.annule}"><strike></c:if>
-			<a href="../tiers/visu.do?id=${debiteur.numero}"><unireg:numCTB numero="${debiteur.numero}"/></a>
-		<c:if test="${debiteur.annule}"></strike></c:if>
+		<a href="../tiers/visu.do?id=${debiteur.numero}"><unireg:numCTB numero="${debiteur.numero}"/></a>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.nom.raison" >
-		<c:if test="${debiteur.annule}"><strike></c:if>
-			<unireg:multiline lines="${debiteur.nomCourrier}"/>
-			<c:if test="${debiteur.complementNom != null }">
-				<br />${debiteur.complementNom}
-			</c:if>
-		<c:if test="${debiteur.annule}"></strike></c:if>
+		<unireg:multiline lines="${debiteur.nomCourrier}"/>
+		<c:if test="${debiteur.complementNom != null }">
+			<br />${debiteur.complementNom}
+		</c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.categorie.is" >
-		<c:if test="${debiteur.annule}"><strike></c:if>
-			<fmt:message key="option.categorie.impot.source.${debiteur.categorieImpotSource}" />
-		<c:if test="${debiteur.annule}"></strike></c:if>
+		<fmt:message key="option.categorie.impot.source.${debiteur.categorieImpotSource}" />
 	</display:column>
 	<display:column sortable ="true" property="personneContact" titleKey="label.contact"  />
 	<display:column style="action">

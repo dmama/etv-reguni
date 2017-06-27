@@ -10,35 +10,25 @@
 <c:if test="${not empty command.mouvements}">
 	<display:table
 			name="command.mouvements" id="mouvement" pagesize="10"
-			requestURI="${url}"
+			requestURI="${url}" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator"
 			class="display">
 
 		<display:column sortable ="true" titleKey="label.type.mouvement">
-			<c:if test="${mouvement.annule}"><strike></c:if>
-				<fmt:message key="option.type.mouvement.${mouvement.typeMouvement}"/>
-			<c:if test="${mouvement.annule}"></strike></c:if>
+			<fmt:message key="option.type.mouvement.${mouvement.typeMouvement}"/>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.date.mouvement" sortProperty="dateMouvement">
-			<c:if test="${mouvement.annule}"><strike></c:if>
-				<fmt:formatDate value="${mouvement.dateMouvement}" pattern="dd.MM.yyyy"/>
-			<c:if test="${mouvement.annule}"></strike></c:if>
+			<fmt:formatDate value="${mouvement.dateMouvement}" pattern="dd.MM.yyyy"/>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.etat.mouvement" sortProperty="etatMouvement">
-			<c:if test="${mouvement.annule}"><strike></c:if>
-				<fmt:message key="option.etat.mouvement.${mouvement.etatMouvement}"/>
-			<c:if test="${mouvement.annule}"></strike></c:if>
+			<fmt:message key="option.etat.mouvement.${mouvement.etatMouvement}"/>
 		</display:column>
 
 		<display:column sortable ="true" titleKey="label.collectivite.administrative" >
-			<c:if test="${mouvement.annule}"><strike></c:if>
-				${mouvement.collectiviteAdministrative}
-			<c:if test="${mouvement.annule}"></strike></c:if>
+			${mouvement.collectiviteAdministrative}
 		</display:column>
 
 		<display:column sortable ="true" titleKey="label.destination.utilisateur">
-			<c:if test="${mouvement.annule}"><strike></c:if>
-				${mouvement.destinationUtilisateur}
-			<c:if test="${mouvement.annule}"></strike></c:if>
+			${mouvement.destinationUtilisateur}
 		</display:column>
 
 		<display:column style="action">
