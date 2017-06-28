@@ -2,6 +2,7 @@ package ch.vd.uniregctb.rapport.manager;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
@@ -107,8 +108,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 
 		// on récupère les tiers eux-mêmes, et quelques infos supplémentaires
-		final Tiers tiersCourant = tiersService.getTiers(numeroTiersCourant); // le tiers par lequel on est arrivé sur le rapport
-		Assert.notNull(tiersCourant);
 		final Tiers tiersLie = tiersService.getTiers(numeroTiersLie); // l'autre tiers du rapport (pas celui par lequel on est arrivé sur le rapport)
 		Assert.notNull(tiersLie);
 
@@ -122,19 +121,11 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		rapportView.setDateDebut(rapportEntreTiers.getDateDebut());
 		rapportView.setDateFin(rapportEntreTiers.getDateFin());
 		rapportView.setNatureRapportEntreTiers(rapportEntreTiers.getClass().getSimpleName());
-		rapportView.setAllowed(true);
 		rapportView.setToolTipMessage(toolTipMessage);
 
-		//vérification droit édition du rapport pour fermeture
 		if (rapportEntreTiers instanceof RapportPrestationImposable) {
-			if (!SecurityHelper.isGranted(securityProvider, Role.RT)) {
-				rapportView.setAllowed(false);
-			}
 			RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
 			rapportView.setNatureRapportEntreTiers(rapportPrestationImposable.getClass().getSimpleName());
-		}
-		else if (rapportEntreTiers.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
-			rapportView.setAllowed(false);
 		}
 		else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 			final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
@@ -142,12 +133,60 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			rapportView.setExtensionExecutionForcee(b != null && b);
 			final boolean isHorsSuisse = isHorsSuisse(rapportEntreTiers.getSujetId(), rapportEntreTiers);
 			rapportView.setExtensionExecutionForceeAllowed(isHorsSuisse); // [UNIREG-2655]
-			rapportView.setAllowed(checkDroitEdit(tiersCourant)); // [UNIREG-2814]
+		}
+
+		//vérification droit édition du rapport pour fermeture
+		rapportView.setAllowed(isEditionAllowed(idRapport, editingFrom));
+
+		return rapportView;
+	}
+
+	@Override
+	public boolean isEditionAllowed(long idRapport, @NotNull SensRapportEntreTiers sens) {
+
+		final RapportEntreTiers rapportEntreTiers = rapportEntreTiersDAO.get(idRapport);
+		if (rapportEntreTiers == null) {
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.rapport.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final Long numeroTiersCourant;
+		final Long numeroTiersLie;
+		switch (sens) {
+		case OBJET:
+			numeroTiersCourant = rapportEntreTiers.getObjetId();
+			numeroTiersLie = rapportEntreTiers.getSujetId();
+			break;
+		case SUJET:
+			numeroTiersCourant = rapportEntreTiers.getSujetId();
+			numeroTiersLie = rapportEntreTiers.getObjetId();
+			break;
+		default:
+			throw new IllegalArgumentException("Sens de rapport-entre-tiers inconnu =[" + sens + ']');
+		}
+
+		boolean allowed = true;
+
+		//vérification droit édition du rapport pour fermeture
+		if (rapportEntreTiers instanceof RapportPrestationImposable) {
+			if (!SecurityHelper.isGranted(securityProvider, Role.RT)) {
+				allowed = false;
+			}
+		}
+		else if (rapportEntreTiers.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
+			allowed = false;
+		}
+		else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
+			final Tiers tiersCourant = tiersService.getTiers(numeroTiersCourant); // le tiers par lequel on est arrivé sur le rapport
+			Assert.notNull(tiersCourant);
+			allowed = checkDroitEdit(tiersCourant); // [UNIREG-2814]
 		}
 		else {//rapport de non travail
-			rapportView.setAllowed(checkDroitEdit(tiersLie));
+			final Tiers tiersLie = tiersService.getTiers(numeroTiersLie); // l'autre tiers du rapport (pas celui par lequel on est arrivé sur le rapport)
+			Assert.notNull(tiersLie);
+			allowed = checkDroitEdit(tiersLie);
 		}
-		return rapportView;
+
+		return allowed;
 	}
 
 	/**

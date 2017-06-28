@@ -59,6 +59,7 @@
 		<property name="autorisationManager" ref="autorisationManager" />
 		<property name="rapportEditManager" ref="rapportEditManager" />
 		<property name="rapportAddValidator" ref="rapportAddValidator" />
+		<property name="rapportEditValidator" ref="rapportEditValidator" />
 	</bean>
 
 	<bean id="rapportEditManager" class="ch.vd.uniregctb.rapport.manager.RapportEditManagerImpl" parent="tiersManager">
@@ -73,17 +74,7 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
-	<bean id="tiersRapportController" class="ch.vd.uniregctb.tiers.TiersRapportController" parent="abstractRapportPrestationController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.rapport.view.RapportView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="tiers/edition/rapport/rapport-modif" />
-		<property name="successView" value="common/refresh-parent" />
-		<property name="rapportEditManager" ref="rapportEditManager" />
-		<property name="validator" ref="tiersRapportValidator" />
-	</bean>
-
-	<bean id="tiersRapportValidator" class="ch.vd.uniregctb.tiers.validator.TiersRapportValidator" />
+	<bean id="rapportEditValidator" class="ch.vd.uniregctb.tiers.validator.RapportEditValidator" />
 
 	<bean id="rapportsPrestationEditController" class="ch.vd.uniregctb.tiers.RapportsPrestationEditController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />

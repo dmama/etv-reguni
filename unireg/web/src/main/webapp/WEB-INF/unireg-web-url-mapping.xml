@@ -69,7 +69,6 @@
 			<map>
 				<!-- Tiers - display -->
 				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
-				<entry key="/tiers/rapport.do" value-ref="tiersRapportController" />
 
 				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
 				<entry key="/rapports-prestation/list.do" value-ref="rapportsPrestationListController" />

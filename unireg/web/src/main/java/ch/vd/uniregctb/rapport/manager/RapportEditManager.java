@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.rapport.manager;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -40,6 +41,13 @@ public interface RapportEditManager {
 	@Transactional(readOnly = true)
 	RapportView get(Long idRapport, SensRapportEntreTiers editingFrom) throws AdresseException;
 
+
+	/**
+	 * @param idRapport l'id du rapport à éditer
+	 * @param sens      <i>OBJET</i> si le rapport est édité depuis le tiers objet ou  <i>SUJET</i> si le rapport est édité depuis le tiers sujet.
+	 * @return <i>vrai</i> si l'édition du rapport est autorisée; <i>faux</i> autrement.
+	 */
+	boolean isEditionAllowed(long idRapport, @NotNull SensRapportEntreTiers sens);
 
 	/**
 	 * Persiste le rapport entre tiers

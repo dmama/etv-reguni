@@ -61,6 +61,7 @@ import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
+import ch.vd.uniregctb.tiers.validator.RapportEditValidator;
 import ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
@@ -86,6 +87,7 @@ public class RapportController {
 	private AutorisationManager autorisationManager;
 	private RapportEditManager rapportEditManager;
 	private Validator rapportAddValidator;
+	private RapportEditValidator rapportEditValidator;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -136,6 +138,10 @@ public class RapportController {
 
 	public void setRapportAddValidator(Validator rapportAddValidator) {
 		this.rapportAddValidator = rapportAddValidator;
+	}
+
+	public void setRapportEditValidator(RapportEditValidator rapportEditValidator) {
+		this.rapportEditValidator = rapportEditValidator;
 	}
 
 	private Set<RapportEntreTiersKey> getAllowedTypes() {
@@ -305,6 +311,88 @@ public class RapportController {
 		}
 
 		return "redirect:/tiers/visu.do?id=" + numeroTiers;
+	}
+
+	/**
+	 * Affichage de l'écran d'édition d'un rapport-entre-tiers existant.
+	 *
+	 * @param idRapport l'id du rapport à éditer
+	 * @param sens le sens du rapport qui permet d'ordonner le sujet et l'objet.
+	 */
+	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String edit(@RequestParam("idRapport") long idRapport, @RequestParam("sens") SensRapportEntreTiers sens, @RequestParam(value = "urlRetour", required = false) String urlRetour, Model model) throws AdresseException {
+
+		final RapportEntreTiers rapport = rapportEntreTiersDAO.get(idRapport);
+		if (rapport == null) {
+			throw new ObjectNotFoundException("Le rapport-entre-tiers n°" + idRapport + " n'existe pas.");
+		}
+
+		final Long objetId = rapport.getObjetId();
+		final Long sujetId = rapport.getSujetId();
+
+		final Tiers sujet = tiersDAO.get(objetId);
+		if (sujet == null) {
+			throw new TiersNotFoundException(objetId);
+		}
+		final Tiers objet = tiersDAO.get(sujetId);
+		if (objet == null) {
+			throw new TiersNotFoundException(sujetId);
+		}
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnLecture(objetId);
+		controllerUtils.checkAccesDossierEnLecture(sujetId);
+		if (!rapportEditManager.isEditionAllowed(idRapport, sens)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition du rapport-entre-tiers entre le tiers n°" + objetId + " et le tiers n°" + sujetId);
+		}
+
+		final RapportView rapportView = rapportEditManager.get(idRapport, sens);
+		final String viewRetour = StringUtils.isBlank(urlRetour) ? "/rapport/list.do?id=" + rapportView.getNumeroCourant() : urlRetour;
+		rapportView.setViewRetour(viewRetour);
+		model.addAttribute("rapportEditView", rapportView);
+
+		return "tiers/edition/rapport/edit";
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	@InitBinder(value = "rapportEditView")
+	public void initBinderForEdit(WebDataBinder binder) {
+		binder.addValidators(rapportEditValidator);
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
+	}
+
+	/**
+	 * Méthode de création d'un nouveau rapport-entre-tiers.
+	 */
+	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String edit(@ModelAttribute("rapportEditView") RapportView view, BindingResult binding) throws AdressesResolutionException {
+
+		if (binding.hasErrors()) {
+			return "tiers/edition/rapport/edit";
+		}
+
+		final Long numeroTiers = view.getNumeroCourant();
+		final Long numeroTiersLie = view.getNumero();
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnEcriture(numeroTiers);
+		controllerUtils.checkAccesDossierEnEcriture(numeroTiersLie);
+		if (!rapportEditManager.isEditionAllowed(view.getId(), view.getSensRapportEntreTiers())) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition du rapport-entre-tiers entre le tiers n°" + numeroTiers + " et le tiers n°" + numeroTiersLie);
+		}
+
+		try {
+			rapportEditManager.save(view);
+		}
+		catch (Exception e) {
+			binding.reject("", e.getMessage());
+			return "tiers/edition/rapport/edit";
+		}
+
+		final String viewRetour = StringUtils.isBlank(view.getViewRetour()) ? "/rapport/list.do?id=" + view.getNumeroCourant() : view.getViewRetour();
+		return "redirect:" + viewRetour;
 	}
 
 	/**

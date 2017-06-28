@@ -91,7 +91,7 @@
 					<c:if test="${((dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE') && (autorisations.rapportsDeTravail)) ||
 			((dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE') && (dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE') && (autorisations.autresRapports))  && (dossierApparente.id != null)}">
 						<unireg:raccourciModifier
-								link="../tiers/rapport.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&viewRetour=%2Frapport%2Flist.do%3Fid%3D${tiersGeneral.numero}"
+								link="../rapport/edit.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&viewRetour=%2Frapport%2Flist.do%3Fid%3D${tiersGeneral.numero}"
 								tooltip="Edition de rapport"/>
 						<unireg:linkTo name="" action="/rapport/cancel.do" method="POST" params="{id:${dossierApparente.id}}" link_class="delete"
 						               title="Annulation du rapport-entre-tiers" confirm="Voulez-vous vraiment annuler ce rapport-entre-tiers ?"/>
