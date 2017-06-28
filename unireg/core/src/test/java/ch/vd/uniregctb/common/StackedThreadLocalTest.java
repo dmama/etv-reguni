@@ -2,12 +2,15 @@ package ch.vd.uniregctb.common;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -80,7 +83,7 @@ public class StackedThreadLocalTest extends WithoutSpringTest {
 			tl.popState();
 			Assert.fail("Aurait dû exploser car il n'y a pas eu de push pour ce pop...");
 		}
-		catch (IllegalStateException e) {
+		catch (NoSuchElementException e) {
 			Assert.assertEquals("Cannot pop last state!!", e.getMessage());
 		}
 	}
@@ -129,5 +132,38 @@ public class StackedThreadLocalTest extends WithoutSpringTest {
 		Assert.assertNotNull(reset);
 		Assert.assertEquals(0, reset.size());
 		Assert.assertNotSame(init, reset);
+	}
+
+	@Test
+	public void testDelayedInstantiation() throws Exception {
+		final AtomicInteger instanceCount = new AtomicInteger(0);
+		final Supplier<Set<Long>> instanciator = () -> {
+			instanceCount.incrementAndGet();
+			return new HashSet<>();
+		};
+
+		final StackedThreadLocal<Set<Long>> tl = new StackedThreadLocal<>(instanciator);
+		Assert.assertEquals(0, instanceCount.intValue());
+		final Set<Long> init = tl.get();
+		Assert.assertNotNull(init);
+		Assert.assertEquals(1, instanceCount.intValue());
+
+		tl.set(null);
+		Assert.assertEquals(1, instanceCount.intValue());
+		final Set<Long> set = tl.get();
+		Assert.assertNull(set);
+		Assert.assertEquals(1, instanceCount.intValue());
+
+		tl.reset();
+		Assert.assertEquals(1, instanceCount.intValue());
+		final Set<Long> reset = tl.get();
+		Assert.assertNotNull(reset);
+		Assert.assertEquals(0, reset.size());
+		Assert.assertNotSame(init, reset);
+		Assert.assertEquals(2, instanceCount.intValue());
+
+		final Set<Long> again = tl.get();
+		Assert.assertSame(reset, again);
+		Assert.assertEquals(2, instanceCount.intValue());
 	}
 }

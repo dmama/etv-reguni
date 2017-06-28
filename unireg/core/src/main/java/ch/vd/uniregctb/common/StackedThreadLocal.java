@@ -2,6 +2,7 @@ package ch.vd.uniregctb.common;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,11 @@ public class StackedThreadLocal<T> {
 	 * Un objet qui sera utilisé dans les stacks comme remplaçant de "null", car cette valeur n'est pas acceptée dans les ArrayDeque...
 	 */
 	private static final Object NULL_REPLACEMENT = new Object();
+
+	/**
+	 * Un objet qui sera utilisé dans les stacks comme indication de "non-initialisé"
+	 */
+	private static final Object NOT_INITIALIZED = new Object();
 
 	/**
 	 * {@link ThreadLocal} à qui est déléguée la partie "valeur différente pour chaque threads"
@@ -52,25 +58,32 @@ public class StackedThreadLocal<T> {
 	 */
 	private Deque<Object> newStack() {
 		final Deque<Object> stack = new ArrayDeque<>();
-		push(stack, newEncodedElement());
+		_push(stack, NOT_INITIALIZED);
 		return stack;
 	}
 
+	/**
+	 * @return valeur renvoyée par un nouvel appel au fournisseur officiel de valeurs
+	 */
 	private T newElement() {
 		return supplier.get();
 	}
 
-	private Object newEncodedElement() {
-		return encodeElement(newElement());
-	}
-
+	/**
+	 * @param element élément non-encodée (donc potentiellement <code>null</code>)
+	 * @return élément encodé (= jamais <code>null</code>)
+	 */
 	@NotNull
 	private Object encodeElement(@Nullable T element) {
 		return element != null ? element : NULL_REPLACEMENT;
 	}
 
+	/**
+	 * @param element élément encodé (= jamais <code>null</code>)
+	 * @return élément décodé (donc potentiellement <code>null</code>)
+	 */
 	@Nullable
-	private T decodeElement(Object element) {
+	private T decodeElement(@NotNull Object element) {
 		//noinspection unchecked
 		return element == NULL_REPLACEMENT ? null : (T) element;
 	}
@@ -85,26 +98,39 @@ public class StackedThreadLocal<T> {
 	}
 
 	/**
-	 * Mise de côté du contenu actuel et initialisation d'un nouveau contexte
+	 * Mise de côté du contenu actuel et démarrage d'un nouveau contexte
 	 */
 	public void pushState() {
-		push(getStack(), newEncodedElement());
+		_push(getStack(), NOT_INITIALIZED);
 	}
 
-	private static <T> void push(Deque<T> stack, T value) {
+	/**
+	 * Méthode interne d'empilement d'une nouvelle valeur
+	 * @param stack stack sur laquelle on veut poser la nouvelle valeur
+	 * @param value nouvelle valeur
+	 * @param <T> type des valeurs placées dans la stack
+	 */
+	private static <T> void _push(Deque<T> stack, @NotNull T value) {
 		stack.push(value);
 	}
 
 	/**
 	 * Récupération du contenu mis de côté au préalable
+	 * @throws NoSuchElementException si aucun appel à {@link #pushState()} n'a été fait au préalable
 	 */
 	public void popState() {
-		pop(getStack(), false);
+		_pop(getStack(), false);
 	}
 
-	private static <T> void pop(Deque<T> stack, boolean lastStatePoppable) {
+	/**
+	 * Méthode interne d'oubli de la dernière valeur de la stack fournie
+	 * @param stack stack dont on veut dépiler (et oublier) l'élément courant
+	 * @param lastStatePoppable <code>true</code> si cette opération est autorisée à enlever le dernier élément de la stack, <code>false</code> sinon
+	 * @throws NoSuchElementException s'il n'y a déjà plus d'élément dans la stack, ou s'il n'en reste qu'un mais qu'il n'est pas permis de l'enlever
+	 */
+	private static void _pop(Deque<?> stack, boolean lastStatePoppable) {
 		if (stack.isEmpty() || (stack.size() == 1 && !lastStatePoppable)) {
-			throw new IllegalStateException("Cannot pop last state!!");
+			throw new NoSuchElementException("Cannot pop last state!!");
 		}
 		stack.pop();
 	}
@@ -114,7 +140,14 @@ public class StackedThreadLocal<T> {
 	 * @return le contenu du {@link ThreadLocal}
 	 */
 	public T get() {
-		return decodeElement(getStack().peek());
+		final Deque<Object> stack = getStack();
+		final Object current = stack.peek();
+		if (current == NOT_INITIALIZED) {
+			final T newElement = newElement();
+			_set(stack, encodeElement(newElement));
+			return newElement;
+		}
+		return decodeElement(current);
 	}
 
 	/**
@@ -122,15 +155,32 @@ public class StackedThreadLocal<T> {
 	 * @param value la valeur explicite à assigner
 	 */
 	public void set(T value) {
-		final Deque<Object> stack = getStack();
-		pop(stack, true);
-		push(stack, encodeElement(value));
+		_set(encodeElement(value));
 	}
 
 	/**
-	 * Ré-assignation explicite du contenu à la valeur par défaut fournie par le fournisseur officiel
+	 * Méthode interne d'assignation de la valeur courante
+	 * @param encoded valeur courante à assigner (déjà encodée par rapport à la valeur nulle)
+	 */
+	private void _set(Object encoded) {
+		_set(getStack(), encoded);
+	}
+
+	/**
+	 * Méthode interne d'assignation d'une valeur comme dernière valeur (= remplacement) de la stack fournie
+	 * @param stack stack cible
+	 * @param encoded valeur courante à assigner (déjà encodée par rapport à la valeur nulle)
+	 */
+	private static void _set(Deque<Object> stack, Object encoded) {
+		_pop(stack, true);
+		_push(stack, encoded);
+	}
+
+	/**
+	 * Ré-initialisation explicite du contenu afin que le prochain appel à {@link #get()} fournisse une nouvelle valeur
+	 * générée par le fournisseur officiel
 	 */
 	public void reset() {
-		set(newElement());
+		_set(NOT_INITIALIZED);
 	}
 }
