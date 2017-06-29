@@ -426,7 +426,9 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 
 		final SortedMap<Long, List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble>> mapProps = executeFindInfoDroitsHql(dateTraitement, hqlProps);
 		final SortedMap<Long, List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble>> mapServ = executeFindInfoDroitsHql(dateTraitement, hqlServ);
-		mapProps.putAll(mapServ);
+		for (Map.Entry<Long, List<EnvoiFormulairesDemandeDegrevementICIResults.DroitImmeuble>> entry : mapServ.entrySet()) {
+			mapProps.merge(entry.getKey(), entry.getValue(), ListUtils::union);
+		}
 
 		return mapProps.entrySet().stream()
 				.map(entry -> new EnvoiFormulairesDemandeDegrevementICIResults.InformationDroitsContribuable(entry.getKey(), entry.getValue()))

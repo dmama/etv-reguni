@@ -2006,6 +2006,134 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		});
 	}
 
+	/**
+	 * [SIFISC-25330] Ce test vérifie qu'un contribuable qui possède un droit de propriété sur l'immeuble A et un usufruit
+	 * sur l'immeuble B voit bien une demande d'éxonération envoyée sur l'immeuble A (et rien sur l'immeuble B).
+	 */
+	@Test
+	public void testDroitProprieteEtUsufruit() throws Exception {
+
+		final RegDate dateDebutEntreprise = date(2009, 4, 1);
+		final RegDate dateDebutDroit = date(2015, 7, 12);
+		final RegDate dateTraitement = RegDate.get();
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		final class Ids {
+			long idContribuable;
+			long idImmeubleA;
+			long idImmeubleB;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Acheteuse...");
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SA);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebutEntreprise, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+			final PersonneMoraleRF rf = addPersonneMoraleRF("Acheteuse", null, "48514s66fss", 445198L, null);
+			addRapprochementRF(entreprise, rf, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
+
+			// le droit de propriété sur l'immeuble A
+			final BienFondsRF immeubleA = addBienFondsRF("4545841dfsshdas", null, commune, 112);
+			addEstimationFiscale(date(2015, 12, 1), null, null, false, 424242L, "2015", immeubleA);
+			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeubleA, null);
+
+			// l'usufruit sur l'immeuble B
+			final BienFondsRF immeubleB = addBienFondsRF("3727717711", null, commune, 113);
+			addEstimationFiscale(date(2015, 12, 1), null, null, false, 388282L, "2015", immeubleB);
+			addUsufruitRF(null, dateDebutDroit, null, null, "Achat", null, "74i6783", "74i6782", new IdentifiantAffaireRF(51, null, null, null), new IdentifiantDroitRF(41, 2001, 4), rf, immeubleB);
+
+			final Ids identifiants = new Ids();
+			identifiants.idContribuable = entreprise.getNumero();
+			identifiants.idImmeubleA = immeubleA.getId();
+			identifiants.idImmeubleB = immeubleB.getId();
+			return identifiants;
+		});
+
+		// lancement du processus
+		final EnvoiFormulairesDemandeDegrevementICIResults results = processor.run(1, null, dateTraitement, null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(2, results.getNbDroitsInspectes());
+		Assert.assertEquals(1, results.getNbDroitsIgnores());
+		Assert.assertEquals(0, results.getErreurs().size());
+		Assert.assertEquals(1, results.getEnvois().size());     // le droit de propriété
+		Assert.assertEquals(1, results.getIgnores().size());    // l'usufruit
+
+		// le droit de propriété
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
+			Assert.assertNotNull(envoi);
+			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals((Long) ids.idImmeubleA, envoi.idImmeuble);
+			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
+			Assert.assertEquals("Lausanne", envoi.nomCommune);
+			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), envoi.noOfsCommune);
+			Assert.assertEquals((Integer) 112, envoi.noParcelle);
+			Assert.assertNull(envoi.index1);
+			Assert.assertNull(envoi.index2);
+			Assert.assertNull(envoi.index3);
+		}
+
+		// l'usufruit
+		{
+			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementNonEnvoyee ignore = results.getIgnores().get(0);
+			Assert.assertNotNull(ignore);
+			Assert.assertEquals(ids.idContribuable, ignore.noContribuable);
+			final List<EnvoiFormulairesDemandeDegrevementICIResults.ImmeubleInfo> immeubleInfos = ignore.getImmeubleInfos();
+			Assert.assertEquals(1, immeubleInfos.size());
+			assertImmeubleInfo(ids.idImmeubleB,
+			                   ids.idContribuable,
+			                   "Lausanne",
+			                   MockCommune.Lausanne.getNoOFS(),
+			                   113,
+			                   null,
+			                   null,
+			                   null,
+			                   RaisonIgnorance.DROIT_USUFRUIT_OU_HABITATION,
+			                   UsufruitRF.class.getSimpleName(),
+			                   immeubleInfos.get(0));
+		}
+
+		// vérification en base...
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise e = (Entreprise) tiersDAO.get(ids.idContribuable);
+				Assert.assertNotNull(e);
+
+				final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, true, true);
+				Assert.assertNotNull(demandes);
+				Assert.assertEquals(1, demandes.size());
+				{
+					final DemandeDegrevementICI demande = demandes.get(0);
+					Assert.assertNotNull(demande);
+					Assert.assertFalse(demande.isAnnule());
+
+					final RegDate dateEnvoi = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(dateTraitement);
+					final RegDate delaiRetour = dateEnvoi.addDays(parametreAppService.getDelaiRetourDemandeDegrevementICI());
+					Assert.assertEquals(dateEnvoi, demande.getDateEnvoi());
+					Assert.assertEquals(delaiRetour, demande.getDelaiRetour());
+					Assert.assertNull(demande.getDateRetour());
+					Assert.assertNull(demande.getDateRappel());
+					Assert.assertNotNull(demande.getCodeControle());
+					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
+					Assert.assertEquals((Integer) (dateDebutDroit.year() + 1), demande.getPeriodeFiscale());
+				}
+			}
+		});
+	}
+
 	private static EstimationRF buildDummyEstimationRF(String reference, RegDate dateInscription, Long montant) {
 		final EstimationRF estimation = new EstimationRF();
 		estimation.setReference(reference);
