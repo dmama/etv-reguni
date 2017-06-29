@@ -36,7 +36,7 @@ public class HttpDocumentFetcherTest extends WebTest {
 	public void testCodeRetour200() throws Exception {
 		final URL blog = new URL("http://www.vd.ch");
 		try (HttpDocumentFetcher.HttpDocument doc = fetcher.fetch(blog, null)) {
-			Assert.assertEquals("text/html; charset=UTF-8", doc.getContentType());
+			Assert.assertTrue(doc.getContentType(), "text/html; charset=UTF-8".equalsIgnoreCase(doc.getContentType()));
 			Assert.assertNotNull(doc.getContent());
 		}
 	}
