@@ -108,6 +108,12 @@ public class InboxElement implements Comparable<InboxElement>, Expirable {
 		return timeToExpiration;
 	}
 
+	@SuppressWarnings("unused")
+	public Long getMsToExpiration() {
+		final Duration tte = getTimeToExpiration();
+		return tte != null ? tte.toMillis() : null;
+	}
+
 	public boolean isRead() {
 		return read;
 	}

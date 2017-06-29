@@ -34,7 +34,7 @@
 
 						<c:set var="sansExpiration"><fmt:message key="label.inbox.sans.expiration"/></c:set>
 						<c:set var="expirationDepassee"><fmt:message key="label.inbox.expire"/></c:set>
-						<td><unireg:duration msDuration='${elt.timeToExpiration}' rounded="true" zeroDisplay="${expirationDepassee}" nullDisplay="${sansExpiration}" isNullDuration="${elt.timeToExpiration == null}"/></td>
+						<td><unireg:duration msDuration='${elt.msToExpiration}' rounded="true" zeroDisplay="${expirationDepassee}" nullDisplay="${sansExpiration}" isNullDuration="${elt.msToExpiration == null}"/></td>
 
 						<td>
 							<c:set var="attachment" value="${elt.attachment}"/>
