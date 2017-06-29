@@ -124,12 +124,12 @@ public class EachWebPageTest extends WebitTest {
 	// Page de visualisation d'un rapport
 	@Test
 	public void testTiersEditRapport() throws Exception {
-		assertPage("/tiers/rapport.do?idRapport=1&sens=SUJET", "Edition du rapport entre le tiers n°123.000.01 et le tiers n°860.062.02");
+		assertPage("/rapport/edit.do?idRapport=6&sens=SUJET", "Edition du rapport entre le tiers n°348.078.10 et le tiers n°123.000.02");
 	}
 
 	@Test
 	public void testTiersEditRapportInexistant() throws Exception {
-		assertPage("/tiers/rapport.do?idRapport=12345678&sens=SUJET", "Page d'erreur", "Le rapport spécifié n'existe pas");
+		assertPage("/rapport/edit.do?idRapport=12345678&sens=SUJET", "Page d'erreur", "Le rapport-entre-tiers n°12345678 n'existe pas.");
 	}
 
 	// Page de visualisation d'un rapport
