@@ -28,7 +28,7 @@ public class DonneesFusionsCommunes {
 	public DonneesFusionsCommunes(List<DonneeBruteFusionCommunes> donneesBrutes) {
 		final Map<Integer, SortedMap<RegDate, OffsetCommune>> map = new HashMap<>();
 		for (DonneeBruteFusionCommunes data : donneesBrutes) {
-			final SortedMap<RegDate, OffsetCommune> dataMap = map.computeIfAbsent(data.ofsAncienneCommune, k -> new TreeMap());
+			final SortedMap<RegDate, OffsetCommune> dataMap = map.computeIfAbsent(data.ofsAncienneCommune, k -> new TreeMap<>());
 			dataMap.put(data.dateFusion, new OffsetCommune(data.offsetParcelle, data.ofsNouvelleCommune));
 		}
 		this.map = Collections.unmodifiableMap(map);

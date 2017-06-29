@@ -409,7 +409,7 @@ public class DegrevementExonerationController {
 				.filter(af -> excluded == null || af != excluded)
 				.filter(af -> clazz.isAssignableFrom(af.getClass()))
 				.filter(af -> af.getImmeuble().getId() == idImmeuble)
-				.map(af -> (T) af)
+				.map(clazz::cast)
 				.collect(Collectors.toList());
 	}
 

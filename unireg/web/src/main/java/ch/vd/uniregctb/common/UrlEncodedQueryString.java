@@ -688,7 +688,7 @@ public class UrlEncodedQueryString {
 		}
 
 		String query = toString();
-		String thatQuery = ( (UrlEncodedQueryString) obj ).toString();
+		String thatQuery = obj.toString();
 
 		return query.equals( thatQuery );
 	}

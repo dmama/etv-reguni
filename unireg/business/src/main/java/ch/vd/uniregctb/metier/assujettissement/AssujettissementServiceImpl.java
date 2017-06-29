@@ -182,12 +182,7 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 	 */
 	@NotNull
 	private static <T extends Contribuable> InternalAssujettissementCalculator<T, Assujettissement> buildInternalCalculator(final AssujettissementCalculator<T> calculator) {
-		return new InternalAssujettissementCalculator<T, Assujettissement>() {
-			@Override
-			public List<Assujettissement> determine(T ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
-				return calculator.determine(ctb, fpt, noOfsCommunesVaudoises);
-			}
-		};
+		return calculator::determine;
 	}
 
 	/**
@@ -220,22 +215,12 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 	/**
 	 * Calculateur spécifique du rôle ordinaire des personnes physiques
 	 */
-	private static final InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, Assujettissement> ROLE_PP_CALCULATOR = new InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, Assujettissement>() {
-		@Override
-		public List<Assujettissement> determine(ContribuableImpositionPersonnesPhysiques ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
-			return AssujettissementPersonnesPhysiquesCalculator.determineRole(ctb, fpt, noOfsCommunesVaudoises);
-		}
-	};
+	private static final InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, Assujettissement> ROLE_PP_CALCULATOR = AssujettissementPersonnesPhysiquesCalculator::determineRole;
 
 	/**
 	 * Calculateur spécifique de la source des personnes physiques
 	 */
-	private static final InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, SourcierPur> SOURCE_PP_CALCULATOR = new InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, SourcierPur>() {
-		@Override
-		public List<SourcierPur> determine(ContribuableImpositionPersonnesPhysiques ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
-			return AssujettissementPersonnesPhysiquesCalculator.determineSource(ctb, fpt, noOfsCommunesVaudoises);
-		}
-	};
+	private static final InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, SourcierPur> SOURCE_PP_CALCULATOR = AssujettissementPersonnesPhysiquesCalculator::determineSource;
 
 	@Override
 	public List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {

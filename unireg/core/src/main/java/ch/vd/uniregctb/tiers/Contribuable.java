@@ -527,7 +527,7 @@ public abstract class Contribuable extends Tiers {
 		return allegementsFonciers.stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(af -> clazz.isAssignableFrom(af.getClass()))
-				.map(af -> (T) af)
+				.map(clazz::cast)
 				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toList());
 	}

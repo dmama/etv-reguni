@@ -159,7 +159,7 @@ public class EvenementOrganisationDetailView implements Serializable {
 
 	@SuppressWarnings("unused")
 	public List<TiersAssocieView> getTiersAssocies() {
-		return tiersAssocie == null ? Collections.<TiersAssocieView>emptyList() : Collections.singletonList(tiersAssocie);
+		return tiersAssocie == null ? Collections.emptyList() : Collections.singletonList(tiersAssocie);
 	}
 
 	public void setTiersAssocie(TiersAssocieView tiersAssocie) {

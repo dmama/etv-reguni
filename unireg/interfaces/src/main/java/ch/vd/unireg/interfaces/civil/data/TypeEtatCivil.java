@@ -23,5 +23,5 @@ public enum TypeEtatCivil {
 	PACS_SEPARE,
 	SEPARE,
 	VEUF,
-	NON_MARIE;
+	NON_MARIE
 }

@@ -30,7 +30,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -255,11 +254,6 @@ public class EvenementOrganisation extends HibernateEntity {
 	}
 
 	public String rapportErreurs() {
-		return CollectionsUtils.toString(this.getErreurs(), new StringRenderer<EvenementOrganisationErreur>() {
-			@Override
-			public String toString(EvenementOrganisationErreur object) {
-				return object.getMessage();
-			}
-		}, "\n");
+		return CollectionsUtils.toString(this.getErreurs(), EvenementOrganisationErreur::getMessage, "\n");
 	}
 }

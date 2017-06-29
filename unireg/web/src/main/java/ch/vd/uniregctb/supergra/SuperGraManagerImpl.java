@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -387,11 +388,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			}
 			for (EntityType t : EntityType.values()) {
 				if (t.getHibernateClass().isAssignableFrom(clazz)) {
-					List<Class<? extends HibernateEntity>> list = concreteClassByType.get(t);
-					if (list == null) {
-						list = new ArrayList<>();
-						concreteClassByType.put(t, list);
-					}
+					final List<Class<? extends HibernateEntity>> list = concreteClassByType.computeIfAbsent(t, k -> new ArrayList<>());
 					list.add(clazz);
 				}
 			}
@@ -806,7 +803,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			fillView(e, v, context);
 			entities.add(v);
 		}
-		entities.sort((o1, o2) -> Long.compare(o1.getKey().getId(), o2.getKey().getId()));
+		entities.sort(Comparator.comparingLong(o -> o.getKey().getId()));
 
 		return entities;
 	}

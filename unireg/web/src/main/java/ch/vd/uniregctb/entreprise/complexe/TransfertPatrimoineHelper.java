@@ -35,11 +35,7 @@ public abstract class TransfertPatrimoineHelper {
 					throw new TiersNotFoundException(ret.getObjetId());
 				}
 
-				List<Entreprise> receptrices = map.get(ret.getDateDebut());
-				if (receptrices == null) {
-					receptrices = new ArrayList<>();
-					map.put(ret.getDateDebut(), receptrices);
-				}
+				final List<Entreprise> receptrices = map.computeIfAbsent(ret.getDateDebut(), k -> new ArrayList<>());
 				receptrices.add((Entreprise) receptrice);
 			}
 		}

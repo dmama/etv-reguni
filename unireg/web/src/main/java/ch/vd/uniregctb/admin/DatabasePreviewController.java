@@ -76,12 +76,7 @@ public class DatabasePreviewController {
 
 				final InfoTiers info = new InfoTiers(numero, type, nomsPrenoms);
 
-				List<InfoTiers> infoTiers = infoMap.get(entry.getKey());
-				if (infoTiers == null) {
-					infoTiers = new ArrayList<>();
-					infoMap.put(entry.getKey(), infoTiers);
-				}
-
+				final List<InfoTiers> infoTiers = infoMap.computeIfAbsent(entry.getKey(), k -> new ArrayList<>());
 				infoTiers.add(info);
 			}
 		}

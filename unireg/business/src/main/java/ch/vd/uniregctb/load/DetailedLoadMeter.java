@@ -68,14 +68,11 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	 * particulière (c'est juste un pointeur = assignation atomique), la synchronisation est uniquement gérée au niveau de 
 	 * la collection {@link #detailHolders}
 	 */
-	private final ThreadLocal<DetailHolder> details = new ThreadLocal<DetailHolder>() {
-		@Override
-		protected DetailHolder initialValue() {
-			final DetailHolder holder = new DetailHolder();
-			lockHelper.doInWriteLock(() -> detailHolders.put(holder, null));
-			return holder;
-		}
-	};
+	private final ThreadLocal<DetailHolder> details = ThreadLocal.withInitial(() -> {
+		final DetailHolder holder = new DetailHolder();
+		lockHelper.doInWriteLock(() -> detailHolders.put(holder, null));
+		return holder;
+	});
 
 	public DetailedLoadMeter() {
 		this(StringRenderer.DEFAULT);

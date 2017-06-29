@@ -122,7 +122,7 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 		final LocalizedDateRange dernierElement = CollectionsUtils.getLastElement(sorted);
 		if (sorted.size() == 1) {
 			// raccourci en présence d'une seule valeur
-			return Pair.<RegDate, LocalisationFiscale>of(dernierElement.getDateDebut(), dernierElement);
+			return Pair.of(dernierElement.getDateDebut(), dernierElement);
 		}
 
 		// passage à une liste accessible facilement par index
@@ -146,7 +146,7 @@ public class DemenagementSiegeController extends AbstractProcessusComplexeRecher
 			}
 			firstAtLocation = current;
 		}
-		return Pair.<RegDate, LocalisationFiscale>of(firstAtLocation.getDateDebut(), dernierElement);
+		return Pair.of(firstAtLocation.getDateDebut(), dernierElement);
 	}
 
 	@RequestMapping(value = "/start.do", method = RequestMethod.POST)

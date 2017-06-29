@@ -72,11 +72,7 @@ public abstract class FusionEntreprisesHelper {
 				if (dd != null) {
 					final RegDate dateContrat = dd.getDateObtention();
 					final DatesFusion key = new DatesFusion(dateBilan, dateContrat);
-					List<Entreprise> absorbees = map.get(key);
-					if (absorbees == null) {
-						absorbees = new ArrayList<>();
-						map.put(key, absorbees);
-					}
+					final List<Entreprise> absorbees = map.computeIfAbsent(key, k -> new ArrayList<>());
 					absorbees.add((Entreprise) absorbee);
 				}
 			}

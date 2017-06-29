@@ -72,6 +72,6 @@ public class InboxContentJmxBeanImpl implements InboxContentJmxBean {
 
 	private List<InboxElement> getElements() {
 		final List<InboxElement> elts = inboxService.getInboxContent(visa);
-		return elts != null ? elts : Collections.<InboxElement>emptyList();
+		return elts != null ? elts : Collections.emptyList();
 	}
 }

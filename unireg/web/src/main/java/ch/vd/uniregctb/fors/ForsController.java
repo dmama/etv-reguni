@@ -500,7 +500,7 @@ public class ForsController {
 			throw new ObjectNotFoundException("Le for principal avec l'id = " + view.getId() + " n'existe pas.");
 		}
 
-		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
+		final Autorisations auth = getAutorisations(ffp.getTiers());
 		if (!auth.isForsPrincipaux()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
 		}

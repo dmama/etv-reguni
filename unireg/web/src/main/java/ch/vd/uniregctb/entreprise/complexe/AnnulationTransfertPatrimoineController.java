@@ -59,7 +59,7 @@ public class AnnulationTransfertPatrimoineController extends AbstractProcessusCo
 			public List<RegDate> doInTransaction(TransactionStatus status) {
 				final Entreprise emettrice = getTiers(Entreprise.class, idEntreprise);
 				final List<RegDate> datesTransfert = new ArrayList<>(TransfertPatrimoineHelper.getTransferts(emettrice, tiersService).keySet());
-				datesTransfert.sort(Collections.<RegDate>reverseOrder());
+				datesTransfert.sort(Collections.reverseOrder());
 				return datesTransfert;
 			}
 		});

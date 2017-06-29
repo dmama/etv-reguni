@@ -760,8 +760,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	private boolean setDroitHabitant(ContribuableImpositionPersonnesPhysiques tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
 
 		Assert.isTrue(tiers instanceof PersonnePhysique || tiers instanceof MenageCommun, "Le tiers " + tiers.getNumero() + " n'est ni une personne physique ni un ménage commun");
-		final Contribuable ctbAVerifier = (Contribuable) tiers;
-		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(ctbAVerifier, visa, oid);
+		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(tiers, visa, oid);
 		//les habitants n'ont jamais les onglets civil et rapport prestation
 		boolean isEditable = codeFactorise1(tiers, visa, oid, allowedOnglet);
 		if (isEditAllowedPP(tiers, visa, oid)) {

@@ -35,11 +35,7 @@ public abstract class ScissionEntrepriseHelper {
 					throw new TiersNotFoundException(ret.getObjetId());
 				}
 
-				List<Entreprise> resultantes = map.get(ret.getDateDebut());
-				if (resultantes == null) {
-					resultantes = new ArrayList<>();
-					map.put(ret.getDateDebut(), resultantes);
-				}
+				final List<Entreprise> resultantes = map.computeIfAbsent(ret.getDateDebut(), k -> new ArrayList<>());
 				resultantes.add((Entreprise) resultante);
 			}
 		}

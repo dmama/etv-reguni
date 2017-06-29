@@ -165,7 +165,7 @@ public class ForsTimelineController {
 		final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxNonAnnules(true);
 
 		// Extraction des fors de gestion
-		final List<ForGestion> forsGestion = bean.isShowForsGestion() ? tiersService.getForsGestionHisto(tiers) : Collections.<ForGestion>emptyList();
+		final List<ForGestion> forsGestion = bean.isShowForsGestion() ? tiersService.getForsGestionHisto(tiers) : Collections.emptyList();
 
 		// Extraction de l'assujettissement
 		final List<SourcierPur> assujettissementsSource = new ArrayList<>();

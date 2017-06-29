@@ -409,7 +409,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 		try {
 			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, Duration.ofMillis(500));
 			try {
-				return traiterTache(tache, (ContribuableImpositionPersonnesPhysiques) contribuable, dateTraitement, rapport, cache, dcache, simul);
+				return traiterTache(tache, contribuable, dateTraitement, rapport, cache, dcache, simul);
 			}
 			finally {
 				ticket.release();

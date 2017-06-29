@@ -49,9 +49,7 @@ public class DocumentController {
 		if (doc != null) {
 			try {
 				// On veut que la réponse provoque un téléchargement de fichier
-				docService.readDoc(doc, (doc1, is) -> {
-					servletService.downloadAsFile(doc1.getFileName(), is, (int) doc1.getFileSize(), response);
-				});
+				docService.readDoc(doc, (doc1, is) -> servletService.downloadAsFile(doc1.getFileName(), is, (int) doc1.getFileSize(), response));
 
 				Audit.info("Le document '" + doc.getNom() + "' a été téléchargé par l'utilisateur " + AuthenticationHelper.getCurrentPrincipal() + ".");
 

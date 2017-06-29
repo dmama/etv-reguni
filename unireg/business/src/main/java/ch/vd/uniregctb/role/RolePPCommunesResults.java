@@ -45,7 +45,7 @@ public class RolePPCommunesResults extends RolePPResults<RolePPCommunesResults> 
 	}
 
 	public void addToRole(ContribuableImpositionPersonnesPhysiques contribuable, int ofsCommune) throws CalculRoleException {
-		final List<RolePPData> list = extraction.computeIfAbsent(ofsCommune, key -> new LinkedList());
+		final List<RolePPData> list = extraction.computeIfAbsent(ofsCommune, key -> new LinkedList<>());
 		list.add(new RolePPData(contribuable, ofsCommune, annee, adresseService, infraService, tiersService, assujettissementService));
 		addContribuableAuDecompte();
 	}

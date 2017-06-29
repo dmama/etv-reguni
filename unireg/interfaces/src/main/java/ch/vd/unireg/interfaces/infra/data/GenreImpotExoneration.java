@@ -22,5 +22,5 @@ public enum GenreImpotExoneration {
 	/**
 	 * Autre type, pour gérer la compatibilité en cas d'apparition dans le système source (FIDOR, en l'occurrence), d'un nouveau genre d'impôt susceptible de porter une exonération
 	 */
-	AUTRE;
+	AUTRE
 }

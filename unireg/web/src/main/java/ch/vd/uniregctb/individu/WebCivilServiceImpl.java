@@ -161,7 +161,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 			indCible.setPermisView(list);
 		}
 		else {
-			indCible.setPermisView(Collections.<PermisView>emptyList());
+			indCible.setPermisView(Collections.emptyList());
 		}
 	}
 
@@ -201,7 +201,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 			indCible.setOrigines(views);
 		}
 		else {
-			indCible.setOrigines(Collections.<OrigineView>emptyList());
+			indCible.setOrigines(Collections.emptyList());
 		}
 	}
 
@@ -221,7 +221,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 			indCible.setNationalites(views);
 		}
 		else {
-			indCible.setNationalites(Collections.<NationaliteView>emptyList());
+			indCible.setNationalites(Collections.emptyList());
 		}
 	}
 }

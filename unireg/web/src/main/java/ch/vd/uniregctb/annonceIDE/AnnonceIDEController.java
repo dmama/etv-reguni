@@ -112,7 +112,7 @@ public class AnnonceIDEController {
 
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("page", new PageImpl<>(Collections.<AnnonceIDEView>emptyList()));
-			model.addAttribute("totalElements", (int) 0);
+			model.addAttribute("totalElements", 0);
 			return "annonceIDE/find";
 		}
 
@@ -182,7 +182,7 @@ public class AnnonceIDEController {
 			LOGGER.warn("Erreur lors de la recherche de demandes à l'IDE", e);
 			Flash.warning("L'appel à RCEnt a levé l'erreur suivante : " + e.getMessage() + ". Veuillez réessayer plus tard.");
 			model.addAttribute("page", new PageImpl<>(Collections.<AnnonceIDEView>emptyList()));
-			model.addAttribute("totalElements", (int) 0);
+			model.addAttribute("totalElements", 0);
 			return "annonceIDE/find";
 		}
 

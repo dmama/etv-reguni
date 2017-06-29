@@ -9,7 +9,7 @@ public class MouvementMasseResultatRechercheView {
 	private final int size;
 
 	public MouvementMasseResultatRechercheView(List<MouvementDetailView> results, int size) {
-		this.results = results != null ? Collections.unmodifiableList(results) : Collections.<MouvementDetailView>emptyList();
+		this.results = results != null ? Collections.unmodifiableList(results) : Collections.emptyList();
 		this.size = size;
 	}
 

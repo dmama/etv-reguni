@@ -142,12 +142,7 @@ public class PerfsClient {
 				}
 
 				// Enregistre un shutdown hook de manière à afficher les stats même lorsque l'application est interrompue avec un Ctlr-C.
-				Runtime.getRuntime().addShutdownHook(new Thread() {
-					@Override
-					public void run() {
-						shutdown();
-					}
-				});
+				Runtime.getRuntime().addShutdownHook(new Thread(PerfsClient::shutdown));
 
 				client.run();
 			}

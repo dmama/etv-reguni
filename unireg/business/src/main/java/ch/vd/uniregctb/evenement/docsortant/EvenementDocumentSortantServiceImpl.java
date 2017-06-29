@@ -117,7 +117,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		return declaration.getEtats().stream()
 				.sorted(Comparator.comparing(EtatDeclaration::getId).reversed())
 				.filter(etat -> clazz.isAssignableFrom(etat.getClass()))
-				.map(etat -> (T) etat)
+				.map(clazz::cast)
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(etat -> etat.getCleDocument() == null)
 				.mapToLong(EtatDeclaration::getId)

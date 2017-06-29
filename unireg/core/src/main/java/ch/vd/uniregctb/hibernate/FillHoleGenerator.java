@@ -66,12 +66,7 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 
 	@Override
 	public Serializable generate(SessionImplementor session, Object object) throws HibernateException {
-		return session.execute(new LobCreationContext.Callback<Serializable>() {
-			@Override
-			public Serializable executeOnConnection(Connection connection) throws SQLException {
-				return holeNumber(connection);
-			}
-		});
+		return session.execute((LobCreationContext.Callback<Serializable>) this::holeNumber);
 	}
 
 	private long getFirstId(Connection session) throws SQLException {

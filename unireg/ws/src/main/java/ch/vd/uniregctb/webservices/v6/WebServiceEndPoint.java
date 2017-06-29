@@ -249,7 +249,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	public Response getParty(final int partyNo, final String user, final Set<PartyPart> parts) {
 		final Supplier<String> params = () -> {
 			// petite combine pour que les modalités de l'énum soient toujours logguées dans le même ordre...
-			final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.<PartyPart>emptySet() : EnumSet.copyOf(parts);
+			final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.emptySet() : EnumSet.copyOf(parts);
 			return String.format("getParty{user=%s, partyNo=%d, parts=%s}", WebServiceHelper.enquote(user), partyNo, WebServiceHelper.toString(sortedParts));
 		};
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
@@ -287,7 +287,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	public Response getParties(final String user, final List<Integer> partyNos, final Set<PartyPart> parts) {
 		final Supplier<String> params = () -> {
 			// petite combine pour que les modalités de l'énum soient toujours logguées dans le même ordre...
-			final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.<PartyPart>emptySet() : EnumSet.copyOf(parts);
+			final Set<PartyPart> sortedParts = parts == null || parts.isEmpty() ? Collections.emptySet() : EnumSet.copyOf(parts);
 			return String.format("getParties{user=%s, partyNo=%s, parts=%s}", WebServiceHelper.enquote(user), WebServiceHelper.toString(partyNos), WebServiceHelper.toString(sortedParts));
 		};
 		return execute(user, params, READ_ACCESS_LOG, userLogin -> {

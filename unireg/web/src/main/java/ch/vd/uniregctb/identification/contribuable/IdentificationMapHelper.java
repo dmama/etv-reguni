@@ -186,9 +186,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			IdentifiantUtilisateur identifiantUtilisateur = identCtbService.getNomUtilisateurFromVisaUser(visaUser);
 			visaUser = identifiantUtilisateur.getVisa();
 			String nom = identifiantUtilisateur.getNomComplet();
-			if (mapUtilisateur.get(visaUser) == null) {
-				mapUtilisateur.put(visaUser, nom);
-			}
+			mapUtilisateur.putIfAbsent(visaUser, nom);
 
 		}
 		//Ajout du user de traitement automatique ignoré dans la requete

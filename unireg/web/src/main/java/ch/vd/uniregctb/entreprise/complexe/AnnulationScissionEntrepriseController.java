@@ -59,7 +59,7 @@ public class AnnulationScissionEntrepriseController extends AbstractProcessusCom
 			public List<RegDate> doInTransaction(TransactionStatus status) {
 				final Entreprise scindee = getTiers(Entreprise.class, idEntreprise);
 				final List<RegDate> datesContrats = new ArrayList<>(ScissionEntrepriseHelper.getScissions(scindee, tiersService).keySet());
-				datesContrats.sort(Collections.<RegDate>reverseOrder());
+				datesContrats.sort(Collections.reverseOrder());
 				return datesContrats;
 			}
 		});

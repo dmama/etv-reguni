@@ -80,7 +80,7 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 
 			LOGGER.info(String.format("Ouverture de la session pour l'utilisateur %s %s (%s)", firstName, lastName, visa));
 
-			final List<GrantedAuthority> granted = Collections.<GrantedAuthority>singletonList(new SimpleGrantedAuthority(visa));
+			final List<GrantedAuthority> granted = Collections.singletonList(new SimpleGrantedAuthority(visa));
 			final User user = new User(visa, "noPwd", true, true, true, true, granted);
 			final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd", granted);
 			authentication.setDetails(details);

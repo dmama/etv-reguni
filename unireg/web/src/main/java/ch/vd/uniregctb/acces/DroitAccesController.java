@@ -532,23 +532,13 @@ public class DroitAccesController {
 	@RequestMapping(value = "/copie-transfert/copie.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
 	public String copieDroitsAccess(@ModelAttribute ConfirmedDataView view, HttpSession session) throws Exception {
-		return doCopieTransfert(view, session, new CopieTransfertAction() {
-			@Override
-			public List<DroitAccesConflitAvecDonneesContribuable> execute(ConfirmedDataView view) throws AdresseException {
-				return copieManager.copie(view);
-			}
-		});
+		return doCopieTransfert(view, session, copieManager::copie);
 	}
 
 	@RequestMapping(value = "/copie-transfert/transfert.do", method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = WRITE_REQUIRED)
 	public String transfereDroitsAccess(@ModelAttribute ConfirmedDataView view, HttpSession session) throws Exception {
-		return doCopieTransfert(view, session, new CopieTransfertAction() {
-			@Override
-			public List<DroitAccesConflitAvecDonneesContribuable> execute(ConfirmedDataView view) throws AdresseException {
-				return copieManager.transfert(view);
-			}
-		});
+		return doCopieTransfert(view, session, copieManager::transfert);
 	}
 
 	private interface CopieTransfertAction {

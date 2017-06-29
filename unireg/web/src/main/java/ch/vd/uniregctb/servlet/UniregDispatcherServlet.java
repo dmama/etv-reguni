@@ -25,12 +25,7 @@ public class UniregDispatcherServlet extends DispatcherServlet {
 	private HandlerAdapter getWrapping(HandlerAdapter ha) {
 		final IdentityKey<HandlerAdapter> key = new IdentityKey<>(ha);
 		synchronized (wrapping) {
-			HandlerAdapter wrapper = wrapping.get(key);
-			if (wrapper == null) {
-				wrapper = new UnexpectedRollbackAwareHandlerAdapter(ha);
-				wrapping.put(key, wrapper);
-			}
-			return wrapper;
+			return wrapping.computeIfAbsent(key, k -> new UnexpectedRollbackAwareHandlerAdapter(ha));
 		}
 	}
 

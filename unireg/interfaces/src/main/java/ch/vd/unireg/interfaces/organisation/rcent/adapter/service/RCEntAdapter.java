@@ -290,7 +290,7 @@ public class RCEntAdapter {
 				.map(NoticeOrganisation::getOrganisation)
 				.flatMap(organisation -> organisation.getOrganisationLocation().stream())
 				.filter(l -> l.getCantonalId().longValue() == targetLocationId)
-				.findFirst().orElseGet(() -> null);
+				.findFirst().orElse(null);
 	}
 
 	private List<BusinessPublication> getPublicationsForTheDay(@Nullable OrganisationLocation location, RegDate evtDate) {

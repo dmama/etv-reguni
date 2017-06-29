@@ -27,5 +27,5 @@ public final class DelaiDeclarationAddAndSaveAccessor implements AddAndSaveHelpe
 		Assert.isSame(d1.getDateDemande(), d2.getDateDemande());
 		Assert.isSame(d1.getDateTraitement(), d2.getDateTraitement());
 	}
-};
+}
 
