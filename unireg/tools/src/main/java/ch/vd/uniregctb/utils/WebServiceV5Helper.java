@@ -13,13 +13,20 @@ import ch.vd.unireg.xml.party.v3.PartyPart;
 
 public abstract class WebServiceV5Helper {
 
+	private static Object[] asObjectArray(Collection<?> collection) {
+		if (collection == null || collection.isEmpty()) {
+			return new Object[0];
+		}
+		return collection.toArray(new Object[collection.size()]);
+	}
+
 	public static Party getParty(String urlWebService, String username, String password, String businessUser, int oid, int partyNo, Set<PartyPart> parts) {
 		final WebClient client = WebClient.create(urlWebService, username, password, null);
 		client.path("party");
 		client.path(String.valueOf(partyNo));
 		client.query("user", String.format("%s/%d", businessUser, oid));
 		if (parts != null && !parts.isEmpty()) {
-			client.query("part", parts.toArray(new PartyPart[parts.size()]));
+			client.query("part", asObjectArray(parts));
 		}
 		return client.get(Party.class);
 	}
@@ -28,9 +35,9 @@ public abstract class WebServiceV5Helper {
 		final WebClient client = WebClient.create(urlWebService, username, password, null);
 		client.path("parties");
 		client.query("user", String.format("%s/%d", businessUser, oid));
-		client.query("partyNo", partyNos.toArray(new Integer[partyNos.size()]));
+		client.query("partyNo", asObjectArray(partyNos));
 		if (parts != null && !parts.isEmpty()) {
-			client.query("part", parts.toArray(new PartyPart[parts.size()]));
+			client.query("part", asObjectArray(parts));
 		}
 		return client.get(Parties.class);
 	}
@@ -53,7 +60,7 @@ public abstract class WebServiceV5Helper {
 			client.query("uid", ide);
 		}
 		if (partyTypes != null && !partyTypes.isEmpty()) {
-			client.query("partyType", partyTypes.toArray(new String[partyTypes.size()]));
+			client.query("partyType", asObjectArray(partyTypes));
 		}
 		return client.get(SearchResult.class);
 	}
