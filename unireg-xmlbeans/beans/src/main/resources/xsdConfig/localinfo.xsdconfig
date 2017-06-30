@@ -43,9 +43,4 @@
         <xb:package>ch.vd.fiscalite.registre.identificationContribuable</xb:package>
     </xb:namespace>
 
-	<!-- Evénements Entreprise -->
-    <xb:namespace uri="http://www.vd.ch/schema/registrePM/20101208/EvtEntreprise">
-        <xb:package>ch.vd.fiscalite.registre.entrepriseEvent</xb:package>
-    </xb:namespace>
-
 </xb:config>
