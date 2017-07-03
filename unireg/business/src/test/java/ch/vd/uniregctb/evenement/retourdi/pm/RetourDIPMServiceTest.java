@@ -475,7 +475,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	@Test
 	public void testChangementDateFinExerciceCommercialMemeAnneePlusTard() throws Exception {
 
-		final int annee = RegDate.get().year() - 1;
+		final RegDate today = RegDate.get();
+		final int annee = today.year() - 1;
 		final RegDate dateDebutEntreprise = date(annee - 1, 6, 1);
 		final RegDate ancienneFinExerciceCommercial = date(annee, 3, 31);
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 6, 30);      // même année en repoussant
@@ -523,8 +524,25 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertNotNull(entreprise);
 				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
+				// OK, si on est après le 30.06 de l'année courante, alors une nouvelle tâche va apparaître car la période de l'année
+				// courante est maintenant échue
 				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				Assert.assertEquals(Collections.emptyList(), taches);
+				if (DayMonth.get(today).compareTo(DayMonth.get(6, 30)) > 0) {
+					Assert.assertEquals(1, taches.size());
+					final Tache tache = taches.get(0);
+					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+					Assert.assertNull(tache.getCommentaire());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertFalse(tache.isAnnule());
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebut());
+					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebutExercice());
+					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFin());
+					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFinExercice());
+				}
+				else {
+					Assert.assertEquals(Collections.emptyList(), taches);
+				}
 
 				// la déclaration
 				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
@@ -540,12 +558,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// les bouclements
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				});
+				bouclements.sort(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare));
 				Assert.assertEquals(2, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -652,12 +665,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// les bouclements
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(2, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -770,12 +778,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// les bouclements
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(2, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -888,12 +891,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// les bouclements
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(2, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -918,7 +916,8 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	@Test
 	public void testChangementDateFinExerciceCommercialMemeAnneePlusTotAvecDeclarationExistanteUlterieureRetournee() throws Exception {
 
-		final int annee = RegDate.get().year() - 2;
+		final RegDate today = RegDate.get();
+		final int annee = today.year() - 2;
 		final RegDate dateDebutEntreprise = date(annee - 1, 6, 1);
 		final RegDate ancienneFinExerciceCommercial = date(annee, 6, 30);
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 3, 31);      // même année en avançant
@@ -978,8 +977,25 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertNotNull(entreprise);
 				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
+				// OK, si on est après le 30.06 de l'année courante, alors une nouvelle tâche va apparaître car la période de l'année
+				// courante est maintenant échue
 				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				Assert.assertEquals(Collections.emptyList(), taches);
+				if (DayMonth.get(today).compareTo(DayMonth.get(6, 30)) > 0) {
+					Assert.assertEquals(1, taches.size());
+					final Tache tache = taches.get(0);
+					Assert.assertEquals(TacheEnvoiDeclarationImpotPM.class, tache.getClass());
+					Assert.assertNull(tache.getCommentaire());
+					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					Assert.assertFalse(tache.isAnnule());
+					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebut());
+					Assert.assertEquals(date(today.year() - 1, 7, 1), tacheEnvoi.getDateDebutExercice());
+					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFin());
+					Assert.assertEquals(date(today.year(), 6, 30), tacheEnvoi.getDateFinExercice());
+				}
+				else {
+					Assert.assertEquals(Collections.emptyList(), taches);
+				}
 
 				// la déclaration retournée
 				final List<DeclarationImpotOrdinairePM> disAnneeRetour = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
@@ -1007,12 +1023,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// les bouclements
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>((o1, o2) -> NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut())));
 				Assert.assertEquals(3, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -1134,12 +1145,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// les bouclements
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(3, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -1244,12 +1250,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// bouclements ?
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(3, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -1410,12 +1411,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// bouclements ?
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(3, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -1623,12 +1619,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// bouclements ?
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(4, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -1816,12 +1807,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// bouclements ?
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(2, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -1960,12 +1946,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// bouclements ?
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(2, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -2141,12 +2122,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// bouclements ?
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(3, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
@@ -3110,13 +3086,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertNotNull(taches);
 				Assert.assertEquals(2, taches.size());
 				final List<Tache> tachesTriees = new ArrayList<>(taches);
-				Collections.sort(tachesTriees, new Comparator<Tache>() {
-					@Override
-					public int compare(Tache o1, Tache o2) {
-						// comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
+				tachesTriees.sort(Comparator.comparingLong(Tache::getId));      // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
 				{
 					final Tache tache = tachesTriees.get(0);
 					Assert.assertFalse(tache.isAnnule());
@@ -3135,13 +3105,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertNotNull(remarques);
 				Assert.assertEquals(2, remarques.size());
 				final List<Remarque> remarquesTriees = new ArrayList<>(remarques);
-				Collections.sort(remarquesTriees, new Comparator<Remarque>() {
-					@Override
-					public int compare(Remarque o1, Remarque o2) {
-						// comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
-						return Long.compare(o1.getId(), o2.getId());
-					}
-				});
+				remarquesTriees.sort(Comparator.comparingLong(Remarque::getId));    // comme l'algorithme s'intéresse d'abord à l'adresse, puis à la raison sociale, l'ordre est ainsi connu
 				{
 					final Remarque remarque = remarquesTriees.get(0);
 					Assert.assertNotNull(remarque);
@@ -4664,7 +4628,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					}
 				}
 				Assert.assertEquals(2, mandats.size());
-				Collections.sort(mandats, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+				mandats.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				{
 					final Mandat mandat = mandats.get(0);
 					Assert.assertNotNull(mandat);
@@ -4913,7 +4877,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertNotNull(adresses);
 				Assert.assertEquals(2, adresses.size());
 				final List<AdresseMandataire> adressesTriees = new ArrayList<>(adresses);
-				Collections.sort(adressesTriees, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+				adressesTriees.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				{
 					final AdresseMandataire adresse = adressesTriees.get(0);
 					Assert.assertNotNull(adresse);
@@ -6054,7 +6018,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					}
 				}
 				Assert.assertEquals(2, mandats.size());
-				Collections.sort(mandats, new DateRangeComparator<>());
+				mandats.sort(new DateRangeComparator<>());
 				{
 					final Mandat mandat = mandats.get(0);
 					Assert.assertNotNull(mandat);
@@ -6182,7 +6146,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					}
 				}
 				Assert.assertEquals(2, mandats.size());
-				Collections.sort(mandats, new DateRangeComparator<>());
+				mandats.sort(new DateRangeComparator<>());
 				{
 					final Mandat mandat = mandats.get(0);
 					Assert.assertNotNull(mandat);
@@ -6306,7 +6270,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					}
 				}
 				Assert.assertEquals(1, mandats.size());
-				Collections.sort(mandats, new DateRangeComparator<>());
+				mandats.sort(new DateRangeComparator<>());
 				{
 					final Mandat mandat = mandats.get(0);
 					Assert.assertNotNull(mandat);
@@ -6418,7 +6382,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 					}
 				}
 				Assert.assertEquals(1, mandats.size());
-				Collections.sort(mandats, new DateRangeComparator<>());
+				mandats.sort(new DateRangeComparator<>());
 				{
 					final Mandat mandat = mandats.get(0);
 					Assert.assertNotNull(mandat);
@@ -7248,12 +7212,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 
 				// bouclements ?
 				final List<Bouclement> bouclements = new ArrayList<>(entreprise.getBouclements());
-				Collections.sort(bouclements, new AnnulableHelper.AnnulesApresWrappingComparator<>(new Comparator<Bouclement>() {
-					@Override
-					public int compare(Bouclement o1, Bouclement o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-					}
-				}));
+				bouclements.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(Bouclement::getDateDebut, NullDateBehavior.EARLIEST::compare)));
 				Assert.assertEquals(2, bouclements.size());
 				{
 					final Bouclement bouclement = bouclements.get(0);
