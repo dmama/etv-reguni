@@ -6,9 +6,9 @@
 
 	<bean id="evenementRetourDiListener" class="ch.vd.uniregctb.jms.GentilEsbMessageListenerContainer" parent="esbMessageListener">
 		<property name="handler" ref="evenementRetourDiHandler" />
-		<property name="destinationName" value="${extprop.jms.queue.evtIAM}"/>
+		<property name="destinationName" value="${extprop.jms.queue.evtCedi}"/>
 		<property name="concurrentConsumers" value="1"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtIAM.enabled}" />
+		<property name="autoStartup" value="${extprop.jms.queue.evtCedi.enabled}" />
 		<property name="description" value="Réception des messages JMS contenant les informations issues du scan des DIs"/>
 	</bean>
 
