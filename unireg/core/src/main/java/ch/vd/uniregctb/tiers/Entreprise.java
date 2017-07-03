@@ -26,7 +26,6 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.NullableDefaultComparator;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
@@ -105,7 +104,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		regimeFiscal.setEntreprise(this);
 	}
 
-	private static final Comparator<RegimeFiscal.Portee> PORTEE_COMPARATOR = new NullableDefaultComparator<>(true);
+	private static final Comparator<RegimeFiscal.Portee> PORTEE_COMPARATOR = Comparator.nullsLast(Comparator.naturalOrder());
 
 	private static final Comparator<RegimeFiscal> REGIME_FISCAL_COMPARATOR = new DateRangeComparator<RegimeFiscal>() {
 		@Override
@@ -258,11 +257,11 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		af.setEntreprise(this);
 	}
 
-	private static final Comparator<Integer> INTEGER_COMPARATOR_NULLS_FIRST = new NullableDefaultComparator<>(false);
+	private static final Comparator<Integer> INTEGER_COMPARATOR_NULLS_FIRST = Comparator.nullsFirst(Comparator.naturalOrder());
 
-	private static final Comparator<AllegementFiscal.TypeImpot> TYPE_IMPOT_COMPARATOR = new NullableDefaultComparator<>(true);
+	private static final Comparator<AllegementFiscal.TypeImpot> TYPE_IMPOT_COMPARATOR = Comparator.nullsLast(Comparator.naturalOrder());
 
-	private static final Comparator<AllegementFiscal.TypeCollectivite> TYPE_COLLECTIVITE_COMPARATOR = new NullableDefaultComparator<>(true);
+	private static final Comparator<AllegementFiscal.TypeCollectivite> TYPE_COLLECTIVITE_COMPARATOR = Comparator.nullsLast(Comparator.naturalOrder());
 
 	private static final Comparator<AllegementFiscal> ALLEGEMENT_FISCAL_COMPARATOR = new DateRangeComparator<AllegementFiscal>() {
 		@Override

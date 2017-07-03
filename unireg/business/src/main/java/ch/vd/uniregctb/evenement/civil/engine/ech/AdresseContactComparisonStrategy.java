@@ -10,22 +10,17 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.common.NullableComparator;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseContactComparisonStrategy implements IndividuComparisonStrategy {
 
 	private static final String ATTRIBUTE = "adresse de contact";
 
-	private static final Comparator<Adresse> ADDRESS_COMPARATOR = new NullableComparator<Adresse>(true) {
-		@Override
-		protected int compareNonNull(@NotNull Adresse o1, @NotNull Adresse o2) {
-			// on n'est pas censé avoir plusieurs adresses de contact en même temps, donc une simple comparaison sur les dates devrait suffire
-			return IndividuComparisonHelper.RANGE_COMPARATOR.compare(o1, o2);
-		}
-	};
+	// on n'est pas censé avoir plusieurs adresses de contact en même temps, donc une simple comparaison sur les dates devrait suffire
+	private static final Comparator<Adresse> ADDRESS_COMPARATOR = Comparator.nullsLast(DateRangeComparator::compareRanges);
 
 	private static final IndividuComparisonHelper.Equalator<Object> DEFAULT_EQUALATOR = new IndividuComparisonHelper.DefaultEqualator<>();
 

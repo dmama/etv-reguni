@@ -10,23 +10,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class IdentifiantDeclaration {
 
-	public static final Comparator<IdentifiantDeclaration> COMPARATOR_BY_DECL_ID = new Comparator<IdentifiantDeclaration>() {
-		@Override
-		public int compare(IdentifiantDeclaration o1, IdentifiantDeclaration o2) {
-			return Long.compare(o1.idDeclaration, o2.idDeclaration);
-		}
-	};
+	public static final Comparator<IdentifiantDeclaration> COMPARATOR_BY_DECL_ID = Comparator.comparingLong(o -> o.idDeclaration);
 
-	public static final Comparator<IdentifiantDeclaration> COMPARATOR_NATUREL = new Comparator<IdentifiantDeclaration>() {
-		@Override
-		public int compare(IdentifiantDeclaration o1, IdentifiantDeclaration o2) {
-			int comparison = Long.compare(o1.numeroTiers, o2.numeroTiers);
-			if (comparison == 0) {
-				comparison = Long.compare(o1.idDeclaration, o2.idDeclaration);
-			}
-			return comparison;
-		}
-	};
+	public static final Comparator<IdentifiantDeclaration> COMPARATOR_NATUREL = Comparator.<IdentifiantDeclaration>comparingLong(o -> o.numeroTiers).thenComparingLong(o -> o.idDeclaration);
 
 	private final long idDeclaration;
 	private final long numeroTiers;

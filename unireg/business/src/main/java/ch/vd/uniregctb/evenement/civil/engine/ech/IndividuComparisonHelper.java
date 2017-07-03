@@ -13,11 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.NullableComparator;
-import ch.vd.uniregctb.common.NullableDefaultComparator;
 
 /**
  * Classe qui regroupe quelques classes et méthodes utiles dans la comparaison d'invididus civils
@@ -27,14 +24,7 @@ public abstract class IndividuComparisonHelper {
 	private static final String APPARITION = "apparition";
 	private static final String DISPARITION = "disparition";
 
-	public static final Comparator<DateRange> RANGE_COMPARATOR = new NullableComparator<DateRange>(true) {
-		@Override
-		protected int compareNonNull(@NotNull DateRange o1, @NotNull DateRange o2) {
-			return DateRangeComparator.compareRanges(o1, o2);
-		}
-	};
-
-	public static final Comparator<Integer> INTEGER_COMPARATOR = new NullableDefaultComparator<>(true);
+	public static final Comparator<Integer> INTEGER_COMPARATOR = Comparator.nullsLast(Comparator.naturalOrder());
 
 	/**
 	 * Interface de vérification d'égalité

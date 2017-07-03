@@ -38,7 +38,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchServiceImpl.class);
 
-	private static final Comparator<ActionEvenementCivilEch> ACTION_PRIORITY_COMPARATOR = new ActionEvenementCivilEchComparator();
+	private static final Comparator<ActionEvenementCivilEch> ACTION_PRIORITY_COMPARATOR = Comparator.comparingInt(ActionEvenementCivilEch::getPriorite);
 
 	/**
 	 * Comparateur qui trie les types d'événements civil par priorité (les types sans priorité sont placés à la fin)

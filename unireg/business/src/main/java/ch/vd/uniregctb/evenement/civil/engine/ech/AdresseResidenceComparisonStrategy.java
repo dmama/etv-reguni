@@ -9,12 +9,11 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.common.NullableComparator;
-import ch.vd.uniregctb.common.NullableDefaultComparator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
@@ -29,18 +28,10 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 	private static final String LOCALISATION_PRECEDENTE = "localisation précédente";
 	private static final String LOCALISATION_SUIVANTE = "localisation suivante";
 
-	private static final Comparator<LocalisationType> TYPE_LOCALISATION_COMPARATOR = new NullableDefaultComparator<>(true);
+	private static final Comparator<LocalisationType> TYPE_LOCALISATION_COMPARATOR = Comparator.nullsLast(Comparator.naturalOrder());
 
-	private static final Comparator<Localisation> LOCALISATION_COMPARATOR = new NullableComparator<Localisation>(true) {
-		@Override
-		protected int compareNonNull(@NotNull Localisation o1, @NotNull Localisation o2) {
-			int comparison = TYPE_LOCALISATION_COMPARATOR.compare(o1.getType(), o2.getType());
-			if (comparison == 0) {
-				comparison = IndividuComparisonHelper.INTEGER_COMPARATOR.compare(o1.getNoOfs(), o2.getNoOfs());
-			}
-			return comparison;
-		}
-	};
+	private static final Comparator<Localisation> LOCALISATION_COMPARATOR = Comparator.nullsLast(Comparator.comparing(Localisation::getType, TYPE_LOCALISATION_COMPARATOR)
+			                                                                                             .thenComparing(Localisation::getNoOfs, IndividuComparisonHelper.INTEGER_COMPARATOR));
 
 	private static final IndividuComparisonHelper.Equalator<Localisation> LOCALISATION_EQUALATOR = new IndividuComparisonHelper.NullableEqualator<Localisation>() {
 		@Override
@@ -59,26 +50,11 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 		}
 	};
 
-	private final Comparator<Adresse> ADRESSE_COMPARATOR = new NullableComparator<Adresse>(true) {
-		@Override
-		protected int compareNonNull(@NotNull Adresse o1, @NotNull Adresse o2) {
-			int comparison = Integer.signum(o1.getTypeAdresse().ordinal() - o2.getTypeAdresse().ordinal());
-			if (comparison == 0) {
-				comparison = IndividuComparisonHelper.RANGE_COMPARATOR.compare(o1, o2);
-				if (comparison == 0) {
-					comparison = IndividuComparisonHelper.INTEGER_COMPARATOR.compare(getNoOfsCommune(o1), getNoOfsCommune(o2));
-					if (comparison == 0) {
-						comparison = LOCALISATION_COMPARATOR.compare(o1.getLocalisationPrecedente(), o2.getLocalisationPrecedente());
-						if (comparison == 0) {
-							comparison = LOCALISATION_COMPARATOR.compare(o1.getLocalisationSuivante(), o2.getLocalisationSuivante());
-						}
-					}
-				}
-			}
-
-			return comparison;
-		}
-	};
+	private final Comparator<Adresse> ADRESSE_COMPARATOR = Comparator.nullsLast(Comparator.comparing(Adresse::getTypeAdresse)
+			                                                                            .thenComparing(DateRangeComparator::compareRanges)
+			                                                                            .thenComparing(this::getNoOfsCommune, IndividuComparisonHelper.INTEGER_COMPARATOR)
+			                                                                            .thenComparing(Adresse::getLocalisationPrecedente, LOCALISATION_COMPARATOR)
+			                                                                            .thenComparing(Adresse::getLocalisationSuivante, LOCALISATION_COMPARATOR));
 
 	private static final IndividuComparisonHelper.Equalator<TypeAdresseCivil> TYPE_ADRESSE_EQUALATOR = new IndividuComparisonHelper.DefaultEqualator<>();
 
