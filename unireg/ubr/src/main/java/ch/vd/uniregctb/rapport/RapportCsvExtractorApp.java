@@ -4,15 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import com.itextpdf.text.pdf.PRStream;
 import com.itextpdf.text.pdf.PdfDictionary;
@@ -75,14 +76,37 @@ public class RapportCsvExtractorApp {
 		System.exit(0);
 	}
 
+	/**
+	 * Sous-classe du PdfReader pour y ajouter le support de l'interface AutoCloseable
+	 * et des méthodes helper pour sortir sous forme de stream les objets inclus dans le PDF
+	 */
+	private static final class CloseablePdfReader extends PdfReader implements AutoCloseable {
+		public CloseablePdfReader(InputStream is) throws IOException {
+			super(is);
+		}
+
+		public Stream<PdfObject> stream() {
+			final int nbFiles = getXrefSize();
+			return IntStream.range(0, nbFiles)
+					.mapToObj(this::getPdfObject)
+					.filter(Objects::nonNull);
+		}
+
+		public <T extends PdfObject> Stream<T> stream(Class<T> clazz) {
+			return stream()
+					.filter(clazz::isInstance)
+					.map(clazz::cast);
+		}
+	}
+
 	private static void listeFichiersInclus(String pdffile) {
-		try {
-			final PdfReader reader = ouvrirFichierPdf(pdffile);
-			boucleSurFichiers(PdfDictionary.class, reader, element -> {
-				if (PdfName.FILESPEC.equals(element.get(PdfName.TYPE))) {
-					System.out.println(element.getAsString(PdfName.F));
-				}
-			});
+		try (final FileInputStream fis = new FileInputStream(pdffile);
+		     final CloseablePdfReader reader = new CloseablePdfReader(fis)) {
+
+			reader.stream(PdfDictionary.class)
+					.filter(dict -> PdfName.FILESPEC.equals(dict.get(PdfName.TYPE)))
+					.map(dict -> dict.getAsString(PdfName.F))
+					.forEach(System.out::println);
 		}
 		catch (IOException ex) {
 			System.err.println("Erreur d'accès au fichier pdf : " + ex.getMessage());
@@ -92,16 +116,14 @@ public class RapportCsvExtractorApp {
 
 	private static void extractionFichiersInclus(String pdffiles, String[] cvsfiles, String outputdir) {
 
-		try {
-			final PdfReader reader = ouvrirFichierPdf(pdffiles);
+		try (final FileInputStream fis = new FileInputStream(pdffiles);
+		     final CloseablePdfReader reader = new CloseablePdfReader(fis)) {
 
-			// on remplit d'abord la liste des noms
-			final List<PdfString> noms = new ArrayList<>();
-			boucleSurFichiers(PdfDictionary.class, reader, element -> {
-				if (PdfName.FILESPEC.equals(element.get(PdfName.TYPE))) {
-					noms.add(element.getAsString(PdfName.F));
-				}
-			});
+			// on remplit d'abord la liste des noms des fichiers inclus
+			final List<PdfString> noms = reader.stream(PdfDictionary.class)
+					.filter(dict -> PdfName.FILESPEC.equals(dict.get(PdfName.TYPE)))
+					.map(dict -> dict.getAsString(PdfName.F))
+					.collect(Collectors.toList());
 
 			// puis on va chercher les documents qui vont bien
 			final File outputdirFile = new File(outputdir);
@@ -114,46 +136,30 @@ public class RapportCsvExtractorApp {
 
 			final Set<String> cvsAExtraire = (cvsfiles == null || cvsfiles.length == 0 ? null : new HashSet<>(Arrays.asList(cvsfiles)));
 			final MutableInt index = new MutableInt(0);
-			boucleSurFichiers(PRStream.class, reader, element -> {
-				if (PdfName.EMBEDDEDFILE.equals(element.get(PdfName.TYPE))) {
-					final String nomFichierExtrait = noms.get(index.intValue()).toString();
-					if (cvsAExtraire == null || cvsAExtraire.contains(nomFichierExtrait)) {
-						try {
-							final byte[] content = PdfReader.getStreamBytes(element);
-							final File file = new File(outputdirFile, nomFichierExtrait);
-							try (FileOutputStream stream = new FileOutputStream(file)) {
-								stream.write(content);
+			reader.stream(PRStream.class)
+					.filter(elt -> PdfName.EMBEDDEDFILE.equals(elt.get(PdfName.TYPE)))
+					.forEach(elt -> {
+						final String nomFichierExtrait = noms.get(index.intValue()).toString();
+						if (cvsAExtraire == null || cvsAExtraire.contains(nomFichierExtrait)) {
+							try {
+								final byte[] content = PdfReader.getStreamBytes(elt);
+								final File file = new File(outputdirFile, nomFichierExtrait);
+								try (FileOutputStream stream = new FileOutputStream(file)) {
+									stream.write(content);
+								}
+							}
+							catch (IOException ex) {
+								System.err.println("Erreur lors de l'écriture du fichier extrait " + nomFichierExtrait + " : " + ex.getMessage());
+								System.exit(1);
 							}
 						}
-						catch (IOException ex) {
-							System.err.println("Erreur lors de l'écriture du fichier extrait " + nomFichierExtrait + " : " + ex.getMessage());
-							System.exit(1);
-						}
-					}
-					index.increment();
-				}
-			});
+						index.increment();
+					});
 		}
 		catch (IOException ex) {
 			System.err.println("Erreur d'accès au fichier pdf : " + ex.getMessage());
 			System.exit(1);
 		}
-	}
-
-	private static PdfReader ouvrirFichierPdf(String pdffile) throws IOException {
-		final File fileName = new File(pdffile);
-		return new PdfReader(new FileInputStream(fileName));
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T extends PdfObject> void boucleSurFichiers(Class<T> clazz, PdfReader reader, Consumer<? super T> aFaire) {
-		final int nbFiles = reader.getXrefSize();
-		IntStream.range(0, nbFiles)
-				.mapToObj(reader::getPdfObject)
-				.filter(Objects::nonNull)
-				.filter(obj -> clazz.isAssignableFrom(obj.getClass()))
-				.map(obj -> (T) obj)
-				.forEach(aFaire);
 	}
 
 	/**
