@@ -105,7 +105,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		service = getBean(ServiceOrganisationService.class, "serviceOrganisationService");
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testGetOrganisation() throws Exception {
 		Organisation org = service.getOrganisationHistory(ID_BCV);
 		Assert.assertNotNull(org);
@@ -113,14 +113,14 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	}
 
 //	@Ignore
-	@Test
+	@Test(timeout = 30000)
 	public void testGetPseudoOrganisationHistory() throws Exception {
 		Organisation org = service.getOrganisationEvent(ID_EVT).get(ID_ORGANISATION_EVT).getPseudoHistory();
 		Assert.assertNotNull(org);
 		assertContains(ID_NOM_EVT, org.getNom().get(0).getPayload());
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testGetOrganisationByNoIde() throws Exception {
 		final ServiceOrganisationRaw.Identifiers ids = service.getOrganisationByNoIde(IDE_SUCC);
 		Assert.assertNotNull(ids);
@@ -128,7 +128,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(ID_SUCC, ids.idCantonalSite);
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testRCEntClientGetOrganisationWithoutValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(false);
 		OrganisationData data = client.getOrganisation(ID_BCV, null, true);
@@ -147,7 +147,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertTrue(foundPrincipal);
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testRCEntClientGetOrganisationWithValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
 		OrganisationData data = client.getOrganisation(ID_BCV, null, true);
@@ -166,7 +166,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertTrue(foundPrincipal);
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testDirectGetOrganisationWithoutValidation() throws Exception {
 		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_BCV;
 		String xml = getUrlContent(url);
@@ -186,7 +186,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertTrue(foundPrincipal);
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testDirectGetOrganisationWithValidation() throws Exception {
 		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_BCV;
 		String xml = getUrlContent(url);
@@ -206,7 +206,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertTrue(foundPrincipal);
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testSampleOrganisationWithValidation() throws Exception {
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(loadFile(FILE_SAMPLE_ORGANISATION_100983251_HISTORY)))).getValue();
 		Assert.assertNotNull(data);
@@ -214,7 +214,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testDirectGetAnnonceIDE() throws Exception {
 		String url = baseUrl + BASE_PATH_ANNONCE_IDE + "?userId=" + USER_ID + "&noticeRequestId=" + ID_ANNONCE;
 		String xml = getUrlContent(url);
@@ -225,7 +225,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testRCEntClientGetAnnonceIDE() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
 		final RcEntNoticeQuery rcEntNoticeQuery = new RcEntNoticeQuery();
@@ -239,7 +239,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(Long.toString(ID_ANNONCE), listOfNoticeRequest.get(0).getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId());
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testGetAnnonceIDE() throws Exception {
 		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE, null);
 
@@ -248,7 +248,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertEquals(StatutAnnonce.ACCEPTE_IDE, annonceIDE.getStatut().getStatut());
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testValidateProtoAnnonceIDE() throws ParseException {
 
 		final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
@@ -264,7 +264,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		Assert.assertNull(statut.getErreurs());
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testValidateAnnonceIDEPourrie() throws ParseException {
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(new ProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), new AnnonceIDEData.UtilisateurImpl(RCEntAnnonceIDEHelper.UNIREG_USER, null), TypeDeSite.ETABLISSEMENT_PRINCIPAL, null,
 		                                                                                   new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG)));
@@ -273,7 +273,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		// TODO: check le contenu
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	public void testValidateAnnonceIDEUnPeuMoinsPourrie() throws ParseException {
 		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getCurrentDate(), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
 		                                                                    new NumeroIDE("CHE999999998"), null, null, null, null, null, "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION,
