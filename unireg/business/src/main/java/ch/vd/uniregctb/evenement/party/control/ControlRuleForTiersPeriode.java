@@ -31,12 +31,12 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers<TypeAssujett
 	}
 
 	@Override
-	public AssujettissementStatut checkAssujettissement(@NotNull Tiers tiers, Set<TypeAssujettissement> aRejeter) throws ControlRuleException {
-		return assujettissementSurPeriode(tiers, aRejeter);
+	public AssujettissementStatut checkAssujettissement(@NotNull Contribuable ctb, Set<TypeAssujettissement> aRejeter) throws ControlRuleException {
+		return assujettissementSurPeriode(ctb, aRejeter);
 	}
 
 	@Override
-	public  Set<TypeAssujettissement> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException {
+	public  Set<TypeAssujettissement> getSourceAssujettissement(@NotNull Contribuable tiers) throws ControlRuleException {
 		final Set<TypeAssujettissement> types = EnumSet.noneOf(TypeAssujettissement.class);
 		final List<Assujettissement> assujetissements = getAssujettissements(tiers);
 		if (assujetissements != null) {
@@ -47,7 +47,7 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers<TypeAssujett
 		return types;
 	}
 
-	private AssujettissementStatut assujettissementSurPeriode(@NotNull Tiers tiers, Set<TypeAssujettissement> aRejeter) throws ControlRuleException {
+	private AssujettissementStatut assujettissementSurPeriode(@NotNull Contribuable tiers, Set<TypeAssujettissement> aRejeter) throws ControlRuleException {
 
 		final Set<TypeAssujettissement> typeAssujettissementsTrouves = getSourceAssujettissement(tiers);
 		AssujettissementStatut statut = null;

@@ -45,7 +45,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -356,15 +355,15 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		handleDepartSimple(departCharles);
 		handleDepartSimple(departGeorgette);
-		Tiers tiers = tiersDAO.get(26012004L);
-		ForFiscalPrincipal forFiscalPrincipalOuvert = tiers.getForFiscalPrincipalAt(dateArrivee);
+		Contribuable ctb = (Contribuable) tiersDAO.get(26012004L);
+		ForFiscalPrincipal forFiscalPrincipalOuvert = ctb.getForFiscalPrincipalAt(dateArrivee);
 
 		assertEquals(TypeAutoriteFiscale.COMMUNE_HC, forFiscalPrincipalOuvert.getTypeAutoriteFiscale());
 		assertTrue(communeArrivee.getNoOFS() == forFiscalPrincipalOuvert.getNumeroOfsAutoriteFiscale());
 
 
 
-		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementsFiscaux(tiers);
+		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementsFiscaux(ctb);
 		assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
 		assertTrue("Absence d'événement de type femeture de for", findEvenementFermetureFor(lesEvenements, departCharles));
 

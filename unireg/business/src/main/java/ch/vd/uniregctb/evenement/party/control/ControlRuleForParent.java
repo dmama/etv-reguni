@@ -8,9 +8,10 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -26,11 +27,11 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 	}
 
 	@Override
-	public TaxLiabilityControlResult<T> check(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException {
+	public TaxLiabilityControlResult<T> check(@NotNull Contribuable ctb, Set<T> aRejeter) throws ControlRuleException {
 		final TaxLiabilityControlResult<T> result;
 
 		//Recherche des parents:
-		final List<Parente> parentes = tiers instanceof PersonnePhysique ? extractParents(tiersService.getParents((PersonnePhysique) tiers, false)) : Collections.emptyList();
+		final List<Parente> parentes = ctb instanceof PersonnePhysique ? extractParents(tiersService.getParents((PersonnePhysique) ctb, false)) : Collections.emptyList();
 		if (parentes.isEmpty()) {
 			result = new TaxLiabilityControlResult<>(createEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, null, null));
 		}
@@ -102,7 +103,7 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 
 		final TaxLiabilityControlResult<T> result;
 		if (idMenageAssujettiParent1 != null && idMenageAssujettiParent2 != null && idMenageAssujettiParent1.longValue() == idMenageAssujettiParent2.longValue()) {
-			final Tiers menage = tiersService.getTiers(idMenageAssujettiParent1);
+			final MenageCommun menage = (MenageCommun) tiersService.getTiers(idMenageAssujettiParent1);
 			final Set<T> sourceAssujettissement = getSourceAssujettissement(menage);
 			result = new TaxLiabilityControlResult<>(TaxLiabilityControlResult.Origine.MENAGE_COMMUN_PARENT, idMenageAssujettiParent1, sourceAssujettissement);
 		}

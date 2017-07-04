@@ -24,21 +24,16 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -56,10 +51,7 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -77,8 +69,6 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class Tiers extends HibernateEntity implements BusinessComparable<Tiers> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(Tiers.class);
 
 	/**
 	 * Numero unique attribue au tiers, qui correspond pour les contribuables PP au numero de contribuable.
@@ -587,46 +577,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	/**
-	 * Trie les fors principaux par date, sans les annulés
-	 *
-	 * @return Renvoie les fors principaux
-	 */
-	@NotNull
-	@Transient
-	public List<? extends ForFiscalPrincipal> getForsFiscauxPrincipauxActifsSorted() {
-		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
-				.sorted(FOR_FISCAL_COMPARATOR)
-				.collect(Collectors.toList());
-	}
-
-	/**
-	 * Trie les fors secondaires par date, sans les annulés
-	 *
-	 * @return Renvoie les fors secondaires dans une map indexée par no ofs de la commune
-	 */
-	@NotNull
-	@Transient
-	public Map<Integer, List<ForFiscalSecondaire>> getForsFiscauxSecondairesActifsSortedMapped(MotifRattachement filtreMotifRattachement) {
-		final Map<Integer, List<ForFiscalSecondaire>> map = getStreamForsFiscaux(ForFiscalSecondaire.class, false)
-				.filter(ffs -> filtreMotifRattachement == null || ffs.getMotifRattachement() == filtreMotifRattachement)
-				.collect(Collectors.toMap(ForFiscalSecondaire::getNumeroOfsAutoriteFiscale,
-				                          Collections::singletonList,
-				                          ListUtils::union));
-		map.values().forEach(list -> list.sort(DateRangeComparator::compareRanges));
-		return map;
-	}
-
-	/**
-	 * Trie les fors secondaires par date, sans les annulés
-	 *
-	 * @return Renvoie les fors secondaires dans une map indexée par no ofs de la commune
-	 */
-	@Transient
-	public Map<Integer, List<ForFiscalSecondaire>> getForsFiscauxSecondairesActifsSortedMapped() {
-		return getForsFiscauxSecondairesActifsSortedMapped(null);
-	}
-
-	/**
 	 * @return les fors triés par - La date d'ouverture - Leur type, selon l'ordinal de l'enum TypeAutoriteFiscale
 	 */
 	@NotNull
@@ -650,14 +600,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@Transient
 	protected Stream<ForFiscal> getSortedStreamForsFiscaux() {
 		return getStreamForsFiscaux().sorted(FOR_FISCAL_COMPARATOR);
-	}
-
-	@NotNull
-	@Transient
-	protected Stream<ForFiscal> getRevertedSortedStreamForsFiscaux() {
-		final List<ForFiscal> sorted = getForsFiscauxSorted();
-		final Iterable<ForFiscal> reversed = CollectionsUtils.revertedOrder(sorted);
-		return StreamSupport.stream(reversed.spliterator(), false);
 	}
 
 	@NotNull
@@ -699,22 +641,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	/**
-	 * Retourne le for principal actif à une date donnée.
-	 *
-	 * @param date
-	 *            la date à laquelle le for principal est actif, ou <b>null</b> pour obtenir le for courant.
-	 *
-	 * @return le for principal correspondant, ou nulle si aucun for ne correspond aux critères.
-	 */
-	@Transient
-	public ForFiscalPrincipal getForFiscalPrincipalAt(@Nullable RegDate date) {
-		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
-				.filter(ff -> ff.isValidAt(date))
-				.findFirst()
-				.orElse(null);
-	}
-
-	/**
 	 * Retourne la liste de tous les fors actifs à une date donnée.
 	 *
 	 * @param date
@@ -728,85 +654,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		return getStreamForsFiscaux()
 				.filter(ff -> ff.isValidAt(date))
 				.collect(Collectors.toList());
-	}
-
-	@Transient
-	public ForFiscalPrincipal getPremierForFiscalPrincipal() {
-		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
-				.sorted(FOR_FISCAL_COMPARATOR)
-				.findFirst()
-				.orElse(null);
-	}
-
-	// ***********************************************
-	@Transient
-	public ForFiscalPrincipal getDernierForFiscalPrincipal() {
-		return getRevertedSortedStreamForsFiscaux()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(ForFiscal::isPrincipal)
-				.findFirst()
-				.map(ForFiscalPrincipal.class::cast)
-				.orElse(null);
-	}
-
-	// ***********************************************
-	@Transient
-	public ForFiscalPrincipal getDernierForFiscalPrincipalAvant(@Nullable RegDate date) {
-		return getRevertedSortedStreamForsFiscaux()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(ForFiscal::isPrincipal)
-				.filter(ff -> RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), date, NullDateBehavior.LATEST))
-				.findFirst()
-				.map(ForFiscalPrincipal.class::cast)
-				.orElse(null);
-	}
-
-	// ***********************************************
-	@Transient
-	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudois() {
-		return getRevertedSortedStreamForsFiscaux()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(ForFiscal::isPrincipal)
-				.filter(ff -> ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
-				.findFirst()
-				.map(ForFiscalPrincipal.class::cast)
-				.orElse(null);
-	}
-
-	// ***********************************************
-	@Transient
-	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudoisAvant(RegDate date) {
-		return getRevertedSortedStreamForsFiscaux()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(ForFiscal::isPrincipal)
-				.filter(ff -> ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
-				.filter(ff -> RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), date, NullDateBehavior.LATEST))
-				.findFirst()
-				.map(ForFiscalPrincipal.class::cast)
-				.orElse(null);
-	}
-
-	// ***********************************************
-	@Transient
-	public ForDebiteurPrestationImposable getDernierForDebiteur() {
-		return getRevertedSortedStreamForsFiscaux()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(ForFiscal::isDebiteur)
-				.findFirst()
-				.map(ForDebiteurPrestationImposable.class::cast)
-				.orElse(null);
-	}
-
-	// ***********************************************
-	@Transient
-	public ForDebiteurPrestationImposable getDernierForDebiteurAvant(RegDate date) {
-		return getRevertedSortedStreamForsFiscaux()
-				.filter(AnnulableHelper::nonAnnule)
-				.filter(ForFiscal::isDebiteur)
-				.filter(ff -> RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), date, NullDateBehavior.LATEST))
-				.findFirst()
-				.map(ForDebiteurPrestationImposable.class::cast)
-				.orElse(null);
 	}
 
 	/**
@@ -980,59 +827,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	/**
-	 * @return vrai s'il existe un for principal (ou une succession ininterrompue de fors principaux) durant la période spécifiée.
-	 */
-	public static boolean existForPrincipal(List<? extends ForFiscalPrincipal> principaux, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
-
-		int indexCandidat = -1;
-
-		// Vérification de la date de début
-		for (int i = 0; i < principaux.size(); ++i) {
-			final ForFiscalPrincipal f = principaux.get(i);
-
-			if (dateDebut != null && f.getDateFin() != null && f.getDateFin().isBefore(dateDebut)) {
-				// on est pas encore arrivé à la date de début => on continue
-				continue;
-			}
-			else if (f.getDateDebut() == null || (dateDebut != null && f.getDateDebut().isBeforeOrEqual(dateDebut))) {
-				// on a trouvé un for qui contient la date de début => on saute à la vérification de la date de fin
-				indexCandidat = i;
-				break;
-			}
-			else if (dateDebut == null || (dateFin != null && f.getDateDebut().isAfter(dateFin))) {
-				// on a dépassé la date de fin => rien trouvé
-				return false;
-			}
-		}
-		if (indexCandidat < 0) {
-			// on a rien trouvé.
-			return false;
-		}
-
-		// Vérification de la date de fin
-		RegDate dateRaccord = null;
-		for (int i = indexCandidat; i < principaux.size(); ++i) {
-			final ForFiscalPrincipal f = principaux.get(i);
-
-			if (dateRaccord != null && !dateRaccord.equals(f.getDateDebut())) {
-				// il y a bien deux fors dans la plage spécifiée, mais ils ne se touchent pas => pas trouvé
-				return false;
-			}
-			else if (f.getDateFin() == null || (dateFin != null && f.getDateFin().isAfterOrEqual(dateFin))) {
-				// le for courant contient la date de fin => on a trouvé
-				return true;
-			}
-			else {
-				// le for ne s'étend pas sur toute la plage spécifiée => on continue avec le for suivant en spécifiant une date de raccord
-				dateRaccord = f.getDateFin().getOneDayAfter();
-			}
-		}
-
-		// on a pas trouvé de for s'étendant sur toute la plage demandée
-		return false;
-	}
-
-	/**
 	 * Un tiers "annulé" (au sens technique de la date d'annulation) est dit "désactivé" pour toute date ;
 	 * sinon, cela peut dépendre de ses fors
 	 * @param date date de référencce
@@ -1107,76 +901,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				.map(ForFiscal::getDateFin)
 				.orElse(null);
 	}
-
-	/**
-	 * Renvoi le ForDebiteurPrestationImposable actif à la date donnée en entrée
-	 *
-	 * @param date
-	 * @return
-	 */
-	@Transient
-	public ForDebiteurPrestationImposable getForDebiteurPrestationImposableAt(@Nullable RegDate date) {
-		return getStreamForsFiscaux(ForDebiteurPrestationImposable.class, false)
-				.filter(ff -> ff.isValidAt(date))
-				.findFirst()
-				.orElse(null);
-	}
-
-	/**
-	 * Renvoi le premier ForDebiteurPrestationImposable actif après la date donnée en entrée
-	 *
-	 * @param date
-	 * @return
-	 */
-	@Transient
-	public ForDebiteurPrestationImposable getForDebiteurPrestationImposableAfter(RegDate date) {
-		return getStreamForsFiscaux(ForDebiteurPrestationImposable.class, false)
-				.filter(ff -> ff.getDateDebut().isAfter(date))
-				.min(Comparator.comparing(ForFiscal::getDateDebut))
-				.orElse(null);
-	}
-
-	/**
-	 * Renvoie la liste de fors fiscaux principaux débutant à ou après la date demandée (y compris les fors annulés).
-	 * @param date date de référence
-	 * @return liste des fors principaux demandés
-	 */
-	@NotNull
-	@Transient
-	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date) {
-		return getForsFiscauxPrincipauxOuvertsApres(date,true);
-	}
-
-	/**
-	 * Renvoie la liste de fors fiscaux principaux débutant à ou après la date demandée (y compris les fors annulés).
-	 * @param date date de référence
-	 * @param withAnnule indique si on veut les fors annulées
-	 * @return liste des fors principaux demandés
-	 */
-	@NotNull
-	@Transient
-	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date, boolean withAnnule) {
-		Assert.notNull(date);
-		return getStreamForsFiscaux(ForFiscalPrincipal.class, withAnnule)
-				.filter(ff -> date.isBeforeOrEqual(ff.getDateDebut()))
-				.sorted(FOR_FISCAL_COMPARATOR)
-				.collect(Collectors.toList());
-	}
-
-    /**
-     * @param date date a laquelle on doit verifié que le tiers possède un for annulé.
-     * @param motif motif du for
-     *
-     * @return true si le tiers a un for fiscal principale annulé à la date précisée pour le motif précisé
-     */
-    @Transient
-    public boolean hasForFiscalPrincipalAnnule(RegDate date, @Nullable MotifFor motif) {
-	    Assert.notNull(date);
-	    return getStreamForsFiscaux(ForFiscalPrincipal.class, true)
-		        .filter(ForFiscal::isAnnule)
-		        .filter(ff -> RegDateHelper.isBetween(date, ff.getDateDebut(), ff.getDateFin(), NullDateBehavior.EARLIEST))
-		        .anyMatch(ff -> motif == null || ff.getMotifOuverture() == motif);
-    }
 
 	/**
 	 * @return la nature du tiers courant

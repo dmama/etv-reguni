@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -82,7 +83,12 @@ public class CommunauteRFMembreComparator implements Comparator<Long> {
 	@NotNull
 	private TypeFor getTypeFor(@NotNull Tiers tiers) {
 
-		final List<? extends ForFiscalPrincipal> fors = tiers.getForsFiscauxPrincipauxActifsSorted();
+		if (!Contribuable.class.isInstance(tiers)) {
+			// pas un contribuable, aucune chance d'avoir des fors principaux
+			return TypeFor.UNKNOWN;
+		}
+
+		final List<? extends ForFiscalPrincipal> fors = ((Contribuable) tiers).getForsFiscauxPrincipauxActifsSorted();
 
 		// on s'intéresse à la situation courante
 		ForFiscalPrincipal actif = DateRangeHelper.rangeAt(fors, RegDate.get());

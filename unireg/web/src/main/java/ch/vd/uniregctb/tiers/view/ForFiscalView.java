@@ -116,14 +116,18 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		if (tiers instanceof DebiteurPrestationImposable) {
 			forGestion = null;
 			forPrincipalActif = null;
-			dernierForPrincipalOuDebiteur = tiers.getDernierForDebiteur();
+			dernierForPrincipalOuDebiteur = ((DebiteurPrestationImposable) tiers).getDernierForDebiteur();
 			comparator = new ForDebiteurViewComparator();
 		}
-		else {
-			forGestion = (dernierForGestionProvider == null ? null : dernierForGestionProvider.apply((Contribuable) tiers, null));
-			forPrincipalActif = tiers.getForFiscalPrincipalAt(null);
-			dernierForPrincipalOuDebiteur = tiers.getDernierForFiscalPrincipal();
+		else if (tiers instanceof Contribuable) {
+			final Contribuable ctb = (Contribuable) tiers;
+			forGestion = (dernierForGestionProvider == null ? null : dernierForGestionProvider.apply(ctb, null));
+			forPrincipalActif = ctb.getForFiscalPrincipalAt(null);
+			dernierForPrincipalOuDebiteur = ctb.getDernierForFiscalPrincipal();
 			comparator = new ForFiscalViewComparator();
+		}
+		else {
+			return Collections.emptyList();
 		}
 
 		return forsFiscauxSorted.stream()

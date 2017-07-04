@@ -15,6 +15,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -43,13 +44,18 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 			LOGGER.debug(message);
 		}
 
+		// contrôle sur le type de tiers
+		if (!Contribuable.class.isInstance(tiers)) {
+			return new TaxLiabilityControlResult<>(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO));
+		}
+
 		//Contrôle sur la date activé avec date dans le futur
 		if (controleDateDansFutur && date.isAfter(RegDate.get())) {
 			return new TaxLiabilityControlResult<>(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTUR));
 		}
 
 		final List<TaxLiabilityControlRule<ModeImposition>> rules = getControlRulesForDate(tiers, date, rechercheMenageCommun, rechercheParent);
-		return doControl(tiers, rules, modeImpositionARejeter);
+		return doControl((Contribuable) tiers, rules, modeImpositionARejeter);
 	}
 
 	public TaxLiabilityControlResult<TypeAssujettissement> doControlOnPeriod(@NotNull Tiers tiers, int periode, boolean rechercheMenageCommun, boolean rechercheParent, boolean controlePeriodeDansFutur,
@@ -59,21 +65,27 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 			                                     tiers.getNumero(), periode, rechercheMenageCommun, rechercheParent);
 			LOGGER.debug(message);
 		}
+
+		// contrôle sur le type de tiers
+		if (!Contribuable.class.isInstance(tiers)) {
+			return new TaxLiabilityControlResult<>(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO));
+		}
+
 		//Contrôle sur la Période activé avec la période dans le futur
 		if (controlePeriodeDansFutur && periode > RegDate.get().year()) {
 			return new TaxLiabilityControlResult<>(new TaxLiabilityControlEchec(TaxLiabilityControlEchec.EchecType.DATE_OU_PF_DANS_FUTUR));
 		}
 
 		final List<TaxLiabilityControlRule<TypeAssujettissement>> rules = getControlRulesForPeriod(tiers, periode, rechercheMenageCommun, rechercheParent);
-		return doControl(tiers, rules, assujettissementsARejeter);
+		return doControl((Contribuable) tiers, rules, assujettissementsARejeter);
 	}
 
-	private <T extends Enum<T>> TaxLiabilityControlResult<T> doControl(@NotNull Tiers tiers, List<TaxLiabilityControlRule<T>> rules, Set<T> aRejeter) throws ControlRuleException {
+	private <T extends Enum<T>> TaxLiabilityControlResult<T> doControl(@NotNull Contribuable ctb, List<TaxLiabilityControlRule<T>> rules, Set<T> aRejeter) throws ControlRuleException {
 
 		TaxLiabilityControlResult<T> echecARetourner = null;
 		TaxLiabilityControlResult<T> analyse = null;
 		for (TaxLiabilityControlRule<T> taxLiabilityControlRule : rules) {
-			analyse = taxLiabilityControlRule.check(tiers,aRejeter);
+			analyse = taxLiabilityControlRule.check(ctb,aRejeter);
 			if (analyse.getIdTiersAssujetti() != null) {
 				// on a trouvé un controle OK on retourne le résultat
 				return analyse;

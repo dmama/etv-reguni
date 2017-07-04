@@ -18,6 +18,7 @@ import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.taglibs.JspTagBandeauTiers;
 import ch.vd.uniregctb.taglibs.JspTagInteroperabilite;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -58,7 +59,7 @@ public class VignetteView {
 		this.dateAnnulation = tiers.getAnnulationDate();
 		this.dateDesactivation = tiers.getDateDesactivation();
 
-		final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipal ffp = tiers instanceof Contribuable ? ((Contribuable) tiers).getForFiscalPrincipalAt(null) : null;
 		this.typeAutoriteFiscaleForPrincipal = (ffp == null ? null : ffp.getTypeAutoriteFiscale());
 
 		// les rôles

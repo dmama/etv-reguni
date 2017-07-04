@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,8 +18,10 @@ import java.util.stream.Collectors;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -247,10 +250,51 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	@Transient
 	public ForDebiteurPrestationImposable getPremierForDebiteur() {
-		return getSortedStreamForsFiscaux()
-				.filter(AnnulableHelper::nonAnnule)
+		return getStreamForsFiscaux(ForDebiteurPrestationImposable.class, false)
+				.min(FOR_FISCAL_COMPARATOR)
+				.orElse(null);
+	}
+
+	@Transient
+	public ForDebiteurPrestationImposable getDernierForDebiteur() {
+		return getStreamForsFiscaux(ForDebiteurPrestationImposable.class, false)
+				.max(FOR_FISCAL_COMPARATOR)
+				.orElse(null);
+	}
+
+	@Transient
+	public ForDebiteurPrestationImposable getDernierForDebiteurAvant(RegDate date) {
+		return getStreamForsFiscaux(ForDebiteurPrestationImposable.class, false)
+				.filter(ff -> RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), date, NullDateBehavior.LATEST))
+				.max(FOR_FISCAL_COMPARATOR)
+				.orElse(null);
+	}
+
+	/**
+	 * Renvoie le ForDebiteurPrestationImposable actif à la date donnée en entrée
+	 *
+	 * @param date
+	 * @return
+	 */
+	@Transient
+	public ForDebiteurPrestationImposable getForDebiteurPrestationImposableAt(@Nullable RegDate date) {
+		return getStreamForsFiscaux(ForDebiteurPrestationImposable.class, false)
+				.filter(ff -> ff.isValidAt(date))
 				.findFirst()
-				.map(ForDebiteurPrestationImposable.class::cast)
+				.orElse(null);
+	}
+
+	/**
+	 * Renvoie le premier ForDebiteurPrestationImposable actif après la date donnée en entrée
+	 *
+	 * @param date
+	 * @return
+	 */
+	@Transient
+	public ForDebiteurPrestationImposable getForDebiteurPrestationImposableAfter(RegDate date) {
+		return getStreamForsFiscaux(ForDebiteurPrestationImposable.class, false)
+				.filter(ff -> ff.getDateDebut().isAfter(date))
+				.min(Comparator.comparing(ForFiscal::getDateDebut))
 				.orElse(null);
 	}
 

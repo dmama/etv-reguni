@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +37,8 @@ import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 @Entity
 public abstract class Contribuable extends Tiers {
@@ -213,6 +217,196 @@ public abstract class Contribuable extends Tiers {
 
 		final Contribuable other = (Contribuable) obj;
 		return ComparisonHelper.areEqual(identificationsEntreprise, other.identificationsEntreprise);
+	}
+
+	/**
+	 * Trie les fors principaux par date, sans les annulés
+	 *
+	 * @return Renvoie les fors principaux
+	 */
+	@NotNull
+	@Transient
+	public List<? extends ForFiscalPrincipal> getForsFiscauxPrincipauxActifsSorted() {
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
+				.sorted(FOR_FISCAL_COMPARATOR)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Trie les fors secondaires par date, sans les annulés
+	 *
+	 * @return Renvoie les fors secondaires dans une map indexée par no ofs de la commune
+	 */
+	@NotNull
+	@Transient
+	public Map<Integer, List<ForFiscalSecondaire>> getForsFiscauxSecondairesActifsSortedMapped(MotifRattachement filtreMotifRattachement) {
+		final Map<Integer, List<ForFiscalSecondaire>> map = getStreamForsFiscaux(ForFiscalSecondaire.class, false)
+				.filter(ffs -> filtreMotifRattachement == null || ffs.getMotifRattachement() == filtreMotifRattachement)
+				.collect(Collectors.toMap(ForFiscalSecondaire::getNumeroOfsAutoriteFiscale,
+				                          Collections::singletonList,
+				                          ListUtils::union));
+		map.values().forEach(list -> list.sort(DateRangeComparator::compareRanges));
+		return map;
+	}
+
+	/**
+	 * Trie les fors secondaires par date, sans les annulés
+	 *
+	 * @return Renvoie les fors secondaires dans une map indexée par no ofs de la commune
+	 */
+	@Transient
+	public Map<Integer, List<ForFiscalSecondaire>> getForsFiscauxSecondairesActifsSortedMapped() {
+		return getForsFiscauxSecondairesActifsSortedMapped(null);
+	}
+
+	/**
+	 * Retourne le for principal actif à une date donnée.
+	 *
+	 * @param date
+	 *            la date à laquelle le for principal est actif, ou <b>null</b> pour obtenir le for courant.
+	 *
+	 * @return le for principal correspondant, ou nulle si aucun for ne correspond aux critères.
+	 */
+	@Transient
+	public ForFiscalPrincipal getForFiscalPrincipalAt(@Nullable RegDate date) {
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
+				.filter(ff -> ff.isValidAt(date))
+				.findFirst()
+				.orElse(null);
+	}
+
+	@Transient
+	public ForFiscalPrincipal getPremierForFiscalPrincipal() {
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
+				.min(FOR_FISCAL_COMPARATOR)
+				.orElse(null);
+	}
+
+	@Transient
+	public ForFiscalPrincipal getDernierForFiscalPrincipal() {
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
+				.max(FOR_FISCAL_COMPARATOR)
+				.orElse(null);
+	}
+
+	@Transient
+	public ForFiscalPrincipal getDernierForFiscalPrincipalAvant(@Nullable RegDate date) {
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
+				.filter(ff -> RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), date, NullDateBehavior.LATEST))
+				.max(FOR_FISCAL_COMPARATOR)
+				.orElse(null);
+	}
+
+	@Transient
+	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudois() {
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
+				.filter(ff -> ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+				.max(FOR_FISCAL_COMPARATOR)
+				.orElse(null);
+	}
+
+	@Transient
+	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudoisAvant(RegDate date) {
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
+				.filter(ff -> ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+				.filter(ff -> RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), date, NullDateBehavior.LATEST))
+				.max(FOR_FISCAL_COMPARATOR)
+				.orElse(null);
+	}
+
+	/**
+	 * @return vrai s'il existe un for principal (ou une succession ininterrompue de fors principaux) durant la période spécifiée.
+	 */
+	public static boolean existForPrincipal(List<? extends ForFiscalPrincipal> principaux, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
+
+		int indexCandidat = -1;
+
+		// Vérification de la date de début
+		for (int i = 0; i < principaux.size(); ++i) {
+			final ForFiscalPrincipal f = principaux.get(i);
+
+			if (dateDebut != null && f.getDateFin() != null && f.getDateFin().isBefore(dateDebut)) {
+				// on est pas encore arrivé à la date de début => on continue
+				continue;
+			}
+			else if (f.getDateDebut() == null || (dateDebut != null && f.getDateDebut().isBeforeOrEqual(dateDebut))) {
+				// on a trouvé un for qui contient la date de début => on saute à la vérification de la date de fin
+				indexCandidat = i;
+				break;
+			}
+			else if (dateDebut == null || (dateFin != null && f.getDateDebut().isAfter(dateFin))) {
+				// on a dépassé la date de fin => rien trouvé
+				return false;
+			}
+		}
+		if (indexCandidat < 0) {
+			// on a rien trouvé.
+			return false;
+		}
+
+		// Vérification de la date de fin
+		RegDate dateRaccord = null;
+		for (int i = indexCandidat; i < principaux.size(); ++i) {
+			final ForFiscalPrincipal f = principaux.get(i);
+
+			if (dateRaccord != null && !dateRaccord.equals(f.getDateDebut())) {
+				// il y a bien deux fors dans la plage spécifiée, mais ils ne se touchent pas => pas trouvé
+				return false;
+			}
+			else if (f.getDateFin() == null || (dateFin != null && f.getDateFin().isAfterOrEqual(dateFin))) {
+				// le for courant contient la date de fin => on a trouvé
+				return true;
+			}
+			else {
+				// le for ne s'étend pas sur toute la plage spécifiée => on continue avec le for suivant en spécifiant une date de raccord
+				dateRaccord = f.getDateFin().getOneDayAfter();
+			}
+		}
+
+		// on a pas trouvé de for s'étendant sur toute la plage demandée
+		return false;
+	}
+
+	/**
+	 * Renvoie la liste de fors fiscaux principaux débutant à ou après la date demandée (y compris les fors annulés).
+	 * @param date date de référence
+	 * @return liste des fors principaux demandés
+	 */
+	@NotNull
+	@Transient
+	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date) {
+		return getForsFiscauxPrincipauxOuvertsApres(date,true);
+	}
+
+	/**
+	 * Renvoie la liste de fors fiscaux principaux débutant à ou après la date demandée (y compris les fors annulés).
+	 * @param date date de référence
+	 * @param withAnnule indique si on veut les fors annulées
+	 * @return liste des fors principaux demandés
+	 */
+	@NotNull
+	@Transient
+	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date, boolean withAnnule) {
+		ch.vd.registre.base.utils.Assert.notNull(date);
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, withAnnule)
+				.filter(ff -> date.isBeforeOrEqual(ff.getDateDebut()))
+				.sorted(FOR_FISCAL_COMPARATOR)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * @param date date a laquelle on doit verifié que le tiers possède un for annulé.
+	 * @param motif motif du for
+	 *
+	 * @return true si le tiers a un for fiscal principale annulé à la date précisée pour le motif précisé
+	 */
+	@Transient
+	public boolean hasForFiscalPrincipalAnnule(RegDate date, @Nullable MotifFor motif) {
+		ch.vd.registre.base.utils.Assert.notNull(date);
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, true)
+				.filter(ForFiscal::isAnnule)
+				.filter(ff -> RegDateHelper.isBetween(date, ff.getDateDebut(), ff.getDateFin(), NullDateBehavior.EARLIEST))
+				.anyMatch(ff -> motif == null || ff.getMotifOuverture() == motif);
 	}
 
 	@Override

@@ -157,7 +157,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		AssujettissementHelper.assertCoherenceRanges(sieges);
 
 		// et finalement aux influences des rattachements économiques
-		final List<Data> economiques = determinerAssujettissementEconomique(forsSecondaires, fractionnements, exercices, noOfsCommunesVaudoises);
+		final List<Data> economiques = determinerAssujettissementEconomique(entreprise, forsSecondaires, fractionnements, exercices, noOfsCommunesVaudoises);
 
 		// fusion des deux
 		final List<Data> fusion = fusionnerAssujettissementsSiegesEtEconomiques(sieges, economiques);
@@ -779,6 +779,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 
 	/**
 	 * Calcul de l'assujettissement économique dû aux fors secondaires
+	 * @param entreprise l'entreprise
 	 * @param forsSecondaires les fors secondaires triés
 	 * @param fractionnements les fractionnements précalculés
 	 * @param exercicesCommerciaux les exercices commerciaux de la personne morale
@@ -786,14 +787,15 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	 * @return la liste des données d'assujettissements économiques
 	 * @throws AssujettissementException en cas de problème
 	 */
-	private static List<Data> determinerAssujettissementEconomique(List<ForFiscalSecondaire> forsSecondaires,
+	private static List<Data> determinerAssujettissementEconomique(Entreprise entreprise,
+	                                                               List<ForFiscalSecondaire> forsSecondaires,
 	                                                               Fractionnements<ForFiscalPrincipalPM> fractionnements,
 	                                                               List<ExerciceCommercial> exercicesCommerciaux,
 	                                                               @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final List<Data> data = new ArrayList<>(forsSecondaires.size());
 		for (ForFiscalSecondaire ffs : forsSecondaires) {
-			final Data economique = determinerAssujettissementEconomique(ffs, fractionnements, exercicesCommerciaux, noOfsCommunesVaudoises);
+			final Data economique = determinerAssujettissementEconomique(entreprise, ffs, fractionnements, exercicesCommerciaux, noOfsCommunesVaudoises);
 			if (economique != null) {
 				data.add(economique);
 			}
@@ -803,6 +805,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 
 	/**
 	 * Calcul de l'assujettissement économique dû à un for secondaire
+	 * @param entreprise l'entreprise
 	 * @param forSecondaire le for secondaire analysé
 	 * @param fractionnements les fractionnements précalculés
 	 * @param exercicesCommerciaux les exercices commerciaux de la personne morale
@@ -811,7 +814,8 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	 * @throws AssujettissementException en cas de problème
 	 */
 	@Nullable
-	private static Data determinerAssujettissementEconomique(ForFiscalSecondaire forSecondaire,
+	private static Data determinerAssujettissementEconomique(Entreprise entreprise,
+	                                                         ForFiscalSecondaire forSecondaire,
 	                                                         Fractionnements<ForFiscalPrincipalPM> fractionnements,
 	                                                         List<ExerciceCommercial> exercicesCommerciaux,
 	                                                         @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
@@ -825,7 +829,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		// à la date de début du for, mais sinon, il commence au début de l'exercice commercial actif à l'ouverture du for
 		final RegDate dateDebutFor = forSecondaire.getDateDebut();
 		RegDate dateDebutAssujettissement;
-		if (AssujettissementHelper.isForPrincipalHorsSuisse(forSecondaire.getTiers(), dateDebutFor)) {
+		if (AssujettissementHelper.isForPrincipalHorsSuisse(entreprise, dateDebutFor)) {
 			dateDebutAssujettissement = dateDebutFor;
 		}
 		else {
@@ -837,7 +841,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		// mais il se poursuit jusqu'à la fin de l'exercice commercial en cours sinon
 		final RegDate dateFinFor = forSecondaire.getDateFin();
 		RegDate dateFinAssujettissement;
-		if (dateFinFor == null || AssujettissementHelper.isForPrincipalHorsSuisse(forSecondaire.getTiers(), dateFinFor)) {
+		if (dateFinFor == null || AssujettissementHelper.isForPrincipalHorsSuisse(entreprise, dateFinFor)) {
 			dateFinAssujettissement = dateFinFor;
 		}
 		else {

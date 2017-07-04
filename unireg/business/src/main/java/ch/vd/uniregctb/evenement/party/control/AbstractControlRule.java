@@ -6,7 +6,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -30,15 +30,15 @@ public abstract class AbstractControlRule<T extends Enum<T>> implements TaxLiabi
 		return echec;
 	}
 
-	public abstract AssujettissementStatut checkAssujettissement(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException;
+	public abstract AssujettissementStatut checkAssujettissement(@NotNull Contribuable tiers, Set<T> aRejeter) throws ControlRuleException;
 
 	/**
 	 * Les types d'assujettissement portés par le tiers
-	 * @param tiers tiers à considérer
+	 * @param ctb tiers à considérer
 	 * @return ensemble (potentiellement vide) des assujettissements portés par le tiers sur la période ou à la date considérée
 	 * @throws ControlRuleException en cas de souci
 	 */
-	public abstract Set<T> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException;
+	public abstract Set<T> getSourceAssujettissement(@NotNull Contribuable ctb) throws ControlRuleException;
 
 	public class AssujettissementStatut {
 		 boolean isAssujetti;

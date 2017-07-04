@@ -412,14 +412,14 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		return localiteOuPays;
 	}
 
-	protected TiersAssocieView createTiersAssocieView(Tiers tiers) throws AdresseException, ServiceInfrastructureException {
+	protected TiersAssocieView createTiersAssocieView(Entreprise entreprise) throws AdresseException, ServiceInfrastructureException {
 		final TiersAssocieView tiersAssocie = new TiersAssocieView();
-		tiersAssocie.setNumero(tiers.getNumero());
-		final List<String> nomCourrier = adresseService.getNomCourrier(tiers, null, false);
+		tiersAssocie.setNumero(entreprise.getNumero());
+		final List<String> nomCourrier = adresseService.getNomCourrier(entreprise, null, false);
 		tiersAssocie.setNomCourrier(nomCourrier);
 
-		tiersAssocie.setLocaliteOuPays(retrieveLocaliteOuPays(tiers));
-		final ForFiscalPrincipal forFiscalPrincipal = tiers.getDernierForFiscalPrincipal();
+		tiersAssocie.setLocaliteOuPays(retrieveLocaliteOuPays(entreprise));
+		final ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
 		if (forFiscalPrincipal != null) {
 			final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
 			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
@@ -433,14 +433,14 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		return tiersAssocie;
 	}
 
-	protected TiersAssocieView createTiersAssocieViewSansCivil(Tiers tiers) throws AdresseException, ServiceInfrastructureException {
+	protected TiersAssocieView createTiersAssocieViewSansCivil(Entreprise entreprise) throws AdresseException, ServiceInfrastructureException {
 		final TiersAssocieView tiersAssocie = new TiersAssocieView();
-		tiersAssocie.setNumero(tiers.getNumero());
+		tiersAssocie.setNumero(entreprise.getNumero());
 		final String message = "<erreur: organisation introuvable>";
 
 		tiersAssocie.setNomCourrier(Collections.singletonList(message));
 		tiersAssocie.setLocaliteOuPays("&lt;erreur: organisation introuvable&gt;");
-		final ForFiscalPrincipal forFiscalPrincipal = tiers.getDernierForFiscalPrincipal();
+		final ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
 		if (forFiscalPrincipal != null) {
 			final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
 			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());

@@ -1561,10 +1561,10 @@ public interface TiersService {
     boolean isHorsCanton(Contribuable contribuable, RegDate date);
 
     /**
-     * @param tiers
+     * @param ctb
      * @return <code>true</code> si le dernier for fiscal principal du contribuable a bien été fermé pour motif "séparation", <code>false</code> sinon
      */
-    boolean isDernierForFiscalPrincipalFermePourSeparation(Tiers tiers);
+    boolean isDernierForFiscalPrincipalFermePourSeparation(ContribuableImpositionPersonnesPhysiques ctb);
 
     /**
      * @param menage un ménage commun

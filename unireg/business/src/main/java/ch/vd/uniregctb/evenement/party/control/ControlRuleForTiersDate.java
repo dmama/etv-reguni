@@ -6,10 +6,10 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -28,13 +28,13 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers<ModeImposition>
 	}
 
 	@Override
-	public AssujettissementStatut checkAssujettissement(@NotNull Tiers tiers, Set<ModeImposition> aRejeter) throws ControlRuleException {
-		return hasForPrincipalVaudois(tiers,aRejeter);
+	public AssujettissementStatut checkAssujettissement(@NotNull Contribuable ctb, Set<ModeImposition> aRejeter) throws ControlRuleException {
+		return hasForPrincipalVaudois(ctb, aRejeter);
 	}
 
-	private AssujettissementStatut hasForPrincipalVaudois(@NotNull Tiers tiers, Set<ModeImposition> aRejeter) throws ControlRuleException {
+	private AssujettissementStatut hasForPrincipalVaudois(@NotNull Contribuable ctb, Set<ModeImposition> aRejeter) throws ControlRuleException {
 		//On se situe dans le cadre d'un contrôle assujetissement sur PP
-		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
+		final ForFiscalPrincipal forFiscalPrincipal = ctb.getForFiscalPrincipalAt(date);
 		final boolean isAssujetti;
 		final boolean modeImpositionNonConforme;
 		if (forFiscalPrincipal instanceof ForFiscalPrincipalPP) {
@@ -64,9 +64,9 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers<ModeImposition>
 	}
 
 	@Override
-	public Set<ModeImposition> getSourceAssujettissement(@NotNull Tiers tiers) {
+	public Set<ModeImposition> getSourceAssujettissement(@NotNull Contribuable ctb) {
 		final Set<ModeImposition> modeImpositions = EnumSet.noneOf(ModeImposition.class);
-		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
+		final ForFiscalPrincipal forFiscalPrincipal = ctb.getForFiscalPrincipalAt(date);
 		if (forFiscalPrincipal instanceof ForFiscalPrincipalPP) {
 			modeImpositions.add(((ForFiscalPrincipalPP) forFiscalPrincipal).getModeImposition());
 		}

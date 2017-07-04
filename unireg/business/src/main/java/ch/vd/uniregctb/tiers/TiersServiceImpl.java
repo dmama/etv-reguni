@@ -4199,12 +4199,14 @@ public class TiersServiceImpl implements TiersService {
 		    return null;
 	    }
 
+	    final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tiers;
+
         /*
 		 * Cette méthode implémente l'algorithme de détermination des fors spécifié dans le document SCU-TenirLeRegistreDesTiers.doc au
 		 * paragraphe intitulé "Détermination de la commune ou fraction de commune du for de gestion"
 		 */
 
-        final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxValidAt(date);
+        final List<ForFiscal> forsFiscaux = contribuable.getForsFiscauxValidAt(date);
         Assert.notNull(forsFiscaux);
 
         ForFiscalPrincipal forPrincipal = null;
@@ -4217,7 +4219,7 @@ public class TiersServiceImpl implements TiersService {
                 // Les fors principaux hors canton/Suisse ou avec un mode d'imposition Source ne peuvent pas être des fors de gestion
                 if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == f.getTypeAutoriteFiscale()) {
 	                final ForFiscalPrincipalPP fp = (ForFiscalPrincipalPP) f;
-	                if (isConformePourForGestion(tiers, fp, date)) {
+	                if (isConformePourForGestion(contribuable, fp, date)) {
 		                forPrincipal = fp;
                         break; // pas besoin de chercher plus loin
                     }
@@ -4271,7 +4273,7 @@ public class TiersServiceImpl implements TiersService {
 				 */
 
                 final FirstForsList forsSecondaires = (forsActiviteIndependante.size() > 1 ? forsActiviteIndependante : forsImmeuble);
-                final ForFiscalPrincipal dernierForVaudois = tiers.getDernierForFiscalPrincipalVaudois();
+                final ForFiscalPrincipal dernierForVaudois = contribuable.getDernierForFiscalPrincipalVaudois();
 
                 if (dernierForVaudois != null) {
                     final Integer noOfs = dernierForVaudois.getNumeroOfsAutoriteFiscale();
@@ -4305,7 +4307,8 @@ public class TiersServiceImpl implements TiersService {
         return forGestion == null ? null : new ForGestion(forGestion);
     }
 
-	/**SIFISC-14122
+	/**
+	 * SIFISC-14122
 	 * Permet de savoir si un for fiscal est compatible  avec les régles de determination d'un for de gestion à savoir:
 	 * - Le mode d'imposition est Différent de source.
 	 * - Si le for est fermé, le motif de fermeture est différent d'un mariage, d'une séparation ou d'un départ HC,  sauf pour les mixte_2 dans le cas d'un départ HC ou si la date de fin est au 31.12 de la période
@@ -4313,11 +4316,11 @@ public class TiersServiceImpl implements TiersService {
 	 * @param date de référence pour analyser le for de gestion, peut être nulle
 	 * @return vrai si le for est éligible pour etre for de gestion, false sinon
 	 */
-	private boolean isConformePourForGestion(Tiers tiers, ForFiscalPrincipalPP f, @Nullable RegDate date) {
+	private boolean isConformePourForGestion(ContribuableImpositionPersonnesPhysiques ctb, ForFiscalPrincipalPP f, @Nullable RegDate date) {
 
 		//Découpage précis afin de faciliter la compréhension des différents cas
-		final Integer periodeReference = date!=null ?RegDateHelper.getYear(date):RegDateHelper.getYear(RegDate.get());
-		final RegDate dernierJourAnnee =  RegDateHelper.get(periodeReference, 12, 31);
+		final Integer periodeReference = date != null ? RegDateHelper.getYear(date) : RegDateHelper.getYear(RegDate.get());
+		final RegDate dernierJourAnnee = RegDateHelper.get(periodeReference, 12, 31);
 		final boolean isDateFinForDansPeriodeReference=periodeReference.equals(RegDateHelper.getYear(f.getDateFin()));
 		final boolean isFermetureDernierJourAnnee =RegDateHelper.equals(f.getDateFin(), dernierJourAnnee);
 		final boolean isSourcier = f.getModeImposition() == ModeImposition.SOURCE;
@@ -4339,7 +4342,7 @@ public class TiersServiceImpl implements TiersService {
 
 		//On récupère pour le for en cours d'analyse la liste des fors vaudois suivants accolés et ouverts dans la même période
 		//Si on en trouve un avec un départ hors canton, le for en cours d'analyse ne peut pas être for de gestion
-		final List<ForFiscalPrincipal> principaux = tiers.getForsFiscauxPrincipauxOuvertsApres(f.getDateDebut());
+		final List<ForFiscalPrincipal> principaux = ctb.getForsFiscauxPrincipauxOuvertsApres(f.getDateDebut());
 		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(principaux);
 		//Devrait être toujours vrai car on doit retrouver en début le for que l'on analyse
 		if (iter.hasNext()) {
@@ -5218,8 +5221,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
     @Override
-    public boolean isDernierForFiscalPrincipalFermePourSeparation(Tiers tiers) {
-        final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
+    public boolean isDernierForFiscalPrincipalFermePourSeparation(ContribuableImpositionPersonnesPhysiques ctb) {
+        final ForFiscalPrincipal ffp = ctb.getDernierForFiscalPrincipal();
         return ffp != null && ffp.getDateFin() != null && ffp.getMotifFermeture() == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT;
     }
 

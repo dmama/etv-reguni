@@ -24,6 +24,7 @@ import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.individu.WebCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -92,14 +93,14 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 		return localiteOuPays;
 	}
 
-	protected TiersAssocieView createTiersAssocieView(Tiers tiers) throws AdresseException, ServiceInfrastructureException {
+	protected TiersAssocieView createTiersAssocieView(ContribuableImpositionPersonnesPhysiques ctb) throws AdresseException, ServiceInfrastructureException {
 		final TiersAssocieView tiersAssocie = new TiersAssocieView();
-		tiersAssocie.setNumero(tiers.getNumero());
-		final List<String> nomCourrier = adresseService.getNomCourrier(tiers, null, false);
+		tiersAssocie.setNumero(ctb.getNumero());
+		final List<String> nomCourrier = adresseService.getNomCourrier(ctb, null, false);
 		tiersAssocie.setNomCourrier(nomCourrier);
 
-		tiersAssocie.setLocaliteOuPays(retrieveLocaliteOuPays(tiers));
-		final ForFiscalPrincipal forFiscalPrincipal = tiers.getDernierForFiscalPrincipal();
+		tiersAssocie.setLocaliteOuPays(retrieveLocaliteOuPays(ctb));
+		final ForFiscalPrincipal forFiscalPrincipal = ctb.getDernierForFiscalPrincipal();
 		if (forFiscalPrincipal != null) {
 			final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
 			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());

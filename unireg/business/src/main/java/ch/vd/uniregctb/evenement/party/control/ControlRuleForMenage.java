@@ -6,10 +6,10 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -22,9 +22,9 @@ public abstract class ControlRuleForMenage<T extends Enum<T>> extends ControlRul
 	}
 
 	@Override
-	public TaxLiabilityControlResult<T> check(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException {
+	public TaxLiabilityControlResult<T> check(@NotNull Contribuable ctb, Set<T> aRejeter) throws ControlRuleException {
 		final TaxLiabilityControlResult<T> result;
-		final List<EnsembleTiersCouple> listeCouples = tiers instanceof PersonnePhysique ? getEnsembleTiersCouple((PersonnePhysique) tiers) : null;
+		final List<EnsembleTiersCouple> listeCouples = ctb instanceof PersonnePhysique ? getEnsembleTiersCouple((PersonnePhysique) ctb) : null;
 		if (listeCouples != null && !listeCouples.isEmpty()) {
 			//recherche des menages communs assujettis sur la période
 			final List<Long> menagesCommunsAssujettis = new ArrayList<>();
@@ -47,7 +47,7 @@ public abstract class ControlRuleForMenage<T extends Enum<T>> extends ControlRul
 			//Si un seul numéro de couple est assujetti >> CTRL OK (num CTB assujetti renvoyé = num CTB couple)
 			if (menagesCommunsAssujettis.size() == 1) {
 				final Long idTiersAssujetti = menagesCommunsAssujettis.get(0);
-				final Tiers tiersCandidat = tiersService.getTiers(idTiersAssujetti);
+				final MenageCommun tiersCandidat = (MenageCommun) tiersService.getTiers(idTiersAssujetti);
 				final Set<T> sourceAssujettissement = getSourceAssujettissement(tiersCandidat);
 				result = new TaxLiabilityControlResult<>(TaxLiabilityControlResult.Origine.MENAGE_COMMUN, idTiersAssujetti, sourceAssujettissement);
 			}

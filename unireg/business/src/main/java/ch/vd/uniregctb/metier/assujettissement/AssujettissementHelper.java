@@ -17,7 +17,6 @@ import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForsParType;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -211,12 +210,12 @@ public abstract class AssujettissementHelper {
 	}
 
 	/**
-	 * @param tiers un tiers (a priori un contribuable...)
+	 * @param ctb un contribuable
 	 * @param date une date de référence
 	 * @return <code>true</code> si le tiers possède un for principal hors Suisse à la date de référence
 	 */
-	public static boolean isForPrincipalHorsSuisse(Tiers tiers, RegDate date) {
-		final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(date);
+	public static boolean isForPrincipalHorsSuisse(Contribuable ctb, RegDate date) {
+		final ForFiscalPrincipal ffp = ctb.getForFiscalPrincipalAt(date);
 		return ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS;
 	}
 }

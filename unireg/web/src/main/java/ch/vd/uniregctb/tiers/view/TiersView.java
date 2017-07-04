@@ -212,7 +212,7 @@ public class TiersView {
 	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
 		TypeAutoriteFiscale result = null;
 		if (tiers instanceof Contribuable) {
-			ForFiscalPrincipal forFiscal = tiers.getForFiscalPrincipalAt(null);
+			ForFiscalPrincipal forFiscal = ((Contribuable) tiers).getForFiscalPrincipalAt(null);
 			if (forFiscal != null) {
 				result = forFiscal.getTypeAutoriteFiscale();
 			}

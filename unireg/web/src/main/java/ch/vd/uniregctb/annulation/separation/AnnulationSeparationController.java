@@ -32,6 +32,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -149,7 +150,9 @@ public class AnnulationSeparationController {
 
 	private boolean isDernierForFiscalPrincipalFermePourSeparation(long idTiers) {
 		final Tiers tiers = tiersService.getTiers(idTiers);
-		return tiers != null && tiersService.isDernierForFiscalPrincipalFermePourSeparation(tiers);
+		return tiers != null
+				&& tiers instanceof ContribuableImpositionPersonnesPhysiques
+				&& tiersService.isDernierForFiscalPrincipalFermePourSeparation((ContribuableImpositionPersonnesPhysiques) tiers);
 	}
 
 	private String showList(Model model, TiersCriteriaView criteria) {

@@ -389,7 +389,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		domicile.compacterNonAssujettissements(noOfsCommunesVaudoises != null); // SIFISC-2939
 		AssujettissementHelper.assertCoherenceRanges(domicile);
 
-		final List<Data> economique = determineAssujettissementEconomique(fors.secondaires, fractionnements, noOfsCommunesVaudoises);
+		final List<Data> economique = determineAssujettissementEconomique(ctb, fors.secondaires, fractionnements, noOfsCommunesVaudoises);
 		fusionne(domicile, economique);
 
 		// Création des assujettissements finaux
@@ -741,18 +741,19 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	/**
 	 * Détermine les données d'assujettissements brutes pour les rattachements de type économique.
 	 *
+	 * @param ctb                    le contribuable
 	 * @param secondaires            les fors secondaires d'un contribuable
 	 * @param fractionnements        la liste des fractionnements d'assujettissement calculés lors de l'analyse des fors principaux
 	 * @param noOfsCommunesVaudoises si renseigné, détermine le assujettissements du point de vue des communes spécifiées; si null, détermine les assujettissements du point de vue cantonal.
 	 * @return la liste des assujettissements brutes calculés
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static List<Data> determineAssujettissementEconomique(List<ForFiscalSecondaire> secondaires, Fractionnements fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws
+	private static List<Data> determineAssujettissementEconomique(ContribuableImpositionPersonnesPhysiques ctb, List<ForFiscalSecondaire> secondaires, Fractionnements fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws
 			AssujettissementException {
 		List<Data> economique = new ArrayList<>();
 		// Détermine les assujettissements pour le rattachement de type économique
 		for (ForFiscalSecondaire f : secondaires) {
-			final Data a = determine(f, fractionnements, noOfsCommunesVaudoises);
+			final Data a = determine(ctb, f, fractionnements, noOfsCommunesVaudoises);
 			if (a != null) {
 				economique.add(a);
 			}
@@ -1406,7 +1407,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		return data;
 	}
 
-	private static Data determine(ForFiscalSecondaire ffs, Fractionnements<?> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private static Data determine(ContribuableImpositionPersonnesPhysiques ctb, ForFiscalSecondaire ffs, Fractionnements<?> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final RegDate debut = ffs.getDateDebut();
 		final RegDate fin = ffs.getDateFin();
@@ -1427,7 +1428,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 			// L'idée est que dans ces cas-là, le rattachement est transféré de la PP vers le ménage (ou inversément) sur l'entier de la période.
 			adebut = getDernier1Janvier(debut);
 		}
-		else if (AssujettissementHelper.isForPrincipalHorsSuisse(ffs.getTiers(), debut)) {
+		else if (AssujettissementHelper.isForPrincipalHorsSuisse(ctb, debut)) {
 			adebut = debut;
 		}
 		else {
@@ -1443,7 +1444,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 			// L'idée est que dans ces cas-là, le rattachement est transféré de la PP vers le ménage (ou inversément) sur l'entier de la période.
 			afin = getDernier31Decembre(fin);
 		}
-		else if (AssujettissementHelper.isForPrincipalHorsSuisse(ffs.getTiers(), fin)) {
+		else if (AssujettissementHelper.isForPrincipalHorsSuisse(ctb, fin)) {
 			afin = fin;
 		}
 		else {

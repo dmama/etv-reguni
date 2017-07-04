@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.MetierServiceException;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -80,8 +81,8 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 	@Transactional(readOnly = true)
 	public boolean isAvecForFiscalPrincipalActif(long noTiers) {
 		final Tiers tiers = tiersService.getTiers(noTiers);
-		if (tiers != null) {
-			final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
+		if (tiers != null && tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+			final ForFiscalPrincipal ffp = ((ContribuableImpositionPersonnesPhysiques) tiers).getDernierForFiscalPrincipal();
 			return ffp != null && ffp.getDateFin() == null;
 		}
 		return false;

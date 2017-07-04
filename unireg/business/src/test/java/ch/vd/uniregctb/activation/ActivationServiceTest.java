@@ -364,8 +364,8 @@ public class ActivationServiceTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 
-				final Tiers tiersRemplace = tiersService.getTiers(ids.remplaceId);
-				final Tiers tiersRemplacant = tiersService.getTiers(ids.remplacantId);
+				final PersonnePhysique tiersRemplace = (PersonnePhysique) tiersService.getTiers(ids.remplaceId);
+				final PersonnePhysique tiersRemplacant = (PersonnePhysique) tiersService.getTiers(ids.remplacantId);
 				Assert.assertNotNull(tiersRemplace);
 				Assert.assertNotNull(tiersRemplacant);
 

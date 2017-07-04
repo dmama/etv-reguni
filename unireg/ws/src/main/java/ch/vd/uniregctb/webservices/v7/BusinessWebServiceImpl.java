@@ -390,11 +390,12 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				if (tiers.isDebiteurInactif()) {
 					result.addCasTraite(key, AckStatus.ERROR_INACTIVE_DEBTOR, null);
 				}
-				else if (tiers.getDernierForFiscalPrincipal() == null) {
-					result.addCasTraite(key, AckStatus.ERROR_TAX_LIABILITY, "Aucun for principal.");
-				}
 				else if (tiers instanceof Contribuable) {
 					final Contribuable ctb = (Contribuable) tiers;
+					if (ctb.getDernierForFiscalPrincipal() == null) {
+						result.addCasTraite(key, AckStatus.ERROR_TAX_LIABILITY, "Aucun for principal.");
+					}
+
 					final DeclarationImpotOrdinaire di = findDeclaration(ctb, pf, noSeq);
 					if (di == null) {
 						result.addCasTraite(key, AckStatus.ERROR_UNKNOWN_TAX_DECLARATION, null);

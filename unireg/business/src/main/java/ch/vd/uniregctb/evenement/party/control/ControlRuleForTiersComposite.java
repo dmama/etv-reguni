@@ -4,7 +4,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -21,12 +21,12 @@ public abstract class ControlRuleForTiersComposite<T extends Enum<T>> extends Ab
 		this.controlRule = controlRule;
 	}
 
-	public final AssujettissementStatut checkAssujettissement(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException {
-		return controlRule.checkAssujettissement(tiers, aRejeter);
+	public final AssujettissementStatut checkAssujettissement(@NotNull Contribuable ctb, Set<T> aRejeter) throws ControlRuleException {
+		return controlRule.checkAssujettissement(ctb, aRejeter);
 	}
 
 	@Override
-	public final Set<T> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException {
-		return controlRule.getSourceAssujettissement(tiers);
+	public final Set<T> getSourceAssujettissement(@NotNull Contribuable ctb) throws ControlRuleException {
+		return controlRule.getSourceAssujettissement(ctb);
 	}
 }

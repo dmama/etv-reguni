@@ -4,8 +4,8 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -20,13 +20,13 @@ public abstract class ControlRuleForTiers<T extends Enum<T>> extends AbstractCon
 	}
 
 	@Override
-	public TaxLiabilityControlResult<T> check(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException {
+	public TaxLiabilityControlResult<T> check(@NotNull Contribuable ctb, Set<T> aRejeter) throws ControlRuleException {
 		//S'il y a un assujettissement sur tout ou partie de la PF (au moins 1 jour) -> CTRL OK
 		final TaxLiabilityControlResult<T> result;
-		final AssujettissementStatut assujettissementStatut = checkAssujettissement(tiers, aRejeter);
+		final AssujettissementStatut assujettissementStatut = checkAssujettissement(ctb, aRejeter);
 		if (assujettissementStatut.isAssujetti) {
-			final Set<T> sourceAssujettissement = getSourceAssujettissement(tiers);
-			result = new TaxLiabilityControlResult<>(TaxLiabilityControlResult.Origine.INITIAL, tiers.getId(), sourceAssujettissement);
+			final Set<T> sourceAssujettissement = getSourceAssujettissement(ctb);
+			result = new TaxLiabilityControlResult<>(TaxLiabilityControlResult.Origine.INITIAL, ctb.getId(), sourceAssujettissement);
 		}
 		//	Dans le cas contraire (pas un seul jour d'assujettissement)-> CTRL KO
 		else {

@@ -33,10 +33,10 @@ import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
 
 public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionQuestionnaireSNCHelper {
@@ -124,7 +124,7 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 	}
 
 	@Nullable
-	private static ForFiscalPrincipal getForPrincipalInteressant(Tiers tiers, int pf) {
+	private static ForFiscalPrincipal getForPrincipalInteressant(Contribuable tiers, int pf) {
 		final DateRange periode = new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31));
 		for (ForFiscalPrincipal ffp : CollectionsUtils.revertedOrder(tiers.getForsFiscauxPrincipauxActifsSorted())) {
 			if (ffp.getGenreImpot() == GenreImpot.REVENU_FORTUNE && DateRangeHelper.intersect(periode, ffp)) {

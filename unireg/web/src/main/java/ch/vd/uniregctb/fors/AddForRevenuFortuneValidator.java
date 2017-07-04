@@ -5,6 +5,7 @@ import org.springframework.validation.Errors;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
@@ -57,8 +58,8 @@ public abstract class AddForRevenuFortuneValidator extends AddForAvecMotifsValid
 		boolean premierFor = false;
 		if (nonVaudois) {
 			// [SIFISC-4065] On n'autorise les motifs d'ouverture vide que s'il n'y a pas de for principal non annulé existant avant le for que l'on veut créer maintenant
-			final Tiers tiers = hibernateTemplate.get(Tiers.class, view.getTiersId());
-			premierFor = tiers.getDernierForFiscalPrincipalAvant(view.getDateDebut()) == null;
+			final Contribuable ctb = hibernateTemplate.get(Contribuable.class, view.getTiersId());
+			premierFor = ctb != null && ctb.getDernierForFiscalPrincipalAvant(view.getDateDebut()) == null;
 		}
 		return nonVaudois && premierFor;
 	}

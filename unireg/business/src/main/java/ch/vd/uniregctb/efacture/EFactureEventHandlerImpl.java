@@ -23,6 +23,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -188,6 +189,8 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 			return TypeRefusDemande.NUMERO_CTB_INCOHERENT;
 		}
 
+		final Contribuable contribuable = (Contribuable) tiers;
+
 		// si c'est un NAVS13, on vérifie qu'il correspond à au moins un contribuable PP lié au numéro donné
 		if (isNavs13) {
 			// si le set contient "null", on ne va pas plus loin dans le test sur le numéro AVS puisqu'un au moins est inconnu dans le registre
@@ -200,7 +203,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 		}
 		else {
 			// ce n'est pas un numéro AVS13, il faut donc vérifier que le contribuable a un for principal HS actif
-			final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipal ffp = contribuable.getDernierForFiscalPrincipal();
 			if (ffp == null || ffp.getDateFin() != null || ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS) {
 				return TypeRefusDemande.NUMERO_SECU_SANS_FOR_PRINCIPAL_HS;
 			}
@@ -208,7 +211,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
 		// vérifier la présence d'une adresse courrier
 		try {
-			if (adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false) == null) {
+			if (adresseService.getAdresseFiscale(contribuable, TypeAdresseFiscale.COURRIER, null, false) == null) {
 				return TypeRefusDemande.ADRESSE_COURRIER_INEXISTANTE;
 			}
 		}
