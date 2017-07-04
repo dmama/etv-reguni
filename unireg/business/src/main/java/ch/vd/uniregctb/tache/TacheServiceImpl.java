@@ -1593,18 +1593,16 @@ public class TacheServiceImpl implements TacheService {
 				ForFiscal dernierForFiscalVaudoisNonSourceAnnule = null;
 
 				final List<ForFiscal> fors = contribuable.getForsFiscauxSorted();
-				if (fors != null) {
-					for (int i = fors.size() - 1; i >= 0; --i) {
-						final ForFiscal f = fors.get(i);
-						if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-							if (dernierForFiscalVaudois == null) {
-								dernierForFiscalVaudois = f;
-							}
-							if (f.isAnnule()) {
-								if (f instanceof ForFiscalSecondaire || (f.isPrincipal() && ((ForFiscalPrincipalPP) f).getModeImposition() != ModeImposition.SOURCE)) {
-									dernierForFiscalVaudoisNonSourceAnnule = f;
-									break;
-								}
+				for (int i = fors.size() - 1; i >= 0; --i) {
+					final ForFiscal f = fors.get(i);
+					if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						if (dernierForFiscalVaudois == null) {
+							dernierForFiscalVaudois = f;
+						}
+						if (f.isAnnule()) {
+							if (f instanceof ForFiscalSecondaire || (f.isPrincipal() && ((ForFiscalPrincipalPP) f).getModeImposition() != ModeImposition.SOURCE)) {
+								dernierForFiscalVaudoisNonSourceAnnule = f;
+								break;
 							}
 						}
 					}

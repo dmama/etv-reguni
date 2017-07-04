@@ -211,7 +211,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	protected static int getNoSequenceAnnexeImmeuble(ContribuableImpositionPersonnesPhysiques ctb, DateRange pi) {
 		final List<DeclarationImpotOrdinairePP> decls = ctb.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, pi.getDateFin().year(), true);
 		final int noSequence;
-		if (decls == null || decls.isEmpty()) {
+		if (decls.isEmpty()) {
 			noSequence = 1;
 		}
 		else {

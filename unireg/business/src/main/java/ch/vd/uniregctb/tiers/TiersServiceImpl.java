@@ -2544,7 +2544,7 @@ public class TiersServiceImpl implements TiersService {
             if (forFiscalPrincipal.getDateDebut().year() == RegDate.get().year()) {
                 // Le for ouvert est dans la période courante, on verifie que le contribuable n'ait pas une DI libre
                 final List<DeclarationImpotOrdinairePP> dis = contribuable.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, RegDate.get().year(), false);
-                if (dis != null && !dis.isEmpty()) {
+                if (!dis.isEmpty()) {
                     dis.sort(new DateRangeComparator<>());
                     final DeclarationImpotOrdinairePP di = dis.get(dis.size() - 1);
                     // Le contribuable a une DI libre, on ajuste la periode d'imposition
@@ -3367,7 +3367,7 @@ public class TiersServiceImpl implements TiersService {
      */
     private void annulerPeriodicitePosterieure(DebiteurPrestationImposable debiteur, RegDate dateDebut) {
         final List<Periodicite> periodicites = debiteur.getPeriodicitesSorted();
-        if (periodicites != null && !periodicites.isEmpty()) {
+        if (!periodicites.isEmpty()) {
             for (Periodicite periodicite : periodicites) {
                 if (RegDateHelper.isAfter(periodicite.getDateDebut(), dateDebut, NullDateBehavior.LATEST)) {
                     periodicite.setAnnule(true);
@@ -4398,7 +4398,7 @@ public class TiersServiceImpl implements TiersService {
         List<ForGestion> results = new ArrayList<>();
 
         final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxSorted();
-        if (forsFiscaux == null || forsFiscaux.isEmpty()) {
+        if (forsFiscaux.isEmpty()) {
             return results;
         }
 
@@ -6035,7 +6035,7 @@ public class TiersServiceImpl implements TiersService {
 	@Nullable
 	private static FlagEntreprise getDernierFlagEntreprise(Entreprise e, GroupeFlagsEntreprise groupe) {
 		final List<FlagEntreprise> all = e.getFlagsNonAnnulesTries(groupe);
-		return all.isEmpty() ? null : all.get(all.size() - 1);
+		return all.isEmpty() ? null : CollectionsUtils.getLastElement(all);
 	}
 
 	@Override

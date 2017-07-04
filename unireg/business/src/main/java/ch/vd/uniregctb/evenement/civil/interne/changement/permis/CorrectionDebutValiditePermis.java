@@ -81,7 +81,7 @@ public class CorrectionDebutValiditePermis extends EvenementCivilInterne {
 
 					if (mineurs) {
 						final List<ForFiscal> fors = ctb.getForsFiscauxValidAt(aujourdhui);
-						if (fors == null || fors.isEmpty()) {
+						if (fors.isEmpty()) {
 							ignorable = true;
 							Audit.info(getNumeroEvenement(), "Permis C sur mineur sans for (à la date de traitement) : ignoré");
 						}

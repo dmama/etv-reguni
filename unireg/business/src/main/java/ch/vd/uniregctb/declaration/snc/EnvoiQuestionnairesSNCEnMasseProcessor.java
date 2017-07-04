@@ -155,7 +155,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 		else {
 			// un questionnaire existe-t-il déjà pour cette période fiscale
 			final List<QuestionnaireSNC> questionnairesExistants = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, pf.getAnnee(), false);
-			if (questionnairesExistants != null && !questionnairesExistants.isEmpty()) {
+			if (!questionnairesExistants.isEmpty()) {
 				// on annule tout, il n'y a rien à faire !
 				for (Tache tache : tachesATraiter) {
 					tache.setAnnule(true);
@@ -190,10 +190,8 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 	private static int getNewSequenceNumber(Entreprise entreprise, int pf) {
 		final List<DeclarationAvecNumeroSequence> declarations = entreprise.getDeclarationsDansPeriode(DeclarationAvecNumeroSequence.class, pf, true);
 		int max = 0;
-		if (declarations != null) {
-			for (DeclarationAvecNumeroSequence declaration : declarations) {
-				max = Math.max(max, declaration.getNumero());
-			}
+		for (DeclarationAvecNumeroSequence declaration : declarations) {
+			max = Math.max(max, declaration.getNumero());
 		}
 		return max + 1;
 	}

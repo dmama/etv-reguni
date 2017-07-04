@@ -6,17 +6,20 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ForeignKey;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
@@ -61,39 +64,28 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 
 	@Transient
 	public SituationFamille getSituationFamilleAt(@Nullable RegDate date) {
-
-		if (situationsFamille == null) {
+		if (situationsFamille == null || situationsFamille.isEmpty()) {
 			return null;
 		}
-
-		for (SituationFamille situation : situationsFamille) {
-			if (situation.isValidAt(date)) {
-				return situation;
-			}
-		}
-
-		return null;
+		return situationsFamille.stream()
+				.filter(situ -> situ.isValidAt(date))
+				.findFirst()
+				.orElse(null);
 	}
 
 	/**
 	 * @return les situations de famille non-annulées triées par - La date d'ouverture
 	 */
+	@NotNull
 	@Transient
 	public List<SituationFamille> getSituationsFamilleSorted() {
-		List<SituationFamille> situations = null;
-		if (situationsFamille != null) {
-			situations = new ArrayList<>();
-			for (SituationFamille situation : situationsFamille) {
-				if (!situation.isAnnule())
-					situations.add(situation);
-			}
-			situations.sort(new DateRangeComparator<>());
-		}
-		return situations;
+		return CollectionsUtils.neverNull(situationsFamille).stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
 	}
 
 	// ***********************************************
-	@Transient
 	public void closeSituationFamilleActive(RegDate dateFin) {
 		final SituationFamille situation = getSituationFamilleActive();
 		if (situation != null) {
@@ -179,7 +171,7 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 
 	public DeclarationImpotOrdinairePP getDeclarationActiveAt(RegDate date) {
 		final List<DeclarationImpotOrdinairePP> declarations = getDeclarationsTriees(DeclarationImpotOrdinairePP.class, false);
-		if (declarations == null || declarations.isEmpty()) {
+		if (declarations.isEmpty()) {
 			return null;
 		}
 		return DateRangeHelper.rangeAt(declarations, date);
@@ -232,6 +224,7 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 		return (ForFiscalPrincipalPP) super.getForFiscalPrincipalAt(date);
 	}
 
+	@NotNull
 	@Transient
 	@Override
 	public List<ForFiscalPrincipalPP> getForsFiscauxPrincipauxActifsSorted() {

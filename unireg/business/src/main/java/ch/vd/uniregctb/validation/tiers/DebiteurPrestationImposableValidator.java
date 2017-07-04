@@ -40,7 +40,7 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 	private ValidationResults validatePeriodicites(DebiteurPrestationImposable dpi) {
 		final ValidationResults results = new ValidationResults();
 		final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
-		if (periodicites == null || periodicites.isEmpty()) {
+		if (periodicites.isEmpty()) {
 			results.addWarning("ce débiteur n'a aucune périodicité");
 		}
 		else {

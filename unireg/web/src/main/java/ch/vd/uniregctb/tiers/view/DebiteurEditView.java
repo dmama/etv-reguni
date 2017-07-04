@@ -56,7 +56,7 @@ public class DebiteurEditView {
 
 	private static RegDate getDateReferencePourPeriodiciteActive(DebiteurPrestationImposable dpi) {
 		final List<DeclarationImpotSource> lrs = dpi.getDeclarationsTriees(DeclarationImpotSource.class, false);
-		return lrs == null || lrs.isEmpty() ? RegDate.get() : CollectionsUtils.getLastElement(lrs).getDateFin();
+		return lrs.isEmpty() ? RegDate.get() : CollectionsUtils.getLastElement(lrs).getDateFin();
 	}
 
 	public Long getId() {

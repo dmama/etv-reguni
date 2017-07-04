@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -130,13 +131,9 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@NotNull
 	public List<RegimeFiscal> getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee portee) {
 		final List<RegimeFiscal> all = getRegimesFiscauxNonAnnulesTries();
-		final List<RegimeFiscal> pourPortee = new ArrayList<>(all.size());
-		for (RegimeFiscal rf : all) {
-			if (rf.getPortee() == portee) {
-				pourPortee.add(rf);
-			}
-		}
-		return pourPortee;
+		return all.stream()
+				.filter(rf -> rf.getPortee() == portee)
+				.collect(Collectors.toList());
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)
@@ -188,15 +185,13 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	@Transient
 	public ActiviteEconomique getActiviteEconomiquePrincipaleValidAt(RegDate date) {
-		for (RapportEntreTiers ret : getRapportsSujet()) {
-			if (ret instanceof ActiviteEconomique && ret.isValidAt(date)) {
-				ActiviteEconomique ae = (ActiviteEconomique) ret;
-				if (ae.isPrincipal()) {
-					return ae;
-				}
-			}
-		}
-		return null;
+		return CollectionsUtils.neverNull(getRapportsSujet()).stream()
+				.filter(ActiviteEconomique.class::isInstance)
+				.map(ActiviteEconomique.class::cast)
+				.filter(ActiviteEconomique::isPrincipal)
+				.filter(ret -> ret.isValidAt(date))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Transient
@@ -356,6 +351,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		return flags;
 	}
 
+	@NotNull
 	@Transient
 	public List<FlagEntreprise> getFlagsNonAnnulesTries() {
 		final List<FlagEntreprise> nonAnnules = AnnulableHelper.sansElementsAnnules(flags);
@@ -363,16 +359,13 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		return nonAnnules;
 	}
 
+	@NotNull
 	@Transient
 	public List<FlagEntreprise> getFlagsNonAnnulesTries(GroupeFlagsEntreprise groupe) {
 		final List<FlagEntreprise> tous = getFlagsNonAnnulesTries();
-		final List<FlagEntreprise> filtres = new ArrayList<>(tous.size());
-		for (FlagEntreprise flag : tous) {
-			if (flag.getGroupe() == groupe) {
-				filtres.add(flag);
-			}
-		}
-		return filtres;
+		return tous.stream()
+				.filter(flag -> flag.getGroupe() == groupe)
+				.collect(Collectors.toList());
 	}
 
 	public void setFlags(Set<FlagEntreprise> flags) {
@@ -486,18 +479,8 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 			}
 		}
 		if (sorted && liste.size() > 1) {
-			liste.sort(new Comparator<T>() {
-				@Override
-				public int compare(T o1, T o2) {
-					int compare = NullDateBehavior.EARLIEST.compare(o1.getDateEnvoi(), o2.getDateEnvoi());
-					if (compare == 0) {
-						final long id1 = o1.getId() != null ? o1.getId() : Long.MAX_VALUE;
-						final long id2 = o2.getId() != null ? o2.getId() : Long.MAX_VALUE;
-						compare = Long.compare(id1, id2);
-					}
-					return compare;
-				}
-			});
+			liste.sort(Comparator.comparing(AutreDocumentFiscal::getDateEnvoi, NullDateBehavior.EARLIEST::compare)
+					           .thenComparing(AutreDocumentFiscal::getId, Comparator.nullsLast(Comparator.naturalOrder())));
 		}
 		return liste;
 	}

@@ -1103,18 +1103,16 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		if (etatCivil != null && dateEtatCivil != null) {
 			final List<SituationFamille> sfs = data.personnePhysique.getSituationsFamilleSorted();
 			final RegDate effDateEtatCivil = getDateEffectiveEtatCivil(dateEtatCivil, dateSeparation);
-			final SituationFamille sf = sfs != null ? DateRangeHelper.rangeAt(sfs, effDateEtatCivil) : null;
+			final SituationFamille sf = DateRangeHelper.rangeAt(sfs, effDateEtatCivil);
 			final EtatCivil effEtatCivil = getEtatCivilEffectif(effDateEtatCivil, etatCivil, dateSeparation);
 			if (sf == null || sf.getEtatCivil() != effEtatCivil) {
 				// fermeture de la situation de famille encore ouverte et annulation des situations de familles éventuelles ultérieures
-				if (sfs != null) {
-					for (SituationFamille curseur : sfs) {
-						if (RegDateHelper.isAfterOrEqual(curseur.getDateDebut(), effDateEtatCivil, NullDateBehavior.EARLIEST)) {
-							curseur.setAnnule(true);
-						}
-						else if (curseur.getDateFin() == null) {
-							curseur.setDateFin(effDateEtatCivil.getOneDayBefore());
-						}
+				for (SituationFamille curseur : sfs) {
+					if (RegDateHelper.isAfterOrEqual(curseur.getDateDebut(), effDateEtatCivil, NullDateBehavior.EARLIEST)) {
+						curseur.setAnnule(true);
+					}
+					else if (curseur.getDateFin() == null) {
+						curseur.setDateFin(effDateEtatCivil.getOneDayBefore());
 					}
 				}
 

@@ -291,7 +291,7 @@ public class DeterminationDIsPMAEmettreProcessor {
 		// relative à la date de traitement)
 
 		final List<DeclarationImpotOrdinairePM> declarations = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, false);
-		if (declarations != null && !declarations.isEmpty()) {
+		if (!declarations.isEmpty()) {
 			for (DeclarationImpotOrdinairePM di : declarations) {
 				if (di.getPeriode().getAnnee().equals(periodeFiscale.getAnnee())) {
 					verifierValiditeDeclaration(entreprise, data, di, rapport);

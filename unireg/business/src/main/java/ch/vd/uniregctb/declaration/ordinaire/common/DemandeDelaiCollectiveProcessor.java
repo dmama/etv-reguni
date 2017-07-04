@@ -152,7 +152,7 @@ public class DemandeDelaiCollectiveProcessor {
 	                                        DemandeDelaiCollectiveResults r) {
 
 		final List<DeclarationImpotOrdinaire> declarations = ctb.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, annee, false);
-		if (declarations == null || declarations.isEmpty()) {
+		if (declarations.isEmpty()) {
 			r.addErrorCtbSansDI(ctb);
 			return;
 		}

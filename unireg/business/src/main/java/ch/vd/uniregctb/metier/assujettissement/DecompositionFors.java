@@ -79,56 +79,54 @@ public abstract class DecompositionFors implements DateRange {
 		ForFiscalPrincipal forPrincipalAvant = null;
 		ForFiscalPrincipal forPrincipalApres = null;
 
-		if (fors != null) {
-			for (ForFiscal f : fors) {
-				if (f.isAnnule()) {
-					continue;
-				}
+		for (ForFiscal f : fors) {
+			if (f.isAnnule()) {
+				continue;
+			}
 
-				if (f.isValidAt(fin)) {
-					// Le for est valide à la fin de la période
-					if (f.isPrincipal()) {
-						if (forPrincipal != null) {
-							Assert.fail("Le contribuable n°" + contribuable.getNumero() + " possède plus d'un for principal valide à la date = " + fin);
-						}
-						forPrincipal = (ForFiscalPrincipal) f;
-						this.principauxDansLaPeriode.add(forPrincipal);
+			if (f.isValidAt(fin)) {
+				// Le for est valide à la fin de la période
+				if (f.isPrincipal()) {
+					if (forPrincipal != null) {
+						Assert.fail("Le contribuable n°" + contribuable.getNumero() + " possède plus d'un for principal valide à la date = " + fin);
 					}
-					else if (f instanceof ForFiscalSecondaire) {
-						this.secondaires.add((ForFiscalSecondaire) f);
-						this.secondairesDansLaPeriode.add((ForFiscalSecondaire) f);
-					}
+					forPrincipal = (ForFiscalPrincipal) f;
+					this.principauxDansLaPeriode.add(forPrincipal);
 				}
-				else if (DateRangeHelper.intersect(f, rangePeriode)) {
-					// Le for est valide dans la période
-					if (f.isPrincipal()) {
-						this.principauxDansLaPeriode.add((ForFiscalPrincipal) f);
-					}
-					else if (f instanceof ForFiscalSecondaire) {
-						this.secondairesDansLaPeriode.add((ForFiscalSecondaire) f);
-					}
+				else if (f instanceof ForFiscalSecondaire) {
+					this.secondaires.add((ForFiscalSecondaire) f);
+					this.secondairesDansLaPeriode.add((ForFiscalSecondaire) f);
 				}
+			}
+			else if (DateRangeHelper.intersect(f, rangePeriode)) {
+				// Le for est valide dans la période
+				if (f.isPrincipal()) {
+					this.principauxDansLaPeriode.add((ForFiscalPrincipal) f);
+				}
+				else if (f instanceof ForFiscalSecondaire) {
+					this.secondairesDansLaPeriode.add((ForFiscalSecondaire) f);
+				}
+			}
 
-				if (debut != null && f.isValidAt(debut.getOneDayBefore())) {
-					// le for est valide juste avant la période
-					if (f instanceof ForFiscalPrincipal) {
-						Assert.isNull(forPrincipalAvant);
-						forPrincipalAvant = (ForFiscalPrincipal) f;
-					}
-					else if (f instanceof ForFiscalSecondaire) {
-						this.secondairesAvantLaPeriode.add((ForFiscalSecondaire) f);
-					}
+			if (debut != null && f.isValidAt(debut.getOneDayBefore())) {
+				// le for est valide juste avant la période
+				if (f instanceof ForFiscalPrincipal) {
+					Assert.isNull(forPrincipalAvant);
+					forPrincipalAvant = (ForFiscalPrincipal) f;
 				}
+				else if (f instanceof ForFiscalSecondaire) {
+					this.secondairesAvantLaPeriode.add((ForFiscalSecondaire) f);
+				}
+			}
 
-				if (fin != null && f.isValidAt(fin.getOneDayAfter())) {
-					// le for est valide juste après la période
-					if (f instanceof ForFiscalPrincipal) {
-						Assert.isNull(forPrincipalApres);
-						forPrincipalApres = (ForFiscalPrincipal) f;
-					}
-					else if (f instanceof ForFiscalSecondaire) {
-						this.secondairesApresLaPeriode.add((ForFiscalSecondaire) f);
-					}
+			if (fin != null && f.isValidAt(fin.getOneDayAfter())) {
+				// le for est valide juste après la période
+				if (f instanceof ForFiscalPrincipal) {
+					Assert.isNull(forPrincipalApres);
+					forPrincipalApres = (ForFiscalPrincipal) f;
+				}
+				else if (f instanceof ForFiscalSecondaire) {
+					this.secondairesApresLaPeriode.add((ForFiscalSecondaire) f);
 				}
 			}
 		}

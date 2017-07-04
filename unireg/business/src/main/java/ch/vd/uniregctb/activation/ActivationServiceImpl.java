@@ -87,7 +87,7 @@ public class ActivationServiceImpl implements ActivationService {
 
 		// s'il n'y a pas de for actif à la date de désactivation, il faut carrément annuler le tiers complètement
 		final List<ForFiscal> forsFiscauxValides = tiers.getForsFiscauxValidAt(dateAnnulation);
-		if (forsFiscauxValides == null || forsFiscauxValides.isEmpty()) {
+		if (forsFiscauxValides.isEmpty()) {
 			tiers.setAnnule(true);
 		}
 	}

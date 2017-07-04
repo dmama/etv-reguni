@@ -259,7 +259,7 @@ public class Deces extends EvenementCivilInterne {
 		}
 
 		final List<ForFiscal> forsFiscauxOuverts = ctbPourFors.getForsFiscauxValidAt(null);
-		if (forsFiscauxOuverts != null && forsFiscauxOuverts.size() > 0) {
+		if (forsFiscauxOuverts.size() > 0) {
 			// visiblement, il y a encore des fors fiscaux ouverts, ce qui fait un peu tâche sur un décédé
 			warnings.addWarning(String.format("Il reste au moins un for fiscal ouvert sur le contribuable %s malgré la date de décès déjà renseignée sur la personne physique %s.",
 			                                  FormatNumeroHelper.numeroCTBToDisplay(ctbPourFors.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero())));

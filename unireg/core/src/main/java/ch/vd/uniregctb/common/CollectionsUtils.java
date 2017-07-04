@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.RandomAccess;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -360,5 +361,25 @@ public abstract class CollectionsUtils {
 		else {
 			return new ArrayList<>(coll);
 		}
+	}
+
+	/**
+	 * @param list une liste, qui peut être nulle
+	 * @param <T> le type des éléments de la liste
+	 * @return la liste elle-même si elle n'est pas nulle, ou une liste (read-only) vide si elle l'était
+	 */
+	@NotNull
+	public static <T> List<T> neverNull(@Nullable List<T> list) {
+		return list == null ? Collections.emptyList() : list;
+	}
+
+	/**
+	 * @param set un ensemble, qui peut être null
+	 * @param <T> le type des éléments de l'ensemble
+	 * @return l'ensemble lui-même s'il n'est pas null, ou un ensemble (read-only) vide s'il l'était
+	 */
+	@NotNull
+	public static <T> Set<T> neverNull(@Nullable Set<T> set) {
+		return set == null ? Collections.emptySet() : set;
 	}
 }

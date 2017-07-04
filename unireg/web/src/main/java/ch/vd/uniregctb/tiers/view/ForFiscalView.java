@@ -104,7 +104,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	public static List<ForFiscalView> getList(@NotNull Tiers tiers, @Nullable BiFunction<Contribuable, RegDate, ForGestion> dernierForGestionProvider) {
 
 		final List<ForFiscal> forsFiscauxSorted = tiers.getForsFiscauxSorted();
-		if (forsFiscauxSorted == null || forsFiscauxSorted.isEmpty()) {
+		if (forsFiscauxSorted.isEmpty()) {
 			return Collections.emptyList();
 		}
 

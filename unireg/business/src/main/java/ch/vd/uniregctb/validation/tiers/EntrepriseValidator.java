@@ -109,19 +109,17 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 				// principal avec un genre d'impôt 'bénéfice/capital'
 				final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
 				// Il se peut qu'aucun for principal actif n'existe
-				if (forsPrincipaux != null) {
-					for (ForFiscalPrincipalPM ff : forsPrincipaux) {
-						if (ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL) {
-							// nous venons de trouver le premier for principal IBC
-							// (comme nous sommes dans le validateur, il n'est pas exclu que la date de début de ce for soit nulle,,,)
-							if (ff.getDateDebut() == null || entreprise.getDateDebutPremierExerciceCommercial().isAfter(ff.getDateDebut())) {
-								vr.addError(String.format(
-										"La date de début du premier exercice commercial (%s) doit être antérieure ou égale à la date de début du premier for principal IBC (%s) de l'entreprise.",
-										RegDateHelper.dateToDisplayString(entreprise.getDateDebutPremierExerciceCommercial()),
-										RegDateHelper.dateToDisplayString(ff.getDateDebut())));
-							}
-							break;
+				for (ForFiscalPrincipalPM ff : forsPrincipaux) {
+					if (ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL) {
+						// nous venons de trouver le premier for principal IBC
+						// (comme nous sommes dans le validateur, il n'est pas exclu que la date de début de ce for soit nulle,,,)
+						if (ff.getDateDebut() == null || entreprise.getDateDebutPremierExerciceCommercial().isAfter(ff.getDateDebut())) {
+							vr.addError(String.format(
+									"La date de début du premier exercice commercial (%s) doit être antérieure ou égale à la date de début du premier for principal IBC (%s) de l'entreprise.",
+									RegDateHelper.dateToDisplayString(entreprise.getDateDebutPremierExerciceCommercial()),
+									RegDateHelper.dateToDisplayString(ff.getDateDebut())));
 						}
+						break;
 					}
 				}
 			}

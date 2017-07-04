@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -77,17 +76,12 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		return vr;
 	}
 
-	@NotNull
-	protected static <T> List<T> neverNull(List<T> list) {
-		return list == null ? Collections.emptyList() : list;
-	}
-
 	@Override
 	protected ValidationResults validateFors(T ctb) {
 		final ValidationResults vr = super.validateFors(ctb);
 
 		// les plages de validité des fors principaux ne doivent pas se chevaucher
-		final List<? extends ForFiscalPrincipal> forsPrincipaux = neverNull(ctb.getForsFiscauxPrincipauxActifsSorted());
+		final List<? extends ForFiscalPrincipal> forsPrincipaux = ctb.getForsFiscauxPrincipauxActifsSorted();
 		final MovingWindow<ForFiscalPrincipal> movingWindow = new MovingWindow<>(forsPrincipaux);
 		while (movingWindow.hasNext()) {
 			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = movingWindow.next();
@@ -168,7 +162,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		final ValidationResults results = super.validateDeclarations(ctb);
 
 		final List<DeclarationImpotOrdinaire> decls = ctb.getDeclarationsTriees(DeclarationImpotOrdinaire.class, false);
-		if (decls != null && !decls.isEmpty()) {
+		if (!decls.isEmpty()) {
 
 			// [SIFISC-3127] on valide les déclarations d'impôts ordinaires par rapport aux périodes d'imposition théoriques
 			try {

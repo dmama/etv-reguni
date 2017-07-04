@@ -1517,7 +1517,7 @@ public class MetierServiceImpl implements MetierService {
 
 	private static boolean hasForSecondaireOuvert(Contribuable ctb, RegDate date) {
 		final List<ForFiscal> forFiscaux = ctb.getForsFiscauxValidAt(date);
-		if (forFiscaux != null && forFiscaux.size() > 0) {
+		if (!forFiscaux.isEmpty()) {
 			for (ForFiscal ff : forFiscaux) {
 				if (ff instanceof ForFiscalSecondaire) {
 					return true;
@@ -1584,13 +1584,12 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private void updateSituationFamilleSeparation(MenageCommun menageCommun, RegDate date, ch.vd.uniregctb.type.EtatCivil etatCivil) throws MetierServiceException {
-		if (menageCommun.getSituationsFamilleSorted() != null) {
-			for (SituationFamille sf : menageCommun.getSituationsFamilleSorted()) {
-				if (sf.getDateDebut().isAfter(date)) {
-					throw new MetierServiceException("Des situations famille actives existent après la date de séparation. Veuillez les annuler manuellement.");
-				}
+		for (SituationFamille sf : menageCommun.getSituationsFamilleSorted()) {
+			if (sf.getDateDebut().isAfter(date)) {
+				throw new MetierServiceException("Des situations famille actives existent après la date de séparation. Veuillez les annuler manuellement.");
 			}
 		}
+
 		/*
 		 * Fermeture de la situation de famille actuelle du ménage
 		 */

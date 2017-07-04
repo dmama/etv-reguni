@@ -21,12 +21,12 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
@@ -300,32 +300,18 @@ public abstract class Contribuable extends Tiers {
 		return decisionsAci;
 	}
 
+	@NotNull
 	@Transient
 	public List<DecisionAci> getDecisionsSorted() {
-		List<DecisionAci> decisions = null;
-		if (decisionsAci != null) {
-			decisions = new ArrayList<>();
-			for (DecisionAci decisionAci : decisionsAci) {
-				if (!decisionAci.isAnnule()) {
-					decisions.add(decisionAci);
-				}
-			}
-			decisions.sort(new DateRangeComparator<DecisionAci>() {
-				@Override
-				public int compare(DecisionAci o1, DecisionAci o2) {
-					int comparisonDates = super.compare(o1, o2);
-					if (comparisonDates == 0) {
-						// à dates égales, il faut comparer selon le type d'autorité fiscale
-						return Integer.compare(o1.getTypeAutoriteFiscale().ordinal(), o2.getTypeAutoriteFiscale().ordinal());
-					}
-					else {
-						return comparisonDates;
-					}
-				}
-			});
+		if (decisionsAci == null || decisionsAci.isEmpty()) {
+			return Collections.emptyList();
 		}
-		return decisions;
+		return decisionsAci.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.sorted(new DateRangeComparator<DecisionAci>().thenComparing(DecisionAci::getTypeAutoriteFiscale))
+				.collect(Collectors.toList());
 	}
+
 	public void setDecisionsAci(Set<DecisionAci> decisionsAci) {
 		this.decisionsAci = decisionsAci;
 	}
@@ -357,60 +343,40 @@ public abstract class Contribuable extends Tiers {
 
 	@Transient
 	public boolean hasDecisionAciValidAt(@Nullable RegDate date) {
-
-		if (decisionsAci == null) {
+		if (decisionsAci == null || decisionsAci.isEmpty()) {
 			return false;
 		}
-
-		for (DecisionAci d : decisionsAci) {
-			if (d.isValidAt(date)) {
-				return true;
-			}
-		}
-
-		return false;
+		return decisionsAci.stream().anyMatch(d -> d.isValidAt(date));
 	}
 
 	@Transient
 	public boolean hasDecisionEnCours(){
-		if (decisionsAci == null) {
+		if (decisionsAci == null || decisionsAci.isEmpty()) {
 			return false;
 		}
-
-		for (DecisionAci d : decisionsAci) {
-			final boolean ouverte =  d.getDateFin()==null || d.getDateFin().isAfterOrEqual(RegDate.get());
-			if (ouverte && !d.isAnnule()) {
-				return true;
-			}
-		}
-
-		return false;
+		return decisionsAci.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.anyMatch(d -> RegDateHelper.isAfterOrEqual(d.getDateFin(), RegDate.get(), NullDateBehavior.LATEST));
 	}
 
 
 	@Transient
-	public boolean hasDecisionsNonAnnulees(){
-		if (decisionsAci == null) {
+	public boolean hasDecisionsNonAnnulees() {
+		if (decisionsAci == null || decisionsAci.isEmpty()) {
 			return false;
 		}
-		for (DecisionAci d : decisionsAci) {
-			if (!d.isAnnule()) {
-				return true;
-			}
-		}
-		return false;
+		return decisionsAci.stream().anyMatch(AnnulableHelper::nonAnnule);
 	}
 
 
 	@Transient
 	public RegDate getDateFinDerniereDecisionAci() {
-
 		final List<DecisionAci> decisionsAci = getDecisionsSorted();
-		if (decisionsAci != null && !decisionsAci.isEmpty()) {
-			final List<RegDate> dates = DateRangeHelper.extractBoundaries(decisionsAci);
-			return dates.get(dates.size()-1);
+		if (!decisionsAci.isEmpty()) {
+			final Iterable<DecisionAci> reversed = CollectionsUtils.revertedOrder(decisionsAci);
+			final DecisionAci last = reversed.iterator().next();
+			return last.getDateFin();
 		}
-
 		return null;
 	}
 
@@ -426,10 +392,9 @@ public abstract class Contribuable extends Tiers {
 			final RegDate dateFinDerniereDecisionAci = getDateFinDerniereDecisionAci();
 			return RegDateHelper.isBefore(date, dateFinDerniereDecisionAci, NullDateBehavior.LATEST);
 		}
-		else{
+		else {
 			return false;
 		}
-
 	}
 
 	/**
@@ -526,7 +491,7 @@ public abstract class Contribuable extends Tiers {
 		}
 		return allegementsFonciers.stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.filter(af -> clazz.isAssignableFrom(af.getClass()))
+				.filter(clazz::isInstance)
 				.map(clazz::cast)
 				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toList());

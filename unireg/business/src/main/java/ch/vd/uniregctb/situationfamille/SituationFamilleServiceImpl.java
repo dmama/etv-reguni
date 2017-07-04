@@ -264,7 +264,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		}
 		else {
 			final List<ForFiscalPrincipalPP> fors = pp.getForsFiscauxPrincipauxActifsSorted();
-			if (fors != null && !fors.isEmpty()) {
+			if (!fors.isEmpty()) {
 				// récupération des zones continues de fors principaux
 				final List<CollatableDateRange> ranges = new ArrayList<>(fors.size());
 				for (ForFiscalPrincipal ffp : fors) {

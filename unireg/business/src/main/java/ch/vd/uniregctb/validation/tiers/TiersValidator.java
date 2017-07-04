@@ -146,7 +146,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		final ValidationResults results = new ValidationResults();
 
 		final List<Declaration> decls = tiers.getDeclarationsTriees(Declaration.class, false);
-		if (decls != null && !decls.isEmpty()) {
+		if (!decls.isEmpty()) {
 
 			// validation des déclarations pour elles-mêmes
 			decls.stream()

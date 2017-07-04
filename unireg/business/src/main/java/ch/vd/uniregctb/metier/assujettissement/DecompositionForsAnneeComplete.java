@@ -32,20 +32,18 @@ public class DecompositionForsAnneeComplete extends DecompositionFors {
 		final DateRange periodeSuivante = new DateRangeHelper.Range(RegDate.get(annee + 1, 1, 1), RegDate.get(annee + 1, 12, 31));
 
 		final List<ForFiscal> fors = contribuable.getForsFiscauxSorted();
-		if (fors != null) {
-			for (ForFiscal f : fors) {
-				if (f.isAnnule()) {
-					continue;
+		for (ForFiscal f : fors) {
+			if (f.isAnnule()) {
+				continue;
+			}
+			if (f.isPrincipal()) {
+				if (DateRangeHelper.intersect(f, periodeSuivante)) {
+					principauxDansPeriodeSuivante.add((ForFiscalPrincipal) f);
 				}
-				if (f.isPrincipal()) {
-					if (DateRangeHelper.intersect(f, periodeSuivante)) {
-						principauxDansPeriodeSuivante.add((ForFiscalPrincipal) f);
-					}
-				}
-				else if (f instanceof ForFiscalSecondaire) {
-					if (DateRangeHelper.intersect(f, periodeSuivante)) {
-						secondairesDansPeriodeSuivante.add((ForFiscalSecondaire) f);
-					}
+			}
+			else if (f instanceof ForFiscalSecondaire) {
+				if (DateRangeHelper.intersect(f, periodeSuivante)) {
+					secondairesDansPeriodeSuivante.add((ForFiscalSecondaire) f);
 				}
 			}
 		}

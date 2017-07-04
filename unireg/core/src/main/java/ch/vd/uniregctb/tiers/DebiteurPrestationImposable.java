@@ -8,10 +8,11 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
@@ -21,6 +22,8 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -148,20 +151,13 @@ public class DebiteurPrestationImposable extends Tiers {
 	 */
 	@Transient
 	public Long getContribuableId() {
-
-		Long ctbId = null;
-
-		final Set<RapportEntreTiers> rapports = getRapportsObjet();
-		if (rapports != null) {
-			for (RapportEntreTiers r : rapports) {
-				if (r.isValidAt(null) && r instanceof ContactImpotSource) {
-					ctbId = r.getSujetId();
-					break;
-				}
-			}
-		}
-
-		return ctbId;
+		return CollectionsUtils.neverNull(getRapportsObjet()).stream()
+				.filter(ContactImpotSource.class::isInstance)
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ret -> ret.getDateFin() == null)
+				.findFirst()
+				.map(RapportEntreTiers::getSujetId)
+				.orElse(null);
 	}
 
 	@Column(name = "SANS_LISTE_RECAP")
@@ -211,41 +207,28 @@ public class DebiteurPrestationImposable extends Tiers {
 	/**
 	 * @return Retourne les Periodicités triées par - La date d'ouverture (sans les annulées)
 	 */
+	@NotNull
 	@Transient
 	public List<Periodicite> getPeriodicitesSorted() {
-		if (periodicites == null) {
-			return null;
+		if (periodicites == null || periodicites.isEmpty()) {
+			return Collections.emptyList();
 		}
-		final List<Periodicite> list = new ArrayList<>(periodicites.size());
-		for (Periodicite p : periodicites) {
-			if (!p.isAnnule()) {
-				list.add(p);
-			}
-		}
-		list.sort(new DateRangeComparator<>());
-		return list;
+		return periodicites.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
 	}
 
 	@Transient
 	public Periodicite getDernierePeriodicite() {
 		final List<Periodicite> list = getPeriodicitesSorted();
-		if (list != null && !list.isEmpty()) {
-			return list.get(list.size() - 1);
-		}
-		else {
-			return null;
-		}
+		return list.isEmpty() ? null : CollectionsUtils.getLastElement(list);
 	}
 
 	@Transient
 	public Periodicite getPremierePeriodicite() {
 		final List<Periodicite> list = getPeriodicitesSorted();
-		if (list != null && !list.isEmpty()) {
-			return list.get(0);
-		}
-		else {
-			return null;
-		}
+		return list.isEmpty() ? null : list.get(0);
 	}
 
 	/**
@@ -255,34 +238,20 @@ public class DebiteurPrestationImposable extends Tiers {
 	@Transient
 	@NotNull
 	public List<Periodicite> getPeriodicitesNonAnnulees(boolean sort) {
-		final List<Periodicite> periodicitesNonAnnulees = new ArrayList<>();
-		if (periodicites != null) {
-			for (Periodicite p : periodicites) {
-				if (!p.isAnnule()) {
-					periodicitesNonAnnulees.add(p);
-				}
-			}
-		}
+		final List<Periodicite> periodicitesNonAnnulees = AnnulableHelper.sansElementsAnnules(periodicites);
 		if (sort) {
 			periodicitesNonAnnulees.sort(new DateRangeComparator<>());
 		}
 		return periodicitesNonAnnulees;
 	}
 
-
-
-
 	@Transient
 	public ForDebiteurPrestationImposable getPremierForDebiteur() {
-		List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (ForFiscal forFiscal : list) {
-				if (!forFiscal.isAnnule()) {
-					return (ForDebiteurPrestationImposable) forFiscal;
-				}
-			}
-		}
-		return null;
+		return getSortedStreamForsFiscaux()
+				.filter(AnnulableHelper::nonAnnule)
+				.findFirst()
+				.map(ForDebiteurPrestationImposable.class::cast)
+				.orElse(null);
 	}
 
 	@Override

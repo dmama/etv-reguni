@@ -72,7 +72,7 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 
 		final int annee = scan.getPeriodeFiscale();
 		final List<DeclarationImpotOrdinaire> declarations = ctb.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, annee, false);
-		if (declarations == null || declarations.isEmpty()) {
+		if (declarations.isEmpty()) {
 			throw new EvenementCediException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.');
 		}
 

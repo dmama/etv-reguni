@@ -57,7 +57,7 @@ public abstract class PeriodeImpositionHelper {
 	private static DeclarationImpotOrdinairePP getDerniereDeclaration(ContribuableImpositionPersonnesPhysiques contribuable, int annee) {
 		DeclarationImpotOrdinairePP derniereDI = null;
 		final List<DeclarationImpotOrdinairePP> declarations = contribuable.getDeclarationsDansPeriode(DeclarationImpotOrdinairePP.class, annee, false);
-		if (declarations != null && !declarations.isEmpty()) {
+		if (!declarations.isEmpty()) {
 			derniereDI = CollectionsUtils.getLastElement(declarations);
 		}
 		return derniereDI;

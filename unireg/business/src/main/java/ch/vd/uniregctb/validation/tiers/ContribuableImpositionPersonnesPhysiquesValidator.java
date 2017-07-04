@@ -37,7 +37,7 @@ public abstract class ContribuableImpositionPersonnesPhysiquesValidator<T extend
 		final ValidationResults results = new ValidationResults();
 
 		final List<SituationFamille> situationsSorted = ctb.getSituationsFamilleSorted();
-		if (situationsSorted != null) {
+		if (!situationsSorted.isEmpty()) {
 
 			// On valide toutes les situations de familles pour elles-mêmes
 			final ValidationService validationService = getValidationService();

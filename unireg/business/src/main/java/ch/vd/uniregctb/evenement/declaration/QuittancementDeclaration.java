@@ -143,7 +143,7 @@ public class QuittancementDeclaration implements EvenementDeclarationHandler<Dec
 
 		final int annee = declaration.getTaxPeriod();
 		final List<DeclarationAvecNumeroSequence> declarations = ctb.getDeclarationsDansPeriode(DeclarationAvecNumeroSequence.class, annee, true);
-		if (declarations == null || declarations.isEmpty()) {
+		if (declarations.isEmpty()) {
 			throw new EsbBusinessException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.', null);
 		}
 

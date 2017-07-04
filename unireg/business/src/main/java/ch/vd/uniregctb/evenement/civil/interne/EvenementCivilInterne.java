@@ -629,8 +629,8 @@ public abstract class EvenementCivilInterne {
 	}
 
 	private boolean evenementIsAnterieurDecision(Contribuable c, RegDate date){
-		List<DecisionAci> decisions = c.getDecisionsSorted();
-		if (decisions != null && !decisions.isEmpty()) {
+		final List<DecisionAci> decisions = c.getDecisionsSorted();
+		if (!decisions.isEmpty()) {
 			final DecisionAci firstDecision = decisions.get(0);
 			return date.isBefore(firstDecision.getDateDebut());
 		}

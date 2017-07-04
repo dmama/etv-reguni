@@ -168,12 +168,10 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 		// -> parce que le for ne peut être fermé avant la fin des LR qui sont dans le trou
 		final List<DeclarationImpotSource> lrsTriees = dpi.getDeclarationsTriees(DeclarationImpotSource.class, false);
 		RegDate candidate = null;
-		if (lrsTriees != null) {
-			for (DeclarationImpotSource lr : CollectionsUtils.revertedOrder(lrsTriees)) {
-				if (DateRangeHelper.intersect(lr, premierTrou)) {
-					candidate = lr.getDateDebut().getOneDayBefore();
-					break;
-				}
+		for (DeclarationImpotSource lr : CollectionsUtils.revertedOrder(lrsTriees)) {
+			if (DateRangeHelper.intersect(lr, premierTrou)) {
+				candidate = lr.getDateDebut().getOneDayBefore();
+				break;
 			}
 		}
 		if (candidate == null) {

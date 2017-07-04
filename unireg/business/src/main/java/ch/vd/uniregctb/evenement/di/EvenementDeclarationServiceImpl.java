@@ -62,7 +62,7 @@ public class EvenementDeclarationServiceImpl implements EvenementDeclarationServ
 
 		final int annee = quittance.getPeriodeFiscale();
 		final List<DeclarationImpotOrdinaire> declarations = ctb.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, annee, false);
-		if (declarations == null || declarations.isEmpty()) {
+		if (declarations.isEmpty()) {
 			throw new EvenementDeclarationException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + '.');
 		}
 

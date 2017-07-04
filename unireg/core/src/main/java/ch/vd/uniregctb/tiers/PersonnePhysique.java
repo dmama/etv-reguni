@@ -172,14 +172,6 @@ public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 		return "Autre tiers";
 	}
 
-	@Override
-	protected void dumpForDebug(int nbTabs) {
-		super.dumpForDebug(nbTabs);
-		if (habitant) {
-			ddump(nbTabs, "Individu: "+ numeroIndividu);
-		}
-	}
-
 	@Transient
 	public boolean isConnuAuCivil() {
 		return numeroIndividu != null && numeroIndividu > 0L;

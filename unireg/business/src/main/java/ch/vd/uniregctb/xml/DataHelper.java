@@ -595,7 +595,7 @@ public abstract class DataHelper {
 
 		final Contribuable contribuable = periodeImposition.getContribuable();
 		final List<DeclarationImpotOrdinaire> dis = contribuable.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, periodeImposition.getDateFin().year(), false);
-		if (dis == null || dis.isEmpty()) {
+		if (dis.isEmpty()) {
 			return null;
 		}
 

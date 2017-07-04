@@ -18,16 +18,20 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import org.apache.commons.collections4.ListUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
@@ -36,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -316,6 +321,18 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		}
 	}
 
+	@Nullable
+	private static <T extends DateRange> T getAt(Collection<T> collection, @Nullable RegDate date, Predicate<? super T> subSetFilter) {
+		if (collection == null || collection.isEmpty()) {
+			return null;
+		}
+		return collection.stream()
+				.filter(subSetFilter)
+				.filter(elt -> elt.isValidAt(date))
+				.findFirst()
+				.orElse(null);
+	}
+
 	/**
 	 * Retourne l'adresse d'un type donné active à une date donnée.
 	 *
@@ -328,22 +345,8 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public AdresseTiers getAdresseActive(TypeAdresseTiers type, @Nullable RegDate date) {
-
 		Assert.notNull(type);
-
-		if (adressesTiers == null) {
-			return null;
-		}
-
-		AdresseTiers result = null;
-		for (AdresseTiers adresse : adressesTiers) {
-			if (adresse.isValidAt(date) && type == adresse.getUsage()) {
-				result = adresse;
-				break;
-			}
-		}
-
-		return result;
+		return getAt(adressesTiers, date, adr -> adr.getUsage() == type);
 	}
 
 	@Column(name = "BLOC_REMB_AUTO")
@@ -422,12 +425,18 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public RapportEntreTiers getRapportSujetValidAt(@Nullable RegDate date, TypeRapportEntreTiers type) {
-		for (RapportEntreTiers rapportSujet : rapportsSujet) {
-			if (rapportSujet.isValidAt(date) && rapportSujet.getType() == type) {
-				return rapportSujet;
-			}
+		return getAt(rapportsSujet, date, ret -> ret.getType() == type);
+	}
+
+	private static RapportEntreTiers getDernierRapport(Collection<RapportEntreTiers> rapports, TypeRapportEntreTiers type) {
+		if (rapports == null || rapports.isEmpty()) {
+			return null;
 		}
-		return null;
+		return rapports.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ret -> ret.getType() == type)
+				.max(Comparator.comparing(RapportEntreTiers::getDateDebut, NullDateBehavior.EARLIEST::compare))
+				.orElse(null);
 	}
 
 	/**
@@ -435,16 +444,19 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public RapportEntreTiers getDernierRapportSujet(TypeRapportEntreTiers type) {
-		RapportEntreTiers dernierRapport = null;
-		for (RapportEntreTiers rapportSujet : rapportsSujet) {
-			if (!rapportSujet.isAnnule() && type == rapportSujet.getType()) {
-				if (dernierRapport == null
-						|| RegDateHelper.isAfterOrEqual(rapportSujet.getDateDebut(), dernierRapport.getDateDebut(), NullDateBehavior.EARLIEST)) {
-					dernierRapport = rapportSujet;
-				}
-			}
+		return getDernierRapport(rapportsSujet, type);
+	}
+
+	private static RapportEntreTiers getPremierRapport(Collection<RapportEntreTiers> rapports, TypeRapportEntreTiers type, Predicate<? super RapportEntreTiers> subsetFilter) {
+		if (rapports == null || rapports.isEmpty()) {
+			return null;
 		}
-		return dernierRapport;
+		return rapports.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ret -> ret.getType() == type)
+				.filter(subsetFilter)
+				.min(Comparator.comparing(RapportEntreTiers::getDateDebut, NullDateBehavior.EARLIEST::compare))
+				.orElse(null);
 	}
 
 	/**
@@ -452,15 +464,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public RapportEntreTiers getPremierRapportSujet(TypeRapportEntreTiers type, Tiers tiers) {
-		RapportEntreTiers premierRapport = null;
-		for (RapportEntreTiers rapportSujet : rapportsSujet) {
-			if (!rapportSujet.isAnnule() && type == rapportSujet.getType() && rapportSujet.getObjetId().equals(tiers.getId())) {
-				if (premierRapport == null || RegDateHelper.isBeforeOrEqual(rapportSujet.getDateDebut(), premierRapport.getDateDebut(), NullDateBehavior.EARLIEST)) {
-					premierRapport = rapportSujet;
-				}
-			}
-		}
-		return premierRapport;
+		return getPremierRapport(rapportsSujet, type, ret -> ret.getObjetId().equals(tiers.getNumero()));
 	}
 
 	/**
@@ -468,12 +472,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public RapportEntreTiers getRapportObjetValidAt(RegDate date, TypeRapportEntreTiers type) {
-		for (RapportEntreTiers rapportObjet : rapportsObjet) {
-			if (rapportObjet.isValidAt(date) && rapportObjet.getType() == type) {
-				return rapportObjet;
-			}
-		}
-		return null;
+		return getAt(rapportsObjet, date, ret -> ret.getType() == type);
 	}
 
 	/**
@@ -481,17 +480,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public RapportEntreTiers getDernierRapportObjet(TypeRapportEntreTiers type) {
-		RapportEntreTiers dernierRapport = null;
-		for (RapportEntreTiers rapportObjet : rapportsObjet) {
-			if (!rapportObjet.isAnnule() && type == rapportObjet.getType()) {
-				if (dernierRapport == null
-						|| RegDateHelper.isAfterOrEqual(rapportObjet.getDateDebut(), dernierRapport.getDateDebut(),
-						NullDateBehavior.EARLIEST)) {
-					dernierRapport = rapportObjet;
-				}
-			}
-		}
-		return dernierRapport;
+		return getDernierRapport(rapportsObjet, type);
 	}
 
 	/**
@@ -499,15 +488,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public RapportEntreTiers getPremierRapportObjet(TypeRapportEntreTiers type, Tiers tiers) {
-		RapportEntreTiers premierRapport = null;
-		for (RapportEntreTiers rapportObjet : rapportsObjet) {
-			if (!rapportObjet.isAnnule() && type == rapportObjet.getType() && rapportObjet.getSujetId().equals(tiers.getId())) {
-				if (premierRapport == null || RegDateHelper.isBeforeOrEqual(rapportObjet.getDateDebut(), premierRapport.getDateDebut(), NullDateBehavior.EARLIEST)) {
-					premierRapport = rapportObjet;
-				}
-			}
-		}
-		return premierRapport;
+		return getPremierRapport(rapportsObjet, type, ret -> ret.getSujetId().equals(tiers.getNumero()));
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -534,54 +515,45 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	/**
 	 * @return la liste de toutes les déclarations du contribuable (y compris les déclarations annulées), triées
 	 */
+	@NotNull
 	@Transient
 	public List<Declaration> getDeclarationsTriees() {
 		return getDeclarationsTriees(Declaration.class, true);
 	}
 
+	@NotNull
 	@Transient
 	public <T extends Declaration> List<T> getDeclarationsTriees(Class<T> clazz, boolean avecAnnulees) {
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<T> triees = new ArrayList<>(declarations.size());
-		for (Declaration declaration : declarations) {
-			if (clazz.isAssignableFrom(declaration.getClass()) && (avecAnnulees || !declaration.isAnnule())) {
-				//noinspection unchecked
-				triees.add((T) declaration);
-			}
-		}
-		triees.sort(DateRangeComparator::compareRanges);
-		return triees;
+		return declarations.stream()
+				.filter(decl -> avecAnnulees || !decl.isAnnule())
+				.filter(clazz::isInstance)
+				.map(clazz::cast)
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
 	}
 
+	@NotNull
 	@Transient
 	public <T extends Declaration> List<T> getDeclarationsDansPeriode(Class<T> clazz, int pf, boolean avecAnnulees) {
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<T> filtrees = new ArrayList<>(declarations.size());
-		for (Declaration declaration : declarations) {
-			if ((avecAnnulees || !declaration.isAnnule()) && pf == declaration.getPeriode().getAnnee()) {
-				if (clazz.isAssignableFrom(declaration.getClass())) {
-					//noinspection unchecked
-					filtrees.add((T) declaration);
-				}
-			}
-		}
-		if (filtrees.isEmpty()) {
-			return Collections.emptyList();
-		}
-		else {
-			filtrees.sort(DateRangeComparator::compareRanges);
-			return filtrees;
-		}
+		return declarations.stream()
+				.filter(decl -> avecAnnulees || !decl.isAnnule())
+				.filter(clazz::isInstance)
+				.filter(decl -> decl.getPeriode().getAnnee() == pf)
+				.map(clazz::cast)
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
 	}
 
 	@Transient
 	public <T extends Declaration> T getDerniereDeclaration(Class<T> clazz) {
 		final List<T> toutes = getDeclarationsTriees(clazz, false);
-		return toutes == null || toutes.isEmpty() ? null : CollectionsUtils.getLastElement(toutes);
+		return toutes.isEmpty() ? null : CollectionsUtils.getLastElement(toutes);
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -619,19 +591,12 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 *
 	 * @return Renvoie les fors principaux
 	 */
+	@NotNull
 	@Transient
 	public List<? extends ForFiscalPrincipal> getForsFiscauxPrincipauxActifsSorted() {
-		List<ForFiscalPrincipal> ffps = null;
-		if (forsFiscaux != null) {
-			ffps = new ArrayList<>();
-			for (ForFiscal ff : forsFiscaux) {
-				if (ff instanceof ForFiscalPrincipal && !ff.isAnnule()) {
-					ffps.add((ForFiscalPrincipal) ff);
-				}
-			}
-			ffps.sort(DateRangeComparator::compareRanges);
-		}
-		return ffps;
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
+				.sorted(FOR_FISCAL_COMPARATOR)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -639,22 +604,15 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 *
 	 * @return Renvoie les fors secondaires dans une map indexée par no ofs de la commune
 	 */
+	@NotNull
 	@Transient
 	public Map<Integer, List<ForFiscalSecondaire>> getForsFiscauxSecondairesActifsSortedMapped(MotifRattachement filtreMotifRattachement) {
-		Map<Integer, List<ForFiscalSecondaire>> map = new HashMap<>();
-		if (forsFiscaux != null) {
-			for (ForFiscal ff : forsFiscaux) {
-				if (ff instanceof ForFiscalSecondaire && !ff.isAnnule()) {
-					ForFiscalSecondaire ffsec = (ForFiscalSecondaire) ff;
-					if (filtreMotifRattachement != null && ffsec.getMotifRattachement() != filtreMotifRattachement) {
-						continue;
-					}
-					final List<ForFiscalSecondaire> ffps = map.computeIfAbsent(ffsec.getNumeroOfsAutoriteFiscale(), k -> new ArrayList<>());
-					ffps.add(ffsec);
-				}
-			}
-			map.values().forEach(list -> list.sort(DateRangeComparator::compareRanges));
-		}
+		final Map<Integer, List<ForFiscalSecondaire>> map = getStreamForsFiscaux(ForFiscalSecondaire.class, false)
+				.filter(ffs -> filtreMotifRattachement == null || ffs.getMotifRattachement() == filtreMotifRattachement)
+				.collect(Collectors.toMap(ForFiscalSecondaire::getNumeroOfsAutoriteFiscale,
+				                          Collections::singletonList,
+				                          ListUtils::union));
+		map.values().forEach(list -> list.sort(DateRangeComparator::compareRanges));
 		return map;
 	}
 
@@ -671,14 +629,44 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	/**
 	 * @return les fors triés par - La date d'ouverture - Leur type, selon l'ordinal de l'enum TypeAutoriteFiscale
 	 */
+	@NotNull
 	@Transient
 	public List<ForFiscal> getForsFiscauxSorted() {
-		List<ForFiscal> fors = null;
-		if (forsFiscaux != null) {
-			fors = new ArrayList<>(forsFiscaux);
-			fors.sort(new DateRangeComparator<ForFiscal>().thenComparing(Comparator.comparing(ForFiscal::getTypeAutoriteFiscale)));
+		return getSortedStreamForsFiscaux().collect(Collectors.toList());
+	}
+
+	protected static final Comparator<ForFiscal> FOR_FISCAL_COMPARATOR = new DateRangeComparator<ForFiscal>().thenComparing(ForFiscal::getTypeAutoriteFiscale);
+
+	@NotNull
+	@Transient
+	protected Stream<ForFiscal> getStreamForsFiscaux() {
+		if (forsFiscaux == null || forsFiscaux.isEmpty()) {
+			return Stream.empty();
 		}
-		return fors;
+		return forsFiscaux.stream();
+	}
+
+	@NotNull
+	@Transient
+	protected Stream<ForFiscal> getSortedStreamForsFiscaux() {
+		return getStreamForsFiscaux().sorted(FOR_FISCAL_COMPARATOR);
+	}
+
+	@NotNull
+	@Transient
+	protected Stream<ForFiscal> getRevertedSortedStreamForsFiscaux() {
+		final List<ForFiscal> sorted = getForsFiscauxSorted();
+		final Iterable<ForFiscal> reversed = CollectionsUtils.revertedOrder(sorted);
+		return StreamSupport.stream(reversed.spliterator(), false);
+	}
+
+	@NotNull
+	@Transient
+	protected <T extends ForFiscal> Stream<T> getStreamForsFiscaux(Class<T> clazz, boolean withAnnules) {
+		return getStreamForsFiscaux()
+				.filter(ff -> withAnnules || !ff.isAnnule())
+				.filter(clazz::isInstance)
+				.map(clazz::cast);
 	}
 
 	/**
@@ -690,7 +678,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public List<ForFiscal> getForsFiscauxNonAnnules(boolean sort) {
 		final List<ForFiscal> fors = AnnulableHelper.sansElementsAnnules(forsFiscaux);
 		if (sort) {
-			fors.sort(DateRangeComparator::compareRanges);
+			fors.sort(FOR_FISCAL_COMPARATOR);
 		}
 		return fors;
 	}
@@ -720,18 +708,10 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public ForFiscalPrincipal getForFiscalPrincipalAt(@Nullable RegDate date) {
-
-		if (forsFiscaux == null) {
-			return null;
-		}
-
-		for (ForFiscal f : forsFiscaux) {
-			if (f.isPrincipal() && f.isValidAt(date)) {
-				return (ForFiscalPrincipal) f;
-			}
-		}
-
-		return null;
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
+				.filter(ff -> ff.isValidAt(date))
+				.findFirst()
+				.orElse(null);
 	}
 
 	/**
@@ -742,127 +722,91 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 *
 	 * @return la liste des fors correspondant, qui peut être vide si aucun for ne correspond aux critères.
 	 */
+	@NotNull
 	@Transient
 	public List<ForFiscal> getForsFiscauxValidAt(@Nullable RegDate date) {
-
-		List<ForFiscal> fors = new ArrayList<>();
-		if (forsFiscaux != null) {
-			for (ForFiscal f : forsFiscaux) {
-				if (f.isValidAt(date)) {
-					fors.add(f);
-				}
-			}
-		}
-		return fors;
+		return getStreamForsFiscaux()
+				.filter(ff -> ff.isValidAt(date))
+				.collect(Collectors.toList());
 	}
 
 	@Transient
 	public ForFiscalPrincipal getPremierForFiscalPrincipal() {
-		List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (ForFiscal forFiscal : list) {
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()) {
-					return (ForFiscalPrincipal) forFiscal;
-				}
-			}
-		}
-		return null;
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, false)
+				.sorted(FOR_FISCAL_COMPARATOR)
+				.findFirst()
+				.orElse(null);
 	}
 
 	// ***********************************************
 	@Transient
 	public ForFiscalPrincipal getDernierForFiscalPrincipal() {
-
-		List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()) {
-					return (ForFiscalPrincipal) forFiscal;
-				}
-			}
-		}
-		return null;
+		return getRevertedSortedStreamForsFiscaux()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ForFiscal::isPrincipal)
+				.findFirst()
+				.map(ForFiscalPrincipal.class::cast)
+				.orElse(null);
 	}
 
 	// ***********************************************
 	@Transient
 	public ForFiscalPrincipal getDernierForFiscalPrincipalAvant(@Nullable RegDate date) {
-
-		final List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				final ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal() && RegDateHelper.isBeforeOrEqual(forFiscal.getDateDebut(), date, NullDateBehavior.LATEST)) {
-					return (ForFiscalPrincipal) forFiscal;
-				}
-			}
-		}
-		return null;
+		return getRevertedSortedStreamForsFiscaux()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ForFiscal::isPrincipal)
+				.filter(ff -> RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), date, NullDateBehavior.LATEST))
+				.findFirst()
+				.map(ForFiscalPrincipal.class::cast)
+				.orElse(null);
 	}
 
 	// ***********************************************
 	@Transient
 	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudois() {
-
-		final List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				final ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal() && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscal.getTypeAutoriteFiscale()) {
-					return (ForFiscalPrincipal) forFiscal;
-				}
-			}
-		}
-		return null;
+		return getRevertedSortedStreamForsFiscaux()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ForFiscal::isPrincipal)
+				.filter(ff -> ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+				.findFirst()
+				.map(ForFiscalPrincipal.class::cast)
+				.orElse(null);
 	}
 
 	// ***********************************************
 	@Transient
 	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudoisAvant(RegDate date) {
-
-		final List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				final ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal() && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscal.getTypeAutoriteFiscale() && RegDateHelper.isBeforeOrEqual(forFiscal.getDateDebut(), date, NullDateBehavior.LATEST)) {
-					return (ForFiscalPrincipal) forFiscal;
-				}
-			}
-		}
-		return null;
+		return getRevertedSortedStreamForsFiscaux()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ForFiscal::isPrincipal)
+				.filter(ff -> ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+				.filter(ff -> RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), date, NullDateBehavior.LATEST))
+				.findFirst()
+				.map(ForFiscalPrincipal.class::cast)
+				.orElse(null);
 	}
 
 	// ***********************************************
 	@Transient
 	public ForDebiteurPrestationImposable getDernierForDebiteur() {
-
-		final List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				final ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isDebiteur()) {
-					return (ForDebiteurPrestationImposable) forFiscal;
-				}
-			}
-		}
-		return null;
+		return getRevertedSortedStreamForsFiscaux()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ForFiscal::isDebiteur)
+				.findFirst()
+				.map(ForDebiteurPrestationImposable.class::cast)
+				.orElse(null);
 	}
 
 	// ***********************************************
 	@Transient
 	public ForDebiteurPrestationImposable getDernierForDebiteurAvant(RegDate date) {
-
-		final List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				final ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isDebiteur() && RegDateHelper.isBeforeOrEqual(forFiscal.getDateDebut(), date, NullDateBehavior.LATEST)) {
-					return (ForDebiteurPrestationImposable) forFiscal;
-				}
-			}
-		}
-		return null;
+		return getRevertedSortedStreamForsFiscaux()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ForFiscal::isDebiteur)
+				.filter(ff -> RegDateHelper.isBeforeOrEqual(ff.getDateDebut(), date, NullDateBehavior.LATEST))
+				.findFirst()
+				.map(ForDebiteurPrestationImposable.class::cast)
+				.orElse(null);
 	}
 
 	/**
@@ -1142,19 +1086,11 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public RegDate getDateDebutActivite() {
-		RegDate date = RegDateHelper.getLateDate();
-		if (forsFiscaux != null) {
-			for (ForFiscal forFiscal : forsFiscaux) {
-				if (forFiscal.isAnnule()) {
-					continue;
-				}
-				date = RegDateHelper.minimum(date, forFiscal.getDateDebut(), NullDateBehavior.EARLIEST);
-			}
-		}
-		if (date == RegDateHelper.getLateDate()) {
-			date = null;
-		}
-		return date;
+		return getStreamForsFiscaux()
+				.filter(AnnulableHelper::nonAnnule)
+				.min(Comparator.comparing(ForFiscal::getDateDebut, NullDateBehavior.EARLIEST::compare))
+				.map(ForFiscal::getDateDebut)
+				.orElse(null);
 	}
 
 	/**
@@ -1165,19 +1101,11 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public RegDate getDateFinActivite() {
-		RegDate date = RegDateHelper.getEarlyDate();
-		if (forsFiscaux != null) {
-			for (ForFiscal forFiscal : forsFiscaux) {
-				if (forFiscal.isAnnule()) {
-					continue;
-				}
-				date = RegDateHelper.maximum(date, forFiscal.getDateFin(), NullDateBehavior.LATEST);
-			}
-		}
-		if (date == RegDateHelper.getEarlyDate()) {
-			date = null;
-		}
-		return date;
+		return getStreamForsFiscaux()
+				.filter(AnnulableHelper::nonAnnule)
+				.max(Comparator.comparing(ForFiscal::getDateFin, NullDateBehavior.LATEST::compare))
+				.map(ForFiscal::getDateFin)
+				.orElse(null);
 	}
 
 	/**
@@ -1188,21 +1116,10 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public ForDebiteurPrestationImposable getForDebiteurPrestationImposableAt(@Nullable RegDate date) {
-
-		if (forsFiscaux == null) {
-			return null;
-		}
-
-		for (ForFiscal f : forsFiscaux) {
-			if (f instanceof ForDebiteurPrestationImposable) {
-				ForDebiteurPrestationImposable forDpi = (ForDebiteurPrestationImposable) f;
-				if (forDpi.isValidAt(date)) {
-					return forDpi;
-				}
-			}
-		}
-
-		return null;
+		return getStreamForsFiscaux(ForDebiteurPrestationImposable.class, false)
+				.filter(ff -> ff.isValidAt(date))
+				.findFirst()
+				.orElse(null);
 	}
 
 	/**
@@ -1213,21 +1130,10 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public ForDebiteurPrestationImposable getForDebiteurPrestationImposableAfter(RegDate date) {
-
-		if (forsFiscaux == null) {
-			return null;
-		}
-
-		for (ForFiscal f : getForsFiscauxSorted()) {
-			if (f instanceof ForDebiteurPrestationImposable) {
-				ForDebiteurPrestationImposable forDpi = (ForDebiteurPrestationImposable) f;
-				if (forDpi.getDateDebut().isAfter(date) && !forDpi.isAnnule()) {
-					return forDpi;
-				}
-			}
-		}
-
-		return null;
+		return getStreamForsFiscaux(ForDebiteurPrestationImposable.class, false)
+				.filter(ff -> ff.getDateDebut().isAfter(date))
+				.min(Comparator.comparing(ForFiscal::getDateDebut))
+				.orElse(null);
 	}
 
 	/**
@@ -1235,9 +1141,9 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @param date date de référence
 	 * @return liste des fors principaux demandés
 	 */
+	@NotNull
 	@Transient
 	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date) {
-
 		return getForsFiscauxPrincipauxOuvertsApres(date,true);
 	}
 
@@ -1247,19 +1153,14 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @param withAnnule indique si on veut les fors annulées
 	 * @return liste des fors principaux demandés
 	 */
+	@NotNull
 	@Transient
 	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date, boolean withAnnule) {
-
 		Assert.notNull(date);
-		List<ForFiscalPrincipal> fors = new ArrayList<>();
-
-		final List<ForFiscal> forsFiscauxSorted= withAnnule ? getForsFiscauxSorted(): getForsFiscauxNonAnnules(true);
-		for (ForFiscal ff : forsFiscauxSorted) {
-			if (ff.isPrincipal() && date.isBeforeOrEqual(ff.getDateDebut())) {
-				fors.add((ForFiscalPrincipal) ff);
-			}
-		}
-		return fors;
+		return getStreamForsFiscaux(ForFiscalPrincipal.class, withAnnule)
+				.filter(ff -> date.isBeforeOrEqual(ff.getDateDebut()))
+				.sorted(FOR_FISCAL_COMPARATOR)
+				.collect(Collectors.toList());
 	}
 
     /**
@@ -1270,40 +1171,12 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
      */
     @Transient
     public boolean hasForFiscalPrincipalAnnule(RegDate date, @Nullable MotifFor motif) {
-
-        Assert.notNull(date);
-
-        if (forsFiscaux == null) {
-            return false;
-        }
-
-        for (ForFiscal f : forsFiscaux) {
-            if (!f.isPrincipal() || !f.isAnnule() ) {
-                 continue;
-            }
-            ForFiscalPrincipal ffp = (ForFiscalPrincipal) f;
-            if (RegDateHelper.isBetween(date, ffp.getDateDebut(), ffp.getDateFin(), NullDateBehavior.EARLIEST)) {
-                if (motif == null || ffp.getMotifOuverture() == motif) {
-                    return true;
-                }
-            }
-        }
-        return false;
+	    Assert.notNull(date);
+	    return getStreamForsFiscaux(ForFiscalPrincipal.class, true)
+		        .filter(ForFiscal::isAnnule)
+		        .filter(ff -> RegDateHelper.isBetween(date, ff.getDateDebut(), ff.getDateFin(), NullDateBehavior.EARLIEST))
+		        .anyMatch(ff -> motif == null || ff.getMotifOuverture() == motif);
     }
-
-	public void dumpForDebug() {
-		dumpForDebug(0);
-	}
-
-	protected void dumpForDebug(int nbTabs) {
-		ddump(nbTabs, "Tiers: " + numero);
-		if (getForsFiscauxSorted() != null) {
-			for (ForFiscal ff : getForsFiscauxSorted()) {
-				ddump(nbTabs, ff.getClass().getSimpleName());
-				ff.dumpForDebug(nbTabs + 1);
-			}
-		}
-	}
 
 	/**
 	 * @return la nature du tiers courant

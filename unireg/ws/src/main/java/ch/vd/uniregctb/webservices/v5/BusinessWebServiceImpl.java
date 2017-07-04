@@ -458,7 +458,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		DeclarationImpotOrdinaire declaration = null;
 		DeclarationImpotOrdinaire declarationAnnuleeTrouvee = null;
 		final List<DeclarationImpotOrdinaire> declarations = contribuable.getDeclarationsDansPeriode(DeclarationImpotOrdinaire.class, annee, true);
-		if (declarations != null && !declarations.isEmpty()) {
+		if (!declarations.isEmpty()) {
 			for (DeclarationImpotOrdinaire di : declarations) {
 				if (numeroSequenceDI == 0) {
 					// Dans le cas où le numero dans l'année n'est pas spécifié on prend la dernière DI trouvée sur la période

@@ -3,10 +3,9 @@ package ch.vd.uniregctb.metier.piis;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +18,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.MovingWindow;
@@ -68,15 +68,12 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		final Set<RapportEntreTiers> base = objet ? pp.getRapportsObjet() : pp.getRapportsSujet();
 		final List<T> liste;
 		if (base != null && !base.isEmpty()) {
-			final List<T> tempList = new LinkedList<>();
-			for (RapportEntreTiers r : base) {
-				if (!r.isAnnule() && clazz.isAssignableFrom(r.getClass())) {
-					//noinspection unchecked
-					tempList.add((T) r);
-				}
-			}
-			liste = new ArrayList<>(tempList);
-			liste.sort(new DateRangeComparator<>());
+			liste = base.stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(clazz::isInstance)
+					.map(clazz::cast)
+					.sorted(DateRangeComparator::compareRanges)
+					.collect(Collectors.toList());
 		}
 		else {
 			liste = Collections.emptyList();
@@ -92,7 +89,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	@NotNull
 	private static List<ForFiscalPrincipalPP> getForsPrincipaux(ContribuableImpositionPersonnesPhysiques ctb, boolean rw) {
 		final List<ForFiscalPrincipalPP> ffps = ctb.getForsFiscauxPrincipauxActifsSorted();
-		return ffps != null ? ffps : (rw ? new ArrayList<>() : Collections.emptyList());
+		return !ffps.isEmpty() ? ffps : (rw ? new ArrayList<>() : Collections.emptyList());
 	}
 
 	/**
@@ -101,11 +98,9 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 */
 	private static Set<Long> getIdsMenagesCommuns(PersonnePhysique pp) {
 		final List<AppartenanceMenage> am = getRapportsEntreTiers(pp, AppartenanceMenage.class, false);
-		final Set<Long> idsMenages = new HashSet<>();
-		for (AppartenanceMenage lienMenage : am) {
-			idsMenages.add(lienMenage.getObjetId());
-		}
-		return idsMenages;
+		return am.stream()
+				.map(AppartenanceMenage::getObjetId)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -199,13 +194,9 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		if (pf.getDateDebut() == null || !pf.getDateDebut().addYears(1).getOneDayBefore().equals(pf.getDateFin()) || pf.getDateDebut().year() != pf.getDateFin().year()) {
 			throw new IllegalArgumentException("Invalid call with pf " + DateRangeHelper.toDisplayString(pf));
 		}
-		final List<T> res = new ArrayList<>(src.size());
-		for (T range : src) {
-			if (DateRangeHelper.intersect(range, pf)) {
-				res.add(range);
-			}
-		}
-		return res.isEmpty() ? Collections.emptyList() : res;
+		return src.stream()
+				.filter(range -> DateRangeHelper.intersect(range, pf))
+				.collect(Collectors.toList());
 	}
 
 	/**

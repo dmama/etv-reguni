@@ -736,7 +736,7 @@ public class TiersManager implements MessageSourceAware {
 
 		// les questionnaires SNC
 		final List<QuestionnaireSNC> qsnc = entreprise.getDeclarationsTriees(QuestionnaireSNC.class, true);
-		if (qsnc != null && !qsnc.isEmpty()) {
+		if (!qsnc.isEmpty()) {
 			final List<QuestionnaireSNCView> views = new ArrayList<>(qsnc.size());
 			for (QuestionnaireSNC q : qsnc) {
 				views.add(new QuestionnaireSNCView(q, serviceInfrastructureService, messageSource));
