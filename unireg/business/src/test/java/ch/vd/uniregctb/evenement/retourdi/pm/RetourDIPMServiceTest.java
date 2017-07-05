@@ -3328,7 +3328,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final Localisation siege = new Localisation.Extranger(MockPays.Allemagne.getNoOFS(), "Stuttgart");
+		final Localisation siege = new Localisation.Etranger(MockPays.Allemagne.getNoOFS(), "Stuttgart");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, siege, null, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 
@@ -3695,7 +3695,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 		});
 
 		// réception des données de retour
-		final Localisation ae = new Localisation.Extranger(MockPays.Allemagne.getNoOFS(), "Stuttgart");
+		final Localisation ae = new Localisation.Etranger(MockPays.Allemagne.getNoOFS(), "Stuttgart");
 		final InformationsEntreprise infosEntreprise = new InformationsEntreprise(null, null, null, ae, null, null, null);
 		final RetourDI retour = new RetourDI(idEntreprise, annee, 1, infosEntreprise, null);
 

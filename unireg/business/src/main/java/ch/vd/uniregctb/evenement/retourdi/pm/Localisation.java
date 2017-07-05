@@ -144,12 +144,12 @@ public abstract class Localisation {
 	/**
 	 * Cas d'un pays étranger
 	 */
-	public static final class Extranger extends Localisation {
+	public static final class Etranger extends Localisation {
 
 		private final int noOfsPays;
 		private final String localite;
 
-		public Extranger(int noOfsPays, String localite) {
+		public Etranger(int noOfsPays, String localite) {
 			this.noOfsPays = noOfsPays;
 			this.localite = localite;
 		}

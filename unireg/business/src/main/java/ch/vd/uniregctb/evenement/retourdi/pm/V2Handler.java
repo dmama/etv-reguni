@@ -129,7 +129,7 @@ public class V2Handler extends AbstractRetourDIHandler implements RetourDiHandle
 		// c'est donc un pays étranger
 		final BigInteger numeroOfsPays = structure.getNumeroOfsPaysEtranger();
 		final Integer ofsPays = toInteger(numeroOfsPays);
-		return ofsPays != null ? new Localisation.Extranger(ofsPays, structure.getLocalitePaysEtranger()) : null;
+		return ofsPays != null ? new Localisation.Etranger(ofsPays, structure.getLocalitePaysEtranger()) : null;
 	}
 
 	@Nullable

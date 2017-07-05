@@ -77,7 +77,7 @@ public class LocalisationTest extends BusinessTest {
 
 	@Test
 	public void testTranscriptionPaysValide() {
-		final Localisation localisation = new Localisation.Extranger(MockPays.Kosovo.getNoOFS(), "Priština");
+		final Localisation localisation = new Localisation.Etranger(MockPays.Kosovo.getNoOFS(), "Priština");
 		final LocalisationFiscale lf = localisation.transcriptionFiscale(serviceInfra, RegDate.get());
 		Assert.assertNotNull(lf);
 		Assert.assertEquals((Integer) MockPays.Kosovo.getNoOFS(), lf.getNumeroOfsAutoriteFiscale());
@@ -86,7 +86,7 @@ public class LocalisationTest extends BusinessTest {
 
 	@Test
 	public void testTranscriptionPaysInconnu() {
-		final Localisation localisation = new Localisation.Extranger(8000, "Où ça?");
+		final Localisation localisation = new Localisation.Etranger(8000, "Où ça?");
 		final LocalisationFiscale lf = localisation.transcriptionFiscale(serviceInfra, RegDate.get());
 		Assert.assertNull(lf);
 	}
