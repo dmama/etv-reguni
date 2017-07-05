@@ -294,25 +294,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		// Un tiers avec un for secondaire bidon
 		PersonnePhysique yvette = addNonHabitant("Yvette", "Jolie", date(1965, 4, 13), Sexe.FEMININ);
 		{
-			ForFiscalSecondaire f = new ForFiscalSecondaire() {
-
-				private static final long serialVersionUID = 2398344278141895238L;
-				private MotifRattachement motif;
-
-				/**
-				 * Hyper-hack pour permettre de setter un motif de rattachement interdit (c'est dègue, mais on peut imaginer que quelqu'un
-				 * fasse la même chose directement en SQL dans la base)
-				 */
-				@Override
-				public void setMotifRattachement(MotifRattachement motif) {
-					this.motif = motif;
-				}
-
-				@Override
-				public MotifRattachement getMotifRattachement() {
-					return this.motif;
-				}
-			};
+			final ForFiscalSecondaire f = new ForFiscalSecondaire();
 			f.setDateDebut(date(1968, 11, 3));
 			f.setDateFin(null);
 			f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -374,22 +356,7 @@ public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 		 */
 		PersonnePhysique michel = addNonHabitant("Michel", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
 		{
-			ForFiscalPrincipalPP f = new ForFiscalPrincipalPP() {
-
-				private MotifRattachement motif;
-
-				// Hyper-hack pour permettre de setter un motif de rattachement interdit (c'est dègue, mais on peut imaginer que quelqu'un
-				// fasse la même chose directement en SQL dans la base)
-				@Override
-				public void setMotifRattachement(MotifRattachement motif) {
-					this.motif = motif;
-				}
-
-				@Override
-				public MotifRattachement getMotifRattachement() {
-					return this.motif;
-				}
-			};
+			final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 			f.setDateDebut(date(1968, 11, 3));
 			f.setMotifOuverture(MotifFor.ARRIVEE_HC);
 			f.setDateFin(null);
