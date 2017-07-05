@@ -79,7 +79,7 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 	@NotNull
 	@Transient
 	public List<SituationFamille> getSituationsFamilleSorted() {
-		return CollectionsUtils.neverNull(situationsFamille).stream()
+		return CollectionsUtils.unmodifiableNeverNull(situationsFamille).stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toList());

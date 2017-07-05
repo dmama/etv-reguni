@@ -154,7 +154,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	 */
 	@Transient
 	public Long getContribuableId() {
-		return CollectionsUtils.neverNull(getRapportsObjet()).stream()
+		return CollectionsUtils.unmodifiableNeverNull(getRapportsObjet()).stream()
 				.filter(ContactImpotSource.class::isInstance)
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(ret -> ret.getDateFin() == null)

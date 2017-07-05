@@ -185,7 +185,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	@Transient
 	public ActiviteEconomique getActiviteEconomiquePrincipaleValidAt(RegDate date) {
-		return CollectionsUtils.neverNull(getRapportsSujet()).stream()
+		return CollectionsUtils.unmodifiableNeverNull(getRapportsSujet()).stream()
 				.filter(ActiviteEconomique.class::isInstance)
 				.map(ActiviteEconomique.class::cast)
 				.filter(ActiviteEconomique::isPrincipal)
