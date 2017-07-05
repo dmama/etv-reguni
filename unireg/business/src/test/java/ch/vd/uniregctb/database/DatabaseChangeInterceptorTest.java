@@ -7,6 +7,7 @@ import java.util.HashSet;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
@@ -53,6 +55,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -947,5 +950,57 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		// on vérifie que l'ajout de la description a bien provoqué l'envoi d'une notification
 		assertEquals(1, eventService.changedBatiments.size());
 		assertEquals(id, eventService.changedBatiments.iterator().next());
+	}
+
+	/**
+	 * [SIFISC-25533] cas d'un changement de numéro de tiers sur un rapprochement par SuperGRA qui ne nettoie pas le cache WS
+	 * du tiers anciennement dans le rapprochement...
+	 */
+	@Test
+	public void testDetectChangementTiersDansRapprochement() throws Exception {
+
+		assertEmpty(eventService.changedTiers);
+
+		final class Ids {
+			long previousTiers;
+			long nextTiers;
+			long rapprochement;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique previous = addNonHabitant("Philippe", "Levieux", date(1978, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique next = addNonHabitant("Philippo", "Lenouvo", date(1987, 3, 1), Sexe.MASCULIN);
+			final PersonnePhysiqueRF rf = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final RapprochementRF rapprochement = addRapprochementRF(previous, rf, null, null, TypeRapprochementRF.AUTO);
+
+			final Ids res = new Ids();
+			res.previousTiers = previous.getNumero();
+			res.nextTiers = next.getNumero();
+			res.rapprochement = rapprochement.getId();
+			return res;
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedTiers);
+
+		// on modifie le tiers sur le rapprochement (= superGRA)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final RapprochementRF rapprochementRF = hibernateTemplate.get(RapprochementRF.class, ids.rapprochement);
+				assertNotNull(rapprochementRF);
+				assertEquals((Long) ids.previousTiers, rapprochementRF.getContribuable().getNumero());
+
+				// changement
+				final PersonnePhysique newTiers = hibernateTemplate.get(PersonnePhysique.class, ids.nextTiers);
+				assertNotNull(newTiers);
+				rapprochementRF.setContribuable(newTiers);
+			}
+		});
+
+		// on vérifie l'envoi de notification de changement de tiers sur les deux tiers
+		assertEquals(2, eventService.changedTiers.size());
+		assertTrue(eventService.changedTiers.contains(ids.nextTiers));
+		assertTrue(eventService.changedTiers.contains(ids.previousTiers));
 	}
 }

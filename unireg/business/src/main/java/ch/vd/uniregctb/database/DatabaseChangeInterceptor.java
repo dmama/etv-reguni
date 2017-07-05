@@ -49,7 +49,25 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 
 	@Override
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException {
+		// notification sur l'entité et ses nouvelles valeurs
+		notifyChange(entity, isAnnulation);
 
+		// [SIFISC-25533] En cas de changement de lien vers une entité, il faut notifier à la fois l'ancienne et la nouvelle entité
+		// (la nouvelle a normalement déjà été notifiée dans l'appel à {@link #notifyChange()} plus haut, reste l'ancienne)
+		if (previousState != null && entity instanceof LinkedEntity) {
+			for (int i = 0; i < types.length; ++i) {
+				final Object currentValue = currentState[i];
+				final Object previousValue = previousState[i];
+				final Type type = types[i];
+				if (currentValue != previousValue && type.isEntityType() && previousValue instanceof HibernateEntity) {
+					notifyChange((HibernateEntity) previousValue, isAnnulation);
+				}
+			}
+		}
+		return false;
+	}
+
+	private void notifyChange(HibernateEntity entity, boolean isAnnulation) {
 		if (entity instanceof Tiers) {
 			// Un tiers a été modifié en base => on envoie un événement correspondant
 			final Tiers tiers = (Tiers) entity;
@@ -119,7 +137,6 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 				}
 			}
 		}
-		return false;
 	}
 
 	@Override
