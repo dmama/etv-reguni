@@ -1,103 +1,81 @@
 package ch.vd.uniregctb.tiers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.ListUtils;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.uniregctb.common.AnnulableHelper;
 
 /**
  * Contient les fors fiscaux d'un contribuable décomposés par types et triés dans l'ordre chronologique.
  */
 public class ForsParType {
 
-	public List<ForFiscalPrincipalPP> principauxPP = Collections.emptyList();
-	public List<ForFiscalPrincipalPM> principauxPM = Collections.emptyList();
-	public List<ForFiscalSecondaire> secondaires = Collections.emptyList();
-	public List<ForDebiteurPrestationImposable> dpis = Collections.emptyList();
-	public List<ForFiscalAutreElementImposable> autreElementImpot = Collections.emptyList();
-	public List<ForFiscalAutreImpot> autresImpots = Collections.emptyList();
+	private static final List<Class<? extends ForFiscal>> CLASSES = Arrays.asList(ForFiscalPrincipalPP.class,
+	                                                                              ForFiscalPrincipalPM.class,
+	                                                                              ForFiscalSecondaire.class,
+	                                                                              ForDebiteurPrestationImposable.class,
+	                                                                              ForFiscalAutreElementImposable.class,
+	                                                                              ForFiscalAutreImpot.class);
+
+	public final List<ForFiscalPrincipalPP> principauxPP;
+	public final List<ForFiscalPrincipalPM> principauxPM;
+	public final List<ForFiscalSecondaire> secondaires;
+	public final List<ForDebiteurPrestationImposable> dpis;
+	public final List<ForFiscalAutreElementImposable> autreElementImpot;
+	public final List<ForFiscalAutreImpot> autresImpots;
 
 	public ForsParType(Set<ForFiscal> forsFiscaux, boolean sort) {
+		this(buildMapFors(forsFiscaux, sort));
+	}
 
-		principauxPP = Collections.emptyList();
-		principauxPM = Collections.emptyList();
-		secondaires = Collections.emptyList();
-		dpis = Collections.emptyList();
-		autreElementImpot = Collections.emptyList();
-		autresImpots = Collections.emptyList();
-
-		if (forsFiscaux == null) {
-			return;
+	@NotNull
+	private static Map<Class<? extends ForFiscal>, List<? extends ForFiscal>> buildMapFors(Set<ForFiscal> forsFiscaux, boolean sort) {
+		if (forsFiscaux == null || forsFiscaux.isEmpty()) {
+			return Collections.emptyMap();
 		}
-
-		for (ForFiscal ff : forsFiscaux) {
-			if (ff.isAnnule()) {
-				continue;
-			}
-
-			if (ff instanceof ForFiscalPrincipalPP) {
-				if (principauxPP == Collections.EMPTY_LIST) {
-					principauxPP = new ArrayList<>();
-				}
-				principauxPP.add((ForFiscalPrincipalPP) ff);
-			}
-			else if (ff instanceof ForFiscalPrincipalPM) {
-				if (principauxPM == Collections.EMPTY_LIST) {
-					principauxPM = new ArrayList<>();
-				}
-				principauxPM.add((ForFiscalPrincipalPM) ff);
-			}
-			else if (ff instanceof ForFiscalSecondaire) {
-				if (secondaires == Collections.EMPTY_LIST) {
-					secondaires = new ArrayList<>();
-				}
-				secondaires.add((ForFiscalSecondaire) ff);
-			}
-			else if (ff instanceof ForDebiteurPrestationImposable) {
-				if (dpis == Collections.EMPTY_LIST) {
-					dpis = new ArrayList<>();
-				}
-				dpis.add((ForDebiteurPrestationImposable) ff);
-			}
-			else if (ff instanceof ForFiscalAutreElementImposable) {
-				if (autreElementImpot == Collections.EMPTY_LIST) {
-					autreElementImpot = new ArrayList<>();
-				}
-				autreElementImpot.add((ForFiscalAutreElementImposable) ff);
-			}
-			else if (ff instanceof ForFiscalAutreImpot) {
-				if (autresImpots == Collections.EMPTY_LIST) {
-					autresImpots = new ArrayList<>();
-				}
-				autresImpots.add((ForFiscalAutreImpot) ff);
-			}
-			else {
-				throw new IllegalArgumentException("Type de for fiscal inconnu = [" + ff.getClass() + ']');
-			}
-		}
-
+		final Map<Class<? extends ForFiscal>, List<? extends ForFiscal>> map = forsFiscaux.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.collect(Collectors.toMap(ForsParType::extractClass,
+				                          Collections::singletonList,
+				                          ListUtils::union));
 		if (sort) {
-			if (principauxPP != Collections.EMPTY_LIST) {
-				principauxPP.sort(new DateRangeComparator<>());
-			}
-			if (principauxPM != Collections.EMPTY_LIST) {
-				principauxPM.sort(new DateRangeComparator<>());
-			}
-			if (secondaires != Collections.EMPTY_LIST) {
-				secondaires.sort(new DateRangeComparator<>());
-			}
-			if (dpis != Collections.EMPTY_LIST) {
-				dpis.sort(new DateRangeComparator<>());
-			}
-			if (autreElementImpot != Collections.EMPTY_LIST) {
-				autreElementImpot.sort(new DateRangeComparator<>());
-			}
-			if (autresImpots != Collections.EMPTY_LIST) {
-				autresImpots.sort(new DateRangeComparator<>());
-			}
+			final DateRangeComparator<ForFiscal> comparator = new DateRangeComparator<>();
+			map.values().forEach(list -> list.sort(comparator));
 		}
+		return map;
+	}
+
+	@NotNull
+	private static Class<? extends ForFiscal> extractClass(ForFiscal ff) {
+		return CLASSES.stream()
+				.filter(clazz -> clazz.isInstance(ff))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Type de for fiscal inconnu : " + ff.getClass().getName()));
+	}
+
+	@NotNull
+	private <T extends ForFiscal> List<T> extractList(Map<Class<? extends ForFiscal>, List<? extends ForFiscal>> map, Class<T> clazz) {
+		//noinspection unchecked
+		final List<T> found = (List<T>) map.get(clazz);
+		return found != null ? new ArrayList<>(found) : new ArrayList<>();          // on veut fournir des listes éditables (pour les fors fictifs du calcul d'assujettissement par exemple)
+	}
+
+	private ForsParType(Map<Class<? extends ForFiscal>, List<? extends ForFiscal>> map) {
+		this.principauxPP = extractList(map, ForFiscalPrincipalPP.class);
+		this.principauxPM = extractList(map, ForFiscalPrincipalPM.class);
+		this.secondaires = extractList(map, ForFiscalSecondaire.class);
+		this.dpis = extractList(map, ForDebiteurPrestationImposable.class);
+		this.autreElementImpot = extractList(map, ForFiscalAutreElementImposable.class);
+		this.autresImpots = extractList(map, ForFiscalAutreImpot.class);
 	}
 
 	public final boolean isEmpty() {

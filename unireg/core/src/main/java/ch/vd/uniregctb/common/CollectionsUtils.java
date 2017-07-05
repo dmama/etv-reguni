@@ -122,13 +122,13 @@ public abstract class CollectionsUtils {
 	/**
 	 * @param first  première liste présentée
 	 * @param second seconde liste présentée
-	 * @param <T>    type des éléments des collections
+	 * @param <T>    type commun des éléments des collections
 	 * @return itérable sur une liste virtuelle vue comme la composition des deux listes données
 	 */
-	public static <T> Iterable<T> merged(Iterable<T> first, Iterable<T> second) {
+	public static <T> Iterable<T> merged(Iterable<? extends T> first, Iterable<? extends T> second) {
 		return () -> {
-			final Iterator<T> iterFirst = first.iterator();
-			final Iterator<T> iterSecond = second.iterator();
+			final Iterator<? extends T> iterFirst = first.iterator();
+			final Iterator<? extends T> iterSecond = second.iterator();
 			return new Iterator<T>() {
 				@Override
 				public boolean hasNext() {
