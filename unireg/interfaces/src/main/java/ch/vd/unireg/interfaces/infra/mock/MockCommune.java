@@ -11,8 +11,10 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 public class MockCommune extends MockEntityOFS implements Commune {
 
 	private static final String VAUD = "VD";
+	private static final String JURA = "JU";
 	private static final String BERN = "BE";
 	private static final String ZURICH = "ZH";
+	private static final String ZUG = "ZG";
 	private static final String NEUCHATEL = "NE";
 	private static final String FRIBOURG = "FR";
 	private static final String GENEVE = "GE";
@@ -148,6 +150,16 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	public static final MockCommune Sion = new MockCommune(6266, "Sion", VALAIS, null);
 	public static final MockCommune Conthey = new MockCommune(6023, "Conthey", VALAIS, null);
 	public static final MockCommune Chur = new MockCommune(3901, "Chur", GRISONS, null);
+
+	// quelques dates de changement de canton (passée et future)
+	public static final RegDate dateIntegrationMoutierJU = RegDate.get().getLastDayOfTheMonth().getOneDayAfter();               // toujours dans le futur...
+	public static final RegDate dateChangementCantonPasse = RegDate.get(RegDate.get().year() - 1, 1, 1);            // en début d'année dernière
+
+	// quelques communes qui changent de canton !!
+	public static final MockCommune MoutierBE = new MockCommune(700, "Moutier", BERN, null, null, dateIntegrationMoutierJU.getOneDayBefore());
+	public static final MockCommune MoutierJU = new MockCommune(700, "Moutier", JURA, null, dateIntegrationMoutierJU, null);
+	public static final MockCommune TransfugeZH = new MockCommune(Integer.MAX_VALUE - 1, "Transfuge (ZH)", ZURICH, null, null, dateChangementCantonPasse.getOneDayBefore());
+	public static final MockCommune TransfugeZG = new MockCommune(Integer.MAX_VALUE - 1, "Transfuge (ZG)", ZUG, null, dateChangementCantonPasse, null);
 
 	/**
 	 * ce bloque statique est positionné en dernier pour s'assurer que les mocks des communes soient tous initialisés avant d'initialiser

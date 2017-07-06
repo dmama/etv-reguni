@@ -2,10 +2,8 @@ package ch.vd.uniregctb.validation.decision;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -22,7 +20,6 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testCommunePrincipale() throws Exception {
 
 		final MockCommune communesPrincipales[] = { MockCommune.LAbbaye, MockCommune.LeChenit, MockCommune.LeLieu };
@@ -39,7 +36,6 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDateFinValiditeCommune() throws Exception {
 		final Commune commune = MockCommune.Malapalud;
 		{
@@ -49,10 +45,8 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 			Assert.assertEquals(0, vr.warningsCount());
 			Assert.assertEquals(1, vr.errorsCount());
 
-			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
-			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
-			final String expectedMsg = String.format("La décision ACI %s a une période de validité qui dépasse la période de validité de sa commune %s (%d) (%s - %s)",
-			                                         d, commune.getNomOfficiel(), commune.getNoOFS(), debutValiditeCommune, finValiditeCommune);
+			final String expectedMsg = String.format("La décision ACI %s a une période de validité qui dépasse la période de validité de la commune %s (%d) depuis le 01.01.2009",
+			                                         d, commune.getNomOfficiel(), commune.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
@@ -65,7 +59,6 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDateFinValiditeCommuneDansFutur() throws Exception {
 		final Commune commune = MockCommune.Mirage;
 		Assert.assertTrue(commune.getDateFinValidite().isAfterOrEqual(RegDate.get()));
@@ -87,7 +80,6 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDateDebutValiditeCommune() throws Exception {
 		final Commune commune = MockCommune.ValDeTravers;
 		{
@@ -97,10 +89,8 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 			Assert.assertEquals(0, vr.warningsCount());
 			Assert.assertEquals(1, vr.errorsCount());
 
-			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
-			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
-			final String expectedMsg = String.format("La décision ACI %s a une période de validité qui dépasse la période de validité de sa commune %s (%d) (%s - %s)",
-			                                         d, commune.getNomOfficiel(), commune.getNoOFS(), debutValiditeCommune, finValiditeCommune);
+			final String expectedMsg = String.format("La décision ACI %s a une période de validité qui dépasse la période de validité de la commune %s (%d) entre le 01.07.2008 et le 31.12.2008",
+			                                         d, commune.getNomOfficiel(), commune.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
@@ -113,7 +103,6 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneVaudoiseOuHorsCanton() throws Exception {
 		{
 			final Commune commune = MockCommune.Lausanne;
@@ -123,7 +112,7 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("La décision ACI %s montre une incohérence entre le type d'autorité fiscale %s et la commune vaudoise %s (%d)", d, d.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS());
+			final String expectedMsg = String.format("La décision ACI %s montre une incohérence entre son type d'autorité fiscale %s et la commune vaudoise %s (%d) depuis le 01.07.2008", d, d.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
@@ -134,13 +123,12 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("La décision ACI %s montre une incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d)", d, d.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS());
+			final String expectedMsg = String.format("La décision ACI %s montre une incohérence entre son type d'autorité fiscale %s et la commune non-vaudoise %s (%d) depuis le 01.07.2008", d, d.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testPaysHS() throws Exception {
 		{
 			final Commune commune = MockCommune.Lausanne;
@@ -183,7 +171,6 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDateDebutDansLeFutur() throws Exception {
 		final RegDate aujourdhui = RegDate.get();
 		final RegDate demain = aujourdhui.addDays(1);
@@ -207,7 +194,6 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDateFinDansLeFutur() throws Exception {
 		final RegDate debut = date(2010, 1, 1);
 		final RegDate aujourdhui = RegDate.get();
@@ -228,6 +214,30 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 
 			final String expectedMsg = String.format("La décision ACI %s possède une date de fin dans le futur", d);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
+		}
+	}
+
+	@Test
+	public void testCommuneAvecChangementCantonFutur() throws Exception {
+		final RegDate debut = date(2010, 1, 1);
+		{
+			final DecisionAci d = new DecisionAci(null, debut, null, MockCommune.MoutierBE.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, null);
+			final ValidationResults vr = validate(d);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+		}
+	}
+
+	@Test
+	public void testCommuneAvecChangementCantonPasse() throws Exception {
+		final RegDate debut = date(2010, 1, 1);
+		{
+			final DecisionAci d = new DecisionAci(null, debut, null, MockCommune.TransfugeZH.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, null);
+			final ValidationResults vr = validate(d);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
 		}
 	}
 }

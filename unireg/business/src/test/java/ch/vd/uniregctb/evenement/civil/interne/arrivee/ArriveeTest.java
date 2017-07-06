@@ -71,7 +71,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 	private static final String DB_UNIT_DATA_FILE = "ArriveeTest.xml";
 
-	private static final Long NUMERO_INDIVIDU_INCONNU = 9999l;
+	private static final Long NUMERO_INDIVIDU_INCONNU = 9999L;
 	private static final Long NUMERO_INDIVIDU_SEUL = 34567L;
 	private static final Long NUMERO_INDIVIDU_MARIE_SEUL = 12345L;
 
@@ -750,7 +750,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 			final ValidationMessage erreur = e.getErrors().get(0);
 			assertEquals("Le for fiscal ForFiscalPrincipalPP (01.09.2010 - ?) a une période de validité qui dépasse " +
-					             "la période de validité de sa commune Riex (5608) (? - 31.12.2010)", erreur.getMessage());
+					             "la période de validité de la commune Riex (5608) depuis le 01.01.2011", erreur.getMessage());
 		}
 	}
 

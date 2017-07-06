@@ -3,7 +3,9 @@ package ch.vd.uniregctb.metier.piis;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -87,9 +89,54 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * @return la liste des fors fiscaux principaux non-annulés de ce contribuables, triés par date
 	 */
 	@NotNull
-	private static List<ForFiscalPrincipalPP> getForsPrincipaux(ContribuableImpositionPersonnesPhysiques ctb, boolean rw) {
+	private List<ForFiscalPrincipalPP> getForsPrincipaux(ContribuableImpositionPersonnesPhysiques ctb, boolean rw) {
 		final List<ForFiscalPrincipalPP> ffps = ctb.getForsFiscauxPrincipauxActifsSorted();
-		return !ffps.isEmpty() ? ffps : (rw ? new ArrayList<>() : Collections.emptyList());
+		if (ffps.isEmpty()) {
+			return rw ? new ArrayList<>() : Collections.emptyList();
+		}
+
+		// traitement des communes qui changent de canton... pour chaque for suisse, si la commune
+		// change de canton pendant la durée du for, on va scinder le for en deux de part et d'autre de la date de transfert intercantonal
+		final List<ForFiscalPrincipalPP> liste = new LinkedList<>();
+		for (ForFiscalPrincipalPP ff : ffps) {
+			boolean takeSource = true;
+			if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+				final List<DateRangeHelper.Ranged<String>> cantons = infraService.getCommuneHistoByNumeroOfs(ff.getNumeroOfsAutoriteFiscale()).stream()
+						.map(c -> new DateRangeHelper.Ranged<>(c.getDateDebutValidite(), c.getDateFinValidite(), c.getSigleCanton()))
+						.collect(Collectors.toList());
+				final List<DateRangeHelper.Ranged<String>> collatedCantons = DateRangeHelper.collate(cantons,
+				                                                                                    (r1, r2) -> DateRangeHelper.isCollatable(r1, r2) && Objects.equals(r1.getPayload(), r2.getPayload()),
+				                                                                                    (r1, r2) -> new DateRangeHelper.Ranged<>(r1.getDateDebut(), r2.getDateFin(), r1.getPayload()));
+				if (collatedCantons.size() > 1) {
+					// il faut encore vérifier que le (ou les) changement(s) de canton se produi(sen)t pendant la période de validité du for
+					final List<DateRange> intersections = DateRangeHelper.intersections(ff, collatedCantons);
+					if (intersections != null && intersections.size() > 1) {
+						// il faut maintenant sortir la scie et couper...
+						for (DateRange intersection : intersections) {
+							final ForFiscalPrincipalPP tranche = (ForFiscalPrincipalPP) ff.duplicate();
+							tranche.setTiers(ff.getTiers());
+							if (intersection.getDateDebut() != ff.getDateDebut()) {
+								tranche.setDateDebut(intersection.getDateDebut());
+								tranche.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+							}
+							if (intersection.getDateFin() != ff.getDateFin()) {
+								tranche.setDateFin(intersection.getDateFin());
+								tranche.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+							}
+							liste.add(tranche);
+						}
+
+						// pas la peine de reprendre le for initial... il a été remplacé
+						takeSource = false;
+					}
+				}
+			}
+			if (takeSource) {
+				liste.add(ff);
+			}
+		}
+
+		return liste;
 	}
 
 	/**

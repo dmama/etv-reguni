@@ -6958,4 +6958,87 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * Moutier va passer du canton de Berne au canton du Jura... un for principal sur cette commune qui change doit
+	 * donc donner lieu à un changement de canton également dans la PIIS
+	 */
+	@Test
+	public void testRepartitionIntercantonaleSiForSurCommuneQuiChangeDeCanton() throws Exception {
+
+		final RegDate today = RegDate.get();
+		final RegDate debut = date(today.year() - 2, 1, 1);
+
+		// mise en place civile -> rien
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// rien
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addNonHabitant("Francesco", "Bianco", null, Sexe.MASCULIN);
+			addForPrincipal(pp, debut, null, MockCommune.TransfugeZH, ModeImposition.SOURCE);
+
+			final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+			addRapportPrestationImposable(dpi, pp, debut, null, false);
+			return pp.getNumero();
+		});
+
+		// vérification des conditions initiales
+		Assert.assertEquals(MockCommune.TransfugeZH.getNoOFS(), MockCommune.TransfugeZG.getNoOFS());
+		Assert.assertNotEquals(MockCommune.TransfugeZH.getSigleCanton(), MockCommune.TransfugeZG.getSigleCanton());
+		Assert.assertEquals(date(today.year() - 1, 1, 1), MockCommune.TransfugeZG.getDateDebut());
+		Assert.assertEquals(date(today.year() - 2, 12, 31), MockCommune.TransfugeZH.getDateFin());
+
+		// calcul des PIIS
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImpositionImpotSource> piis = service.determine(pp);
+				Assert.assertNotNull(piis);
+				Assert.assertEquals(3, piis.size());
+
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(0);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getHorsCanton(MockCommune.TransfugeZH.getSigleCanton()), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.TransfugeZH.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(today.year() - 2, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(today.year() - 2, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(1);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getHorsCanton(MockCommune.TransfugeZG.getSigleCanton()), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.TransfugeZG.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(today.year() - 1, 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(today.year() - 1, 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+				{
+					final PeriodeImpositionImpotSource pi = piis.get(2);
+					Assert.assertNotNull(pi);
+					Assert.assertEquals(PeriodeImpositionImpotSource.Type.SOURCE, pi.getType());
+					Assert.assertEquals(Localisation.getHorsCanton(MockCommune.TransfugeZG.getSigleCanton()), pi.getLocalisation());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, pi.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.TransfugeZG.getNoOFS(), pi.getNoOfs());
+					Assert.assertEquals(date(today.year(), 1, 1), pi.getDateDebut());
+					Assert.assertEquals(date(today.year(), 12, 31), pi.getDateFin());
+					Assert.assertNotNull(pi.getContribuable());
+					Assert.assertEquals((Long) ppId, pi.getContribuable().getNumero());
+				}
+			}
+		});
+	}
 }
