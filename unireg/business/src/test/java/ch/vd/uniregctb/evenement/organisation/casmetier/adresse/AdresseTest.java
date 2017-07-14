@@ -168,9 +168,9 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertEquals(5, erreurs.size());
 				                             Assert.assertEquals("Mutation : Changement d'adresse",
 				                                                 erreurs.get(1).getMessage());
-				                             Assert.assertEquals("L'adresse de courrier a changé suite au changement de l'adresse effective civile (issue de l'IDE).",
+				                             Assert.assertEquals("L'adresse de courrier a changé suite au changement de l'adresse effective civile.",
 				                                                 erreurs.get(2).getMessage());
-				                             Assert.assertEquals("L'adresse de représentation a changé suite au changement de l'adresse effective civile (issue de l'IDE).",
+				                             Assert.assertEquals("L'adresse de représentation a changé suite au changement de l'adresse effective civile.",
 				                                                 erreurs.get(3).getMessage());
 				                             Assert.assertEquals("L'adresse de poursuite a changé suite au changement de l'adresse légale civile (issue du RC).",
 				                                                 erreurs.get(4).getMessage());
@@ -506,11 +506,11 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertEquals(5, erreurs.size());
 				                             Assert.assertEquals("Mutation : Changement d'adresse",
 				                                                 erreurs.get(1).getMessage());
-				                             Assert.assertEquals("L'adresse de courrier a changé suite au changement de l'adresse effective civile (issue de l'IDE).",
+				                             Assert.assertEquals("L'adresse de courrier a changé suite au changement de l'adresse effective civile.",
 				                                                 erreurs.get(2).getMessage());
-				                             Assert.assertEquals("L'adresse de représentation a changé suite au changement de l'adresse effective civile (issue de l'IDE).",
+				                             Assert.assertEquals("L'adresse de représentation a changé suite au changement de l'adresse effective civile.",
 				                                                 erreurs.get(3).getMessage());
-				                             Assert.assertEquals("L'adresse fiscale de poursuite, non-permanente, a été fermée. L'adresse de poursuite est maintenant donnée par l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).",
+				                             Assert.assertEquals("L'adresse fiscale de poursuite, non-permanente, a été fermée. L'adresse de poursuite est maintenant donnée par l'adresse effective civile, en l'absence d'adresse légale civile (issue du RC).",
 				                                                 erreurs.get(4).getMessage());
 
 				                             return null;
@@ -632,12 +632,12 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 					                             Assert.assertEquals(5, erreurs.size());
 					                             Assert.assertEquals("Mutation : Changement d'adresse",
 					                                                 erreurs.get(1).getMessage());
-					                             Assert.assertEquals("L'adresse de courrier a changé suite au changement de l'adresse effective civile (issue de l'IDE).",
+					                             Assert.assertEquals("L'adresse de courrier a changé suite au changement de l'adresse effective civile.",
 					                                                 erreurs.get(2).getMessage());
-					                             Assert.assertEquals("L'adresse de représentation a changé suite au changement de l'adresse effective civile (issue de l'IDE).",
+					                             Assert.assertEquals("L'adresse de représentation a changé suite au changement de l'adresse effective civile.",
 					                                                 erreurs.get(3).getMessage());
 					                             Assert.assertEquals(
-							                             "L'adresse fiscale de poursuite, non-permanente, a été fermée. L'adresse de poursuite est maintenant donnée par l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).",
+							                             "L'adresse fiscale de poursuite, non-permanente, a été fermée. L'adresse de poursuite est maintenant donnée par l'adresse effective civile, en l'absence d'adresse légale civile (issue du RC).",
 							                             erreurs.get(4).getMessage());
 				                             }
 				                             {
@@ -647,7 +647,7 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 
 					                             final List<EvenementOrganisationErreur> erreurs2 = evt2.getErreurs();
 					                             Assert.assertEquals(5, erreurs2.size());
-					                             Assert.assertEquals("L'adresse de poursuite a changé suite au changement de l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).",
+					                             Assert.assertEquals("L'adresse de poursuite a changé suite au changement de l'adresse effective civile, en l'absence d'adresse légale civile (issue du RC).",
 					                                                 evt2.getErreurs().get(4).getMessage());
 				                             }
 				                             return null;
@@ -758,11 +758,11 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertEquals(5, erreurs.size());
 				                             Assert.assertEquals("Mutation : Changement d'adresse",
 				                                                 erreurs.get(1).getMessage());
-				                             Assert.assertEquals("L'adresse de courrier a changé suite au changement de l'adresse effective civile (issue de l'IDE).",
+				                             Assert.assertEquals("L'adresse de courrier a changé suite au changement de l'adresse effective civile.",
 				                                                 erreurs.get(2).getMessage());
-				                             Assert.assertEquals("L'adresse de représentation a changé suite au changement de l'adresse effective civile (issue de l'IDE).",
+				                             Assert.assertEquals("L'adresse de représentation a changé suite au changement de l'adresse effective civile.",
 				                                                 erreurs.get(3).getMessage());
-				                             Assert.assertEquals("L'adresse fiscale poursuite, permanente, est maintenue malgré le changement de l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).",
+				                             Assert.assertEquals("L'adresse fiscale poursuite, permanente, est maintenue malgré le changement de l'adresse effective civile, en l'absence d'adresse légale civile (issue du RC).",
 				                                                 erreurs.get(4).getMessage());
 
 				                             return null;
@@ -868,11 +868,11 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertEquals(5, erreurs.size());
 				                             Assert.assertEquals("Mutation : Changement d'adresse",
 				                                                 erreurs.get(1).getMessage());
-				                             Assert.assertEquals("L'adresse de courrier a changé suite au changement de l'adresse effective civile (issue de l'IDE).",
+				                             Assert.assertEquals("L'adresse de courrier a changé suite au changement de l'adresse effective civile.",
 				                                                 erreurs.get(2).getMessage());
-				                             Assert.assertEquals("L'adresse de représentation a changé suite au changement de l'adresse effective civile (issue de l'IDE).",
+				                             Assert.assertEquals("L'adresse de représentation a changé suite au changement de l'adresse effective civile.",
 				                                                 erreurs.get(3).getMessage());
-				                             Assert.assertEquals("L'adresse de poursuite a changé suite au changement de l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).",
+				                             Assert.assertEquals("L'adresse de poursuite a changé suite au changement de l'adresse effective civile, en l'absence d'adresse légale civile (issue du RC).",
 				                                                 erreurs.get(4).getMessage());
 
 				                             return null;

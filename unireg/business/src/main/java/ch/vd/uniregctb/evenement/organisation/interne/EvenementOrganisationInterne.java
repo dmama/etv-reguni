@@ -1042,38 +1042,38 @@ public abstract class EvenementOrganisationInterne {
 		final AdresseSupplementaire adresseCourrier = getAdresseTiers(TypeAdresseTiers.COURRIER, date);
 		if (adresseCourrier != null) {
 			if (adresseCourrier.isPermanente()) {
-				warnings.addWarning("L'adresse fiscale de courrier, permanente, est maintenue malgré le changement de l'adresse effective civile (issue de l'IDE).");
+				warnings.addWarning("L'adresse fiscale de courrier, permanente, est maintenue malgré le changement de l'adresse effective civile.");
 			} else {
 				context.getAdresseService().fermerAdresse(adresseCourrier, date.getOneDayBefore());
-				suivis.addSuivi("L'adresse fiscale de courrier, non-permanente, a été fermée. L'adresse de courrier est maintenant donnée par l'adresse effective civile (issue de l'IDE).");
+				suivis.addSuivi("L'adresse fiscale de courrier, non-permanente, a été fermée. L'adresse de courrier est maintenant donnée par l'adresse effective civile.");
 			}
 		} else {
-			suivis.addSuivi("L'adresse de courrier a changé suite au changement de l'adresse effective civile (issue de l'IDE).");
+			suivis.addSuivi("L'adresse de courrier a changé suite au changement de l'adresse effective civile.");
 		}
 		final AdresseSupplementaire adresseRepresentation = getAdresseTiers(TypeAdresseTiers.REPRESENTATION, date);
 		if (adresseRepresentation != null) {
 			if (adresseRepresentation.isPermanente()) {
-				warnings.addWarning("L'adresse fiscale de représentation, permanente, est maintenue malgré le changement de l'adresse effective civile (issue de l'IDE).");
+				warnings.addWarning("L'adresse fiscale de représentation, permanente, est maintenue malgré le changement de l'adresse effective civile.");
 			} else {
 				context.getAdresseService().fermerAdresse(adresseRepresentation, date.getOneDayBefore());
-				suivis.addSuivi("L'adresse fiscale de représentation, non-permanente, a été fermée. L'adresse de représentation est maintenant donnée par l'adresse effective civile (issue de l'IDE).");
+				suivis.addSuivi("L'adresse fiscale de représentation, non-permanente, a été fermée. L'adresse de représentation est maintenant donnée par l'adresse effective civile.");
 			}
 		} else {
-			suivis.addSuivi("L'adresse de représentation a changé suite au changement de l'adresse effective civile (issue de l'IDE).");
+			suivis.addSuivi("L'adresse de représentation a changé suite au changement de l'adresse effective civile.");
 		}
 		final AdresseSupplementaire adressePoursuite = getAdresseTiers(TypeAdresseTiers.POURSUITE, date);
 		if (utiliserCommeAdressePoursuite) {
 			if (adressePoursuite != null) {
 				if (adressePoursuite.isPermanente()) {
-					warnings.addWarning("L'adresse fiscale poursuite, permanente, est maintenue malgré le changement de l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).");
+					warnings.addWarning("L'adresse fiscale poursuite, permanente, est maintenue malgré le changement de l'adresse effective civile, en l'absence d'adresse légale civile (issue du RC).");
 				}
 				else {
 					context.getAdresseService().fermerAdresse(adressePoursuite, date.getOneDayBefore());
-					suivis.addSuivi("L'adresse fiscale de poursuite, non-permanente, a été fermée. L'adresse de poursuite est maintenant donnée par l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).");
+					suivis.addSuivi("L'adresse fiscale de poursuite, non-permanente, a été fermée. L'adresse de poursuite est maintenant donnée par l'adresse effective civile, en l'absence d'adresse légale civile (issue du RC).");
 				}
 			}
 			else {
-				suivis.addSuivi("L'adresse de poursuite a changé suite au changement de l'adresse effective civile (issue de l'IDE), en l'absence d'adresse légale civile (issue du RC).");
+				suivis.addSuivi("L'adresse de poursuite a changé suite au changement de l'adresse effective civile, en l'absence d'adresse légale civile (issue du RC).");
 			}
 		}
 		raiseStatusTo(HandleStatus.TRAITE);
