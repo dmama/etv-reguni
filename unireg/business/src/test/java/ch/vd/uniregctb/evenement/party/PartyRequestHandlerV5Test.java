@@ -279,6 +279,46 @@ public class PartyRequestHandlerV5Test extends BusinessTest {
 		}
 	}
 
+
+	//SIFSC-25503
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testHandleRequeteSurTiersSansAdresse() throws Exception {
+
+		final Role[] roles = {Role.VISU_ALL};
+		final MockSecurityProvider provider = new MockSecurityProvider(roles);
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+				//addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 14), null, MockRue.Chamblon.RueDesUttins);
+				return pp.getNumero();
+			}
+		});
+
+		handler.setSecurityProvider(provider);
+		try {
+			final PartyRequest request = new PartyRequest();
+			final UserLogin login = UserLoginHelper.of("xxxxx", 22);
+			request.setLogin(login);
+			request.setPartyNumber(id.intValue());
+			request.getParts().add(PartyPart.ADDRESSES);
+
+			final PartyResponse response = handler.handle(request).getResponse();
+			assertNotNull(response);
+
+			final Party party = response.getParty();
+			assertNotNull(party);
+
+			final List<Address> addresses = party.getResidenceAddresses();
+			assertEmpty(addresses);
+
+		}
+		finally {
+			handler.setSecurityProvider(null);
+		}
+	}
 	/**
 	 * Type de débiteur non-supporté par les vieilles versions du service
 	 */
