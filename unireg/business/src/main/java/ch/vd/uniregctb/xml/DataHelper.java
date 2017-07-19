@@ -271,8 +271,10 @@ public abstract class DataHelper {
 				list.add(AddressBuilder.newAddress(a, type));
 			}
 		}
+		//SIFISC-25503 on supprime toutes les adresses Fake des réponses des services ws et asynch
+		final List<ch.vd.unireg.xml.party.address.v3.Address> listeResultat=list.stream().filter(a->!a.isFake()).collect(Collectors.toList());
 
-		return list.isEmpty() ? null : list;
+		return listeResultat.isEmpty() ? null : list;
 	}
 
 	public static List<ch.vd.unireg.xml.party.address.v1.AddressOtherParty> coreToXMLATv1(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range,
