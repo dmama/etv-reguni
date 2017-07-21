@@ -13,6 +13,9 @@ public class RolePopulationPMExtractor extends RolePopulationExtractorImpl<Entre
 		super(EnumSet.of(MotifFor.FIN_EXPLOITATION, MotifFor.DEPART_HS, MotifFor.FUSION_ENTREPRISES, MotifFor.FAILLITE));
 	}
 
+	public RolePopulationPMExtractor(MotifFor motifFor) {
+		super(EnumSet.of(MotifFor.FIN_EXPLOITATION, MotifFor.DEPART_HS, MotifFor.FUSION_ENTREPRISES, MotifFor.FAILLITE,motifFor));
+	}
 	@Override
 	protected boolean isForAPrendreEnCompte(ForFiscalRevenuFortune ff) {
 		return ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL;

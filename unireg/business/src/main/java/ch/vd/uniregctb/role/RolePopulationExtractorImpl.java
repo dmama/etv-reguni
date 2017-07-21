@@ -48,6 +48,16 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 	@Nullable
 	@Override
 	public Integer getCommunePourRoles(int annee, T contribuable) {
+		final ForFiscalRevenuFortune ffv = getForPourRoles(annee,contribuable);
+		if (ffv != null) {
+			return ffv.getNumeroOfsAutoriteFiscale();
+		}
+		// rien (en général des considérations HC...)
+		return null;
+	}
+	@Nullable
+	@Override
+	public ForFiscalRevenuFortune getForPourRoles(int annee, T contribuable){
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
 
@@ -68,7 +78,7 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 
 		// trois possibilités : VD, HC ou HS
 		if (ffp.getCurrent().getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			return getCommunePourForPrincipalVaudois(ffp, finAnnee);
+			return getForPrincipalVaudois(ffp, finAnnee);
 		}
 
 		// fors secondaires qui intersectent la période de l'année des rôles
@@ -89,9 +99,8 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 		if (!fsActifsFin.isEmpty()) {
 			// le for "prépondérant" est l'un des actifs (= le plus vieux)
 			return fsActifsFin.stream()
-					.min(RolePopulationExtractorImpl::compareForsSecondaires)
-					.map(ForFiscalSecondaire::getNumeroOfsAutoriteFiscale)
-					.get();
+					.min(RolePopulationExtractorImpl::compareForsSecondaires).get();
+
 		}
 
 		// il faut chercher la date de fermeture du dernier for vaudois sur la période
@@ -113,7 +122,7 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 			final MovingWindow.Snapshot<ForFiscalPrincipal> snap = getSnapshot(getForsPrincipaux(contribuable), ffpvd);
 			final MotifFor motifFermeture = getMotifFermeture(snap);
 			if (motifsFermetureFractionnementAssujettissement.contains(motifFermeture)) {
-				return ffpvd.getNumeroOfsAutoriteFiscale();
+				return ffpvd;
 			}
 		}
 		else if (taf == TypeAutoriteFiscale.PAYS_HS) {
@@ -124,9 +133,7 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 			//      - HS -> on conserve la commune du dernier for
 			final List<ForFiscalSecondaire> fsActifs = DateRangeHelper.rangesAt(forsSecondaires, dateFermetureDernierForVaudois);
 			return fsActifs.stream()
-					.min(RolePopulationExtractorImpl::compareForsSecondaires)
-					.map(ForFiscalSecondaire::getNumeroOfsAutoriteFiscale)
-					.get();
+					.min(RolePopulationExtractorImpl::compareForsSecondaires).get();
 		}
 
 		// rien (en général des considérations HC...)
@@ -232,9 +239,20 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 
 	@Nullable
 	private Integer getCommunePourForPrincipalVaudois(MovingWindow.Snapshot<ForFiscalPrincipal> ffp, RegDate finAnnee) {
+		final ForFiscalPrincipal current = getForPrincipalVaudois(ffp,finAnnee);
+		if (current!=null) {
+			return current.getNumeroOfsAutoriteFiscale();
+		}
+
+		// cas du mariage, de la séparation, du départ HC... -> rien sur la PF
+		return null;
+	}
+
+	@Nullable
+	private ForFiscalPrincipal getForPrincipalVaudois(MovingWindow.Snapshot<ForFiscalPrincipal> ffp, RegDate finAnnee) {
 		final ForFiscalPrincipal current = ffp.getCurrent();
 		if (current.isValidAt(finAnnee) || motifsFermetureFractionnementAssujettissement.contains(getMotifFermeture(ffp))) {
-			return ffp.getCurrent().getNumeroOfsAutoriteFiscale();
+			return ffp.getCurrent();
 		}
 
 		// cas du mariage, de la séparation, du départ HC... -> rien sur la PF

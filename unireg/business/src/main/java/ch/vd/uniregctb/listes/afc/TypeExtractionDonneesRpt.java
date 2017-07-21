@@ -8,7 +8,8 @@ public enum TypeExtractionDonneesRpt {
 
 	REVENU_ORDINAIRE("Revenu rôle ordinaire"),
 	REVENU_SOURCE_PURE("Revenu source pure"),
-	FORTUNE("Fortune");
+	FORTUNE("Fortune"),
+	IBC("Impot bénéfice capital");
 
 	private final String description;
 

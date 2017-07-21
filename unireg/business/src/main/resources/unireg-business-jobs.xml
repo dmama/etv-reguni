@@ -541,6 +541,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
+
 	<bean id="listeAssujettisJob" parent="schedulerJob" class="ch.vd.uniregctb.listes.assujettis.ListeAssujettisJob">
 		<constructor-arg value="615"/>
 		<constructor-arg value="Extraire la liste des assujettis"/>
@@ -641,6 +642,13 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="tiersService" ref="tiersService"/>
+	</bean>
+	<bean id="extractionDonneesRptPMJob" parent="schedulerJob" class="ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMJob">
+		<constructor-arg value="625"/>
+		<constructor-arg value="Extraire les données de référence RPT pour les personnes morales"/>
+		<property name="service" ref="extractionDonneesRptService"/>
+		<property name="rapportService" ref="rapportService"/>
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
     <bean id="dumpDatabaseJob" parent="schedulerJob" class="ch.vd.uniregctb.database.DumpDatabaseJob">

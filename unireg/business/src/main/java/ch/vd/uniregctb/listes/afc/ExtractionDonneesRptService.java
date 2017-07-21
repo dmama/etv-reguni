@@ -2,6 +2,7 @@ package ch.vd.uniregctb.listes.afc;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMResults;
 
 /**
  * Interface du service utilisé par l'extraction des listes des données de référence RPT
@@ -17,4 +18,6 @@ public interface ExtractionDonneesRptService {
 	 * @return extraction
 	 */
 	ExtractionDonneesRptResults produireExtraction(RegDate dateTraitement, int pf, TypeExtractionDonneesRpt mode, int nbThreads, StatusManager statusManager);
+
+	ExtractionDonneesRptPMResults produireExtractionIBC(RegDate dateTraitement, int pf, String versionWS, int nbThreads, StatusManager statusManager);
 }
