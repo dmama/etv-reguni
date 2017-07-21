@@ -128,7 +128,7 @@ public class BatchClientTest extends WebitTest {
 		assertEquals("ListeAssujettisParSubstitutionJob", list.get(i++));
 		assertEquals("InitialisationIFoncJob", list.get(i++));
 		assertEquals("ExtractionRegimesFiscauxJob", list.get(i++));
-		assertEquals("extractionDonneesRptPMJob", list.get(i++));
+		assertEquals("ExtractionDonneesRptPMJob", list.get(i++));
 		assertEquals("DumpDatabaseJob", list.get(i++));
 		assertEquals("LoadDatabaseJob", list.get(i++));
 		assertEquals("RamasseDocumentJob", list.get(i++));
