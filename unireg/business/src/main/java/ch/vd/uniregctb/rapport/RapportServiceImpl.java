@@ -130,6 +130,7 @@ import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromLis
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
+import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMResults;
 import ch.vd.uniregctb.listes.assujettis.AssujettisParSubstitutionResults;
 import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
@@ -781,6 +782,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 				@Override
 				public void writeDoc(ExtractionDonneesRptRapport doc, OutputStream os) throws Exception {
 					final PdfExtractionDonneesRptRapport document = new PdfExtractionDonneesRptRapport();
+					document.write(results, nom, description, dateGeneration, os, statusManager);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+	@Override
+	public ExtractionDonneesRptRapport generateRapport(ExtractionDonneesRptPMResults results, StatusManager statusManager) {
+		final String nom = "RapportExtractionDonneesRptPM" + results.getDateTraitement().index();
+		final String description = String.format("Rapport de l'extraction des données de référence RPT au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+		final Date dateGeneration = DateHelper.getCurrentDate();
+		try {
+			return docService.newDoc(ExtractionDonneesRptRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ExtractionDonneesRptRapport>() {
+				@Override
+				public void writeDoc(ExtractionDonneesRptRapport doc, OutputStream os) throws Exception {
+					final PdfExtractionDonneesRptPMRapport document = new PdfExtractionDonneesRptPMRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
 				}
 			});

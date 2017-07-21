@@ -341,6 +341,14 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		return null;
 	}
 
+	@Transient
+	public EtatEntreprise getEtatAt(RegDate date) {
+		final List<EtatEntreprise> nonAnnules = getEtatsNonAnnulesTries();
+		return nonAnnules.stream().filter(e->e.getDateObtention().isBeforeOrEqual(date)).
+				max(Comparator.comparing(EtatEntreprise::getDateObtention, NullDateBehavior.EARLIEST::compare)).orElse(null);
+
+	}
+
 	public void setEtats(Set<EtatEntreprise> etats) {
 		this.etats = etats;
 	}

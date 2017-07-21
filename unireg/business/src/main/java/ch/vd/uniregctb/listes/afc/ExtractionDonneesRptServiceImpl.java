@@ -8,6 +8,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMProcessor;
+import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMResults;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -77,5 +79,13 @@ public class ExtractionDonneesRptServiceImpl implements ExtractionDonneesRptServ
 		final ExtractionDonneesRptProcessor proc = new ExtractionDonneesRptProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService,
 				assujettissementService, periodeImpositionService, adresseService);
 		return proc.run(dateTraitement, pf, mode, nbThreads, statusManager);
+	}
+
+	@Override
+	public ExtractionDonneesRptPMResults produireExtractionIBC(RegDate dateTraitement, int pf, String versionWS, int nbThreads, StatusManager statusManager) {
+		final ExtractionDonneesRptPMProcessor proc = new ExtractionDonneesRptPMProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService,
+				assujettissementService, periodeImpositionService, adresseService);
+		return proc.run(dateTraitement, pf, versionWS, nbThreads, statusManager);
+
 	}
 }
