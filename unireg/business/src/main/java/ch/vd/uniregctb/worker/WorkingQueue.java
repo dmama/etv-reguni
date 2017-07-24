@@ -384,8 +384,7 @@ public class WorkingQueue<T> {
 				// attente interrompue... pas grave, on aura attendu moins longtemps, c'est tout!
 			}
 			if (listener.isAlive()) {
-				LOGGER.warn("Interruption forcée du thread " + listener.getName() + " qui ne s'est pas arrêté après 10 secondes d'attente.");
-				listener.interrupt();
+				LOGGER.warn("Le thread " + listener.getName() + " ne s'est pas arrêté après 10 secondes d'attente.");
 			}
 
 			final long execTime = listener.getExecutionTime();

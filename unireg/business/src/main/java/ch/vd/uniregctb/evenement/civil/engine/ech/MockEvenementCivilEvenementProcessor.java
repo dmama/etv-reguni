@@ -15,7 +15,7 @@ public class MockEvenementCivilEvenementProcessor implements EvenementCivilEchPr
 	}
 
 	@Override
-	public void restartProcessingThread(boolean agressiveKill) {
+	public void restartProcessingThread() {
 		throw new NotImplementedException();
 	}
 }

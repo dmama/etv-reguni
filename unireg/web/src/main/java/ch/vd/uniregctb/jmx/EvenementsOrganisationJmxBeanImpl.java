@@ -107,9 +107,9 @@ public class EvenementsOrganisationJmxBeanImpl implements EvenementsOrganisation
 	}
 
 	@Override
-	public void restartProcessingThread(boolean agressiveKill) {
+	public void restartProcessingThread() {
 		LOGGER.info("Demande de redémarrage du thread de traitement des événements oganisation par JMX");
-		processor.restartProcessingThread(agressiveKill);
+		processor.restartProcessingThread();
 	}
 
 	@Override

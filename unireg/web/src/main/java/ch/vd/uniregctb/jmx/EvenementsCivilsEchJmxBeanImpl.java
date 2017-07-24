@@ -110,8 +110,8 @@ public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBea
 
 	@Override
 	@ManagedOperation
-	public void restartProcessingThread(boolean agressiveKill) {
+	public void restartProcessingThread() {
 		LOGGER.info("Demande de redémarrage du thread de traitement des événements civils par JMX");
-		processor.restartProcessingThread(agressiveKill);
+		processor.restartProcessingThread();
 	}
 }
