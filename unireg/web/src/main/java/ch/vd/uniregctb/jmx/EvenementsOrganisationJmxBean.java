@@ -51,8 +51,7 @@ public interface EvenementsOrganisationJmxBean {
 	void treatOrganisationEvents(long idPerson);
 
 	@ManagedOperation(description = "Stops and restarts the processing thread")
-	@ManagedOperationParameters(value = {@ManagedOperationParameter(name = "agressiveKill", description = "whether the thread should be interrupted or gently asked to stop")})
-	void restartProcessingThread(boolean agressiveKill);
+	void restartProcessingThread();
 
 	@ManagedAttribute(description = "Capping level used during event processing (allowed values are null, A_VERIFIER and EN_ERREUR)")
 	String getProcessingCappingLevel();

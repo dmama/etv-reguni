@@ -51,6 +51,5 @@ public interface EvenementsCivilsEchJmxBean {
 	void treatPersonsEvents(long idPerson);
 
 	@ManagedOperation(description = "Stops and restarts the processing thread")
-	@ManagedOperationParameters(value = {@ManagedOperationParameter(name = "agressiveKill", description = "whether the thread should be interrupted or gently asked to stop")})
-	void restartProcessingThread(boolean agressiveKill);
+	void restartProcessingThread();
 }

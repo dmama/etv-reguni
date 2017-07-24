@@ -41,17 +41,8 @@ public class EvenementOrganisationProcessorFacade implements EvenementOrganisati
 
 	@Override
 	public void stop() {
-		stop(false);
-	}
-
-	private void stop(boolean aggressiveKill) {
 		if (processor != null) {
-			if (aggressiveKill) {
-				processor.interrupt();
-			}
-			else {
-				processor.stopIt();
-			}
+			processor.stopIt();
 			try {
 				processor.join();
 			}
@@ -64,9 +55,9 @@ public class EvenementOrganisationProcessorFacade implements EvenementOrganisati
 	}
 
 	@Override
-	public void restartProcessingThread(boolean agressiveKill) {
+	public void restartProcessingThread() {
 		// arrêt
-		stop(agressiveKill);
+		stop();
 
 		// démarrage
 		start();

@@ -358,7 +358,6 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dis
 			}
 			catch (InterruptedException e) {
 				// c'est fini, on s'en va...
-				Thread.currentThread().interrupt();
 				LOGGER.error("Thread d'attente de la fin du job <" + name + "> interrompu.", e);
 			}
 		}

@@ -43,8 +43,7 @@ public interface EvenementCivilEchProcessor {
 	ListenerHandle registerListener(Listener listener);
 
 	/**
-	 * Redémarre le thread de processing des événements civils
-	 * @param aggressiveKill si <code>true</code>, force l'interruption du thread, sinon un stop en douceur est demandé
+	 * Redémarre le thread de processing des événements civils (en douceur)
 	 */
-	void restartProcessingThread(boolean aggressiveKill);
+	void restartProcessingThread();
 }

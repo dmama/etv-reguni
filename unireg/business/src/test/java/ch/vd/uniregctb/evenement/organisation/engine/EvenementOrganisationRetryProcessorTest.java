@@ -110,7 +110,7 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 			}
 
 			@Override
-			public void restartProcessingThread(boolean agressiveKill) {
+			public void restartProcessingThread() {
 				throw new NotImplementedException();
 			}
 
