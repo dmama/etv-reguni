@@ -106,7 +106,7 @@ public class RecalculTachesProcessor {
 		boolean interrupted = false;
 		final ExecutorService executorService = Executors.newFixedThreadPool(nbThreads, new DefaultThreadFactory(new DefaultThreadNameGenerator(Thread.currentThread().getName())));
 		try {
-			final LinkedList<Future<TacheSyncResults>> tasks = new LinkedList<>();
+			final List<Future<TacheSyncResults>> tasks = new LinkedList<>();
 			while (iterator.hasNext() && !status.interrupted()) {
 				final List<Long> ids = iterator.next();
 				final int percent = iterator.getPercent();
@@ -136,8 +136,9 @@ public class RecalculTachesProcessor {
 			finally {
 				// il faut arrêter tous les traitements qui restent en attente
 				if (!tasks.isEmpty()) {
-					tasks.clear();
-					executorService.shutdownNow();
+					tasks.stream()
+							.filter(task -> !task.isDone())
+							.forEach(task -> task.cancel(false));
 				}
 			}
 		}
