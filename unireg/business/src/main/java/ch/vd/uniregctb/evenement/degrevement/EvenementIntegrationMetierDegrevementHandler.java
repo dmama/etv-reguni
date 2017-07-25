@@ -62,7 +62,7 @@ public class EvenementIntegrationMetierDegrevementHandler implements EvenementIn
 	public Document handleMessage(Source xml, Map<String, String> metaDonnees) throws Exception {
 		LOGGER.info("Arrivée d'un message de retour de formulaire de dégrèvement ICI");
 
-		AuthenticationHelper.pushPrincipal("RetourDégrèvement");
+		AuthenticationHelper.pushPrincipal("JMS-RetourDégrèvement");
 		try {
 			// lecture des données entrantes
 			final Message message;

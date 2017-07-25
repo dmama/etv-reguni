@@ -93,7 +93,7 @@ public final class EvenementFiscalV1SenderImpl implements EvenementFiscalSender 
 		try {
 			final EsbMessage m = EsbMessageFactory.createMessage();
 			m.setBusinessId(String.valueOf(evenement.getId()));
-			m.setBusinessUser(evenement.getLogCreationUser());
+			m.setBusinessUser(EvenementFiscalHelper.getBusinessUser(evenement.getLogCreationUser()));
 			m.setServiceDestination(serviceDestination);
 			m.setContext("evenementFiscal.v1");
 			m.addHeader(VERSION_ATTRIBUTE, "1");
