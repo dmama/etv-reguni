@@ -11,6 +11,22 @@
 	    </li>
 	</tiles:put>
   	<tiles:put name="body">
+
+	    <spring:bind path="separationCommand">
+		    <c:if test="${not empty status.errorMessages}">
+			    <table class="action_error" cellspacing="0" cellpadding="0" border="0">
+				    <tr><td class="heading"><fmt:message key="label.action.problemes.detectes"/></td></tr>
+				    <tr><td class="details">
+					    <ul>
+						    <c:forEach items="${status.errorMessages}" var="error">
+							    <li class="error"><c:out value="${error}"/></li>
+						    </c:forEach>
+					    </ul>
+				    </td></tr>
+			    </table>
+		    </c:if>
+	    </spring:bind>
+
 	    <unireg:bandeauTiers numero="${idMenage}" showValidation="true" showEvenementsCivils="true" showLinks="false"/>
 	  	<form:form method="post" id="formRecapSeparation"  name="formRecapSeparation" commandName="separationCommand" action="commit.do">
 		    <form:hidden path="idMenage"/>

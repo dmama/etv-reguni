@@ -1490,7 +1490,7 @@ public class MetierServiceImpl implements MetierService {
 		PersonnePhysique principal = ensemble.getPrincipal();
 		PersonnePhysique conjoint = ensemble.getConjoint();
 		if ((principal == null) && (conjoint == null)) {
-			results.addError("Le ménage doit déjà être séparé à cette date");
+			results.addError("Le ménage semble déjà être séparé à cette date");
 		}
 		else {
 			// [UNIREG-1057] y aura plus de génération de warnings
