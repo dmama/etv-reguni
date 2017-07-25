@@ -283,7 +283,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		final Document document = typeFichierImpression.addNewDocument();
 		final TypeDocument typeDocument = informationsDocument.getTypeDocument();
 		if (typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDocument == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-			final DI di = remplitSpecifiqueDI(informationsDocument, annexes, isFromBatchImmeuble);
+			final DI di = remplitSpecifiqueDI(informationsDocument, annexes);
 			document.setDI(di);
 		}
 		else if (typeDocument == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
@@ -320,9 +320,10 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 	/**
 	 * Alimente un objet DI
 	 */
-	protected DI remplitSpecifiqueDI(InformationsDocumentAdapter informationsDocument, @NotNull List<ModeleFeuilleDocumentEditique> annexes, boolean isFromBatchImmeuble) throws EditiqueException {
+	protected DI remplitSpecifiqueDI(InformationsDocumentAdapter informationsDocument, @NotNull List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
-		final String avecCourrierExplicatif = (isFromBatchImmeuble ? "O" : "N");
+		// [SIFISC-25543] on n'envoie plus le courrier explicatif de l'annexe 320 (= immeuble), même dans le job spécifique de ces annexes
+		final String avecCourrierExplicatif = "N";
 		final DI di = DIDocument.Factory.newInstance().addNewDI();
 		remplitDIRetour(informationsDocument, di);
 		final Tiers tiers = informationsDocument.getTiers();
@@ -370,7 +371,7 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 			a.setAnnexe310(nbAnnexes310);
 		}
 		if (nbAnnexes320 > 0) {
-			Annexe320Type annexe320 = a.addNewAnnexe320();
+			final Annexe320Type annexe320 = a.addNewAnnexe320();
 			annexe320.setNombre(nbAnnexes320);
 			annexe320.setAvecCourrierExplicatif(avecCourrierExplicatif);
 			a.setAnnexe320(annexe320);
