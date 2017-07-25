@@ -167,7 +167,7 @@ public class EvenementFiscalV2SenderImpl implements EvenementFiscalSender, Initi
 
 			final EsbMessage m = EsbMessageFactory.createMessage();
 			m.setBusinessId(String.valueOf(evenement.getId()));
-			m.setBusinessUser(evenement.getLogCreationUser());
+			m.setBusinessUser(EvenementFiscalHelper.getBusinessUser(evenement.getLogCreationUser()));
 			m.setServiceDestination(serviceDestination);
 			m.setContext("evenementFiscal.v2");
 			m.addHeader(VERSION_ATTRIBUTE, "2");
