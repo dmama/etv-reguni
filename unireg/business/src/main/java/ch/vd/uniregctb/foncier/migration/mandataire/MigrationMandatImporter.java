@@ -98,6 +98,7 @@ public class MigrationMandatImporter {
 				                          (s1, s2) -> Stream.concat(s1.stream(), s2.stream()).collect(Collectors.toSet())));
 
 		final BatchTransactionTemplateWithResults<DonneesMandat, MigrationMandatImporterResults> template = new BatchTransactionTemplateWithResults<>(mandats.iterator(),
+		                                                                                                                                              mandats.size(),
 		                                                                                                                                              BATCH_SIZE,
 		                                                                                                                                              Behavior.REPRISE_AUTOMATIQUE,
 		                                                                                                                                              transactionManager,
