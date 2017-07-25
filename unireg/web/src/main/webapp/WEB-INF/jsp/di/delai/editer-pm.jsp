@@ -16,6 +16,7 @@
 
 			<form:errors cssClass="error"/>
 
+			<form:hidden path="idDeclaration"/>
 			<form:hidden path="idDelai"/>
 			<form:hidden path="ancienDelaiAccorde"/>
 			<form:hidden path="typeImpression" id="typeImpression"/>
