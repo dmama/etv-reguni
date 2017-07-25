@@ -262,7 +262,6 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		SiteOrganisation sitePrincipal = organisation.getSitePrincipal(dateEvenement).getPayload();
 		final Domicile siege = sitePrincipal.getDomicile(dateEvenement);
 		final boolean isVaudoise = siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-		final boolean isAssociationFondation = organisation.isAssociationFondation(dateEvenement);
 		final boolean inscritAuRC = organisation.isInscriteAuRC(dateEvenement);
 		final RegDate dateInscriptionRCVd;
 		final RegDate dateInscriptionRC;
@@ -275,8 +274,7 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 				throw new PasDeDateInscriptionRCVD();
 			}
 			dateInscriptionRC = sitePrincipal.getDateInscriptionRC(dateEvenement);
-			isCreation = isCreation(event.getType(), organisation,
-			                        dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
+			isCreation = isCreation(event.getType(), organisation, dateEvenement); // On ne peut pas l'appeler avant car on doit d'abord s'assurer que l'inscription RC VD existe si on est inscrit au RC et vaudois.
 			if (isCreation) {
 				if (isVaudoise) {
 					dateDeCreation = dateInscriptionRCVd;
@@ -294,14 +292,8 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 		}
 		else {
 			isCreation = isCreation(event.getType(), organisation, dateEvenement);
-			if (isCreation && isVaudoise && !isAssociationFondation) { // SIFISC-22478 - Ne pas appliquer la règle jour + 1 pour les associations/fondations.
-				dateDeCreation = dateEvenement;
-				dateOuvertureFiscale = dateEvenement.getOneDayAfter();
-			}
-			else {
-				dateDeCreation = dateEvenement;
-				dateOuvertureFiscale = dateEvenement;
-			}
+			dateDeCreation = dateEvenement;
+			dateOuvertureFiscale = dateEvenement;
 		}
 		return new InformationDeDateEtDeCreation(dateDeCreation, dateOuvertureFiscale, isCreation);
 	}
