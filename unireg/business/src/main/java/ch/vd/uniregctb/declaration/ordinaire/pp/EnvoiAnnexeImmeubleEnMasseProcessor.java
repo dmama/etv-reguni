@@ -265,14 +265,13 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	/**
 	 * Determine le nombre d'annexe à envoyer selon le nombre d'immeuble
 	 *
-	 * @param nombreImmeuble
-	 * @return le nombre d'immeuble divisé par 2 arondi à l'entier supérieur
+	 * @param nombreImmeuble nombre d'immeubles pour le contribuable
+	 * @return le nombre d'immeubles divisé par 2 arondi à l'entier supérieur (car on peut mettre deux immeubles par annexe)
 	 */
 	protected int getNombreAnnexeAEnvoyer(int nombreImmeuble) {
-		final int nbreAnnexeCalcule = Double.valueOf(Math.ceil(nombreImmeuble / 2.0)).intValue();
-		//[SIFISC-2485] les annexes sotn à envoyer à double.
-		return nbreAnnexeCalcule * 2;
-
+		// [SIFISC-2485] les annexes sont à envoyer à double.
+		// [SIFISC-25564] les annexes ne doivent maintenant à nouveau plus être envoyées qu'en un seul exemplaire
+		return (int) Math.ceil(nombreImmeuble / 2.0);
 	}
 
 	/**

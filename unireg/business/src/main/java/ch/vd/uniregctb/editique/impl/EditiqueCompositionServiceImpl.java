@@ -311,7 +311,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, declaration.getTypeDeclaration(), buildDefaultAnnexes(declaration), false);
+		return imprimeDIOnline(declaration, declaration.getTypeDeclaration(), buildDefaultAnnexes(declaration));
 	}
 
 	@Override
@@ -321,7 +321,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	@Override
 	public EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
-		return imprimeDIOnline(declaration, typeDocument, annexes, true);
+		return imprimeDIOnline(declaration, typeDocument, annexes);
 	}
 
 	@Override
@@ -329,25 +329,16 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return imprimeDIOnline(declaration, annexes);
 	}
 
-	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean isDuplicata) throws EditiqueException, JMSException {
+	private EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes);
-		final TypFichierImpression.Document[] documents;
-		if (isDuplicata || typeDocument == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
-			documents = new TypFichierImpression.Document[1];
-			documents[0] = document;
-		}
-		else {
-			documents = new TypFichierImpression.Document[2];
-			documents[0] = document;
-			documents[1] = document;
-		}
+		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[] { document };
 		editiqueDI.setDocumentArray(documents);
 		final TypeDocumentEditique typeDocumentMessage = impressionDIPPHelper.getTypeDocumentEditique(typeDocument);
 		final String nomDocument = impressionDIPPHelper.construitIdDocument(declaration);
 
-		final InfoArchivageDocument.InfoArchivage infoArchivage = documents[0].getInfoArchivage();
+		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getInfoArchivage();
 		final boolean withArchivage = infoArchivage != null;
 		if (withArchivage) {
 			evenementDocumentSortantService.signaleDeclarationImpot(declaration, typeDocument, infoArchivage, true);
@@ -386,20 +377,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypeDocumentEditique typeDocument = impressionDIPPHelper.getTypeDocumentEditique(declaration);
 		final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration));
-		final TypFichierImpression.Document[] documents;
 		Assert.notNull(document);
-		if (declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
-			documents = new TypFichierImpression.Document[1];
-			documents[0] = document;
-		}
-		else {
-			documents = new TypFichierImpression.Document[2];
-			documents[0] = document;
-			documents[1] = document;
-		}
+		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[] { document };
 		editiqueDI.setDocumentArray(documents);
 
-		final InfoArchivageDocument.InfoArchivage infoArchivage = documents[0].getInfoArchivage();
+		final InfoArchivageDocument.InfoArchivage infoArchivage = document.getInfoArchivage();
 		final boolean withArchivage = infoArchivage != null;
 		if (withArchivage) {
 			evenementDocumentSortantService.signaleDeclarationImpot(declaration, null, infoArchivage, false);
