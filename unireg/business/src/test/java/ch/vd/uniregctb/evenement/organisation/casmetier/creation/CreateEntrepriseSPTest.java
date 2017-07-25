@@ -225,7 +225,7 @@ public class CreateEntrepriseSPTest extends AbstractEvenementOrganisationProcess
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
 				                             ForFiscalPrincipal forFiscalPrincipal = entreprise.getDernierForFiscalPrincipal();
-				                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
+				                             Assert.assertEquals(RegDate.get(2015, 6, 24), forFiscalPrincipal.getDateDebut());
 				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
 				                             Assert.assertEquals(GenreImpot.REVENU_FORTUNE, forFiscalPrincipal.getGenreImpot());
 				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
@@ -261,7 +261,7 @@ public class CreateEntrepriseSPTest extends AbstractEvenementOrganisationProcess
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
 
 					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
@@ -272,7 +272,7 @@ public class CreateEntrepriseSPTest extends AbstractEvenementOrganisationProcess
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
 
 					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
@@ -283,12 +283,12 @@ public class CreateEntrepriseSPTest extends AbstractEvenementOrganisationProcess
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);
 					                             Assert.assertNotNull(ef);
 					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
-					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
 
 					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
 					                             Assert.assertTrue(eff.getForFiscal() instanceof ForFiscalPrincipal);
 					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
-					                             Assert.assertEquals(date(2015, 6, 25), eff.getForFiscal().getDateDebut());
+					                             Assert.assertEquals(date(2015, 6, 24), eff.getForFiscal().getDateDebut());
 				                             }
 
 				                             return null;
