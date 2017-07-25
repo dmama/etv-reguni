@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.deces;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Modélise un événement de décès.
@@ -229,10 +231,12 @@ public class Deces extends EvenementCivilInterne {
 		try {
 			if (!redondantSelonFors) {
 				context.getMetierService().deces(defunt, getDate(), null, getNumeroEvenement());
-			}else{
-				//les rapports sont ils tous fermés?
-				//Va permettre de fermer tous les rapports restants. Si aucun rapport ouvert, alors pas de modification apportée
-				context.getTiersService().closeAllRapports(defunt,getDate());
+			}
+			else {
+				// les rapports sont ils tous fermés?
+				// Va permettre de fermer tous les rapports restants. Si aucun rapport ouvert, alors pas de modification apportée
+				// [SIFISC-25653] on ferme tous les rapports sauf les rapports d'héritage (côté "défunt")
+				context.getTiersService().closeAllRapports(defunt, getDate(), r -> r.getType() == TypeRapportEntreTiers.HERITAGE && Objects.equals(r.getObjetId(), defunt.getNumero()));
 			}
 		}
 		catch (MetierServiceException e) {

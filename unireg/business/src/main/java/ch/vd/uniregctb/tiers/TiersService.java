@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -631,14 +632,15 @@ public interface TiersService {
     void closeAppartenanceMenage(PersonnePhysique pp, MenageCommun menage, RegDate dateFermeture) throws RapportEntreTiersException;
 
     /**
-     * Clôt tous les rapports du tiers.
+     * Clôt tous les rapports ouverts non-annulés du tiers à la date donnée, sauf ceux qui satisfont au prédicat
      *
      * @param pp            la pp
      * @param dateFermeture la date de fermeture du rapport
+     * @param sauf          prédicat qui permet d'exclure des rapports entre tiers pourtant ouverts et non-annulés
      */
-    void closeAllRapports(PersonnePhysique pp, RegDate dateFermeture);
+    void closeAllRapports(PersonnePhysique pp, RegDate dateFermeture, Predicate<RapportEntreTiers> sauf);
 
-    /**
+	/**
      * Ajoute un rapport prestation imposable
      *
      *

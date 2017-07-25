@@ -2626,6 +2626,85 @@ public class MetiersServiceTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * [SIFISC-25653] Les liens d'héritage (côté "défunt") ne devraient pas être fermés lors d'un décès
+	 */
+	@Test
+	public void testDecesAvecLienHeritagePresent() throws Exception {
+
+		final RegDate datePremierHeritage = date(1976, 4, 2);
+		final RegDate dateDeces = date(2017, 5, 3);
+
+		final class Ids {
+			long defunt;        // celui qui va mourrir
+			long heritier;      // celui qui hérite
+			long legateur;      // celui dont le défunt avait hérité
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique defunt = addNonHabitant("Albert", "Dellacorte", date(1956, 3, 2), Sexe.MASCULIN);
+			final PersonnePhysique heritier = addNonHabitant("Juliette", "Dellacorte", date(1988, 5, 12), Sexe.FEMININ);
+			final PersonnePhysique legateur = addNonHabitant("Germaine", "Dellacorte", date(1933, 7, 3), Sexe.FEMININ);
+			legateur.setDateDeces(datePremierHeritage.getOneDayBefore());
+
+			addHeritage(defunt, legateur, datePremierHeritage, null);
+			addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null);        // on a déja placé le lien d'héritage avant de traiter le décès...
+
+			final Ids res = new Ids();
+			res.defunt = defunt.getNumero();
+			res.heritier = heritier.getNumero();
+			res.legateur = legateur.getNumero();
+			return res;
+		});
+
+		// traitement du décès
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ids.defunt);
+				Assert.assertNotNull(defunt);
+				metierService.deces(defunt, dateDeces, null, null);
+			}
+		});
+
+		// vérification des liens sur le décédé
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ids.defunt);
+				Assert.assertNotNull(defunt);
+
+				{
+					// le défunt était déjà héritier -> ce rapport-là doit être fermé
+					final Set<RapportEntreTiers> asSujet = defunt.getRapportsSujet();
+					Assert.assertNotNull(asSujet);
+					Assert.assertEquals(1, asSujet.size());
+					final RapportEntreTiers ret = asSujet.iterator().next();
+					Assert.assertNotNull(ret);
+					Assert.assertEquals((Long) ids.legateur, ret.getObjetId());
+					Assert.assertEquals(datePremierHeritage, ret.getDateDebut());
+					Assert.assertEquals(dateDeces, ret.getDateFin());
+					Assert.assertFalse(ret.isAnnule());
+					Assert.assertEquals(TypeRapportEntreTiers.HERITAGE, ret.getType());
+				}
+				{
+					// le défunt avait déjà un héritier -> ce rapport-là ne doit pas être fermé
+					final Set<RapportEntreTiers> asObjet = defunt.getRapportsObjet();
+					Assert.assertNotNull(asObjet);
+					Assert.assertEquals(1, asObjet.size());
+					final RapportEntreTiers ret = asObjet.iterator().next();
+					Assert.assertNotNull(ret);
+					Assert.assertEquals((Long) ids.heritier, ret.getSujetId());
+					Assert.assertEquals(dateDeces.getOneDayAfter(), ret.getDateDebut());
+					Assert.assertNull(ret.getDateFin());
+					Assert.assertFalse(ret.isAnnule());
+					Assert.assertEquals(TypeRapportEntreTiers.HERITAGE, ret.getType());
+				}
+			}
+		});
+	}
+
 	@Test
 	public void testVenteImmeubleVeilleMariage() throws Exception {
 

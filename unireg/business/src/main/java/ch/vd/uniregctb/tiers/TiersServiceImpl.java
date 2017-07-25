@@ -1626,17 +1626,18 @@ public class TiersServiceImpl implements TiersService {
         }
     }
 
-    /**
-     * Clôt tous les rapports du tiers.
-     *
-     * @param pp            la pp
-     * @param dateFermeture la date de fermeture du rapport
-     */
+	/**
+	 * Clôt tous les rapports ouverts non-annulés du tiers à la date donnée, sauf ceux qui satisfont au prédicat
+	 *
+	 * @param pp            la pp
+	 * @param dateFermeture la date de fermeture du rapport
+	 * @param sauf          prédicat qui permet d'exclure des rapports entre tiers pourtant ouverts et non-annulés
+	 */
     @Override
-    public void closeAllRapports(PersonnePhysique pp, RegDate dateFermeture) {
+    public void closeAllRapports(PersonnePhysique pp, RegDate dateFermeture, Predicate<RapportEntreTiers> sauf) {
         if (pp.getRapportsSujet() != null) {
             for (RapportEntreTiers rapport : pp.getRapportsSujet()) {
-                if (rapport.getDateFin() == null && !rapport.isAnnule()) {
+                if (rapport.getDateFin() == null && !rapport.isAnnule() && !sauf.test(rapport)) {
                     rapport.setDateFin(dateFermeture);
                 }
             }
@@ -1644,7 +1645,7 @@ public class TiersServiceImpl implements TiersService {
 
         if (pp.getRapportsObjet() != null) {
             for (RapportEntreTiers rapport : pp.getRapportsObjet()) {
-                if (rapport.getDateFin() == null && !rapport.isAnnule()) {
+                if (rapport.getDateFin() == null && !rapport.isAnnule() && !sauf.test(rapport)) {
                     rapport.setDateFin(dateFermeture);
                 }
             }

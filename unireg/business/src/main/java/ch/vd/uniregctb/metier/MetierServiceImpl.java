@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -2498,7 +2499,9 @@ public class MetierServiceImpl implements MetierService {
 
 			// fermeture des liens d'appartenance ménage des personnes impliquées
 			if (defunt != null) {
-				tiersService.closeAllRapports(defunt, date);
+				// [SIFISC-25653] on ferme tous les rapports sauf les rapports d'héritage (côté "défunt")
+				final Long idDefunt = defunt.getNumero();
+				tiersService.closeAllRapports(defunt, date, r -> r.getType() == TypeRapportEntreTiers.HERITAGE && Objects.equals(r.getObjetId(), idDefunt));
 
 				// le blocage des remboursements automatiques se fait normalement à la fermeture du For principal,
 				// ce qui est correct en ce qui concerne le ménage, dont les remboursements automatiques doivent
@@ -2557,7 +2560,10 @@ public class MetierServiceImpl implements MetierService {
 			if (defunt != null) {
 				Audit.info(numeroEvenement, "Fermeture des fors fiscaux du défunt");
 				tiersService.closeAllForsFiscaux(defunt, date, MotifFor.VEUVAGE_DECES);
-				tiersService.closeAllRapports(defunt, date);
+
+				// [SIFISC-25653] on ferme tous les rapports sauf les rapports d'héritage (côté "défunt")
+				final Long idDefunt = defunt.getNumero();
+				tiersService.closeAllRapports(defunt, date, r -> r.getType() == TypeRapportEntreTiers.HERITAGE && Objects.equals(r.getObjetId(), idDefunt));
 			}
 		}
 
