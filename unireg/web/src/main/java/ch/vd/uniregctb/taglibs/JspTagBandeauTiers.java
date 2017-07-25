@@ -1003,7 +1003,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public String getActionUrl() {
-			return "goto:/annulation/separation/recap.do?numero=";
+			return "goto:/annulation/separation/recap.do?numeroCple=";
 		}
 	}
 
