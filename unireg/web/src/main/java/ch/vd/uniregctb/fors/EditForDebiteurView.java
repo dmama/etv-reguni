@@ -95,6 +95,16 @@ public class EditForDebiteurView implements EditForAvecMotifsView {
 		this.dateFin = dateFin;
 	}
 
+	@Override
+	public boolean isMotifDebutNullAutorise() {
+		return false;
+	}
+
+	@Override
+	public boolean isDateDebutNulleAutorisee() {
+		return false;
+	}
+
 	public boolean isOuvertureEditable() {
 		return ouvertureEditable;
 	}

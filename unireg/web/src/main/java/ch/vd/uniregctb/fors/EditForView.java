@@ -18,6 +18,13 @@ public interface EditForView {
 
 	Integer getNoAutoriteFiscale();
 
+	/**
+	 * Cette méthode peut paraître un peu surprenante, car la date de début d'un for n'est jamais nulle... mais dans les cas où cette date n'est pas éditable,
+	 * il n'est pas exclu du tout que celle-ci ne soit pas fournie du tout dans le formulaire d'édition (auquel cas le champ ne peut être que null).
+	 * @return si le champ de la date de début peutêtre accepté à <code>null</code>
+	 */
+	boolean isDateDebutNulleAutorisee();
+
 	boolean isDateFinFutureAutorisee();
 
 	GenreImpot getGenreImpot();

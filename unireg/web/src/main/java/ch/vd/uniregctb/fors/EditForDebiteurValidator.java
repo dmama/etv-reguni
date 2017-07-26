@@ -59,6 +59,11 @@ public class EditForDebiteurValidator extends EditForAvecMotifsValidator {
 			}
 		}
 
+		// validation du motif de début si celui-ci est obligatoire
+		if (view.getMotifDebut() == null && !view.isMotifDebutNullAutorise()) {
+			errors.rejectValue("motifDebut", "error.motif.ouverture.vide");
+		}
+
 		// validation du motif de fin
 		// [SIFISC-14390] on veut pouvoir conserver le motif de fermeture déjà présent sur le for, même si celui-ci n'est normalement pas accessible à la main
 		if (view.getMotifFin() != null && fdpi.getMotifFermeture() != view.getMotifFin()) {

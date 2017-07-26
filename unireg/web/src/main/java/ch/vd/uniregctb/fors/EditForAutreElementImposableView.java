@@ -114,4 +114,16 @@ public class EditForAutreElementImposableView implements EditForRevenuFortuneVie
 	public GenreImpot getGenreImpot() {
 		return GenreImpot.REVENU_FORTUNE;
 	}
+
+	@Override
+	public boolean isMotifDebutNullAutorise() {
+		// donnée non-éditable, donc non présente dans le bean en retour du POST
+		return true;
+	}
+
+	@Override
+	public boolean isDateDebutNulleAutorisee() {
+		// donnée non-éditable, donc non présente dans le bean en retour du POST
+		return true;
+	}
 }

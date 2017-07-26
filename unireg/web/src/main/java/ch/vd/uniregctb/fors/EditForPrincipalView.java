@@ -149,4 +149,16 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 	public void setGenreImpot(GenreImpot genreImpot) {
 		this.genreImpot = genreImpot;
 	}
+
+	@Override
+	public boolean isMotifDebutNullAutorise() {
+		// donnée non-éditable, donc non présente dans le bean en retour du POST
+		return true;
+	}
+
+	@Override
+	public boolean isDateDebutNulleAutorisee() {
+		// donnée non-éditable, donc non présente dans le bean en retour du POST
+		return true;
+	}
 }

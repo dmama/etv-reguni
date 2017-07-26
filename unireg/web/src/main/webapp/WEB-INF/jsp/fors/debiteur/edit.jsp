@@ -32,6 +32,7 @@
 							</c:if>
 							<c:if test="${!command.ouvertureEditable}">
 								<unireg:regdate regdate="${command.dateDebut}"/>
+								<form:hidden path="dateDebut"/>
 							</c:if>
 						</td>
 						<td><fmt:message key="label.date.fermeture"/>&nbsp;:</td>
@@ -55,6 +56,7 @@
 							</c:if>
 							<c:if test="${!command.ouvertureEditable && command.motifDebut != null}">
 								<fmt:message key="option.motif.ouverture.${command.motifDebut}"/>
+								<form:hidden path="motifDebut"/>
 							</c:if>
 						</td>
 						<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
@@ -108,7 +110,7 @@
 				</c:if>
 				<c:if test="${command.fermetureEditable}">
 					Fors.updateMotifsFermeture($('#motifFin'), '${command.tiersId}', 'DEBITEUR_PRESTATION_IMPOSABLE', null, '${command.motifFin}');
-					Fors.updateDatesFermetureForDebiteur($('#optionDatesFin'), '${command.id}', '${command.dateFin}', ${command.forFerme});
+					Fors.updateDatesFermetureForDebiteur($('#optionDatesFin'), '${command.id}', '<unireg:regdate regdate="${command.dateFin}"/>', ${command.forFerme});
 				</c:if>
 			});
 		</script>

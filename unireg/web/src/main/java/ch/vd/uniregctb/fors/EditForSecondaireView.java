@@ -123,4 +123,14 @@ public class EditForSecondaireView implements EditForRevenuFortuneView {
 	public GenreImpot getGenreImpot() {
 		return genreImpot;
 	}
+
+	@Override
+	public boolean isMotifDebutNullAutorise() {
+		return false;
+	}
+
+	@Override
+	public boolean isDateDebutNulleAutorisee() {
+		return false;
+	}
 }

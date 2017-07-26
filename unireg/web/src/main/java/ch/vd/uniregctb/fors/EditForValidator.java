@@ -10,6 +10,13 @@ public abstract class EditForValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		final EditForView view = (EditForView) target;
 
+		// date de début obligatoire si tel est le cas
+		if (!errors.hasFieldErrors("dateDebut")) {
+			if (view.getDateDebut() == null && !view.isDateDebutNulleAutorisee()) {
+				errors.rejectValue("dateDebut", "error.date.ouverture.vide");
+			}
+		}
+
 		// validation de la date de fin
 		final RegDate dateDebut = view.getDateDebut();
 		final RegDate dateFin = view.getDateFin();
