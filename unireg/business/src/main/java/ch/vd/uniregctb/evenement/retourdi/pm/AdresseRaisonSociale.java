@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -448,22 +449,25 @@ public abstract class AdresseRaisonSociale {
 
 			// constitution d'un tableau des lignes utilisables
 			final String[] lignes = getLignes1a5();
-			if (lignes.length == 0) {
+
+			// [SIFISC-25739] attention aux lignes qui ne sont composées que de caractères spéciaux et qui deviennent "null" après réduction en forme canonique
+			final List<String> lignesCanoniques = Arrays.stream(lignes)
+					.map(Brutte::canonize)
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList());
+			if (lignesCanoniques.isEmpty()) {
 				LOGGER.warn(String.format("Aucune ligne d'adresse utilisable pour comparer aux rues de la localité postale '%s'.", npaEtNomLocalite));
 				return null;
 			}
-			final String[] lignesMinuscules = new String[lignes.length];
-			for (int i = 0 ; i < lignes.length ; ++ i) {
-				lignesMinuscules[i] = canonize(lignes[i]);
-			}
 
 			// ok, maintenant il faut comparer...
+			final String[] arrayLignesCanoniques = lignesCanoniques.toArray(new String[lignesCanoniques.size()]);
 			for (Rue rueOfficielle : ruesOfficielles) {
 				final String nomOfficielRue = rueOfficielle.getDesignationCourrier();
 				final String nomOfficielRueMinuscules = canonize(nomOfficielRue);
-				int index = lignes.length - 1;
+				int index = arrayLignesCanoniques.length - 1;
 				while (index >= 0) {
-					final Integer maxIndex = getIndexMaxBonneRue(nomOfficielRueMinuscules, index, lignesMinuscules, lignesMinuscules[index]);
+					final Integer maxIndex = getIndexMaxBonneRue(nomOfficielRueMinuscules, index, arrayLignesCanoniques, arrayLignesCanoniques[index]);
 					if (maxIndex != null) {
 						// c'est la bonne !!
 						return new SplitData(lignes, rueOfficielle, index, maxIndex);
