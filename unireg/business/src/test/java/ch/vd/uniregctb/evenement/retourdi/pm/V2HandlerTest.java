@@ -217,6 +217,29 @@ public class V2HandlerTest extends BusinessTest {
 		Assert.assertEquals(MockRue.Lausanne.AvenueDeLaGare.getNoRue(), split.getRight().getNumeroRue());
 	}
 
+	/**
+	 * [SIFISC-25739] La présence d'un "+" seul sur une ligne de l'adresse du mandataire provoquait une NPE dans le "split"
+	 */
+	@Test
+	public void testAdresseMandataireAvecLignesComposeeExclusivementDeCaracteresSpeciaux() throws Exception {
+		final InformationMandataire info = new InformationMandataire();
+		final TypAdresse adresseMandataire = new TypAdresse(toTxtMax40("Machin SA"), toTxtMax40("Avenue de la Gare 42"), toTxtMax40("+"), null, null, toTxtMax40("1003"), toTxtMax40("Lausanne"));
+		final InformationMandataire.AdresseCourrier address = new InformationMandataire.AdresseCourrier(null, adresseMandataire);
+		info.setAdresseCourrier(address);
+		final InformationsMandataire infoExtraite = handler.extractInformationsMandataire(info);
+		Assert.assertNotNull(infoExtraite);
+		Assert.assertNull(infoExtraite.getIdeMandataire());
+		Assert.assertNotNull(infoExtraite.getAdresse());
+		Assert.assertNull(infoExtraite.getContact());
+
+		final Pair<NomAvecCivilite, Adresse> split = infoExtraite.getAdresse().split(serviceInfra, tiersService, RegDate.get());
+		Assert.assertNotNull(split);
+		Assert.assertNotNull(split.getLeft());
+		Assert.assertNull(split.getLeft().getCivilite());
+		Assert.assertEquals("Machin SA", split.getLeft().getNomRaisonSociale());
+		Assert.assertEquals(MockRue.Lausanne.AvenueDeLaGare.getNoRue(), split.getRight().getNumeroRue());
+	}
+
 	private static JAXBElement<TypTxtMax40Attr> toTxtMax40(String string) {
 		return new JAXBElement<>(new QName("STR_BIDON"), TypTxtMax40Attr.class, null, new TypTxtMax40Attr(string, true, Boolean.FALSE));
 	}
