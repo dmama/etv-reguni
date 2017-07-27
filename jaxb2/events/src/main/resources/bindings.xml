@@ -605,6 +605,7 @@
 			<namespace:prefix name="ev-scan-di-2016-1" />
 		</jxb:bindings>
 	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2016-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.taxation.pf2016.v2" />
@@ -613,12 +614,31 @@
 			<namespace:prefix name="ev-scan-di-2016-2" />
 		</jxb:bindings>
 	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2017-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.taxation.pf2017.v1" />
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="ev-scan-di-2017-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2017-2.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.taxation.pf2017.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-scan-di-2017-2" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2018-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.taxation.pf2018.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-scan-di-2018-1" />
 		</jxb:bindings>
 	</jxb:bindings>
 

@@ -85,6 +85,8 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/2016/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2016-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/2016/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2016-2.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/2017/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2017-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/2017/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2017-2.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/dossier-electronique/2018/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2018-1.xsd"/>
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/declaration-ibc/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DeclarationIBC-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/declaration-ibc/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DeclarationIBC-2.xsd"/>

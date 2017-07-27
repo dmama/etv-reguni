@@ -82,6 +82,8 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2016-1.xsd" uri="event/taxation/DossierElectronique-2016-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2016-2.xsd" uri="event/taxation/DossierElectronique-2016-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2017-1.xsd" uri="event/taxation/DossierElectronique-2017-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2017-2.xsd" uri="event/taxation/DossierElectronique-2017-2.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-2018-1.xsd" uri="event/taxation/DossierElectronique-2018-1.xsd"/>
 
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DeclarationIBC-1.xsd" uri="event/taxation/DeclarationIBC-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DeclarationIBC-2.xsd" uri="event/taxation/DeclarationIBC-2.xsd"/>
