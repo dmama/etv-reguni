@@ -1,6 +1,6 @@
 <assembly>
 	<!-- BEGIN_LVERSION -->
-	<id>PartyJMSService_6.5</id>
+	<id>PartyJMSService_6.6-SNAPSHOT</id>
 	<!-- END_LVERSION -->
 	<formats>
 		<format>zip</format>
