@@ -2,8 +2,12 @@ package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,8 +18,11 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdressePM;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
@@ -141,10 +148,13 @@ public class PersonnePhysiqueValidator extends ContribuableImpositionPersonnesPh
 
 		final ValidationResults results = super.validateRapports(tiers);
 
+		final Set<RapportEntreTiers> rapportsSujet = tiers.getRapportsSujet();
+		final Set<RapportEntreTiers> rapportsObjet = tiers.getRapportsObjet();
+
 		// [SIFISC-124] Les mesures de tutelles sont mutuellement exclusives (= on ne peut pas en avoir plusieurs actives à un moment donné)
-		if (tiers.getRapportsSujet() != null) {
+		if (rapportsSujet != null && !rapportsSujet.isEmpty()) {
 			List<RapportEntreTiers> mesures = null;
-			for (RapportEntreTiers r : tiers.getRapportsSujet()) {
+			for (RapportEntreTiers r : rapportsSujet) {
 				if (!r.isAnnule() && r instanceof RepresentationLegale) {
 					if (mesures == null) {
 						mesures = new ArrayList<>();
@@ -160,13 +170,12 @@ public class PersonnePhysiqueValidator extends ContribuableImpositionPersonnesPh
 					results.addError(String.format("La période %s est couverte par plusieurs mesures tutélaires", DateRangeHelper.toDisplayString(range)));
 				}
 			}
-
 		}
 
 		// [SIFISC-2533] Une personne physique ne peut pas appartenir à plusieurs ménages-communs en même temps
-		if (tiers.getRapportsSujet() != null) {
+		if (rapportsSujet != null && !rapportsSujet.isEmpty()) {
 			List<AppartenanceMenage> menages = null;
-			for (RapportEntreTiers r : tiers.getRapportsSujet()) {
+			for (RapportEntreTiers r : rapportsSujet) {
 				if (!r.isAnnule() && r instanceof AppartenanceMenage) {
 					if (menages == null) {
 						menages = new ArrayList<>();
@@ -182,7 +191,42 @@ public class PersonnePhysiqueValidator extends ContribuableImpositionPersonnesPh
 					results.addError(String.format("La personne physique appartient à plusieurs ménages communs sur la période %s", DateRangeHelper.toDisplayString(range)));
 				}
 			}
+		}
 
+		// [SIFISC-25655] Deux personnes physiques ne peuvent avoir plus d'un lien d'héritage qui les lie
+		if (rapportsSujet != null && !rapportsSujet.isEmpty()) {
+			// l'héritage ne peut venir plusieurs fois du même défunt...
+			// map, par id de défunt lié, du nombre d'occurrences de lien non-annulé
+			final Map<Long, Integer> idsDefunts = rapportsSujet.stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(Heritage.class::isInstance)
+					.map(RapportEntreTiers::getObjetId)
+					.filter(Objects::nonNull)               // blindage contre le rapport incomplet (écrans supergra ?)
+					.collect(Collectors.toMap(Function.identity(), id -> 1, (nb1, nb2) -> nb1 + nb2));
+			for (Map.Entry<Long, Integer> entry : idsDefunts.entrySet()) {
+				if (entry.getValue() > 1) {
+					results.addError(String.format("La personne physique %s possède plusieurs liens d'héritage vers le défunt %s",
+					                               FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()),
+					                               FormatNumeroHelper.numeroCTBToDisplay(entry.getKey())));
+				}
+			}
+		}
+		if (rapportsObjet != null && !rapportsObjet.isEmpty()) {
+			// on ne peut léguer plusieurs fois au même héritier...
+			// map, par id d'héritier lié, du nombre d'occurrences de lien non-annulé
+			final Map<Long, Integer> idsHeritiers = rapportsObjet.stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(Heritage.class::isInstance)
+					.map(RapportEntreTiers::getSujetId)
+					.filter(Objects::nonNull)           // blindage contre le rapport incomplet (écrans supergra ?)
+					.collect(Collectors.toMap(Function.identity(), id -> 1, (nb1, nb2) -> nb1 + nb2));
+			for (Map.Entry<Long, Integer> entry : idsHeritiers.entrySet()) {
+				if (entry.getValue() > 1) {
+					results.addError(String.format("La personne physique %s possède plusieurs liens d'héritage vers l'héritier %s",
+					                               FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()),
+					                               FormatNumeroHelper.numeroCTBToDisplay(entry.getKey())));
+				}
+			}
 		}
 
 		return results;

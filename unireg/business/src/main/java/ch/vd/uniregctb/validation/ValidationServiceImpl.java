@@ -15,7 +15,7 @@ import ch.vd.uniregctb.common.LockHelper;
  */
 public class ValidationServiceImpl implements ValidationService {
 
-	private final Map<Class, EntityValidator> validatorMap = new HashMap<>();
+	private final Map<Class<?>, EntityValidator<?>> validatorMap = new HashMap<>();
 
 	private final LockHelper lockHelper = new LockHelper();
 	private final ThreadLocal<MutableInt> callDepth = ThreadLocal.withInitial(() -> new MutableInt(0));
@@ -95,16 +95,17 @@ public class ValidationServiceImpl implements ValidationService {
 		}
 	}
 
-	protected EntityValidator findValidator(Object object) {
+	protected <T> EntityValidator<? super T> findValidator(T object) {
 		if (object == null) {
 			return null;
 		}
 
 		return lockHelper.doInReadLock(() -> {
-			EntityValidator validator = null;
-			Class clazz = object.getClass();
+			EntityValidator<? super T> validator = null;
+			Class<?> clazz = object.getClass();
 			while (validator == null && clazz != null) {
-				validator = validatorMap.get(clazz);
+				//noinspection unchecked
+				validator = (EntityValidator<? super T>) validatorMap.get(clazz);
 				clazz = clazz.getSuperclass();
 			}
 			return validator;
@@ -117,16 +118,20 @@ public class ValidationServiceImpl implements ValidationService {
 		final MutableInt depth = getCallDepth();
 		try {
 			depth.increment();
-			final EntityValidator validator = findValidator(object);
-			if (validator != null) {
-				return validator.validate(object);
-			}
-			else {
-				return new ValidationResults();
-			}
+			return _validate(object);
 		}
 		finally {
 			depth.decrement();
+		}
+	}
+
+	private <T> ValidationResults _validate(T object) {
+		final EntityValidator<? super T> validator = findValidator(object);
+		if (validator != null) {
+			return validator.validate(object);
+		}
+		else {
+			return new ValidationResults();
 		}
 	}
 

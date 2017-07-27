@@ -264,7 +264,6 @@
 		<!-- Debut Boutons -->
 		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="retourRapport(${rapportAddView.tiers.numero});" />
 		<input type="submit" value="<fmt:message key="label.bouton.sauver" />" />
-		<form:errors cssClass="error"/>
 		<!-- Fin Boutons -->
 		<script>
 			function retourRapport(numero) {

@@ -31,6 +31,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
@@ -65,6 +66,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
@@ -5107,30 +5109,42 @@ debut PF                                                                        
 
 		// pour l'instant, le rapport existant n'est pas annulé -> on ne doit pas être capable d'en ajouter un entre les même personnes aux mêmes dates
 		try {
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 				@Override
-				public Object doInTransaction(TransactionStatus status) {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idmc);
 
 					final AppartenanceMenage candidat = new AppartenanceMenage(dateMariage, null, pp, mc);
 					tiersService.addRapport(candidat, pp, mc);
-					Assert.fail("Aurait dû être refusé au prétexte que le rapport existe déjà...");
-					return null;
 				}
 			});
+			Assert.fail("Aurait dû exploser au motif que qu'un rapport identique existe déjà");
 		}
-		catch (IllegalArgumentException e) {
-			final String expectedMessage = String.format(
-					"Impossible d'ajouter le rapport-objet de type %s pour la période %s sur le tiers n°%d car il existe déjà.",
-					TypeRapportEntreTiers.APPARTENANCE_MENAGE, DateRangeHelper.toString(new DateRangeHelper.Range(dateMariage, null)), ids.idmc);
-			Assert.assertEquals(expectedMessage, e.getMessage());
+		catch (ValidationException e) {
+			final List<ValidationMessage> errors = e.getErrors();
+			Assert.assertNotNull(errors);
+			Assert.assertEquals(2, errors.size());
+
+			{
+				final ValidationMessage error = errors.get(0);
+				Assert.assertNotNull(error);
+				final String expectedMessage = String.format("AppartenanceMenage (02.05.2000 - ?) entre le tiers personne physique %s et le tiers ménage commun %s est présent plusieurs fois à l'identique",
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idpp),
+				                                             FormatNumeroHelper.numeroCTBToDisplay(ids.idmc));
+				Assert.assertEquals(expectedMessage, error.getMessage());
+			}
+			{
+				final ValidationMessage error = errors.get(1);
+				Assert.assertNotNull(error);
+				Assert.assertEquals("La personne physique appartient à plusieurs ménages communs sur la période [02.05.2000 ; ]", error.getMessage());
+			}
 		}
 
 		// mais si on l'annule, alors tout doit bien se passer
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idmc);
 				final AppartenanceMenage am = (AppartenanceMenage) mc.getRapportObjetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
@@ -5139,7 +5153,6 @@ debut PF                                                                        
 
 				final AppartenanceMenage candidat = new AppartenanceMenage(dateMariage, null, pp, mc);
 				tiersService.addRapport(candidat, pp, mc);
-				return null;
 			}
 		});
 	}

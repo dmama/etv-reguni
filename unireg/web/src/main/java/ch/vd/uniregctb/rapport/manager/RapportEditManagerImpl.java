@@ -193,7 +193,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * Persiste le rapport entre tiers
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void save(RapportView rapportView) {
 
 		if (rapportView.getId() == null) {

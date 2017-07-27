@@ -3,13 +3,17 @@ package ch.vd.uniregctb.validation.tiers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.collections4.ListUtils;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -26,10 +30,12 @@ import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.EntityValidatorImpl;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -63,26 +69,47 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		final ValidationResults results = new ValidationResults();
 
 		// [SIFISC-719] on valide les rapports-entre-tiers pour eux-mêmes
-		final Set<RapportEntreTiers> objets = tiers.getRapportsObjet();
-		if (objets != null) {
-			for (RapportEntreTiers rapport : objets) {
-				if (rapport.isAnnule()) {
-					continue;
+		Stream.of(tiers.getRapportsObjet(), tiers.getRapportsSujet())
+				.filter(Objects::nonNull)
+				.flatMap(Set::stream)
+				.filter(AnnulableHelper::nonAnnule)
+				.map(validationService::validate)
+				.forEach(results::merge);
+
+		// par principe, les rapports strictement identiques sont interdits
+		final Map<TypeRapportEntreTiers, List<RapportEntreTiers>> nonAnnulesParType = Stream.of(tiers.getRapportsObjet(), tiers.getRapportsSujet())
+				.filter(Objects::nonNull)
+				.flatMap(Set::stream)
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(ret -> !RapportPrestationImposable.class.isInstance(ret))       // [UNIREG-859] d'un point-de-vue métier, on peut ajouter deux fois le même rapport de travail
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toMap(RapportEntreTiers::getType,       // ne peuvent être identiques que des rapports de même type
+				                          Collections::singletonList,
+				                          ListUtils::union,
+				                          () -> new EnumMap<>(TypeRapportEntreTiers.class)));
+		for (List<RapportEntreTiers> ofType : nonAnnulesParType.values()) {
+			// pour qu'il y ait conflit, ils doivent être plusieurs...
+			if (ofType.size() > 1) {
+				for (int i = 0 ; i < ofType.size() - 1 ; ++ i) {
+					final RapportEntreTiers ret1 = ofType.get(i);
+					for (int j = i + 1 ; j < ofType.size() ; ++ j) {
+						final RapportEntreTiers ret2 = ofType.get(j);
+
+						// comme les rapports sont triés par date, pas la peine d'aller plus loin si les deux ne s'intersectent même pas
+						if (!DateRangeHelper.intersect(ret1, ret2)) {
+							break;
+						}
+
+						// réelle comparaison des deux, dont on sait déjà qu'ils sont de même type et qu'ils s'intersectent
+						if (ret1.equalsTo(ret2)) {
+							results.addError(String.format("%s est présent plusieurs fois à l'identique", getEntityNamingService().getDisplayName(ret1)));
+						}
+					}
 				}
-				results.merge(validationService.validate(rapport));
 			}
 		}
 
 		final Set<RapportEntreTiers> sujets = tiers.getRapportsSujet();
-		if (sujets != null) {
-			for (RapportEntreTiers rapport : sujets) {
-				if (rapport.isAnnule()) {
-					continue;
-				}
-				results.merge(validationService.validate(rapport));
-			}
-		}
-
 		if (sujets != null) {
 			// [SIFISC-719] on s'assure que les rapports de représentation conventionnels ne se chevauchent pas
 			checkNonOverlap(sujets, r -> r instanceof RepresentationConventionnelle, results, "rapports de type 'représentation conventionnelle'");

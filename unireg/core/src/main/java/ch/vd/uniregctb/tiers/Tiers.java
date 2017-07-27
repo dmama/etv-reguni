@@ -37,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -363,17 +362,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		if (rapportsObjet == null) {
 			rapportsObjet = new HashSet<>();
 		}
-		for (RapportEntreTiers r : rapportsObjet) {
-			if (r instanceof RapportPrestationImposable) {
-				continue; // [UNIREG-859] d'un point-de-vue métier, on peut ajouter deux fois le même rapport de travail
-			}
-			if (r != rapport && r.equalsTo(rapport)) {
-				final String message = String.format(
-						"Impossible d'ajouter le rapport-objet de type %s pour la période %s sur le tiers n°%d car il existe déjà.",
-						rapport.getType(), DateRangeHelper.toString(rapport), numero);
-				Assert.fail(message);
-			}
-		}
 		rapportsObjet.add(rapport);
 		Assert.isTrue(rapport.getObjetId() == null || rapport.getObjetId().equals(numero));
 		rapport.setObjet(this);
@@ -393,17 +381,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public void addRapportSujet(RapportEntreTiers rapport) {
 		if (rapportsSujet == null) {
 			rapportsSujet = new HashSet<>();
-		}
-		for (RapportEntreTiers r : rapportsSujet) {
-			if (r instanceof RapportPrestationImposable) {
-				continue; // [UNIREG-859] d'un point-de-vue métier, on peut ajouter deux fois le même rapport de travail
-			}
-			if (r != rapport && r.equalsTo(rapport)) {
-				final String message = String.format(
-						"Impossible d'ajouter le rapport-sujet de type %s pour la période %s sur le tiers n°%d car il existe déjà.",
-						rapport.getType(), DateRangeHelper.toString(rapport), numero);
-				Assert.fail(message);
-			}
 		}
 		rapportsSujet.add(rapport);
 		Assert.isTrue(rapport.getSujetId() == null || rapport.getSujetId().equals(numero));

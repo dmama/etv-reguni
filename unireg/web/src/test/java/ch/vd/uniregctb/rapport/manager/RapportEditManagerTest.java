@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -69,27 +70,32 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		RapportView rapport = new RapportView();
-		rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.REPRESENTATION);
-		rapport.setTiers(new TiersGeneralView(noTiersRepresentant));
-		rapport.setTiersLie(new TiersGeneralView(noTiersRepresente));
-		rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
-		rapport.setDateDebut(date(2010, 1, 1));
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final RapportView rapport = new RapportView();
+				rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.REPRESENTATION);
+				rapport.setTiers(new TiersGeneralView(noTiersRepresentant));
+				rapport.setTiersLie(new TiersGeneralView(noTiersRepresente));
+				rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
+				rapport.setDateDebut(date(2010, 1, 1));
 
-		// vérifie qu'il n'est PAS possible de sauver une représentation AVEC extension de l'exécution forcée
-		try {
-			rapport.setExtensionExecutionForcee(true);
-			manager.save(rapport);
-			fail("Il ne devrait pas être possible de sauver un rapport de représentation avec extension de l'exécution forcée sur un habitant");
-		}
-		catch (ValidationException e) {
-			assertEquals("PersonnePhysique #10000002 - 1 erreur(s) - 0 avertissement(s):\n" +
-					" [E] L'extension de l'exécution forcée est uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse\n", e.getMessage());
-		}
+				// vérifie qu'il n'est PAS possible de sauver une représentation AVEC extension de l'exécution forcée
+				try {
+					rapport.setExtensionExecutionForcee(true);
+					manager.save(rapport);
+					fail("Il ne devrait pas être possible de sauver un rapport de représentation avec extension de l'exécution forcée sur un habitant");
+				}
+				catch (ValidationException e) {
+					assertEquals("PersonnePhysique #10000002 - 1 erreur(s) - 0 avertissement(s):\n" +
+							             " [E] L'extension de l'exécution forcée est uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse\n", e.getMessage());
+				}
 
-		// vérifie qu'il EST possible de sauver une représentation SANS extension de l'exécution forcée
-		rapport.setExtensionExecutionForcee(false);
-		manager.save(rapport);
+				// vérifie qu'il EST possible de sauver une représentation SANS extension de l'exécution forcée
+				rapport.setExtensionExecutionForcee(false);
+				manager.save(rapport);
+			}
+		});
 
 		assertUneRepresentationConventionnelle(false, noTiersRepresente);
 	}
@@ -126,27 +132,32 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		RapportView rapport = new RapportView();
-		rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.REPRESENTATION);
-		rapport.setTiers(new TiersGeneralView(noTiersRepresentant));
-		rapport.setTiersLie(new TiersGeneralView(noTiersRepresente));
-		rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
-		rapport.setDateDebut(date(2010, 1, 1));
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final RapportView rapport = new RapportView();
+				rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.REPRESENTATION);
+				rapport.setTiers(new TiersGeneralView(noTiersRepresentant));
+				rapport.setTiersLie(new TiersGeneralView(noTiersRepresente));
+				rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
+				rapport.setDateDebut(date(2010, 1, 1));
 
-		// vérifie qu'il n'est PAS possible de sauver une représentation AVEC extension de l'exécution forcée
-		try {
-			rapport.setExtensionExecutionForcee(true);
-			manager.save(rapport);
-			fail("Il ne devrait pas être possible de sauver un rapport de représentation avec extension de l'exécution forcée sur un habitant");
-		}
-		catch (ValidationException e) {
-			assertEquals("PersonnePhysique #10000002 - 1 erreur(s) - 0 avertissement(s):\n" +
-					" [E] L'extension de l'exécution forcée est uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse\n", e.getMessage());
-		}
+				// vérifie qu'il n'est PAS possible de sauver une représentation AVEC extension de l'exécution forcée
+				try {
+					rapport.setExtensionExecutionForcee(true);
+					manager.save(rapport);
+					fail("Il ne devrait pas être possible de sauver un rapport de représentation avec extension de l'exécution forcée sur un habitant");
+				}
+				catch (ValidationException e) {
+					assertEquals("PersonnePhysique #10000002 - 1 erreur(s) - 0 avertissement(s):\n" +
+							             " [E] L'extension de l'exécution forcée est uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse\n", e.getMessage());
+				}
 
-		// vérifie qu'il EST possible de sauver une représentation SANS extension de l'exécution forcée
-		rapport.setExtensionExecutionForcee(false);
-		manager.save(rapport);
+				// vérifie qu'il EST possible de sauver une représentation SANS extension de l'exécution forcée
+				rapport.setExtensionExecutionForcee(false);
+				manager.save(rapport);
+			}
+		});
 
 		assertUneRepresentationConventionnelle(false, noTiersRepresente);
 	}
@@ -181,16 +192,22 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		RapportView rapport = new RapportView();
-		rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.REPRESENTATION);
-		rapport.setTiers(new TiersGeneralView(noTiersRepresentant));
-		rapport.setTiersLie(new TiersGeneralView(noTiersRepresente));
-		rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
-		rapport.setDateDebut(date(2010, 1, 1));
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final RapportView rapport = new RapportView();
+				rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.REPRESENTATION);
+				rapport.setTiers(new TiersGeneralView(noTiersRepresentant));
+				rapport.setTiersLie(new TiersGeneralView(noTiersRepresente));
+				rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
+				rapport.setDateDebut(date(2010, 1, 1));
 
-		// vérifie qu'il EST possible de sauver une représentation AVEC extension de l'exécution forcée
-		rapport.setExtensionExecutionForcee(true);
-		manager.save(rapport);
+				// vérifie qu'il EST possible de sauver une représentation AVEC extension de l'exécution forcée
+				rapport.setExtensionExecutionForcee(true);
+				manager.save(rapport);
+			}
+		});
+
 		assertUneRepresentationConventionnelle(true, noTiersRepresente);
 	}
 
@@ -223,13 +240,18 @@ public class RapportEditManagerTest extends WebTest {
 			}
 		});
 
-		RapportView rapport = new RapportView();
-		rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.ASSUJETTISSEMENT_PAR_SUBSTITUTION);
-		rapport.setTiers(new TiersGeneralView(noTiersSubstituant));
-		rapport.setTiersLie(new TiersGeneralView(noTiersSubstitue));
-		rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
-		rapport.setDateDebut(date(2014, 11, 11));
-		manager.save(rapport);
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final RapportView rapport = new RapportView();
+				rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.ASSUJETTISSEMENT_PAR_SUBSTITUTION);
+				rapport.setTiers(new TiersGeneralView(noTiersSubstituant));
+				rapport.setTiersLie(new TiersGeneralView(noTiersSubstitue));
+				rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
+				rapport.setDateDebut(date(2014, 11, 11));
+				manager.save(rapport);
+			}
+		});
 
 		assertUnAssujetissementParSubstitution(noTiersSubstitue);
 	}

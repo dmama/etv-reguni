@@ -287,6 +287,7 @@
 	</bean>
 
 	<bean id="validationService" class="ch.vd.uniregctb.validation.ValidationServiceImpl" />
+	<bean id="validableEntityNamingService" class="ch.vd.uniregctb.validation.ValidableEntityNamingServiceImpl"/>
 
 	<bean id="bouclementService" class="ch.vd.uniregctb.metier.bouclement.BouclementServiceImpl"/>
 
@@ -311,6 +312,7 @@
 
 	<bean id="entityValidator" class="ch.vd.uniregctb.validation.EntityValidatorImpl" abstract="true">
 		<property name="validationService" ref="validationService" />
+		<property name="entityNamingService" ref="validableEntityNamingService" />
 	</bean>
 
 	<bean id="dateRangeEntityValidator" class="ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator" abstract="true" parent="entityValidator"/>

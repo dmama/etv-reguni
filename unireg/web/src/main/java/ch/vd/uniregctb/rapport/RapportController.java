@@ -35,6 +35,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
+import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -306,10 +307,9 @@ public class RapportController {
 			rapportEditManager.save(view);
 		}
 		catch (Exception e) {
-			binding.reject("", e.getMessage());
-			return "tiers/edition/rapport/add";
+			LOGGER.error("Erreur à l'ajout d'un rapport entre les tiers " + numeroTiers + " et " + numeroTiersLie, e);
+			throw new ActionException(e.getMessage());
 		}
-
 		return "redirect:/tiers/visu.do?id=" + numeroTiers;
 	}
 
@@ -387,8 +387,8 @@ public class RapportController {
 			rapportEditManager.save(view);
 		}
 		catch (Exception e) {
-			binding.reject("", e.getMessage());
-			return "tiers/edition/rapport/edit";
+			LOGGER.error("Erreur à la modification d'un rapport entre les tiers " + numeroTiers + " et " + numeroTiersLie, e);
+			throw new ActionException(e.getMessage());
 		}
 
 		final String viewRetour = StringUtils.isBlank(view.getViewRetour()) ? "/rapport/list.do?id=" + view.getNumeroCourant() : view.getViewRetour();

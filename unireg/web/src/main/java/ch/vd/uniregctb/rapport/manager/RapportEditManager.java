@@ -53,7 +53,6 @@ public interface RapportEditManager {
 	 * Persiste le rapport entre tiers
 	 * @param rapportView
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	void save(RapportView rapportView) ;
 
 	/**

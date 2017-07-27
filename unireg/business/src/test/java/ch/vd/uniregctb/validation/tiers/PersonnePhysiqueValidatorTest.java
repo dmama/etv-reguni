@@ -14,11 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -40,6 +42,7 @@ import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc"})
@@ -1169,4 +1172,107 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		assertEquals("La déclaration d'impôt hors-canton immeuble qui va du 01.01.2009 au 31.12.2009 ne correspond à aucune période d'imposition théorique", warnings.get(0));
 	}
 
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testMultiplesLiensHeritageNonChevauchants() throws Exception {
+
+		final RegDate dateDeces = date(2017, 5, 31);
+		final PersonnePhysique defunt = addNonHabitant("Mordant", "Lapomme", date(1964, 8, 21), Sexe.MASCULIN);
+		defunt.setDateDeces(dateDeces);
+		final PersonnePhysique heritier = addNonHabitant("Croquant", "Lapomme", date(1996, 7, 31), Sexe.MASCULIN);
+
+		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null);
+		addHeritage(heritier, defunt, date(2000, 1, 1), date(2000, 12, 31));        // donnée bidon..
+
+		// validation côté défunt
+		{
+			final ValidationResults results = validate(defunt);
+			assertTrue(results.hasErrors());
+			assertTrue(results.hasWarnings());
+
+			final List<String> erreurs = results.getErrors();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final String expectedErreur = String.format("La personne physique %s possède plusieurs liens d'héritage vers l'héritier %s",
+			                                            FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
+			                                            FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()));
+			assertEquals(expectedErreur, erreurs.get(0));
+
+			final List<String> warnings = results.getWarnings();
+			assertNotNull(warnings);
+			assertEquals(1, warnings.size());
+			final String expectedWarning = String.format("Le rapport entre tiers de type Héritage (01.01.2000 - 31.12.2000) entre le tiers héritier %s et le tiers défunt(e) %s devrait débuter au lendemain de la date de décès du/de la défunt(e) (%s)",
+			                                             FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()),
+			                                             FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
+			                                             RegDateHelper.dateToDisplayString(dateDeces));
+			assertEquals(expectedWarning, warnings.get(0));
+		}
+
+		// validation côté héritier
+		{
+			final ValidationResults results = validate(heritier);
+			assertTrue(results.hasErrors());
+			assertTrue(results.hasWarnings());
+
+			final List<String> erreurs = results.getErrors();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final String expectedErreur = String.format("La personne physique %s possède plusieurs liens d'héritage vers le défunt %s",
+			                                            FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()),
+			                                            FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()));
+			assertEquals(expectedErreur, erreurs.get(0));
+
+			final List<String> warnings = results.getWarnings();
+			assertNotNull(warnings);
+			assertEquals(1, warnings.size());
+			final String expectedWarning = String.format("Le rapport entre tiers de type Héritage (01.01.2000 - 31.12.2000) entre le tiers héritier %s et le tiers défunt(e) %s devrait débuter au lendemain de la date de décès du/de la défunt(e) (%s)",
+			                                             FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()),
+			                                             FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
+			                                             RegDateHelper.dateToDisplayString(dateDeces));
+			assertEquals(expectedWarning, warnings.get(0));
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testMultiplesLiensHeritageChevauchants() throws Exception {
+
+		final RegDate dateDeces = date(2017, 5, 31);
+		final PersonnePhysique defunt = addNonHabitant("Mordant", "Lapomme", date(1964, 8, 21), Sexe.MASCULIN);
+		defunt.setDateDeces(dateDeces);
+		final PersonnePhysique heritier = addNonHabitant("Croquant", "Lapomme", date(1996, 7, 31), Sexe.MASCULIN);
+
+		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null);
+		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), dateDeces.addMonths(1));        // donnée bidon..
+
+		// validation côté défunt
+		{
+			final ValidationResults results = validate(defunt);
+			assertTrue(results.hasErrors());
+			assertFalse(results.hasWarnings());
+
+			final List<String> erreurs = results.getErrors();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final String expectedErreur = String.format("La personne physique %s possède plusieurs liens d'héritage vers l'héritier %s",
+			                                            FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
+			                                            FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()));
+			assertEquals(expectedErreur, erreurs.get(0));
+		}
+
+		// validation côté héritier
+		{
+			final ValidationResults results = validate(heritier);
+			assertTrue(results.hasErrors());
+			assertFalse(results.hasWarnings());
+
+			final List<String> erreurs = results.getErrors();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final String expectedErreur = String.format("La personne physique %s possède plusieurs liens d'héritage vers le défunt %s",
+			                                            FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()),
+			                                            FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()));
+			assertEquals(expectedErreur, erreurs.get(0));
+		}
+	}
 }

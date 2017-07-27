@@ -11,13 +11,22 @@ import org.springframework.beans.factory.InitializingBean;
 public abstract class EntityValidatorImpl<T> implements EntityValidator<T>, InitializingBean, DisposableBean {
 
 	private ValidationService validationService;
+	private ValidableEntityNamingService entityNamingService;
 
 	public void setValidationService(ValidationService validationService) {
 		this.validationService = validationService;
 	}
 
+	public void setEntityNamingService(ValidableEntityNamingService entityNamingService) {
+		this.entityNamingService = entityNamingService;
+	}
+
 	protected ValidationService getValidationService() {
 		return validationService;
+	}
+
+	protected ValidableEntityNamingService getEntityNamingService() {
+		return entityNamingService;
 	}
 
 	protected abstract Class<T> getValidatedClass();
@@ -25,6 +34,7 @@ public abstract class EntityValidatorImpl<T> implements EntityValidator<T>, Init
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		validationService.registerValidator(getValidatedClass(), this);
+		entityNamingService.registerEntityRenderer(getValidatedClass(), this::getEntityDisplayString);
 	}
 
 	@Override
