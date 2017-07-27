@@ -84,6 +84,7 @@ import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 import ch.vd.uniregctb.supergra.delta.Delta;
+import ch.vd.uniregctb.supergra.delta.DisableEntity;
 import ch.vd.uniregctb.supergra.view.AttributeView;
 import ch.vd.uniregctb.supergra.view.CollectionView;
 import ch.vd.uniregctb.supergra.view.EntityView;
@@ -530,6 +531,9 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		if (delta instanceof AttributeUpdate) {
 			AttributeUpdate update = (AttributeUpdate) delta;
 			isAnnulation = "annulationDate".equals(update.getName()) && update.getOldValue() == null && update.getNewValue() != null;
+		}
+		else if (delta instanceof DisableEntity) {
+			isAnnulation = true;
 		}
 		return isAnnulation;
 	}
