@@ -25,6 +25,8 @@
 				<ref bean="evenementCediHandler2016V1"/>
 				<ref bean="evenementCediHandler2016V2"/>
 				<ref bean="evenementCediHandler2017V1"/>
+				<ref bean="evenementCediHandler2017V2"/>
+				<ref bean="evenementCediHandler2018V1"/>
 
 				<!-- PM -->
 				<ref bean="retourDiIbcHandlerV1"/>
@@ -47,6 +49,8 @@
 	<bean id="evenementCediHandler2016V1" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V1Handler" parent="evenementCediAbstractHandler"/>
 	<bean id="evenementCediHandler2016V2" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V2Handler" parent="evenementCediAbstractHandler"/>
 	<bean id="evenementCediHandler2017V1" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V1Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2017V2" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V2Handler" parent="evenementCediAbstractHandler"/>
+	<bean id="evenementCediHandler2018V1" class="ch.vd.uniregctb.evenement.retourdi.pp.Pf2018V1Handler" parent="evenementCediAbstractHandler"/>
 
 	<!-- DI des contribuables "personnes morales" -->
 

@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -30,6 +29,8 @@ import ch.vd.uniregctb.evenement.retourdi.pp.Pf2015V2Handler;
 import ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V1Handler;
 import ch.vd.uniregctb.evenement.retourdi.pp.Pf2016V2Handler;
 import ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V1Handler;
+import ch.vd.uniregctb.evenement.retourdi.pp.Pf2017V2Handler;
+import ch.vd.uniregctb.evenement.retourdi.pp.Pf2018V1Handler;
 import ch.vd.uniregctb.evenement.retourdi.pp.RetourDI;
 import ch.vd.uniregctb.evenement.retourdi.pp.V1Handler;
 import ch.vd.uniregctb.evenement.retourdi.pp.V2Handler;
@@ -87,6 +88,8 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				new ClassPathResource("event/taxation/DossierElectronique-2016-1.xsd"),
 				new ClassPathResource("event/taxation/DossierElectronique-2016-2.xsd"),
 				new ClassPathResource("event/taxation/DossierElectronique-2017-1.xsd"),
+				new ClassPathResource("event/taxation/DossierElectronique-2017-2.xsd"),
+				new ClassPathResource("event/taxation/DossierElectronique-2018-1.xsd"),
 
 				new ClassPathResource("event/taxation/DeclarationIBC-1.xsd"),
 				new ClassPathResource("event/taxation/DeclarationIBC-2.xsd"),
@@ -211,8 +214,32 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				Assert.fail("Un message v2 ne devrait pas arriver dans le handler Periode 2016 v1");
 			}
 		};
+		final RetourDiHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v2 ne devrait pas arriver dans le handler Periode 2016 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v2 ne devrait pas arriver dans le handler Periode 2017 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2017v2Handler = new Pf2017V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v2 ne devrait pas arriver dans le handler Periode 2017 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2018v1Handler = new Pf2018V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v2 ne devrait pas arriver dans le handler Periode 2018 v1");
+			}
+		};
 
-		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler,pf2015v2Handler,pf2016v1Handler));
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2016v2Handler, pf2017v1Handler, pf2017v2Handler, pf2018v1Handler));
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
@@ -257,6 +284,12 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler v2");
 			}
 		};
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				events.add(evt);
+			}
+		};
 		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -269,14 +302,32 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2016 v1");
 			}
 		};
-		final RetourDiHandler<?> v3Handler = new V3Handler() {
+		final RetourDiHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
-				events.add(evt);
+				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2016 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2017 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2017v2Handler = new Pf2017V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2017 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2018v1Handler = new Pf2018V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2018 v1");
 			}
 		};
 
-		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler,pf2015v2Handler,pf2016v1Handler));
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2016v2Handler, pf2017v1Handler, pf2017v2Handler, pf2018v1Handler));
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
@@ -321,6 +372,12 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler v2");
 			}
 		};
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				events.add(evt);
+			}
+		};
 		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -333,14 +390,32 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2016 v1");
 			}
 		};
-		final RetourDiHandler<?> v3Handler = new V3Handler() {
+		final RetourDiHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
-				events.add(evt);
+				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2016 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2017 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2017v2Handler = new Pf2017V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2017 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2018v1Handler = new Pf2018V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v3 ne devrait pas arriver dans le handler Periode 2018 v1");
 			}
 		};
 
-		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler,pf2015v2Handler,pf2016v1Handler));
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2016v2Handler, pf2017v1Handler, pf2017v2Handler, pf2018v1Handler));
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
@@ -393,20 +468,44 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				Assert.fail("Un message Periode 2015 v2 ne devrait pas arriver dans le handler v3");
 			}
 		};
-		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
-			@Override
-			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
-				Assert.fail("Un message periode 2015 v2 ne devrait pas arriver dans le handler Periode 2016 v1");
-			}
-		};
 		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				events.add(evt);
 			}
 		};
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message periode 2015 v2 ne devrait pas arriver dans le handler Periode 2016 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message periode 2015 v2 ne devrait pas arriver dans le handler Periode 2016 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message periode 2015 v2 ne devrait pas arriver dans le handler Periode 2017 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2017v2Handler = new Pf2017V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message periode 2015 v2 ne devrait pas arriver dans le handler Periode 2017 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2018v1Handler = new Pf2018V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message periode 2015 v2 ne devrait pas arriver dans le handler Periode 2018 v1");
+			}
+		};
 
-		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler,pf2015v2Handler,pf2016v1Handler));
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2016v2Handler, pf2017v1Handler, pf2017v2Handler, pf2018v1Handler));
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
@@ -457,20 +556,44 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				Assert.fail("Un message Periode 2016 v1 ne devrait pas arriver dans le handler v3");
 			}
 		};
-		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
-			@Override
-			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
-				events.add(evt);
-			}
-		};
 		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message periode 2016 v1 ne devrait pas arriver dans le handler Periode 2015 v2");
 			}
 		};
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				events.add(evt);
+			}
+		};
+		final RetourDiHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message periode 2016 v1 ne devrait pas arriver dans le handler Periode 2016 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message periode 2016 v1 ne devrait pas arriver dans le handler Periode 2017 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2017v2Handler = new Pf2017V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message periode 2016 v1 ne devrait pas arriver dans le handler Periode 2017 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2018v1Handler = new Pf2018V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message periode 2016 v1 ne devrait pas arriver dans le handler Periode 2018 v1");
+			}
+		};
 
-		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler,pf2015v2Handler,pf2016v1Handler));
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2016v2Handler, pf2017v1Handler, pf2017v2Handler, pf2018v1Handler));
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
@@ -527,28 +650,38 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler Periode 2015 v2");
 			}
 		};
-		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
-			@Override
-			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
-				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler Periode 2017 v1");
-			}
-		};
 		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler Periode 2016 v1");
 			}
 		};
-
 		final RetourDiHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				events.add(evt);
 			}
 		};
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler Periode 2017 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2017v2Handler = new Pf2017V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler Periode 2017 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2018v1Handler = new Pf2018V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2016 v2 ne devrait pas arriver dans le handler Periode 2018 v1");
+			}
+		};
 
-
-		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler,pf2015v2Handler,pf2016v1Handler,pf2016v2Handler,pf2017v1Handler));
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2016v2Handler, pf2017v1Handler, pf2017v2Handler, pf2018v1Handler));
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
@@ -611,15 +744,32 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 				Assert.fail("Un message Periode 2017 v1 ne devrait pas arriver dans le handler Periode 2016 v1");
 			}
 		};
+		final RetourDiHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v1 ne devrait pas arriver dans le handler Periode 2016 v2");
+			}
+		};
 		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
 			@Override
 			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
 				events.add(evt);
 			}
 		};
+		final RetourDiHandler<?> pf2017v2Handler = new Pf2017V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v1 ne devrait pas arriver dans le handler Periode 2017 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2018v1Handler = new Pf2018V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v1 ne devrait pas arriver dans le handler Periode 2018 v1");
+			}
+		};
 
-
-		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler,pf2015v2Handler,pf2016v1Handler,pf2017v1Handler));
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2016v2Handler, pf2017v1Handler, pf2017v2Handler, pf2018v1Handler));
 		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
@@ -639,6 +789,182 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		assertNotNull(q);
 		assertEquals(10500171, q.getNoContribuable());
 		assertEquals(2017, q.getPeriodeFiscale());
+		assertEquals(1, q.getNoSequenceDI());
+		assertEquals(RetourDI.TypeDocument.VAUDTAX, q.getTypeDocument());
+		assertEquals("toto@earth.net", q.getEmail());
+		assertEquals("CH2800767000U09565735", q.getIban());
+		assertEquals("0211234567", q.getNoTelephone());
+		assertEquals("0797654321", q.getNoMobile());
+		assertEquals("Toto le rigolo", q.getTitulaireCompte());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testFormatPf2017_V2() throws Exception {
+
+		final List<EvenementCedi> events = new ArrayList<>();
+		final RetourDiHandler<?> v1Handler = new V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v2 ne devrait pas arriver dans le handler v1");
+			}
+		};
+		final RetourDiHandler<?> v2Handler = new V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v2 ne devrait pas arriver dans le handler v2");
+			}
+		};
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v2 ne devrait pas arriver dans le handler v3");
+			}
+		};
+		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v2 ne devrait pas arriver dans le handler Periode 2015 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v2 ne devrait pas arriver dans le handler Periode 2016 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v2 ne devrait pas arriver dans le handler Periode 2016 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v2 ne devrait pas arriver dans le handler Periode 2017 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2017v2Handler = new Pf2017V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				events.add(evt);
+			}
+		};
+		final RetourDiHandler<?> pf2018v1Handler = new Pf2018V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2017 v2 ne devrait pas arriver dans le handler Periode 2018 v1");
+			}
+		};
+
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2016v2Handler, pf2017v1Handler, pf2017v2Handler, pf2018v1Handler));
+		esbHandler.afterPropertiesSet();
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2017.2-exemple.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final RetourDI q = (RetourDI) events.get(0);
+		assertNotNull(q);
+		assertEquals(10500171, q.getNoContribuable());
+		assertEquals(2017, q.getPeriodeFiscale());
+		assertEquals(1, q.getNoSequenceDI());
+		assertEquals(RetourDI.TypeDocument.VAUDTAX, q.getTypeDocument());
+		assertEquals("toto@earth.net", q.getEmail());
+		assertEquals("CH2800767000U09565735", q.getIban());
+		assertEquals("0211234567", q.getNoTelephone());
+		assertEquals("0797654321", q.getNoMobile());
+		assertEquals("Toto le rigolo", q.getTitulaireCompte());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testFormatPf2018_V1() throws Exception {
+
+		final List<EvenementCedi> events = new ArrayList<>();
+		final RetourDiHandler<?> v1Handler = new V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2018 v1 ne devrait pas arriver dans le handler v1");
+			}
+		};
+		final RetourDiHandler<?> v2Handler = new V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2018 v1 ne devrait pas arriver dans le handler v2");
+			}
+		};
+		final RetourDiHandler<?> v3Handler = new V3Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2018 v1 ne devrait pas arriver dans le handler v3");
+			}
+		};
+		final RetourDiHandler<?> pf2015v2Handler = new Pf2015V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2018 v1 ne devrait pas arriver dans le handler Periode 2015 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2016v1Handler = new Pf2016V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2018 v1 ne devrait pas arriver dans le handler Periode 2016 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2016v2Handler = new Pf2016V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2018 v1 ne devrait pas arriver dans le handler Periode 2016 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2017v1Handler = new Pf2017V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2018 v1 ne devrait pas arriver dans le handler Periode 2017 v1");
+			}
+		};
+		final RetourDiHandler<?> pf2017v2Handler = new Pf2017V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message Periode 2018 v1 ne devrait pas arriver dans le handler Periode 2017 v2");
+			}
+		};
+		final RetourDiHandler<?> pf2018v1Handler = new Pf2018V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				events.add(evt);
+			}
+		};
+
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler, pf2015v2Handler, pf2016v1Handler, pf2016v2Handler, pf2017v1Handler, pf2017v2Handler, pf2018v1Handler));
+		esbHandler.afterPropertiesSet();
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/retourdi/pp/DossierElectronique-2018.1-exemple.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final RetourDI q = (RetourDI) events.get(0);
+		assertNotNull(q);
+		assertEquals(10500171, q.getNoContribuable());
+		assertEquals(2018, q.getPeriodeFiscale());
 		assertEquals(1, q.getNoSequenceDI());
 		assertEquals(RetourDI.TypeDocument.VAUDTAX, q.getTypeDocument());
 		assertEquals("toto@earth.net", q.getEmail());
