@@ -262,7 +262,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		for (XmlVersionPP pp : XmlVersionPP.values()) {
 			final Consumer<EvenementCedi> consumer;
 			if (pp == accepted) {
-				consumer = collector::add;
+				consumer = buildCollectingAndNotifyingConsumer(collector);
 			}
 			else {
 				consumer = evt -> Assert.fail("Un message " + accepted + " ne devrait pas arriver dans le canal " + pp);
@@ -288,7 +288,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		for (XmlVersionPM pm : XmlVersionPM.values()) {
 			final Consumer<ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> consumer;
 			if (pm == accepted) {
-				consumer = collector::add;
+				consumer = buildCollectingAndNotifyingConsumer(collector);
 			}
 			else {
 				consumer = evt -> Assert.fail("Un message " + accepted + " ne devrait pas arriver dans le canal " + pm);
@@ -300,6 +300,24 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 			list.add(pp.buildHandler(consumer));
 		}
 		return list;
+	}
+
+	private static <T> Consumer<T> buildCollectingAndNotifyingConsumer(List<T> collector) {
+		return data -> {
+			synchronized (collector) {
+				collector.add(data);
+				collector.notifyAll();
+			}
+		};
+	}
+
+	@SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
+	private static void waitForNonEmpty(List<?> collection) throws InterruptedException {
+		synchronized (collection) {
+			while (collection.isEmpty()) {
+				collection.wait(100);
+			}
+		}
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -318,9 +336,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -356,9 +372,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -390,9 +404,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -424,9 +436,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -458,9 +468,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -494,9 +502,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -528,9 +534,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -562,9 +566,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -596,9 +598,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -630,9 +630,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -664,9 +662,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final RetourDI q = (RetourDI) events.get(0);
@@ -698,9 +694,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final ch.vd.uniregctb.evenement.retourdi.pm.RetourDI q = events.get(0);
@@ -755,9 +749,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message
-		while (events.isEmpty()) {
-			Thread.sleep(100);
-		}
+		waitForNonEmpty(events);
 		Assert.assertEquals(1, events.size());
 
 		final ch.vd.uniregctb.evenement.retourdi.pm.RetourDI q = events.get(0);
