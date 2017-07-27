@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.ResourceUtils;
@@ -79,20 +78,17 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		esbHandler = new EvenementRetourDiEsbMessageHandler();
 		esbHandler.setHibernateTemplate(hibernateTemplate);
 
-		buildEsbMessageValidator(new Resource[]{
-				new ClassPathResource("event/taxation/DossierElectronique-1-0.xsd"),
-				new ClassPathResource("event/taxation/DossierElectronique-2-0.xsd"),
-				new ClassPathResource("event/taxation/DossierElectronique-3-2.xsd"),
-				new ClassPathResource("event/taxation/DossierElectronique-2015-2.xsd"),
-				new ClassPathResource("event/taxation/DossierElectronique-2016-1.xsd"),
-				new ClassPathResource("event/taxation/DossierElectronique-2016-2.xsd"),
-				new ClassPathResource("event/taxation/DossierElectronique-2017-1.xsd"),
-				new ClassPathResource("event/taxation/DossierElectronique-2017-2.xsd"),
-				new ClassPathResource("event/taxation/DossierElectronique-2018-1.xsd"),
-
-				new ClassPathResource("event/taxation/DeclarationIBC-1.xsd"),
-				new ClassPathResource("event/taxation/DeclarationIBC-2.xsd"),
-		});
+		final Consumer<Object> noop = data -> {};
+		final List<Resource> resources = new ArrayList<>();
+		for (XmlVersionPP pp : XmlVersionPP.values()) {
+			final RetourDiHandler<?> handler = pp.buildHandler(noop);
+			resources.add(handler.getRequestXSD());
+		}
+		for (XmlVersionPM pm : XmlVersionPM.values()) {
+			final RetourDiHandler<?> handler = pm.buildHandler(noop);
+			resources.add(handler.getRequestXSD());
+		}
+		buildEsbMessageValidator(resources.toArray(new Resource[resources.size()]));
 
 		initListenerContainer(INPUT_QUEUE, esbHandler);
 	}
@@ -103,7 +99,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 	private enum XmlVersionPP {
 		V1 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<EvenementCedi> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
 				return new V1Handler() {
 					@Override
 					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -114,7 +110,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		},
 		V2 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<EvenementCedi> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
 				return new V2Handler() {
 					@Override
 					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -125,7 +121,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		},
 		V3 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<EvenementCedi> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
 				return new V3Handler() {
 					@Override
 					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -136,7 +132,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		},
 		PF2015_2 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<EvenementCedi> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
 				return new Pf2015V2Handler() {
 					@Override
 					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -147,7 +143,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		},
 		PF2016_1 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<EvenementCedi> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
 				return new Pf2016V1Handler() {
 					@Override
 					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -158,7 +154,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		},
 		PF2016_2 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<EvenementCedi> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
 				return new Pf2016V2Handler() {
 					@Override
 					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -169,7 +165,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		},
 		PF2017_1 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<EvenementCedi> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
 				return new Pf2017V1Handler() {
 					@Override
 					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -180,7 +176,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		},
 		PF2017_2 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<EvenementCedi> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
 				return new Pf2017V2Handler() {
 					@Override
 					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -191,7 +187,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		},
 		PF2018_1 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<EvenementCedi> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action) {
 				return new Pf2018V1Handler() {
 					@Override
 					protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
@@ -206,7 +202,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		 * constructeur de handler pour une version de la XSD, qui appelle le {@link Consumer} fourni
 		 * @param action action lancée par le handler construit
 		 */
-		public abstract RetourDiHandler<?> buildHandler(Consumer<EvenementCedi> action);
+		public abstract RetourDiHandler<?> buildHandler(Consumer<? super EvenementCedi> action);
 
 		@Override
 		public String toString() {
@@ -220,7 +216,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 	private enum XmlVersionPM {
 		V1 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> action) {
 				return new ch.vd.uniregctb.evenement.retourdi.pm.V1Handler() {
 					@Override
 					protected void traiterRetour(ch.vd.uniregctb.evenement.retourdi.pm.RetourDI retour, Map<String, String> headers) throws EsbBusinessException {
@@ -231,7 +227,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		},
 		V2 {
 			@Override
-			public RetourDiHandler<?> buildHandler(Consumer<ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> action) {
+			public RetourDiHandler<?> buildHandler(Consumer<? super ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> action) {
 				return new ch.vd.uniregctb.evenement.retourdi.pm.V2Handler() {
 					@Override
 					protected void traiterRetour(ch.vd.uniregctb.evenement.retourdi.pm.RetourDI retour, Map<String, String> headers) throws EsbBusinessException {
@@ -246,7 +242,7 @@ public class EvenementRetourDiEsbMessageHandlerTest extends EvenementTest {
 		 * constructeur de handler pour une version de la XSD, qui appelle le {@link Consumer} fourni
 		 * @param action action lancée par le handler construit
 		 */
-		public abstract RetourDiHandler<?> buildHandler(Consumer<ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> action);
+		public abstract RetourDiHandler<?> buildHandler(Consumer<? super ch.vd.uniregctb.evenement.retourdi.pm.RetourDI> action);
 
 		@Override
 		public String toString() {
