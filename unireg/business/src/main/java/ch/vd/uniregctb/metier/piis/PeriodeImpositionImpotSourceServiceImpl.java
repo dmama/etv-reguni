@@ -342,7 +342,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		return dateFin;
 	}
 
-	private static final class ProtoPeriodeImpositionImpotSource extends AbstractCollatablePeriodeImpositionImpotSource<ProtoPeriodeImpositionImpotSource.Type> {
+	private static final class ProtoPeriodeImpositionImpotSource extends AbstractCollatablePeriodeImpositionImpotSource<ProtoPeriodeImpositionImpotSource.Type, ProtoPeriodeImpositionImpotSource> {
 
 		public enum Type {
 			/**
@@ -424,8 +424,8 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		}
 
 		@Override
-		public DateRange collate(DateRange next) {
-			return new ProtoPeriodeImpositionImpotSource(this, (ProtoPeriodeImpositionImpotSource) next);
+		public ProtoPeriodeImpositionImpotSource collate(ProtoPeriodeImpositionImpotSource next) {
+			return new ProtoPeriodeImpositionImpotSource(this, next);
 		}
 	}
 
@@ -615,7 +615,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * @param src liste de base
 	 * @return liste collatée (on arrête les boucles dès que le nombre d'éléments dans la liste ne bouge plus)
 	 */
-	private static <T extends CollatableDateRange> List<T> collate(@NotNull List<T> src) {
+	private static <T extends CollatableDateRange<T>> List<T> collate(@NotNull List<T> src) {
 		List<T> collated = src;
 		while (!collated.isEmpty()) {
 			final int size = collated.size();

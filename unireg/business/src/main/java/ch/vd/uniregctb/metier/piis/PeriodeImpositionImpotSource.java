@@ -3,7 +3,6 @@ package ch.vd.uniregctb.metier.piis;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Duplicable;
@@ -12,7 +11,7 @@ import ch.vd.uniregctb.metier.common.FractionSimple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class PeriodeImpositionImpotSource extends AbstractCollatablePeriodeImpositionImpotSource<PeriodeImpositionImpotSource.Type> implements Duplicable<PeriodeImpositionImpotSource> {
+public class PeriodeImpositionImpotSource extends AbstractCollatablePeriodeImpositionImpotSource<PeriodeImpositionImpotSource.Type, PeriodeImpositionImpotSource> implements Duplicable<PeriodeImpositionImpotSource> {
 
 	public enum Type {
 		MIXTE,
@@ -20,7 +19,7 @@ public class PeriodeImpositionImpotSource extends AbstractCollatablePeriodeImpos
 	}
 
 	/**
-	 * Constructeur utilisé lors du {@link #collate(ch.vd.registre.base.date.DateRange)}
+	 * Constructeur utilisé lors du {@link #collate(PeriodeImpositionImpotSource)}
 	 * @param courant une période
 	 * @param suivant la période suivante, qui doit fusionner avec la première
 	 */
@@ -80,8 +79,8 @@ public class PeriodeImpositionImpotSource extends AbstractCollatablePeriodeImpos
 	}
 
 	@Override
-	public DateRange collate(DateRange next) {
-		return new PeriodeImpositionImpotSource(this, (PeriodeImpositionImpotSource) next);
+	public PeriodeImpositionImpotSource collate(PeriodeImpositionImpotSource next) {
+		return new PeriodeImpositionImpotSource(this, next);
 	}
 
 	@Override

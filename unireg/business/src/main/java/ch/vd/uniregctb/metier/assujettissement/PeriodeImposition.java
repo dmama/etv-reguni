@@ -6,7 +6,6 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -37,7 +36,7 @@ import ch.vd.uniregctb.type.TypeDocument;
  * deux assujettissements VaudoisOrdinaire et HorsSuisse génèrent le même type de DI au final.</li>
  * </ul>
  */
-public abstract class PeriodeImposition implements CollatableDateRange {
+public abstract class PeriodeImposition implements CollatableDateRange<PeriodeImposition> {
 
 	/**
 	 * Description des différents cas intéressants de fermeture de la période d'imposition
@@ -123,13 +122,11 @@ public abstract class PeriodeImposition implements CollatableDateRange {
 	}
 
 	@Override
-	public final boolean isCollatable(DateRange next) {
-		final PeriodeImposition nextPeriode = (PeriodeImposition) next;
-
+	public final boolean isCollatable(PeriodeImposition next) {
 		// on accepte les ranges qui se touchent *et* ceux qui se chevauchent, ceci parce que les périodes d'impositions peuvent être plus
 		// larges que les assujettissement sous-jacents (cas des HorsCanton et HorsSuisse) et qu'il s'agit de pouvoir les
 		// collater malgré tout (mais jamais sur deux périodes fiscales différentes).
-		return fin.getOneDayAfter().isAfterOrEqual(next.getDateDebut()) && getPeriodeFiscale() == nextPeriode.getPeriodeFiscale() && isCompatibleWith(nextPeriode);
+		return fin.getOneDayAfter().isAfterOrEqual(next.getDateDebut()) && getPeriodeFiscale() == next.getPeriodeFiscale() && isCompatibleWith(next);
 	}
 
 	/**

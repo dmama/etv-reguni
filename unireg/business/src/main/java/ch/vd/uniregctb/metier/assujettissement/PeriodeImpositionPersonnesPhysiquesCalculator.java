@@ -148,7 +148,9 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		}
 
 		// [UNIREG-1118] On fusionne les périodes qui provoqueraient des déclarations identiques contiguës.
-		return DateRangeHelper.collate(periodes);
+		return DateRangeHelper.collate(periodes,
+		                               PeriodeImpositionPersonnesPhysiques::isCollatable,
+		                               PeriodeImpositionPersonnesPhysiques::collate);
 	}
 
 	/**

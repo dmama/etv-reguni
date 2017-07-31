@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 
@@ -49,14 +48,14 @@ public class RelationVersIndividuImpl implements RelationVersIndividu, Serializa
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
+	public boolean isCollatable(RelationVersIndividu next) {
 		return DateRangeHelper.isCollatable(this, next)
-				&& numeroAutreIndividu == ((RelationVersIndividu) next).getNumeroAutreIndividu()
-				&& type == ((RelationVersIndividu) next).getTypeRelation();
+				&& numeroAutreIndividu == next.getNumeroAutreIndividu()
+				&& type == next.getTypeRelation();
 	}
 
 	@Override
-	public DateRange collate(DateRange next) {
+	public RelationVersIndividu collate(RelationVersIndividu next) {
 		return new RelationVersIndividuImpl(numeroAutreIndividu, type, dateDebut, next.getDateFin());
 	}
 

@@ -145,7 +145,7 @@ public class MockOrganisation implements Organisation {
 				}
 			}
 		}
-		Collections.sort(sieges, new DateRangeComparator<>());
+		sieges.sort(new DateRangeComparator<>());
 		return DateRangeHelper.collate(sieges);
 	}
 

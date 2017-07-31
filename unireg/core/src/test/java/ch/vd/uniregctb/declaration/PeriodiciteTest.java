@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.declaration;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -28,7 +27,7 @@ public class PeriodiciteTest extends WithoutSpringTest {
 		listePeriodicite.add(periodicite3);
 
 		DateRangeHelper.collate(listePeriodicite);
-		Collections.sort(listePeriodicite, new DateRangeComparator<Periodicite>());
+		listePeriodicite.sort(new DateRangeComparator<>());
 
 		assertEquals(3,listePeriodicite.size());
 		assertEquals(date(2009,1,1),listePeriodicite.get(0).getDateDebut());
@@ -50,7 +49,7 @@ public class PeriodiciteTest extends WithoutSpringTest {
 
 		listePeriodicite = Periodicite.comblerVidesPeriodicites(listePeriodicite);
 		DateRangeHelper.collate(listePeriodicite);
-		Collections.sort(listePeriodicite, new DateRangeComparator<Periodicite>());
+		listePeriodicite.sort(new DateRangeComparator<>());
 
 		assertEquals(3,listePeriodicite.size());
 		assertEquals(date(2009,1,1),listePeriodicite.get(0).getDateDebut());

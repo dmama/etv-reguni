@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -36,7 +35,7 @@ public abstract class Sourcier extends Assujettissement {
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
+	public boolean isCollatable(Assujettissement next) {
 		return super.isCollatable(next) && typeAutoriteFiscale == ((Sourcier) next).typeAutoriteFiscale;
 	}
 }

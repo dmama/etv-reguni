@@ -658,7 +658,7 @@ public class IndividuRCPers implements Individu, Serializable {
 				last.setDateFin(dateDeces.getOneDayBefore());
 			}
 		}
-		return DateRangeHelper.collate(new ArrayList<RelationVersIndividu>(list));
+		return DateRangeHelper.collate(new ArrayList<>(list));
 	}
 
 	private static Collection<Origine> initOrigins(Person person) {

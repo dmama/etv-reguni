@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -36,7 +35,7 @@ public class SourcierPur extends Sourcier {
 	}
 
 	@Override
-	public DateRange collate(DateRange next) {
+	public SourcierPur collate(Assujettissement next) {
 		return new SourcierPur(this, (SourcierPur) next);
 	}
 

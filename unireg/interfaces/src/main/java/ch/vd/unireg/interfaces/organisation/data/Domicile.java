@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -13,7 +12,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class Domicile implements Serializable, CollatableDateRange, DateRangeLimitable<Domicile>, LocalizedDateRange {
+public class Domicile implements Serializable, CollatableDateRange<Domicile>, DateRangeLimitable<Domicile>, LocalizedDateRange {
 
 	private static final long serialVersionUID = -1655521082019660148L;
 
@@ -51,15 +50,14 @@ public class Domicile implements Serializable, CollatableDateRange, DateRangeLim
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
+	public boolean isCollatable(Domicile next) {
 		return DateRangeHelper.isCollatable(this, next)
-				&& next instanceof Domicile
-				&& ((Domicile) next).typeAutoriteFiscale == this.typeAutoriteFiscale
-				&& ((Domicile) next).numeroOfsAutoriteFiscale == this.numeroOfsAutoriteFiscale;
+				&& next.typeAutoriteFiscale == this.typeAutoriteFiscale
+				&& next.numeroOfsAutoriteFiscale == this.numeroOfsAutoriteFiscale;
 	}
 
 	@Override
-	public Domicile collate(DateRange next) {
+	public Domicile collate(Domicile next) {
 		Assert.isTrue(isCollatable(next));
 		return new Domicile(this.dateDebut, next.getDateFin(), this.typeAutoriteFiscale, this.numeroOfsAutoriteFiscale);
 	}

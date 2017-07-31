@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.civil.data;
 
 import ch.vd.registre.base.date.CollatableDateRange;
 
-public interface RelationVersIndividu extends CollatableDateRange {
+public interface RelationVersIndividu extends CollatableDateRange<RelationVersIndividu> {
 
 	/**
 	 * @return Le numéro d'individu de l'autre partie

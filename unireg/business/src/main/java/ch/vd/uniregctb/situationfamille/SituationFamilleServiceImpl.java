@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -266,11 +265,11 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			final List<ForFiscalPrincipalPP> fors = pp.getForsFiscauxPrincipauxActifsSorted();
 			if (!fors.isEmpty()) {
 				// récupération des zones continues de fors principaux
-				final List<CollatableDateRange> ranges = new ArrayList<>(fors.size());
+				final List<DateRangeHelper.Range> ranges = new ArrayList<>(fors.size());
 				for (ForFiscalPrincipal ffp : fors) {
 					ranges.add(new DateRangeHelper.Range(ffp));
 				}
-				final List<CollatableDateRange> collated = DateRangeHelper.collate(ranges);
+				final List<DateRangeHelper.Range> collated = DateRangeHelper.collate(ranges);
 
 				// on prend la première date de début d'une zone continue qui se situe avant (ou à) la date "max"
 				for (DateRange ff : CollectionsUtils.revertedOrder(collated)) {

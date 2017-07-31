@@ -3,7 +3,6 @@ package ch.vd.uniregctb.entreprise;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
@@ -13,7 +12,7 @@ import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.Source;
 import ch.vd.uniregctb.tiers.Sourced;
 
-public class ShowCapitalView implements Sourced<Source>, Annulable, CollatableDateRange {
+public class ShowCapitalView implements Sourced<Source>, Annulable, CollatableDateRange<ShowCapitalView> {
 
 	private final Long id;
 	private final RegDate dateDebut;
@@ -77,13 +76,12 @@ public class ShowCapitalView implements Sourced<Source>, Annulable, CollatableDa
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
+	public boolean isCollatable(ShowCapitalView next) {
 		return DateRangeHelper.isCollatable(this, next)
-				&& next instanceof ShowCapitalView
-				&& isSameValue(id, ((ShowCapitalView) next).id)
-				&& isSameValue(capitalLibere, ((ShowCapitalView) next).capitalLibere)
-				&& annule == ((ShowCapitalView) next).annule
-				&& source == ((ShowCapitalView) next).source;
+				&& isSameValue(id, next.id)
+				&& isSameValue(capitalLibere, next.capitalLibere)
+				&& annule == next.annule
+				&& source == next.source;
 	}
 
 	private static <T> boolean isSameValue(T one, T two) {
@@ -91,7 +89,7 @@ public class ShowCapitalView implements Sourced<Source>, Annulable, CollatableDa
 	}
 
 	@Override
-	public ShowCapitalView collate(DateRange next) {
+	public ShowCapitalView collate(ShowCapitalView next) {
 		if (!isCollatable(next)) {
 			throw new IllegalArgumentException("Ranges are not collatable!");
 		}

@@ -203,7 +203,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 	}
 
-	private static class DatedLegalFormWithCategory extends DatedCategory implements CollatableDateRange {
+	private static class DatedLegalFormWithCategory extends DatedCategory implements CollatableDateRange<DatedLegalFormWithCategory> {
 
 		private final FormeLegale formeLegale;
 
@@ -222,14 +222,14 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 
 		@Override
-		public boolean isCollatable(DateRange next) {
+		public boolean isCollatable(DatedLegalFormWithCategory next) {
 			return DateRangeHelper.isCollatable(this, next)
-					&& getCategorie() == ((DatedLegalFormWithCategory) next).getCategorie()
-					&& getFormeLegale() == ((DatedLegalFormWithCategory) next).getFormeLegale();
+					&& getCategorie() == next.getCategorie()
+					&& getFormeLegale() == next.getFormeLegale();
 		}
 
 		@Override
-		public DatedLegalFormWithCategory collate(DateRange next) {
+		public DatedLegalFormWithCategory collate(DatedLegalFormWithCategory next) {
 			Assert.isTrue(isCollatable(next));
 			return new DatedLegalFormWithCategory(getCategorie(), getDateDebut(), next.getDateFin(), getFormeLegale());
 		}

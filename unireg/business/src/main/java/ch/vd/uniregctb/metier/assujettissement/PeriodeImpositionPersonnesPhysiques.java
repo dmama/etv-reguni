@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
@@ -100,7 +99,7 @@ public class PeriodeImpositionPersonnesPhysiques extends PeriodeImposition {
 	}
 
 	@Override
-	public PeriodeImpositionPersonnesPhysiques collate(DateRange next) {
+	public PeriodeImpositionPersonnesPhysiques collate(PeriodeImposition next) {
 		final PeriodeImpositionPersonnesPhysiques nextPeriode = (PeriodeImpositionPersonnesPhysiques) next;
 		if (!isCollatable(next)) {
 			throw new IllegalArgumentException("Ne devrait pas être appelé si la période suivante n'est pas collatable...");

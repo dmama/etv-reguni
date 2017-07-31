@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.common.Fraction;
@@ -16,7 +15,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  *
  * @param <T> la typologie des periodes concrètes
  */
-public abstract class AbstractCollatablePeriodeImpositionImpotSource<T extends Enum<T>> implements CollatableDateRange {
+public abstract class AbstractCollatablePeriodeImpositionImpotSource<T extends Enum<T>, U extends AbstractCollatablePeriodeImpositionImpotSource<T, U>> implements CollatableDateRange<U> {
 
 	private final PersonnePhysique contribuable;
 	private final T type;
@@ -29,30 +28,34 @@ public abstract class AbstractCollatablePeriodeImpositionImpotSource<T extends E
 	private final Fraction fractionFin;
 
 	/**
-	 * Constructeur utilisé lors du {@link #collate(ch.vd.registre.base.date.DateRange)}
+	 * Constructeur utilisé lors du {@link #collate(CollatableDateRange)}
 	 * @param courant une période
 	 * @param suivant la période suivante, qui doit fusionner avec la première
 	 */
-	protected AbstractCollatablePeriodeImpositionImpotSource(AbstractCollatablePeriodeImpositionImpotSource<T> courant, AbstractCollatablePeriodeImpositionImpotSource<T> suivant) {
+	protected AbstractCollatablePeriodeImpositionImpotSource(U courant, U suivant) {
 		if (!courant.isCollatable(suivant)) {
 			throw new IllegalArgumentException();
 		}
-		this.contribuable = courant.contribuable;
-		this.type = suivant.type;
-		this.typeAutoriteFiscale = suivant.typeAutoriteFiscale;
-		this.noOfs = suivant.noOfs;
-		this.localisation = suivant.localisation;
-		this.dateDebut = courant.dateDebut;
-		this.dateFin = suivant.dateFin;
-		this.fractionDebut = courant.fractionDebut;
-		this.fractionFin = courant.fractionFin;
+
+		final AbstractCollatablePeriodeImpositionImpotSource<T,U> typedCourant = courant;
+		final AbstractCollatablePeriodeImpositionImpotSource<T,U> typedSuivant = suivant;
+
+		this.contribuable = typedCourant.contribuable;
+		this.type = typedSuivant.type;
+		this.typeAutoriteFiscale = typedSuivant.typeAutoriteFiscale;
+		this.noOfs = typedSuivant.noOfs;
+		this.localisation = typedSuivant.localisation;
+		this.dateDebut = typedCourant.dateDebut;
+		this.dateFin = typedSuivant.dateFin;
+		this.fractionDebut = typedCourant.fractionDebut;
+		this.fractionFin = typedCourant.fractionFin;
 	}
 
 	/**
 	 * Constructeur de duplication
 	 * @param src source
 	 */
-	protected AbstractCollatablePeriodeImpositionImpotSource(AbstractCollatablePeriodeImpositionImpotSource<T> src) {
+	protected AbstractCollatablePeriodeImpositionImpotSource(AbstractCollatablePeriodeImpositionImpotSource<T, U> src) {
 		this.contribuable = src.contribuable;
 		this.type = src.type;
 		this.typeAutoriteFiscale = src.typeAutoriteFiscale;
@@ -91,12 +94,12 @@ public abstract class AbstractCollatablePeriodeImpositionImpotSource<T extends E
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
+	public boolean isCollatable(U next) {
 		if (getClass() != next.getClass()) {
 			return false;
 		}
 
-		final AbstractCollatablePeriodeImpositionImpotSource<T> other = (AbstractCollatablePeriodeImpositionImpotSource<T>) next;
+		final AbstractCollatablePeriodeImpositionImpotSource<T, U> other = next;
 
 		// périodes fiscales différentes -> on ne colle jamais !
 		if (dateDebut.year() != other.dateDebut.year()) {

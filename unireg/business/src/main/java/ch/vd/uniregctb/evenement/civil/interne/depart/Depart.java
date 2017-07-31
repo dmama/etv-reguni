@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -608,7 +607,7 @@ public abstract class Depart extends Mouvement {
 		}
 	}
 
-	private static class LieuResidence implements CollatableDateRange {
+	private static class LieuResidence implements CollatableDateRange<LieuResidence> {
 		private final TypeAutoriteFiscale typeAutoriteFiscale;
 		private final int noOfs;
 		private final RegDate dateDebut;
@@ -622,12 +621,12 @@ public abstract class Depart extends Mouvement {
 		}
 
 		@Override
-		public boolean isCollatable(DateRange next) {
-			return DateRangeHelper.isCollatable(this, next) && next instanceof LieuResidence && ((LieuResidence) next).noOfs == noOfs && ((LieuResidence) next).typeAutoriteFiscale == typeAutoriteFiscale;
+		public boolean isCollatable(LieuResidence next) {
+			return DateRangeHelper.isCollatable(this, next) && next.noOfs == noOfs && next.typeAutoriteFiscale == typeAutoriteFiscale;
 		}
 
 		@Override
-		public DateRange collate(DateRange next) {
+		public LieuResidence collate(LieuResidence next) {
 			return new LieuResidence(dateDebut, next.getDateFin(), typeAutoriteFiscale, noOfs);
 		}
 

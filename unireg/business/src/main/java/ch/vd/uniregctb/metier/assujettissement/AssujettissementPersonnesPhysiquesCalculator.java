@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -217,7 +216,9 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		// source peuvent se chevaucher. Dans ce cas-là, on privilégie un assujettissement vaudois si possible; autrement on choisit le plus récent.
 		list = compacterAssujettissementsSource(list);
 
-		return DateRangeHelper.collate(list);
+		return DateRangeHelper.collate(list,
+		                               SourcierPur::isCollatable,
+		                               SourcierPur::collate);
 	}
 
 	/**
@@ -1164,7 +1165,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	/**
 	 * Représente les données brutes d'une période d'assujettissement
 	 */
-	private static class Data implements CollatableDateRange {
+	private static class Data implements CollatableDateRange<Data> {
 
 		RegDate debut;
 		RegDate fin;
@@ -1230,15 +1231,13 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		}
 
 		@Override
-		public boolean isCollatable(DateRange next) {
-			final Data nextData = (Data) next;
-			return fin == nextData.debut.getOneDayBefore() && motifFin == nextData.motifDebut && type == nextData.type && typeAut == nextData.typeAut;
+		public boolean isCollatable(Data next) {
+			return fin == next.debut.getOneDayBefore() && motifFin == next.motifDebut && type == next.type && typeAut == next.typeAut;
 		}
 
 		@Override
-		public DateRange collate(DateRange next) {
-			final Data nextData = (Data) next;
-			return new Data(debut, nextData.fin, motifDebut, nextData.motifFin, type, typeAut);
+		public Data collate(Data next) {
+			return new Data(debut, next.fin, motifDebut, next.motifFin, type, typeAut);
 		}
 
 		/**

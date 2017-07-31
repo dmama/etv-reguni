@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -33,7 +32,7 @@ public class SourcierMixteArt137Al1 extends SourcierMixte {
 	}
 
 	@Override
-	public DateRange collate(DateRange next) {
+	public SourcierMixteArt137Al1 collate(Assujettissement next) {
 		return new SourcierMixteArt137Al1(this, (SourcierMixteArt137Al1) next);
 	}
 

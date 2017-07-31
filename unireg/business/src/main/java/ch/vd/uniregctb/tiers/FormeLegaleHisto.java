@@ -13,7 +13,7 @@ import ch.vd.uniregctb.common.Rerangeable;
 /**
  * @author Raphaël Marmier, 2016-01-07, <raphael.marmier@vd.ch>
  */
-public class FormeLegaleHisto implements Sourced<Source>, CollatableDateRange, Duplicable<FormeLegaleHisto>, Annulable, Rerangeable<FormeLegaleHisto> {
+public class FormeLegaleHisto implements Sourced<Source>, CollatableDateRange<FormeLegaleHisto>, Duplicable<FormeLegaleHisto>, Annulable, Rerangeable<FormeLegaleHisto> {
 
 	private final Long id;
 	private final boolean annule;
@@ -53,20 +53,19 @@ public class FormeLegaleHisto implements Sourced<Source>, CollatableDateRange, D
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
-		boolean collatable = DateRangeHelper.isCollatable(this, next) && next instanceof FormeLegaleHisto;
+	public boolean isCollatable(FormeLegaleHisto next) {
+		boolean collatable = DateRangeHelper.isCollatable(this, next);
 		if (collatable) {
-			final FormeLegaleHisto nextFormeLegaleHisto = (FormeLegaleHisto) next;
-			collatable = nextFormeLegaleHisto.formeLegale.equals(formeLegale)
-					&& nextFormeLegaleHisto.source == source
-					&& nextFormeLegaleHisto.annule == annule
-					&& ((nextFormeLegaleHisto.id == null && id == null) || (nextFormeLegaleHisto.id != null && id != null && nextFormeLegaleHisto.id.equals(id)));
+			collatable = next.formeLegale.equals(formeLegale)
+					&& next.source == source
+					&& next.annule == annule
+					&& ((next.id == null && id == null) || (next.id != null && id != null && next.id.equals(id)));
 		}
 		return collatable;
 	}
 
 	@Override
-	public DateRange collate(DateRange next) {
+	public FormeLegaleHisto collate(FormeLegaleHisto next) {
 		if (!isCollatable(next)) {
 			throw new IllegalArgumentException("Les ranges ne sont pas collatables...");
 		}

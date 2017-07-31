@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.adresse;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -9,7 +8,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 /**
  * Décrit la présence dans une commune pendant une période
  */
-public class HistoriqueCommune implements CollatableDateRange {
+public class HistoriqueCommune implements CollatableDateRange<HistoriqueCommune> {
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -32,8 +31,8 @@ public class HistoriqueCommune implements CollatableDateRange {
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
-		return DateRangeHelper.isCollatable(this, next) && next instanceof HistoriqueCommune && sameCommune(commune, ((HistoriqueCommune) next).commune);
+	public boolean isCollatable(HistoriqueCommune next) {
+		return DateRangeHelper.isCollatable(this, next) && sameCommune(commune, next.commune);
 	}
 
 	@SuppressWarnings({"SimplifiableIfStatement"})
@@ -50,7 +49,7 @@ public class HistoriqueCommune implements CollatableDateRange {
 	}
 
 	@Override
-	public DateRange collate(DateRange next) {
+	public HistoriqueCommune collate(HistoriqueCommune next) {
 		return new HistoriqueCommune(dateDebut, next.getDateFin(), commune);
 	}
 

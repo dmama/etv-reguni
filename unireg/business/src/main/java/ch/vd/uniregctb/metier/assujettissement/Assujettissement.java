@@ -3,7 +3,6 @@ package ch.vd.uniregctb.metier.assujettissement;
 import java.util.List;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -15,7 +14,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public abstract class Assujettissement implements CollatableDateRange {
+public abstract class Assujettissement implements CollatableDateRange<Assujettissement> {
 
 	private final Contribuable contribuable;
 	private final RegDate dateDebut;
@@ -88,7 +87,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
+	public boolean isCollatable(Assujettissement next) {
 		// dans le cas d'un départ HS et d'une arrivée HC, on ne veut pas collater les deux assujettissements
 		final boolean departHSEtArriveeHC = (this.motifFin == MotifAssujettissement.DEPART_HS && ((Assujettissement) next).motifDebut == MotifAssujettissement.ARRIVEE_HC);
 

@@ -20,7 +20,6 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -38,7 +37,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 @Entity
 @Table(name = "PERIODICITE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Periodicite extends HibernateEntity implements CollatableDateRange, LinkedEntity, Duplicable<Periodicite> {
+public class Periodicite extends HibernateEntity implements CollatableDateRange<Periodicite>, LinkedEntity, Duplicable<Periodicite> {
 
 	/**
 	 * The ID
@@ -221,12 +220,12 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
-		return DateRangeHelper.isCollatable(this, next) && periodiciteDecompte == ((Periodicite) next).getPeriodiciteDecompte();
+	public boolean isCollatable(Periodicite next) {
+		return DateRangeHelper.isCollatable(this, next) && periodiciteDecompte == next.getPeriodiciteDecompte();
 	}
 
 	@Override
-	public DateRange collate(DateRange next) {
+	public Periodicite collate(Periodicite next) {
 		return new Periodicite(periodiciteDecompte, periodeDecompte, dateDebut, next.getDateFin());
 	}
 

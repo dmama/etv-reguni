@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
@@ -88,7 +87,7 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 	}
 
 	@Override
-	public PeriodeImpositionPersonnesMorales collate(DateRange next) {
+	public PeriodeImpositionPersonnesMorales collate(PeriodeImposition next) {
 		final PeriodeImpositionPersonnesMorales nextPeriode = (PeriodeImpositionPersonnesMorales) next;
 		if (!isCollatable(next)) {
 			throw new IllegalArgumentException("Ne devrait pas être appelé si la période suivante n'est pas collatable...");

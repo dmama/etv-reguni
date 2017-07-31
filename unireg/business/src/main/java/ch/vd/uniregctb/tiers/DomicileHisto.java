@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 /**
  * @author Raphaël Marmier, 2016-01-07, <raphael.marmier@vd.ch>
  */
-public class DomicileHisto implements Sourced<Source>, CollatableDateRange, Duplicable<DomicileHisto>, Annulable, Rerangeable<DomicileHisto>, LocalizedDateRange {
+public class DomicileHisto implements Sourced<Source>, CollatableDateRange<DomicileHisto>, Duplicable<DomicileHisto>, Annulable, Rerangeable<DomicileHisto>, LocalizedDateRange {
 
 	private final Long id;
 	private final boolean annule;
@@ -61,21 +61,20 @@ public class DomicileHisto implements Sourced<Source>, CollatableDateRange, Dupl
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
-		boolean collatable = DateRangeHelper.isCollatable(this, next) && next instanceof DomicileHisto;
+	public boolean isCollatable(DomicileHisto next) {
+		boolean collatable = DateRangeHelper.isCollatable(this, next);
 		if (collatable) {
-			final DomicileHisto nextDomicileHisto = (DomicileHisto) next;
-			collatable = nextDomicileHisto.typeAutoriteFiscale == typeAutoriteFiscale
-					&& nextDomicileHisto.noOfs == noOfs
-					&& nextDomicileHisto.source == source
-					&& nextDomicileHisto.annule == annule
-					&& ((nextDomicileHisto.id == null && id == null) || (nextDomicileHisto.id != null && id != null && nextDomicileHisto.id.equals(id)));
+			collatable = next.typeAutoriteFiscale == typeAutoriteFiscale
+					&& next.noOfs == noOfs
+					&& next.source == source
+					&& next.annule == annule
+					&& ((next.id == null && id == null) || (next.id != null && id != null && next.id.equals(id)));
 		}
 		return collatable;
 	}
 
 	@Override
-	public DateRange collate(DateRange next) {
+	public DomicileHisto collate(DomicileHisto next) {
 		if (!isCollatable(next)) {
 			throw new IllegalArgumentException("Les ranges ne sont pas collatables...");
 		}

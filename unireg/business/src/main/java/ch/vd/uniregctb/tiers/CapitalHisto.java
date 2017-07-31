@@ -9,7 +9,7 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.Rerangeable;
 
-public class CapitalHisto implements Sourced<Source>, CollatableDateRange, Duplicable<CapitalHisto>, Annulable, Rerangeable<CapitalHisto> {
+public class CapitalHisto implements Sourced<Source>, CollatableDateRange<CapitalHisto>, Duplicable<CapitalHisto>, Annulable, Rerangeable<CapitalHisto> {
 
 	private final Long id;
 	private final boolean annule;
@@ -42,20 +42,19 @@ public class CapitalHisto implements Sourced<Source>, CollatableDateRange, Dupli
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
-		boolean collatable = DateRangeHelper.isCollatable(this, next) && next instanceof CapitalHisto;
+	public boolean isCollatable(CapitalHisto next) {
+		boolean collatable = DateRangeHelper.isCollatable(this, next);
 		if (collatable) {
-			final CapitalHisto nextCapital = (CapitalHisto) next;
-			collatable = nextCapital.montant.equals(montant)
-					&& nextCapital.source == source
-					&& nextCapital.annule == annule
-					&& ((nextCapital.id == null && id == null) || (nextCapital.id != null && id != null && nextCapital.id.equals(id)));
+			collatable = next.montant.equals(montant)
+					&& next.source == source
+					&& next.annule == annule
+					&& ((next.id == null && id == null) || (next.id != null && id != null && next.id.equals(id)));
 		}
 		return collatable;
 	}
 
 	@Override
-	public CapitalHisto collate(DateRange next) {
+	public CapitalHisto collate(CapitalHisto next) {
 		if (!isCollatable(next)) {
 			throw new IllegalArgumentException("Les ranges ne sont pas collatables...");
 		}

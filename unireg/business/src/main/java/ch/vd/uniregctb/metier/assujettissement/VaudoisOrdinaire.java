@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -41,7 +40,7 @@ public class VaudoisOrdinaire extends Assujettissement {
 	}
 
 	@Override
-	public DateRange collate(DateRange next) {
+	public VaudoisOrdinaire collate(Assujettissement next) {
 		return new VaudoisOrdinaire(this, (VaudoisOrdinaire) next);
 	}
 

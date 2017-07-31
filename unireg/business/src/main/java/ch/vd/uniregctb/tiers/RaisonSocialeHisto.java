@@ -12,7 +12,7 @@ import ch.vd.uniregctb.common.Rerangeable;
 /**
  * @author Raphaël Marmier, 2016-01-07, <raphael.marmier@vd.ch>
  */
-public class RaisonSocialeHisto implements Sourced<Source>, CollatableDateRange, Duplicable<RaisonSocialeHisto>, Annulable, Rerangeable<RaisonSocialeHisto> {
+public class RaisonSocialeHisto implements Sourced<Source>, CollatableDateRange<RaisonSocialeHisto>, Duplicable<RaisonSocialeHisto>, Annulable, Rerangeable<RaisonSocialeHisto> {
 
 	private final Long id;
 	private final boolean annule;
@@ -52,20 +52,19 @@ public class RaisonSocialeHisto implements Sourced<Source>, CollatableDateRange,
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
-		boolean collatable = DateRangeHelper.isCollatable(this, next) && next instanceof RaisonSocialeHisto;
+	public boolean isCollatable(RaisonSocialeHisto next) {
+		boolean collatable = DateRangeHelper.isCollatable(this, next);
 		if (collatable) {
-			final RaisonSocialeHisto nextRaisonSocialeHisto = (RaisonSocialeHisto) next;
-			collatable = nextRaisonSocialeHisto.raisonSociale.equals(raisonSociale)
-					&& nextRaisonSocialeHisto.source == source
-					&& nextRaisonSocialeHisto.annule == annule
-					&& ((nextRaisonSocialeHisto.id == null && id == null) || (nextRaisonSocialeHisto.id != null && id != null && nextRaisonSocialeHisto.id.equals(id)));
+			collatable = next.raisonSociale.equals(raisonSociale)
+					&& next.source == source
+					&& next.annule == annule
+					&& ((next.id == null && id == null) || (next.id != null && id != null && next.id.equals(id)));
 		}
 		return collatable;
 	}
 
 	@Override
-	public DateRange collate(DateRange next) {
+	public RaisonSocialeHisto collate(RaisonSocialeHisto next) {
 		if (!isCollatable(next)) {
 			throw new IllegalArgumentException("Les ranges ne sont pas collatables...");
 		}

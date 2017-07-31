@@ -9,6 +9,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -280,15 +281,18 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	/**
 	 * Données collectées sur un assujettissement PM
 	 */
-	private static final class Data extends DateRangeHelper.Range {
+	private static final class Data implements CollatableDateRange<Data> {
 
+		private final RegDate dateDebut;
+		private final RegDate dateFin;
 		private final Type type;
 		private final MotifAssujettissement motifDebut;
 		private final MotifAssujettissement motifFin;
 		private final TypeAutoriteFiscale typeAutoriteFiscale;
 
 		public Data(RegDate dateDebut, RegDate dateFin, Type type, MotifAssujettissement motifDebut, MotifAssujettissement motifFin, TypeAutoriteFiscale typeAutoriteFiscale) {
-			super(dateDebut, dateFin);
+			this.dateDebut = dateDebut;
+			this.dateFin = dateFin;
 			this.type = type;
 			this.motifDebut = motifDebut;
 			this.motifFin = motifFin;
@@ -300,15 +304,24 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		}
 
 		@Override
-		public boolean isCollatable(DateRange next) {
-			final Data nextData = (Data) next;
-			return super.isCollatable(next) && motifFin == nextData.motifDebut && type == nextData.type && typeAutoriteFiscale == nextData.typeAutoriteFiscale;
+		public RegDate getDateDebut() {
+			return dateDebut;
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return dateFin;
+		}
+
+		@Override
+		public boolean isCollatable(Data next) {
+			return DateRangeHelper.isCollatable(this, next) && motifFin == next.motifDebut && type == next.type && typeAutoriteFiscale == next.typeAutoriteFiscale;
 		}
 
 		@NotNull
 		@Override
-		public Data collate(DateRange next) {
-			return new Data(getDateDebut(), next.getDateFin(), type, motifDebut, ((Data) next).motifFin, typeAutoriteFiscale);
+		public Data collate(Data next) {
+			return new Data(getDateDebut(), next.getDateFin(), type, motifDebut, next.motifFin, typeAutoriteFiscale);
 		}
 	}
 

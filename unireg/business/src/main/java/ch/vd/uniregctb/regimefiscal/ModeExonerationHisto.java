@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.regimefiscal;
 
 import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
@@ -9,7 +8,7 @@ import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 /**
  * Période associée à in mode d'exonération
  */
-public class ModeExonerationHisto implements CollatableDateRange {
+public class ModeExonerationHisto implements CollatableDateRange<ModeExonerationHisto> {
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -22,12 +21,12 @@ public class ModeExonerationHisto implements CollatableDateRange {
 	}
 
 	@Override
-	public boolean isCollatable(DateRange next) {
-		return DateRangeHelper.isCollatable(this, next) && ((ModeExonerationHisto) next).modeExoneration == modeExoneration;
+	public boolean isCollatable(ModeExonerationHisto next) {
+		return DateRangeHelper.isCollatable(this, next) && next.modeExoneration == modeExoneration;
 	}
 
 	@Override
-	public ModeExonerationHisto collate(DateRange next) {
+	public ModeExonerationHisto collate(ModeExonerationHisto next) {
 		return new ModeExonerationHisto(dateDebut, next.getDateFin(), modeExoneration);
 	}
 
