@@ -72,14 +72,16 @@ public abstract class ImmeubleRFHelper {
 				throw new IllegalArgumentException("Le flag CFA de l'immeuble idRF=[" + immeuble.getIdRF() + "] a changé.");
 			}
 		}
-		if (!Objects.equals(immeuble.getEgrid(), grundstueck.getEGrid())) {
-			throw new IllegalArgumentException("L'egrid de l'immeuble idRF=[" + immeuble.getIdRF() + "] a changé.");
-		}
 		// [/blindage]
 
 		// on vérifie l'état de radiation
 		if (immeuble.getDateRadiation() != null) {
 			// un immeuble radié est forcément différent d'un immeuble que l'on reçoit du RF (qui par définition n'est pas radié)
+			return false;
+		}
+
+		if (!Objects.equals(immeuble.getEgrid(), grundstueck.getEGrid())) {
+			// un egrid peut être attribué avec plusieurs semaines de retard, on détecte donc tout changement dessus.
 			return false;
 		}
 

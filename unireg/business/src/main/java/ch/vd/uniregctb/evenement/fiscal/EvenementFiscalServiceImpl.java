@@ -317,6 +317,11 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	}
 
 	@Override
+	public void publierModificationEgridImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
+		saveAndPublish(new EvenementFiscalImmeuble(dateModification, immeuble, EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_EGRID));
+	}
+
+	@Override
 	public void publierModificationSituationImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
 		saveAndPublish(new EvenementFiscalImmeuble(dateModification, immeuble, EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_SITUATION));
 	}

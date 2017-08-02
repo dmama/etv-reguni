@@ -279,6 +279,11 @@ public class EvenementFiscalMockService implements EvenementFiscalService {
 	}
 
 	@Override
+	public void publierModificationEgridImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void publierModificationSituationImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
 		throw new UnsupportedOperationException();
 	}

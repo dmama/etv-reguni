@@ -431,6 +431,47 @@ public class ImmeubleRFHelperTest {
 		assertFalse(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
 	}
 
+	/**
+	 * [SIFISC-25610] Ce test vérifie que deux immeubles avec des egrid différents sont bien considérés inégaux.
+	 */
+	@Test
+	public void testCurrentDataEqualsEgridDifferents() throws Exception {
+
+		final CommuneRF commune = new CommuneRF();
+		commune.setNoRf(2233);
+
+		final SituationRF situation = new SituationRF();
+		situation.setCommune(commune);
+		situation.setNoParcelle(109);
+		situation.setIndex1(17);
+
+		final BienFondsRF immeuble = new BienFondsRF();
+		immeuble.setIdRF("382929efa218");
+		immeuble.setCfa(true);
+		immeuble.setEgrid(null);    // <--- pas renseigné
+		immeuble.addSituation(situation);
+
+		final GrundstueckNummer grundstueckNummer = new GrundstueckNummer();
+		grundstueckNummer.setBfsNr(2233);
+		grundstueckNummer.setStammNr(109);
+		grundstueckNummer.setIndexNr1(17);
+
+		final AmtlicheBewertung amtlicheBewertung = new AmtlicheBewertung();
+		amtlicheBewertung.setAmtlicherWert(120000L);
+		amtlicheBewertung.setProtokollNr("2015");
+		amtlicheBewertung.setProtokollDatum(RegDate.get(2015, 7, 1));
+		amtlicheBewertung.setProtokollGueltig(true);
+
+		final Liegenschaft grundstueck = new Liegenschaft();
+		grundstueck.setGrundstueckID("382929efa218");
+		grundstueck.setLigUnterartEnum("cfa");
+		grundstueck.setEGrid("CH282891891");    // <-- renseigné
+		grundstueck.setGrundstueckNummer(grundstueckNummer);
+		grundstueck.setAmtlicheBewertung(amtlicheBewertung);
+
+		assertFalse(ImmeubleRFHelper.currentDataEquals(immeuble, grundstueck));
+	}
+
 	@Test
 	public void testNewImmeubleRFMine() throws Exception {
 

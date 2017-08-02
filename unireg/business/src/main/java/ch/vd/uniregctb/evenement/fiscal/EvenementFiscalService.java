@@ -382,6 +382,14 @@ public interface EvenementFiscalService {
 	void publierReactivationImmeuble(RegDate dateReactivation, ImmeubleRF immeuble);
 
 	/**
+	 * Publie un événement de modification de l'egrid d'un immeuble.
+	 *
+	 * @param dateModification la date de modification de l'egrid de l'immeuble.
+	 * @param immeuble         l'immeuble en question.
+	 */
+	void publierModificationEgridImmeuble(RegDate dateModification, ImmeubleRF immeuble);
+
+	/**
 	 * Publie un événement de modification de la situation d'un immeuble.
 	 *
 	 * @param dateModification la date de modification de la situation de l'immeuble.

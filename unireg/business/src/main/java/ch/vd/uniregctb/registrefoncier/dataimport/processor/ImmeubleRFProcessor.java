@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.apache.camel.converter.jaxp.StringSource;
@@ -181,6 +182,14 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 		}
 		else {
 			reactivation = false;
+		}
+
+		// on met-à-jour l'egrid, si nécessaire (SIFISC-25610)
+		if (!Objects.equals(persisted.getEgrid(), newImmeuble.getEgrid())) {
+			persisted.setEgrid(newImmeuble.getEgrid());
+			if (!reactivation) {
+				evenementFiscalService.publierModificationEgridImmeuble(dateValeur, persisted);
+			}
 		}
 
 		// on va chercher les situations, estimations, surfaces totales courantes et quotes-parts
