@@ -1089,6 +1089,95 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/**
+	 * [SIFISC-25610] Ce test vérifie que le processing d'une mutation d'egrid sur un immeuble modifie bien l'immeuble en base.
+	 */
+	@Test
+	public void testProcessMutationModificationEgrid() throws Exception {
+
+		final RegDate dateValeur = RegDate.get(2016, 10, 1);
+
+		// précondition : il y a un immeuble sans egrid dans la base
+		doInNewTransaction(status -> {
+
+			CommuneRF commune = new CommuneRF();
+			commune.setNoRf(294);
+			commune.setNomRf("Pétahouchnok");
+			commune.setNoOfs(66666);
+			commune = communeRFDAO.save(commune);
+
+			final BienFondsRF bienFonds = new BienFondsRF();
+			bienFonds.setIdRF("_1f109152381026b501381028a73d1852");
+			bienFonds.setEgrid(null);   // <---- pas d'egrid
+			bienFonds.setCfa(false);
+
+			final SituationRF situation = new SituationRF();
+			situation.setDateDebut(RegDate.get(1988, 1, 1));
+			situation.setCommune(commune);
+			situation.setNoParcelle(5089);
+			bienFonds.addSituation(situation);
+
+			final EstimationRF estimation = new EstimationRF();
+			estimation.setDateDebut(RegDate.get(1988, 1, 1));
+			estimation.setMontant(260000L);
+			estimation.setReference("RG93");
+			estimation.setAnneeReference(1993);
+			estimation.setDateDebutMetier(RegDate.get(1993, 1, 1));
+			estimation.setEnRevision(false);
+			bienFonds.addEstimation(estimation);
+
+			final SurfaceTotaleRF surfaceTotale = new SurfaceTotaleRF();
+			surfaceTotale.setDateDebut(RegDate.get(1988, 1, 1));
+			surfaceTotale.setSurface(707);
+			bienFonds.addSurfaceTotale(surfaceTotale);
+
+			immeubleRFDAO.save(bienFonds);
+			assertEquals(1, immeubleRFDAO.getAll().size());
+			return null;
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_immeuble_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, dateValeur, TypeEntiteRF.IMMEUBLE, TypeMutationRF.MODIFICATION, "_1f109152381026b501381028a73d1852", null);
+
+		// on process la mutation
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
+		});
+
+		// postcondition : la mutation est traitée et l'egrid de l'immeuble est renseigné en base
+		doInNewTransaction(status -> {
+
+			final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+			assertEquals(1, immeubles.size());
+
+			// l'egrid est renseigné
+			final ImmeubleRF immeuble0 = immeubles.get(0);
+			assertEquals("_1f109152381026b501381028a73d1852", immeuble0.getIdRF());
+			assertEquals("CH938391457759", immeuble0.getEgrid());
+
+			return null;
+		});
+
+		// postcondition : les événements fiscaux a bien été envoyés
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+			events.sort(Comparator.comparing(EvenementFiscal::getId));
+
+			final EvenementFiscalImmeuble event0 = (EvenementFiscalImmeuble) events.get(0);
+			assertEquals(EvenementFiscalImmeuble.TypeEvenementFiscalImmeuble.MODIFICATION_EGRID, event0.getType());
+			assertEquals(RegDate.get(2016, 10, 1), event0.getDateValeur());
+			assertEquals("_1f109152381026b501381028a73d1852", event0.getImmeuble().getIdRF());
+
+			return null;
+		});
+	}
+
+	/**
 	 * Ce test vérifie que le processing d'une mutation de modification d'un immeuble sans estimation fiscale fonctionne bien.
 	 */
 	@Test

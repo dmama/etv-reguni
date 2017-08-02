@@ -225,6 +225,11 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 	}
 
 	@Override
+	public void publierModificationEgridImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
+
+	}
+
+	@Override
 	public void publierModificationSituationImmeuble(RegDate dateModification, ImmeubleRF immeuble) {
 
 	}

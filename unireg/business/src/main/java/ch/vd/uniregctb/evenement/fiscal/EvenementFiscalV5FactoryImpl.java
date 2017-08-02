@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.xml.event.fiscal.v5.AdditionalOrgInfoEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.AdditionalOrgInfoEventType;
 import ch.vd.unireg.xml.event.fiscal.v5.BirthEvent;
@@ -24,6 +25,7 @@ import ch.vd.unireg.xml.event.fiscal.v5.EasementRightUpdateEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.EasementType;
 import ch.vd.unireg.xml.event.fiscal.v5.FamilyStatusEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.FiscalEvent;
+import ch.vd.unireg.xml.event.fiscal.v5.FutureEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.ImmoGroundAreaUpdateEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.ImmoShareUpdateEvent;
 import ch.vd.unireg.xml.event.fiscal.v5.ImmoSituationUpdateEvent;
@@ -627,10 +629,10 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 		}
 	}
 
-	private static class ImmovablePropertyEventFactory extends OutputDataFactory<EvenementFiscalImmeuble, ImmovablePropertyEvent> {
+	private static class ImmovablePropertyEventFactory extends OutputDataFactory<EvenementFiscalImmeuble, FiscalEvent> {
 		@NotNull
 		@Override
-		protected ImmovablePropertyEvent internalBuild(@NotNull EvenementFiscalImmeuble evenementFiscal) throws NotSupportedInHereException {
+		protected FiscalEvent internalBuild(@NotNull EvenementFiscalImmeuble evenementFiscal) throws NotSupportedInHereException {
 			final ImmovablePropertyEvent event;
 			switch (evenementFiscal.getType()) {
 			case CREATION:
@@ -642,6 +644,14 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 			case REACTIVATION:
 				event = new ImmovablePropertyRestartEvent();
 				break;
+			case MODIFICATION_EGRID: {
+				// [SIFISC-25610] le type d'événement de modification de l'egrid n'existe pas en v5, on utilise le type de réserve 'futur' pour cela.
+				final FutureEvent modifEgrid = new FutureEvent();
+				modifEgrid.setType("IMMO_EGRID_UPDATE");
+				modifEgrid.setData1(RegDateHelper.dateToXmlDateString(evenementFiscal.getDateValeur()));
+				modifEgrid.setData2(String.valueOf(evenementFiscal.getImmeuble().getId()));
+				return modifEgrid;
+			}
 			case MODIFICATION_SITUATION:
 				event = new ImmoSituationUpdateEvent();
 				break;
