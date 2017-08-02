@@ -346,6 +346,7 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 */
 	public boolean isEmpty() {
 		return numero == null
+				&& (typesTiers == null || typesTiers.isEmpty())
 				&& StringUtils.isBlank(nomRaison)
 				&& dateNaissanceInscriptionRC == null
 				&& sexe == null
