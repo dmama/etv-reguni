@@ -2,6 +2,7 @@ package ch.vd.uniregctb.webservice.v7;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.xml.common.v2.Date;
+import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.landregistry.v1.AcquisitionReason;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
@@ -262,6 +270,37 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertAcquisitionReason(RegDate.get(2014, 9, 13), "Voyage spatio-temporel", 24, "2014/12/1", reasons.get(1));
 	}
 
+	@Test
+	public void testGetImmovableProperties() throws Exception {
+
+		final int noBienFonds = 264310664;
+		final int noPPE1 = 189968987;
+		final int noPPE2 = 357426402;
+
+		final Map<String, Integer> params = new HashMap<>();
+		params.put("noBienFonds", noBienFonds);
+		params.put("noPPE1", noPPE1);
+		params.put("noPPE2", noPPE2);
+
+		// on demande les trois immeubles qui existent dans la DB
+		final ResponseEntity<ImmovablePropertyList> resp = get(ImmovablePropertyList.class, MediaType.APPLICATION_XML,
+		                                                   "/landRegistry/immovableProperties?immoId={noBienFonds}&immoId={noPPE1}&immoId={noPPE2}&user=zaizzt/22",
+		                                                   params);
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		// on vérifie qu'on a reçu les immeubles
+		final ImmovablePropertyList list = resp.getBody();
+		assertNotNull(list);
+
+		final List<ImmovablePropertyEntry> entries = list.getEntries();
+		assertNotNull(entries);
+		assertEquals(3, entries.size());
+		assertEntry(noPPE1, "CH416556658161", entries.get(0));
+		assertEntry(noBienFonds, "CH785283458046", entries.get(1));
+		assertEntry(noPPE2, "CH796577806563", entries.get(2));
+	}
+
 	/**
 	 * [SIFISC-24715] Vérifie que l'historique des quotes-parts est bien exposé.
 	 */
@@ -347,6 +386,35 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 	}
 
 	@Test
+	public void testGetBuildings() throws Exception {
+
+		final int buildingId1 = 266023444;
+		final int buildingId2 = 348934893;
+
+		final Map<String, Integer> params = new HashMap<>();
+		params.put("buildingId1", buildingId1);
+		params.put("buildingId2", buildingId2);
+
+		// on demande les deux bâtiments qui existent dans la DB
+		final ResponseEntity<BuildingList> resp = get(BuildingList.class,
+		                                              MediaType.APPLICATION_XML,
+		                                              "/landRegistry/buildings?buildingId={buildingId1}&buildingId={buildingId2}&user=zaizzt/22",
+		                                              params);
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		// on vérifie qu'on a reçu les bâtiments
+		final BuildingList list = resp.getBody();
+		assertNotNull(list);
+
+		final List<BuildingEntry> entries = list.getEntries();
+		assertNotNull(entries);
+		assertEquals(2, entries.size());
+		assertEntry(buildingId1, entries.get(0));
+		assertEntry(buildingId2, entries.get(1));
+	}
+
+	@Test
 	public void testGetCommunityOfOwner() throws Exception {
 
 		final int communityId = 264822986;
@@ -373,6 +441,33 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		final LandOwnershipRight landRight = community.getLandRight();
 		assertNotNull(landRight);
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, null, null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, 264822986L, landRight);
+	}
+
+	@Test
+	public void testGetCommunitiesOfOwner() throws Exception {
+
+		final int communityId = 264822986;
+		final int communauteInconnueId = -1;
+
+		final Map<String, Integer> params = new HashMap<>();
+		params.put("communityId", communityId);
+		params.put("communauteInconnueId", communauteInconnueId);
+
+		final ResponseEntity<CommunityOfOwnersList> resp = get(CommunityOfOwnersList.class,
+		                                                       MediaType.APPLICATION_XML,
+		                                                       "/landRegistry/communitiesOfOwners?communityId={communityId}&communityId={communauteInconnueId}&user=zaizzt/22",
+		                                                       params);
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		final CommunityOfOwnersList list = resp.getBody();
+		assertNotNull(list);
+
+		final List<CommunityOfOwnersEntry> entries = list.getEntries();
+		assertNotNull(entries);
+		assertEquals(2, entries.size());
+		assertEntryNotFound(communauteInconnueId, entries.get(0));
+		assertEntry(communityId, entries.get(1));
 	}
 
 	private static void assertRightHolderNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder owner) {
@@ -558,5 +653,38 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertDate(dateTo, share.getDateTo());
 		assertEquals(numerator, share.getNumerator());
 		assertEquals(denominator, share.getDenominator());
+	}
+
+	private static void assertEntry(int immoId, String egrid, ImmovablePropertyEntry entry) {
+		assertNotNull(entry);
+		assertEquals(immoId, entry.getImmovablePropertyId());
+		final ImmovableProperty immo = entry.getImmovableProperty();
+		assertNotNull(immo);
+		assertEquals(immoId, immo.getId());
+		assertEquals(egrid, immo.getEgrid());
+	}
+
+	private static void assertEntry(int buildingId, BuildingEntry entry) {
+		assertNotNull(entry);
+		assertEquals(buildingId, entry.getBuildingId());
+		final Building immo = entry.getBuilding();
+		assertNotNull(immo);
+		assertEquals(buildingId, immo.getId());
+	}
+
+	private static void assertEntry(int communityId, CommunityOfOwnersEntry entry) {
+		assertNotNull(entry);
+		assertEquals(communityId, entry.getCommunityOfOwnersId());
+		final CommunityOfOwners community = entry.getCommunityOfOwners();
+		assertNotNull(community);
+		assertEquals(communityId, community.getId());
+	}
+
+	private static void assertEntryNotFound(int communityId, CommunityOfOwnersEntry entry) {
+		assertNotNull(entry);
+		assertEquals(communityId, entry.getCommunityOfOwnersId());
+		assertNull(entry.getCommunityOfOwners());
+		assertEquals(ErrorType.BUSINESS, entry.getError().getType());
+		assertEquals("La communauté n°[" + communityId + "] n'existe pas.", entry.getError().getErrorMessage());
 	}
 }

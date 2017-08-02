@@ -14,14 +14,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
@@ -58,6 +61,12 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -80,6 +89,7 @@ import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.avatar.ImageData;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -113,6 +123,9 @@ import ch.vd.uniregctb.metier.bouclement.ExerciceCommercialHelper;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
+import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -165,7 +178,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	private final Context context = new Context();
 	private GlobalTiersSearcher tiersSearcher;
-	private ExecutorService threadPool;
+	private ForkJoinPool forkJoinPool;
 	private AvatarService avatarService;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
@@ -252,8 +265,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		context.eFactureService = eFactureService;
 	}
 
-	public void setThreadPool(ExecutorService threadPool) {
-		this.threadPool = threadPool;
+	public void setForkJoinPool(ForkJoinPool forkJoinPool) {
+		this.forkJoinPool = forkJoinPool;
 	}
 
 	public void setAvatarService(AvatarService avatarService) {
@@ -932,7 +945,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		// on envoie la sauce sur plusieurs threads
-		final ExecutorCompletionService<Parties> executor = new ExecutorCompletionService<>(threadPool);
+		final ExecutorCompletionService<Parties> executor = new ExecutorCompletionService<>(forkJoinPool);
 		final BatchIterator<Integer> iterator = new StandardBatchIterator<>(nos, PARTIES_BATCH_SIZE);
 		int nbRemainingTasks = 0;
 		while (iterator.hasNext()) {
@@ -1041,14 +1054,62 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
+	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
 		return doInTransaction(true, status ->
-				Optional.ofNullable(context.registreFoncierService.getImmeuble(immId))
+				Optional.ofNullable(context.registreFoncierService.getImmeuble(immoId))
 						.map((immeuble) -> ImmovablePropertyBuilder.newImmovableProperty(immeuble,
 						                                                                 context.registreFoncierService::getCapitastraURL,
 						                                                                 context.registreFoncierService::getContribuableIdFor,
 						                                                                 new EasementRightHolderComparator(context.tiersService)))
 						.orElse(null));
+	}
+
+	@NotNull
+	@Override
+	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
+
+		if (immoIds.size() > MAX_BATCH_SIZE) {
+			throw new BadRequestException("Le nombre d'immeubles demandés ne peut dépasser " + MAX_BATCH_SIZE);
+		}
+
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		// on charge les données sur plusieurs threads
+		final ForkJoinTask<ImmovablePropertyList> task = forkJoinPool.submit(() -> {
+			final List<ImmovablePropertyEntry> entries = new HashSet<>(immoIds).stream()
+					.parallel()
+					.filter(Objects::nonNull)
+					.map((Long immoId) -> executeInTx(currentPrincipal, currentOID, status -> resolveImmovablePropertyEntry(immoId)))
+					.sorted(Comparator.comparing(ImmovablePropertyEntry::getImmovablePropertyId))
+					.collect(Collectors.toList());
+			return new ImmovablePropertyList(entries);
+		});
+
+		return task.join();
+	}
+
+	@NotNull
+	private ImmovablePropertyEntry resolveImmovablePropertyEntry(long immoId) {
+		try {
+			final ImmeubleRF immeuble = context.registreFoncierService.getImmeuble(immoId);
+			if (immeuble == null) {
+				return new ImmovablePropertyEntry(immoId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "L'immeuble n°[" + immoId + "] n'existe pas."));
+			}
+			else {
+				final ImmovableProperty immovableProperty = ImmovablePropertyBuilder.newImmovableProperty(immeuble,
+				                                                                                          context.registreFoncierService::getCapitastraURL,
+				                                                                                          context.registreFoncierService::getContribuableIdFor,
+				                                                                                          new EasementRightHolderComparator(context.tiersService));
+				return new ImmovablePropertyEntry(immoId, immovableProperty, null);
+			}
+		}
+		catch (Exception e) {
+			return new ImmovablePropertyEntry(immoId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage()));
+		}
 	}
 
 	@Nullable
@@ -1058,6 +1119,50 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				Optional.ofNullable(context.registreFoncierService.getBatiment(buildingId))
 						.map(BuildingBuilder::newBuilding)
 						.orElse(null));
+	}
+
+	@NotNull
+	@Override
+	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
+
+		if (buildingIds.size() > MAX_BATCH_SIZE) {
+			throw new BadRequestException("Le nombre de bâtiments demandés ne peut dépasser " + MAX_BATCH_SIZE);
+		}
+
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		// on charge les données sur plusieurs threads
+		final ForkJoinTask<BuildingList> task = forkJoinPool.submit(() -> {
+			final List<BuildingEntry> entries = new HashSet<>(buildingIds).stream()
+					.parallel()
+					.filter(Objects::nonNull)
+					.map((Long buildingId) -> executeInTx(currentPrincipal, currentOID, status -> resolveBuildingEntry(buildingId)))
+					.sorted(Comparator.comparing(BuildingEntry::getBuildingId))
+					.collect(Collectors.toList());
+			return new BuildingList(entries);
+		});
+
+		return task.join();
+	}
+
+	private BuildingEntry resolveBuildingEntry(long batimentId) {
+		try {
+			final BatimentRF batiment = context.registreFoncierService.getBatiment(batimentId);
+			if (batiment == null) {
+				return new BuildingEntry(batimentId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "Le bâtiment n°[" + batimentId + "] n'existe pas."));
+			}
+			else {
+				final Building immovableProperty = BuildingBuilder.newBuilding(batiment);
+				return new BuildingEntry(batimentId, immovableProperty, null);
+			}
+		}
+		catch (Exception e) {
+			return new BuildingEntry(batimentId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage()));
+		}
 	}
 
 	@Nullable
@@ -1070,4 +1175,60 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 						                                                         context.registreFoncierService::getCommunauteMembreInfo))
 						.orElse(null));
 	}
+
+	@Override
+	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
+
+		if (communityIds.size() > MAX_BATCH_SIZE) {
+			throw new BadRequestException("Le nombre de communautés demandées ne peut dépasser " + MAX_BATCH_SIZE);
+		}
+
+		final String currentPrincipal = AuthenticationHelper.getCurrentPrincipal();
+		final Integer currentOID = AuthenticationHelper.getCurrentOID();
+		if (currentOID == null) {
+			throw new IllegalArgumentException("L'OID courant de l'utilisateur [" + currentPrincipal + "] n'est pas défini.");
+		}
+
+		// on charge les données sur plusieurs threads
+		final ForkJoinTask<CommunityOfOwnersList> task = forkJoinPool.submit(() -> {
+			final List<CommunityOfOwnersEntry> entries = new HashSet<>(communityIds).stream()
+					.parallel()
+					.filter(Objects::nonNull)
+					.map((Long communityId) -> executeInTx(currentPrincipal, currentOID, status -> resolveCommunityEntry(communityId)))
+					.sorted(Comparator.comparing(CommunityOfOwnersEntry::getCommunityOfOwnersId))
+					.collect(Collectors.toList());
+			return new CommunityOfOwnersList(entries);
+		});
+
+		return task.join();
+	}
+
+	private CommunityOfOwnersEntry resolveCommunityEntry(long communityId) {
+		try {
+			final CommunauteRF communaute = context.registreFoncierService.getCommunaute(communityId);
+			if (communaute == null) {
+				return new CommunityOfOwnersEntry(communityId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.BUSINESS, "La communauté n°[" + communityId + "] n'existe pas."));
+			}
+			else {
+				final CommunityOfOwners community = CommunityOfOwnersBuilder.newCommunity(communaute,
+				                                                                          context.registreFoncierService::getContribuableIdFor,
+				                                                                          context.registreFoncierService::getCommunauteMembreInfo);
+				return new CommunityOfOwnersEntry(communityId, community, null);
+			}
+		}
+		catch (Exception e) {
+			return new CommunityOfOwnersEntry(communityId, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage()));
+		}
+	}
+
+	private <T> T executeInTx(@NotNull String currentPrincipal, int currentOID, TransactionCallback<@NotNull T> callback) {
+		AuthenticationHelper.pushPrincipal(currentPrincipal, currentOID);
+		try {
+			return doInTransaction(true, callback);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
+	}
 }
+

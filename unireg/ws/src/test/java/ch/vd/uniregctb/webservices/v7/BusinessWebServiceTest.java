@@ -56,6 +56,12 @@ import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineStatus;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvent;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -2207,7 +2213,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNotNull(tpAvec.getTaxationPeriods());
 		Assert.assertEquals(RegDate.get().year() - dateMariage.year() + 1, tpAvec.getTaxationPeriods().size());
 
-		for (int year = dateMariage.year() ; year <= RegDate.get().year() ; ++ year) {
+		for (int year = dateMariage.year(); year <= RegDate.get().year(); ++year) {
 			final TaxationPeriod tp = tpAvec.getTaxationPeriods().get(year - dateMariage.year());
 			Assert.assertNotNull(tp);
 			Assert.assertEquals(date(year, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(tp.getDateFrom()));
@@ -2289,7 +2295,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(0);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2008, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(dateNaissance.addYears(18).getOneDayBefore(),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(dateNaissance.addYears(18).getOneDayBefore(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertNull(wtp.getTaxationAuthority());
 			Assert.assertNull(wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
@@ -2298,7 +2304,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(1);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(dateNaissance.addYears(18), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2008, 12, 31),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(date(2008, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
@@ -2307,7 +2313,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(2);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2009, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2009, 12, 31),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(date(2009, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aigle.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
@@ -2316,7 +2322,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(3);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2010, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(dateMariage.getLastDayOfTheMonth(),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(dateMariage.getLastDayOfTheMonth(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.PURE, wtp.getType());
@@ -2325,7 +2331,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(4);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(dateMariage.getLastDayOfTheMonth().getOneDayAfter(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2010, 12, 31),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(date(2010, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
@@ -2334,7 +2340,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(5);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2011, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2011, 12, 31),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(date(2011, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
@@ -2343,7 +2349,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(6);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2012, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(date(2012, 12, 31),  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(date(2012, 12, 31), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
@@ -2352,7 +2358,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			final WithholdingTaxationPeriod wtp = tpAvec.getWithholdingTaxationPeriods().get(7);
 			Assert.assertNotNull(wtp);
 			Assert.assertEquals(date(2013, 1, 1), ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateFrom()));
-			Assert.assertEquals(dateDeces,  ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
+			Assert.assertEquals(dateDeces, ch.vd.uniregctb.xml.DataHelper.xmlToCore(wtp.getDateTo()));
 			Assert.assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, wtp.getTaxationAuthority());
 			Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), wtp.getTaxationAuthorityFSOId());
 			Assert.assertEquals(WithholdingTaxationPeriodType.MIXED, wtp.getType());
@@ -2985,7 +2991,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				ids.pp = pp.getNumero().intValue();
 				ids.dpi = dpi.getNumero().intValue();
 				ids.di = di.getId();
-				ids.immeuble =  immeuble.getId();
+				ids.immeuble = immeuble.getId();
 				return ids;
 			}
 		});
@@ -3573,7 +3579,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(bys);
 			final int nbExpectedExercices = today.year() - 2000 + (today.month() > 6 ? 1 : 0);
 			Assert.assertEquals(nbExpectedExercices, bys.size());
-			for (int i = 0 ; i < nbExpectedExercices ; ++ i) {
+			for (int i = 0; i < nbExpectedExercices; ++i) {
 				final BusinessYear by = bys.get(i);
 				Assert.assertNotNull(by);
 				if (i == 0) {
@@ -3783,7 +3789,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	/**
-	 *	Pour vérifier que les requêtes SQL sur toutes les parts fonctionnent
+	 * Pour vérifier que les requêtes SQL sur toutes les parts fonctionnent
 	 */
 	@Test
 	public void testGetPartiesAllParts() throws Exception {
@@ -4701,11 +4707,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
-		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = service.getImmovablePropery(user, id);
+		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = service.getImmovableProperty(user, id);
 		Assert.assertNotNull(immo);
 		Assert.assertTrue(immo instanceof RealEstate);
 
-		final RealEstate realEstate =(RealEstate) immo;
+		final RealEstate realEstate = (RealEstate) immo;
 		Assert.assertEquals(id.longValue(), realEstate.getId());
 		Assert.assertEquals("some egrid", realEstate.getEgrid());
 		Assert.assertNull(realEstate.getCancellationDate());
@@ -4714,6 +4720,36 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(1, locations.size());
 		assertLocation(RegDate.get(2000, 1, 1), null, 579, null, null, null, 5498, locations.get(0));
 	}
+
+	/**
+	 * Ce test vérifie que le WS de récupération d'un immeuble fonctionne bien dans le cas passant.
+	 */
+	@Test
+	public void testGetImmovableProperties() throws Exception {
+
+		// on ajoute deux immeubles dans la base
+		final List<Long> ids = doInNewTransaction(status -> {
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble1 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble2 = addBienFondsRF("covfefe", "other egrid", laSarraz, 580);
+			return Arrays.asList(immeuble1.getId(), immeuble2.getId());
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+
+		// on demande trois immeubles : deux existants et un inconnu
+		final long idInexistant = -1;
+		final ImmovablePropertyList immovableProperties = service.getImmovableProperties(user, Arrays.asList(ids.get(0), ids.get(1), idInexistant));
+
+		// on vérifie qu'on reçoit bien trois réponses
+		final List<ImmovablePropertyEntry> entries = immovableProperties.getEntries();
+		Assert.assertNotNull(entries);
+		Assert.assertEquals(3, entries.size());
+		assertNotFoundEntry(idInexistant, entries.get(0));
+		assertFoundEntry(ids.get(0), entries.get(1));
+		assertFoundEntry(ids.get(1), entries.get(2));
+	}
+
 
 	@Test
 	public void testGetBuilding() throws Exception {
@@ -4757,6 +4793,31 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(RegDate.get(2000, 1, 1), DataHelper.webToRegDate(setting0.getDateFrom()));
 		Assert.assertNull(setting0.getDateTo());
 		Assert.assertEquals(Integer.valueOf(310), setting0.getArea());
+	}
+
+	@Test
+	public void testGetBuildings() throws Exception {
+
+		// on ajoute deux bâtiments dans la base
+		final List<Long> ids = doInNewTransaction(status -> {
+			final BatimentRF batiment1 = addBatimentRF("483838ace8e8");
+			final BatimentRF batiment2 = addBatimentRF("473727217111");
+			return Arrays.asList(batiment1.getId(), batiment2.getId());
+		});
+
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+
+		// on demande trois bâtiments : deux existants et un inconnu
+		final long idInexistant = -1;
+		final BuildingList buildings = service.getBuildings(user, Arrays.asList(ids.get(0), ids.get(1), idInexistant));
+
+		// on vérifie qu'on reçoit bien trois réponses
+		final List<BuildingEntry> entries = buildings.getEntries();
+		Assert.assertNotNull(entries);
+		Assert.assertEquals(3, entries.size());
+		assertNotFoundEntry(idInexistant, entries.get(0));
+		assertFoundEntry(ids.get(0), entries.get(1));
+		assertFoundEntry(ids.get(1), entries.get(2));
 	}
 
 	/**
@@ -4814,6 +4875,73 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertOwnerNaturalPerson("Attila", "Misère", RegDate.get(2002, 12, 22), members.get(1));
 	}
 
+	/**
+	 * Ce test vérifie que la méthode 'getCommunitiesOfOwners' fonctionne bien dans le cas passant.
+	 */
+	@Test
+	public void testGetCommunitiesOfOwners() throws Exception {
+
+		class Ids {
+			long pp;
+			long immeuble;
+			long communaute1;
+			long communaute2;
+		}
+		final Ids ids = new Ids();
+
+		// on crée un immeuble possédé par deux communauté dans la base
+		doInNewTransaction(status -> {
+
+			// un immeuble
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			ids.immeuble = immeuble.getId();
+
+			// trois tiers RF
+			final PersonnePhysiqueRF ericRF = addPersonnePhysiqueRF("38383830ae3ff", "Eric", "Bolomey", RegDate.get(1966,3,30));
+			final PersonnePhysiqueRF attilaRF = addPersonnePhysiqueRF("828e8a828", "Attila", "Misère", RegDate.get(2002,12,22));
+			final PersonnePhysiqueRF gudrunRF = addPersonnePhysiqueRF("0ea0e020", "Gudrun", "Chaud", RegDate.get(1996,2,4));
+
+			// deux communautés
+			final CommunauteRF communauteRF1 = addCommunauteRF("78282828", TypeCommunaute.COMMUNAUTE_DE_BIENS);
+			final CommunauteRF communauteRF2 = addCommunauteRF("20826216", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			ids.communaute1 = communauteRF1.getId();
+			ids.communaute2 = communauteRF2.getId();
+
+			// Les deux tiers RF possèdent l'immeuble à travers une communauté de biens
+			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(123, 2004, 202, 3);
+			addDroitPropriete(ericRF, immeuble, communauteRF1, GenrePropriete.COMMUNE, new Fraction(1, 3), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "48390a0e044", "48390a0e043");
+			addDroitPropriete(attilaRF, immeuble, communauteRF1, GenrePropriete.COMMUNE, new Fraction(1, 3), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "a88e883c73", "a88e883c72");
+			addDroitPropriete(communauteRF1, immeuble, GenrePropriete.COPROPRIETE, new Fraction(1, 3), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Achat", null, numeroAffaire, "2890cc033a", "2890cc033b");
+
+			addDroitPropriete(ericRF, immeuble, communauteRF2, GenrePropriete.COMMUNE, new Fraction(2, 3), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Succession", null, numeroAffaire, "7833737", "47838282");
+			addDroitPropriete(gudrunRF, immeuble, communauteRF2, GenrePropriete.COMMUNE, new Fraction(2, 3), RegDate.get(2004, 5, 21), null, RegDate.get(2004, 4, 12), null, "Succession", null, numeroAffaire, "739237329", "34727222");
+			addDroitPropriete(communauteRF2, immeuble, GenrePropriete.COPROPRIETE, new Fraction(2, 3), RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, "Succession", null, numeroAffaire, "4782372172", "9033900");
+
+			// le tiers Unireg rapproché
+			final PersonnePhysique pp = addNonHabitant("Eric", "Bolomey", RegDate.get(1966, 3, 30), Sexe.MASCULIN);
+			ids.pp = pp.getId();
+			addRapprochementRF(pp, ericRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+
+			return null;
+
+		});
+
+		// on demande trois communautés : deux existantes et une inconnue
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Long idCommunauteInconnue = -1L;
+		final CommunityOfOwnersList list = service.getCommunitiesOfOwners(user, Arrays.asList(ids.communaute1, ids.communaute2, idCommunauteInconnue));
+		Assert.assertNotNull(list);
+
+		// on vérifie qu'on reçoit bien trois réponses
+		final List<CommunityOfOwnersEntry> entries = list.getEntries();
+		Assert.assertNotNull(entries);
+		Assert.assertEquals(3, entries.size());
+		assertNotFoundEntry(idCommunauteInconnue, entries.get(0));
+		assertFoundEntry(ids.communaute1, entries.get(1));
+		assertFoundEntry(ids.communaute2, entries.get(2));
+	}
+
 	private static void assertOwnerNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder owner) {
 		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
 		Assert.assertEquals(firstName, identity.getFirstName());
@@ -4846,5 +4974,50 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertEquals(index2, location.getIndex2());
 		Assert.assertEquals(index3, location.getIndex3());
 		Assert.assertEquals(noOfsCommune, location.getMunicipalityFsoId());
+	}
+
+	public static void assertFoundEntry(long immoId, ImmovablePropertyEntry entry) {
+		Assert.assertEquals(immoId, entry.getImmovablePropertyId());
+		final ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty immo = entry.getImmovableProperty();
+		Assert.assertNotNull(immo);
+		Assert.assertEquals(immoId, immo.getId());
+		Assert.assertNull(entry.getError());
+	}
+
+	private static void assertNotFoundEntry(long immoId, ImmovablePropertyEntry entry) {
+		Assert.assertEquals(immoId, entry.getImmovablePropertyId());
+		Assert.assertNull(entry.getImmovableProperty());
+		Assert.assertEquals(ErrorType.BUSINESS, entry.getError().getType());
+		Assert.assertEquals("L'immeuble n°[" + immoId + "] n'existe pas.", entry.getError().getErrorMessage());
+	}
+
+	public static void assertFoundEntry(long buildingId, BuildingEntry entry) {
+		Assert.assertEquals(buildingId, entry.getBuildingId());
+		final Building building = entry.getBuilding();
+		Assert.assertNotNull(building);
+		Assert.assertEquals(buildingId, building.getId());
+		Assert.assertNull(entry.getError());
+	}
+
+	private static void assertNotFoundEntry(long buildingId, BuildingEntry entry) {
+		Assert.assertEquals(buildingId, entry.getBuildingId());
+		Assert.assertNull(entry.getBuilding());
+		Assert.assertEquals(ErrorType.BUSINESS, entry.getError().getType());
+		Assert.assertEquals("Le bâtiment n°[" + buildingId + "] n'existe pas.", entry.getError().getErrorMessage());
+	}
+
+	public static void assertFoundEntry(long communityId, CommunityOfOwnersEntry entry) {
+		Assert.assertEquals(communityId, entry.getCommunityOfOwnersId());
+		final CommunityOfOwners community = entry.getCommunityOfOwners();
+		Assert.assertNotNull(community);
+		Assert.assertEquals(communityId, community.getId());
+		Assert.assertNull(entry.getError());
+	}
+
+	private static void assertNotFoundEntry(long communityId, CommunityOfOwnersEntry entry) {
+		Assert.assertEquals(communityId, entry.getCommunityOfOwnersId());
+		Assert.assertNull(entry.getCommunityOfOwners());
+		Assert.assertEquals(ErrorType.BUSINESS, entry.getError().getType());
+		Assert.assertEquals("La communauté n°[" + communityId + "] n'existe pas.", entry.getError().getErrorMessage());
 	}
 }

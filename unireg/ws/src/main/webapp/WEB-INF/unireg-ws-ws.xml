@@ -16,9 +16,9 @@
         <property name="bus" ref="cxf" />        
     </bean>
 
-	<bean id="wsThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
-		<property name="corePoolSize" value="${extprop.webservice.threadpool.minSize}"/> <!-- nombre minimum de threads -->
-		<property name="maxPoolSize" value="${extprop.webservice.threadpool.maxSize}"/> <!-- nombre maximum de threads -->
+	<!-- pool de threads à disposition des contrôleurs et des managers web -->
+	<bean id="wsForkJoinPool" class="java.util.concurrent.ForkJoinPool">
+		<constructor-arg value="${extprop.webservice.threadpool.maxSize}"/>
 	</bean>
 
 	<bean id="wsEventDataListenerAdapter" class="ch.vd.uniregctb.webservices.common.WebServiceEventListenerAdapter">
@@ -59,7 +59,7 @@
 		<property name="lrService" ref="lrService" />
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
-		<property name="threadPool" ref="wsThreadPool" />
+		<property name="threadPool" ref="wsForkJoinPool" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
@@ -108,7 +108,7 @@
 		<property name="lrService" ref="lrService" />
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
-		<property name="threadPool" ref="wsThreadPool" />
+		<property name="threadPool" ref="wsForkJoinPool" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
@@ -224,7 +224,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
 		<property name="EFactureService" ref="efactureService"/>
-		<property name="threadPool" ref="wsThreadPool"/>
+		<property name="threadPool" ref="wsForkJoinPool"/>
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
@@ -313,7 +313,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
 		<property name="EFactureService" ref="efactureService"/>
-		<property name="threadPool" ref="wsThreadPool"/>
+		<property name="threadPool" ref="wsForkJoinPool"/>
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>
@@ -404,7 +404,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
 		<property name="EFactureService" ref="efactureService"/>
-		<property name="threadPool" ref="wsThreadPool"/>
+		<property name="forkJoinPool" ref="wsForkJoinPool"/>
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>

@@ -16,6 +16,9 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -143,8 +146,14 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
-		return target.getImmovablePropery(user, immId);
+	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
+		return target.getImmovableProperty(user, immoId);
+	}
+
+	@NotNull
+	@Override
+	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
+		return target.getImmovableProperties(user, immoIds);
 	}
 
 	@Nullable
@@ -153,10 +162,21 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 		return target.getBuilding(user, buildingId);
 	}
 
+	@NotNull
+	@Override
+	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
+		return target.getBuildings(user, buildingIds);
+	}
+
 	@Nullable
 	@Override
 	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
 		return target.getCommunityOfOwners(user, communityId);
+	}
+
+	@Override
+	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
+		return target.getCommunitiesOfOwners(user, communityIds);
 	}
 
 	private void check(int partyNo) {

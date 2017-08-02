@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.v7.cache;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -24,10 +25,17 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingEntry;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersEntry;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyEntry;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
+import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
@@ -366,18 +374,59 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
+	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
 		final ImmovableProperty immovable;
-		final GetImmovablePropertyKey key = new GetImmovablePropertyKey(immId);
+		final GetImmovablePropertyKey key = new GetImmovablePropertyKey(immoId);
 		final Element element = cache.get(key);
 		if (element == null) {
-			immovable = target.getImmovablePropery(user, immId);
+			immovable = target.getImmovableProperty(user, immoId);
 			cache.put(new Element(key, immovable));
 		}
 		else {
 			immovable = (ImmovableProperty) element.getObjectValue();
 		}
 		return immovable;
+	}
+
+	@NotNull
+	@Override
+	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
+
+		final List<Long> elementsToFetch = new ArrayList<>();
+		final List<ImmovablePropertyEntry> cached = new ArrayList<>();
+
+		// on récupère tout ce qu'on peut dans le cache
+		for (Long immoId : immoIds) {
+			final Element element = cache.get(new GetImmovablePropertyKey(immoId));
+			if (element == null) {
+				elementsToFetch.add(immoId);
+			}
+			else {
+				final ImmovableProperty immovableProperty = (ImmovableProperty) element.getObjectValue();
+				final Error error = immovableProperty == null ? new Error(ErrorType.BUSINESS, "L'immeuble n°[" + immoId + "] n'existe pas.") : null;
+				cached.add(new ImmovablePropertyEntry(immoId, immovableProperty, error));
+			}
+		}
+
+		// on récupère tout ce qui manque dans le service
+		final ImmovablePropertyList list;
+		if (elementsToFetch.isEmpty()) {
+			list = new ImmovablePropertyList();
+		}
+		else {
+			list = target.getImmovableProperties(user, elementsToFetch);
+		}
+
+		// on met-à-jour le cache
+		list.getEntries().forEach(e -> cache.put(new Element(new GetImmovablePropertyKey(e.getImmovablePropertyId()), e.getImmovableProperty())));
+
+		// on fusionne les deux listes
+		if (!cached.isEmpty()) {
+			list.getEntries().addAll(cached);
+			list.getEntries().sort(Comparator.comparing(ImmovablePropertyEntry::getImmovablePropertyId));
+		}
+
+		return list;
 	}
 
 	@Nullable
@@ -396,6 +445,47 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		return immovable;
 	}
 
+	@NotNull
+	@Override
+	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
+
+		final List<Long> elementsToFetch = new ArrayList<>();
+		final List<BuildingEntry> cached = new ArrayList<>();
+
+		// on récupère tout ce qu'on peut dans le cache
+		for (Long buildingId : buildingIds) {
+			final Element element = cache.get(new GetBuildingKey(buildingId));
+			if (element == null) {
+				elementsToFetch.add(buildingId);
+			}
+			else {
+				final Building building = (Building) element.getObjectValue();
+				final Error error = building == null ? new Error(ErrorType.BUSINESS, "Le bâtiment n°[" + buildingId + "] n'existe pas.") : null;
+				cached.add(new BuildingEntry(buildingId, building, error));
+			}
+		}
+
+		// on récupère tout ce qui manque dans le service
+		final BuildingList list;
+		if (elementsToFetch.isEmpty()) {
+			list = new BuildingList();
+		}
+		else {
+			list = target.getBuildings(user, elementsToFetch);
+		}
+
+		// on met-à-jour le cache
+		list.getEntries().forEach(e -> cache.put(new Element(new GetBuildingKey(e.getBuildingId()), e.getBuilding())));
+
+		// on fusionne les deux listes
+		if (!cached.isEmpty()) {
+			list.getEntries().addAll(cached);
+			list.getEntries().sort(Comparator.comparing(BuildingEntry::getBuildingId));
+		}
+
+		return list;
+	}
+
 	@Nullable
 	@Override
 	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
@@ -410,6 +500,46 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 			community = (CommunityOfOwners) element.getObjectValue();
 		}
 		return community;
+	}
+
+	@Override
+	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
+
+		final List<Long> elementsToFetch = new ArrayList<>();
+		final List<CommunityOfOwnersEntry> cached = new ArrayList<>();
+
+		// on récupère tout ce qu'on peut dans le cache
+		for (Long communityId : communityIds) {
+			final Element element = cache.get(new GetCommunityOfOwnersKey(communityId));
+			if (element == null) {
+				elementsToFetch.add(communityId);
+			}
+			else {
+				final CommunityOfOwners building = (CommunityOfOwners) element.getObjectValue();
+				final Error error = building == null ? new Error(ErrorType.BUSINESS, "La communauté n°[" + communityId + "] n'existe pas.") : null;
+				cached.add(new CommunityOfOwnersEntry(communityId, building, error));
+			}
+		}
+
+		// on récupère tout ce qui manque dans le service
+		final CommunityOfOwnersList list;
+		if (elementsToFetch.isEmpty()) {
+			list = new CommunityOfOwnersList();
+		}
+		else {
+			list = target.getCommunitiesOfOwners(user, elementsToFetch);
+		}
+
+		// on met-à-jour le cache
+		list.getEntries().forEach(e -> cache.put(new Element(new GetCommunityOfOwnersKey(e.getCommunityOfOwnersId()), e.getCommunityOfOwners())));
+
+		// on fusionne les deux listes
+		if (!cached.isEmpty()) {
+			list.getEntries().addAll(cached);
+			list.getEntries().sort(Comparator.comparing(CommunityOfOwnersEntry::getCommunityOfOwnersId));
+		}
+
+		return list;
 	}
 
 	/**

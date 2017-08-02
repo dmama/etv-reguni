@@ -114,8 +114,13 @@ public interface WebService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
-	@Path("/landRegistry/immovableProperty/{immId}")
-	Response getImmovableProperty(@PathParam("immId") long immNo, @QueryParam("user") String user);
+	@Path("/landRegistry/immovableProperty/{immoId}")
+	Response getImmovableProperty(@PathParam("immoId") long immoId, @QueryParam("user") String user);
+
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/landRegistry/immovableProperties")
+	Response getImmovableProperties(@QueryParam("immoId") List<Long> immoIds, @QueryParam("user") String user);
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
@@ -124,6 +129,16 @@ public interface WebService {
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
+	@Path("/landRegistry/buildings")
+	Response getBuildings(@QueryParam("buildingId") List<Long> buildingId, @QueryParam("user") String user);
+
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
 	@Path("/landRegistry/communityOfOwners/{communityId}")
 	Response getCommunityOfOwners(@PathParam("communityId") long communityId, @QueryParam("user") String user);
+
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/landRegistry/communitiesOfOwners")
+	Response getCommunitiesOfOwners(@QueryParam("communityId") List<Long> communityId, @QueryParam("user") String user);
 }

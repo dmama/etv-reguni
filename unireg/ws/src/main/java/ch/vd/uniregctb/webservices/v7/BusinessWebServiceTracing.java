@@ -15,6 +15,9 @@ import ch.vd.unireg.ws.ack.v7.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v7.DeadlineRequest;
 import ch.vd.unireg.ws.deadline.v7.DeadlineResponse;
 import ch.vd.unireg.ws.fiscalevents.v7.FiscalEvents;
+import ch.vd.unireg.ws.landregistry.v7.BuildingList;
+import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
+import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
@@ -290,18 +293,35 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@Nullable
 	@Override
-	public ImmovableProperty getImmovablePropery(@NotNull UserLogin user, long immId) throws AccessDeniedException {
+	public ImmovableProperty getImmovableProperty(@NotNull UserLogin user, long immoId) throws AccessDeniedException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getImmovablePropery(user, immId);
+			return target.getImmovableProperty(user, immoId);
 		}
 		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getImmovablePropery", null);
+			tracing.end(time, t, "getImmovableProperty", null);
+		}
+	}
+
+	@NotNull
+	@Override
+	public ImmovablePropertyList getImmovableProperties(UserLogin user, List<Long> immoIds) throws AccessDeniedException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getImmovableProperties(user, immoIds);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getImmovableProperties", null);
 		}
 	}
 
@@ -322,6 +342,23 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 	}
 
+	@NotNull
+	@Override
+	public BuildingList getBuildings(@NotNull UserLogin user, List<Long> buildingIds) throws AccessDeniedException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getBuildings(user, buildingIds);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getBuildings", null);
+		}
+	}
+
 	@Nullable
 	@Override
 	public CommunityOfOwners getCommunityOfOwners(@NotNull UserLogin user, long communityId) throws AccessDeniedException {
@@ -336,6 +373,22 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 		finally {
 			tracing.end(time, t, "getCommunityOfOwners", null);
+		}
+	}
+
+	@Override
+	public @NotNull CommunityOfOwnersList getCommunitiesOfOwners(@NotNull UserLogin user, List<Long> communityIds) throws AccessDeniedException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getCommunitiesOfOwners(user, communityIds);
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getCommunitiesOfOwners", null);
 		}
 	}
 }
