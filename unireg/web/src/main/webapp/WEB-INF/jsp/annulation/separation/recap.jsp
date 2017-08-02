@@ -17,7 +17,7 @@
 	</tiles:put>
   	<tiles:put name="body">
 
-	    <div style="display: inline-block;">
+	    <div style="display: inline-block; width: 100%">
 		    <div style="width: 48%; float: left;">
 			    <c:set var="titreCaracteristiques"><fmt:message key="label.caracteristiques.premierePersonne"/></c:set>
 			    <unireg:bandeauTiers numero="${idContribuablePrincipal}" showComplements="true" showValidation="true" showLinks="false" showAvatar="false" titre="${titreCaracteristiques}"/>
