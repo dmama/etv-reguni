@@ -353,6 +353,90 @@ public class ImmeubleRFDetectorTest {
 	}
 
 	/**
+	 * [SIFISC-25610] Ce test vérifie qu'une mutation de type MODIFICATION est bien créée sur un immeuble qui existe dans l'import avec un egrid différent de celui stocké en DB.
+	 */
+	@Test
+	public void testImmeublesEgridModifies() throws Exception {
+
+		final String idRfBienFonds = "382929efa218";
+
+		final CommuneRF commune = new CommuneRF(2233, "Le-gros-du-lac", 6666);
+
+		final SituationRF situation = new SituationRF();
+		situation.setDateDebut(RegDate.get(2016, 1, 1));
+		situation.setNoParcelle(212);
+		situation.setCommune(commune);
+
+		final EstimationRF estimation = new EstimationRF();
+		estimation.setAnneeReference(2016);
+		estimation.setMontant(500000L);
+		estimation.setReference("2016");
+		estimation.setDateInscription(RegDate.get(2016, 1, 1));
+
+		final BienFondRF bienFonds = new BienFondRF();
+		bienFonds.setIdRF(idRfBienFonds);
+		bienFonds.addSituation(situation);
+		bienFonds.addEstimation(estimation);
+		bienFonds.setEgrid(null);   // <--- Egrid non-renseigné
+		bienFonds.setSurfacesTotales(Collections.emptySet());
+
+		final ImmeubleRFDAO immeubleRFDAO = new MockImmeubleRFDAO(bienFonds);
+
+		// un mock de DAO avec un import du registre foncier
+		final EvenementRFImportDAO evenementRFImportDAO = new MockEvenementRFImportDAO() {
+			@Override
+			public EvenementRFImport get(Long id) {
+				final EvenementRFImport imp = new EvenementRFImport();
+				imp.setId(IMPORT_ID);
+				return imp;
+			}
+		};
+
+		// un mock qui mémorise toutes les mutations sauvées
+		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
+
+		final ImmeubleRFDetector detector = new ImmeubleRFDetector(xmlHelperRF, immeubleRFDAO, communeRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
+
+		// on envoie les immeubles avec des modifications
+		// - egrid renseigné
+		final Liegenschaft bienfondsImport = newBienFond(2233, "Le-gros-du-lac", 212, null,
+		                                                 500000L, "2016", RegDate.get(2016, 1, 1), false,
+		                                                 idRfBienFonds, "CH282891891", false);
+		final List<Grundstueck> immeublesImport = Collections.singletonList(bienfondsImport);
+		detector.processImmeubles(IMPORT_ID, 2, immeublesImport.listIterator(), null);
+
+		// on devrait avoir deux événements de mutation de type MODIFICATION à l'état A_TRAITER dans la base
+		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
+		assertEquals(1, mutations.size());
+
+		final EvenementRFMutation mut0 = mutations.get(0);
+		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
+		assertEquals(TypeEntiteRF.IMMEUBLE, mut0.getTypeEntite());
+		assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
+		assertEquals("382929efa218", mut0.getIdRF());
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <GrundstueckID>382929efa218</GrundstueckID>\n" +
+				             "    <EGrid>CH282891891</EGrid>\n" +
+				             "    <GrundstueckNummer>\n" +
+				             "        <BfsNr>2233</BfsNr>\n" +
+				             "        <Gemeindenamen>Le-gros-du-lac</Gemeindenamen>\n" +
+				             "        <StammNr>212</StammNr>\n" +
+				             "    </GrundstueckNummer>\n" +
+				             "    <IstKopie>false</IstKopie>\n" +
+				             "    <AmtlicheBewertung>\n" +
+				             "        <AmtlicherWert>500000</AmtlicherWert>\n" +
+				             "        <ProtokollNr>2016</ProtokollNr>\n" +
+				             "        <ProtokollDatum>2016-01-01</ProtokollDatum>\n" +
+				             "        <ProtokollGueltig>true</ProtokollGueltig>\n" +
+				             "    </AmtlicheBewertung>\n" +
+				             "    <LigUnterartEnum></LigUnterartEnum>\n" +
+				             "</Liegenschaft>\n", mut0.getXmlContent());
+
+	}
+
+	/**
 	 * Ce test vérifie qu'aucune mutation n'est créée si les données des immeubles et des communes dans l'import sont identiques avec les états courants des immeubles et des communes stockés dans la DB.
 	 */
 	@Test

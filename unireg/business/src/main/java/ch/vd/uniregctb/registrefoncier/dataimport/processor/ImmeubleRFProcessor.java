@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.util.Objects;
 
 import org.apache.camel.converter.jaxp.StringSource;
 import org.hibernate.FlushMode;
@@ -163,6 +164,11 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 			persisted.getSituations().stream()
 					.max(new DateRangeComparator<>())
 					.ifPresent(s -> s.setDateFin(null));
+		}
+
+		// on met-à-jour l'egrid, si nécessaire (SIFISC-25610)
+		if (!Objects.equals(persisted.getEgrid(), newImmeuble.getEgrid())) {
+			persisted.setEgrid(newImmeuble.getEgrid());
 		}
 
 		// on va chercher les situations, estimations, surfaces totales courantes et quotes-parts
