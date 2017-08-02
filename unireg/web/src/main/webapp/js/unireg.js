@@ -1859,7 +1859,8 @@ var App = {
 		if (match === null) {
 			// le paramètre n'existe pas, on l'ajoute
 			newUrl = String(url.href);
-			if (newUrl.endsWith('#')) { // supprime le trailing # si nécessaire
+			// supprime le trailing # si nécessaire
+			if (newUrl.indexOf('#', newUrl.length - 1) !== -1) {
 				newUrl = newUrl.substr(0, newUrl.length - 1);
 			}
 			newUrl += '&' + name + '=' + default_value;
