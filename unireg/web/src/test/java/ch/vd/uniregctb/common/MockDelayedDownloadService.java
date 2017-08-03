@@ -18,6 +18,10 @@ public class MockDelayedDownloadService implements DelayedDownloadService {
 	}
 
 	@Override
+	public void eraseDocument(UUID id) {
+	}
+
+	@Override
 	public int getPendingSize() {
 		return 0;
 	}

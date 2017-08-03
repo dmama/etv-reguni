@@ -1170,6 +1170,7 @@ public class DegrevementExonerationController {
 		return retourEditiqueControllerHelper.traiteRetourEditiqueAfterRedirect(resultat,
 		                                                                        "formulaire-demande-dégrèvement",
 		                                                                        redirect,
+		                                                                        true,
 		                                                                        inbox,
 		                                                                        null,
 		                                                                        erreur);

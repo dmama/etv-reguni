@@ -45,6 +45,14 @@ public class DelayedDownloadServiceImpl implements DelayedDownloadService, Initi
 	}
 
 	@Override
+	public void eraseDocument(UUID id) {
+		final TypedDataContainer data = fetchDocument(id, true);
+		if (data != null) {
+			data.close();
+		}
+	}
+
+	@Override
 	public int getPendingSize() {
 		synchronized (container) {
 			return container.size();

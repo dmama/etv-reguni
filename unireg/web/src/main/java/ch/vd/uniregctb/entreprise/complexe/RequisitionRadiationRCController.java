@@ -128,6 +128,7 @@ public class RequisitionRadiationRCController extends AbstractProcessusComplexeR
 						return retourEditiqueHelper.traiteRetourEditiqueAfterRedirect(editique,
 						                                                              "demandeBilanFinal",
 						                                                              redirect,
+						                                                              true,
 						                                                              inbox,
 						                                                              null,
 						                                                              erreur);

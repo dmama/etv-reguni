@@ -373,13 +373,22 @@ public class ListeRecapitulativeController {
 		dpi.addDeclaration(saved);
 		evenementFiscalService.publierEvenementFiscalEmissionListeRecapitulative(saved, RegDate.get());
 
+		// on force un flush ici pour lancer une petite validation
+		hibernateTemplate.flush();
+
 		// et finalement l'envoi à l'éditique...
 		final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(dpi.getNumero());
 		try {
 			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, Duration.ofMillis(500));
 			try {
 				final EditiqueResultat resultat = editiqueCompositionService.imprimeLROnline(saved, TypeDocument.LISTE_RECAPITULATIVE);
-				return retourEditiqueHelper.traiteRetourEditiqueAfterRedirect(resultat, "lr", "redirect:edit-debiteur.do?numero=" + dpi.getNumero(), null, null, ERREUR_ORIGINAL_EDITIQUE);
+				return retourEditiqueHelper.traiteRetourEditiqueAfterRedirect(resultat,
+				                                                              "lr",
+				                                                              "redirect:edit-debiteur.do?numero=" + dpi.getNumero(),
+				                                                              true,
+				                                                              null,
+				                                                              null,
+				                                                              ERREUR_ORIGINAL_EDITIQUE);
 			}
 			finally {
 				ticket.release();
@@ -535,7 +544,13 @@ public class ListeRecapitulativeController {
 		                         RegDateHelper.dateToDashString(lr.getDateFin())));
 
 		final EditiqueResultat resultat = editiqueCompositionService.imprimeLROnline(lr, TypeDocument.LISTE_RECAPITULATIVE);
-		return retourEditiqueHelper.traiteRetourEditiqueAfterRedirect(resultat, "lr", "redirect:edit-lr.do?id=" + idListe, null, null, ERREUR_DUPLICATA_EDITIQUE);
+		return retourEditiqueHelper.traiteRetourEditiqueAfterRedirect(resultat,
+		                                                              "lr",
+		                                                              "redirect:edit-lr.do?id=" + idListe,
+		                                                              true,
+		                                                              null,
+		                                                              null,
+		                                                              ERREUR_DUPLICATA_EDITIQUE);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)

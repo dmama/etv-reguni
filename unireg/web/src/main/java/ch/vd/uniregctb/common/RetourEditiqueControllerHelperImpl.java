@@ -7,6 +7,9 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -62,6 +65,7 @@ public class RetourEditiqueControllerHelperImpl implements MessageSourceAware, R
 	public String traiteRetourEditiqueAfterRedirect(@Nullable EditiqueResultat resultat,
 	                                                final String filenameRadical,
 	                                                final String redirectInstruction,
+	                                                final boolean cleanupOnRollback,
 	                                                @Nullable TraitementRetourEditique<? super EditiqueResultatReroutageInbox> onReroutageInbox,
 	                                                @Nullable TraitementRetourEditique<? super EditiqueResultatTimeout> onTimeout,
 	                                                @Nullable TraitementRetourEditique<? super EditiqueResultatErreur> onError) throws IOException {
@@ -70,16 +74,44 @@ public class RetourEditiqueControllerHelperImpl implements MessageSourceAware, R
 			@Override
 			public String doJob(EditiqueResultatDocument resultat) throws IOException {
 				final UUID id = delayedDownloadService.putDocument(resultat, filenameRadical);
+				setDelayedDownloadIdToSession(id);
 
-				// on met dans la session l'identifiant du document stocké
-				final RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
-				attributes.setAttribute(DelayedDownloadService.SESSION_ATTRIBUTE_NAME, id, RequestAttributes.SCOPE_SESSION);
+				// [SIFISC-25996] on a mis quelque chose en session, mais ce quelque chose peut devoir disparaître si nous
+				// sommes actuellement dans une transaction et que cette transaction doit être annulée
+				if (cleanupOnRollback && TransactionSynchronizationManager.isActualTransactionActive()) {
+					TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+						@Override
+						public void afterCompletion(int status) {
+							// si rollback il y a, on doit oublier cet identifiant
+							super.afterCompletion(status);
+							if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
+
+								// effacement de la donnée en session
+								setDelayedDownloadIdToSession(null);
+
+								// effacement de la donnée enregistrée dans le service
+								delayedDownloadService.eraseDocument(id);
+							}
+						}
+					});
+				}
 
 				return redirectInstruction;
 			}
 		};
 
 		return traiteRetourEditique(resultat, print, onReroutageInbox, onTimeout, onError);
+	}
+
+	private void setDelayedDownloadIdToSession(@Nullable UUID id) {
+		// on met dans la session l'identifiant du document stocké
+		final RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
+		if (id != null) {
+			attributes.setAttribute(DelayedDownloadService.SESSION_ATTRIBUTE_NAME, id, RequestAttributes.SCOPE_SESSION);
+		}
+		else {
+			attributes.removeAttribute(DelayedDownloadService.SESSION_ATTRIBUTE_NAME, RequestAttributes.SCOPE_SESSION);
+		}
 	}
 
 	private String traiteRetourEditique(@Nullable EditiqueResultat resultat,
