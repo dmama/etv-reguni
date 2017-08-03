@@ -540,6 +540,14 @@ public class IdentificationController {
 	                              @RequestParam(value = "wipeCriteria", required = false) String wipeCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
 
+		if (bindingResult.hasErrors()) {
+			// erreur dans les critères de recherche : on réaffiche le formulaire sans résultat (SIFISC-14788)
+			model.put("identificationCriteria", criteria);
+			model.put("tailleTableau", 0);
+			setUpModelForListMessageEnCours(model);
+			return new ModelAndView("identification/gestion-messages/list", model);
+		}
+
 		criteria = manageCriteria(request, criteria, "identificationCriteria", wipeCriteria == null);
 		criteria.setUserCourant(AuthenticationHelper.getCurrentPrincipal());
 
@@ -584,6 +592,14 @@ public class IdentificationController {
 	                                     @RequestParam(value = "wipeCriteria", required = false) String wipeCriteria,
 	                                     ModelMap model) throws AdressesResolutionException {
 
+		if (bindingResult.hasErrors()) {
+			// erreur dans les critères de recherche : on réaffiche le formulaire sans résultat (SIFISC-14788)
+			model.put("identificationCriteria", criteria);
+			model.put("tailleTableau", 0);
+			setUpModelForListMessageSuspendu(model);
+			return new ModelAndView("identification/gestion-messages/list", model);
+		}
+
 		criteria = manageCriteria(request, criteria, "identificationCriteria", wipeCriteria == null);
 		addPaginationToModel(request, model);
 		return buildReponseForMessageSuspendu(request, criteria, model);
@@ -600,13 +616,7 @@ public class IdentificationController {
 	                                              @RequestParam(value = "typeMessage", required = false) String typeMessage,
 	                                              ModelMap model) throws AdressesResolutionException {
 
-
-		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_ADMIN)) {
-			setUpModelForListMessageEnCoursAvecException(model);
-		}
-		else{
-			setUpModelForListMessageEnCours(model);
-		}
+		setUpModelForListMessageEnCours(model);
 
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
@@ -647,6 +657,14 @@ public class IdentificationController {
 	                              BindingResult bindingResult,
 	                              @RequestParam(value = "wipeCriteria", required = false) String wipeCriteria,
 	                              ModelMap model) throws AdressesResolutionException {
+
+		if (bindingResult.hasErrors()) {
+			// erreur dans les critères de recherche : on réaffiche le formulaire sans résultat (SIFISC-14788)
+			model.put("identificationCriteria", criteria);
+			model.put("tailleTableau", 0);
+			setUpModelForListMessageTraites(model);
+			return new ModelAndView("identification/gestion-messages/list", model);
+		}
 
 		criteria = manageCriteria(request, criteria, "identificationCriteria", wipeCriteria == null);
 		addPaginationToModel(request, model);
@@ -697,13 +715,7 @@ public class IdentificationController {
 	 * @throws AdressesResolutionException
 	 */
 	private ModelAndView buildResponseForMessageEnCours(HttpServletRequest request, IdentificationContribuableListCriteria criteria, ModelMap model) throws AdressesResolutionException {
-		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_ADMIN)) {
-			setUpModelForListMessageEnCoursAvecException(model);
-		}
-		else{
-			setUpModelForListMessageEnCours(model);
-		}
-
+		setUpModelForListMessageEnCours(model);
 		model.put("identificationCriteria", criteria);
 		// Récupération de la pagination
 		construireModelMessageEnCours(request, model, criteria);
@@ -751,9 +763,6 @@ public class IdentificationController {
 		model.put("tailleTableau", tailleTableau);
 		model.put("identifications", listIdentifications);
 		model.put("identificationsSize", nombreElements);
-		model.put("messageEnCours", true);
-		model.put("messageTraite", false);
-		model.put("messageSuspendu", false);
 	}
 
 	private void construireModelMessageSuspendu(HttpServletRequest request, ModelMap model, IdentificationContribuableListCriteria criteria) throws AdressesResolutionException {
@@ -768,10 +777,6 @@ public class IdentificationController {
 		model.put("tailleTableau", tailleTableau);
 		model.put("identifications", listIdentifications);
 		model.put("identificationsSize", nombreElements);
-
-		model.put("messageEnCours", false);
-		model.put("messageTraite", false);
-		model.put("messageSuspendu", true);
 	}
 
 
@@ -789,9 +794,6 @@ public class IdentificationController {
 		model.put("tailleTableau", tailleTableau);
 		model.put("identifications", listIdentifications);
 		model.put("identificationsSize", nombreElements);
-		model.put("messageEnCours", false);
-		model.put("messageTraite", true);
-		model.put("messageSuspendu", false);
 	}
 
 	private void setUpModelForStats(ModelMap model) throws Exception {
@@ -800,6 +802,15 @@ public class IdentificationController {
 	}
 
 	private void setUpModelForListMessageEnCours(ModelMap model) {
+		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_ADMIN)) {
+			setUpModelForListMessageEnCoursAvecException(model);
+		}
+		else{
+			setUpModelForListMessageEnCoursNormal(model);
+		}
+	}
+
+	private void setUpModelForListMessageEnCoursNormal(ModelMap model) {
 		model.put("typesMessage", initMapTypeMessageEncours());
 		model.put("emetteurs", identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES));
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
@@ -813,6 +824,9 @@ public class IdentificationController {
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
 		model.put("periodesFiscales",identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION));
 		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageEnCoursEtException());
+		model.put("messageEnCours", true);
+		model.put("messageTraite", false);
+		model.put("messageSuspendu", false);
 	}
 
 	private void setUpModelForListMessageSuspendu(ModelMap model) {
@@ -821,6 +835,9 @@ public class IdentificationController {
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
 		model.put("periodesFiscales", identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS));
 		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageSuspendu());
+		model.put("messageEnCours", false);
+		model.put("messageTraite", false);
+		model.put("messageSuspendu", true);
 	}
 
 	private void setUpModelForListMessageTraites(ModelMap model) {
@@ -830,6 +847,9 @@ public class IdentificationController {
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
 		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageArchive());
 		model.put("traitementUsers", identificationMapHelper.initMapUser());
+		model.put("messageEnCours", false);
+		model.put("messageTraite", true);
+		model.put("messageSuspendu", false);
 	}
 
 	/**
