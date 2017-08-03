@@ -74,8 +74,10 @@ import ch.vd.uniregctb.registrefoncier.BatimentRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleAvecQuotePartRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
@@ -242,6 +244,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		childToParentRelationships.put(SurfaceTotaleRF.class, ImmeubleRF.class);
 		childToParentRelationships.put(EstimationRF.class, ImmeubleRF.class);
 		childToParentRelationships.put(RaisonAcquisitionRF.class, DroitProprieteRF.class);
+		childToParentRelationships.put(QuotePartRF.class, ImmeubleAvecQuotePartRF.class);
 		childToParentRelationships.put(RolePartiePrenante.class, PartiePrenante.class);
 		childToParentRelationships.put(ErreurTraitement.class, UniteTraitement.class);
 
