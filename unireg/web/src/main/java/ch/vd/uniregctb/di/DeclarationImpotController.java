@@ -1394,6 +1394,7 @@ public class DeclarationImpotController {
 		return retourEditiqueControllerHelper.traiteRetourEditiqueAfterRedirect(resultat,
 		                                                                        "delai",
 		                                                                        String.format("redirect:/di/editer.do?id=%d", idDeclaration.getValue()),
+		                                                                        false,
 		                                                                        inbox,
 		                                                                        null,
 		                                                                        erreur);

@@ -29,6 +29,12 @@ public interface DelayedDownloadService {
 	TypedDataContainer fetchDocument(UUID id, boolean remove);
 
 	/**
+	 * Destruction du document précédemment placé là
+	 * @param id identifiant du document, founi lors de l'insertion du document
+	 */
+	void eraseDocument(UUID id);
+
+	/**
 	 * @return le nombre de document enregistrés mais pas récupérés
 	 */
 	int getPendingSize();

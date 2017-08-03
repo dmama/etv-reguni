@@ -120,7 +120,13 @@ public class FourreNeutreController {
 		final EditiqueResultat resultat =fourreNeutreManager.envoieImpressionLocaleFourreNeutre(tiersId, view.getPeriodeFiscale());
 		final FourreNeutreController.RedirectImpressionFourreNeutre inbox = new FourreNeutreController.RedirectImpressionFourreNeutre(tiersId);
 		final FourreNeutreController.RedirectImpressionFourreNeutreApresErreur erreur = new FourreNeutreController.RedirectImpressionFourreNeutreApresErreur(tiersId, messageSource);
-		return retourEditiqueControllerHelper.traiteRetourEditiqueAfterRedirect(resultat, "fourreNeutre", "redirect:/tiers/visu.do?id=" + tiersId, inbox, null, erreur);
+		return retourEditiqueControllerHelper.traiteRetourEditiqueAfterRedirect(resultat,
+		                                                                        "fourreNeutre",
+		                                                                        "redirect:/tiers/visu.do?id=" + tiersId,
+		                                                                        true,
+		                                                                        inbox,
+		                                                                        null,
+		                                                                        erreur);
 
 	}
 

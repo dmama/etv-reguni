@@ -155,6 +155,7 @@ public class AutreDocumentFiscalController {
 		return retourEditiqueControllerHelper.traiteRetourEditiqueAfterRedirect(resultat,
 		                                                                        view.getTypeDocument().name().toLowerCase(),
 		                                                                        redirect,
+		                                                                        false,
 		                                                                        inbox,
 		                                                                        null,
 		                                                                        erreur);

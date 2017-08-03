@@ -38,6 +38,7 @@ public interface RetourEditiqueControllerHelper {
 	 * @param resultat le résultat à gérer
 	 * @param filenameRadical radical (sans extension, qui sera déduite du type MIME du contenu) du nom de fichier sous lequel le contenu doit apparaître dans la réponse HTTP, le cas échéant
 	 * @param redirectInstruction une chaîne de caractères de la forme "redirect:URI" qui sera retournée en cas de document avec contenu
+	 * @param cleanupOnRollback <code>true</code> si les données qui conduiraient au chargement d'un document après le redirect doivent être effacées en cas de rollback de la transaction en cours (et qu'il y en a une)
 	 * @param onReroutageInbox action à effectuer après l'appel à la méthode {@link ch.vd.uniregctb.common.Flash#warning} dans le cas où le retour d'impression se fait un peu attendre et a été re-routé ver l'inbox
 	 * @param onTimeout action à effectuer sur réception d'un timeout définitif
 	 * @param onError action à effectuer à la réception d'une erreur depuis éditique
@@ -47,6 +48,7 @@ public interface RetourEditiqueControllerHelper {
 	String traiteRetourEditiqueAfterRedirect(@Nullable EditiqueResultat resultat,
 	                                         String filenameRadical,
 	                                         String redirectInstruction,
+	                                         boolean cleanupOnRollback,
 	                                         @Nullable TraitementRetourEditique<? super EditiqueResultatReroutageInbox> onReroutageInbox,
 	                                         @Nullable TraitementRetourEditique<? super EditiqueResultatTimeout> onTimeout,
 	                                         @Nullable TraitementRetourEditique<? super EditiqueResultatErreur> onError) throws IOException;
