@@ -33,6 +33,7 @@ import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
+import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Contribuable;
 
@@ -41,52 +42,54 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 	public final RegDate dateReference;
 	public final int nbThreads;
 
-	public static class NomPrenomRaisonSociale {
+	public static class NomPrenomRaisonSocialeDateNaissance {
 		public final String prenom;
 		public final String nom;
 		public final String raisonSociale;
+		public final RegDate dateNaissance;
 
-		public static final NomPrenomRaisonSociale EMPTY = new NomPrenomRaisonSociale(null, null, null);
+		public static final NomPrenomRaisonSocialeDateNaissance EMPTY = new NomPrenomRaisonSocialeDateNaissance(null, null, null, null);
 
-		public NomPrenomRaisonSociale(String prenom, String nom, String raisonSociale) {
+		public NomPrenomRaisonSocialeDateNaissance(String prenom, String nom, String raisonSociale, RegDate dateNaissance) {
 			this.prenom = prenom;
 			this.nom = nom;
 			this.raisonSociale = raisonSociale;
+			this.dateNaissance = dateNaissance;
 		}
 
-		public NomPrenomRaisonSociale(PersonnePhysiqueRF pp) {
-			this(pp.getPrenom(), pp.getNom(), null);
+		public NomPrenomRaisonSocialeDateNaissance(PersonnePhysiqueRF pp) {
+			this(pp.getPrenom(), pp.getNom(), null, pp.getDateNaissance());
 		}
 
-		public NomPrenomRaisonSociale(CollectivitePubliqueRF cp) {
-			this(null, null, cp.getRaisonSociale());
+		public NomPrenomRaisonSocialeDateNaissance(CollectivitePubliqueRF cp) {
+			this(null, null, cp.getRaisonSociale(), null);
 		}
 
-		public NomPrenomRaisonSociale(PersonneMoraleRF pm) {
-			this(null, null, pm.getRaisonSociale());
+		public NomPrenomRaisonSocialeDateNaissance(PersonneMoraleRF pm) {
+			this(null, null, pm.getRaisonSociale(), null);
 		}
 	}
 
-	private static final Map<Class<? extends AyantDroitRF>, Function<? extends AyantDroitRF, NomPrenomRaisonSociale>> RF_NOM_EXTRACTORS = buildRfNomExtractors();
+	private static final Map<Class<? extends AyantDroitRF>, Function<? extends AyantDroitRF, NomPrenomRaisonSocialeDateNaissance>> RF_IDENT_AYANT_DROIT_EXTRACTOR = buildRfIdentificationAyantDroitExtractors();
 
-	private static Map<Class<? extends AyantDroitRF>, Function<? extends AyantDroitRF, NomPrenomRaisonSociale>> buildRfNomExtractors() {
-		final Map<Class<? extends AyantDroitRF>, Function<? extends AyantDroitRF, NomPrenomRaisonSociale>> map = new HashMap<>();
-		addToNomExtractors(map, PersonnePhysiqueRF.class, NomPrenomRaisonSociale::new);
-		addToNomExtractors(map, CollectivitePubliqueRF.class, NomPrenomRaisonSociale::new);
-		addToNomExtractors(map, PersonneMoraleRF.class, NomPrenomRaisonSociale::new);
+	private static Map<Class<? extends AyantDroitRF>, Function<? extends AyantDroitRF, NomPrenomRaisonSocialeDateNaissance>> buildRfIdentificationAyantDroitExtractors() {
+		final Map<Class<? extends AyantDroitRF>, Function<? extends AyantDroitRF, NomPrenomRaisonSocialeDateNaissance>> map = new HashMap<>();
+		addToRfIdentificationAyantDroitExtractors(map, PersonnePhysiqueRF.class, NomPrenomRaisonSocialeDateNaissance::new);
+		addToRfIdentificationAyantDroitExtractors(map, CollectivitePubliqueRF.class, NomPrenomRaisonSocialeDateNaissance::new);
+		addToRfIdentificationAyantDroitExtractors(map, PersonneMoraleRF.class, NomPrenomRaisonSocialeDateNaissance::new);
 		return map;
 	}
 
-	private static <T extends AyantDroitRF> void addToNomExtractors(Map<Class<? extends AyantDroitRF>, Function<? extends AyantDroitRF, NomPrenomRaisonSociale>> map,
-	                                                                Class<T> clazz,
-	                                                                Function<T, NomPrenomRaisonSociale> extractor) {
+	private static <T extends AyantDroitRF> void addToRfIdentificationAyantDroitExtractors(Map<Class<? extends AyantDroitRF>, Function<? extends AyantDroitRF, NomPrenomRaisonSocialeDateNaissance>> map,
+	                                                                                       Class<T> clazz,
+	                                                                                       Function<T, NomPrenomRaisonSocialeDateNaissance> extractor) {
 		map.put(clazz, extractor);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Nullable
-	private static <T extends AyantDroitRF> NomPrenomRaisonSociale buildNomPrenomRaisonSociale(T ayantDroit) {
-		final Function<T, NomPrenomRaisonSociale> extractor = (Function<T, NomPrenomRaisonSociale>) RF_NOM_EXTRACTORS.get(ayantDroit.getClass());
+	private static <T extends AyantDroitRF> InitialisationIFoncResults.NomPrenomRaisonSocialeDateNaissance buildNomPrenomRaisonSociale(T ayantDroit) {
+		final Function<T, NomPrenomRaisonSocialeDateNaissance> extractor = (Function<T, NomPrenomRaisonSocialeDateNaissance>) RF_IDENT_AYANT_DROIT_EXTRACTOR.get(ayantDroit.getClass());
 		return extractor != null ? extractor.apply(ayantDroit) : null;
 	}
 
@@ -130,6 +133,15 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 				.orElse(null);
 	}
 
+	@Nullable
+	private static Long getNoRFAyantDroit(AyantDroitRF ayantDroit) {
+		return Optional.of(ayantDroit)
+				.filter(TiersRF.class::isInstance)
+				.map(TiersRF.class::cast)
+				.map(TiersRF::getNoRF)
+				.orElse(null);
+	}
+
 	public static class InfoImmeuble {
 		public final Long idImmeuble;
 		public final String egrid;
@@ -170,9 +182,10 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 
 		public final Long idContribuable;
 		public final Long idCommunaute;
-		public final NomPrenomRaisonSociale identificationRF;
+		public final NomPrenomRaisonSocialeDateNaissance identificationRF;
 		public final Class<? extends AyantDroitRF> classAyantDroit;
 		public final String idRFAyantDroit;
+		public final Long noRFAyantDroit;
 		public final Class<? extends DroitRF> classDroit;
 		public final GenrePropriete regime;
 		public final String motifDebut;
@@ -196,6 +209,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 
 			// information d'identification en provenance du RF
 			identificationRF = buildNomPrenomRaisonSociale(ayantDroit);
+			noRFAyantDroit = getNoRFAyantDroit(ayantDroit);
 
 			// l'éventuelle communauté
 			idCommunaute = Optional.ofNullable(extractCommunaute(droit)).map(CommunauteRF::getId).orElse(null);
@@ -240,6 +254,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 
 			// information d'identification en provenance du RF
 			identificationRF = buildNomPrenomRaisonSociale(ayantDroit);
+			noRFAyantDroit = getNoRFAyantDroit(ayantDroit);
 
 			// l'éventuelle communauté
 			idCommunaute = Optional.ofNullable(extractCommunaute(servitude)).map(CommunauteRF::getId).orElse(null);
@@ -266,6 +281,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			identificationRF = null;
 			classAyantDroit = null;
 			idRFAyantDroit = null;
+			noRFAyantDroit = null;
 			classDroit = null;
 			regime = null;
 			dateDebut = null;

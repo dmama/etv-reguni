@@ -119,6 +119,7 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 				b.append("NOM").append(COMMA);
 				b.append("PRENOM").append(COMMA);
 				b.append("RAISON_SOCIALE").append(COMMA);
+				b.append("DATE_NAISSANCE").append(COMMA);
 				b.append("TYPE_AYANT_DROIT").append(COMMA);
 				b.append("COMMUNAUTE_ID").append(COMMA);
 				b.append("TYPE_DROIT").append(COMMA);
@@ -139,6 +140,7 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 				b.append("OFS_COMMUNE").append(COMMA);
 				b.append("NOM_COMMUNE").append(COMMA);
 				b.append("AYANT_DROIT_IDRF").append(COMMA);
+				b.append("AYANT_DROIT_NORF").append(COMMA);
 				b.append("IMMEUBLE_BENEFICIAIRE_ID");
 			}
 
@@ -148,6 +150,7 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 				b.append(Optional.ofNullable(extrait.identificationRF).map(identif -> identif.nom).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.identificationRF).map(identif -> identif.prenom).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.identificationRF).map(identif -> identif.raisonSociale).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY)).append(COMMA);
+				b.append(Optional.ofNullable(extrait.identificationRF).map(identif -> identif.dateNaissance).orElse(null)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.classAyantDroit).map(AYANT_DROIT_DISPLAY_STRINGS::get).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.idCommunaute).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.classDroit).map(DROIT_DISPLAY_STRING::get).orElse(StringUtils.EMPTY)).append(COMMA);
@@ -168,6 +171,7 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 				b.append(Optional.ofNullable(extrait.infoImmeuble).map(info -> info.noOfsCommune).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.infoImmeuble).map(info -> info.nomCommune).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.idRFAyantDroit).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY)).append(COMMA);
+				b.append(Optional.ofNullable(extrait.noRFAyantDroit).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.idImmeubleBeneficiaire).map(String::valueOf).orElse(StringUtils.EMPTY));
 				return true;
 			}

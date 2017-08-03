@@ -41,6 +41,10 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 	@Test
 	public void testSimple() throws Exception {
 
+		final long noRfProprietaire = 5753865L;
+		final long noRfHabitant = 432784237L;
+		final long noRfUsufruitier = 32432L;
+
 		final class Ids {
 			long idProprietaire;
 			long idHabitant;
@@ -54,15 +58,18 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 
 			final PersonnePhysique proprio = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
 			final PersonnePhysiqueRF proprioRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
+			proprioRF.setNoRF(noRfProprietaire);
 			addRapprochementRF(proprio, proprioRF, null, null, TypeRapprochementRF.AUTO);
 			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COPROPRIETE, proprioRF, immeuble, null);
 
 			final PersonnePhysique habitant = addNonHabitant("Albertine", "Zorro", date(1979, 6, 1), Sexe.FEMININ);
 			final PersonnePhysiqueRF habitantRF = addPersonnePhysiqueRF("5w47tgtflbsfg", "Albertine", "Zorro", date(1979, 6, 1));
+			habitantRF.setNoRF(noRfHabitant);
 			addRapprochementRF(habitant, habitantRF, null, null, TypeRapprochementRF.AUTO);
 			addDroitHabitationRF(null, date(2017, 3, 1), null, null, "Un motif, quoi...", null, "5378tgzufbs", "5378tgzufbr", null, null, habitantRF, immeuble);
 
 			final PersonnePhysiqueRF usufruitier = addPersonnePhysiqueRF("236gzbfahécf", "Gérard", "Menfais", date(2000, 3, 1));
+			usufruitier.setNoRF(noRfUsufruitier);
 			addUsufruitRF(null, date(2015, 6, 1), null, null, "Succession", null, "58gfhfba", "58gfhfbb", null, null, usufruitier, immeuble);
 
 			final Ids res = new Ids();
@@ -90,6 +97,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals("Rouge", info.identificationRF.nom);
 				Assert.assertEquals("Francis", info.identificationRF.prenom);
 				Assert.assertNull(info.identificationRF.raisonSociale);
+				Assert.assertEquals(date(1975, 4, 2), info.identificationRF.dateNaissance);
 				Assert.assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
 				Assert.assertEquals(DroitProprietePersonnePhysiqueRF.class, info.classDroit);
 				Assert.assertEquals("Achat", info.motifDebut);
@@ -107,6 +115,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals(5, info.part.getDenominateur());
 				Assert.assertEquals(GenrePropriete.COPROPRIETE, info.regime);
 				Assert.assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+				Assert.assertEquals((Long) noRfProprietaire, info.noRFAyantDroit);
 				Assert.assertNull(info.idImmeubleBeneficiaire);
 			}
 			{
@@ -118,6 +127,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals("Menfais", info.identificationRF.nom);
 				Assert.assertEquals("Gérard", info.identificationRF.prenom);
 				Assert.assertNull(info.identificationRF.raisonSociale);
+				Assert.assertEquals(date(2000, 3, 1), info.identificationRF.dateNaissance);
 				Assert.assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
 				Assert.assertEquals(UsufruitRF.class, info.classDroit);
 				Assert.assertEquals("Succession", info.motifDebut);
@@ -133,6 +143,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertNull(info.part);
 				Assert.assertNull(info.regime);
 				Assert.assertEquals("236gzbfahécf", info.idRFAyantDroit);
+				Assert.assertEquals((Long) noRfUsufruitier, info.noRFAyantDroit);
 				Assert.assertNull(info.idImmeubleBeneficiaire);
 			}
 		}
@@ -154,6 +165,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals("Rouge", info.identificationRF.nom);
 				Assert.assertEquals("Francis", info.identificationRF.prenom);
 				Assert.assertNull(info.identificationRF.raisonSociale);
+				Assert.assertEquals(date(1975, 4, 2), info.identificationRF.dateNaissance);
 				Assert.assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
 				Assert.assertEquals(DroitProprietePersonnePhysiqueRF.class, info.classDroit);
 				Assert.assertEquals("Achat", info.motifDebut);
@@ -171,6 +183,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals(5, info.part.getDenominateur());
 				Assert.assertEquals(GenrePropriete.COPROPRIETE, info.regime);
 				Assert.assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+				Assert.assertEquals((Long) noRfProprietaire, info.noRFAyantDroit);
 				Assert.assertNull(info.idImmeubleBeneficiaire);
 			}
 			{
@@ -182,6 +195,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals("Zorro", info.identificationRF.nom);
 				Assert.assertEquals("Albertine", info.identificationRF.prenom);
 				Assert.assertNull(info.identificationRF.raisonSociale);
+				Assert.assertEquals(date(1979, 6, 1), info.identificationRF.dateNaissance);
 				Assert.assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
 				Assert.assertEquals(DroitHabitationRF.class, info.classDroit);
 				Assert.assertEquals("Un motif, quoi...", info.motifDebut);
@@ -197,6 +211,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertNull(info.part);
 				Assert.assertNull(info.regime);
 				Assert.assertEquals("5w47tgtflbsfg", info.idRFAyantDroit);
+				Assert.assertEquals((Long) noRfHabitant, info.noRFAyantDroit);
 				Assert.assertNull(info.idImmeubleBeneficiaire);
 			}
 			{
@@ -208,6 +223,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertEquals("Menfais", info.identificationRF.nom);
 				Assert.assertEquals("Gérard", info.identificationRF.prenom);
 				Assert.assertNull(info.identificationRF.raisonSociale);
+				Assert.assertEquals(date(2000, 3, 1), info.identificationRF.dateNaissance);
 				Assert.assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
 				Assert.assertEquals(UsufruitRF.class, info.classDroit);
 				Assert.assertEquals("Succession", info.motifDebut);
@@ -223,6 +239,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 				Assert.assertNull(info.part);
 				Assert.assertNull(info.regime);
 				Assert.assertEquals("236gzbfahécf", info.idRFAyantDroit);
+				Assert.assertEquals((Long) noRfUsufruitier, info.noRFAyantDroit);
 				Assert.assertNull(info.idImmeubleBeneficiaire);
 			}
 		}
@@ -230,6 +247,9 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 
 	@Test
 	public void testAvecCommunaute() throws Exception {
+
+		final long noRfCommuniste1 = 43724L;
+		final long noRfCommuniste2 = 437823L;
 
 		final class Ids {
 			long id1;
@@ -247,12 +267,14 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 
 			final PersonnePhysique communiste1 = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
 			final PersonnePhysiqueRF communisteRF1 = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
+			communisteRF1.setNoRF(noRfCommuniste1);
 			addRapprochementRF(communiste1, communisteRF1, null, null, TypeRapprochementRF.AUTO);
 
 			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, communisteRF1, immeuble, communaute);
 
 			final PersonnePhysique communiste2 = addNonHabitant("Albertine", "Zorro", date(1979, 6, 1), Sexe.FEMININ);
 			final PersonnePhysiqueRF communisteRF2 = addPersonnePhysiqueRF("5w47tgtflbsfg", "Albertine", "Zorro", date(1979, 6, 1));
+			communisteRF2.setNoRF(noRfCommuniste2);
 			addRapprochementRF(communiste2, communisteRF2, null, null, TypeRapprochementRF.AUTO);
 
 			addDroitPersonnePhysiqueRF(null, date(2017, 3, 1), null, null, "Un motif, quoi...", null, "5378tgzufbs", "5378tgzufbr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(3, 8), GenrePropriete.COMMUNE, communisteRF2, immeuble, communaute);
@@ -283,6 +305,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals("Rouge", info.identificationRF.nom);
 			Assert.assertEquals("Francis", info.identificationRF.prenom);
 			Assert.assertNull(info.identificationRF.raisonSociale);
+			Assert.assertEquals(date(1975, 4, 2), info.identificationRF.dateNaissance);
 			Assert.assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
 			Assert.assertEquals(DroitProprietePersonnePhysiqueRF.class, info.classDroit);
 			Assert.assertEquals("Achat", info.motifDebut);
@@ -300,6 +323,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(5, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.COMMUNE, info.regime);
 			Assert.assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+			Assert.assertEquals((Long) noRfCommuniste1, info.noRFAyantDroit);
 			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 		{
@@ -311,6 +335,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals("Zorro", info.identificationRF.nom);
 			Assert.assertEquals("Albertine", info.identificationRF.prenom);
 			Assert.assertNull(info.identificationRF.raisonSociale);
+			Assert.assertEquals(date(1979, 6, 1), info.identificationRF.dateNaissance);
 			Assert.assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
 			Assert.assertEquals(DroitProprietePersonnePhysiqueRF.class, info.classDroit);
 			Assert.assertEquals("Un motif, quoi...", info.motifDebut);
@@ -328,6 +353,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(8, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.COMMUNE, info.regime);
 			Assert.assertEquals("5w47tgtflbsfg", info.idRFAyantDroit);
+			Assert.assertEquals((Long) noRfCommuniste2, info.noRFAyantDroit);
 			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 		{
@@ -353,12 +379,15 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(50, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.INDIVIDUELLE, info.regime);
 			Assert.assertEquals("285t378og43t", info.idRFAyantDroit);
+			Assert.assertNull(info.noRFAyantDroit);
 			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 	}
 
 	@Test
 	public void testImmeubleSansAucunDroit() throws Exception {
+
+		final long noRfProprietaire = 4625237L;
 
 		final class Ids {
 			long idProprietaire;
@@ -373,6 +402,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 
 			final PersonnePhysique proprio = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
 			final PersonnePhysiqueRF proprioRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
+			proprioRF.setNoRF(noRfProprietaire);
 			addRapprochementRF(proprio, proprioRF, null, null, TypeRapprochementRF.AUTO);
 
 			addDroitPersonnePhysiqueRF(null, date(2016, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeuble, null);
@@ -402,6 +432,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals("Rouge", info.identificationRF.nom);
 			Assert.assertEquals("Francis", info.identificationRF.prenom);
 			Assert.assertNull(info.identificationRF.raisonSociale);
+			Assert.assertEquals(date(1975, 4, 2), info.identificationRF.dateNaissance);
 			Assert.assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
 			Assert.assertEquals(DroitProprietePersonnePhysiqueRF.class, info.classDroit);
 			Assert.assertEquals("Achat", info.motifDebut);
@@ -419,6 +450,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(5, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.COMMUNE, info.regime);
 			Assert.assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+			Assert.assertEquals((Long) noRfProprietaire, info.noRFAyantDroit);
 			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 		{
@@ -441,11 +473,16 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), info.infoImmeuble.noOfsCommune);
 			Assert.assertNull(info.part);
 			Assert.assertNull(info.regime);
+			Assert.assertNull(info.idRFAyantDroit);
+			Assert.assertNull(info.noRFAyantDroit);
+			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 	}
 
 	@Test
 	public void testImmeubleSansDroitADateReference() throws Exception {
+
+		final long noRfProprietaire = 23478234L;
 
 		final class Ids {
 			long idProprietaire;
@@ -460,6 +497,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 
 			final PersonnePhysique proprio = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
 			final PersonnePhysiqueRF proprioRF = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
+			proprioRF.setNoRF(noRfProprietaire);
 			addRapprochementRF(proprio, proprioRF, null, null, TypeRapprochementRF.AUTO);
 
 			addDroitPersonnePhysiqueRF(null, date(2015, 5, 2), null, null, "Achat", null, "3458wgfs", "3458wgfr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(1, 5), GenrePropriete.COMMUNE, proprioRF, immeuble, null);
@@ -490,6 +528,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals("Rouge", info.identificationRF.nom);
 			Assert.assertEquals("Francis", info.identificationRF.prenom);
 			Assert.assertNull(info.identificationRF.raisonSociale);
+			Assert.assertEquals(date(1975, 4, 2), info.identificationRF.dateNaissance);
 			Assert.assertEquals(PersonnePhysiqueRF.class, info.classAyantDroit);
 			Assert.assertEquals(DroitProprietePersonnePhysiqueRF.class, info.classDroit);
 			Assert.assertEquals("Achat", info.motifDebut);
@@ -507,6 +546,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(5, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.COMMUNE, info.regime);
 			Assert.assertEquals("6784t6gfsbnc", info.idRFAyantDroit);
+			Assert.assertEquals((Long) noRfProprietaire, info.noRFAyantDroit);
 			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 
@@ -578,6 +618,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertEquals(5, info.part.getDenominateur());
 			Assert.assertEquals(GenrePropriete.FONDS_DOMINANT, info.regime);
 			Assert.assertEquals("4678536545hjksdf", info.idRFAyantDroit);
+			Assert.assertNull(info.noRFAyantDroit);
 			Assert.assertEquals((Long) ids.idImmeubleBeneficiaire, info.idImmeubleBeneficiaire);
 		}
 		{
@@ -601,6 +642,7 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			Assert.assertNull(info.part);
 			Assert.assertNull(info.regime);
 			Assert.assertNull(info.idRFAyantDroit);
+			Assert.assertNull(info.noRFAyantDroit);
 			Assert.assertNull(info.idImmeubleBeneficiaire);
 		}
 	}
