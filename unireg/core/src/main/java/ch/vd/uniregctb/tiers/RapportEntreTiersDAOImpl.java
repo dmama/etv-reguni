@@ -215,6 +215,11 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 								//noinspection unchecked
 								return ((Comparable) value1).compareTo(value2);
 							}
+							else if (Class.class.equals(descriptor.getPropertyType())) {
+								// [SIFISC-25994] on veut comparer par classe (= type de rapport)...
+								//noinspection ConstantConditions
+								return ((Class<?>) value1).getSimpleName().compareTo(((Class<?>) value2).getSimpleName());
+							}
 							else {
 								throw new IllegalArgumentException("Propriété " + descriptor.getDisplayName() + " de type " + descriptor.getPropertyType().getName() + " non comparable...");
 							}
