@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-ws-tools</artifactId>
 	<packaging>jar</packaging>
-	<version>1.4</version>
+	<version>1.5-SNAPSHOT</version>
 
 	<name>Unireg - WS Tools</name>
 	<description>Unireg - Outils pour les web-services</description>
