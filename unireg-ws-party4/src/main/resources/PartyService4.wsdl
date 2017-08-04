@@ -2,7 +2,7 @@
 <wsdl:definitions name="PartyWebService" targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party4" xmlns="http://www.vd.ch/fiscalite/unireg/webservices/party4"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ws="http://www.vd.ch/fiscalite/unireg/webservices/party4" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
 	<!-- BEGIN_LVERSION -->
-	<wsdl:documentation>version 4.1</wsdl:documentation>
+	<wsdl:documentation>version 4.2-SNAPSHOT</wsdl:documentation>
 	<!-- END_LVERSION -->
 	<wsdl:types>
 		<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/webservices/party4"
