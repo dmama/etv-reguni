@@ -10,7 +10,7 @@
 	<artifactId>unireg-ws-party3</artifactId>
 	<packaging>jar</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>3.8</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
+	<version>3.9-SNAPSHOT</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
 	<!-- END_LVERSION -->
 
 	<name>Unireg - WS Party v3</name>
@@ -171,7 +171,7 @@
 									author="true"
 									classpath="${compile_classpath}"
 									destdir="target/ws.javadoc"
-									doctitle="Unireg - Documentation du web service Party v3 (3.8)"
+									doctitle="Unireg - Documentation du web service Party v3 (3.9-SNAPSHOT)"
 									nodeprecated="false"
 									nodeprecatedlist="false"
 									noindex="false"
