@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-wsclient-rcpers</artifactId>
 	<packaging>jar</packaging>
-	<version>5.2</version>
+	<version>5.3-SNAPSHOT</version>
 
 	<name>Unireg - Client WS RCPers v5</name>
 	<description>Unireg - Client Java pour le web-service d'échange de données v5 de RCPers</description>
