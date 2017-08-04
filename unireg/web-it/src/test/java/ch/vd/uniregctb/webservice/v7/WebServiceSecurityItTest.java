@@ -62,7 +62,7 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 		final Map<String, Object> params = new HashMap<>();
 		params.put("user", login.getUserId());
 		final String partyNosParams = Arrays.stream(noTiers)
-				.mapToObj(no -> "partyNos=" + no)
+				.mapToObj(no -> "partyNo=" + no)
 				.collect(Collectors.joining("&"));
 		final ResponseEntity<SecurityListResponse> response = get(SecurityListResponse.class, mediaType, "/securityOnParties?user={user}&" + partyNosParams, params);
 		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
