@@ -70,6 +70,8 @@ import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
+import ch.vd.unireg.ws.security.v7.PartyAccess;
+import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
@@ -296,6 +298,34 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public SecurityResponse getSecurityOnParty(String user, int partyNo) {
 		final Niveau niveau = context.securityProvider.getDroitAcces(user, partyNo);
 		return new SecurityResponse(user, partyNo, EnumHelper.toXml(niveau));
+	}
+
+	@Override
+	public SecurityListResponse getSecurityOnParties(@NotNull String user, @NotNull List<Integer> partyNos) {
+
+		// on charge les données sur plusieurs threads
+		final ForkJoinTask<SecurityListResponse> task = forkJoinPool.submit(() -> {
+			List<PartyAccess> partyAccesses = new HashSet<>(partyNos).stream()
+					.parallel()
+					.filter(Objects::nonNull)
+					.map((Integer partyNo) -> resolvePartyAccess(user, partyNo))
+					.sorted(Comparator.comparing(PartyAccess::getPartyNo))
+					.collect(Collectors.toList());
+			return new SecurityListResponse(user, partyAccesses);
+		});
+
+		return task.join();
+	}
+
+	@NotNull
+	private PartyAccess resolvePartyAccess(@NotNull String user, int partyNo) {
+		try {
+			final Niveau niveau = context.securityProvider.getDroitAcces(user, partyNo);
+			return new PartyAccess(partyNo, EnumHelper.toXml(niveau), null);
+		}
+		catch (Exception e) {
+			return new PartyAccess(partyNo, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, e.getMessage()));
+		}
 	}
 
 	@Override

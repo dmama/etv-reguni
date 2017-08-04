@@ -18,6 +18,7 @@ import ch.vd.unireg.ws.landregistry.v7.CommunityOfOwnersList;
 import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Parties;
+import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
@@ -118,6 +119,11 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	@Override
 	public SecurityResponse getSecurityOnParty(String user, int partyNo) {
 		return target.getSecurityOnParty(user, partyNo);
+	}
+
+	@Override
+	public SecurityListResponse getSecurityOnParties(@NotNull String user, @NotNull List<Integer> partyNos) {
+		return target.getSecurityOnParties(user, partyNos);
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
+import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
@@ -83,6 +84,27 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 		finally {
 			tracing.end(time, t, "getSecurityOnParty", null);
+		}
+	}
+
+	@Override
+	public SecurityListResponse getSecurityOnParties(@NotNull String user, @NotNull List<Integer> partyNos) {
+		Throwable t = null;
+		final long time = tracing.start();
+		int resultSize = 0;
+		try {
+			final SecurityListResponse list = target.getSecurityOnParties(user, partyNos);
+			if (list != null) {
+				resultSize = list.getPartyAccesses().size();
+			}
+			return list;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getSecurityOnParties", resultSize, null);
 		}
 	}
 

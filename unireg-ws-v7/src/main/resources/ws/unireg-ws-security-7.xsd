@@ -3,9 +3,11 @@
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:common="http://www.vd.ch/fiscalite/unireg/common/2"
            xmlns:tns="http://www.vd.ch/fiscalite/unireg/ws/security/7"
+           xmlns:error="http://www.vd.ch/fiscalite/unireg/error/1"
            xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/error/1" schemaLocation="../unireg-error-1.xsd"/>
 
 	<xs:simpleType name="allowedAccessType">
 		<xs:annotation>
@@ -61,6 +63,57 @@
 		</xs:sequence>
 	</xs:complexType>
 
+	<xs:complexType name="securityListResponseType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Réponse à la demande du type d'accès autorisé sur plusieurs dossiers fiscaux.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="user" type="xs:token">
+				<xs:annotation>
+					<xs:documentation>Visa de l'opérateur demandeur.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="partyAccesses" type="tns:partyAccessType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Accès octroyé pour les numéros de tiers demandés.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="partyAccessType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Type d'accès autorisé sur un dossier fiscal (pour un opérateur implicit).</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="partyNo" type="common:partyNumberType">
+				<xs:annotation>
+					<xs:documentation>Numéro du tiers concerné.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="allowedAccess" type="tns:allowedAccessType">
+					<xs:annotation>
+						<xs:documentation>Accès octroyé pour l'opérateur sur le dossier du tiers.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="error" type="error:errorType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- élément de réponse de la ressource /security/{user}/{partyNo} -->
 	<xs:element name="userAccess" type="tns:securityResponseType"/>
+
+	<!-- élément de réponse de la ressource /securityOnParties -->
+	<xs:element name="userAccesses" type="tns:securityListResponseType"/>
 
 </xs:schema>

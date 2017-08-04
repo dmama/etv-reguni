@@ -34,6 +34,7 @@ import ch.vd.unireg.ws.landregistry.v7.ImmovablePropertyList;
 import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
+import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
@@ -321,6 +322,11 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	@Override
 	public SecurityResponse getSecurityOnParty(String user, int partyNo) {
 		return target.getSecurityOnParty(user, partyNo);
+	}
+
+	@Override
+	public SecurityListResponse getSecurityOnParties(@NotNull String user, @NotNull List<Integer> partyNos) {
+		return target.getSecurityOnParties(user, partyNos);
 	}
 
 	@Override

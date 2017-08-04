@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.webservice.v7;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
@@ -11,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import ch.vd.unireg.ws.security.v7.AllowedAccess;
+import ch.vd.unireg.ws.security.v7.PartyAccess;
+import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 
@@ -39,7 +43,7 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 		final Map<String, Object> map = new HashMap<>();
 		map.put("user", userLogin.getUserId());
 		map.put("partyNo", partyNumber);
-		return Pair.<String, Map<String, ?>>of("/security/{user}/{partyNo}", map);
+		return Pair.of("/security/{user}/{partyNo}", map);
 	}
 
 	private void doTest(UserLogin login, long noTiers, AllowedAccess expected, MediaType mediaType) {
@@ -52,6 +56,24 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 		Assert.assertEquals(noTiers, body.getPartyNo());
 		Assert.assertEquals(login.getUserId(), body.getUser());
 		Assert.assertEquals(expected, body.getAllowedAccess());
+	}
+
+	private void doTestBatch(UserLogin login, AllowedAccess expected, MediaType mediaType, long... noTiers) {
+		final Map<String, Object> params = new HashMap<>();
+		params.put("user", login.getUserId());
+		final String partyNosParams = Arrays.stream(noTiers)
+				.mapToObj(no -> "partyNos=" + no)
+				.collect(Collectors.joining("&"));
+		final ResponseEntity<SecurityListResponse> response = get(SecurityListResponse.class, mediaType, "/securityOnParties?user={user}&" + partyNosParams, params);
+		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		final SecurityListResponse body = response.getBody();
+		Assert.assertNotNull(body);
+		Assert.assertEquals(login.getUserId(), body.getUser());
+		final Map<Integer, AllowedAccess> accesses = body.getPartyAccesses().stream().collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
+		for (long no : noTiers) {
+			Assert.assertEquals(expected, accesses.get((int) no));
+		}
 	}
 
 	@Test
@@ -99,6 +121,15 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 	}
 
 	/**
+	 * Teste que Francis Perroset possède les droits d'écriture sur tous les contribuables (parce que les droits d'accès ont été définis comme ça)
+	 */
+	@Test
+	public void testGetBatchSecurityFrancisPerroset() throws Exception {
+		doTestBatch(zaiptf, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
+		doTestBatch(zaiptf, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
+	}
+
+	/**
 	 * Teste que Marinette Kellenberger possède les droits d'écriture sur tous les contribuables (parce qu'elle fait partie de la direction de l'ACI)
 	 */
 	@Test
@@ -127,6 +158,15 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 		// Pascal Broulis
 		doTest(zaimkd, 10149508L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML);
 		doTest(zaimkd, 10149508L, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON);
+	}
+
+	/**
+	 * Teste que Marinette Kellenberger possède les droits d'écriture sur tous les contribuables (parce qu'elle fait partie de la direction de l'ACI)
+	 */
+	@Test
+	public void testGetBatchSecurityMarinetteKellenbeger() throws Exception {
+		doTestBatch(zaimkd, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
+		doTestBatch(zaimkd, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L, 10149508L);
 	}
 
 	/**
@@ -162,6 +202,18 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 	}
 
 	/**
+	 * Teste que Daniel Di Lallo ne possède aucun droit sur Laurent Schmid et son couple (interdiction) ni sur Pascal Broulis
+	 * (autorisation exclusive pour Francis Perroset).
+	 */
+	@Test
+	public void testGetBatchSecurityDanielDiLallo() throws Exception {
+		doTestBatch(zciddo, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML, 12300001L, 10210315L, 61615502L);
+		doTestBatch(zciddo, AllowedAccess.NONE, MediaType.APPLICATION_XML, 12300002L, 86006202L, 10149508L);
+		doTestBatch(zciddo, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON, 12300001L, 10210315L, 61615502L);
+		doTestBatch(zciddo, AllowedAccess.NONE, MediaType.APPLICATION_JSON, 12300002L, 86006202L, 10149508L);
+	}
+
+	/**
 	 * Teste que Pascal Mutrux (un employé de l'ACI pris au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
 	 */
 	@Test
@@ -190,5 +242,16 @@ public class WebServiceSecurityItTest extends AbstractWebServiceItTest {
 		// Pascal Broulis
 		doTest(zaipmx, 10149508L, AllowedAccess.NONE, MediaType.APPLICATION_XML);
 		doTest(zaipmx, 10149508L, AllowedAccess.NONE, MediaType.APPLICATION_JSON);
+	}
+
+	/**
+	 * Teste que Pascal Mutrux (un employé de l'ACI pris au hazard) ne possède aucun droit sur Pascal Broulis (autorisation exclusive pour Francis Perroset).
+	 */
+	@Test
+	public void testGetBatchSecurityRoselyneFavre() throws Exception {
+		doTestBatch(zaipmx, AllowedAccess.READ_WRITE, MediaType.APPLICATION_XML, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L);
+		doTestBatch(zaipmx, AllowedAccess.NONE, MediaType.APPLICATION_XML, 10149508L);
+		doTestBatch(zaipmx, AllowedAccess.READ_WRITE, MediaType.APPLICATION_JSON, 12300001L, 12300002L, 86006202L, 10210315L, 61615502L);
+		doTestBatch(zaipmx, AllowedAccess.NONE, MediaType.APPLICATION_JSON, 10149508L);
 	}
 }

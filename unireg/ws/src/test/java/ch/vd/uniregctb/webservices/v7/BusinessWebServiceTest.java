@@ -66,6 +66,8 @@ import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.AllowedAccess;
+import ch.vd.unireg.ws.security.v7.PartyAccess;
+import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
@@ -369,11 +371,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		final class Ids {
-			long idProtege;
-			long idConjointDeProtege;
-			long idCoupleProtege;
-			long idNormal;
-			long idCoupleNormal;
+			int idProtege;
+			int idConjointDeProtege;
+			int idCoupleProtege;
+			int idNormal;
+			int idCoupleNormal;
 		}
 
 		// création des contribuables avec éventuelle protections
@@ -390,11 +392,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final EnsembleTiersCouple coupleNormal = addEnsembleTiersCouple(normal, null, date(1987, 6, 5), null);
 
 				final Ids ids = new Ids();
-				ids.idProtege = protege.getNumero();
-				ids.idConjointDeProtege = conjointDeProtege.getNumero();
-				ids.idCoupleProtege = coupleProtege.getMenage().getNumero();
-				ids.idNormal = normal.getNumero();
-				ids.idCoupleNormal = coupleNormal.getMenage().getNumero();
+				ids.idProtege = protege.getNumero().intValue();
+				ids.idConjointDeProtege = conjointDeProtege.getNumero().intValue();
+				ids.idCoupleProtege = coupleProtege.getMenage().getNumero().intValue();
+				ids.idNormal = normal.getNumero().intValue();
+				ids.idCoupleNormal = coupleNormal.getMenage().getNumero().intValue();
 				return ids;
 			}
 		});
@@ -408,38 +410,86 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		// l'omnipotent peut tout faire
 		{
-			assertAllowedAccess(visaOmnipotent, (int) ids.idProtege, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaOmnipotent, (int) ids.idConjointDeProtege, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaOmnipotent, (int) ids.idCoupleProtege, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaOmnipotent, (int) ids.idNormal, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaOmnipotent, (int) ids.idCoupleNormal, AllowedAccess.READ_WRITE);
+			// accès un-à-un
+			assertAllowedAccess(visaOmnipotent, ids.idProtege, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaOmnipotent, ids.idConjointDeProtege, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaOmnipotent, ids.idCoupleProtege, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaOmnipotent, ids.idNormal, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaOmnipotent, ids.idCoupleNormal, AllowedAccess.READ_WRITE);
+
+			// accès batch
+			final SecurityListResponse response = service.getSecurityOnParties(visaOmnipotent, Arrays.asList(ids.idProtege, ids.idConjointDeProtege, ids.idCoupleProtege, ids.idNormal, ids.idCoupleNormal));
+			Assert.assertEquals(visaOmnipotent, response.getUser());
+			final Map<Integer, AllowedAccess> accessesMap = response.getPartyAccesses().stream()
+					.collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idProtege));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleProtege));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
 		}
 
 		// l'acteur peut tout faire également
 		{
-			assertAllowedAccess(visaActeur, (int) ids.idProtege, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaActeur, (int) ids.idConjointDeProtege, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaActeur, (int) ids.idCoupleProtege, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaActeur, (int) ids.idNormal, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaActeur, (int) ids.idCoupleNormal, AllowedAccess.READ_WRITE);
+			// accès un-à-un
+			assertAllowedAccess(visaActeur, ids.idProtege, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaActeur, ids.idConjointDeProtege, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaActeur, ids.idCoupleProtege, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaActeur, ids.idNormal, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaActeur, ids.idCoupleNormal, AllowedAccess.READ_WRITE);
+
+			// accès batch
+			final SecurityListResponse response = service.getSecurityOnParties(visaActeur, Arrays.asList(ids.idProtege, ids.idConjointDeProtege, ids.idCoupleProtege, ids.idNormal, ids.idCoupleNormal));
+			Assert.assertEquals(visaActeur, response.getUser());
+			final Map<Integer, AllowedAccess> accessesMap = response.getPartyAccesses().stream()
+					.collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idProtege));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleProtege));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
 		}
 
 		// le voyeur, lui, ne peut pas modifier ce qui est protégé, mais peut le voir
 		{
-			assertAllowedAccess(visaVoyeur, (int) ids.idProtege, AllowedAccess.READ_ONLY);
-			assertAllowedAccess(visaVoyeur, (int) ids.idConjointDeProtege, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaVoyeur, (int) ids.idCoupleProtege, AllowedAccess.READ_ONLY);
-			assertAllowedAccess(visaVoyeur, (int) ids.idNormal, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaVoyeur, (int) ids.idCoupleNormal, AllowedAccess.READ_WRITE);
+			// accès un-à-un
+			assertAllowedAccess(visaVoyeur, ids.idProtege, AllowedAccess.READ_ONLY);
+			assertAllowedAccess(visaVoyeur, ids.idConjointDeProtege, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaVoyeur, ids.idCoupleProtege, AllowedAccess.READ_ONLY);
+			assertAllowedAccess(visaVoyeur, ids.idNormal, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaVoyeur, ids.idCoupleNormal, AllowedAccess.READ_WRITE);
+
+			// accès batch
+			final SecurityListResponse response = service.getSecurityOnParties(visaVoyeur, Arrays.asList(ids.idProtege, ids.idConjointDeProtege, ids.idCoupleProtege, ids.idNormal, ids.idCoupleNormal));
+			Assert.assertEquals(visaVoyeur, response.getUser());
+			final Map<Integer, AllowedAccess> accessesMap = response.getPartyAccesses().stream()
+					.collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
+			Assert.assertEquals(AllowedAccess.READ_ONLY, accessesMap.get(ids.idProtege));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
+			Assert.assertEquals(AllowedAccess.READ_ONLY, accessesMap.get(ids.idCoupleProtege));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
 		}
 
 		// le grouillot, lui, ne peut pas voir ce qui est protégé
 		{
-			assertAllowedAccess(visaGrouillot, (int) ids.idProtege, AllowedAccess.NONE);
-			assertAllowedAccess(visaGrouillot, (int) ids.idConjointDeProtege, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaGrouillot, (int) ids.idCoupleProtege, AllowedAccess.NONE);
-			assertAllowedAccess(visaGrouillot, (int) ids.idNormal, AllowedAccess.READ_WRITE);
-			assertAllowedAccess(visaGrouillot, (int) ids.idCoupleNormal, AllowedAccess.READ_WRITE);
+			// accès un-à-un
+			assertAllowedAccess(visaGrouillot, ids.idProtege, AllowedAccess.NONE);
+			assertAllowedAccess(visaGrouillot, ids.idConjointDeProtege, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaGrouillot, ids.idCoupleProtege, AllowedAccess.NONE);
+			assertAllowedAccess(visaGrouillot, ids.idNormal, AllowedAccess.READ_WRITE);
+			assertAllowedAccess(visaGrouillot, ids.idCoupleNormal, AllowedAccess.READ_WRITE);
+
+			// accès batch
+			final SecurityListResponse response = service.getSecurityOnParties(visaGrouillot, Arrays.asList(ids.idProtege, ids.idConjointDeProtege, ids.idCoupleProtege, ids.idNormal, ids.idCoupleNormal));
+			Assert.assertEquals(visaGrouillot, response.getUser());
+			final Map<Integer, AllowedAccess> accessesMap = response.getPartyAccesses().stream()
+					.collect(Collectors.toMap(PartyAccess::getPartyNo, PartyAccess::getAllowedAccess));
+			Assert.assertEquals(AllowedAccess.NONE, accessesMap.get(ids.idProtege));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idConjointDeProtege));
+			Assert.assertEquals(AllowedAccess.NONE, accessesMap.get(ids.idCoupleProtege));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idNormal));
+			Assert.assertEquals(AllowedAccess.READ_WRITE, accessesMap.get(ids.idCoupleNormal));
 		}
 	}
 

@@ -47,6 +47,7 @@ import ch.vd.unireg.ws.modifiedtaxpayers.v7.PartyNumberList;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.search.party.v7.SearchResult;
+import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
@@ -256,6 +257,27 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			}
 			else if (preferred == MediaType.APPLICATION_XML_TYPE) {
 				return ExecutionResult.with(Response.ok(securityObjectFactory.createUserAccess(response), preferred).build());
+			}
+			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+		});
+	}
+
+	@Override
+	public Response getSecurityOnParties(String user, List<Integer> partyNos) {
+
+		if (StringUtils.isBlank(user) || partyNos == null || partyNos.isEmpty()) {
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		}
+		final Supplier<String> params = () -> String.format("getSecurityOnParties{user=%s, partyNos=%s}", WebServiceHelper.enquote(user), WebServiceHelper.toString(partyNos));
+
+		return execute(params, READ_ACCESS_LOG, () -> {
+			final SecurityListResponse response = target.getSecurityOnParties(user, partyNos);
+			final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+			if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
+				return ExecutionResult.with(Response.ok(response, preferred).build());
+			}
+			else if (preferred == MediaType.APPLICATION_XML_TYPE) {
+				return ExecutionResult.with(Response.ok(securityObjectFactory.createUserAccesses(response), preferred).build());
 			}
 			return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
 		});
