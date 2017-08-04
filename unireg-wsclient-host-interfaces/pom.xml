@@ -10,7 +10,7 @@
 	<artifactId>unireg-wsclient-host-interfaces</artifactId>
 	<packaging>jar</packaging>
         <!-- BEGIN_LVERSION -->
-	<version>1.1</version>
+	<version>1.2-SNAPSHOT</version>
         <!-- END_LVERSION -->
 
 	<name>Unireg - Client host-interfaces</name>
