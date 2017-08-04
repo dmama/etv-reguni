@@ -667,7 +667,7 @@
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 
-		<!-- Web application versions -->
+		<!-- Web application versions (voir section "References" de https://tomcat.apache.org/tomcat-8.0-doc/index.html) -->
 		<jsp.version>2.2</jsp.version>
 		<servlet.version>3.1.0</servlet.version>
 		<jstl.version>1.2</jstl.version>
