@@ -42,7 +42,6 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamDynamicEnum;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamType;
-import ch.vd.uniregctb.ubr.ErrorData;
 import ch.vd.uniregctb.ubr.JobConstants;
 import ch.vd.uniregctb.ubr.JobDescription;
 import ch.vd.uniregctb.ubr.JobNames;
@@ -231,7 +230,7 @@ public class WebServiceEndPoint implements WebService {
 	private static Response buildUnknownBatchNameResponse(String jobName) {
 		return Response.status(Response.Status.NOT_FOUND)
 				.type(APPLICATION_JSON_WITH_UTF8_CHARSET)
-				.entity(new ErrorData(String.format("Job '%s' not found", jobName)))
+				.entity(String.format("Job '%s' not found", jobName))
 				.build();
 	}
 
@@ -257,7 +256,7 @@ public class WebServiceEndPoint implements WebService {
 					if (StringUtils.isBlank(name)) {
 						return Response.status(Response.Status.BAD_REQUEST)
 								.type(APPLICATION_JSON_WITH_UTF8_CHARSET)
-								.entity(new ErrorData("Parts in multipart data should be named using the 'name' field in the 'Content-Disposition' header"))
+								.entity("Parts in multipart data should be named using the 'name' field in the 'Content-Disposition' header")
 								.build();
 					}
 					if (JobConstants.SIMPLE_PARAMETERS_PART_NAME.equals(name)) {
@@ -292,7 +291,7 @@ public class WebServiceEndPoint implements WebService {
 							// on attendait un fichier, mais autre chose nous arrive...
 							return Response.status(Response.Status.BAD_REQUEST)
 									.type(APPLICATION_JSON_WITH_UTF8_CHARSET)
-									.entity(new ErrorData("File-typed parameter " + untyped.getKey() + " is not well-formed"))
+									.entity("File-typed parameter " + untyped.getKey() + " is not well-formed")
 									.build();
 						}
 						else {

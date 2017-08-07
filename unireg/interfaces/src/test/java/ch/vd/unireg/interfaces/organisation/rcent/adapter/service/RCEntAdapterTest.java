@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.rcent.adapter.service;
 
+import javax.ws.rs.WebApplicationException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -15,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -424,7 +424,7 @@ public class RCEntAdapterTest {
 
 		final Errors orgOfNoticeBeforeErrors = (Errors) errorunmarshaller.unmarshal(xmlBefore);
 		final Error error = orgOfNoticeBeforeErrors.getError().get(0);
-		final RcEntClientException rcEntClientException = new RcEntClientException(new ServerWebApplicationException(), Collections.singletonList(new RcEntClientErrorMessage(error)));
+		final RcEntClientException rcEntClientException = new RcEntClientException(new WebApplicationException(), Collections.singletonList(new RcEntClientErrorMessage(error)));
 		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.BEFORE)).thenThrow(rcEntClientException);
 
 		final Long noOrganisation = 101704297L;
@@ -458,7 +458,7 @@ public class RCEntAdapterTest {
 
 		final Errors orgOfNoticeBeforeErrors = (Errors) errorunmarshaller.unmarshal(xmlBefore);
 		final Error error = orgOfNoticeBeforeErrors.getError().get(0);
-		final RcEntClientException rcEntClientException = new RcEntClientException(new ServerWebApplicationException(), Collections.singletonList(new RcEntClientErrorMessage(error)));
+		final RcEntClientException rcEntClientException = new RcEntClientException(new WebApplicationException(), Collections.singletonList(new RcEntClientErrorMessage(error)));
 		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.BEFORE)).thenThrow(rcEntClientException);
 
 		final Long noOrganisation = 101704297L;
@@ -596,7 +596,7 @@ public class RCEntAdapterTest {
 
 		final Errors orgOfNoticeBeforeErrors = (Errors) errorunmarshaller.unmarshal(xmlBefore);
 		final Error error = orgOfNoticeBeforeErrors.getError().get(0);
-		final RcEntClientException rcEntClientException = new RcEntClientException(new ServerWebApplicationException(), Collections.singletonList(new RcEntClientErrorMessage(error)));
+		final RcEntClientException rcEntClientException = new RcEntClientException(new WebApplicationException(), Collections.singletonList(new RcEntClientErrorMessage(error)));
 		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.BEFORE)).thenThrow(rcEntClientException);
 
 		try {
@@ -615,7 +615,7 @@ public class RCEntAdapterTest {
 		final JAXBElement<OrganisationsOfNotice> orgOfNoticeAfter = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal(xmlAfter);
 		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.AFTER)).thenReturn(orgOfNoticeAfter.getValue());
 
-		final RcEntClientException rcEntClientException = new RcEntClientException(new ServerWebApplicationException(), null);
+		final RcEntClientException rcEntClientException = new RcEntClientException(new WebApplicationException(), null);
 		when(client.getOrganisationsOfNotice(noticeId, RcEntClient.OrganisationState.BEFORE)).thenThrow(rcEntClientException);
 
 		try {

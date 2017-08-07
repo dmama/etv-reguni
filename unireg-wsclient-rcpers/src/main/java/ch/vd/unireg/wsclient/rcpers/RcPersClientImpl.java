@@ -1,10 +1,10 @@
 package ch.vd.unireg.wsclient.rcpers;
 
+import javax.ws.rs.WebApplicationException;
 import java.util.Collection;
 
 import ch.ech.ech0085.v1.GetInfoPersonRequest;
 import ch.ech.ech0085.v1.GetInfoPersonResponse;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -100,7 +100,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			try {
 				return wc.get(ListOfPersons.class);
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				throw new RcPersClientException(e);
 			}
 		}
@@ -131,7 +131,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			try {
 				return wc.get(ListOfPersons.class);
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				throw new RcPersClientException(e);
 			}
 		}
@@ -171,7 +171,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			try {
 				return wc.get(ListOfPersons.class);
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				throw new RcPersClientException(e);
 			}
 		}
@@ -190,7 +190,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			try {
 				return wc.get(Event.class);
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				if (e.getResponse().getStatus() == 404) {
 					// la ressource n'existe pas
 					return null;
@@ -232,7 +232,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			try {
 				return wc.get(ListOfFoundPersons.class);
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				throw new RcPersClientException(e);
 			}
 		}
@@ -269,7 +269,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			final GetInfoPersonRequest request = new GetInfoPersonRequest(noAvs13);
 			return wc.post(objectFactory.createGetInfoPersonRequest(request), GetInfoPersonResponse.class);
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new RcPersClientException(e);
 		}
 		finally {

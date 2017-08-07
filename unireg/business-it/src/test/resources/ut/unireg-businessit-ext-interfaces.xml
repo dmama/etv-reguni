@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-							http://www.springframework.org/schema/util
-							http://www.springframework.org/schema/util/spring-util.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Ce fichier définit les services d'interfaces externes; c'est-à-dire les clients de services externes à Unireg et que Unireg utilise. -->
 
@@ -57,15 +54,16 @@
 		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
 		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
 		<property name="pingPath" value="/infrastructure/ping"/>
-		<property name="validationEnabled" value="${testprop.webservice.rcent.validate}"/>
-		<property name="schemasLocations">
-			<util:list>
-				<value>eVD-0004-3-0.xsd</value>
-				<value>eVD-0022-3-3.xsd</value>
-				<value>eVD-0023-3-3.xsd</value>
-				<value>eVD-0024-3-4.xsd</value>
-			</util:list>
-		</property>
+		<!-- FIXME (msi) réactiver la validation -->
+		<!--<property name="validationEnabled" value="${testprop.webservice.rcent.validate}"/>-->
+		<!--<property name="schemasLocations">-->
+			<!--<util:list>-->
+				<!--<value>eVD-0004-3-0.xsd</value>-->
+				<!--<value>eVD-0022-3-3.xsd</value>-->
+				<!--<value>eVD-0023-3-3.xsd</value>-->
+				<!--<value>eVD-0024-3-4.xsd</value>-->
+			<!--</util:list>-->
+		<!--</property>-->
 	</bean>
 
 	<!-- Adapteur RCEnt -->

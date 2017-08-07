@@ -1,10 +1,10 @@
 package ch.vd.unireg.wsclient.rcpers;
 
+import javax.ws.rs.WebApplicationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 
 public class RcPersClientException extends RuntimeException {
 
@@ -15,11 +15,11 @@ public class RcPersClientException extends RuntimeException {
 	private final transient Throwable cause;
 
 	/**
-	 * Construit une exception spécifique avec un message clair et concis à partir d'une ServerWebApplicationException (qui expose la réponse complète dans son message).
+	 * Construit une exception spécifique avec un message clair et concis à partir d'une WebApplicationException (qui expose la réponse complète dans son message).
 	 *
 	 * @param e une exception
 	 */
-	public RcPersClientException(ServerWebApplicationException e) {
+	public RcPersClientException(WebApplicationException e) {
 		this(buildShortMessage(e), e);
 	}
 
@@ -34,9 +34,9 @@ public class RcPersClientException extends RuntimeException {
 		this.cause = cause;
 	}
 
-	private static String buildShortMessage(ServerWebApplicationException e) {
+	private static String buildShortMessage(WebApplicationException e) {
 		final StringBuilder s = new StringBuilder();
-		s.append("Status ").append(e.getStatus());
+		s.append("Status ").append(e.getResponse().getStatus());
 		final String title = extractTitle(e.getMessage());
 		if (title != null) {
 			s.append(" (").append(title).append(")");

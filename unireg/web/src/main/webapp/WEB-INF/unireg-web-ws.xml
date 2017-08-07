@@ -7,8 +7,11 @@
 
 							http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
-	<import resource="classpath:META-INF/cxf/cxf.xml" />
-	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+	<!-- équivalent à l'import du fichier classpath:META-INF/cxf/cxf.xml (mais qui référence des namespaces Spring 4 et Unireg est encore en Spring 3 -->
+	<bean id="cxf" class="org.apache.cxf.bus.spring.SpringBus" destroy-method="shutdown"/>
+	<bean id="org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor" class="org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor"/>
+	<bean id="org.apache.cxf.bus.spring.Jsr250BeanPostProcessor" class="org.apache.cxf.bus.spring.Jsr250BeanPostProcessor"/>
+	<bean id="org.apache.cxf.bus.spring.BusExtensionPostProcessor" class="org.apache.cxf.bus.spring.BusExtensionPostProcessor"/>
 
 	<!-- Job pour le testing du BatchClient -->
 	<bean id="itBatchClientJob" parent="schedulerJob" class="ch.vd.uniregctb.webservices.batch.ItBatchClientJob" >

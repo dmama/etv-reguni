@@ -1,11 +1,11 @@
 package ch.vd.unireg.wsclient.host.interfaces;
 
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -58,8 +58,8 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 
 			try {
 				e = (ListeCollectiviteAdministrative)wc.get(ListeCollectiviteAdministrative.class);
-			} catch (ServerWebApplicationException var7) {
-				if(var7.getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
+			} catch (WebApplicationException var7) {
+				if(var7.getResponse().getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
 					return null;
 				}
 				throw new ServiceSecuriteClientException(var7);
@@ -81,8 +81,8 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 
 			try {
 				e = (ListeCollectiviteAdministrative)wc.get(ListeCollectiviteAdministrative.class);
-			} catch (ServerWebApplicationException var7) {
-				if(var7.getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
+			} catch (WebApplicationException var7) {
+				if(var7.getResponse().getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
 					return null;
 				}
 				throw new ServiceSecuriteClientException(var7);
@@ -105,8 +105,8 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 
 			try {
 				e = (ProfilOperateur)wc.get(ProfilOperateur.class);
-			} catch (ServerWebApplicationException var8) {
-				if(var8.getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
+			} catch (WebApplicationException var8) {
+				if(var8.getResponse().getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
 					return null;
 				}
 				throw new ServiceSecuriteClientException(var8);
@@ -131,8 +131,8 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 
 			try {
 				e = (ListeOperateurs)wc.get(ListeOperateurs.class);
-			} catch (ServerWebApplicationException var8) {
-				if(var8.getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
+			} catch (WebApplicationException var8) {
+				if(var8.getResponse().getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
 					return null;
 				}
 				throw new ServiceSecuriteClientException(var8);
@@ -163,8 +163,8 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 
 			try {
 				e = (Operateur)wc.get(Operateur.class);
-			} catch (ServerWebApplicationException var9) {
-				if(var9.getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
+			} catch (WebApplicationException var9) {
+				if(var9.getResponse().getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
 					return null;
 				}
 				throw new ServiceSecuriteClientException(var9);
@@ -195,8 +195,8 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 
 			try {
 				e = (Operateur)wc.get(Operateur.class);
-			} catch (ServerWebApplicationException var8) {
-				if(var8.getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
+			} catch (WebApplicationException var8) {
+				if(var8.getResponse().getStatus()== Response.Status.NOT_FOUND.getStatusCode()){
 					return null;
 				}
 				throw new ServiceSecuriteClientException(var8);
@@ -223,7 +223,7 @@ public class ServiceSecuriteClientImpl implements ServiceSecuriteClient, Initial
 				}
 
 				var3 = e;
-			} catch (ServerWebApplicationException var7) {
+			} catch (WebApplicationException var7) {
 				throw new ServiceSecuriteClientException(var7);
 			}
 		} finally {

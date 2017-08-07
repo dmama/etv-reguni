@@ -173,20 +173,19 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		finally {
 			final Instant end = loadMeter.end();
 			final Response.Status status = (r == null ? null : Response.Status.fromStatusCode(r.getStatus()));
-			final String type = extractContentType(r);
+			final MediaType type = extractContentType(r);
 			WebServiceHelper.logAccessInfo(accessLog, messageContext.getHttpServletRequest(), callDescription, Duration.between(start, end), getLoad() + 1, type, status, nbItems, t);
 		}
 		return r;
 	}
 
-	@Nullable
-	private static String extractContentType(@Nullable Response r) {
+	private static MediaType extractContentType(@Nullable Response r) {
 		if (r != null) {
 			final MultivaluedMap<String, Object> metadata = r.getMetadata();
 			if (metadata != null) {
 				final List<Object> typeList = metadata.get(HttpHeaders.CONTENT_TYPE);
 				if (typeList != null && !typeList.isEmpty()) {
-					return (String) typeList.get(0);
+					return (MediaType) typeList.get(0);
 				}
 			}
 		}

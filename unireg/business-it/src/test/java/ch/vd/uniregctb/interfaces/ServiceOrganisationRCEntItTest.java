@@ -15,7 +15,6 @@ import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
@@ -293,10 +292,11 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		client.setOrganisationsOfNoticePath(BASE_PATH_ORGANISATIONS_OF_NOTICE);
 		client.setNoticeRequestValidatePath(BASE_PATH_VALIDER_ANNONCE_IDE);
 		client.setNoticeRequestListPath(BASE_PATH_ANNONCE_IDE);
-		if (validating) {
-			client.setSchemasLocations(Arrays.asList(RCEntSchemaHelper.RCENT_SCHEMA));
-			client.setValidationEnabled(true);
-		}
+		// FIXME (msi) réactiver la validation
+//		if (validating) {
+//			client.setSchemasLocations(Arrays.asList(RCEntSchemaHelper.RCENT_SCHEMA));
+//			client.setValidationEnabled(true);
+//		}
 		client.afterPropertiesSet();
 		return client;
 	}

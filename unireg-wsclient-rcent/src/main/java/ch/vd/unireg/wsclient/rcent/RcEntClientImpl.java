@@ -1,5 +1,6 @@
 package ch.vd.unireg.wsclient.rcent;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -130,7 +130,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 			try {
 				return wc.get(OrganisationData.class);
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				throw new RcEntClientException(e, parseErrors(e.getMessage()));
 			}
 		}
@@ -158,11 +158,11 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 			try {
 				return wc.get(OrganisationData.class);
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				// au contraire de la récupération par numéro cantonal, la récupération par
 				// numéro IDE peut ne pas aboutir, et ce de manière tout-à-fait légitime
 				// (en particulier car les numéros IDE peuvent être/avoir été saisis à la main dans Unireg/RegPM)
-				if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+				if (e.getResponse().getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
 					return null;
 				}
 				throw new RcEntClientException(e, parseErrors(e.getMessage()));
@@ -182,7 +182,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 			try {
 				final Response response = wc.post(new ObjectFactory().createNoticeRequest(noticeRequest));
 				if (response.getStatus() >= 400) {
-					throw new ServerWebApplicationException(response);
+					throw new WebApplicationException(response);
 				}
 
 				final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -191,7 +191,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				final JAXBElement<NoticeRequestReport> data = (JAXBElement<NoticeRequestReport>) unmarshaller.unmarshal((InputStream) response.getEntity());
 				return data.getValue();
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				throw new RcEntClientException(e, parseErrors(e.getMessage()));
 			}
 			catch (JAXBException e) {
@@ -218,7 +218,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 			try {
 				return wc.get(ListOfNoticeRequest.class);
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				throw new RcEntClientException(e, parseErrors(e.getMessage()));
 			}
 		}
@@ -261,7 +261,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				final PageRequest pageable = new PageRequest(pageNumber - 1, resultsPerPage, sort);
 				return new PageImpl<>(list.getResults(), pageable, (long) list.getTotalNumberOfResults());
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				final List<RcEntClientErrorMessage> errors = parseErrors(e.getMessage());
 				throw new RcEntClientException(e, errors);
 			}
@@ -338,7 +338,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 			try {
 				final Response response = wc.get();
 				if (response.getStatus() >= 400) {
-					throw new ServerWebApplicationException(response);
+					throw new WebApplicationException(response);
 				}
 
 				final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -347,7 +347,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 				final JAXBElement<OrganisationsOfNotice> data = (JAXBElement<OrganisationsOfNotice>) unmarshaller.unmarshal((InputStream) response.getEntity());
 				return data.getValue();
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				throw new RcEntClientException(e, parseErrors(e.getMessage()));
 			}
 		}
@@ -370,7 +370,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 					throw new RcEntClientException("Wrong answer...", null);
 				}
 			}
-			catch (ServerWebApplicationException e) {
+			catch (WebApplicationException e) {
 				throw new RcEntClientException(e, parseErrors(e.getMessage()));
 			}
 		}

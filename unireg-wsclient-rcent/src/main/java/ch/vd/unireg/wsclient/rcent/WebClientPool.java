@@ -31,14 +31,10 @@ public class WebClientPool {
 		public WebClient create() throws Exception {
 			JAXBElementProvider<OrganisationData> prov = new JAXBElementProvider<>();
 
-			/*
-				Supporter l'absence de @XmlRootElement sur OrganisationData
-			 */
+			// Supporter l'absence de @XmlRootElement sur OrganisationData
 			prov.setJaxbElementClassMap(Collections.singletonMap(OrganisationData.class.getName(), ""));
 
-			/*
-				Supporter la validation du xml entrant
-			 */
+			// Supporter la validation du xml entrant
 			if (enableValidation) {
 				prov.setSchemaLocations(schemasLocations);
 			}

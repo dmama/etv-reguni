@@ -35,6 +35,11 @@
 			<artifactId>cxf-rt-transports-http</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-client</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
 	</dependencies>
 	
 	<build>
@@ -50,6 +55,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -82,7 +88,7 @@
 		<copyright.year>2015</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
-		<cxf.version>2.6.0.fuse-71-047</cxf.version>
+		<cxf.version>3.1.9</cxf.version>
 		<junit.version>4.12</junit.version>
 	</properties>
 	

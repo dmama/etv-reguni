@@ -1,9 +1,9 @@
 package ch.vd.unireg.wsclient.rcent;
 
+import javax.ws.rs.WebApplicationException;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.jetbrains.annotations.Nullable;
 
 public class RcEntClientException extends RuntimeException {
@@ -30,7 +30,7 @@ public class RcEntClientException extends RuntimeException {
 	 *
 	 * @param e une exception
 	 */
-	public RcEntClientException(ServerWebApplicationException e, @Nullable List<RcEntClientErrorMessage> errors) {
+	public RcEntClientException(WebApplicationException e, @Nullable List<RcEntClientErrorMessage> errors) {
 		this(buildShortMessage(e, errors), e);
 		this.errors = errors;
 	}
@@ -48,9 +48,9 @@ public class RcEntClientException extends RuntimeException {
 		this.errors = null;
 	}
 
-	private static String buildShortMessage(ServerWebApplicationException e, @Nullable List<RcEntClientErrorMessage> errors) {
+	private static String buildShortMessage(WebApplicationException e, @Nullable List<RcEntClientErrorMessage> errors) {
 		final StringBuilder s = new StringBuilder();
-		s.append("Status ").append(e.getStatus());
+		s.append("Status ").append(e.getResponse().getStatus());
 		final String title = extractMessage(errors);
 		if (title != null) {
 			s.append(" (").append(title).append(")");

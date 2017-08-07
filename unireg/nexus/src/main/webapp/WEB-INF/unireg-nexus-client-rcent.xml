@@ -9,15 +9,16 @@
 		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
 		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
 		<property name="pingPath" value="/infrastructure/ping"/>
-		<property name="validationEnabled" value="${extprop.webservice.rcent.validate}"/>
-		<property name="schemasLocations">
-			<list>
-				<value>eVD-0004-3-0.xsd</value>
-				<value>eVD-0022-3-3.xsd</value>
-				<value>eVD-0023-3-3.xsd</value>
-				<value>eVD-0024-3-4.xsd</value>
-			</list>
-		</property>
+		<!-- FIXME (msi) réactiver la validation -->
+		<!--<property name="validationEnabled" value="${extprop.webservice.rcent.validate}"/>-->
+		<!--<property name="schemasLocations">-->
+			<!--<list>-->
+				<!--<value>eVD-0004-3-0.xsd</value>-->
+				<!--<value>eVD-0022-3-3.xsd</value>-->
+				<!--<value>eVD-0023-3-3.xsd</value>-->
+				<!--<value>eVD-0024-3-4.xsd</value>-->
+			<!--</list>-->
+		<!--</property>-->
 	</bean>
 
 	<bean id="rcEntClientTracing" class="ch.vd.uniregctb.wsclient.rcent.RcEntClientTracing">

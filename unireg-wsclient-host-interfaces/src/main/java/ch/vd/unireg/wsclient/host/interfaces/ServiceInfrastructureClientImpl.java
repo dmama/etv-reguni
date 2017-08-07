@@ -1,10 +1,10 @@
 package ch.vd.unireg.wsclient.host.interfaces;
 
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -65,7 +65,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 
 			try {
 				e = (Rue)wc.get(Rue.class);
-			} catch (ServerWebApplicationException var7) {
+			} catch (WebApplicationException var7) {
 				throw new ServiceInfrastructureClientException(var7);
 			}
 		} finally {
@@ -84,7 +84,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 
 			try {
 				e = (CollectiviteAdministrative)wc.get(CollectiviteAdministrative.class);
-			} catch (ServerWebApplicationException var7) {
+			} catch (WebApplicationException var7) {
 				throw new ServiceInfrastructureClientException(var7);
 			}
 		} finally {
@@ -104,7 +104,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 
 			try {
 				e = (CollectiviteAdministrative)wc.get(CollectiviteAdministrative.class);
-			} catch (ServerWebApplicationException var7) {
+			} catch (WebApplicationException var7) {
 				throw new ServiceInfrastructureClientException(var7);
 			}
 		} finally {
@@ -126,7 +126,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 
 			try {
 				e = (ListeCollectiviteAdministrative)wc.get(ListeCollectiviteAdministrative.class);
-			} catch (ServerWebApplicationException var7) {
+			} catch (WebApplicationException var7) {
 				throw new ServiceInfrastructureClientException(var7);
 			}
 		} finally {
@@ -149,7 +149,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 
 			try {
 				e = (ListeCollectiviteAdministrative)wc.get(ListeCollectiviteAdministrative.class);
-			} catch (ServerWebApplicationException var8) {
+			} catch (WebApplicationException var8) {
 				throw new ServiceInfrastructureClientException(var8);
 			}
 		} finally {
@@ -172,7 +172,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 
 			try {
 				e = (ListeCollectiviteAdministrative)wc.get(ListeCollectiviteAdministrative.class);
-			} catch (ServerWebApplicationException var7) {
+			} catch (WebApplicationException var7) {
 				throw new ServiceInfrastructureClientException(var7);
 			}
 		} finally {
@@ -194,7 +194,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 
 			try {
 				e = (CollectiviteAdministrative)wc.get(CollectiviteAdministrative.class);
-			} catch (ServerWebApplicationException var7) {
+			} catch (WebApplicationException var7) {
 				throw new ServiceInfrastructureClientException(var7);
 			}
 		} finally {
@@ -213,7 +213,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 
 			try {
 				e = (ListeTypesCollectivite)wc.get(ListeTypesCollectivite.class);
-			} catch (ServerWebApplicationException var6) {
+			} catch (WebApplicationException var6) {
 				throw new ServiceInfrastructureClientException(var6);
 			}
 		} finally {
@@ -234,7 +234,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 
 			try {
 				institutionFinanciere = (InstitutionFinanciere)wc.get(InstitutionFinanciere.class);
-			} catch (ServerWebApplicationException var7) {
+			} catch (WebApplicationException var7) {
 				throw new ServiceInfrastructureClientException(var7);
 			}
 		} finally {
@@ -255,7 +255,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 
 			try {
 				liste = (ListeInstitutionsFinancieres)wc.get(ListeInstitutionsFinancieres.class);
-			} catch (ServerWebApplicationException var7) {
+			} catch (WebApplicationException var7) {
 				throw new ServiceInfrastructureClientException(var7);
 			}
 		} finally {
@@ -281,7 +281,7 @@ public class ServiceInfrastructureClientImpl implements ServiceInfrastructureCli
 				}
 
 				var3 = e;
-			} catch (ServerWebApplicationException var7) {
+			} catch (WebApplicationException var7) {
 				throw new ServiceInfrastructureClientException(var7);
 			}
 		} finally {
