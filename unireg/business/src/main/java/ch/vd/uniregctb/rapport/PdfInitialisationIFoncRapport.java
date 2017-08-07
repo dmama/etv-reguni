@@ -88,7 +88,7 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 
 		// Cas ignorés
 		{
-			final String filename = "ingores.csv";
+			final String filename = "ignores.csv";
 			final String titre = "Immeubles ignorés";
 			final String listVide = "(aucun)";
 			try (TemporaryFile contenu = ignoredAsCsvFile(results.getImmeublesIgnores(), filename, status)) {
