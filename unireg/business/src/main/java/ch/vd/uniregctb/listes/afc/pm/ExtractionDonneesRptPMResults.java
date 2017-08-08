@@ -5,10 +5,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -22,7 +20,6 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.listes.afc.TypeExtractionDonneesRpt;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
@@ -55,6 +52,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 	public static final String NON_ASSUJETTI = "Non assujetti sur la période fiscale";
 
 	public final int periodeFiscale;
+	public final ModeExtraction mode;
 	public final VersionWS versionWS;
 
 	private final ServiceInfrastructureService infraService;
@@ -77,7 +75,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 		public abstract Object[] getValeursColonnes(@NotNull VersionWS versionWS);
 	}
 
-	public static class InfoCtbAvecDecisionACI extends InfoCtbBase {
+	public static class InfoCtbAvecDecisionACI extends InfoCtbBase<InfoCtbAvecDecisionACI> {
 		public final  int numeroOfs;
 		public RegDate dateDebut;
 		public RegDate dateFin;
@@ -103,7 +101,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 		}
 	}
 
-	public static class InfoCtbIgnore extends InfoCtbBase {
+	public static class InfoCtbIgnore extends InfoCtbBase<InfoCtbIgnore> {
 		public final String raisonIgnore;
 
 		private static final String[] NOMS_COLONNES = {"NO_CTB", "RAISON"};
@@ -434,29 +432,20 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 		return entreprise.getDernierForFiscalPrincipalAvant(periode.getDateFin());
 	}
 
-	public ExtractionDonneesRptPMResults(RegDate dateTraitement, int periodeFiscale, VersionWS versionWS, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService,
+	public ExtractionDonneesRptPMResults(RegDate dateTraitement, int periodeFiscale, ModeExtraction mode, VersionWS versionWS, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService,
 	                                     PeriodeImpositionService periodeImpositionService, AdresseService adresseService) {
 		super(dateTraitement, nbThreads, tiersService, adresseService);
 		this.periodeFiscale = periodeFiscale;
+		this.mode = mode;
 		this.versionWS = versionWS;
 		this.infraService = infraService;
 		this.periodeImpositionService = periodeImpositionService;
-	}
-
-	public TypeExtractionDonneesRpt getMode() {
-		return TypeExtractionDonneesRpt.IBC;
 	}
 
 	private int nbContribuablesAnalyses = 0;
 	private final List<InfoPeriodeImposition> listePeriode = new LinkedList<>();
 	private final List<InfoCtbIgnore> listeCtbsIgnores = new LinkedList<>();
 	private final List<InfoCtbAvecDecisionACI> listeCtbDecisionACI = new LinkedList<>();
-
-	protected static class ContribuableIgnoreException extends Exception {
-		public ContribuableIgnoreException(String message) {
-			super(message);
-		}
-	}
 
 	@Override
 	public final void addContribuable(Contribuable ctb) throws ServiceInfrastructureException {
@@ -471,42 +460,29 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 			
 			final List<PeriodeImposition> periodes = periodeImpositionService.determine(entreprise);
 			if (periodes == null) {
-				throw new ContribuableIgnoreException("Pas de période d'imposition trouvée");
+				addContribuableIgnore(ctb, "Pas de période d'imposition trouvée");
 			}
-			final List<PeriodeImpositionPersonnesMorales> periodesImpositionFiltres = periodes.stream()
-					.map(PeriodeImpositionPersonnesMorales.class::cast)
-					.filter(pipm -> pipm.getPeriodeFiscale() == periodeFiscale)
-					.collect(Collectors.toList());
-			if (CollectionUtils.isNotEmpty(periodesImpositionFiltres)) {
-				for (PeriodeImpositionPersonnesMorales periode : periodesImpositionFiltres) {
-					addPeriodeImposition(new InfoPeriodeImposition(entreprise, periode, tiersService, infraService));
+			else {
+				final List<InfoPeriodeImposition> periodesImpositionFiltres = periodes.stream()
+						.map(PeriodeImpositionPersonnesMorales.class::cast)
+						.filter(pipm -> pipm.getPeriodeFiscale() == periodeFiscale)
+						.map(pipm -> new InfoPeriodeImposition(entreprise, pipm, tiersService, infraService))
+						.collect(Collectors.toList());
+				if (periodesImpositionFiltres.isEmpty()) {
+					addContribuableIgnore(ctb, "Pas de période d'imposition trouvée");
 				}
-			}else{
-				throw new ContribuableIgnoreException("Pas de période d'imposition trouvée");
+				else {
+					periodesImpositionFiltres.forEach(this::addPeriodeImposition);
+				}
 			}
 		}
 		catch (AssujettissementException e) {
 			addErrorException(ctb, e);
 		}
-
-		catch (ContribuableIgnoreException e) {
-			addContribuableIgnore(ctb, e.getMessage());
-		}
 	}
 
-
-
 	private boolean hasDecisionsACI(Entreprise entreprise, int periodeFiscale) {
-		List<DecisionAci> decisions = entreprise.getDecisionsSorted();
-		if (CollectionUtils.isNotEmpty(decisions)) {
-			final Optional<DecisionAci> decisionAci = decisions.stream()
-					.filter(d -> isDecisionMatchWithPeriode(d, periodeFiscale))
-					.findFirst();
-			return decisionAci.isPresent();
-		}
-		else {
-			return false;
-		}
+		return entreprise.getDecisionsSorted().stream().anyMatch(d -> isDecisionMatchWithPeriode(d, periodeFiscale));
 	}
 	
 	private boolean isDecisionMatchWithPeriode(DecisionAci d,int periodeFiscale){
@@ -528,8 +504,6 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 			}
 
 		}
-
-		
 	}
 
 	protected void addContribuableIgnore(Contribuable ctb, String raison) {
@@ -537,16 +511,14 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 	}
 
 	private void addContribuableAvecDecisionACI(Contribuable ctb) {
-		final List<DecisionAci> decisions = ctb.getDecisionsSorted().stream()
-				.filter(d->isDecisionMatchWithPeriode(d, periodeFiscale))
-				.collect(Collectors.toList());
-		for (DecisionAci d : decisions) {
-			listeCtbDecisionACI.add(new InfoCtbAvecDecisionACI(ctb.getNumero(),
-			                                                   d.getNumeroOfsAutoriteFiscale(),
-					                                           d.getDateDebut(),
-					                                           d.getDateFin(),
-					                                           d.getLogCreationDate()));
-		}
+		ctb.getDecisionsSorted().stream()
+				.filter(d -> isDecisionMatchWithPeriode(d, periodeFiscale))
+				.map(d -> new InfoCtbAvecDecisionACI(ctb.getNumero(),
+				                                     d.getNumeroOfsAutoriteFiscale(),
+				                                     d.getDateDebut(),
+				                                     d.getDateFin(),
+				                                     d.getLogCreationDate()))
+				.forEach(listeCtbDecisionACI::add);
 	}
 
 	protected void addPeriodeImposition(InfoPeriodeImposition periode) {

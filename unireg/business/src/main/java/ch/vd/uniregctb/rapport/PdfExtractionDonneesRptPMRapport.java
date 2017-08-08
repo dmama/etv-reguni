@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -40,7 +41,7 @@ public class PdfExtractionDonneesRptPMRapport extends PdfRapport {
 			addTableSimple(2, table -> {
 			    table.addLigne("Période fiscale :", String.valueOf(results.periodeFiscale));
 			    table.addLigne("Version des énumérations :", String.valueOf(results.versionWS));
-			    table.addLigne("Mode d'extraction :", results.getMode().getDescription());
+			    table.addLigne("Mode d'extraction :", results.mode.getDescription());
 				table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
 			    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 			});
@@ -66,7 +67,10 @@ public class PdfExtractionDonneesRptPMRapport extends PdfRapport {
 		}
 
 		{
-			final String filename = String.format("donnees_rpt_%s_%d.csv", results.getMode().name().toLowerCase(), results.periodeFiscale);
+			final String filename = String.format("Unireg-Batch-%d-%s-%s.csv",
+			                                      results.periodeFiscale,
+			                                      StringUtils.capitalize(results.mode.name().toLowerCase()),
+			                                      RegDateHelper.dateToDashString(results.getDateTraitement()));
 			final String titre = "Liste des périodes";
 			final String listeVide = "(aucun)";
 			try (TemporaryFile contenu = genererListePeriodes(results, filename, status)) {
@@ -86,7 +90,7 @@ public class PdfExtractionDonneesRptPMRapport extends PdfRapport {
 
 		// contribuables ignorés (for intersectant avec la periode fiscale mais pas d'assujettissement, ou assujettissement ne donnant pas droit aux acomptes)
 		{
-			final String filename = "contribuables_ignorés.csv";
+			final String filename = "contribuables_ignores.csv";
 			final String titre = " Liste des contribuables ignorés ayant un for sur la période fiscale concernée";
 			final String listeVide = "(aucun)";
 			try (TemporaryFile contenu = genererListeIgnores(results, filename, status)) {

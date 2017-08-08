@@ -30,6 +30,7 @@ public class ExtractionDonneesRptPMJob extends JobDefinition {
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String VERSION_WS = "VERSION_WS";
+	public static final String MODE = "MODE";
 
 	private RapportService rapportService;
 
@@ -48,6 +49,14 @@ public class ExtractionDonneesRptPMJob extends JobDefinition {
 			param.setMandatory(true);
 			param.setType(new JobParamInteger());
 			addParameterDefinition(param, today.year() - 2);
+		}
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Mode d'extraction");
+			param.setName(MODE);
+			param.setType(new JobParamEnum(ModeExtraction.class));
+			param.setMandatory(true);
+			addParameterDefinition(param, ModeExtraction.BENEFICE);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -88,9 +97,10 @@ public class ExtractionDonneesRptPMJob extends JobDefinition {
 		final int nbThreads = getStrictlyPositiveIntegerValue(params,  NB_THREADS);
 		final int pf = getIntegerValue(params, PERIODE_FISCALE);
 		final VersionWS versionWS = getEnumValue(params, VERSION_WS, VersionWS.class);
+		final ModeExtraction mode = getEnumValue(params, MODE, ModeExtraction.class);
 
 		// on fait le boulot !
-		final ExtractionDonneesRptPMResults results = service.produireExtractionIBC(dateTraitement, pf, versionWS, nbThreads, statusManager);
+		final ExtractionDonneesRptPMResults results = service.produireExtractionIBC(dateTraitement, pf, versionWS, mode, nbThreads, statusManager);
 
 		// on génère un rapport
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

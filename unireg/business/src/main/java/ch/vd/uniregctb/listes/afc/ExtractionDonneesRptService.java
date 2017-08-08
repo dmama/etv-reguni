@@ -3,6 +3,7 @@ package ch.vd.uniregctb.listes.afc;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMResults;
+import ch.vd.uniregctb.listes.afc.pm.ModeExtraction;
 import ch.vd.uniregctb.listes.afc.pm.VersionWS;
 
 /**
@@ -25,9 +26,10 @@ public interface ExtractionDonneesRptService {
 	 * @param dateTraitement date d'exécution de l'extraction
 	 * @param pf période fiscale de référence
 	 * @param versionWS version du WS à utiliser pour le mapping des constantes énumérées
+	 * @param mode mode d'extraction
 	 * @param nbThreads niveau de parallélisation du traitement
 	 * @param statusManager status manager
 	 * @return résultats de l'extraction
 	 */
-	ExtractionDonneesRptPMResults produireExtractionIBC(RegDate dateTraitement, int pf, VersionWS versionWS, int nbThreads, StatusManager statusManager);
+	ExtractionDonneesRptPMResults produireExtractionIBC(RegDate dateTraitement, int pf, VersionWS versionWS, ModeExtraction mode, int nbThreads, StatusManager statusManager);
 }

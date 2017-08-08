@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
@@ -53,9 +54,14 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 		this.adresseService = adresseService;
 	}
 
-	public ExtractionDonneesRptPMResults run(RegDate dateTraitement, int pf, VersionWS versionWs, int nbThreads, @Nullable StatusManager s) {
+	public ExtractionDonneesRptPMResults run(RegDate dateTraitement, int pf, ModeExtraction mode, VersionWS versionWs, int nbThreads, @Nullable StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		return runIBC(dateTraitement, pf, versionWs, nbThreads, status);
+		if (mode == ModeExtraction.BENEFICE) {
+			return runBenefice(dateTraitement, pf, versionWs, nbThreads, status);
+		}
+		else {
+			throw new NotImplementedException("Mode d'extraction " + mode + " non-implémenté");
+		}
 	}
 
 	/**
@@ -70,7 +76,7 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 	}
 
 
-	private ExtractionDonneesRptPMResults runIBC(RegDate dateTraitement, int pf, VersionWS versionWs, int nbThreads, StatusManager s) {
+	private ExtractionDonneesRptPMResults runBenefice(RegDate dateTraitement, int pf, VersionWS versionWs, int nbThreads, StatusManager s) {
 		return doRun(dateTraitement, nbThreads, s, hibernateTemplate, new ExtractionDonneesRptBaseCustomizer() {
 			@Override
 			public Iterator<Long> getIdIterator(Session session) {
@@ -79,7 +85,7 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 
 			@Override
 			public ExtractionDonneesRptPMResults createResults(RegDate dateTraitement) {
-				return new ExtractionDonneesRptPMResults(dateTraitement, pf, versionWs, nbThreads, tiersService, infraService, periodeImpositionService, adresseService);
+				return new ExtractionDonneesRptPMResults(dateTraitement, pf, ModeExtraction.BENEFICE, versionWs, nbThreads, tiersService, infraService, periodeImpositionService, adresseService);
 			}
 		});
 	}
