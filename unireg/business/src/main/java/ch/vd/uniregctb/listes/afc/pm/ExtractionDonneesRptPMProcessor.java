@@ -20,7 +20,6 @@ import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -38,12 +37,11 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private final ServiceInfrastructureService infraService;
 	private final TiersDAO tiersDAO;
-	private final AssujettissementService assujettissementService;
 	private final PeriodeImpositionService periodeImpositionService;
 	private final AdresseService adresseService;
 
 	public ExtractionDonneesRptPMProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService, ServiceCivilCacheWarmer serviceCivilCacheWarmer,
-	                                       TiersDAO tiersDAO, ServiceInfrastructureService infraService, AssujettissementService assujettissementService,
+	                                       TiersDAO tiersDAO, ServiceInfrastructureService infraService,
 	                                       PeriodeImpositionService periodeImpositionService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
@@ -51,17 +49,14 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.tiersDAO = tiersDAO;
 		this.infraService = infraService;
-		this.assujettissementService = assujettissementService;
 		this.periodeImpositionService = periodeImpositionService;
 		this.adresseService = adresseService;
 	}
 
-	public ExtractionDonneesRptPMResults run(RegDate dateTraitement, int pf, String versionWs, int nbThreads, @Nullable StatusManager s) {
+	public ExtractionDonneesRptPMResults run(RegDate dateTraitement, int pf, VersionWS versionWs, int nbThreads, @Nullable StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-				return runIBC(dateTraitement,pf,nbThreads,status);
-
+		return runIBC(dateTraitement, pf, versionWs, nbThreads, status);
 	}
-
 
 	/**
 	 * Classe de base des customizers spécifiques à chacun des modes de fonctionnement
@@ -75,7 +70,7 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 	}
 
 
-	private ExtractionDonneesRptPMResults runIBC(RegDate dateTraitement, int pf, int nbThreads, StatusManager s) {
+	private ExtractionDonneesRptPMResults runIBC(RegDate dateTraitement, int pf, VersionWS versionWs, int nbThreads, StatusManager s) {
 		return doRun(dateTraitement, nbThreads, s, hibernateTemplate, new ExtractionDonneesRptBaseCustomizer() {
 			@Override
 			public Iterator<Long> getIdIterator(Session session) {
@@ -84,16 +79,15 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 
 			@Override
 			public ExtractionDonneesRptPMResults createResults(RegDate dateTraitement) {
-				return new ExtractionDonneesRptPMResults(dateTraitement, pf, nbThreads, tiersService, infraService, assujettissementService, periodeImpositionService, adresseService);
+				return new ExtractionDonneesRptPMResults(dateTraitement, pf, versionWs, nbThreads, tiersService, infraService, periodeImpositionService, adresseService);
 			}
 		});
 	}
 
-
-	@SuppressWarnings({"unchecked"})
-/**
- * Retourne toutes les entreprises avec un for vaudois actif sur la période
- */
+	/**
+	 * Retourne toutes les entreprises avec un for vaudois actif sur la période
+	 */
+	@SuppressWarnings("unchecked")
 	private Iterator<Long> getIdsContribuablesPMAvecForActifSurPf(Session session, int pf) {
 		//final ArrayList list = new ArrayList(1);list.add(1L);
 
@@ -118,16 +112,5 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 
 		query.setParameter("debutPeriode", debutPeriodePrisEnCompte);
 		return query.iterate();
-//		return iter;
 	}
-
-	/**
-	 * Retourne les ids des contrubuables PM qui ont un exercice commercial qui se termine durant l'année civile N
-	 * et qui ont un for fiscal VD actif(principal ou secondaire)durant cet exercice commercial
-	 */
-	private Iterator<Long> getIdsTiersCandidatsPourExtractionIBC(Session session, int pf) {
-		return getIdsContribuablesPMAvecForActifSurPf(session, pf);
-
-	}
-
 }

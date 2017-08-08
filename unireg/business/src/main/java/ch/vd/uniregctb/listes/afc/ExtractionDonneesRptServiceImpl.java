@@ -10,6 +10,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMProcessor;
 import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMResults;
+import ch.vd.uniregctb.listes.afc.pm.VersionWS;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -77,15 +78,14 @@ public class ExtractionDonneesRptServiceImpl implements ExtractionDonneesRptServ
 	@Override
 	public ExtractionDonneesRptResults produireExtraction(RegDate dateTraitement, int pf, TypeExtractionDonneesRpt mode, int nbThreads, StatusManager statusManager) {
 		final ExtractionDonneesRptProcessor proc = new ExtractionDonneesRptProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService,
-				assujettissementService, periodeImpositionService, adresseService);
+		                                                                             assujettissementService, periodeImpositionService, adresseService);
 		return proc.run(dateTraitement, pf, mode, nbThreads, statusManager);
 	}
 
 	@Override
-	public ExtractionDonneesRptPMResults produireExtractionIBC(RegDate dateTraitement, int pf, String versionWS, int nbThreads, StatusManager statusManager) {
+	public ExtractionDonneesRptPMResults produireExtractionIBC(RegDate dateTraitement, int pf, VersionWS versionWS, int nbThreads, StatusManager statusManager) {
 		final ExtractionDonneesRptPMProcessor proc = new ExtractionDonneesRptPMProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService,
-				assujettissementService, periodeImpositionService, adresseService);
+		                                                                                 periodeImpositionService, adresseService);
 		return proc.run(dateTraitement, pf, versionWS, nbThreads, statusManager);
-
 	}
 }

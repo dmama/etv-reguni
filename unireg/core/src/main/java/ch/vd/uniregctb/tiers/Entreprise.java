@@ -326,6 +326,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	}
 
 	@Transient
+	@NotNull
 	public List<EtatEntreprise> getEtatsNonAnnulesTries() {
 		final List<EtatEntreprise> nonAnnules = AnnulableHelper.sansElementsAnnules(etats);
 		Collections.sort(nonAnnules);

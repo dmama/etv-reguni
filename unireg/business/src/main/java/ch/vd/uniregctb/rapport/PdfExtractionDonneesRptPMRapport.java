@@ -14,6 +14,7 @@ import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMResults;
+import ch.vd.uniregctb.listes.afc.pm.VersionWS;
 
 /**
  * Générateur du rapport PDF d'exécution du batch d'extraction des listes des données de référence RPT
@@ -38,6 +39,7 @@ public class PdfExtractionDonneesRptPMRapport extends PdfRapport {
 		{
 			addTableSimple(2, table -> {
 			    table.addLigne("Période fiscale :", String.valueOf(results.periodeFiscale));
+			    table.addLigne("Version des énumérations :", String.valueOf(results.versionWS));
 			    table.addLigne("Mode d'extraction :", results.getMode().getDescription());
 				table.addLigne("Nombre de threads :", String.valueOf(results.getNombreThreads()));
 			    table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
@@ -62,20 +64,6 @@ public class PdfExtractionDonneesRptPMRapport extends PdfRapport {
 				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
 		}
-
-		// Répartition par modes d'imposition
-	/*	addEntete1("Répartition des périodes trouvées");
-		{
-			addTableSimple(2, table -> {
-				final Map<ModeImposition, Integer> decoupage = results.get();
-				for (ModeImposition modeImposition : ModeImposition.values()) {
-					final Integer nb = decoupage.get(modeImposition);
-					if (nb != null && nb > 0) {
-						table.addLigne(modeImposition.texte(), String.valueOf(nb));
-					}
-				}
-			});
-		}*/
 
 		{
 			final String filename = String.format("donnees_rpt_%s_%d.csv", results.getMode().name().toLowerCase(), results.periodeFiscale);
@@ -146,18 +134,18 @@ public class PdfExtractionDonneesRptPMRapport extends PdfRapport {
 	}
 
 	private TemporaryFile genererListeIgnores(ExtractionDonneesRptPMResults results, String filename, StatusManager status) {
-		return genererListe(results.getListeCtbsIgnores(), filename, status);
+		return genererListe(results.getListeCtbsIgnores(), results.versionWS, filename, status);
 	}
 
 	private TemporaryFile genererListePeriodes(ExtractionDonneesRptPMResults results, String filename, StatusManager status) {
-		return genererListe(results.getListePeriode(), filename, status);
+		return genererListe(results.getListePeriode(), results.versionWS, filename, status);
 	}
 
 	private TemporaryFile genererListeDecisions(ExtractionDonneesRptPMResults results, String filename, StatusManager status) {
-		return genererListe(results.getListeCtbDecisionACI(), filename, status);
+		return genererListe(results.getListeCtbDecisionACI(), results.versionWS, filename, status);
 	}
 
-	private <T extends ExtractionDonneesRptPMResults.InfoCtbBase> TemporaryFile genererListe(List<T> liste, String filename, StatusManager status) {
+	private <T extends ExtractionDonneesRptPMResults.InfoCtbBase> TemporaryFile genererListe(List<T> liste, VersionWS versionWS, String filename, StatusManager status) {
 		final String[] nomsColonnes = (!liste.isEmpty() ? liste.get(0).getNomsColonnes() : null);
 		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override
@@ -174,7 +162,7 @@ public class PdfExtractionDonneesRptPMRapport extends PdfRapport {
 
 			@Override
 			public boolean fillLine(CsvHelper.LineFiller b, T elt) {
-				final Object[] values = elt.getValeursColonnes();
+				final Object[] values = elt.getValeursColonnes(versionWS);
 				for (int i = 0 ; i < values.length ; ++ i) {
 					if (i > 0) {
 						b.append(COMMA);

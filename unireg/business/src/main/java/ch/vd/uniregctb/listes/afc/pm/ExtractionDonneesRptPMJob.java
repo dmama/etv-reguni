@@ -17,6 +17,7 @@ import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 
 /**
@@ -46,13 +47,15 @@ public class ExtractionDonneesRptPMJob extends JobDefinition {
 			param.setName(PERIODE_FISCALE);
 			param.setMandatory(true);
 			param.setType(new JobParamInteger());
-			addParameterDefinition(param, today.year() - 1);
+			addParameterDefinition(param, today.year() - 2);
 		}
 		{
 			final JobParam param = new JobParam();
-			param.setDescription("versionWs");
+			param.setDescription("Version des énumérations exposées (idem WS)");
 			param.setName(VERSION_WS);
+			param.setType(new JobParamEnum(VersionWS.class));
 			param.setMandatory(true);
+			addParameterDefinition(param, VersionWS.V7);
 		}
 		{
 			final JobParam param = new JobParam();
@@ -84,10 +87,10 @@ public class ExtractionDonneesRptPMJob extends JobDefinition {
 		// récupère les paramètres
 		final int nbThreads = getStrictlyPositiveIntegerValue(params,  NB_THREADS);
 		final int pf = getIntegerValue(params, PERIODE_FISCALE);
-		//final String versionWS = getStringValue(params,VERSION_WS);
+		final VersionWS versionWS = getEnumValue(params, VERSION_WS, VersionWS.class);
 
 		// on fait le boulot !
-		final ExtractionDonneesRptPMResults results = service.produireExtractionIBC(dateTraitement, pf, null, nbThreads, statusManager);
+		final ExtractionDonneesRptPMResults results = service.produireExtractionIBC(dateTraitement, pf, versionWS, nbThreads, statusManager);
 
 		// on génère un rapport
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
