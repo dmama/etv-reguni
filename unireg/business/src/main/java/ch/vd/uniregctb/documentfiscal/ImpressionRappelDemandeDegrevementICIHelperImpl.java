@@ -69,9 +69,11 @@ public class ImpressionRappelDemandeDegrevementICIHelperImpl extends EditiqueAbs
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, Entreprise entreprise) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, true, ServiceInfrastructureService.noOIPM);
-		assigneIdEnvoi(infoDoc, entreprise, infosAffranchissement);
-		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
+		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi,
+		                                                                                                      true,
+		                                                                                                      ServiceInfrastructureService.noOIPM);
+		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoi(infoDoc, entreprise, infosAffranchissement);
+		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 
 		infoDoc.setCodDoc(CODE_DOCUMENT_RAPPEL_DEMANDE_DEGREVEMENT_ICI);

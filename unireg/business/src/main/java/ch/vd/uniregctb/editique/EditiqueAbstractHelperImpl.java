@@ -30,6 +30,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -89,45 +90,42 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		this.infraService = infraService;
 	}
 
+
+	@NotNull
+	protected static Pair<STypeZoneAffranchissement, String> getInformationAffranchissementIdEnvoi(String idEnvoi) {
+		Objects.requireNonNull(idEnvoi);
+		Objects.requireNonNull(StringUtils.trimToNull(idEnvoi));
+		return Pair.of(STypeZoneAffranchissement.NA, idEnvoi);
+	}
+
 	/**
 	 * @param adresseEnvoi l'adresse à laquelle on veut envoyer un document
 	 * @param idEnvoiSiEtranger <code>true</code> si une adresse à l'étranger doit être en fait traitée par un idEnvoi
 	 * @param valeurIdEnvoi valeur à utiliser
-	 * @return un type d'affranchissement et, éventuellement, un idEnvoi à utiliser pour
+	 * @return un type d'affranchissement et, éventuellement, un idEnvoi à utiliser pour l'envoi du courrier
 	 */
 	@NotNull
-	protected static Pair<STypeZoneAffranchissement, String> getInformationsAffranchissement(AdresseEnvoiDetaillee adresseEnvoi, boolean idEnvoiSiEtranger, int valeurIdEnvoi) {
+	protected static Pair<STypeZoneAffranchissement, String> getInformationsAffranchissement(AdresseEnvoiDetaillee adresseEnvoi,
+	                                                                                         boolean idEnvoiSiEtranger,
+	                                                                                         int valeurIdEnvoi) {
 
-		final STypeZoneAffranchissement zoneAffranchissement;
-		final String idEnvoi;
-		if (adresseEnvoi.isIncomplete()) {
-			idEnvoi = String.valueOf(valeurIdEnvoi);
-			zoneAffranchissement = STypeZoneAffranchissement.NA;
-		}
-		else if (adresseEnvoi.getTypeAffranchissement() == null) {
-			idEnvoi = String.valueOf(valeurIdEnvoi);
-			zoneAffranchissement = STypeZoneAffranchissement.NA;
-		}
-		else {
-			switch (adresseEnvoi.getTypeAffranchissement()) {
-			case SUISSE:
-				idEnvoi = null;
-				zoneAffranchissement = STypeZoneAffranchissement.CH;
-				break;
-			case EUROPE:
-				idEnvoi = idEnvoiSiEtranger ? String.valueOf(valeurIdEnvoi) : null;
-				zoneAffranchissement = idEnvoi != null ? STypeZoneAffranchissement.NA : STypeZoneAffranchissement.EU;
-				break;
-			case MONDE:
-				idEnvoi = idEnvoiSiEtranger ? String.valueOf(valeurIdEnvoi) : null;
-				zoneAffranchissement = idEnvoi != null ? STypeZoneAffranchissement.NA : STypeZoneAffranchissement.RM;
-				break;
-			default:
-				throw new IllegalArgumentException("Type d'affranchissement non supporté : " + adresseEnvoi.getTypeAffranchissement());
-			}
+		// adresse incomplète, sans type d'affranchissement ou à destination de l'étranger quand on ne veut justement rien y envoyer
+		final TypeAffranchissement typeAffranchissement = adresseEnvoi.getTypeAffranchissement();
+		if (adresseEnvoi.isIncomplete() || typeAffranchissement == null || (idEnvoiSiEtranger && typeAffranchissement != TypeAffranchissement.SUISSE)) {
+			return getInformationAffranchissementIdEnvoi(String.valueOf(valeurIdEnvoi));
 		}
 
-		return Pair.of(zoneAffranchissement, idEnvoi);
+		// donc ici : adresse complète avec type d'affranchissement connu et sans limitation sur les destinations autorisées
+		switch (typeAffranchissement) {
+		case SUISSE:
+			return Pair.of(STypeZoneAffranchissement.CH, null);
+		case EUROPE:
+			return Pair.of(STypeZoneAffranchissement.EU, null);
+		case MONDE:
+			return Pair.of(STypeZoneAffranchissement.RM, null);
+		default:
+			throw new IllegalArgumentException("Type d'affranchissement non supporté : " + typeAffranchissement);
+		}
 	}
 
 	/**
@@ -165,8 +163,9 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 	 * @param infoDocument structure qui va recevoir la valeur de l'IdEnvoi
 	 * @param contribuable contribuable concerné par le document envoyé
 	 * @param infoAffranchissement information calculée préalablement par un appel à {@link #getInformationsAffranchissement(AdresseEnvoiDetaillee, boolean, int)}
+	 * @return la valeur de la zone d'affranchissement à utiliser (= toujours NA si l'IdEnvoi est rempli...)
 	 */
-	protected static void assigneIdEnvoi(CTypeInfoDocument infoDocument, ContribuableImpositionPersonnesMorales contribuable, Pair<STypeZoneAffranchissement, String> infoAffranchissement) {
+	protected static STypeZoneAffranchissement assigneIdEnvoi(CTypeInfoDocument infoDocument, ContribuableImpositionPersonnesMorales contribuable, Pair<STypeZoneAffranchissement, String> infoAffranchissement) {
 		final String idEnvoi;
 		if (StringUtils.isNotBlank(infoAffranchissement.getRight())) {
 			idEnvoi = infoAffranchissement.getRight();
@@ -178,6 +177,7 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 			idEnvoi = null;
 		}
 		infoDocument.setIdEnvoi(idEnvoi);
+		return idEnvoi != null ? STypeZoneAffranchissement.NA : infoAffranchissement.getLeft();
 	}
 
 	protected AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers) throws AdresseException {
@@ -342,7 +342,9 @@ public abstract class EditiqueAbstractHelperImpl implements EditiqueAbstractHelp
 		}
 
 		// données d'affranchissement pour l'adresse mandataire
-		final Pair<STypeZoneAffranchissement, String> affranchissement = getInformationsAffranchissement(adresse, false, ServiceInfrastructureService.noOIPM);
+		final Pair<STypeZoneAffranchissement, String> affranchissement = getInformationsAffranchissement(adresse,
+		                                                                                                 false,
+		                                                                                                 ServiceInfrastructureService.noOIPM);
 		final CTypeAdresse adresseEditique = buildAdresse(adresse);
 
 		final CTypeInfoEnteteDocument originalInfoEnteteDocument = original.getInfoEnteteDocument();

@@ -71,7 +71,9 @@ public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, Tiers tiers) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
+		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi,
+		                                                                                                      false,
+		                                                                                                      ServiceInfrastructureService.noOIPM);
 		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 

@@ -57,9 +57,11 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperI
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, Entreprise entreprise) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
-		assigneIdEnvoi(infoDoc, entreprise, infosAffranchissement);
-		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
+		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi,
+		                                                                                                      false,
+		                                                                                                      ServiceInfrastructureService.noOIPM);
+		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoi(infoDoc, entreprise, infosAffranchissement);
+		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 
 		infoDoc.setCodDoc(CODE_DOCUMENT_LETTRE_BIENVENUE);

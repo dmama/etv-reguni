@@ -141,9 +141,11 @@ public class ImpressionQuestionnaireSNCHelperImpl extends EditiqueAbstractHelper
 	private static CTypeInfoDocument buildInfoDocument(AdresseEnvoiDetaillee adresseEnvoi, ContribuableImpositionPersonnesMorales pm) {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi, false, ServiceInfrastructureService.noOIPM);
-		assigneIdEnvoi(infoDoc, pm, infosAffranchissement);
-		infoDoc.setAffranchissement(new CTypeAffranchissement(infosAffranchissement.getLeft(), null));
+		final Pair<STypeZoneAffranchissement, String> infosAffranchissement = getInformationsAffranchissement(adresseEnvoi,
+		                                                                                                      false,
+		                                                                                                      ServiceInfrastructureService.noOIPM);
+		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoi(infoDoc, pm, infosAffranchissement);
+		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 
 		infoDoc.setCodDoc(CODE_DOCUMENT_QSNC);

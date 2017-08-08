@@ -56,6 +56,7 @@ import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.ModeleFeuille;
+import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionDeclarationImpotPersonnesMoralesHelper {
@@ -212,12 +213,21 @@ public class ImpressionDeclarationImpotPersonnesMoralesHelperImpl extends Editiq
 		}
 	}
 
+	private static Pair<STypeZoneAffranchissement, String> getInformationsAffranchissement(AdresseEnvoiDetaillee adresseContribuable, TypeContribuable typeContribuable) {
+		switch (typeContribuable) {
+		case UTILITE_PUBLIQUE:
+			return getInformationAffranchissementIdEnvoi("LIASF");
+		default:
+			return getInformationsAffranchissement(adresseContribuable, false, ServiceInfrastructureService.noOIPM);
+		}
+	}
+
 	private CTypeInfoDocument buildInfoDocument(DeclarationImpotOrdinairePM declaration, AdresseEnvoiDetaillee adresseContribuable) throws AdresseException {
 		final CTypeInfoDocument infoDoc = new CTypeInfoDocument();
 
-		final Pair<STypeZoneAffranchissement, String> infoAffranchissement = getInformationsAffranchissement(adresseContribuable, false, ServiceInfrastructureService.noOIPM);
-		assigneIdEnvoi(infoDoc, declaration.getTiers(), infoAffranchissement);
-		infoDoc.setAffranchissement(new CTypeAffranchissement(infoAffranchissement.getLeft(), null));
+		final Pair<STypeZoneAffranchissement, String> infoAffranchissement = getInformationsAffranchissement(adresseContribuable, declaration.getTypeContribuable());
+		final STypeZoneAffranchissement zoneAffranchissement = assigneIdEnvoi(infoDoc, declaration.getTiers(), infoAffranchissement);
+		infoDoc.setAffranchissement(new CTypeAffranchissement(zoneAffranchissement, null));
 		infoDoc.setVersionXSD(VERSION_XSD);
 
 		final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique(declaration);
