@@ -1,6 +1,7 @@
 package ch.vd.unireg.wsclient.efacture;
 
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
+import javax.ws.rs.WebApplicationException;
+
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
@@ -44,8 +45,8 @@ public class EFactureClientImpl implements EFactureClient {
 			}
 			return payerSearchResult.getPayerWithHistory();
 		}
-		catch (ServerWebApplicationException e) {
-			if (e.getStatus() == 404) {
+		catch (WebApplicationException e) {
+			if (e.getResponse().getStatus() == 404) {
 				return null;
 			}
 			throw e;

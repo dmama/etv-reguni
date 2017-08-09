@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.ubr;
 
 import javax.activation.DataHandler;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -20,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
@@ -144,14 +144,15 @@ public class BatchRunnerClient {
 				throw new BatchRunnerClientException("Job is already running...");
 			}
 			if (status >= 400) {
-				throw new ServerWebApplicationException(response);
+				final String message = response.readEntity(String.class);
+				throw new WebApplicationException(message, response);
 			}
 			if (status != HttpURLConnection.HTTP_CREATED) {
 				throw new BatchRunnerClientException(String.format("HTTP code %d received from the server", status));
 			}
 		}
-		catch (ServerWebApplicationException e) {
-			throw new BatchRunnerClientException(String.format("HTTP error code %d received from the server", e.getStatus()), e);
+		catch (WebApplicationException e) {
+			throw new BatchRunnerClientException(String.format("HTTP error code %d received from the server", e.getResponse().getStatus()), e);
 		}
 		catch (BatchRunnerClientException e) {
 			throw e;
@@ -228,7 +229,7 @@ public class BatchRunnerClient {
 					return info;
 				}
 			}
-			catch (ServerWebApplicationException | IOException e) {
+			catch (WebApplicationException | IOException e) {
 				throw new BatchRunnerClientException(e);
 			}
 			catch (RuntimeException e) {
@@ -273,14 +274,15 @@ public class BatchRunnerClient {
 			// demande d'arrêt
 			final Response response = client.post(null);
 			if (response.getStatus() >= 400) {
-				throw new ServerWebApplicationException(response);
+				final String message = response.readEntity(String.class);
+				throw new WebApplicationException(message, response);
 			}
 			if (response.getStatus() != HttpURLConnection.HTTP_OK) {
 				throw new BatchRunnerClientException(String.format("HTTP code %d received while trying to stop job %s.", response.getStatus(), name));
 			}
 		}
-		catch (ServerWebApplicationException e) {
-			throw new BatchRunnerClientException(String.format("HTTP code %d received from the server", e.getStatus()), e);
+		catch (WebApplicationException e) {
+			throw new BatchRunnerClientException(String.format("HTTP code %d received from the server", e.getResponse().getStatus()), e);
 		}
 
 		// attente de l'arrêt
@@ -298,18 +300,19 @@ public class BatchRunnerClient {
 			final JobNames names = getJSON(client, JobNames.class);
 			return names.getJobs();
 		}
-		catch (ServerWebApplicationException e) {
-			throw new BatchRunnerClientException(String.format("HTTP error code %d received from the server", e.getStatus()), e);
+		catch (WebApplicationException e) {
+			throw new BatchRunnerClientException(String.format("HTTP error code %d received from the server", e.getResponse().getStatus()), e);
 		}
 		catch (Exception e) {
 			throw new BatchRunnerClientException(e);
 		}
 	}
 
-	private static <T> T getJSON(WebClient client, Class<T> clazz) throws IOException, ServerWebApplicationException {
+	private static <T> T getJSON(WebClient client, Class<T> clazz) throws IOException, WebApplicationException {
 		final Response response = client.accept(MediaType.APPLICATION_JSON_TYPE).get();
 		if (response.getStatus() >= 400) {
-			throw new ServerWebApplicationException(response);
+			final String message = response.readEntity(String.class);
+			throw new WebApplicationException(message, response);
 		}
 		final ObjectMapper mapper = new ObjectMapper();
 		try (InputStream is = (InputStream) response.getEntity()) {
@@ -317,7 +320,7 @@ public class BatchRunnerClient {
 		}
 	}
 
-	private static String getString(WebClient client) throws IOException, ServerWebApplicationException {
+	private static String getString(WebClient client) throws IOException, WebApplicationException {
 		return client.accept(MediaType.TEXT_PLAIN_TYPE).get(String.class);
 	}
 
@@ -331,8 +334,8 @@ public class BatchRunnerClient {
 		try {
 			return getJSON(client, JobDescription.class);
 		}
-		catch (ServerWebApplicationException e) {
-			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+		catch (WebApplicationException e) {
+			if (e.getResponse().getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
 				return null;
 			}
 			throw new BatchRunnerClientException(e);
@@ -349,8 +352,8 @@ public class BatchRunnerClient {
 			final String status = getString(client);
 			return JobStatus.valueOf(status);
 		}
-		catch (ServerWebApplicationException e) {
-			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+		catch (WebApplicationException e) {
+			if (e.getResponse().getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
 				return null;
 			}
 			throw new BatchRunnerClientException(e);
@@ -371,7 +374,8 @@ public class BatchRunnerClient {
 		try {
 			final Response response = client.accept(MediaType.APPLICATION_OCTET_STREAM_TYPE).get();
 			if (response.getStatus() >= 400) {
-				throw new ServerWebApplicationException(response);
+				final String message = response.readEntity(String.class);
+				throw new WebApplicationException(message, response);
 			}
 			if (response.getStatus() == HttpURLConnection.HTTP_NO_CONTENT) {
 				return null;
@@ -381,8 +385,8 @@ public class BatchRunnerClient {
 			final String filename = StringUtils.defaultIfBlank(cd.getParameter("filename"), String.format("%s-report-data", name));
 			return new Report((InputStream) response.getEntity(), filename);
 		}
-		catch (ServerWebApplicationException e) {
-			throw new BatchRunnerClientException(String.format("HTTP error code %d received from the server", e.getStatus()), e);
+		catch (WebApplicationException e) {
+			throw new BatchRunnerClientException(String.format("HTTP error code %d received from the server", e.getResponse().getStatus()), e);
 		}
 		catch (Exception e) {
 			throw new BatchRunnerClientException(e);

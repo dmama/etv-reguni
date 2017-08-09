@@ -10,7 +10,7 @@
 	<artifactId>unireg-ws-party4</artifactId>
 	<packaging>jar</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>4.1</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
+	<version>4.2-SNAPSHOT</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
 	<!-- END_LVERSION -->
 
 	<name>Unireg - WS Party v4</name>
@@ -26,11 +26,6 @@
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-common-utilities</artifactId>
-			<version>${cxf-commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -87,10 +82,9 @@
 							</sourceRoot>
 							<wsdlOptions>
 								<wsdlOption>
-									<wsdl>
-										${basedir}/src/main/resources/PartyService4.wsdl
-									</wsdl>
-									<extraargs> 
+									<wsdl>${basedir}/src/main/resources/PartyService4.wsdl</wsdl>
+									<catalog>${basedir}/src/main/resources/catalog.xml</catalog>
+									<extraargs>
 										<extraarg>-wsdlLocation</extraarg>
 										<extraarg>${basedir}/src/main/resources/PartyService4.wsdl</extraarg>
 										<extraarg>-p</extraarg>
@@ -115,7 +109,7 @@
 					<dependency>
 						<groupId>org.apache.cxf.xjcplugins</groupId>
 						<artifactId>cxf-xjc-ts</artifactId>
-						<version>2.3.2</version>
+						<version>3.0.5</version>
 					</dependency>
 					<dependency>
 						<groupId>org.jvnet.jaxb2_commons</groupId>
@@ -141,6 +135,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.3</version>
 
 				<dependencies>
 					<dependency>
@@ -171,7 +166,7 @@
 									author="true"
 									classpath="${compile_classpath}"
 									destdir="target/ws.javadoc"
-									doctitle="Unireg - Documentation du web service Party v4 (4.1)"
+									doctitle="Unireg - Documentation du web service Party v4 (4.2-SNAPSHOT)"
 									nodeprecated="false"
 									nodeprecatedlist="false"
 									noindex="false"
@@ -194,6 +189,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -235,7 +231,7 @@
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<spring.version>3.1.4.RELEASE</spring.version>
-		<cxf.version>2.6.0.fuse-71-047</cxf.version>
+		<cxf.version>3.1.9</cxf.version>
 		<cxf-commons.version>2.5.0.fuse-70-084</cxf-commons.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.10</junit.version>

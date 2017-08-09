@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservice.fidor.v5;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.jetbrains.annotations.NotNull;
@@ -166,7 +166,7 @@ public class FidorClientImpl implements FidorClient {
 				throw new FidorClientException("Did not receive 'pong' to my 'ping' ('" + response + "')", null);
 			}
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -200,7 +200,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return c;
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -227,7 +227,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return result;
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -253,7 +253,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -271,7 +271,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -298,7 +298,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -315,7 +315,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return list.getListOfResults().getListOfCantons().getExtendedCanton();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -344,7 +344,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale().get(0);
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -377,7 +377,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return c;
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -410,7 +410,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return c;
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -430,7 +430,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return list.getListOfResults().getListOfStateTerritories().getStateTerritory();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -447,7 +447,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return list.getListOfResults().getListOfStateTerritories().getStateTerritory();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -474,7 +474,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return l;
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -491,7 +491,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return list.getListOfResults().getListOfLogiciels().getLogiciel();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -518,7 +518,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return df;
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -545,7 +545,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return rf;
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -581,7 +581,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return list.getListOfResults().getListOfURL().getUrl().get(0).getUrlAddress();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -611,7 +611,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return result.getPostalLocality();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -629,7 +629,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return result.getPostalLocality();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -644,7 +644,7 @@ public class FidorClientImpl implements FidorClient {
 		try {
 			final Response response = wc.get();
 			if (response.getStatus() >= 400) {
-				throw new ServerWebApplicationException(response);
+				throw new WebApplicationException(response);
 			}
 
 			final JAXBContext jaxbContext = JAXBContext.newInstance(ch.vd.fidor.xml.ws.v5.postallocality.ObjectFactory.class);
@@ -654,8 +654,8 @@ public class FidorClientImpl implements FidorClient {
 			final JAXBElement<PostalLocality> data = (JAXBElement<PostalLocality>) unmarshaller.unmarshal((InputStream) response.getEntity());
 			return data.getValue();
 		}
-		catch (ServerWebApplicationException e) {
-			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+		catch (WebApplicationException e) {
+			if (e.getResponse().getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
 				return null;
 			}
 			throw new FidorClientException(e);
@@ -679,7 +679,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return result.getStreet();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -700,7 +700,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return result.getStreet();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -713,7 +713,7 @@ public class FidorClientImpl implements FidorClient {
 		try {
 			final Response response = wc.get();
 			if (response.getStatus() >= 400) {
-				throw new ServerWebApplicationException(response);
+				throw new WebApplicationException(response);
 			}
 
 			final JAXBContext jaxbContext = JAXBContext.newInstance(ch.vd.fidor.xml.ws.v5.regimefiscal.ObjectFactory.class);
@@ -723,8 +723,8 @@ public class FidorClientImpl implements FidorClient {
 			final JAXBElement<RegimeFiscal> data = (JAXBElement<RegimeFiscal>) unmarshaller.unmarshal((InputStream) response.getEntity());
 			return data.getValue();
 		}
-		catch (ServerWebApplicationException e) {
-			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+		catch (WebApplicationException e) {
+			if (e.getResponse().getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
 				return null;
 			}
 			throw new FidorClientException(e);
@@ -745,7 +745,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return result.getRegimeFiscal();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -758,7 +758,7 @@ public class FidorClientImpl implements FidorClient {
 		try {
 			final Response response = wc.get();
 			if (response.getStatus() >= 400) {
-				throw new ServerWebApplicationException(response);
+				throw new WebApplicationException(response);
 			}
 
 			final JAXBContext jaxbContext = JAXBContext.newInstance(ch.vd.fidor.xml.ws.v5.categorieentreprise.ObjectFactory.class);
@@ -768,8 +768,8 @@ public class FidorClientImpl implements FidorClient {
 			final JAXBElement<CategorieEntreprise> data = (JAXBElement<CategorieEntreprise>) unmarshaller.unmarshal((InputStream) response.getEntity());
 			return data.getValue();
 		}
-		catch (ServerWebApplicationException e) {
-			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+		catch (WebApplicationException e) {
+			if (e.getResponse().getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
 				return null;
 			}
 			throw new FidorClientException(e);
@@ -790,7 +790,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return result.getCategorieEntreprise();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
@@ -806,7 +806,7 @@ public class FidorClientImpl implements FidorClient {
 			}
 			return result.getImpotSpecial();
 		}
-		catch (ServerWebApplicationException e) {
+		catch (WebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}

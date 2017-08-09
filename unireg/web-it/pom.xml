@@ -32,57 +32,27 @@
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-securite</artifactId>
-			<version>1.0.5</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-common-utilities</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>1.0.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-ws-party3</artifactId>
 			<version>${wsparty3.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-common-utilities</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-ws-party4</artifactId>
 			<version>${wsparty4.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-common-utilities</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-ws-v5</artifactId>
 			<version>${ws.v5.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-common-utilities</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-ws-v6</artifactId>
 			<version>${ws.v6.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-common-utilities</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
@@ -100,12 +70,10 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-			<version>${cxf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>${cxf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
@@ -115,7 +83,6 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http-jetty</artifactId>
-			<version>${cxf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.jms</groupId>
@@ -151,6 +118,16 @@
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-xc</artifactId>
 			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<artifactId>jaxb2-catalog-resolver</artifactId>
+			<groupId>ch.vd.uniregctb</groupId>
+			<version>1.0.6</version>
+		</dependency>
+		<dependency>
+			<artifactId>shared-cxf</artifactId>
+			<groupId>ch.vd.shared</groupId>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<pluginRepositories>

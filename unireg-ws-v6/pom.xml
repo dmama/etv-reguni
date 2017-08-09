@@ -10,7 +10,7 @@
 	<artifactId>unireg-ws-v6</artifactId>
 	<packaging>jar</packaging>
 	<!-- BEGIN_LVERSION -->
-	<version>6.5.1</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
+	<version>6.5.2-SNAPSHOT</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
 	<!-- END_LVERSION -->
 
 	<name>Unireg - WS v6</name>
@@ -26,11 +26,6 @@
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-common-utilities</artifactId>
-			<version>${cxf-commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -164,7 +159,7 @@
 									author="true"
 									classpath="${compile_classpath}"
 									destdir="target/ws.javadoc"
-									doctitle="Unireg - Documentation du web service v6 (6.5.1)"
+									doctitle="Unireg - Documentation du web service v6 (6.5.2-SNAPSHOT)"
 									nodeprecated="false"
 									nodeprecatedlist="false"
 									noindex="false"
@@ -228,8 +223,7 @@
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<spring.version>3.2.13.RELEASE</spring.version>
-		<cxf.version>2.6.0.fuse-71-047</cxf.version>
-		<cxf-commons.version>2.5.0.fuse-70-084</cxf-commons.version>
+		<cxf.version>3.1.9</cxf.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.12</junit.version>
 	</properties>

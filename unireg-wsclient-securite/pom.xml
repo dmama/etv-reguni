@@ -7,7 +7,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-wsclient-securite</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.5</version> <!-- Attention ! Aussi changer la version dans le fichier SecuriteService.wsdl ! -->
+	<version>1.0.6-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier SecuriteService.wsdl ! -->
 
 	<name>Unireg - Client WS Securite</name>
 	<description>Unireg - Client Java pour le web-service securité de Unireg</description>
@@ -74,6 +74,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -107,7 +108,7 @@
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 		<spring.version>3.1.4.RELEASE</spring.version>
-		<cxf.version>2.6.0.fuse-71-047</cxf.version>
+		<cxf.version>3.1.9</cxf.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.10</junit.version>
 	</properties>

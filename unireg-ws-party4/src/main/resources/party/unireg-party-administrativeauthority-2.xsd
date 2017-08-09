@@ -5,7 +5,7 @@
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/adminauth/2" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/2" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/2" schemaLocation="unireg-party-taxpayer-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxpayer-2.xsd" />
 
 	<xs:complexType name="administrativeAuthorityType">
 		<xs:annotation>

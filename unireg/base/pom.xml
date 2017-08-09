@@ -171,6 +171,49 @@
 				<artifactId>unireg-jaxb2-rcent</artifactId>
 				<version>${unireg.jaxb2.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-transports-http</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-frontend-jaxws</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-transports-http-jetty</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-bindings-soap</artifactId>
+				<version>${cxf.version}</version>
+				<exclusions>
+					<!-- Pour éviter d'inclure cette librairie qui redéfinit com.sun.xml.bind.v2.model.nav.Nagivator (entre autres) -->
+					<exclusion>
+						<groupId>com.sun.xml.bind</groupId>
+						<artifactId>jaxb-core</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+				<version>${cxf.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.sun.xml.bind</groupId>
+						<artifactId>jaxb-core</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-rs-service-description</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -667,7 +710,7 @@
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 
-		<!-- Web application versions -->
+		<!-- Web application versions (voir section "References" de https://tomcat.apache.org/tomcat-8.0-doc/index.html) -->
 		<jsp.version>2.2</jsp.version>
 		<servlet.version>3.1.0</servlet.version>
 		<jstl.version>1.2</jstl.version>
@@ -679,14 +722,14 @@
 		<shared-base.version>5.5.2</shared-base.version>
 		<spring.version>3.2.13.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
-		<cxf.version>2.6.0.fuse-71-047</cxf.version>
+		<cxf.version>3.1.9</cxf.version>
 		<activemq.version>5.11.0.redhat-620133</activemq.version>
 		<atomikos.version>4.0.4</atomikos.version>
 		<jackson.version>1.9.13</jackson.version>
-		<wsparty3.version>3.8</wsparty3.version>
-		<wsparty4.version>4.1</wsparty4.version>
-		<ws.v5.version>5.5.1</ws.v5.version>
-		<ws.v6.version>6.5.1</ws.v6.version>
+		<wsparty3.version>3.9-SNAPSHOT</wsparty3.version>
+		<wsparty4.version>4.2-SNAPSHOT</wsparty4.version>
+		<ws.v5.version>5.5.2-SNAPSHOT</ws.v5.version>
+		<ws.v6.version>6.5.2-SNAPSHOT</ws.v6.version>
 		<ws.v7.version>7.8-SNAPSHOT</ws.v7.version>
 		<unireg.jaxb2.version>6.6-SNAPSHOT</unireg.jaxb2.version>
 

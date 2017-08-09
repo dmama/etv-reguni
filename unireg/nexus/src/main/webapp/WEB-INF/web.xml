@@ -11,6 +11,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
+			classpath*:/unireg-business-cxf.xml,
 			/WEB-INF/unireg-nexus-properties.xml
 			/WEB-INF/unireg-nexus-*.xml
 		</param-value>

@@ -8,7 +8,7 @@
 
 	<!-- unireg-jaxb2-common -->
 
-	<jxb:bindings schemaLocation="unireg-common-1.xsd">
+	<jxb:bindings schemaLocation="file:unireg-common-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.common.v1" />
 		</jxb:schemaBindings>
@@ -17,7 +17,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="unireg-exception-1.xsd">
+	<jxb:bindings schemaLocation="file:unireg-exception-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.exception.v1" />
 		</jxb:schemaBindings>
@@ -25,13 +25,13 @@
 
 	<!-- unireg-jaxb2-ech -->
 
-	<jxb:bindings schemaLocation="eCH-0010-4-0.xsd">
+	<jxb:bindings schemaLocation="file:eCH-0010-4-0.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0010.v4" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="eCH-0044-2-0.xsd">
+	<jxb:bindings schemaLocation="file:eCH-0044-2-0.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0044.v2" />
 		</jxb:schemaBindings>
@@ -39,7 +39,7 @@
 
 	<!-- unireg-jaxb2-party -->
 
-	<jxb:bindings schemaLocation="party/unireg-party-2.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.v2" />
 		</jxb:schemaBindings>
@@ -48,7 +48,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-debtor-2.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-debtor-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.debtor.v2" />
 		</jxb:schemaBindings>
@@ -58,7 +58,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-immovableproperty-1.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-immovableproperty-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.immovableproperty.v1" />
 		</jxb:schemaBindings>
@@ -67,7 +67,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-taxpayer-2.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-taxpayer-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.taxpayer.v2" />
 		</jxb:schemaBindings>
@@ -77,7 +77,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-person-2.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-person-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.person.v2" />
 		</jxb:schemaBindings>
@@ -86,7 +86,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-corporation-2.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-corporation-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.corporation.v2" />
 		</jxb:schemaBindings>
@@ -107,13 +107,13 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-administrativeauthority-2.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-administrativeauthority-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.adminauth.v2" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-address-1.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-address-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.address.v1" />
 		</jxb:schemaBindings>
@@ -122,7 +122,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-relation-1.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-relation-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.relation.v1" />
 		</jxb:schemaBindings>
@@ -132,7 +132,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-taxdeclaration-2.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-taxdeclaration-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.taxdeclaration.v2" />
 		</jxb:schemaBindings>
@@ -148,7 +148,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-taxresidence-1.xsd">
+	<jxb:bindings schemaLocation="file:party/unireg-party-taxresidence-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.taxresidence.v1" />
 		</jxb:schemaBindings>

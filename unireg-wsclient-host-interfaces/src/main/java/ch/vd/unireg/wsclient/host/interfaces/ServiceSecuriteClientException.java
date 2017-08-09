@@ -1,16 +1,16 @@
 package ch.vd.unireg.wsclient.host.interfaces;
 
+import javax.ws.rs.WebApplicationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 
 public class ServiceSecuriteClientException extends RuntimeException {
 	private final transient Throwable cause;
 	private static final Pattern TITLE_PATTERN = Pattern.compile(".*?<title>(.*?)</title>.*", 34);
 
-	public ServiceSecuriteClientException(ServerWebApplicationException e) {
+	public ServiceSecuriteClientException(WebApplicationException e) {
 		this(buildShortMessage(e), e);
 	}
 
@@ -19,9 +19,9 @@ public class ServiceSecuriteClientException extends RuntimeException {
 		this.cause = cause;
 	}
 
-	private static String buildShortMessage(ServerWebApplicationException e) {
+	private static String buildShortMessage(WebApplicationException e) {
 		StringBuilder s = new StringBuilder();
-		s.append("Status ").append(e.getStatus());
+		s.append("Status ").append(e.getResponse().getStatus());
 		String title = extractTitle(e.getMessage());
 		if(title != null) {
 			s.append(" (").append(title).append(")");

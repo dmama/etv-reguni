@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.interfaces.service.host;
 
+import javax.ws.rs.WebApplicationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 
 import ch.vd.infrastructure.model.rest.ListeCollectiviteAdministrative;
 import ch.vd.securite.model.rest.ListeOperateurs;
@@ -84,7 +84,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	 */
 	private static boolean isOperateurInconnuException(ServiceSecuriteClientException e) {
 		final Exception root = getRootException(e);
-		if (root instanceof ServerWebApplicationException) {
+		if (root instanceof WebApplicationException) {
 			//TODO En attendant d'avoir des codes http et des messages host interfaces qui  sont exploitables
 			return true;
 		}
@@ -97,7 +97,7 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	 */
 	private static boolean isOperateurTermineException(ServiceSecuriteClientException e) {
 		final Exception root = getRootException(e);
-		if (root instanceof ServerWebApplicationException) {
+		if (root instanceof WebApplicationException) {
 			final Pattern pattern = Pattern.compile(MESSAGE_VISA_OPERATEUR_TERMINE);
 			final Matcher matcher = pattern.matcher(root.getMessage());
 			if (matcher.find()) {

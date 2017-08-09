@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-ws-tools</artifactId>
 	<packaging>jar</packaging>
-	<version>1.4</version>
+	<version>1.5-SNAPSHOT</version>
 
 	<name>Unireg - WS Tools</name>
 	<description>Unireg - Outils pour les web-services</description>
@@ -35,6 +35,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -67,7 +68,7 @@
 		<copyright.year>2013</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
-		<cxf.version>2.6.0.fuse-71-047</cxf.version>
+		<cxf.version>3.1.9</cxf.version>
 	</properties>
 	
 </project>

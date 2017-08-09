@@ -47,13 +47,13 @@ public abstract class WebServiceHelper {
 	 * @param nbItems dans les cas où cela a un sens, le nombre d'éléments retournés par la requête
 	 * @param t éventuelle exception lancée pendant l'appel
 	 */
-	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Supplier<String> params, Duration duration, int load, @Nullable String contentType, @Nullable Response.Status status, @Nullable Integer nbItems, @Nullable Throwable t) {
+	public static void logAccessInfo(Logger accessLogger, HttpServletRequest request, Supplier<String> params, Duration duration, int load, @Nullable MediaType contentType, @Nullable Response.Status status, @Nullable Integer nbItems, @Nullable Throwable t) {
 		if (accessLogger.isInfoEnabled()) {
 			final String user = AuthenticatedUserHelper.getAuthenticatedUser(request);
 			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
 			final String statusString = (status == null ? StringUtils.EMPTY : String.format(" status='%d %s'", status.getStatusCode(), status.getReasonPhrase()));
 			final String itemString = (nbItems == null ? StringUtils.EMPTY : String.format(" => %d item(s)", nbItems));
-			final String typeString = StringUtils.isBlank(contentType) ? StringUtils.EMPTY : String.format(" content-type='%s'", contentType);
+			final String typeString = contentType == null ? StringUtils.EMPTY : String.format(" content-type='%s'", contentType);
 			accessLogger.info(String.format("[%s] (%d ms) %s load=%d%s%s%s%s", user, duration.toMillis(), params.get(), load, statusString, typeString, itemString, exceptionString));
 		}
 	}
