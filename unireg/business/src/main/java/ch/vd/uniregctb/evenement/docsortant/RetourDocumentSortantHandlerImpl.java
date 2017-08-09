@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -118,29 +117,27 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 		T fetchEntity(String id);
 	}
 
-	private static class EntityFetcherById<K, E> implements EntityFetcher<E> {
-		private final Function<String, ? extends K> entityIdExtractor;
-		private final Function<K, E> entityFetcher;
+	private static class EntityFetcherById<E> implements EntityFetcher<E> {
+		private final Function<String, ? extends E> fetcher;
 
-		public EntityFetcherById(Function<String, ? extends K> entityIdExtractor, Function<K, E> entityFetcher) {
-			this.entityIdExtractor = entityIdExtractor;
-			this.entityFetcher = entityFetcher;
+		public <K> EntityFetcherById(Function<String, K> entityIdExtractor, Function<? super K, ? extends E> entityFetcher) {
+			this.fetcher = entityIdExtractor.andThen(entityFetcher);
 		}
 
 		@Override
 		public E fetchEntity(String id) {
-			return entityFetcher.apply(entityIdExtractor.apply(id));
+			return fetcher.apply(id);
 		}
 	}
 
-	private static class HibernateEntityFetcherById<T extends HibernateEntity> extends EntityFetcherById<Long, T> {
+	private static class HibernateEntityFetcherById<T extends HibernateEntity> extends EntityFetcherById<T> {
 		public HibernateEntityFetcherById(HibernateTemplate hibernateTemplate, Class<T> clazz) {
 			super(Long::valueOf,
 			      id -> hibernateTemplate.get(clazz, id));
 		}
 	}
 
-	private static class DocumentEFactureFetcher extends EntityFetcherById<Pair<Long, String>, DocumentEFacture> {
+	private static class DocumentEFactureFetcher extends EntityFetcherById<DocumentEFacture> {
 		public DocumentEFactureFetcher(DocumentEFactureDAO dao) {
 			super(DocumentEFactureHelper::decodeIdentifiant,
 			      id -> dao.findByTiersEtCleArchivage(id.getLeft(), id.getRight()));
