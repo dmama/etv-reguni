@@ -5,9 +5,9 @@
 		   xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/2"
 		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/exception/1" schemaLocation="../unireg-exception-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/2" schemaLocation="../party/unireg-party-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/exception/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-exception-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-2.xsd" />
 
 	<xs:include schemaLocation="base.xsd" />
 	<xs:complexType name="getBatchPartyRequestType">

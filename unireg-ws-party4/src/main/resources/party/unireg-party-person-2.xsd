@@ -9,9 +9,9 @@
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:person="http://www.vd.ch/fiscalite/unireg/party/person/2"
 		   xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/2" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
-	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="../eCH-0044-2-0.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/2" schemaLocation="unireg-party-taxpayer-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0044/2/eCH-0044-2-0.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxpayer-2.xsd" />
 
 	<xs:complexType name="naturalPersonType">
 		<xs:annotation>

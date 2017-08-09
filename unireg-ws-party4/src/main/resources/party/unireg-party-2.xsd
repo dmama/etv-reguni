@@ -14,13 +14,13 @@
 		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/2"
 		   xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
-	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="../eCH-0044-2-0.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/address/1" schemaLocation="unireg-party-address-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/1" schemaLocation="unireg-party-relation-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/2" schemaLocation="unireg-party-taxdeclaration-2.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="unireg-party-taxresidence-1.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/debtor/2" schemaLocation="unireg-party-debtor-2.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0044/2/eCH-0044-2-0.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/address/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxdeclaration-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/debtor/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-debtor-2.xsd" />
 
 	<xs:complexType abstract="true" name="partyType">
 		<xs:annotation>
