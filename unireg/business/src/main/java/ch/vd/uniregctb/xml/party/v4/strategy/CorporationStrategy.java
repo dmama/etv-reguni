@@ -293,7 +293,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private void initExercicesCommerciaux(Corporation corporation, Entreprise entreprise, Context context) {
 		final List<ExerciceCommercial> exercices = context.exerciceCommercialHelper.getExercicesCommerciauxExposables(entreprise);
 		for (ExerciceCommercial ex : exercices) {
-			corporation.getBusinessYears().add(BusinessYearBuilder.newBusinessYear(ex));
+			// [SIFISC-26050] on ignore les exercices commerciaux d'avant 1800 car les dates correspondantes ne sont pas exposables dans la XSD
+			if (ex.getDateFin().year() >= 1800) {
+				corporation.getBusinessYears().add(BusinessYearBuilder.newBusinessYear(ex));
+			}
 		}
 	}
 
