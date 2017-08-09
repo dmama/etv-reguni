@@ -17,10 +17,16 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.Bus;
+import org.apache.cxf.bus.spring.SpringBusFactory;
+import org.apache.cxf.catalog.OASISCatalogManager;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ch.vd.shared.cxf.LSResourceCatalogManager;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,6 +53,11 @@ public abstract class WebitTest {
 	protected String v7Url;
 
 	protected WebClient webClient;
+
+	static {
+		final Bus bus = SpringBusFactory.getDefaultBus(true);
+		bus.setExtension(new LSResourceCatalogManager(new ClasspathCatalogResolver()), OASISCatalogManager.class);
+	}
 
 	/**
 	 * Supprime l'éventuel pattern "---VALI-" ou "---TEST-" ajouté aux DB de validation/test.

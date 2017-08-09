@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Catalogue vide nécessaire pour la classe org.apache.cxf.jaxrs.utils.schemas.SchemaHandler initialise bien le resourceResolver sur la schemaFactory,
+     et ainsi que le LSResourceCatalogManager soit bien utilisé pour résoudre les ressources externes -->
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+</catalog>

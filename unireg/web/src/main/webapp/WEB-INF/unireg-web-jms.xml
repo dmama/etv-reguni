@@ -74,7 +74,7 @@
 	</bean>
 
 	<bean id="esbMessageValidatorRaw" class="ch.vd.uniregctb.jms.EsbMessageValidatorImpl">
-		<property name="resourceResolver"><bean class="ch.vd.unireg.xml.tools.ClasspathCatalogResolver"/></property>
+		<property name="resourceResolver" ref="catalogResolver"/>
 		<property name="sources">
 			<list>
 				<value>classpath:xsd/civil/**/*.xsd</value>
