@@ -33,6 +33,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationAvecDocumentArchive;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
@@ -107,7 +108,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       questionnaire.getPeriode().getAnnee(),
 		                       questionnaire.getNumero(),
-		                       null,
+		                       duplicata ? null : getIdEtatDeclaration(questionnaire, EtatDeclarationEmise.class),
 		                       infoArchivage);
 
 	}
@@ -115,11 +116,11 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	@Nullable
 	private static <T extends EtatDeclaration & EtatDeclarationAvecDocumentArchive> String getIdEtatDeclaration(Declaration declaration, Class<T> clazz) {
 		return declaration.getEtats().stream()
-				.sorted(Comparator.comparing(EtatDeclaration::getId).reversed())
-				.filter(etat -> clazz.isAssignableFrom(etat.getClass()))
+				.filter(clazz::isInstance)
 				.map(clazz::cast)
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(etat -> etat.getCleDocument() == null)
+				.sorted(Comparator.comparingLong(EtatDeclaration::getId).reversed())
 				.mapToLong(EtatDeclaration::getId)
 				.mapToObj(String::valueOf)
 				.findFirst()
@@ -129,10 +130,10 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	@Nullable
 	private static String getIdDelaiDeclaration(Declaration declaration, Predicate<? super DelaiDeclaration> predicate) {
 		return declaration.getDelais().stream()
-				.sorted(Comparator.comparing(DelaiDeclaration::getId).reversed())
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(predicate)
 				.filter(delai -> delai.getCleDocument() == null)
+				.sorted(Comparator.comparingLong(DelaiDeclaration::getId).reversed())
 				.mapToLong(DelaiDeclaration::getId)
 				.mapToObj(String::valueOf)
 				.findFirst()
@@ -181,7 +182,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
-		                       null,
+		                       duplicata ? null : getIdEtatDeclaration(di, EtatDeclarationEmise.class),
 		                       infoArchivage);
 	}
 
@@ -301,7 +302,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
-		                       null,
+		                       duplicata ? null : getIdEtatDeclaration(di, EtatDeclarationEmise.class),
 		                       infoArchivage);
 	}
 
@@ -341,7 +342,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       lr.getPeriode().getAnnee(),
 		                       extractPseudoNumeroSequenceListeImpotSource(lr),
-		                       null,
+		                       duplicata ? null : getIdEtatDeclaration(lr, EtatDeclarationEmise.class),
 		                       infoArchivage);
 	}
 

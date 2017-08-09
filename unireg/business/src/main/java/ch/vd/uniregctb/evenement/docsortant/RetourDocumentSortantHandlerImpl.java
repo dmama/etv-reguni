@@ -21,6 +21,7 @@ import ch.vd.unireg.xml.event.docsortant.retour.v3.Quittance;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationAvecDocumentArchive;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
@@ -218,7 +219,7 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 		addToTraitementMap(map,
 		                   EnumSet.of(TypeDocumentSortant.RAPPEL_QSNC),
 		                   new TraitementRetourImpl<>(new HibernateEntityFetcherById<>(hibernateTemplate, EtatDeclarationRappelee.class),
-		                                              new EtatDeclarationRappeleeOuSommeeKeyAssignator()));
+		                                              new EtatDeclarationAvecDocumentArchiveKeyAssignator()));
 
 		// accord, refus de délai, sursis, confirmation de délai
 		addToTraitementMap(map,
@@ -235,7 +236,20 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 		                              TypeDocumentSortant.SOMMATION_DI_PP,
 		                              TypeDocumentSortant.SOMMATION_LR),
 		                   new TraitementRetourImpl<>(new HibernateEntityFetcherById<>(hibernateTemplate, EtatDeclarationSommee.class),
-		                                              new EtatDeclarationRappeleeOuSommeeKeyAssignator()));
+		                                              new EtatDeclarationAvecDocumentArchiveKeyAssignator()));
+
+		// édition originale de LR, DI, QSNC
+		addToTraitementMap(map,
+		                   EnumSet.of(TypeDocumentSortant.LR,
+		                              TypeDocumentSortant.QSNC,
+		                              TypeDocumentSortant.DI_APM,
+		                              TypeDocumentSortant.DI_PM,
+		                              TypeDocumentSortant.DI_PP_COMPLETE,
+		                              TypeDocumentSortant.DI_PP_DEPENSE,
+		                              TypeDocumentSortant.DI_PP_HC_IMMEUBLE,
+		                              TypeDocumentSortant.DI_PP_VAUDTAX),
+		                   new TraitementRetourImpl<>(new HibernateEntityFetcherById<>(hibernateTemplate, EtatDeclarationEmise.class),
+		                                              new EtatDeclarationAvecDocumentArchiveKeyAssignator()));
 
 		// lettre de bienvenue
 		addToTraitementMap(map,
@@ -254,7 +268,8 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 
 		// documents e-facture
 		addToTraitementMap(map,
-		                   EnumSet.of(TypeDocumentSortant.E_FACTURE_CONTACT, TypeDocumentSortant.E_FACTURE_SIGNATURE),
+		                   EnumSet.of(TypeDocumentSortant.E_FACTURE_CONTACT,
+		                              TypeDocumentSortant.E_FACTURE_SIGNATURE),
 		                   new TraitementRetourImpl<>(new DocumentEFactureFetcher(documentEFactureDAO),
 		                                              new DocumentEFactureKeyAssignator()));
 
@@ -287,7 +302,7 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 		}
 	}
 
-	private static final class EtatDeclarationRappeleeOuSommeeKeyAssignator implements KeyAssignator<EtatDeclarationAvecDocumentArchive> {
+	private static final class EtatDeclarationAvecDocumentArchiveKeyAssignator implements KeyAssignator<EtatDeclarationAvecDocumentArchive> {
 		@Override
 		public void assignKey(EtatDeclarationAvecDocumentArchive entity, String key) {
 			entity.setCleDocument(key);

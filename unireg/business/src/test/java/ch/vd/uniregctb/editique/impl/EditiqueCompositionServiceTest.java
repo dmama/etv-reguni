@@ -108,6 +108,7 @@ public class EditiqueCompositionServiceTest extends BusinessTest {
 				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), cedi, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				di.setNumeroOfsForGestion(MockCommune.Cossonay.getNoOFS());
+				addEtatDeclarationEmise(di, RegDate.get());
 				service.imprimeDIForBatch(di);          // <-- ça pêtait ici sur un "type de document non supporté: null"
 				return pp.getNumero();
 			}

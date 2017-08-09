@@ -2917,19 +2917,22 @@ var Decl = {
 					html += '&nbsp;(' + StringUtils.escapeHTML(e.dateEnvoiCourrierMessage) + ')';
 				}
 				html += '</td><td>' + StringUtils.escapeHTML(e.etatMessage);
-				if (!e.annule && (e.etat == 'SOMMEE' || e.etat == 'RAPPELEE')) {
+				if (!e.annule && (e.etat == 'SOMMEE' || e.etat == 'RAPPELEE' || e.etat == 'EMISE')) {
 					if (e.urlVisualisationExterneDocument != null) {
 						var title;
 						if (e.etat == 'RAPPELEE') {
 							title = 'Visualisation du rappel émis';
 						}
-						else {
+						else if (e.etat == 'SOMMEE') {
 							title = 'Visualisation de la sommation émise';
+						}
+						else {
+							title = 'Visualisation du document émis';
 						}
 
 						html += '&nbsp;<a href="#" class="pdf" title="' + title + '" onclick="VisuExterneDoc.openWindow(\x27' + e.urlVisualisationExterneDocument + '\x27);">&nbsp;</a>';
 					}
-					else {
+					else if (e.etat != 'EMISE') {
 						var url;
 						if (e.etat == 'RAPPELEE') {
 							url = App.curl('/declaration/copie-conforme-rappel.do?idEtat=') + e.id;
