@@ -5,7 +5,7 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
 
 	<xs:complexType name="taxResidenceType">
 		<xs:annotation>
