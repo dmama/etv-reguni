@@ -20,17 +20,7 @@
 			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxdeclaration-2.xsd" />
 			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-1.xsd" />
 			<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-1.xsd" />
-			<xs:include schemaLocation="messages/getpartytype.xsd" />
-			<xs:include schemaLocation="messages/getparty.xsd" />
-			<xs:include schemaLocation="messages/getbatchparty.xsd" />
-			<xs:include schemaLocation="messages/searchparty.xsd" />
-			<xs:include schemaLocation="messages/getmodifiedtaxpayers.xsd" />
-			<xs:include schemaLocation="messages/searchcorporationevents.xsd" />
-			<xs:include schemaLocation="messages/acknowledgetaxdeclarations.xsd" />
-			<xs:include schemaLocation="messages/extenddeadline.xsd" />
-			<xs:include schemaLocation="messages/setautomaticreimbursementblocking.xsd" />
-			<xs:include schemaLocation="messages/getdebtorinfo.xsd" />
-			<xs:include schemaLocation="messages/gettaxoffices.xsd" />
+			<xs:include schemaLocation="messages/party4.xsd" />
 			<xs:element name="searchPartyRequest" nillable="true" type="ws:searchPartyRequestType" />
 			<xs:element name="searchPartyResponse" nillable="true" type="ws:searchPartyResponseType" />
 			<xs:element name="searchCorporationEventsRequest" nillable="true" type="ws:searchCorporationEventsRequestType" />
