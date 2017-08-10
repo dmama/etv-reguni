@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -19,16 +20,19 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 	private final TypeContribuable typeContribuable;
 	private final TypeDocument typeDocument;
 	private final CategorieEntreprise categorieEntreprise;
+	private final TypeAutoriteFiscale typeAutoriteFiscalePrincipale;
+
 
 	public PeriodeImpositionPersonnesMorales(RegDate debut, RegDate fin, ContribuableImpositionPersonnesMorales contribuable,
 	                                         boolean declarationOptionnelle, boolean declarationRemplaceeParNote, CauseFermeture causeFermeture, Integer codeSegment,
 	                                         List<ExerciceCommercial> exercicesCommerciaux, TypeContribuable typeContribuable, TypeDocument typeDocument,
-	                                         CategorieEntreprise categorieEntreprise) {
+	                                         CategorieEntreprise categorieEntreprise, TypeAutoriteFiscale typeAutoriteFiscalePrincipale) {
 		super(debut, fin, contribuable, declarationOptionnelle, declarationRemplaceeParNote, causeFermeture, codeSegment);
 		this.exercicesCommerciaux = exercicesCommerciaux;
 		this.typeContribuable = typeContribuable;
 		this.typeDocument = typeDocument;
 		this.categorieEntreprise = categorieEntreprise;
+		this.typeAutoriteFiscalePrincipale = typeAutoriteFiscalePrincipale;
 
 		if (!typeContribuable.isUsedForPM()) {
 			throw new IllegalArgumentException("Le type de contribuable " + typeContribuable + " n'est pas supporté pour les PM.");
@@ -86,6 +90,10 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 		return (ContribuableImpositionPersonnesMorales) super.getContribuable();
 	}
 
+	public TypeAutoriteFiscale getTypeAutoriteFiscalePrincipale() {
+		return typeAutoriteFiscalePrincipale;
+	}
+
 	@Override
 	public PeriodeImpositionPersonnesMorales collate(PeriodeImposition next) {
 		final PeriodeImpositionPersonnesMorales nextPeriode = (PeriodeImpositionPersonnesMorales) next;
@@ -103,7 +111,8 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 		                                             exercicesCommerciaux,
 		                                             nextPeriode.getTypeContribuable(),
 		                                             typeDocument,
-		                                             categorieEntreprise);
+		                                             categorieEntreprise,
+		                                             nextPeriode.typeAutoriteFiscalePrincipale);
 	}
 
 	@Override
@@ -112,5 +121,6 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 		map.put("typeContribuable", String.valueOf(typeContribuable));
 		map.put("typeDocumentDeclaration", String.valueOf(typeDocument));
 		map.put("categorieEntreprise", String.valueOf(categorieEntreprise));
+		map.put("typeAutoriteFiscalePrincipale", String.valueOf(typeAutoriteFiscalePrincipale));
 	}
 }

@@ -24,6 +24,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
@@ -89,6 +90,7 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					final TypeContribuable typeContribuable = computeTypeContribuable(entreprise, intersection.getDateFin(), assujettissement);
 					final TypeDocument typeDocument = computeTypeDocument(entreprise, intersection.getDateFin());
 					final CategorieEntreprise categorieEntreprise = getLastKnownCategorieEntrepriseAtOrBefore(entreprise, intersection.getDateFin());
+					final TypeAutoriteFiscale typeAutoriteFiscalePrincipale = computeTypeAutoriteFiscalePrincipale(assujettissement);
 
 					// OBSOLETE (supprimé) - [SIFISC-17721] sur les DP/APM, les déclarations sont optionnelles --> selon régime fiscal, voir ci-dessous.
 
@@ -107,7 +109,8 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					                                                   exercices,
 					                                                   typeContribuable,
 					                                                   typeDocument,
-					                                                   categorieEntreprise));
+					                                                   categorieEntreprise,
+					                                                   typeAutoriteFiscalePrincipale));
 				}
 			}
 		}
@@ -149,6 +152,19 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 			return TypeContribuable.HORS_SUISSE;
 		case VAUDOIS_ORDINAIRE:
 			return TypeContribuable.VAUDOIS_ORDINAIRE;
+		default:
+			throw new IllegalArgumentException("Type d'assujettissement PM non-supporté dans le calculateur de périodes d'imposition : " + assujettissement.getType());
+		}
+	}
+
+	private static TypeAutoriteFiscale computeTypeAutoriteFiscalePrincipale(Assujettissement assujettissement) {
+		switch (assujettissement.getType()) {
+		case HORS_CANTON:
+			return TypeAutoriteFiscale.COMMUNE_HC;
+		case HORS_SUISSE:
+			return TypeAutoriteFiscale.PAYS_HS;
+		case VAUDOIS_ORDINAIRE:
+			return TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 		default:
 			throw new IllegalArgumentException("Type d'assujettissement PM non-supporté dans le calculateur de périodes d'imposition : " + assujettissement.getType());
 		}

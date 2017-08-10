@@ -95,8 +95,6 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 	 */
 	@SuppressWarnings("unchecked")
 	private Iterator<Long> getIdsContribuablesPMAvecForActifSurPf(Session session, int pf) {
-		//final ArrayList list = new ArrayList(1);list.add(1L);
-
 		//Mettre la pf à 2 ans en arrière permet de recuperer les entreprises n'ayant plus de for sur la période N mais qui potentiellement
 		//pourraient encore avoir des périodes d'impostion qui existent encore au dela de la fermeture grace à l'existence d'un exercice commercial
 		//	Iterator<Long> iter = list.iterator();

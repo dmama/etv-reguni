@@ -58,9 +58,9 @@ public class PdfExtractionDonneesRptPMRapport extends PdfRapport {
 			addTableSimple(2, table -> {
 				table.addLigne("Nombre de contribuables inspectés :", String.valueOf(results.getNombreCtbAnalyses()));
 				table.addLigne("Contribuables ignorés :", String.valueOf(results.getListeCtbsIgnores().size()));
-				table.addLigne("Contribuables avec Décision ACI :", String.valueOf(results.getListeCtbDecisionACI().size()));
+				table.addLigne("Contribuables avec Décision ACI :", String.valueOf(results.getListeCtbsDecisionACI().size()));
 				table.addLigne("Contribuables en erreur :", String.valueOf(results.getListeErreurs().size()));
-				table.addLigne("Nombre de périodes trouvées :", String.valueOf(results.getListePeriode().size()));
+				table.addLigne("Nombre de périodes trouvées :", String.valueOf(results.getListePeriodes().size()));
 				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 				table.addLigne("Date de génération : ", formatTimestamp(dateGeneration));
 			});
@@ -142,11 +142,11 @@ public class PdfExtractionDonneesRptPMRapport extends PdfRapport {
 	}
 
 	private TemporaryFile genererListePeriodes(ExtractionDonneesRptPMResults results, String filename, StatusManager status) {
-		return genererListe(results.getListePeriode(), results.versionWS, filename, status);
+		return genererListe(results.getListePeriodes(), results.versionWS, filename, status);
 	}
 
 	private TemporaryFile genererListeDecisions(ExtractionDonneesRptPMResults results, String filename, StatusManager status) {
-		return genererListe(results.getListeCtbDecisionACI(), results.versionWS, filename, status);
+		return genererListe(results.getListeCtbsDecisionACI(), results.versionWS, filename, status);
 	}
 
 	private <T extends ExtractionDonneesRptPMResults.InfoCtbBase> TemporaryFile genererListe(List<T> liste, VersionWS versionWS, String filename, StatusManager status) {

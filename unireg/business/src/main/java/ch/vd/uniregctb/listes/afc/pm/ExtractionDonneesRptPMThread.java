@@ -10,7 +10,6 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesThread;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 public class ExtractionDonneesRptPMThread extends ListesThread<ExtractionDonneesRptPMResults> {
@@ -20,11 +19,4 @@ public class ExtractionDonneesRptPMThread extends ListesThread<ExtractionDonnees
 		super(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate, localResults);
 	}
 
-	@Override
-	protected void traiteContribuable(Contribuable ctb) throws Exception {
-
-
-
-		super.traiteContribuable(ctb);
-	}
 }

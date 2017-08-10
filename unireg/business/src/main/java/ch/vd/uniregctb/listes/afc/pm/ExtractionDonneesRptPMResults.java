@@ -2,12 +2,15 @@ package ch.vd.uniregctb.listes.afc.pm;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -24,7 +27,6 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.role.RolePopulationPMExtractor;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
 import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
@@ -34,6 +36,7 @@ import ch.vd.uniregctb.tiers.DomicileHisto;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
@@ -152,26 +155,35 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 		public final MotifFor motifFermeture;
 		public final Integer noOfsForPrincipal;
 		public final String nomForPrincipal;
-		public final String autoriteFiscaleForPrincipal;
+		public final TypeAutoriteFiscale autoriteFiscalePrincipale;
 		public final TypeEtatEntreprise etatEntreprise;
 
 		public InfoPeriodeImposition(Entreprise entreprise, PeriodeImpositionPersonnesMorales periode, TiersService tiersService, ServiceInfrastructureService infraService) {
 			super(entreprise.getNumero());
 
-			this.formeJuridique = getFormeJuridique(entreprise, periode.getDateFin(), tiersService );
-			final RolePopulationPMExtractor extractor = new RolePopulationPMExtractor(MotifFor.DEPART_HC);
-			final ForFiscalRevenuFortune forTrouve = extractor.getForPourRoles(periode.getPeriodeFiscale(), entreprise);
-			this.noOfsCommune = forTrouve!=null? extractor.getCommunePourRoles(periode.getPeriodeFiscale(), entreprise) : null;
-			this.nomCommune = getNomAutoriteFor(forTrouve, periode, infraService);
+			this.formeJuridique = getFormeJuridique(entreprise, periode.getDateFin(), tiersService);
+
+			final Commune commune = findCommuneVaudoiseDeReference(entreprise, periode.getDateFin(), infraService);
+			if (commune == null) {
+				this.noOfsCommune = null;
+				this.nomCommune = null;
+			}
+			else {
+				this.noOfsCommune = commune.getNoOFS();
+				this.nomCommune = commune.getNomOfficiel();
+			}
+
 			this.joursImposables = FiscalDateHelper.getLongueurEnJours(periode.getDateDebut(), periode.getDateFin());
 			this.raisonSociale = getRaisonSociale(entreprise, periode.getDateFin(), tiersService);
 			this.regimeFiscalCode = getRegimeFiscal(entreprise, periode.getDateFin());
+
 			final AllegementFiscalConfederation allegementFiscalIFD = getAllegementFiscalIFD(entreprise, periode.getDateFin());
 			this.typeAllegementFiscalIFD = allegementFiscalIFD != null ? allegementFiscalIFD.getType() : null;
 			this.debutAllegementIFD =allegementFiscalIFD != null ? allegementFiscalIFD.getDateDebut() : null;
 			this.finAllegementIFD = allegementFiscalIFD != null ? allegementFiscalIFD.getDateFin() : null;
 			this.tauxOuMontantIFD = getValeurTauxOuMontant(allegementFiscalIFD);
 			this.tauxAllegementIFD = allegementFiscalIFD != null ? allegementFiscalIFD.getPourcentageAllegement() : null;
+
 			final AllegementFiscalCanton allegementFiscalVD = getAllegementFiscalVD(entreprise, periode.getDateFin());
 			this.typeAllegementFiscalVD = allegementFiscalVD != null ? allegementFiscalVD.getType() : null;
 			this.tauxOuMontantVD = getValeurTauxOuMontant(allegementFiscalVD);
@@ -189,13 +201,13 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 			}
 			this.debutExerciceCommercial = periode.getExerciceCommercial().getDateDebut();
 			this.finExerciceCommercial = periode.getExerciceCommercial().getDateFin();
-			this.specifiteFiscale = getSpecialite(entreprise,periode.getDateFin());
+			this.specifiteFiscale = getSpecialite(entreprise, periode.getDateFin());
 			this.noIDE = tiersService.getNumeroIDE(entreprise);
 			this.dateFondation = getDateCreation(entreprise);
 			this.dateDebutPI = periode.getDateDebut();
 			this.datefinPI = periode.getDateFin();
 
-			final ForFiscalPrincipalPM forFiscal = getDernierForFiscalPrincipalSurPeriode(entreprise, periode);
+			final ForFiscalPrincipalPM forFiscal = entreprise.getDernierForFiscalPrincipalAvant(periode.getDateFin());
 			if (forFiscal != null) {
 				this.motifRattachement = forFiscal.getMotifRattachement();
 				this.motifOuverture = forFiscal.getMotifOuverture();
@@ -208,8 +220,8 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 				this.motifFermeture = null;
 				this.noOfsForPrincipal = null;
 			}
-			this.nomForPrincipal = getNomAutoriteFor(forFiscal, periode, infraService);
-			this.autoriteFiscaleForPrincipal = getTypeAutoriteFiscale(forFiscal);
+			this.nomForPrincipal = getNomAutoriteFor(forFiscal, infraService);
+			this.autoriteFiscalePrincipale = periode.getTypeAutoriteFiscalePrincipale();
 
 			final EtatEntreprise etatEntreprise = entreprise.getEtatAt(periode.getDateFin());
 			this.etatEntreprise = etatEntreprise != null ? etatEntreprise.getType() : null;
@@ -296,35 +308,74 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 					versionWS.of(motifFermeture),
 					noOfsForPrincipal,
 					nomForPrincipal,
-					autoriteFiscaleForPrincipal,
+					asString(autoriteFiscalePrincipale),
 					versionWS.of(etatEntreprise)
 			};
 		}
 
-		protected FlagEntreprise getSpecialite(Entreprise entreprise, RegDate date){
+		private FlagEntreprise getSpecialite(Entreprise entreprise, RegDate date){
 			final List<FlagEntreprise> liste = entreprise.getFlagsNonAnnulesTries();
 			return DateRangeHelper.rangeAt(liste, date);
 		}
 
-		protected String getNomAutoriteFor(ForFiscalRevenuFortune ffpm,PeriodeImpositionPersonnesMorales periode,ServiceInfrastructureService infraService){
+		private String getNomAutoriteFor(ForFiscalRevenuFortune ffpm, ServiceInfrastructureService infraService) {
 			if (ffpm == null) {
 				return null;
 			}
 			final String nom;
 			final Integer numeroOfs = ffpm.getNumeroOfsAutoriteFiscale();
 			if (ffpm.getTypeAutoriteFiscale()== TypeAutoriteFiscale.PAYS_HS) {
-				final Pays pays = infraService.getPays(numeroOfs, periode.getDateFin());
+				final Pays pays = infraService.getPays(numeroOfs, ffpm.getDateFin());
 				nom = pays != null ? pays.getNomOfficiel() : null;
 			}
 			else{
 				//on est en suisse
-				final Commune commune = infraService.getCommuneByNumeroOfs(numeroOfs, periode.getDateFin());
+				final Commune commune = infraService.getCommuneByNumeroOfs(numeroOfs, ffpm.getDateFin());
 				nom = commune != null ? commune.getNomOfficiel() : null;
 			}
 			return nom;
 		}
 
-		protected String getRaisonSociale(Entreprise entreprise, RegDate date,  TiersService tiersService) {
+		@Nullable
+		private Commune findCommuneVaudoiseDeReference(Entreprise entreprise, RegDate date, ServiceInfrastructureService infraService) {
+			// liste des fors vaudois existant ou ayant existé avant (ou à) la date de référence
+			final List<ForFiscal> forsVaudois = entreprise.getForsFiscauxNonAnnules(false).stream()
+					.filter(ff -> ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
+					.filter(ff -> ff.getDateDebut().isBeforeOrEqual(date))
+					.collect(Collectors.toList());
+			if (forsVaudois.isEmpty()) {
+				// je me demande bien ce que l'on fait ici (avec une période d'imposition, et tout, sans for vaudois... mais bon...
+				return null;
+			}
+
+			// dernière date de validité à regarder
+			final RegDate finDernierFor = forsVaudois.stream()
+					.max(Comparator.comparing(ForFiscal::getDateFin, NullDateBehavior.LATEST::compare))
+					.map(ForFiscal::getDateFin)
+					.orElse(null);      // null signifie que le dernier for est toujours actif
+			final RegDate effectiveDate = RegDateHelper.minimum(date, finDernierFor, NullDateBehavior.LATEST);
+
+			// fors vaudois valides à cette date effective
+			final List<ForFiscal> forsADateEffective = forsVaudois.stream()
+					.filter(ff -> ff.isValidAt(effectiveDate))
+					.collect(Collectors.toList());
+
+			// y a-t-il un for principal vaudois (s'il y en a un, c'est lui...) ?
+			final Optional<ForFiscal> forPrincipalVaudois = forsADateEffective.stream()
+					.filter(ForFiscal::isPrincipal)
+					.findFirst();
+			// si le for prépondérant n'est pas le for principal, il faut bien le choisir
+			// - le plus vieux encore actif
+			// - à date de début égale, celui qui a le numéro OFS le plus petit
+			final ForFiscal forPreponderant = forPrincipalVaudois.orElseGet(() -> forsADateEffective.stream()
+					.min(Comparator.comparing(ForFiscal::getDateDebut, NullDateBehavior.EARLIEST::compare).thenComparing(ForFiscal::getNumeroOfsAutoriteFiscale))
+					.orElse(null));
+
+			// récupération de la commune correspondante
+			return infraService.getCommuneByNumeroOfs(forPreponderant.getNumeroOfsAutoriteFiscale(), effectiveDate);
+		}
+
+		private String getRaisonSociale(Entreprise entreprise, RegDate date,  TiersService tiersService) {
 			final List<RaisonSocialeHisto> liste = tiersService.getRaisonsSociales(entreprise, false);
 			final RaisonSocialeHisto raisonSocialeHisto = DateRangeHelper.rangeAt(liste, date);
 			if (raisonSocialeHisto != null) {
@@ -333,7 +384,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 			return null;
 		}
 
-		protected String getRegimeFiscal(Entreprise entreprise, RegDate date) {
+		private String getRegimeFiscal(Entreprise entreprise, RegDate date) {
 			final List<RegimeFiscal> liste = entreprise.getRegimesFiscauxNonAnnulesTries(RegimeFiscal.Portee.VD);
 			final RegimeFiscal regimeFiscal = DateRangeHelper.rangeAt(liste, date);
 			if (regimeFiscal!= null) {
@@ -343,7 +394,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 			return null;
 		}
 
-		protected String getValeurTauxOuMontant(AllegementFiscal allegementFiscal){
+		private String getValeurTauxOuMontant(AllegementFiscal allegementFiscal){
 			if (allegementFiscal == null) {
 				return null;
 			}
@@ -355,7 +406,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 			}
 		}
 
-		protected FormeJuridiqueEntreprise getFormeJuridique(Entreprise entreprise, RegDate date, TiersService tiersService) {
+		private FormeJuridiqueEntreprise getFormeJuridique(Entreprise entreprise, RegDate date, TiersService tiersService) {
 			final List<FormeLegaleHisto> formesLegales = tiersService.getFormesLegales(entreprise, false);
 			final FormeLegaleHisto formeLegaleHisto = DateRangeHelper.rangeAt(formesLegales, date);
 			if (formeLegaleHisto != null) {
@@ -364,7 +415,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 			return  null;
 		}
 
-		protected AllegementFiscalConfederation getAllegementFiscalIFD(Entreprise entreprise, RegDate date) {
+		private AllegementFiscalConfederation getAllegementFiscalIFD(Entreprise entreprise, RegDate date) {
 			final List<AllegementFiscal> liste = entreprise.getAllegementsFiscauxNonAnnulesTries();
 			return liste.stream()
 					.filter(AllegementFiscalConfederation.class::isInstance)
@@ -374,7 +425,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 					.orElse(null);
 		}
 
-		protected AllegementFiscalCanton getAllegementFiscalVD(Entreprise entreprise, RegDate date) {
+		private AllegementFiscalCanton getAllegementFiscalVD(Entreprise entreprise, RegDate date) {
 			final List<AllegementFiscal> liste = entreprise.getAllegementsFiscauxNonAnnulesTries();
 			return liste.stream()
 					.filter(AllegementFiscalCanton.class::isInstance)
@@ -384,7 +435,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 					.orElse(null);
 		}
 
-		protected DomicileHisto getSiege(Entreprise entreprise, RegDate date,TiersService tiersService) {
+		private DomicileHisto getSiege(Entreprise entreprise, RegDate date,TiersService tiersService) {
 			return tiersService.getSieges(entreprise,false).stream()
 					.filter(a -> a.isValidAt(date))
 					.findFirst()
@@ -397,39 +448,23 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 					.map(EtatEntreprise::getDateObtention)
 					.orElse(null);
 		}
-
 	}
 
-	private static String getTypeAutoriteFiscale(ForFiscalPrincipalPM forFiscal) {
-		if (forFiscal == null) {
+	@Nullable
+	private static String asString(TypeAutoriteFiscale taf) {
+		if (taf == null) {
 			return null;
 		}
-		//CAS PARTICULIER du for fiscal avec départ HC qui a pour autorité fiscale VD,
-		// on doit  considérer ces cas commes des autorité fiscales HC dans le cadre de la RPT (CF revue TAB technique dans SIFISC-25638)
-		if (forFiscal.getDateFin() != null && forFiscal.getMotifFermeture() == MotifFor.DEPART_HC) {
-			return "HC";
-		}
-		switch (forFiscal.getTypeAutoriteFiscale()){
-		case PAYS_HS:
-			return "HS";
-		case COMMUNE_HC:
-			return "HC";
+		switch (taf) {
 		case COMMUNE_OU_FRACTION_VD:
 			return "VD";
+		case COMMUNE_HC:
+			return "HC";
+		case PAYS_HS:
+			return "HS";
 		default:
-			return null;
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnu : " + taf);
 		}
-	}
-
-	private static ForFiscalPrincipalPM getDernierForFiscalPrincipalSurPeriode(Entreprise entreprise, PeriodeImpositionPersonnesMorales periode) {
-
-		final ForFiscalPrincipalPM forFiscal = entreprise.getForFiscalPrincipalAt(periode.getDateFin());
-		if (forFiscal != null) {
-			return forFiscal;
-		}
-		//On a pas de for à la fin de la période, il faut que l'on remonte jusqu'au dernier for vaudois fermé avant ls fin de la période
-
-		return entreprise.getDernierForFiscalPrincipalAvant(periode.getDateFin());
 	}
 
 	public ExtractionDonneesRptPMResults(RegDate dateTraitement, int periodeFiscale, ModeExtraction mode, VersionWS versionWS, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService,
@@ -443,9 +478,9 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 	}
 
 	private int nbContribuablesAnalyses = 0;
-	private final List<InfoPeriodeImposition> listePeriode = new LinkedList<>();
+	private final List<InfoPeriodeImposition> listePeriodes = new LinkedList<>();
 	private final List<InfoCtbIgnore> listeCtbsIgnores = new LinkedList<>();
-	private final List<InfoCtbAvecDecisionACI> listeCtbDecisionACI = new LinkedList<>();
+	private final List<InfoCtbAvecDecisionACI> listeCtbsDecisionACI = new LinkedList<>();
 
 	@Override
 	public final void addContribuable(Contribuable ctb) throws ServiceInfrastructureException {
@@ -518,11 +553,11 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 				                                     d.getDateDebut(),
 				                                     d.getDateFin(),
 				                                     d.getLogCreationDate()))
-				.forEach(listeCtbDecisionACI::add);
+				.forEach(listeCtbsDecisionACI::add);
 	}
 
 	protected void addPeriodeImposition(InfoPeriodeImposition periode) {
-		listePeriode.add(periode);
+		listePeriodes.add(periode);
 	}
 
 	@Override
@@ -534,33 +569,33 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 	public void addAll(ExtractionDonneesRptPMResults sources) {
 		super.addAll(sources);
 		listeCtbsIgnores.addAll(sources.listeCtbsIgnores);
-		listePeriode.addAll(sources.listePeriode);
+		listePeriodes.addAll(sources.listePeriodes);
 		nbContribuablesAnalyses += sources.nbContribuablesAnalyses;
-		listeCtbDecisionACI.addAll(sources.listeCtbDecisionACI);
+		listeCtbsDecisionACI.addAll(sources.listeCtbsDecisionACI);
 	}
 
 	@Override
 	public void sort() {
 		super.sort();
-		Collections.sort(listePeriode);
+		Collections.sort(listePeriodes);
 		Collections.sort(listeCtbsIgnores);
-		Collections.sort(listeCtbDecisionACI);
+		Collections.sort(listeCtbsDecisionACI);
 	}
 
 	public int getNombreCtbAnalyses() {
 		return nbContribuablesAnalyses;
 	}
 
-	public List<InfoPeriodeImposition> getListePeriode() {
-		return listePeriode;
+	public List<InfoPeriodeImposition> getListePeriodes() {
+		return listePeriodes;
 	}
 
 	public List<InfoCtbIgnore> getListeCtbsIgnores() {
 		return listeCtbsIgnores;
 	}
 
-	public List<InfoCtbAvecDecisionACI> getListeCtbDecisionACI() {
-		return listeCtbDecisionACI;
+	public List<InfoCtbAvecDecisionACI> getListeCtbsDecisionACI() {
+		return listeCtbsDecisionACI;
 	}
 }
 

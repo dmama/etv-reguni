@@ -48,13 +48,14 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 	@Nullable
 	@Override
 	public Integer getCommunePourRoles(int annee, T contribuable) {
-		final ForFiscalRevenuFortune ffv = getForPourRoles(annee,contribuable);
+		final ForFiscalRevenuFortune ffv = getForPourRoles(annee, contribuable);
 		if (ffv != null) {
 			return ffv.getNumeroOfsAutoriteFiscale();
 		}
 		// rien (en général des considérations HC...)
 		return null;
 	}
+
 	@Nullable
 	@Override
 	public ForFiscalRevenuFortune getForPourRoles(int annee, T contribuable){
@@ -99,8 +100,8 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 		if (!fsActifsFin.isEmpty()) {
 			// le for "prépondérant" est l'un des actifs (= le plus vieux)
 			return fsActifsFin.stream()
-					.min(RolePopulationExtractorImpl::compareForsSecondaires).get();
-
+					.min(RolePopulationExtractorImpl::compareForsSecondaires)
+					.get();
 		}
 
 		// il faut chercher la date de fermeture du dernier for vaudois sur la période
@@ -133,7 +134,8 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 			//      - HS -> on conserve la commune du dernier for
 			final List<ForFiscalSecondaire> fsActifs = DateRangeHelper.rangesAt(forsSecondaires, dateFermetureDernierForVaudois);
 			return fsActifs.stream()
-					.min(RolePopulationExtractorImpl::compareForsSecondaires).get();
+					.min(RolePopulationExtractorImpl::compareForsSecondaires)
+					.get();
 		}
 
 		// rien (en général des considérations HC...)
@@ -235,17 +237,6 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 		else {
 			return MotifFor.ARRIVEE_HC;
 		}
-	}
-
-	@Nullable
-	private Integer getCommunePourForPrincipalVaudois(MovingWindow.Snapshot<ForFiscalPrincipal> ffp, RegDate finAnnee) {
-		final ForFiscalPrincipal current = getForPrincipalVaudois(ffp,finAnnee);
-		if (current!=null) {
-			return current.getNumeroOfsAutoriteFiscale();
-		}
-
-		// cas du mariage, de la séparation, du départ HC... -> rien sur la PF
-		return null;
 	}
 
 	@Nullable
