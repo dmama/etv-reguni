@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.xml;
 
+import org.apache.cxf.BusFactory;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.catalog.OASISCatalogManager;
 import org.springframework.beans.BeansException;
@@ -49,13 +50,16 @@ public class UniregCxfBusFactory implements FactoryBean<SpringBus>, Initializing
 		if (resourceResolver != null) {
 			bus.setExtension(new LSResourceCatalogManager(resourceResolver), OASISCatalogManager.class);
 		}
+
+		BusFactory.setDefaultBus(bus);
 	}
 
 	@Override
 	public void destroy() throws Exception {
-		if (bus != null) {
-			bus.shutdown();
-		}
+		// on ne shutdown pas le bus courant car il peut être partagé entre plusieurs contextes Spring (cas des tests)
+//		if (bus != null) {
+//			bus.shutdown();
+//		}
 	}
 
 	@Override
