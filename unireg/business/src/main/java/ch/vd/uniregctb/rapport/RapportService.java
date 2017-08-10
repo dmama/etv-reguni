@@ -26,7 +26,80 @@ import ch.vd.uniregctb.declaration.snc.EnvoiRappelsQuestionnairesSNCResults;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.uniregctb.document.*;
+import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.AnnoncesIDERapport;
+import ch.vd.uniregctb.document.AppariementEtablissementsSecondairesRapport;
+import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
+import ch.vd.uniregctb.document.CalculParentesRapport;
+import ch.vd.uniregctb.document.CleanupRFProcessorRapport;
+import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
+import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
+import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
+import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
+import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
+import ch.vd.uniregctb.document.DeterminationDIsPMRapport;
+import ch.vd.uniregctb.document.DeterminationDIsPPRapport;
+import ch.vd.uniregctb.document.DeterminationQuestionnairesSNCRapport;
+import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
+import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
+import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
+import ch.vd.uniregctb.document.EchoirDIsPMRapport;
+import ch.vd.uniregctb.document.EchoirDIsPPRapport;
+import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
+import ch.vd.uniregctb.document.EnvoiDIsPMRapport;
+import ch.vd.uniregctb.document.EnvoiDIsPPRapport;
+import ch.vd.uniregctb.document.EnvoiFormulairesDemandeDegrevementICIRapport;
+import ch.vd.uniregctb.document.EnvoiLRsRapport;
+import ch.vd.uniregctb.document.EnvoiLettresBienvenueRapport;
+import ch.vd.uniregctb.document.EnvoiQuestionnairesSNCRapport;
+import ch.vd.uniregctb.document.EnvoiRappelsQuestionnairesSNCRapport;
+import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
+import ch.vd.uniregctb.document.EnvoiSommationsDIsPMRapport;
+import ch.vd.uniregctb.document.EnvoiSommationsDIsPPRapport;
+import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
+import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
+import ch.vd.uniregctb.document.ExtractionRegimesFiscauxRapport;
+import ch.vd.uniregctb.document.FinsDeDroitRFRapport;
+import ch.vd.uniregctb.document.FusionDeCommunesRapport;
+import ch.vd.uniregctb.document.IdentifierContribuableFromListeRapport;
+import ch.vd.uniregctb.document.IdentifierContribuableRapport;
+import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
+import ch.vd.uniregctb.document.ImportImmeublesRapport;
+import ch.vd.uniregctb.document.InitialisationIFoncRapport;
+import ch.vd.uniregctb.document.ListeAssujettisRapport;
+import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
+import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
+import ch.vd.uniregctb.document.ListeNoteRapport;
+import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
+import ch.vd.uniregctb.document.ListesNominativesRapport;
+import ch.vd.uniregctb.document.MajoriteRapport;
+import ch.vd.uniregctb.document.MigrationMandatairesSpeciauxRapport;
+import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
+import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
+import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
+import ch.vd.uniregctb.document.RappelFormulairesDemandeDegrevementICIRapport;
+import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
+import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
+import ch.vd.uniregctb.document.RapprocherCtbRapport;
+import ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport;
+import ch.vd.uniregctb.document.RecalculTachesRapport;
+import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
+import ch.vd.uniregctb.document.ResolutionAdresseRapport;
+import ch.vd.uniregctb.document.RolePMCommunesRapport;
+import ch.vd.uniregctb.document.RolePMOfficeRapport;
+import ch.vd.uniregctb.document.RolePPCommunesRapport;
+import ch.vd.uniregctb.document.RolePPOfficesRapport;
+import ch.vd.uniregctb.document.RolesCommunesPMRapport;
+import ch.vd.uniregctb.document.RolesCommunesPPRapport;
+import ch.vd.uniregctb.document.RolesOIDsRapport;
+import ch.vd.uniregctb.document.RolesOIPMRapport;
+import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
+import ch.vd.uniregctb.document.StatistiquesDIsRapport;
+import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
+import ch.vd.uniregctb.document.SuppressionOIDRapport;
+import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
+import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.documentfiscal.EnvoiLettresBienvenueResults;
 import ch.vd.uniregctb.documentfiscal.RappelLettresBienvenueResults;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
@@ -35,8 +108,6 @@ import ch.vd.uniregctb.evenement.ide.AnnonceIDEJobResults;
 import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.foncier.InitialisationIFoncResults;
 import ch.vd.uniregctb.foncier.RappelFormulairesDemandeDegrevementICIResults;
-import ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporterResults;
-import ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCImporterResults;
 import ch.vd.uniregctb.foncier.migration.mandataire.MigrationMandatImporterResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableFromListeResults;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
@@ -636,23 +707,6 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	MutationsRFProcessorRapport generateRapport(MutationsRFProcessorResults results, StatusManager status);
-
-	/**
-	 * Génère le rapport d'exécution du batch qui migre les demandes de dégrèvement de SIMPA-PM.
-	 *
-	 * @param results le résultat du batch
-	 * @param status  le status manager
-	 * @return le rapport
-	 */
-	MigrationDDCsvLoaderRapport generateRapport(MigrationDDImporterResults results, StatusManager status);
-
-	/**
-	 * Génère le rapport d'exécution du batch qui migre les exonérations IFONC depuis SIMPA
-	 * @param results le résultat du job
-	 * @param status le status manager
-	 * @return le rapport final
-	 */
-	MigrationExoIFONCRapport generateRapport(MigrationExoIFONCImporterResults results, StatusManager status);
 
 	/**
 	 * Génère le rapport d'exécution du batch qui envoie les formulaires de demande de dégrèvement ICI en masse

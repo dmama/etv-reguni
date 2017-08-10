@@ -390,24 +390,4 @@
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
-	<bean id="migrationDDCsvLoader" class="ch.vd.uniregctb.foncier.migration.ici.MigrationDDImporter">
-		<constructor-arg ref="tiersDAO"/>
-		<constructor-arg ref="serviceInfrastructureService"/>
-		<constructor-arg ref="immeubleRFDAO"/>
-		<constructor-arg ref="globalTiersIndexer"/>
-		<constructor-arg ref="validationInterceptor"/>
-		<constructor-arg ref="tacheSynchronizerInterceptor"/>
-		<constructor-arg ref="transactionManager"/>
-	</bean>
-
-	<bean id="migrationExoIFONCCsvLoader" class="ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCImporter">
-		<constructor-arg ref="serviceInfrastructureService"/>
-		<constructor-arg ref="transactionManager"/>
-		<constructor-arg ref="immeubleRFDAO"/>
-		<constructor-arg ref="validationInterceptor"/>
-		<constructor-arg ref="globalTiersIndexer"/>
-		<constructor-arg ref="tacheSynchronizerInterceptor"/>
-		<constructor-arg ref="hibernateTemplate"/>
-	</bean>
-
 </beans>

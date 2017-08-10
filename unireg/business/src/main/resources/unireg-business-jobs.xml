@@ -758,20 +758,6 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
-	<bean id="migrationDDLoadCsvJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.migration.ici.MigrationDDJob">
-		<constructor-arg value="712"/>
-		<constructor-arg value="Importer le fichier CSV des données de dégrèvement de SIMPA-PM"/>
-		<property name="loader" ref="migrationDDCsvLoader"/>
-		<property name="rapportService" ref="rapportService"/>
-	</bean>
-
-	<bean id="migrationExonerationsIFONCJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.migration.ifonc.MigrationExoIFONCJob">
-		<constructor-arg value="713"/>
-		<constructor-arg value="Importer le fichier CSV des exonérations IFONC de SIMPA-PM"/>
-		<property name="loader" ref="migrationExoIFONCCsvLoader"/>
-		<property name="rapportService" ref="rapportService"/>
-	</bean>
-
 	<bean id="migrationMandatairesSpeciauxJob" parent="schedulerJob" class="ch.vd.uniregctb.foncier.migration.mandataire.MigrationMandatairesSpeciauxJob">
 		<constructor-arg value="714"/>
 		<constructor-arg value="Importer un fichier CSV de mandataires spéciaux extrait de TAO-PP/SIMPA"/>
