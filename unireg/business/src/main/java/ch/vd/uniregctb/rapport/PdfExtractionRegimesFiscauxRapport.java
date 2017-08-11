@@ -18,10 +18,10 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.regimefiscal.extraction.ExtractionRegimesFiscauxResults;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -56,7 +56,7 @@ public class PdfExtractionRegimesFiscauxRapport extends PdfRapport {
 		// Résultats
 		addEntete1("Résultats");
 		{
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
 						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}

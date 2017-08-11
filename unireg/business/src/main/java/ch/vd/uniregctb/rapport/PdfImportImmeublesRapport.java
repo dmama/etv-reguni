@@ -8,8 +8,8 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 

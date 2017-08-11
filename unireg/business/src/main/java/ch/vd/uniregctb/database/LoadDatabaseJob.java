@@ -4,8 +4,8 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.Document;
 import ch.vd.uniregctb.document.DocumentService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;

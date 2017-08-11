@@ -3,8 +3,8 @@ package ch.vd.uniregctb.declaration.ordinaire.pp;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.EchoirDIsPPRapport;
 import ch.vd.uniregctb.rapport.RapportService;

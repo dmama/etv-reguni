@@ -28,13 +28,13 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.common.MonitorableExecutorService;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.common.ThreadNameGenerator;
 import ch.vd.uniregctb.inbox.InboxAttachment;
@@ -567,7 +567,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 				final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
 				final ParallelBatchTransactionTemplateWithResults<E, R>
 						batch = new ParallelBatchTransactionTemplateWithResults<>(elements, extractor.getBatchSize(), extractor.getNbThreads(), extractor.getBatchBehavior(), transactionManager,
-						                                                         extractor.getStatusManager(), AuthenticationInterface.INSTANCE);
+						                                                          extractor.getStatusManager(), AuthenticationInterface.INSTANCE);
 				batch.setReadonly(true);        // ce sont toutes des extractions !
 				batch.execute(rapportFinal, createCallback(extractor, rapportFinal, progressMonitor), progressMonitor);
 			}

@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTestApplication;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 
@@ -127,7 +127,7 @@ public class RapprochementCtbTestApp extends BusinessItTestApplication {
 		}
 
 		@Override
-		public synchronized boolean interrupted() {
+		public synchronized boolean isInterrupted() {
 			return false;
 		}
 

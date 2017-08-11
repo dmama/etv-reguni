@@ -20,7 +20,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -29,6 +28,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -532,6 +532,6 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	@Override
 	public ComparerSituationFamilleResults comparerSituationFamille(RegDate dateTraitement, int nbThreads, StatusManager status) {
 		final ComparerSituationFamilleProcessor processor = new ComparerSituationFamilleProcessor(serviceCivil, hibernateTemplate, tiersService, transactionManager, adresseService);
-		return processor.run(dateTraitement,nbThreads,status);
+		return processor.run(dateTraitement, nbThreads, status);
 	}
 }

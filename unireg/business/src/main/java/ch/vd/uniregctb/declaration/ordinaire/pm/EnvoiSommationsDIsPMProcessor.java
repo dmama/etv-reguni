@@ -20,11 +20,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AddAndSaveHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -99,11 +99,11 @@ public class EnvoiSommationsDIsPMProcessor {
 				final List<Long> numerosDis = getListNumerosDis(batch);
 				final Set<DeclarationImpotOrdinairePM> declarations = declarationImpotOrdinaireDAO.getDeclarationsAvecDelaisEtEtats(DeclarationImpotOrdinairePM.class, numerosDis);
 				final Iterator<DeclarationImpotOrdinairePM> iter = declarations.iterator();
-				while (iter.hasNext() && !status.interrupted() && (nombreMax == null || nombreMax <= 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees()) < nombreMax)) {
+				while (iter.hasNext() && !status.isInterrupted() && (nombreMax == null || nombreMax <= 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees()) < nombreMax)) {
 					final DeclarationImpotOrdinairePM di = iter.next();
 					traiterDI(di, r, dateTraitement);
 				}
-				return (nombreMax == null || nombreMax <= 0 || (rapportFinal.getTotalDisSommees() + r.getTotalDisSommees() ) < nombreMax) && !status.interrupted();
+				return (nombreMax == null || nombreMax <= 0 || (rapportFinal.getTotalDisSommees() + r.getTotalDisSommees() ) < nombreMax) && !status.isInterrupted();
 			}
 
 			@Override
@@ -122,7 +122,7 @@ public class EnvoiSommationsDIsPMProcessor {
 		                                 rapportFinal.getTotalSommationsEnErreur());
 		LOGGER.info(msg);
 		status.setMessage(msg);
-		rapportFinal.setInterrompu(status.interrupted());
+		rapportFinal.setInterrompu(status.isInterrupted());
 		rapportFinal.end();
 		return rapportFinal;
 	}

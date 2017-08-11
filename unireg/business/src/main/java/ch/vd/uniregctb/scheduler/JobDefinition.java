@@ -34,9 +34,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.Document;
 import ch.vd.uniregctb.type.RestrictedAccess;
 import ch.vd.uniregctb.utils.UniregModeHelper;
@@ -380,12 +380,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 
 	public class JobStatusManager implements StatusManager {
 
-		public JobStatusManager() {
-		}
-
 		@Override
-		public synchronized boolean interrupted() {
-			return isInterrupted();
+		public synchronized boolean isInterrupted() {
+			return JobDefinition.this.isInterrupted();
 		}
 
 		@Override

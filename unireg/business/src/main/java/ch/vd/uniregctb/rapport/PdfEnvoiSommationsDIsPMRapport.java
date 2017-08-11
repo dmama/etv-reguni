@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 
@@ -21,8 +21,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 public class PdfEnvoiSommationsDIsPMRapport extends PdfRapport {
 
 
-    public void write(final EnvoiSommationsDIsPMResults results, final String nom, final String description, final Date dateGeneration,
-                      OutputStream os, StatusManager status) throws Exception {
+    public void write(final EnvoiSommationsDIsPMResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
         Assert.notNull(status);
 

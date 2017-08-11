@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 
 public class MockEvenementCivilEchRetryProcessor implements EvenementCivilEchRetryProcessor {
 

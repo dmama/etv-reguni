@@ -2,8 +2,8 @@ package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.util.Map;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.FinsDeDroitRFRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.DateFinDroitsRFProcessor;

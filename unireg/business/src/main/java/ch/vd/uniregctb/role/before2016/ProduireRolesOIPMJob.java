@@ -7,8 +7,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.RolesOIPMRapport;
 import ch.vd.uniregctb.scheduler.JobCategory;
 

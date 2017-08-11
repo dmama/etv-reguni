@@ -13,11 +13,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -76,11 +76,11 @@ public class IdentifierContribuableFromListeProcessor {
 			public boolean doInTransaction(List<CriteresPersonne> batch, IdentifierContribuableFromListeResults r) throws Exception {
 				status.setMessage("Traitement des lignes à identifier ...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r);
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 		}, progressMonitor);
 
-		rapportFinal.interrompu = status.interrupted();
+		rapportFinal.interrompu = status.isInterrupted();
 		rapportFinal.end();
 		return rapportFinal;
 	}

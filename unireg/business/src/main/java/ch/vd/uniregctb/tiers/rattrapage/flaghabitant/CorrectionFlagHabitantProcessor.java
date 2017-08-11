@@ -9,10 +9,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -68,7 +68,7 @@ public class CorrectionFlagHabitantProcessor {
 
 			final ParallelBatchTransactionTemplateWithResults<Long, CorrectionFlagHabitantResults> template =
 					new ParallelBatchTransactionTemplateWithResults<>(ids, TAILLE_LOT, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager,
-					                                                 statusManager, AuthenticationInterface.INSTANCE);
+					                                                  statusManager, AuthenticationInterface.INSTANCE);
 			template.execute(rapportFinal, new BatchWithResultsCallback<Long, CorrectionFlagHabitantResults>() {
 
 				@Override
@@ -98,11 +98,11 @@ public class CorrectionFlagHabitantProcessor {
 							break;
 						}
 
-						if (statusManager.interrupted()) {
+						if (statusManager.isInterrupted()) {
 							break;
 						}
 					}
-					return !statusManager.interrupted();
+					return !statusManager.isInterrupted();
 				}
 
 				@Override
@@ -118,7 +118,7 @@ public class CorrectionFlagHabitantProcessor {
 			}, null);
 		}
 
-		rapportFinal.setInterrupted(statusManager.interrupted());
+		rapportFinal.setInterrupted(statusManager.isInterrupted());
 		rapportFinal.end();
 		return rapportFinal;
 	}

@@ -24,11 +24,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -91,7 +91,7 @@ public class ListeNoteProcessor {
 
 		final int count = rapportFinal.listeContribuableAvecNote.size();
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("La production de la liste de contribuable avec note a été interrompue."
 					+ " Nombre de fors secondaires déclenchant une note au moment de l'interruption = " + count);
 			rapportFinal.interrompu = true;

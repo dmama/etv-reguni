@@ -20,11 +20,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AddAndSaveHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -128,8 +128,7 @@ public class EnvoiSommationsDIsPPProcessor {
 
 		final List<IdentifiantDeclaration> dis = retrieveListIdDIs(dateTraitement);
 
-		final BatchTransactionTemplateWithResults<IdentifiantDeclaration, EnvoiSommationsDIsPPResults>
-				t = new BatchTransactionTemplateWithResults<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		final BatchTransactionTemplateWithResults<IdentifiantDeclaration, EnvoiSommationsDIsPPResults> t = new BatchTransactionTemplateWithResults<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
 		t.execute(rapportFinal, new BatchWithResultsCallback<IdentifiantDeclaration, EnvoiSommationsDIsPPResults>() {
 
 			@Override
@@ -142,11 +141,11 @@ public class EnvoiSommationsDIsPPProcessor {
 				final List<Long> numerosDis = getListNumerosDis(batch);
 				final Set<DeclarationImpotOrdinairePP> declarations = declarationImpotOrdinaireDAO.getDeclarationsAvecDelaisEtEtats(DeclarationImpotOrdinairePP.class, numerosDis);
 				final Iterator<DeclarationImpotOrdinairePP> iter = declarations.iterator();
-				while (iter.hasNext() && ! status.interrupted() && (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees()) < nombreMax)) {
+				while (iter.hasNext() && ! status.isInterrupted() && (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees()) < nombreMax)) {
 					final DeclarationImpotOrdinairePP di = iter.next();
 					traiterDI(di, r, dateTraitement, miseSousPliImpossible);
 				}
-				return  (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees() ) < nombreMax) && !status.interrupted();
+				return  (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees() ) < nombreMax) && !status.isInterrupted();
 			}
 
 			@Override
@@ -166,7 +165,7 @@ public class EnvoiSommationsDIsPPProcessor {
 				rapportFinal.getTotalSommationsEnErreur());
 		LOGGER.info(msg);
 		statusManager.setMessage(msg);
-		rapportFinal.setInterrompu(statusManager.interrupted());
+		rapportFinal.setInterrompu(statusManager.isInterrupted());
 		rapportFinal.end();
 		return rapportFinal;
 	}

@@ -134,7 +134,7 @@ public class RattrapageRegimesFiscauxJob extends JobDefinition {
 			if (resultat != null) {
 				results.addAll(resultat);
 			}
-			if (getStatusManager().interrupted()) {
+			if (getStatusManager().isInterrupted()) {
 				break;
 			}
 		}

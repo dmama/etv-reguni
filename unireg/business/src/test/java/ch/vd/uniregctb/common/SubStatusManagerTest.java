@@ -3,8 +3,6 @@ package ch.vd.uniregctb.common;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.vd.shared.batchtemplate.StatusManager;
-
 import static org.junit.Assert.assertEquals;
 
 public class SubStatusManagerTest {

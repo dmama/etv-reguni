@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.listes;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.listesnominatives.TypeAdresse;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;

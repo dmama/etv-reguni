@@ -19,7 +19,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -30,6 +29,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -89,8 +89,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		final List<Long> list = getListPotentielsNouveauxRentiersSourciers(dateTraitement);
 
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final BatchTransactionTemplateWithResults<Long, PassageNouveauxRentiersSourciersEnMixteResults> template =
-				new BatchTransactionTemplateWithResults<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
+		final BatchTransactionTemplateWithResults<Long, PassageNouveauxRentiersSourciersEnMixteResults> template = new BatchTransactionTemplateWithResults<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, PassageNouveauxRentiersSourciersEnMixteResults>() {
 
 			@Override
@@ -103,7 +102,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 				Set<Long> conjointAIgnorer = new HashSet<>();
 				traiteBatch(batch, dateTraitement, s, r, conjointAIgnorer);
 				conjointAIgnorerGlobal.addAll(conjointAIgnorer);
-				return !s.interrupted();
+				return !s.isInterrupted();
 			}
 
 			@Override
@@ -115,7 +114,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 			}
 		}, progressMonitor);
 
-		if (statusManager.interrupted()) {
+		if (statusManager.isInterrupted()) {
 			statusManager.setMessage("Le passage des nouveaux rentiers sourciers en mixte 1 a été interrompue."
 					+ " Nombre de sourciers traités au moment de l'interruption = " + rapportFinal.sourciersConvertis.size());
 			rapportFinal.interrompu = true;
@@ -135,7 +134,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		serviceCivilCacheWarmer.warmIndividusPourTiers(batch, dateReference, false, AttributeIndividu.ADRESSES);
 
 		for (Long id : batch) {
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				break;
 			}
 			traiteSourcier(id, dateReference, r, conjointAIgnorer);

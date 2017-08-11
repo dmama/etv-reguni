@@ -2,7 +2,7 @@ package ch.vd.uniregctb.indexer.messageidentification;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.IndexerException;
 
 public interface GlobalMessageIdentificationIndexer {

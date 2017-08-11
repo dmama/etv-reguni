@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.Fuse;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -368,7 +368,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 				for (ScoreDoc h : hits.scoreDocs) {
 
-					if (statusManager.interrupted()) {
+					if (statusManager.isInterrupted()) {
 						break;
 					}
 
@@ -389,7 +389,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			}
 		});
 
-		if (statusManager.interrupted()) {
+		if (statusManager.isInterrupted()) {
 			return;
 		}
 

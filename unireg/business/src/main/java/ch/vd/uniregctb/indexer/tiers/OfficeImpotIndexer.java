@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 
 public interface OfficeImpotIndexer {
 

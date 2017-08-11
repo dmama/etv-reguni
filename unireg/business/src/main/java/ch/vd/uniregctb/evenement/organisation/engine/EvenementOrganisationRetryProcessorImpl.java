@@ -13,8 +13,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
 
@@ -88,7 +88,7 @@ public class EvenementOrganisationRetryProcessorImpl implements EvenementOrganis
 				// et on attend la fin
 				final String msg = "Relance des événements organisation en erreur";
 				final int initialSize = organisations.size();
-				while (remaining.size() > 0 && !status.interrupted() && !processorStopping.booleanValue()) {
+				while (remaining.size() > 0 && !status.isInterrupted() && !processorStopping.booleanValue()) {
 					final int progress = getProgress(initialSize, remaining.size());
 					status.setMessage(msg, progress);
 					

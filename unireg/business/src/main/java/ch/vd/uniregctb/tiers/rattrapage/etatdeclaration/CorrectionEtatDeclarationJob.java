@@ -23,11 +23,11 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -145,7 +145,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 		}, progressMonitor);
 
 		final int count = rapportFinal.doublons.size();
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("La suppression des doublons des états des déclarations d'impôt a été interrompue."
 					+ " Nombre de doublons supprimés au moment de l'interruption = " + count);
 			rapportFinal.interrompu = true;

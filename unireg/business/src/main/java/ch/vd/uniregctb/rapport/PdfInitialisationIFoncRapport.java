@@ -12,8 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.foncier.InitialisationIFoncResults;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
@@ -61,7 +61,7 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 		// Résultats
 		addEntete1("Résultats");
 		{
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
 						           + "les valeurs ci-dessous sont donc incomplètes.");
 			}

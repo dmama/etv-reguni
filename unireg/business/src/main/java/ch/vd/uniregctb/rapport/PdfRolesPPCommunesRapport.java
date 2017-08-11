@@ -3,7 +3,7 @@ package ch.vd.uniregctb.rapport;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.role.before2016.InfoCommunePP;

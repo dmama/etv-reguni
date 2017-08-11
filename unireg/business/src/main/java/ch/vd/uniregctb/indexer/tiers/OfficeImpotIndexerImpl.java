@@ -11,8 +11,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.MultipleSwitch;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
@@ -112,7 +112,7 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 
 			for (final List<Long> batch : batches) {
 				processTiers(batch, status);
-				if (status.interrupted()) {
+				if (status.isInterrupted()) {
 					break;
 				}
 			}

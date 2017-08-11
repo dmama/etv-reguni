@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.shared.batchtemplate.StatusManager;
 
 /**
  * Classe utilitaire qui est utilisée pour générer des fichiers CSV

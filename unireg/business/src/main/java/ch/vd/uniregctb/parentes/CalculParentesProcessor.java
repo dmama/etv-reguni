@@ -19,12 +19,12 @@ import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.MultipleSwitch;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.ParenteUpdateResult;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
@@ -92,8 +92,8 @@ public class CalculParentesProcessor {
 
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
 		final ParallelBatchTransactionTemplateWithResults<Long, CalculParentesResults> template = new ParallelBatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, nbThreads,
-		                                                                                                                      Behavior.REPRISE_AUTOMATIQUE,
-		                                                                                                                      transactionManager, status, AuthenticationInterface.INSTANCE);
+		                                                                                                                                            Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                                                            transactionManager, status, AuthenticationInterface.INSTANCE);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, CalculParentesResults>() {
 			@Override
 			public boolean doInTransaction(List<Long> batch, CalculParentesResults rapport) throws Exception {
@@ -117,11 +117,11 @@ public class CalculParentesProcessor {
 							rapport.addError(error.getNoCtb(), error.getErrorMsg());
 						}
 
-						if (status.interrupted()) {
+						if (status.isInterrupted()) {
 							break;
 						}
 					}
-					return !status.interrupted();
+					return !status.isInterrupted();
 				}
 				finally {
 					interceptorSwitch.popState();
@@ -134,7 +134,7 @@ public class CalculParentesProcessor {
 			}
 		}, progressMonitor);
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("Génération des parentés interrompue.");
 			rapportFinal.interrupted = true;
 		}

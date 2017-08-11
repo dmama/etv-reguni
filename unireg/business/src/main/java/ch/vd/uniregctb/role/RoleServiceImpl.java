@@ -23,12 +23,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -139,7 +139,7 @@ public class RoleServiceImpl implements RoleService {
 							}
 						});
 
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 
 			@Override
@@ -148,7 +148,7 @@ public class RoleServiceImpl implements RoleService {
 			}
 		}, progressMonitor);
 
-		rapportFinal.setInterrupted(status.interrupted());
+		rapportFinal.setInterrupted(status.isInterrupted());
 		rapportFinal.end();
 		status.setMessage("Extraction terminée.");
 		return rapportFinal;

@@ -9,8 +9,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalConsolide;
 import ch.vd.uniregctb.regimefiscal.rattrapage.RattrapageRegimesFiscauxJobResults;
@@ -20,8 +20,7 @@ import ch.vd.uniregctb.regimefiscal.rattrapage.RattrapageRegimesFiscauxJobResult
  */
 public class PdfRattrapageRegimesFiscauxRapport extends PdfRapport {
 
-	public void write(final RattrapageRegimesFiscauxJobResults results, final String nom, final String description, final Date dateGeneration,
-	                  OutputStream os, StatusManager status) throws Exception {
+	public void write(final RattrapageRegimesFiscauxJobResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
 		Assert.notNull(status);
 
@@ -50,7 +49,7 @@ public class PdfRattrapageRegimesFiscauxRapport extends PdfRapport {
 		// Résultats
 		addEntete1("Résultats");
 		{
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}

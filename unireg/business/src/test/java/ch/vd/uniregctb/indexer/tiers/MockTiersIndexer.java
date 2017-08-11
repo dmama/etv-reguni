@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.indexer.IndexerException;
 

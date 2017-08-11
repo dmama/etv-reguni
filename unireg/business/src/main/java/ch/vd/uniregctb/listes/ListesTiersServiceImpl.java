@@ -3,9 +3,9 @@ package ch.vd.uniregctb.listes;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesProcessor;
@@ -73,7 +73,7 @@ public class ListesTiersServiceImpl implements ListesTiersService {
 	@Override
 	public ListeContribuablesResidentsSansForVaudoisResults produireListeContribuablesSuissesOuPermisCResidentsMaisSansForVd(RegDate dateTraitement, int nbThreads, StatusManager statusManager) {
 		final ListeContribuablesResidentsSansForVaudoisProcessor processor = new ListeContribuablesResidentsSansForVaudoisProcessor(hibernateTemplate,
-				tiersService, adresseService, transactionManager, tiersDAO, infraService, serviceCivilCacheWarmer);
+		                                                                                                                            tiersService, adresseService, transactionManager, tiersDAO, infraService, serviceCivilCacheWarmer);
 		return processor.run(dateTraitement, nbThreads, statusManager);
 	}
 }

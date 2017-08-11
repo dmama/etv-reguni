@@ -8,8 +8,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.interfaces.service.host.Operateur;
@@ -22,8 +22,7 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
     /**
      * Génère un rapport au format PDF à partir des résultats de job.
      */
-    public void write(final ListeDroitsAccesResults results, final String nom, final String description, final Date dateGeneration,
-                          OutputStream os, StatusManager status) throws Exception {
+    public void write(final ListeDroitsAccesResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
         Assert.notNull(status);
 

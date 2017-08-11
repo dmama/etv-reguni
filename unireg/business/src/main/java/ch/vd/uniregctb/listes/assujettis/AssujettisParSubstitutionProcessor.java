@@ -13,10 +13,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
@@ -40,7 +40,7 @@ public class AssujettisParSubstitutionProcessor {
 		this.transactionManager = transactionManager;
 	}
 
-	public AssujettisParSubstitutionResults run(final RegDate dateTraitement, final int nbThreads,StatusManager s) throws Exception {
+	public AssujettisParSubstitutionResults run(final RegDate dateTraitement, final int nbThreads, StatusManager s) throws Exception {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		AssujettisParSubstitutionResults rapportFinal = new AssujettisParSubstitutionResults(dateTraitement,nbThreads,tiersService,assujettissementService);
@@ -54,7 +54,7 @@ public class AssujettisParSubstitutionProcessor {
 			final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
 			final ParallelBatchTransactionTemplateWithResults<Long, AssujettisParSubstitutionResults> template =
 					new ParallelBatchTransactionTemplateWithResults<>(ids, TAILLE_LOT, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager,
-							status, AuthenticationInterface.INSTANCE);
+					                                                  status, AuthenticationInterface.INSTANCE);
 
 			// et on y va !
 			template.execute(rapportFinal, new BatchWithResultsCallback<Long, AssujettisParSubstitutionResults>() {
@@ -73,7 +73,7 @@ public class AssujettisParSubstitutionProcessor {
 			}, progressMonitor);
 		}
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			rapportFinal.setInterrupted(true);
 			status.setMessage("Traitement interrompu.");
 		}

@@ -16,9 +16,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.Fuse;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
@@ -73,7 +73,7 @@ public class EvenementReqDesRetryProcessorImpl implements EvenementReqDesRetryPr
 				// .. et on attend la fin
 				//noinspection SynchronizationOnLocalVariableOrMethodParameter
 				synchronized (done) {
-					while (done.isNotBlown() && !statusManager.interrupted()) {
+					while (done.isNotBlown() && !statusManager.isInterrupted()) {
 						done.wait(1000);
 
 						final int remainingSize = ids.size();

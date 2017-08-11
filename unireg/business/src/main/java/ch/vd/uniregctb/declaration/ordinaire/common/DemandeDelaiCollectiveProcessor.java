@@ -14,11 +14,11 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -84,7 +84,7 @@ public class DemandeDelaiCollectiveProcessor {
 
 		final int count = rapportFinal.traites.size();
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("Le traitement de la demande de délais collective a été interrompu."
 					+ " Nombre de contribuables traités au moment de l'interruption = " + count);
 			rapportFinal.interrompu = true;

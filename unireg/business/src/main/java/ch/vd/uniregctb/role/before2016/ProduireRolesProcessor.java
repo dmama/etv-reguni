@@ -35,7 +35,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -49,6 +48,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -213,8 +213,7 @@ public class ProduireRolesProcessor {
 		status.setMessage(msgRechercheContribuables, progressCalculator.getProgressPercentage(0, 0));
 
 		final List<Long> list = variante.getIdsContribuablesConcernes(anneePeriode);
-		final ParallelBatchTransactionTemplateWithResults<Long, T>
-				template = new ParallelBatchTransactionTemplateWithResults<>(list, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
+		final ParallelBatchTransactionTemplateWithResults<Long, T> template = new ParallelBatchTransactionTemplateWithResults<>(list, BATCH_SIZE, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, AuthenticationInterface.INSTANCE);
 		template.setReadonly(true);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, T>() {
 
@@ -256,11 +255,11 @@ public class ProduireRolesProcessor {
 						rapport.addErrorException(ctb, e);
 					}
 
-					if (status.interrupted()) {
+					if (status.isInterrupted()) {
 						break;
 					}
 				}
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 
 			@Override
@@ -269,7 +268,7 @@ public class ProduireRolesProcessor {
 			}
 		}, null);
 
-		rapportFinal.interrompu = status.interrupted();
+		rapportFinal.interrompu = status.isInterrupted();
 		rapportFinal.end();
 
 		return rapportFinal;
@@ -726,7 +725,7 @@ public class ProduireRolesProcessor {
 				if (results != null) {
 					liste.add(results);
 				}
-				if (status.interrupted()) {
+				if (status.isInterrupted()) {
 					break;
 				}
 			}

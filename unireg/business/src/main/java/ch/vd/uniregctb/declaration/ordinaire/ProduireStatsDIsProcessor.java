@@ -18,12 +18,12 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -108,7 +108,7 @@ public class ProduireStatsDIsProcessor {
 			public boolean doInTransaction(final List<Long> batch, StatistiquesDIs rapport) throws Exception {
 
 				final Iterator<Long> iter = batch.iterator();
-				while (iter.hasNext() && !status.interrupted()) {
+				while (iter.hasNext() && !status.isInterrupted()) {
 
 					final Long id = iter.next();
 

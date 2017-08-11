@@ -19,13 +19,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -83,7 +83,7 @@ public class ResolutionAdresseProcessor {
 		final int countTraites = rapportFinal.nbAdresseTotal;
 		final int countResolu = rapportFinal.listeAdresseResolues.size();
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("la résolution des adresses a été interrompue."
 					+ " Nombre d'adresses traitées au moment de l'interruption = " + countTraites
 					+ " Nombre d'adresses résolues au moment de l'interruption = " + countResolu);

@@ -15,10 +15,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalServiceImpl;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -70,7 +70,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessor {
 			public boolean doInTransaction(List<Long> batch, RappelFormulairesDemandeDegrevementICIResults rapport) throws Exception {
 				status.setMessage("Envoi des rappels...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, rapport, status);
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 
 			@Override
@@ -79,7 +79,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessor {
 			}
 		}, progressMonitor);
 
-		rapportFinal.setInterrompu(status.interrupted());
+		rapportFinal.setInterrompu(status.isInterrupted());
 		status.setMessage("Envoi des rappels terminé.");
 
 		rapportFinal.end();
@@ -137,7 +137,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessor {
 			}
 
 			// on interrompt le programme...
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				break;
 			}
 		}

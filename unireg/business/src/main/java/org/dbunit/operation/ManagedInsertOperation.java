@@ -5,7 +5,7 @@ import java.util.BitSet;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.ITable;
 
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 
 /**
  * Operation DBUnit d'insert qui prend un status manager.
@@ -25,12 +25,11 @@ public class ManagedInsertOperation extends InsertOperation {
 	@Override
 	protected boolean equalsIgnoreMapping(BitSet ignoreMapping, ITable table, int row) throws DataSetException {
 		if (statusManager != null) {
-			if (statusManager.interrupted()) {
+			if (statusManager.isInterrupted()) {
 				throw new RuntimeException("Import de la base interrompu !");
 			}
 			if (row % 100 == 0) {
-				statusManager
-						.setMessage("Insertion de la ligne " + row + " dans la table " + table.getTableMetaData().getTableName() + '.');
+				statusManager.setMessage("Insertion de la ligne " + row + " dans la table " + table.getTableMetaData().getTableName() + '.');
 			}
 		}
 		return super.equalsIgnoreMapping(ignoreMapping, table, row);

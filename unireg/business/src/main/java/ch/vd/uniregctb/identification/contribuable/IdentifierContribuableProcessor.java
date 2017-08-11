@@ -22,11 +22,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -91,7 +91,7 @@ public class IdentifierContribuableProcessor {
 
 		final int count = rapportFinal.identifies.size();
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("la relance de l'identification des messages a été interrompue."
 					                  + " Nombre de messages identifés au moment de l'interruption = " + count);
 			rapportFinal.interrompu = true;

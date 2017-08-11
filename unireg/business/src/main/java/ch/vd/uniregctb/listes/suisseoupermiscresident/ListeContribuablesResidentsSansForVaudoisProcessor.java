@@ -12,11 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.shared.batchtemplate.Interruptible;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -64,9 +65,9 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 		    }
 
 		    @Override
-		    public ListeContribuablesResidentsSansForVaudoisThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
-		                                               AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
-		        return new ListeContribuablesResidentsSansForVaudoisThread(queue, dateTraitement, nbThreads, status, compteur, transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService, infraService, serviceCivilCacheWarmer);
+		    public ListeContribuablesResidentsSansForVaudoisThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, Interruptible interruptible,
+		                                                                        AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
+		        return new ListeContribuablesResidentsSansForVaudoisThread(queue, dateTraitement, nbThreads, interruptible, compteur, transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService, infraService, serviceCivilCacheWarmer);
 		    }
 
 		    @Override

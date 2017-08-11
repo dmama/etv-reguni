@@ -31,12 +31,12 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -120,7 +120,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 		}, progressMonitor);
 
 		// on range et on rentre...
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("La création des tâches d'envoi des questionnaires SNC a été interrompue.");
 			rapportFinal.setInterrupted();
 		}
@@ -159,7 +159,7 @@ public class DeterminationQuestionnairesSNCAEmettreProcessor {
 		// Traitement de tous les contribuables un par un
 		for (Entreprise ctb : list) {
 			// on n'est pas obligé de tout faire si une interruption a été demandée
-			if (statusManager.interrupted()) {
+			if (statusManager.isInterrupted()) {
 				break;
 			}
 			traiterEntreprise(ctb, periode, dateTraitement, oipm, rapport);

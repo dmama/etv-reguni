@@ -14,11 +14,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.shared.batchtemplate.Interruptible;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
@@ -69,9 +70,9 @@ public class ExtractionDonneesRptPMProcessor extends ListesProcessor<ExtractionD
 	 */
 	private abstract class ExtractionDonneesRptBaseCustomizer implements Customizer<ExtractionDonneesRptPMResults, ExtractionDonneesRptPMThread> {
 		@Override
-		public ExtractionDonneesRptPMThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
+		public ExtractionDonneesRptPMThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, Interruptible interruptible, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
 			final ExtractionDonneesRptPMResults localResults = createResults(dateTraitement);
-			return new ExtractionDonneesRptPMThread(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate, localResults);
+			return new ExtractionDonneesRptPMThread(queue, interruptible, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate, localResults);
 		}
 	}
 

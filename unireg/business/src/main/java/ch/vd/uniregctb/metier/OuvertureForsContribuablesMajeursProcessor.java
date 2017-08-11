@@ -22,7 +22,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
@@ -40,6 +39,7 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -115,7 +115,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			@Override
 			public boolean doInTransaction(List<Long> batch, OuvertureForsResults r) throws Exception {
 				traiteBatch(batch, dateReference, s, r);
-				return !s.interrupted();
+				return !s.isInterrupted();
 			}
 
 			@Override
@@ -138,7 +138,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			}
 		}, progressMonitor);
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("L'ouverture des fors des contribuables majeurs a été interrompue."
 					+ " Nombre d'habitants traités au moment de l'interruption = " + rapportFinal.habitantTraites.size());
 			rapportFinal.interrompu = true;
@@ -164,7 +164,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 
 		for (Long id : batch) {
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				break;
 			}
 			traiteHabitant(id, dateReference, r);

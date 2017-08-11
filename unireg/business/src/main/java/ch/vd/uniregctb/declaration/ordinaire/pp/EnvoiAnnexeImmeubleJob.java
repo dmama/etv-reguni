@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
 import ch.vd.uniregctb.rapport.RapportService;
@@ -129,7 +129,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 			while (s.hasNextLine()) {
 
 				final String line = s.nextLine();
-				if (status.interrupted()) {
+				if (status.isInterrupted()) {
 					break;
 				}
 

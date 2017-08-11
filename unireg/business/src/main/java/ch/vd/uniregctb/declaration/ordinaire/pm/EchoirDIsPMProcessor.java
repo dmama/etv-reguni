@@ -19,10 +19,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -87,11 +87,11 @@ public class EchoirDIsPMProcessor {
 			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EchoirDIsPMResults r) throws Exception {
 				status.setMessage(String.format("Déclarations d'impôt analysées : %d/%d", rapportFinal.nbDIsTotal, dis.size()), progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r, status);
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 		}, progressMonitor);
 
-		rapportFinal.interrompu = status.interrupted();
+		rapportFinal.interrompu = status.isInterrupted();
 		rapportFinal.end();
 		return rapportFinal;
 	}
@@ -106,7 +106,7 @@ public class EchoirDIsPMProcessor {
 	private void traiterBatch(List<IdentifiantDeclaration> batch, EchoirDIsPMResults rapport, StatusManager statusManager) {
 		for (IdentifiantDeclaration id : batch) {
 			traiterDI(id, rapport);
-			if (statusManager.interrupted()) {
+			if (statusManager.isInterrupted()) {
 				break;
 			}
 		}

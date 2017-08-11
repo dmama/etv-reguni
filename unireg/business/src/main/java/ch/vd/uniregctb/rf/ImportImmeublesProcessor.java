@@ -29,11 +29,11 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -140,7 +140,7 @@ public class ImportImmeublesProcessor {
 		processAllLines(status, rapportFinal, csvIterator);
 
 		// Logging
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("L'import des immeubles a été interrompu."
 					+ " Nombre d'immeubles importés au moment de l'interruption = " + rapportFinal.getNbImmeubles());
 			rapportFinal.setInterrompu(true);
@@ -181,7 +181,7 @@ public class ImportImmeublesProcessor {
 						status.setMessage("Traitement de la ligne n°" + lineProcessed + "...");
 					}
 
-					if (status.interrupted()) {
+					if (status.isInterrupted()) {
 						break;
 					}
 				}

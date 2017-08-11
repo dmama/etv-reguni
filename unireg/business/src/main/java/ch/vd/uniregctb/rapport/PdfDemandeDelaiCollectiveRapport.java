@@ -8,8 +8,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
 
@@ -18,8 +18,7 @@ import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveResult
  */
 public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 
-	public void write(final DemandeDelaiCollectiveResults results, String nom, String description, final Date dateGeneration,
-	                  OutputStream os, StatusManager status) throws Exception {
+	public void write(final DemandeDelaiCollectiveResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
 		Assert.notNull(status);
 

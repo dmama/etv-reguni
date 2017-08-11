@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
@@ -121,7 +121,7 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 
 				final int percent = (proprietairesLus * 100) / nombreProprio;
 				status.setMessage("Chargement des propriétaires fonciers", percent);
-				if (status.interrupted()) {
+				if (status.isInterrupted()) {
 					break;
 				}
 

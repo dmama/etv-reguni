@@ -16,13 +16,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CheckedTransactionCallback;
 import ch.vd.uniregctb.common.CheckedTransactionTemplate;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.EvenementCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
@@ -334,7 +334,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		final Set<Long> individusTraites = new HashSet<>();
 		// Traite les événements spécifiées
 		for (final Long id : ids) {
-			if (status != null && status.interrupted()) {
+			if (status != null && status.isInterrupted()) {
 				break;
 			}
 			final Long numInd = traiteUnEvenementCivil(id, refreshCache);
@@ -358,7 +358,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 		// Re-traite automatiquement les (éventuels) événements en erreur sur les individus traités
 		for (Long numInd : individusTraites) {
-			if (status != null && status.interrupted()) {
+			if (status != null && status.isInterrupted()) {
 				break;
 			}
 			retraiteEvenementsEnErreurIndividu(numInd, ids);

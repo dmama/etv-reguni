@@ -19,13 +19,13 @@ import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -146,7 +146,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 			}
 		}, progressMonitor);
 
-		rapportFinal.setInterrompu(statusManager.interrupted());
+		rapportFinal.setInterrompu(statusManager.isInterrupted());
 		rapportFinal.end();
 
 		final ListeDroitsAccesRapport rapport = rapportService.generateRapport(rapportFinal, statusManager);

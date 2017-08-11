@@ -28,13 +28,13 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -198,11 +198,11 @@ public class FusionDeCommunesProcessor {
 				}
 				traiteBatch(batchData, anciensNoOfs, nouveauNoOfs, dateFusion, s, r);
 
-				return !s.interrupted();
+				return !s.isInterrupted();
 			}
 		}, progressMonitor);
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("Le traitement de la fusion des communes a été interrompu."
 					+ " Nombre de contribuables traités au moment de l'interruption = " + rapportFinal.tiersTraitesPourFors.size());
 			rapportFinal.interrompu = true;
@@ -219,7 +219,7 @@ public class FusionDeCommunesProcessor {
 	private void traiteBatch(List<TiersATraiter> batch, final Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, StatusManager s, FusionDeCommunesResults r) {
 		for (TiersATraiter data : batch) {
 			traiteTiers(data, anciensNoOfs, nouveauNoOfs, dateFusion, r);
-			if (s.interrupted()) {
+			if (s.isInterrupted()) {
 				break;
 			}
 		}

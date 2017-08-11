@@ -11,10 +11,10 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 
 /**
@@ -50,7 +50,7 @@ public class ExclureContribuablesEnvoiProcessor {
 
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
 		final BatchTransactionTemplateWithResults<Long, ExclureContribuablesEnvoiResults> template = new BatchTransactionTemplateWithResults<>(ctbIds, BATCH_SIZE,
-				Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
+		                                                                                                                                       Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ExclureContribuablesEnvoiResults>() {
 
 			@Override
@@ -66,7 +66,7 @@ public class ExclureContribuablesEnvoiProcessor {
 			}
 		}, progressMonitor);
 
-		rapportFinal.interrompu = status.interrupted();
+		rapportFinal.interrompu = status.isInterrupted();
 		rapportFinal.end();
 		return rapportFinal;
 	}

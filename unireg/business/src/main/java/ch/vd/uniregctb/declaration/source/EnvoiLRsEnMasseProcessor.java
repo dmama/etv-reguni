@@ -20,11 +20,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.common.TicketTimeoutException;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -86,7 +86,7 @@ public class EnvoiLRsEnMasseProcessor {
 			@Override
 			public boolean doInTransaction(List<Long> batch, EnvoiLRsResults r) throws Exception {
 				traiteBatch(batch, dateFinPeriode, s, r);
-				return !s.interrupted();
+				return !s.isInterrupted();
 			}
 
 			@Override
@@ -96,7 +96,7 @@ public class EnvoiLRsEnMasseProcessor {
 			}
 		}, null);
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("L'envoi des listes récapitulatives a été interrompu."
 					+ " Nombre de listes récapitulatives envoyées au moment de l'interruption = " + rapportFinal.LRTraitees.size());
 			rapportFinal.interrompu = true;
@@ -112,7 +112,7 @@ public class EnvoiLRsEnMasseProcessor {
 
 	private void traiteBatch(List<Long> batch, RegDate dateFinPeriode, StatusManager status, EnvoiLRsResults rapport) throws Exception {
 		for (Long id : batch) {
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				break;
 			}
 			traiteDebiteur(id, dateFinPeriode, rapport);

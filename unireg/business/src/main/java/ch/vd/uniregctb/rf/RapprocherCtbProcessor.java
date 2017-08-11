@@ -15,7 +15,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -27,6 +26,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -85,11 +85,11 @@ public class RapprocherCtbProcessor {
 			public boolean doInTransaction(List<ProprietaireFoncier> batch, RapprocherCtbResults r) throws Exception {
 				status.setMessage("Traitement du batch [" + batch.get(0).getNumeroRegistreFoncier() + "; " + batch.get(batch.size() - 1).getNumeroRegistreFoncier() + "] ...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r);
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 		}, progressMonitor);
 
-		rapportFinal.interrompu = status.interrupted();
+		rapportFinal.interrompu = status.isInterrupted();
 		rapportFinal.end();
 		return rapportFinal;
 	}

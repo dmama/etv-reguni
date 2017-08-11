@@ -6,8 +6,8 @@ import java.util.concurrent.BlockingQueue;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.Fuse;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersFilter;

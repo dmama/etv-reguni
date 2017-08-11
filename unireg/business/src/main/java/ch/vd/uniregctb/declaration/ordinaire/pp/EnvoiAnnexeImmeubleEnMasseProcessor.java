@@ -16,12 +16,12 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -135,7 +135,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 			}
 		}, progressMonitor);
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("L'envoi en masse du formulaire immeuble a été interrompue."
 					+ " Nombre de formulaire immeuble envoyées au moment de l'interruption = " + rapportFinal.ctbsTraites.size());
 			rapportFinal.interrompu = true;

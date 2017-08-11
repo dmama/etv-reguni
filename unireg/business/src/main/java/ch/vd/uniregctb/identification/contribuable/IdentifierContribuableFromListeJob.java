@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.IdentifierContribuableFromListeRapport;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
@@ -146,7 +146,7 @@ public class IdentifierContribuableFromListeJob extends JobDefinition {
 
 				final int percent = (demandeLues * 100) / nombreDemandes;
 				status.setMessage("Chargement des critères de recherche des tiers", percent);
-				if (status.interrupted()) {
+				if (status.isInterrupted()) {
 					break;
 				}
 

@@ -30,7 +30,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
@@ -38,6 +37,7 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.common.TicketTimeoutException;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -158,7 +158,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 			// Traite les contribuables par lots
 			final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
 			final ParallelBatchTransactionTemplateWithResults<Long, EnvoiDIsPPResults> template = new ParallelBatchTransactionTemplateWithResults<>(ids, tailleLot, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
-			                                                                                                                                      transactionManager, status, AuthenticationInterface.INSTANCE);
+			                                                                                                                                        transactionManager, status, AuthenticationInterface.INSTANCE);
 			template.execute(rapportFinal, new BatchWithResultsCallback<Long, EnvoiDIsPPResults>() {
 
 				@Override
@@ -187,7 +187,7 @@ public class EnvoiDIsPPEnMasseProcessor {
 			}, progressMonitor);
 		}
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("L'envoi en masse des déclarations d'impôt a été interrompue."
 					+ " Nombre de déclarations envoyées au moment de l'interruption = " + rapportFinal.ctbsAvecDiGeneree.size());
 			rapportFinal.interrompu = true;

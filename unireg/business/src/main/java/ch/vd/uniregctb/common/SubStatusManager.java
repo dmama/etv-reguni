@@ -2,8 +2,6 @@ package ch.vd.uniregctb.common;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.shared.batchtemplate.StatusManager;
-
 /**
  * Sous status manager qui permet de mapper son pourcentage de progression sur une plage restreinte du status manager parent.
  * <p/>
@@ -76,8 +74,8 @@ public class SubStatusManager implements StatusManager {
 	}
 
 	@Override
-	public boolean interrupted() {
-		return parent.interrupted();
+	public boolean isInterrupted() {
+		return parent.isInterrupted();
 	}
 
 	@Override

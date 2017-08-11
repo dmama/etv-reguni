@@ -12,7 +12,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.shared.batchtemplate.Interruptible;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -46,10 +46,10 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 		PARTS_FISCALES = Collections.unmodifiableSet(parts);
 	}
 
-	public ListeContribuablesResidentsSansForVaudoisThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
+	public ListeContribuablesResidentsSansForVaudoisThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, Interruptible interruptible, AtomicInteger compteur, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
 	                                                       TiersDAO tiersDAO, TiersService tiersService, AdresseService adresseService, ServiceInfrastructureService serviceInfrastructure, ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
-		super(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
-				new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nombreThreads, tiersService, adresseService));
+		super(queue, interruptible, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
+		      new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nombreThreads, tiersService, adresseService));
 		this.dateTraitement = dateTraitement;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;

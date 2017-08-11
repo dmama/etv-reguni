@@ -7,7 +7,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
@@ -16,8 +16,7 @@ import ch.vd.uniregctb.validation.ValidationJobResults;
  */
 public class PdfValidationRapport extends PdfRapport {
 
-	public void write(final ValidationJobResults results, String nom, String description, final Date dateGeneration, OutputStream os,
-	                  StatusManager statusManager) throws Exception {
+	public void write(final ValidationJobResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager statusManager) throws Exception {
 
 		Assert.notNull(statusManager);
 

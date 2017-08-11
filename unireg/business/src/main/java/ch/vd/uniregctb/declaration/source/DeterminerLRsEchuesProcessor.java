@@ -26,10 +26,10 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
@@ -101,11 +101,11 @@ public class DeterminerLRsEchuesProcessor {
 
 				for (DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue debiteur : batch) {
 					traiteDebiteur(rapport, debiteur, dateTraitement);
-					if (s.interrupted()) {
+					if (s.isInterrupted()) {
 						break;
 					}
 				}
-				return !s.interrupted();
+				return !s.isInterrupted();
 			}
 
 			@Override
@@ -118,7 +118,7 @@ public class DeterminerLRsEchuesProcessor {
 		                                         periodeFiscale != null ? String.format(" pour la période fiscale %d", periodeFiscale) : StringUtils.EMPTY,
 		                                         RegDateHelper.dateToDisplayString(dateTraitement));
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage(String.format("%s a été interrompue. Nombre de listes identifiées au moment de l'interruption : %d", baseMessage, rapportFinal.lrEchues.size()));
 			rapportFinal.setInterrompu(true);
 		}

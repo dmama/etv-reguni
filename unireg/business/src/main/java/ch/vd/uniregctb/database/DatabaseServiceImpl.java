@@ -50,8 +50,8 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.dbutils.SqlFileExecutor;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -427,7 +427,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 				otherTables = Collections.emptyList();
 			}
 
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				return -1;
 			}
 
@@ -439,7 +439,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 				}
 			});
 
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				return -1;
 			}
 
@@ -459,7 +459,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 			final IDataSet dataSet = new CompositeDataSet(allTables.toArray(new ITable[allTables.size()]));
 
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				return -1;
 			}
 
@@ -495,7 +495,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			final QueryDataSet q = callback.execute(idsList, connection);
 
 			final ITableIterator iter = q.iterator();
-			while (iter.next() && !status.interrupted()) {
+			while (iter.next() && !status.isInterrupted()) {
 				tables.add(iter.getTable());
 			}
 		}
@@ -504,13 +504,13 @@ public class DatabaseServiceImpl implements DatabaseService {
 			final List<List<Long>> batches = split(idsList, DEFAULT_BATCH_SIZE);
 			final int count = batches.size();
 
-			for (int i = 0; i < count && !status.interrupted(); i++) {
+			for (int i = 0; i < count && !status.isInterrupted(); i++) {
 				status.setMessage(message + " (lot " + i + '/' + count + ")...");
 				final List<Long> batch = batches.get(i);
 				final QueryDataSet q = callback.execute(batch, connection);
 
 				final ITableIterator iter = q.iterator();
-				while (iter.next() && !status.interrupted()) {
+				while (iter.next() && !status.isInterrupted()) {
 					tables.add(iter.getTable());
 				}
 			}

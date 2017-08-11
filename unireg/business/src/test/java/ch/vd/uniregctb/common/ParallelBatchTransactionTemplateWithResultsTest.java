@@ -16,7 +16,6 @@ import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.ProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -154,7 +153,7 @@ public class ParallelBatchTransactionTemplateWithResultsTest extends BusinessTes
 		final MutableBoolean interrupted = new MutableBoolean(false);
 		final StatusManager status = new StatusManager() {
 			@Override
-			public boolean interrupted() {
+			public boolean isInterrupted() {
 				return interrupted.getValue();
 			}
 

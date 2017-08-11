@@ -7,9 +7,9 @@ import java.util.List;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.ListesResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.listesnominatives.TypeAdresse;
@@ -19,8 +19,7 @@ import ch.vd.uniregctb.listes.listesnominatives.TypeAdresse;
  */
 public class PdfListesNominativesRapport extends PdfRapport{
 
-	public void write(final ListesNominativesResults results, final String nom, final String description, final Date dateGeneration,
-	                      OutputStream os, StatusManager status) throws Exception {
+	public void write(final ListesNominativesResults results, final String nom, final String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 
 	    Assert.notNull(status);
 

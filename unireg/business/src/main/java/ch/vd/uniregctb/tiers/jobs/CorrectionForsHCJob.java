@@ -19,9 +19,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.MetierService;
@@ -198,7 +198,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 				Audit.info(String.format("Analyse du for %d terminé", ffp.getId()));
 			}
 
-			return !getStatusManager().interrupted();
+			return !getStatusManager().isInterrupted();
 		}
 		catch (RuntimeException e) {
 			++ monitor.erreurs;

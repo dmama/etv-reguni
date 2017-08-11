@@ -19,9 +19,9 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -79,14 +79,14 @@ public class AppariementEtablissementsSecondairesProcessor {
 					if (entreprise == null) {
 						throw new TiersNotFoundException(id);
 					}
-					else if (status.interrupted()) {
+					else if (status.isInterrupted()) {
 						break;
 					}
 
 					// tentative d'appariement des établissements secondaires non-appariés
 					traitementEntreprise(entreprise, simulation, rapport);
 				}
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 
 			@Override
@@ -97,7 +97,7 @@ public class AppariementEtablissementsSecondairesProcessor {
 
 		status.setMessage("Procédure d'appariements d'établissements secondaires terminée.");
 
-		rapportFinal.setInterrupted(status.interrupted());
+		rapportFinal.setInterrupted(status.isInterrupted());
 		rapportFinal.end();
 		return rapportFinal;
 	}

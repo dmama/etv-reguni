@@ -14,9 +14,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
@@ -198,7 +198,7 @@ public class ValidationJob extends JobDefinition {
 
 		// Dispatching des tiers à processer
 		for (Long id : ids) {
-			if (statusManager.interrupted()) {
+			if (statusManager.isInterrupted()) {
 				results.interrompu = true;
 				queue.clear();
 				break;
@@ -220,7 +220,7 @@ public class ValidationJob extends JobDefinition {
 			 * insère l'id dans la queue à processer, mais de manière à pouvoir interrompre le processus si plus personne ne prélève d'ids
 			 * dans la queue (p.a. si tous les threads de processing sont morts).
 			 */
-			while (!queue.offer(id, 10, TimeUnit.SECONDS) && !statusManager.interrupted()) {
+			while (!queue.offer(id, 10, TimeUnit.SECONDS) && !statusManager.isInterrupted()) {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.warn("La queue de validation est pleine, attente de 10 secondes...");
 				}

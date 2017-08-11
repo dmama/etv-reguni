@@ -16,10 +16,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -131,7 +131,7 @@ public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 	private DumpPeriodesImpositionImpotSourceResults doJob(List<Long> ppIds, final int nbThreads) {
 		final StatusManager sm = getStatusManager();
 		final DumpPeriodesImpositionImpotSourceResults results = new DumpPeriodesImpositionImpotSourceResults(nbThreads);
-		if (!sm.interrupted()) {
+		if (!sm.isInterrupted()) {
 			final String msg = "Calcul des périodes d'imposition IS";
 			sm.setMessage(msg, 0);
 
@@ -159,7 +159,7 @@ public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 						}
 					}
 					sm.setMessage(msg, progressMonitor.getProgressInPercent());
-					return !sm.interrupted();
+					return !sm.isInterrupted();
 				}
 
 				@Override
@@ -170,7 +170,7 @@ public class DumpPeriodesImpositionImpotSourceJob extends JobDefinition {
 			}, progressMonitor);
 		}
 
-		if (sm.interrupted()) {
+		if (sm.isInterrupted()) {
 			sm.setMessage("Le calcul des périodes d'imposition IS a été interrompu.");
 			results.setInterrupted(true);
 		}

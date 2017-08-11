@@ -26,10 +26,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.SuppressionOIDRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
@@ -149,11 +149,11 @@ public class SuppressionOIDJob extends JobDefinition {
 				status.setMessage("Correction de l'OID sur les tiers n°" + first + " à " + last, progressMonitor.getProgressInPercent());
 
 				processBatch(batch, oid, officeImpotId, rapport);
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 		}, progressMonitor);
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("La suppression de l'OID n°" + oid + " a été interrompue."
 					                  + " Nombre de tiers traités au moment de l'interruption = " + rapportFinal.traites.size());
 			rapportFinal.interrompu = true;

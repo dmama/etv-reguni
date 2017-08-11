@@ -17,10 +17,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -86,7 +86,7 @@ private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.c
 			@Override
 			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EnvoiSommationLRsResults rapport) throws Exception {
 				traiteBatch(batch, dateTraitement, s, rapport);
-				return !s.interrupted();
+				return !s.isInterrupted();
 			}
 
 			@Override
@@ -97,7 +97,7 @@ private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.c
 			}
 		}, null);
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("L'envoi des sommations de listes récapitulatives a été interrompu."
 					+ " Nombre de listes récapitulatives sommées au moment de l'interruption = " + rapportFinal.lrSommees.size());
 			rapportFinal.interrompu = true;
@@ -113,7 +113,7 @@ private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.c
 
 	private void traiteBatch(List<IdentifiantDeclaration> batch, RegDate dateTraitement, StatusManager status, EnvoiSommationLRsResults rapport) throws Exception {
 		for (IdentifiantDeclaration id : batch) {
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				break;
 			}
 			traiteLR(id, dateTraitement, rapport);

@@ -24,12 +24,12 @@ import com.itextpdf.text.pdf.codec.PngImage;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.common.ApplicationInfo;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.common.TimeHelper;
 

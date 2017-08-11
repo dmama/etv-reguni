@@ -12,7 +12,7 @@ import org.hibernate.Session;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.shared.batchtemplate.Interruptible;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 
@@ -43,7 +43,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 		/**
 		 * Crée une nouvelle instance de thread spécialisé
 		 */
-		T createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate);
+		T createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, Interruptible interruptible, AtomicInteger compteur, HibernateTemplate hibernateTemplate);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 	 * partage des traitements entre ceux-ci...
 	 */
 	protected R doRun(final RegDate dateTraitement, final int nbThreads, final StatusManager status,
-						final HibernateTemplate hibernateTemplate, final Customizer<R, T> customizer) {
+	                  final HibernateTemplate hibernateTemplate, final Customizer<R, T> customizer) {
 
 		Assert.notNull(status);
 
@@ -91,9 +91,9 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 
 				// on bourre dans la queue des lots de "tailleLot" identifiants
 				int size = 0;
-				while (idIterator.hasNext() && !status.interrupted()) {
+				while (idIterator.hasNext() && !status.isInterrupted()) {
 					final List<Long> list = new ArrayList<>(tailleLot);
-					while (idIterator.hasNext() && !status.interrupted() && list.size() < tailleLot) {
+					while (idIterator.hasNext() && !status.isInterrupted() && list.size() < tailleLot) {
 						list.add(idIterator.next());
 					}
 					queue.add(list);
@@ -149,7 +149,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 			}
 
 			final int valeurCompteur = compteur.intValue();
-			if (status.interrupted()) {
+			if (status.isInterrupted()) {
 				final String message = String.format("Interruption en cours... (%d de %d)", valeurCompteur, nbEltsTrouves);
 				status.setMessage(message);
 			}
@@ -160,7 +160,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 		}
 
 		results.sort();
-		results.setInterrompu(status.interrupted());
+		results.setInterrompu(status.isInterrupted());
 		results.end();
 		return results;
 	}

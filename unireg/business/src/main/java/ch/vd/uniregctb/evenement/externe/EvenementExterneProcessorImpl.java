@@ -21,11 +21,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -70,7 +70,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 
 		final int count = rapportFinal.nbEvenementTotal;
 
-		if (status.interrupted()) {
+		if (status.isInterrupted()) {
 			status.setMessage("la relance du traitement des evenements externes a été interrompue."
 					                  + " Nombre d'evenement traités au moment de l'interruption = " + count);
 			rapportFinal.interrompu = true;

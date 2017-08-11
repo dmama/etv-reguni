@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.shared.batchtemplate.Interruptible;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
@@ -32,10 +32,10 @@ public class ListesNominativesThread extends ListesThread<ListesNominativesResul
 
     public ListesNominativesThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, TypeAdresse adressesIncluses,
                                    boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs, TiersService tiersService,
-                                   AdresseService adresseService, ServiceCivilCacheWarmer serviceCivilCacheWarmer, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager,
+                                   AdresseService adresseService, ServiceCivilCacheWarmer serviceCivilCacheWarmer, Interruptible interruptible, AtomicInteger compteur, PlatformTransactionManager transactionManager,
                                    TiersDAO tiersDAO, HibernateTemplate hibernateTemplate) {
 
-        super(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
+        super(queue, interruptible, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
                 new ListesNominativesResults(dateTraitement, nombreThreads, adressesIncluses, avecContribuablesPP, avecContribuablesPM, avecDebiteurs, tiersService, adresseService));
 
 	    this.adressesIncluses = adressesIncluses;

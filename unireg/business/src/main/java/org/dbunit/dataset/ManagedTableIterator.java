@@ -1,6 +1,6 @@
 package org.dbunit.dataset;
 
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 
 /**
  * Dataset iterator qui prend un status manager.
@@ -19,7 +19,7 @@ public class ManagedTableIterator implements ITableIterator {
 
 	@Override
 	public boolean next() throws DataSetException {
-		return target.next() && !status.interrupted();
+		return target.next() && !status.isInterrupted();
 	}
 
 	@Override

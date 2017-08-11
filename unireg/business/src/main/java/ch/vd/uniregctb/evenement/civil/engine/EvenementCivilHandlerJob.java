@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine;
 
 import java.util.Map;
 
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchRetryProcessor;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;

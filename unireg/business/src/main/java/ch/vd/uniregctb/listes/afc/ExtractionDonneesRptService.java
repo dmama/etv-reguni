@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.listes.afc;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.listes.afc.pm.ExtractionDonneesRptPMResults;
 import ch.vd.uniregctb.listes.afc.pm.ModeExtraction;
 import ch.vd.uniregctb.listes.afc.pm.VersionWS;

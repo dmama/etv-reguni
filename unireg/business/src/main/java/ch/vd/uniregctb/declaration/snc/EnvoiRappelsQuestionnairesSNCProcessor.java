@@ -20,9 +20,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
@@ -92,7 +92,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 						return false;
 					}
 				}
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 
 			@Override
@@ -103,7 +103,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 
 		status.setMessage("Traitement terminé.");
 
-		rapportFinal.setInterrupted(status.interrupted());
+		rapportFinal.setInterrupted(status.isInterrupted());
 		rapportFinal.end();
 		return rapportFinal;
 	}

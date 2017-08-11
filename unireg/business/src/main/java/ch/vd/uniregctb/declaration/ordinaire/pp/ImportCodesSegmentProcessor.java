@@ -15,11 +15,11 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -58,7 +58,7 @@ public class ImportCodesSegmentProcessor {
 			public boolean doInTransaction(List<ContribuableAvecCodeSegment> batch, ImportCodesSegmentResults rapport) throws Exception {
 				status.setMessage("Traitement du batch [" + batch.get(0).getNoContribuable() + "; " + batch.get(batch.size() - 1).getNoContribuable() + "] ...", progressMonitor.getProgressInPercent());
 				doBatch(batch, rapport);
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 
 			@Override
@@ -67,7 +67,7 @@ public class ImportCodesSegmentProcessor {
 			}
 		}, progressMonitor);
 
-		rapportFinal.setInterrompu(status.interrupted());
+		rapportFinal.setInterrompu(status.isInterrupted());
 		rapportFinal.end();
 		return rapportFinal;
 	}

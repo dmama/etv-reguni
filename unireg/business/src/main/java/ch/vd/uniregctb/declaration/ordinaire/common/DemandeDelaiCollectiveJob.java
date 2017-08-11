@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
 import ch.vd.uniregctb.rapport.RapportService;

@@ -2,7 +2,7 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.Collection;
 
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.indexer.IndexerException;
 

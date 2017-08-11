@@ -24,13 +24,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StandardBatchIterator;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -107,7 +107,7 @@ public class RecalculTachesProcessor {
 		final ExecutorService executorService = Executors.newFixedThreadPool(nbThreads, new DefaultThreadFactory(new DefaultThreadNameGenerator(Thread.currentThread().getName())));
 		try {
 			final List<Future<TacheSyncResults>> tasks = new LinkedList<>();
-			while (iterator.hasNext() && !status.interrupted()) {
+			while (iterator.hasNext() && !status.isInterrupted()) {
 				final List<Long> ids = iterator.next();
 				final int percent = iterator.getPercent();
 				tasks.add(executorService.submit(new SyncTask(ids, percent, AuthenticationHelper.getCurrentPrincipal(), status)));
@@ -115,7 +115,7 @@ public class RecalculTachesProcessor {
 
 			try {
 				final Iterator<Future<TacheSyncResults>> taskIterator = tasks.iterator();
-				while (taskIterator.hasNext() && !status.interrupted()) {
+				while (taskIterator.hasNext() && !status.isInterrupted()) {
 					final Future<TacheSyncResults> future = taskIterator.next();
 					try {
 						finalResults.addAll(future.get());
@@ -157,7 +157,7 @@ public class RecalculTachesProcessor {
 		}
 
 		finalResults.end();
-		finalResults.setInterrupted(status.interrupted() || interrupted);
+		finalResults.setInterrupted(status.isInterrupted() || interrupted);
 		return finalResults;
 	}
 

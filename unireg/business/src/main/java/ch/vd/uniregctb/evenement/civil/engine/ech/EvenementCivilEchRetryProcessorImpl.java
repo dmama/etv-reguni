@@ -13,8 +13,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchRecuperateur;
 
@@ -96,7 +96,7 @@ public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRet
 				// et on attend la fin
 				final String msg = "Relance des événements civils e-CH en erreur";
 				final int initialSize = individus.size();
-				while (remaining.size() > 0 && !status.interrupted() && !processorStopping.booleanValue()) {
+				while (remaining.size() > 0 && !status.isInterrupted() && !processorStopping.booleanValue()) {
 					final int progress = getProgress(initialSize, remaining.size());
 					status.setMessage(msg, progress);
 					

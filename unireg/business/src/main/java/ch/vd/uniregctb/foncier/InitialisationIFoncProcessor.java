@@ -23,11 +23,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
@@ -106,17 +106,17 @@ public class InitialisationIFoncProcessor {
 						else {
 							// certains droits au moins sont valides à la date de référence, il faut les lister
 							atReference.stream()
-									.filter(droit -> !statusManager.interrupted())
+									.filter(droit -> !statusManager.isInterrupted())
 									.map(info -> hibernateTemplate.get(DroitRF.class, info.getIdDroit()))
 									.forEach(droit -> traiterDroit(droit, rapport));
 						}
 					}
 
-					if (statusManager.interrupted()) {
+					if (statusManager.isInterrupted()) {
 						break;
 					}
 				}
-				return !statusManager.interrupted();
+				return !statusManager.isInterrupted();
 			}
 
 			@Override

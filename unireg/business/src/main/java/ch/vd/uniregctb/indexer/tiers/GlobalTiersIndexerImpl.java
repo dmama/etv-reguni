@@ -24,7 +24,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -35,6 +34,7 @@ import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.common.StandardBatchIterator;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
@@ -333,7 +333,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		boolean deadThreads = false;
 
 		final BatchIterator<Long> iter = new StandardBatchIterator<>(list, 100);
-		while (iter.hasNext() && !statusManager.interrupted() && !deadThreads) {
+		while (iter.hasNext() && !statusManager.isInterrupted() && !deadThreads) {
 
 			final Set<Long> ids = new HashSet<>(iter.next());
 
@@ -341,14 +341,14 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 			// Dispatching des tiers à indexer
 			for (Long id : ids) {
-				if (statusManager.interrupted()) {
+				if (statusManager.isInterrupted()) {
 					asyncIndexer.clearQueue();
 					break;
 				}
 
 				// insère l'id dans la queue à indexer, mais de manière à pouvoir interrompre le processus si
 				// plus personne ne prélève de tiers dans la queue (p.a. si tous les threads d'indexations sont morts).
-				while (!asyncIndexer.offerTiersForIndexation(id, offerTimeout) && !statusManager.interrupted()) {
+				while (!asyncIndexer.offerTiersForIndexation(id, offerTimeout) && !statusManager.isInterrupted()) {
 
 					// si tous les threads sont morts, il est temps de tout arrêter...
 					if (!asyncIndexer.isAlive()) {
@@ -380,7 +380,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 			Audit.error(msg);
 			throw new IndexerException(msg);
 		}
-		else if (statusManager.interrupted()) {
+		else if (statusManager.isInterrupted()) {
 			Audit.warn("L'indexation a été interrompue. Nombre de tiers réindexés/total = " + i + '/' + size);
 		}
 		else {

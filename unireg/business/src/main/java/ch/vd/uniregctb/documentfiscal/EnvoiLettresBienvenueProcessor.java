@@ -25,10 +25,10 @@ import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.ProgressMonitor;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.MovingWindow;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -89,7 +89,7 @@ public class EnvoiLettresBienvenueProcessor {
 			@Override
 			public boolean doInTransaction(List<Long> batch, EnvoiLettresBienvenueResults rapport) throws Exception {
 				traiterBatch(batch, rapport);
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 
 			@Override

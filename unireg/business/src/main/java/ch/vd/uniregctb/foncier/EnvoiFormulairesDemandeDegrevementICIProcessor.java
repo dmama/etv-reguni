@@ -34,7 +34,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotExoneration;
 import ch.vd.unireg.interfaces.infra.data.ModeExoneration;
 import ch.vd.unireg.interfaces.infra.data.PlageExonerationFiscale;
@@ -42,6 +41,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -115,7 +115,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 						traiterContribuable(info.getNoContribuable(), info.getIdsDroitsImmeubles(), rapport, localMaxEnvois);
 					}
 				}
-				return !status.interrupted() && (localMaxEnvois == null || localMaxEnvois > 0) && (nbMaxEnvois == null || envoyesSansMoi + rapport.getEnvois().size() < nbMaxEnvois);
+				return !status.isInterrupted() && (localMaxEnvois == null || localMaxEnvois > 0) && (nbMaxEnvois == null || envoyesSansMoi + rapport.getEnvois().size() < nbMaxEnvois);
 			}
 
 			@Override
@@ -124,7 +124,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessor {
 			}
 		}, progressMonitor);
 
-		rapportFinal.setInterrupted(status.interrupted());
+		rapportFinal.setInterrupted(status.isInterrupted());
 		rapportFinal.end();
 		status.setMessage("Traitement terminé");
 		return rapportFinal;

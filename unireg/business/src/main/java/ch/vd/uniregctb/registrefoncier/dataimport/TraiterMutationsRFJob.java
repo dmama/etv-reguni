@@ -6,8 +6,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.MutationsRFProcessorRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.registrefoncier.RapprocherTiersRFJob;

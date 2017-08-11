@@ -20,9 +20,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.common.TicketTimeoutException;
 import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
@@ -122,12 +122,12 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 						catch (TicketTimeoutException e) {
 							throw new DeclarationException("Un questionnaire SNC est déjà en cours de génération sur cette entreprise.");
 						}
-						if ((nbMaxEnvois != null && nbMaxEnvois <= nbEnvoyesAvant + rapport.getNombreEnvoyes()) || status.interrupted()) {
+						if ((nbMaxEnvois != null && nbMaxEnvois <= nbEnvoyesAvant + rapport.getNombreEnvoyes()) || status.isInterrupted()) {
 							return false;
 						}
 					}
 				}
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 
 			@Override
@@ -141,7 +141,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 		status.setMessage("Traitement terminé.");
 
 		// fin
-		rapportFinal.setInterrupted(status.interrupted());
+		rapportFinal.setInterrupted(status.isInterrupted());
 		rapportFinal.end();
 		return rapportFinal;
 	}

@@ -1,14 +1,12 @@
 package ch.vd.uniregctb.common;
 
-import ch.vd.shared.batchtemplate.StatusManager;
-
 public class MockStatusManager implements StatusManager {
 
 	private String msg;
 	private int percent;
 
 	@Override
-	public boolean interrupted() {
+	public boolean isInterrupted() {
 		return false;
 	}
 

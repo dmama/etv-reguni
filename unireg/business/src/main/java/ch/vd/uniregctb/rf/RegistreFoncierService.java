@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 
 public interface RegistreFoncierService {
 

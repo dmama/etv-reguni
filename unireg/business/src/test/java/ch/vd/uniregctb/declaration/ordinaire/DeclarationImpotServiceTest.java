@@ -15,7 +15,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -25,6 +24,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -163,7 +163,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		@Override
-		public boolean interrupted() {
+		public boolean isInterrupted() {
 			return count <= 0;
 		}
 
@@ -356,7 +356,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			// Détermine les DIs à émettre : le status manager va lancer une exception sur le traitement de John.
 			StatusManager status = new StatusManager() {
 				@Override
-				public boolean interrupted() {
+				public boolean isInterrupted() {
 					return false;
 				}
 
@@ -1238,7 +1238,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 		final StatusManager status = new StatusManager() {
 			@Override
-			public boolean interrupted() {
+			public boolean isInterrupted() {
 				return false;
 			}
 

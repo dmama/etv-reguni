@@ -21,7 +21,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.shared.batchtemplate.Interruptible;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -39,7 +39,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
     private final T results;
 
-    private final StatusManager status;
+    private final Interruptible interruptible;
 
     private boolean queueFilled = false;
 
@@ -58,12 +58,12 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 	 */
     protected static final Set<Parts> PARTS_FISCALES = Collections.unmodifiableSet(EnumSet.of(Parts.RAPPORTS_ENTRE_TIERS));
 
-	public ListesThread(BlockingQueue<List<Long>> queue, StatusManager status, AtomicInteger compteur,
-                        ServiceCivilCacheWarmer serviceCivilCacheWarmer,
-                        PlatformTransactionManager transactionManager,
-                        TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, T results) {
+	public ListesThread(BlockingQueue<List<Long>> queue, Interruptible interruptible, AtomicInteger compteur,
+	                    ServiceCivilCacheWarmer serviceCivilCacheWarmer,
+	                    PlatformTransactionManager transactionManager,
+	                    TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, T results) {
         this.queue = queue;
-        this.status = status;
+        this.interruptible = interruptible;
         this.compteur = compteur;
 	    this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	    this.hibernateTemplate = hibernateTemplate;
@@ -96,7 +96,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
     private List<Long> getIds() throws InterruptedException {
         while (true) {
             final List<Long> ids = queue.poll(1, TimeUnit.SECONDS);
-            if (status.interrupted()) {
+            if (interruptible.isInterrupted()) {
                 return null;
             } else if (ids != null) {
                 return ids;
@@ -140,7 +140,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 							for (Tiers t : tiers) {
 								traiteTiers(t);
 								niveauExtraction.increment();
-								if (status.interrupted()) {
+								if (interruptible.isInterrupted()) {
 									break;
 								}
 							}
@@ -214,7 +214,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 				}
 			});
 
-			if (status.interrupted()) {
+			if (interruptible.isInterrupted()) {
 				break;
 			}
 		}

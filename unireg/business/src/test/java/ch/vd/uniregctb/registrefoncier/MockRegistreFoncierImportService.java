@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import org.quartz.SchedulerException;
 
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.scheduler.JobAlreadyStartedException;
 

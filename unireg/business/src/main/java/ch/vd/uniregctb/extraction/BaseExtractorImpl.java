@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.extraction;
 
-import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 
 /**
  * Classe de base des implémentations des extracteur comprenant la gestion du StatusManager
@@ -38,7 +38,7 @@ public abstract class BaseExtractorImpl implements Extractor {
 	private final class ExtractorStatusManager implements StatusManager {
 
 		@Override
-		public boolean interrupted() {
+		public boolean isInterrupted() {
 			return wasInterrupted();
 		}
 

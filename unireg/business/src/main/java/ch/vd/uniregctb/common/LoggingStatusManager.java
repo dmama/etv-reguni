@@ -2,7 +2,6 @@ package ch.vd.uniregctb.common;
 
 import org.slf4j.Logger;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.utils.LogLevel;
 
 /**
@@ -24,7 +23,7 @@ public class LoggingStatusManager implements StatusManager {
 	}
 
 	@Override
-	public boolean interrupted() {
+	public boolean isInterrupted() {
 		return false;
 	}
 

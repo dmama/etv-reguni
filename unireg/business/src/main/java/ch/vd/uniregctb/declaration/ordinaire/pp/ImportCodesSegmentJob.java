@@ -18,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.rapport.RapportService;
@@ -93,7 +93,7 @@ public class ImportCodesSegmentJob extends JobDefinition {
 			while (s.hasNextLine()) {
 
 				final String line = s.nextLine();
-				if (status.interrupted()) {
+				if (status.isInterrupted()) {
 					break;
 				}
 

@@ -20,12 +20,12 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.shared.batchtemplate.SimpleProgressMonitor;
-import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -125,7 +125,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 				
 				for (Long id : batch) {
 
-					if (status.interrupted()) {
+					if (status.isInterrupted()) {
 						break;
 					}
 
@@ -143,11 +143,11 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 					}
 				}
 
-				return !status.interrupted();
+				return !status.isInterrupted();
 			}
 		}, progressMonitor);
 
-		rapportFinal.setInterrompu(status.interrupted());
+		rapportFinal.setInterrompu(status.isInterrupted());
 		rapportFinal.end();
 		return rapportFinal;
 	}
