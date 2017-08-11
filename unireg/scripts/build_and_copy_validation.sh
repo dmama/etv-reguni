@@ -1,3 +1,4 @@
+#!/bin/bash
 # On remonte sur le répertoire contenant unireg
 cd ../..
 if [ ! -d unireg ]; then
@@ -21,7 +22,6 @@ version=$(grep "long=" unireg/base/version.txt|awk -F= '{ print $2; }')
 
 echo "Building version $version"
 
-user=dsi_unireg@ssv0309v
 relFileOrig=unireg-web-release.zip
 relFileDest=unireg-web-release-${version}-${DATE}.zip
 wsFileOrig=unireg-ws-release.zip	
@@ -78,15 +78,6 @@ cp unireg/nexus/target/$nexusFileOrig unireg/nexus/target/$nexusFileDest
 cp unireg/web/target/$relFileOrig unireg/web/target/$relFileDest
 cp unireg/ws/target/$wsFileOrig unireg/ws/target/$wsFileDest
 cp unireg/ubr/target/$ubrFileOrig unireg/ubr/target/$ubrFileDest
-
-# Deploiement sur ssv0309v
-REM_DIR="~/release"
-ssh $user "mkdir $REM_DIR"
-scp unireg/nexus/target/$nexusFileDest $user:$REM_DIR
-scp unireg/web/target/$relFileDest $user:$REM_DIR
-scp unireg/ws/target/$wsFileDest $user:$REM_DIR
-scp unireg/ubr/target/$ubrFileDest $user:$REM_DIR
-echo "Les fichiers sont sur: $user:$REM_DIR/*-${version}-${DATE}.zip"
 
 # dépôt direct dans le système du CEI
 URL_DEPOT=http://exploitation.etat-de-vaud.ch/outils/web/ws/rest/file/upload
