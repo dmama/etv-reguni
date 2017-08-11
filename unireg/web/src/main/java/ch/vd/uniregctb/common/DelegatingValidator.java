@@ -18,7 +18,7 @@ public abstract class DelegatingValidator implements Validator {
 
 	@Override
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public final void validate(Object target, Errors errors) {
+	public void validate(Object target, Errors errors) {
 		subValidators.get(target.getClass()).validate(target, errors);
 	}
 
