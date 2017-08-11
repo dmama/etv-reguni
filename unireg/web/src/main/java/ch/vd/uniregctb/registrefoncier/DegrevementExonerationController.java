@@ -100,6 +100,7 @@ public class DegrevementExonerationController {
 			.thenComparing(Comparator.comparing(ImmeubleView::getIndex3, Comparator.nullsFirst(Comparator.naturalOrder())));
 
 	private static final Equalator<Integer> INTEGER_EQUALATOR = Objects::equals;
+	private static final Equalator<Long> LONG_EQUALATOR = Objects::equals;
 	private static final Equalator<RegDate> DATE_EQUALATOR = Objects::equals;
 	private static final Equalator<Boolean> BOOLEAN_EQUALATOR = Objects::equals;
 	private static final Equalator<BigDecimal> BIGDECIMAL_EQUALATOR = (d1, d2) -> Objects.equals(d1, d2) || (d1 != null && d2 != null && d1.compareTo(d2) == 0);
@@ -797,9 +798,9 @@ public class DegrevementExonerationController {
 		if (oldLocation.getPourcentageArrete() != null && !BIGDECIMAL_EQUALATOR.test(oldLocation.getPourcentageArrete(), newLocation.getPourcentageArrete())) {
 			return false;
 		}
-		if (!INTEGER_EQUALATOR.test(oldLocation.getRevenu(), newLocation.getRevenu())
-				|| !INTEGER_EQUALATOR.test(oldLocation.getSurface(), newLocation.getSurface())
-				|| !INTEGER_EQUALATOR.test(oldLocation.getVolume(), newLocation.getVolume())
+		if (!LONG_EQUALATOR.test(oldLocation.getRevenu(), newLocation.getRevenu())
+				|| !LONG_EQUALATOR.test(oldLocation.getSurface(), newLocation.getSurface())
+				|| !LONG_EQUALATOR.test(oldLocation.getVolume(), newLocation.getVolume())
 				|| !BIGDECIMAL_EQUALATOR.test(oldLocation.getPourcentage(), newLocation.getPourcentage())) {
 			return false;
 		}
@@ -810,9 +811,9 @@ public class DegrevementExonerationController {
 		if (oldPropreUsage.getPourcentageArrete() != null && !BIGDECIMAL_EQUALATOR.test(oldPropreUsage.getPourcentageArrete(), newPropreUsage.getPourcentageArrete())) {
 			return false;
 		}
-		if (!INTEGER_EQUALATOR.test(oldPropreUsage.getRevenu(), newPropreUsage.getRevenu())
-				|| !INTEGER_EQUALATOR.test(oldPropreUsage.getSurface(), newPropreUsage.getSurface())
-				|| !INTEGER_EQUALATOR.test(oldPropreUsage.getVolume(), newPropreUsage.getVolume())
+		if (!LONG_EQUALATOR.test(oldPropreUsage.getRevenu(), newPropreUsage.getRevenu())
+				|| !LONG_EQUALATOR.test(oldPropreUsage.getSurface(), newPropreUsage.getSurface())
+				|| !LONG_EQUALATOR.test(oldPropreUsage.getVolume(), newPropreUsage.getVolume())
 				|| !BIGDECIMAL_EQUALATOR.test(oldPropreUsage.getPourcentage(), newPropreUsage.getPourcentage())) {
 			return false;
 		}

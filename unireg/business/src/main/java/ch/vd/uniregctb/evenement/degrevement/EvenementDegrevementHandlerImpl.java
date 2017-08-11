@@ -59,6 +59,7 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDegrevementHandlerImpl.class);
 
 	private static final BigInteger BI_MAXINT = BigInteger.valueOf(Integer.MAX_VALUE);
+	private static final BigInteger BI_MAXLONG = BigInteger.valueOf(Long.MAX_VALUE);
 	private static final BigDecimal BD_HUNDRED = BigDecimal.valueOf(100L);
 
 	private static final int MAX_NATURE_LENGTH = 256;
@@ -202,9 +203,9 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 
 	@Nullable
 	private static DonneesUtilisation extractDonneesLocation(DonneesMetier data) throws DonneeNonIntegrableException {
-		final Integer volume = extractInteger("volume locatif", data.getVolumeLocatif());
-		final Integer surface = extractInteger("surface locative", data.getSurfaceLocatif());
-		final Integer revenu = extractInteger("revenu locatif perçu", data.getRevenuLocatifEncaisse());
+		final Long volume = extractLong("volume locatif", data.getVolumeLocatif());
+		final Long surface = extractLong("surface locative", data.getSurfaceLocatif());
+		final Long revenu = extractLong("revenu locatif perçu", data.getRevenuLocatifEncaisse());
 		final BigDecimal percent = extractPourcentage("pourcentage locatif", data.getPourcentageLocatif());
 		if (volume != null || surface != null || revenu != null || percent != null) {
 			return new DonneesUtilisation(revenu, volume, surface, percent, null);
@@ -214,9 +215,9 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 
 	@Nullable
 	private static DonneesUtilisation extractDonneesPropreUsage(DonneesMetier data) throws DonneeNonIntegrableException {
-		final Integer volume = extractInteger("volume propre usage", data.getVolumePropreUsage());
-		final Integer surface = extractInteger("surface propre usage", data.getSurfacePropreUsage());
-		final Integer revenu = extractInteger("revenu estimé", data.getRevenuLocatifEstime());
+		final Long volume = extractLong("volume propre usage", data.getVolumePropreUsage());
+		final Long surface = extractLong("surface propre usage", data.getSurfacePropreUsage());
+		final Long revenu = extractLong("revenu estimé", data.getRevenuLocatifEstime());
 		final BigDecimal percent = extractPourcentage("pourcentage propre usage", data.getPourcentagePropreUsage());
 		if (volume != null || surface != null || revenu != null || percent != null) {
 			return new DonneesUtilisation(revenu, volume, surface, percent, null);
@@ -237,7 +238,7 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 	}
 
 	@Nullable
-	private static Integer extractInteger(String description, TypEntMax12Attr value) throws DonneeNonIntegrableException {
+	private static Long extractLong(String description, TypEntMax12Attr value) throws DonneeNonIntegrableException {
 		if (value == null) {
 			return null;
 		}
@@ -245,11 +246,11 @@ public class EvenementDegrevementHandlerImpl implements EvenementDegrevementHand
 			throw new DonneeNonIntegrableException("L'attribut '" + description + "' est indiqué comme non-valide dans les données transmises");
 		}
 		final BigInteger numericalValue = value.getValue();
-		if (numericalValue.compareTo(BigInteger.ZERO) < 0 || numericalValue.compareTo(BI_MAXINT) > 0) {
+		if (numericalValue.compareTo(BigInteger.ZERO) < 0 || numericalValue.compareTo(BI_MAXLONG) > 0) {
 			// valeur clairement hors domaine de validité...
-			throw new DonneeNonIntegrableException("L'attribut '" + description + "' est hors de son domaine de validité [0 - " + Integer.MAX_VALUE + "] : " + numericalValue);
+			throw new DonneeNonIntegrableException("L'attribut '" + description + "' est hors de son domaine de validité [0 - " + Long.MAX_VALUE + "] : " + numericalValue);
 		}
-		return numericalValue.intValue();
+		return numericalValue.longValue();
 	}
 
 	@Nullable

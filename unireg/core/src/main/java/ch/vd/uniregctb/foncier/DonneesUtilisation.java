@@ -10,17 +10,17 @@ public class DonneesUtilisation {
 	/**
 	 * Revenu reçu/estimé
 	 */
-	private Integer revenu;
+	private Long revenu;
 
 	/**
 	 * Volume en mètres-cubes
 	 */
-	private Integer volume;
+	private Long volume;
 
 	/**
 	 * Surface en mètres-carrés
 	 */
-	private Integer surface;
+	private Long surface;
 
 	/**
 	 * Pourcentage (0-100, 2 décimales) déclaré
@@ -35,7 +35,7 @@ public class DonneesUtilisation {
 	public DonneesUtilisation() {
 	}
 
-	public DonneesUtilisation(Integer revenu, Integer volume, Integer surface, BigDecimal pourcentage, BigDecimal pourcentageArrete) {
+	public DonneesUtilisation(Long revenu, Long volume, Long surface, BigDecimal pourcentage, BigDecimal pourcentageArrete) {
 		this.revenu = revenu;
 		this.volume = volume;
 		this.surface = surface;
@@ -48,29 +48,29 @@ public class DonneesUtilisation {
 	}
 
 	@Column(name = "REVENU")
-	public Integer getRevenu() {
+	public Long getRevenu() {
 		return revenu;
 	}
 
-	public void setRevenu(Integer revenu) {
+	public void setRevenu(Long revenu) {
 		this.revenu = revenu;
 	}
 
 	@Column(name = "VOLUME")
-	public Integer getVolume() {
+	public Long getVolume() {
 		return volume;
 	}
 
-	public void setVolume(Integer volume) {
+	public void setVolume(Long volume) {
 		this.volume = volume;
 	}
 
 	@Column(name = "SURFACE")
-	public Integer getSurface() {
+	public Long getSurface() {
 		return surface;
 	}
 
-	public void setSurface(Integer surface) {
+	public void setSurface(Long surface) {
 		this.surface = surface;
 	}
 

@@ -722,8 +722,8 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			                  immeuble,
 			                  dateDebutDroit.year(),
 			                  null,
-			                  new DonneesUtilisation(100000, null, 300, BigDecimal.valueOf(25), null),
-			                  new DonneesUtilisation(300000, null, 900, BigDecimal.valueOf(75), null),
+			                  new DonneesUtilisation(100000L, null, 300L, BigDecimal.valueOf(25), null),
+			                  new DonneesUtilisation(300000L, null, 900L, BigDecimal.valueOf(75), null),
 			                  null);
 
 			final Ids identifiants = new Ids();

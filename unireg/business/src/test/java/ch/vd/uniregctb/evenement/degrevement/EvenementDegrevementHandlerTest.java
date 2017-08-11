@@ -138,30 +138,30 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 		final RegDate dateDebut = date(2007, 4, 1);
 		final RegDate dateChargement = date(2017, 1, 7);
 		final RegDate dateAchat = date(2016, 8, 3);
-		
+
 		// mise en place fiscale
 		final int idpm = doInNewTransactionAndSession(status -> {
 			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 			addRaisonSociale(entreprise, dateDebut, null, "Petite Arvine");
 			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-		    addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-		    addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
-		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
-		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
+			final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
+			addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
-		    final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
-		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
-		                             new Fraction(1, 1),
-		                             GenrePropriete.INDIVIDUELLE,
-		                             tiersRF, immeuble, null);
-		    addEstimationFiscale(null, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
+			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
+			final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
+			addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
+			                         "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
+			                         new Fraction(1, 1),
+			                         GenrePropriete.INDIVIDUELLE,
+			                         tiersRF, immeuble, null);
+			addEstimationFiscale(null, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
-		    return entreprise.getNumero().intValue();
+			return entreprise.getNumero().intValue();
 		});
 
 		// réception des données
@@ -216,6 +216,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final long idPM;
 			final long idImmeuble;
 			final int noSequence;
+
 			public Ids(long idPM, long idImmeuble, int noSequence) {
 				this.idPM = idPM;
 				this.idImmeuble = idImmeuble;
@@ -229,19 +230,19 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addRaisonSociale(entreprise, dateDebut, null, "Petite Arvine");
 			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-		    addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-		    addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
-		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
-		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
+			final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
+			addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
-		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
-		                             new Fraction(1, 1),
-		                             GenrePropriete.INDIVIDUELLE,
-		                             tiersRF, immeuble, null);
+			final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
+			addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
+			                         "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
+			                         new Fraction(1, 1),
+			                         GenrePropriete.INDIVIDUELLE,
+			                         tiersRF, immeuble, null);
 			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
@@ -309,14 +310,14 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 				Assert.assertNotNull(degrevement.getLocation());
 				Assert.assertNotNull(degrevement.getPropreUsage());
 				Assert.assertNotNull(degrevement.getLoiLogement());
-				Assert.assertEquals((Integer) 1, degrevement.getLocation().getRevenu());
-				Assert.assertEquals((Integer) 2, degrevement.getLocation().getVolume());
-				Assert.assertEquals((Integer) 3, degrevement.getLocation().getSurface());
+				Assert.assertEquals((Long) 1L, degrevement.getLocation().getRevenu());
+				Assert.assertEquals((Long) 2L, degrevement.getLocation().getVolume());
+				Assert.assertEquals((Long) 3L, degrevement.getLocation().getSurface());
 				Assert.assertEquals(0, BigDecimal.valueOf(10L).compareTo(degrevement.getLocation().getPourcentage()));
 				Assert.assertNull(degrevement.getLocation().getPourcentageArrete());
-				Assert.assertEquals((Integer) 4, degrevement.getPropreUsage().getRevenu());
-				Assert.assertEquals((Integer) 5, degrevement.getPropreUsage().getVolume());
-				Assert.assertEquals((Integer) 6, degrevement.getPropreUsage().getSurface());
+				Assert.assertEquals((Long) 4L, degrevement.getPropreUsage().getRevenu());
+				Assert.assertEquals((Long) 5L, degrevement.getPropreUsage().getVolume());
+				Assert.assertEquals((Long) 6L, degrevement.getPropreUsage().getSurface());
 				Assert.assertEquals(0, BigDecimal.valueOf(20L).compareTo(degrevement.getPropreUsage().getPourcentage()));
 				Assert.assertNull(degrevement.getPropreUsage().getPourcentageArrete());
 				Assert.assertEquals(dateOctroi, degrevement.getLoiLogement().getDateOctroi());
@@ -353,6 +354,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final long idPM;
 			final long idImmeuble;
 			final int noSequence;
+
 			public Ids(long idPM, long idImmeuble, int noSequence) {
 				this.idPM = idPM;
 				this.idImmeuble = idImmeuble;
@@ -366,19 +368,19 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addRaisonSociale(entreprise, dateDebut, null, "Petite Arvine");
 			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-		    addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-		    addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
-		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
-		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
+			final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
+			addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
-		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
-		                             new Fraction(1, 1),
-		                             GenrePropriete.INDIVIDUELLE,
-		                             tiersRF, immeuble, null);
+			final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
+			addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
+			                         "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
+			                         new Fraction(1, 1),
+			                         GenrePropriete.INDIVIDUELLE,
+			                         tiersRF, immeuble, null);
 			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
@@ -470,6 +472,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final long idPM;
 			final long idImmeuble;
 			final int noSequence;
+
 			public Ids(long idPM, long idImmeuble, int noSequence) {
 				this.idPM = idPM;
 				this.idImmeuble = idImmeuble;
@@ -483,19 +486,19 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addRaisonSociale(entreprise, dateDebut, null, "Petite Arvine");
 			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-		    addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-		    addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
-		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
-		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
+			final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
+			addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
-		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
-		                             new Fraction(1, 1),
-		                             GenrePropriete.INDIVIDUELLE,
-		                             tiersRF, immeuble, null);
+			final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
+			addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
+			                         "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
+			                         new Fraction(1, 1),
+			                         GenrePropriete.INDIVIDUELLE,
+			                         tiersRF, immeuble, null);
 			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
@@ -599,6 +602,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final long idPM;
 			final long idImmeuble;
 			final int noSequence;
+
 			public Ids(long idPM, long idImmeuble, int noSequence) {
 				this.idPM = idPM;
 				this.idImmeuble = idImmeuble;
@@ -612,19 +616,19 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addRaisonSociale(entreprise, dateDebut, null, "Petite Arvine");
 			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-		    addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-		    addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
-		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
-		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
+			final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
+			addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
-		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
-		                             new Fraction(1, 1),
-		                             GenrePropriete.INDIVIDUELLE,
-		                             tiersRF, immeuble, null);
+			final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
+			addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
+			                         "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
+			                         new Fraction(1, 1),
+			                         GenrePropriete.INDIVIDUELLE,
+			                         tiersRF, immeuble, null);
 			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
@@ -728,6 +732,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final long idPM;
 			final long idImmeuble;
 			final int noSequence;
+
 			public Ids(long idPM, long idImmeuble, int noSequence) {
 				this.idPM = idPM;
 				this.idImmeuble = idImmeuble;
@@ -741,29 +746,29 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addRaisonSociale(entreprise, dateDebut, null, "Petite Arvine");
 			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-		    addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-		    addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
-		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
-		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
+			final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
+			addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
-		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
-		                             new Fraction(1, 1),
-		                             GenrePropriete.INDIVIDUELLE,
-		                             tiersRF, immeuble, null);
+			final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
+			addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
+			                         "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
+			                         new Fraction(1, 1),
+			                         GenrePropriete.INDIVIDUELLE,
+			                         tiersRF, immeuble, null);
 			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
 			// quelques dégrèvements pré-existants
 			// le premier ne devrait pas être modifié
-			addDegrevementICI(entreprise, immeuble, pf - 3, pf - 3, new DonneesUtilisation(10000, 1000, 100, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, new DonneesLoiLogement(false, null, null, null));
+			addDegrevementICI(entreprise, immeuble, pf - 3, pf - 3, new DonneesUtilisation(10000L, 1000L, 100L, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, new DonneesLoiLogement(false, null, null, null));
 			// le second devra être revu pour sa date de fin (qui est après le début de la PF du formulaire)
-			addDegrevementICI(entreprise, immeuble, pf - 2, pf, new DonneesUtilisation(100000, 750, 75, BigDecimal.valueOf(75), BigDecimal.valueOf(75)), null, new DonneesLoiLogement(false, null, null, null));
+			addDegrevementICI(entreprise, immeuble, pf - 2, pf, new DonneesUtilisation(100000L, 750L, 75L, BigDecimal.valueOf(75), BigDecimal.valueOf(75)), null, new DonneesLoiLogement(false, null, null, null));
 			// et le troisième devrait se retrouver annulé
-			addDegrevementICI(entreprise, immeuble, pf + 1, null, new DonneesUtilisation(5, 2, 20, BigDecimal.valueOf(1), BigDecimal.valueOf(1)), null, new DonneesLoiLogement(false, null, null, null));
+			addDegrevementICI(entreprise, immeuble, pf + 1, null, new DonneesUtilisation(5L, 2L, 20L, BigDecimal.valueOf(1), BigDecimal.valueOf(1)), null, new DonneesLoiLogement(false, null, null, null));
 
 			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
 			Assert.assertNotNull(formulaire);
@@ -836,9 +841,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 					Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
 					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
 					Assert.assertFalse(degrevement.getNonIntegrable());
-					Assert.assertEquals((Integer) 10000, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Integer) 1000, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Integer) 100, degrevement.getLocation().getSurface());
+					Assert.assertEquals((Long) 10000L, degrevement.getLocation().getRevenu());
+					Assert.assertEquals((Long) 1000L, degrevement.getLocation().getVolume());
+					Assert.assertEquals((Long) 100L, degrevement.getLocation().getSurface());
 					Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentage()));
 					Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentageArrete()));
 				}
@@ -858,9 +863,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 					Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
 					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
 					Assert.assertFalse(degrevement.getNonIntegrable());
-					Assert.assertEquals((Integer) 100000, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Integer) 750, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Integer) 75, degrevement.getLocation().getSurface());
+					Assert.assertEquals((Long) 100000L, degrevement.getLocation().getRevenu());
+					Assert.assertEquals((Long) 750L, degrevement.getLocation().getVolume());
+					Assert.assertEquals((Long) 75L, degrevement.getLocation().getSurface());
 					Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentage()));
 					Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentageArrete()));
 				}
@@ -880,9 +885,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 					Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
 					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
 					Assert.assertFalse(degrevement.getNonIntegrable());
-					Assert.assertEquals((Integer) 100000, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Integer) 750, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Integer) 75, degrevement.getLocation().getSurface());
+					Assert.assertEquals((Long) 100000L, degrevement.getLocation().getRevenu());
+					Assert.assertEquals((Long) 750L, degrevement.getLocation().getVolume());
+					Assert.assertEquals((Long) 75L, degrevement.getLocation().getSurface());
 					Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentage()));
 					Assert.assertEquals(0, BigDecimal.valueOf(75L).compareTo(degrevement.getLocation().getPourcentageArrete()));
 				}
@@ -897,14 +902,14 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 					Assert.assertNotNull(degrevement.getLocation());
 					Assert.assertNotNull(degrevement.getPropreUsage());
 					Assert.assertNotNull(degrevement.getLoiLogement());
-					Assert.assertEquals((Integer) 1, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Integer) 2, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Integer) 3, degrevement.getLocation().getSurface());
+					Assert.assertEquals((Long) 1L, degrevement.getLocation().getRevenu());
+					Assert.assertEquals((Long) 2L, degrevement.getLocation().getVolume());
+					Assert.assertEquals((Long) 3L, degrevement.getLocation().getSurface());
 					Assert.assertEquals(0, BigDecimal.valueOf(10L).compareTo(degrevement.getLocation().getPourcentage()));
 					Assert.assertNull(degrevement.getLocation().getPourcentageArrete());
-					Assert.assertEquals((Integer) 4, degrevement.getPropreUsage().getRevenu());
-					Assert.assertEquals((Integer) 5, degrevement.getPropreUsage().getVolume());
-					Assert.assertEquals((Integer) 6, degrevement.getPropreUsage().getSurface());
+					Assert.assertEquals((Long) 4L, degrevement.getPropreUsage().getRevenu());
+					Assert.assertEquals((Long) 5L, degrevement.getPropreUsage().getVolume());
+					Assert.assertEquals((Long) 6L, degrevement.getPropreUsage().getSurface());
 					Assert.assertEquals(0, BigDecimal.valueOf(20L).compareTo(degrevement.getPropreUsage().getPourcentage()));
 					Assert.assertNull(degrevement.getPropreUsage().getPourcentageArrete());
 					Assert.assertTrue(degrevement.getLoiLogement().getControleOfficeLogement());
@@ -929,9 +934,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 					Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
 					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
 					Assert.assertFalse(degrevement.getNonIntegrable());
-					Assert.assertEquals((Integer) 5, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Integer) 2, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Integer) 20, degrevement.getLocation().getSurface());
+					Assert.assertEquals((Long) 5L, degrevement.getLocation().getRevenu());
+					Assert.assertEquals((Long) 2L, degrevement.getLocation().getVolume());
+					Assert.assertEquals((Long) 20L, degrevement.getLocation().getSurface());
 					Assert.assertEquals(0, BigDecimal.valueOf(1L).compareTo(degrevement.getLocation().getPourcentage()));
 					Assert.assertEquals(0, BigDecimal.valueOf(1L).compareTo(degrevement.getLocation().getPourcentageArrete()));
 				}
@@ -966,6 +971,7 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			final long idPM;
 			final long idImmeuble;
 			final int noSequence;
+
 			public Ids(long idPM, long idImmeuble, int noSequence) {
 				this.idPM = idPM;
 				this.idImmeuble = idImmeuble;
@@ -979,24 +985,24 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addRaisonSociale(entreprise, dateDebut, null, "Petite Arvine");
 			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SARL);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
-		    addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-		    addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
-		    final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
-		    addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
+			final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Petite Arvine", null, "3478t267gfhs", 32561251L, null);
+			addRapprochementRF(entreprise, tiersRF, null, null, TypeRapprochementRF.AUTO);
 
 			final CommuneRF communeRF = addCommuneRF(22, MockCommune.Aigle.getNomOfficiel(), MockCommune.Aigle.getNoOFS());
-		    final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
-		    addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
-		                             "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
-		                             new Fraction(1, 1),
-		                             GenrePropriete.INDIVIDUELLE,
-		                             tiersRF, immeuble, null);
+			final BienFondsRF immeuble = addBienFondsRF("478235z32hf", null, communeRF, 1423);
+			addDroitPersonneMoraleRF(dateChargement, dateAchat, null, null, "Achat", null, "57485ztfgdé",
+			                         "57485ztfgdd", new IdentifiantAffaireRF(1234, "452"),
+			                         new Fraction(1, 1),
+			                         GenrePropriete.INDIVIDUELLE,
+			                         tiersRF, immeuble, null);
 			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
 			// une valeur pré-existante
-			addDegrevementICI(entreprise, immeuble, pf - 3, null, new DonneesUtilisation(10000, 1000, 100, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, null);
+			addDegrevementICI(entreprise, immeuble, pf - 3, null, new DonneesUtilisation(10000L, 1000L, 100L, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, null);
 
 			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
 			Assert.assertNotNull(formulaire);
@@ -1062,9 +1068,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 					Assert.assertNotNull(degrevement.getLocation());
 					Assert.assertNull(degrevement.getPropreUsage());
 					Assert.assertNull(degrevement.getLoiLogement());
-					Assert.assertEquals((Integer) 10000, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Integer) 1000, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Integer) 100, degrevement.getLocation().getSurface());
+					Assert.assertEquals((Long) 10000L, degrevement.getLocation().getRevenu());
+					Assert.assertEquals((Long) 1000L, degrevement.getLocation().getVolume());
+					Assert.assertEquals((Long) 100L, degrevement.getLocation().getSurface());
 					Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentage()));
 					Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentageArrete()));
 				}
@@ -1084,9 +1090,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 					Assert.assertNull(degrevement.getLoiLogement().getDateOctroi());
 					Assert.assertNull(degrevement.getLoiLogement().getPourcentageCaractereSocial());
 					Assert.assertFalse(degrevement.getNonIntegrable());
-					Assert.assertEquals((Integer) 10000, degrevement.getLocation().getRevenu());
-					Assert.assertEquals((Integer) 1000, degrevement.getLocation().getVolume());
-					Assert.assertEquals((Integer) 100, degrevement.getLocation().getSurface());
+					Assert.assertEquals((Long) 10000L, degrevement.getLocation().getRevenu());
+					Assert.assertEquals((Long) 1000L, degrevement.getLocation().getVolume());
+					Assert.assertEquals((Long) 100L, degrevement.getLocation().getSurface());
 					Assert.assertEquals(0, BigDecimal.valueOf(100L).compareTo(degrevement.getLocation().getPourcentage()));
 					Assert.assertNull(degrevement.getLocation().getPourcentageArrete());
 				}

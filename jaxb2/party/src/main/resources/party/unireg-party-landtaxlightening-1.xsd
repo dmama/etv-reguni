@@ -209,7 +209,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="income" type="xs:int" minOccurs="0">
+			<xs:element name="income" type="xs:long" minOccurs="0">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -218,7 +218,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="volume" type="xs:int" minOccurs="0">
+			<xs:element name="volume" type="xs:long" minOccurs="0">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -227,7 +227,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="area" type="xs:int" minOccurs="0">
+			<xs:element name="area" type="xs:long" minOccurs="0">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
