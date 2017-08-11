@@ -180,22 +180,14 @@ public class AjustementForsSecondairesEtablissementHelperTest extends WithoutSpr
 	}
 
 	protected Domicile addDomicile(RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noOfs) {
-		List<Domicile> domicileHistos = tousLesDomicilesVD.get(noOfs);
-		if (domicileHistos == null) {
-			domicileHistos = new ArrayList<>();
-			tousLesDomicilesVD.put(noOfs, domicileHistos);
-		}
+		List<Domicile> domicileHistos = tousLesDomicilesVD.computeIfAbsent(noOfs, k -> new ArrayList<>());
 		final Domicile domicile = new Domicile(dateDebut, dateFin, typeAutoriteFiscale, noOfs);
 		domicileHistos.add(domicile);
 		return domicile;
 	}
 
 	protected ForFiscalSecondaire addFor(RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, Integer noOfs, TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement) {
-		List<ForFiscalSecondaire> forFiscalSecondaires = tousLesForsFiscauxSecondairesParCommune.get(noOfs);
-		if (forFiscalSecondaires == null) {
-			forFiscalSecondaires = new ArrayList<>();
-			tousLesForsFiscauxSecondairesParCommune.put(noOfs, forFiscalSecondaires);
-		}
+		List<ForFiscalSecondaire> forFiscalSecondaires = tousLesForsFiscauxSecondairesParCommune.computeIfAbsent(noOfs, k -> new ArrayList<>());
 		final ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(dateDebut, motifOuverture, dateFin, motifFermeture, noOfs, typeAutoriteFiscale, motifRattachement);
 		forFiscalSecondaires.add(forFiscalSecondaire);
 		return forFiscalSecondaire;

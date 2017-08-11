@@ -3,6 +3,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -770,7 +771,7 @@ public class TraiterImportRFImmeublesJobTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(4, mutations.size());    // il y a 4 immeubles dans la base et aucun dans le fichier d'import
-				Collections.sort(mutations, (l,r) -> l.getIdRF().compareTo(r.getIdRF()));
+				mutations.sort(Comparator.comparing(EvenementRFMutation::getIdRF));
 
 				final EvenementRFMutation mutation0 = mutations.get(0);
 				assertEquals(TypeEntiteRF.IMMEUBLE, mutation0.getTypeEntite());

@@ -144,12 +144,7 @@ public class DbUnit2Java extends BusinessTest {
 	}
 
 	private List<Class> getConcreteClasses(Class baseClass) {
-		List<Class> list = baseClassToConcreteOnes.get(baseClass);
-		if (list == null) {
-			list = new ArrayList<>();
-			baseClassToConcreteOnes.put(baseClass, list);
-		}
-		return list;
+		return baseClassToConcreteOnes.computeIfAbsent(baseClass, k -> new ArrayList<>());
 	}
 
 	private void print(HibernateEntity o) throws Exception {

@@ -269,11 +269,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			                                                   @Override
 			                                                   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				                                                   synchronized (calls) {
-					                                                   List<Object[]> c = calls.get(method.getName());
-					                                                   if (c == null) {
-						                                                   c = new ArrayList<>();
-						                                                   calls.put(method.getName(), c);
-					                                                   }
+					                                                   List<Object[]> c = calls.computeIfAbsent(method.getName(), k -> new ArrayList<>());
 					                                                   c.add(args);
 				                                                   }
 				                                                   return method.invoke(target, args);

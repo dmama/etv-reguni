@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -13,7 +12,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
@@ -122,13 +120,7 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		doModificationIndividu(noEnfant2, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				final Iterator<RelationVersIndividu> iter = individu.getParents().iterator();
-				while (iter.hasNext()) {
-					final RelationVersIndividu rel = iter.next();
-					if (rel.getNumeroAutreIndividu() == noLui) {
-						iter.remove();
-					}
-				}
+				individu.getParents().removeIf(rel -> rel.getNumeroAutreIndividu() == noLui);
 			}
 		});
 		doModificationIndividu(noEnfant3, new IndividuModification() {

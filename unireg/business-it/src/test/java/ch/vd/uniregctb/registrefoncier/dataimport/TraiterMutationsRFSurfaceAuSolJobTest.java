@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -170,7 +169,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 
 				final List<SurfaceAuSolRF> surfaces1 = new ArrayList<>(immeuble1.getSurfacesAuSol());
 				assertEquals(2, surfaces1.size());
-				Collections.sort(surfaces1, (o1, o2) -> Integer.compare(o1.getSurface(), o2.getSurface()));
+				surfaces1.sort(Comparator.comparingInt(SurfaceAuSolRF::getSurface));
 
 				final SurfaceAuSolRF surface10 = surfaces1.get(0);
 				assertEquals(dateImport, surface10.getDateDebut());
@@ -189,7 +188,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 
 				final List<SurfaceAuSolRF> surfaces2 = new ArrayList<>(immeuble2.getSurfacesAuSol());
 				assertEquals(2, surfaces2.size());
-				Collections.sort(surfaces2, (o1, o2) -> Integer.compare(o1.getSurface(), o2.getSurface()));
+				surfaces2.sort(Comparator.comparingInt(SurfaceAuSolRF::getSurface));
 
 				final SurfaceAuSolRF surface20 = surfaces2.get(0);
 				assertEquals(dateImport, surface20.getDateDebut());
@@ -364,7 +363,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 
 				final List<SurfaceAuSolRF> surfaces1 = new ArrayList<>(immeuble1.getSurfacesAuSol());
 				assertEquals(3, surfaces1.size());
-				Collections.sort(surfaces1, (o1, o2) -> Integer.compare(o1.getSurface(), o2.getSurface()));
+				surfaces1.sort(Comparator.comparingInt(SurfaceAuSolRF::getSurface));
 
 				final SurfaceAuSolRF surface10 = surfaces1.get(0);
 				assertEquals(dateImportInitial, surface10.getDateDebut());
@@ -389,7 +388,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 
 				final List<SurfaceAuSolRF> surfaces2 = new ArrayList<>(immeuble2.getSurfacesAuSol());
 				assertEquals(3, surfaces2.size());
-				Collections.sort(surfaces2, new SurfaceAuSolRFComparator());
+				surfaces2.sort(new SurfaceAuSolRFComparator());
 
 				final SurfaceAuSolRF surface20 = surfaces2.get(0);
 				assertEquals(dateImportInitial, surface20.getDateDebut());
@@ -536,7 +535,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 
 				final List<SurfaceAuSolRF> surfaces1 = new ArrayList<>(immeuble1.getSurfacesAuSol());
 				assertEquals(2, surfaces1.size());
-				Collections.sort(surfaces1, (o1, o2) -> Integer.compare(o1.getSurface(), o2.getSurface()));
+				surfaces1.sort(Comparator.comparingInt(SurfaceAuSolRF::getSurface));
 
 				final SurfaceAuSolRF surface10 = surfaces1.get(0);
 				assertEquals(dateImportInitial, surface10.getDateDebut());
@@ -555,7 +554,7 @@ public class TraiterMutationsRFSurfaceAuSolJobTest extends ImportRFTestClass {
 
 				final List<SurfaceAuSolRF> surfaces2 = new ArrayList<>(immeuble2.getSurfacesAuSol());
 				assertEquals(2, surfaces2.size());
-				Collections.sort(surfaces2, new SurfaceAuSolRFComparator());
+				surfaces2.sort(new SurfaceAuSolRFComparator());
 
 				final SurfaceAuSolRF surface20 = surfaces2.get(0);
 				assertEquals(dateImportInitial, surface20.getDateDebut());

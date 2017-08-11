@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.mock.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,16 +110,12 @@ public abstract class MockOrganisationHelper {
 		}
 
 		// et on trie tout ça
-		Collections.sort(intermediate, new DateRangeComparator<>());
+		intermediate.sort(new DateRangeComparator<>());
 
 		// On on rebalance ca dans une map...
 		Map<T, List<DateRanged<T>>> resultMap = new HashMap<>();
 		for (DateRanged<T> nomRange : intermediate) {
-			List<DateRanged<T>> list = resultMap.get(nomRange.getPayload());
-			if (list == null) {
-				list = new ArrayList<>();
-				resultMap.put(nomRange.getPayload(), list);
-			}
+			List<DateRanged<T>> list = resultMap.computeIfAbsent(nomRange.getPayload(), k -> new ArrayList<>());
 			list.add(nomRange);
 		}
 		return resultMap;

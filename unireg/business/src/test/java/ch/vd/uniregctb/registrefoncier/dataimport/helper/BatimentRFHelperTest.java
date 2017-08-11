@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.helper;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -252,7 +252,7 @@ public class BatimentRFHelperTest {
 
 		final List<ImplantationRF> implantations = new ArrayList<>(batiment.getImplantations());
 		assertEquals(2, implantations.size());
-		Collections.sort(implantations, (l, r) -> l.getImmeuble().getIdRF().compareTo(r.getImmeuble().getIdRF()));
+		implantations.sort(Comparator.comparing(l -> l.getImmeuble().getIdRF()));
 
 		final ImplantationRF implantation0 = implantations.get(0);
 		assertEquals(Integer.valueOf(80), implantation0.getSurface());

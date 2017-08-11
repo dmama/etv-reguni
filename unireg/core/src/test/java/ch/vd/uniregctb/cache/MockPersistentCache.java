@@ -2,7 +2,6 @@ package ch.vd.uniregctb.cache;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,12 +33,7 @@ public class MockPersistentCache<T extends Serializable> implements PersistentCa
 
 	@Override
 	public void removeAll(long id) {
-		final Iterator<Map.Entry<ObjectKey, T>> iterator = map.entrySet().iterator();
-		while (iterator.hasNext()) {
-			if (iterator.next().getKey().getId() == id) {
-				iterator.remove();
-			}
-		}
+		map.entrySet().removeIf(objectKeyTEntry -> objectKeyTEntry.getKey().getId() == id);
 	}
 
 	@Override
@@ -49,12 +43,7 @@ public class MockPersistentCache<T extends Serializable> implements PersistentCa
 
 	@Override
 	public void removeValues(Predicate<? super T> removal) {
-		final Iterator<Map.Entry<ObjectKey, T>> iterator = map.entrySet().iterator();
-		while (iterator.hasNext()) {
-			if (removal.evaluate(iterator.next().getValue())) {
-				iterator.remove();
-			}
-		}
+		map.entrySet().removeIf(objectKeyTEntry -> removal.evaluate(objectKeyTEntry.getValue()));
 	}
 
 	@Override

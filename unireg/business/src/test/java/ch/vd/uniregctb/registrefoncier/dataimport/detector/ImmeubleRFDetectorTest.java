@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport.detector;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.hibernate.FlushMode;
@@ -514,7 +515,7 @@ public class ImmeubleRFDetectorTest {
 		// on devrait avoir deux mutations de suppression des immeubles
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(2, mutations.size());
-		Collections.sort(mutations, (l, r) -> l.getIdRF().compareTo(r.getIdRF()));
+		mutations.sort(Comparator.comparing(EvenementRFMutation::getIdRF));
 
 		final EvenementRFMutation mut0 = mutations.get(0);
 		assertEquals(IMPORT_ID, mut0.getParentImport().getId());
