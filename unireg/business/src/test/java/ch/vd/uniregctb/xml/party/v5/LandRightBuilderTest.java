@@ -96,6 +96,8 @@ public class LandRightBuilderTest {
 		immeuble.setId(123456L);
 
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setMasterIdRF("28288228");
+		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
@@ -142,6 +144,8 @@ public class LandRightBuilderTest {
 		immeuble.setId(123456L);
 
 		final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
+		droit.setMasterIdRF("28288228");
+		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
@@ -195,6 +199,8 @@ public class LandRightBuilderTest {
 		servant.setId(servantId);
 
 		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
+		droit.setMasterIdRF("28288228");
+		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
@@ -267,6 +273,8 @@ public class LandRightBuilderTest {
 		immeuble1.setId(servantId);
 
 		final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
+		droit0.setMasterIdRF("28288228");
+		droit0.setVersionIdRF("1");
 		droit0.setDateFinMetier(RegDate.get(2017, 4, 14));
 		droit0.setRegime(GenrePropriete.INDIVIDUELLE);
 		droit0.setPart(new Fraction(1, 1));
@@ -276,6 +284,8 @@ public class LandRightBuilderTest {
 		droit0.calculateDateEtMotifDebut(p -> null);
 
 		final DroitProprieteImmeubleRF droit1 = new DroitProprieteImmeubleRF();
+		droit1.setMasterIdRF("4734733");
+		droit1.setVersionIdRF("1");
 		droit1.setRegime(GenrePropriete.FONDS_DOMINANT);
 		droit1.setPart(new Fraction(3, 5));
 		droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Constitution de PPE", new IdentifiantAffaireRF(21, 2000, 1, 0)));
@@ -284,6 +294,8 @@ public class LandRightBuilderTest {
 		droit1.calculateDateEtMotifDebut(p -> null);
 
 		final DroitProprieteVirtuelRF droit2 = new DroitProprieteVirtuelRF();
+		droit2.setMasterIdRF("03030232");
+		droit2.setVersionIdRF("1");
 		droit2.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit2.setDateFinMetier(RegDate.get(2017, 4, 14));
 		droit2.setMotifDebut("Achat");
@@ -355,6 +367,8 @@ public class LandRightBuilderTest {
 		servant.setId(servantId);
 
 		final DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
+		droit.setMasterIdRF("28288228");
+		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
@@ -535,6 +549,8 @@ public class LandRightBuilderTest {
 		usufruit.addImmeuble(immeuble1);
 
 		final DroitProprieteImmeubleRF droit1 = new DroitProprieteImmeubleRF();
+		droit1.setMasterIdRF("28288228");
+		droit1.setVersionIdRF("1");
 		droit1.setRegime(GenrePropriete.FONDS_DOMINANT);
 		droit1.setPart(new Fraction(3, 5));
 		droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Constitution de PPE", new IdentifiantAffaireRF(21, 2000, 1, 0)));
@@ -543,6 +559,8 @@ public class LandRightBuilderTest {
 		droit1.calculateDateEtMotifDebut(p -> null);
 
 		final UsufruitVirtuelRF droit2 = new UsufruitVirtuelRF();
+		droit2.setMasterIdRF("478347347");
+		droit2.setVersionIdRF("1");
 		droit2.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit2.setDateFinMetier(RegDate.get(2017, 4, 14));
 		droit2.setMotifDebut("Achat");
