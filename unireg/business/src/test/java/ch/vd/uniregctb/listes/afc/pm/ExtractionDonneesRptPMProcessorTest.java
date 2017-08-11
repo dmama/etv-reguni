@@ -87,7 +87,7 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 			final ExtractionDonneesRptPMResults.InfoPeriodeImposition info = results.getListePeriodes().get(0);
 			Assert.assertNotNull(info);
 			Assert.assertEquals(idpm, info.noCtb);
-			Assert.assertEquals(MotifRattachement.DOMICILE, info.motifRattachement);
+			Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, info.motifRattachement);
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, info.autoriteFiscalePrincipale);
 			Assert.assertEquals(date(anneeExtraction - 1, 7, 1), info.dateDebutPI);
 			Assert.assertEquals(date(anneeExtraction, 6, 30), info.datefinPI);
@@ -95,8 +95,8 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 			Assert.assertEquals(date(anneeExtraction - 1, 7, 1), info.debutExerciceCommercial);
 			Assert.assertEquals(date(anneeExtraction, 6, 30), info.finExerciceCommercial);
 			Assert.assertEquals(360, info.joursImposables);
-			Assert.assertNull(info.motifOuverture);
-			Assert.assertNull(info.motifFermeture);
+			Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, info.motifOuverture);
+			Assert.assertEquals(MotifFor.FIN_EXPLOITATION, info.motifFermeture);
 			Assert.assertEquals("Leysin", info.nomCommune);
 			Assert.assertEquals((Integer) MockCommune.Leysin.getNoOFS(), info.noOfsCommune);
 			Assert.assertEquals("Genève", info.nomForPrincipal);
@@ -230,8 +230,8 @@ public class ExtractionDonneesRptPMProcessorTest extends BusinessTest {
 			Assert.assertEquals(date(anneeExtraction - 1, 7, 1), info.debutExerciceCommercial);
 			Assert.assertEquals(date(anneeExtraction, 6, 30), info.finExerciceCommercial);
 			Assert.assertEquals(360, info.joursImposables);
-			Assert.assertEquals(MotifFor.DEPART_HC, info.motifOuverture);
-			Assert.assertNull(info.motifFermeture);
+			Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, info.motifOuverture);
+			Assert.assertEquals(MotifFor.DEPART_HC, info.motifFermeture);
 			Assert.assertEquals("Grandson", info.nomCommune);
 			Assert.assertEquals((Integer) MockCommune.Grandson.getNoOFS(), info.noOfsCommune);
 			Assert.assertEquals("Bern", info.nomForPrincipal);
