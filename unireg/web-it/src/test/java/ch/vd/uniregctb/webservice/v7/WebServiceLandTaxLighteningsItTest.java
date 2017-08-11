@@ -70,8 +70,8 @@ public class WebServiceLandTaxLighteningsItTest extends AbstractWebServiceItTest
 		assertNotNull(abatements);
 		assertEquals(2, abatements.size());
 		assertAbatement(noImm, abatements.get(0), RegDate.get(2013, 3, 22), null,
-		                12000, 6500, 230, BigDecimal.valueOf(80), BigDecimal.valueOf(60),
-		                11000, 5000, 250, BigDecimal.valueOf(20), BigDecimal.valueOf(40),
+		                12000L, 6500L, 230L, BigDecimal.valueOf(80), BigDecimal.valueOf(60),
+		                11000L, 5000L, 250L, BigDecimal.valueOf(20), BigDecimal.valueOf(40),
 		                RegDate.get(2015, 3, 1), RegDate.get(2020, 2, 25), BigDecimal.valueOf(825, 2));
 		assertAbatement(noImm, abatements.get(1), RegDate.get(2015, 6, 1), RegDate.get(2015, 6, 30),
 		                null, null, null, null, null,
@@ -85,8 +85,8 @@ public class WebServiceLandTaxLighteningsItTest extends AbstractWebServiceItTest
 	}
 
 	private static void assertAbatement(int noImm, IciAbatement abatement, RegDate dateFrom, RegDate dateTo,
-	                                    @Nullable Integer rentalIncome, @Nullable Integer rentalVolume, @Nullable Integer rentalArea, BigDecimal rentalDeclaredPercent, BigDecimal rentalApprovedPercent,
-	                                    @Nullable Integer ownUseIncome, @Nullable Integer ownUseVolume, @Nullable Integer ownUseArea, BigDecimal ownUseDeclaredPercent, BigDecimal ownUseApprovedPercent,
+	                                    @Nullable Long rentalIncome, @Nullable Long rentalVolume, @Nullable Long rentalArea, BigDecimal rentalDeclaredPercent, BigDecimal rentalApprovedPercent,
+	                                    @Nullable Long ownUseIncome, @Nullable Long ownUseVolume, @Nullable Long ownUseArea, BigDecimal ownUseDeclaredPercent, BigDecimal ownUseApprovedPercent,
 	                                    RegDate grantDate, RegDate expireDate, BigDecimal socialNaturePercent) {
 		assertDate(dateFrom, abatement.getDateFrom());
 		assertDate(dateTo, abatement.getDateTo());
@@ -119,7 +119,7 @@ public class WebServiceLandTaxLighteningsItTest extends AbstractWebServiceItTest
 		}
 	}
 
-	private static void assertUseData(@Nullable Integer income, @Nullable Integer volume, @Nullable Integer area, @Nullable BigDecimal declaredPercent, @Nullable BigDecimal approvedPercent, @Nullable UseData useData) {
+	private static void assertUseData(@Nullable Long income, @Nullable Long volume, @Nullable Long area, @Nullable BigDecimal declaredPercent, @Nullable BigDecimal approvedPercent, @Nullable UseData useData) {
 		if (income == null && volume == null && area == null && declaredPercent == null && approvedPercent == null) {
 			assertNull(useData);
 		}
