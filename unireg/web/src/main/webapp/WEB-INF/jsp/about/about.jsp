@@ -45,7 +45,7 @@
 
 	<tiles:put name="body">
 		<div class="about">
-			<div>Unireg est le registre des contribuables de l'Etat de Vaud. Copyright (c) 2009-2016, Etat-de-Vaud.</div>
+			<div>Unireg est le registre des contribuables de l'Etat de Vaud. Copyright (c) 2009-2017, Etat-de-Vaud.</div>
 			<div>
 				<fieldset>
 					<table>
@@ -63,6 +63,7 @@
 				<h4>Cellule projet :</h4>
 				<ul>
 					<li>David Radelfinger</li>
+					<li>Raphaël Carbo</li>
 				</ul>
 
 				<h4>Cellule registre :</h4>
@@ -75,24 +76,27 @@
 					<li>Dominique Viquerat</li>
 				</ul>
 
+				<h4>Chef de projet :</h4>
+				<ul>
+					<li>Sandro Zinzeri</li>
+				</ul>
+
 				<h4>Spécifications :</h4>
 				<ul>
-					<li>Hakan Kaynar</li>
-					<li>Laurent Bourgeat</li>
+					<li>Gabrielle Servoz</li>
 				</ul>
 
 				<h4>Développement :</h4>
 				<ul>
 					<li>Baba Issa Ngom</li>
 					<li>Jacob Deker</li>
-					<li>Mickaël Zanoli</li>
+					<li>Manuel Siggen</li>
 					<li>Raphaël Marmier</li>
 				</ul>
 
 				<h4>Assurance qualité :</h4>
 				<ul>
 					<li>John Gibson</li>
-					<li>Martin Croteau</li>
 				</ul>
 
 				<h3>Personnes ayant contribué à Unireg par le passé</h3>
@@ -100,6 +104,7 @@
 					<li>Akram Ben Aissi</li>
 					<li>Andréa Osmani</li>
 					<li>Annie Ourliac</li>
+					<li>Boris Mayencourt</li>
 					<li>Christophe Friederich</li>
 					<li>Christophe Ollivier</li>
 					<li>Claudio Parnenzini</li>
@@ -108,14 +113,16 @@
 					<li>François Dardare</li>
 					<li>Frédéric Noguier</li>
 					<li>Gilles Dubey</li>
+					<li>Hakan Kaynar</li>
 					<li>Jean-Eric Cuendet</li>
 					<li>Jérôme Jacques</li>
 					<li>Kamel Chabane</li>
+					<li>Laurent Bourgeat</li>
 					<li>Laurent Perret</li>
 					<li>Ludovic Bertin</li>
-					<li>Manuel Siggen</li>
+					<li>Martin Croteau</li>
+					<li>Mickaël Zanoli</li>
 					<li>Pavel Blanco</li>
-					<li>Raphaël Carbo</li>
 					<li>Smita Roy</li>
 					<li>Thierry Declercq</li>
 				</ul>
