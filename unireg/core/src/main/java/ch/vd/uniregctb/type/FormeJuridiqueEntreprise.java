@@ -100,7 +100,7 @@ public enum FormeJuridiqueEntreprise {
 
 	@NotNull
 	public static FormeJuridiqueEntreprise fromCode(@NotNull String codeECH) {
-		Objects.requireNonNull("Impossible de déterminer une forme juridique sans son code eCH.");
+		Objects.requireNonNull(codeECH, "Impossible de déterminer une forme juridique sans son code eCH.");
 		final FormeJuridiqueEntreprise formeJuridiqueEntreprise = BY_CODE.get(codeECH);
 		if (formeJuridiqueEntreprise == null) {
 			throw new IllegalArgumentException(String.format("Le code %s ne correspond à aucune forme juridique connue d'Unireg.", codeECH));
