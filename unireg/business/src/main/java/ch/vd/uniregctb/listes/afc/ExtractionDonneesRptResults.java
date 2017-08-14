@@ -57,7 +57,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		public abstract Object[] getValeursColonnes();
 	}
 
-	public static class InfoCtbIgnore extends InfoCtbBase {
+	public static class InfoCtbIgnore extends InfoCtbBase<InfoCtbIgnore> {
 		public final String raisonIgnore;
 
 		private static final String[] NOMS_COLONNES = { "NO_CTB", "RAISON" };

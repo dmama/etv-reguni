@@ -311,7 +311,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
+	public <T extends Declaration> T addAndSave(Tiers tiers, T declaration) {
 		return target.addAndSave(tiers, declaration);
 	}
 

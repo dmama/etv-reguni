@@ -1344,27 +1344,27 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return AddAndSaveHelper.addAndSave(tiers, decisionAci, this::saveTiers, DECISION_ACI_ACCESSOR);
 	}
 
-	private static final AddAndSaveHelper.EntityAccessor<Tiers, Declaration> DECLARATION_ACCESSOR = new AddAndSaveHelper.EntityAccessor<Tiers, Declaration>() {
+	private static final class DeclarationAccessor<T extends Declaration> implements AddAndSaveHelper.EntityAccessor<Tiers, T> {
 		@Override
 		public Collection<Declaration> getEntities(Tiers tiers) {
 			return tiers.getDeclarations();
 		}
 
 		@Override
-		public void addEntity(Tiers tiers, Declaration d) {
+		public void addEntity(Tiers tiers, T d) {
 			tiers.addDeclaration(d);
 		}
 
 		@Override
-		public void assertEquals(Declaration d1, Declaration d2) {
+		public void assertEquals(T d1, T d2) {
 			Assert.isSame(d1.getDateDebut(), d2.getDateDebut());
 			Assert.isSame(d1.getDateFin(), d2.getDateFin());
 		}
 	};
 
 	@Override
-	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
-		return AddAndSaveHelper.addAndSave(tiers, declaration, this::saveTiers, DECLARATION_ACCESSOR);
+	public <T extends Declaration> T addAndSave(Tiers tiers, T declaration) {
+		return AddAndSaveHelper.addAndSave(tiers, declaration, this::saveTiers, new DeclarationAccessor<>());
 	}
 
 	private static final AddAndSaveHelper.EntityAccessor<DebiteurPrestationImposable, Periodicite> PERIODICITE_ACCESSOR = new AddAndSaveHelper.EntityAccessor<DebiteurPrestationImposable, Periodicite>() {

@@ -277,7 +277,7 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
-	public Declaration addAndSave(Tiers tiers, Declaration declaration) {
+	public <T extends Declaration> T addAndSave(Tiers tiers, T declaration) {
 		throw new NotImplementedException();
 	}
 

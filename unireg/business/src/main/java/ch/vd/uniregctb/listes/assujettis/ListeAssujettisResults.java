@@ -103,7 +103,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 		}
 	}
 
-	public static class InfoCtbIgnore extends InfoCtb {
+	public static class InfoCtbIgnore extends InfoCtb<InfoCtbIgnore> {
 		public final CauseIgnorance cause;
 
 		public InfoCtbIgnore(long noCtb, CauseIgnorance cause) {

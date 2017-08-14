@@ -10,6 +10,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPDetailView;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPElementListeView;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Classe qui permet de collecter les informations nécessaires à l'affichage
@@ -59,6 +60,6 @@ public interface EvenementCivilRegPPManager {
 	 * @param criterion les critères en question
 	 * @return le nombre d'évenements correspondant aux critères
 	 */
-	int count(EvenementCivilCriteria criterion);
+	int count(EvenementCivilCriteria<TypeEvenementCivil> criterion);
 
 }

@@ -35,7 +35,7 @@ public class JspTagOut extends BodyTagSupport {
 	private Object value;
 	private String id;
 
-	protected static final Map<Class, Editor> editors = new HashMap<>();
+	protected static final Map<Class<?>, Editor> editors = new HashMap<>();
 
 	static {
 		editors.put(String.class, new StringEditor());
@@ -65,14 +65,14 @@ public class JspTagOut extends BodyTagSupport {
 		}
 	}
 
-	private Editor getEditor(Class clazz) {
+	private Editor getEditor(Class<?> clazz) {
 		Editor editor = null;
 		if (this.clazz.isEnum()) {
 			editor = new EnumEditor(); // cas spécial pour les enums
 		}
 		else {
-			for (Map.Entry<Class, Editor> entry : editors.entrySet()) {
-				final Class key = entry.getKey();
+			for (Map.Entry<Class<?>, Editor> entry : editors.entrySet()) {
+				final Class<?> key = entry.getKey();
 				if (key.isAssignableFrom(clazz)) {
 					editor = entry.getValue();
 					break;

@@ -1287,8 +1287,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     @Override
     protected <T extends DeclarationAvecNumeroSequence> T assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, T di) {
         if (useTiersServiceToCreateDeclarationImpot()) {
-            //noinspection unchecked
-            return (T) tiersDAO.addAndSave(ctb, di);
+            return tiersDAO.addAndSave(ctb, di);
         }
         else {
             return super.assignerNumeroSequenceEtSaveDeclarationImpot(ctb, di);

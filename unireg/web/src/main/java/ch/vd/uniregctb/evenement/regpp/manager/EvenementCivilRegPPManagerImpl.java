@@ -27,6 +27,7 @@ import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * @inheritDoc
@@ -191,7 +192,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public int count(EvenementCivilCriteria criterion) {
+	public int count(EvenementCivilCriteria<TypeEvenementCivil> criterion) {
 		return evenementDAO.count(criterion);
 	}
 

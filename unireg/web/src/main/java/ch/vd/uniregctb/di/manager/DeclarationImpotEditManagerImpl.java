@@ -330,10 +330,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		if (declaration != null) {
 			throw new ValidationException(contribuable, "Le contribuable possède déjà une déclaration sur la période spécifiée [" + range + "].");
 		}
-		if (!clazz.isAssignableFrom(elu.getClass())) {
+		if (!clazz.isInstance(elu)) {
 			throw new IllegalArgumentException("Mauvais type de période d'imposition calculée sur le contribuable " + contribuable.getNumero() + " : " + elu.getClass().getSimpleName() + " (" + clazz.getSimpleName() + " attendu)");
 		}
-		return (P) elu;
+		return clazz.cast(elu);
 	}
 
 	@NotNull
@@ -526,7 +526,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		di.setDelaiRetourImprime(delaiAccorde);     // pour les DI envoyées manuellement, il y a égalité des délais imprimés et effectifs
 
 		// persistence du lien entre le contribuable et la nouvelle DI
-		di = (T) tiersDAO.addAndSave(ctb, di);
+		di = tiersDAO.addAndSave(ctb, di);
 
 		//Mise à jour de l'état de la tâche si il y en a une
 		final TacheCriteria criterion = new TacheCriteria();

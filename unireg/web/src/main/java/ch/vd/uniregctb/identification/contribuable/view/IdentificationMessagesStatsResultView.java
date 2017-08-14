@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.identification.contribuable.view;
 
-public class IdentificationMessagesStatsResultView implements Comparable{
+import org.jetbrains.annotations.NotNull;
+
+public class IdentificationMessagesStatsResultView implements Comparable<IdentificationMessagesStatsResultView> {
+
 	private String etat;
 	private String resultatIdentification;
 	private String etatTechnique;
@@ -34,8 +37,8 @@ public class IdentificationMessagesStatsResultView implements Comparable{
 	}
 
 	@Override
-	public int compareTo(Object o) {
-		String otherEtat = ((IdentificationMessagesStatsResultView)o).getEtat();
+	public int compareTo(@NotNull IdentificationMessagesStatsResultView o) {
+		final String otherEtat = o.getEtat();
 		return etat.compareToIgnoreCase(otherEtat);
 	}
 

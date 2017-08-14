@@ -318,7 +318,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param declaration déclaration à ajouter
 	 * @return la déclaration une fois sauvegardée, avec son ID renseigné
 	 */
-	Declaration addAndSave(Tiers tiers, Declaration declaration);
+	<T extends Declaration> T addAndSave(Tiers tiers, T declaration);
 
 	/**
 	 * Ajoute une nouvelle periodicite à un debiteur.

@@ -117,6 +117,7 @@ public class IdentifierContribuableProcessor {
 				Criteria crit = session.createCriteria(IdentificationContribuable.class);
 				crit.add(Restrictions.in("id", batch));
 				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+				//noinspection unchecked
 				return crit.list();
 			}
 		});
