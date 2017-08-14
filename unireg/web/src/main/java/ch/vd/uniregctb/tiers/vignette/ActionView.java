@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.tiers.vignette;
 
 public class ActionView {
-	private String label;
-	private String url;
+	private final String label;
+	private final String url;
 
 	public ActionView(String label, String url) {
 		this.label = label;

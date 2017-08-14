@@ -23,7 +23,7 @@ public class InfrastructureEditor implements Editor {
 		InfrastructureEditor.infraService = infraService;
 	}
 
-	private EditorParams params;
+	private final EditorParams params;
 
 	public InfrastructureEditor(EditorParams params) {
 		this.params = params;

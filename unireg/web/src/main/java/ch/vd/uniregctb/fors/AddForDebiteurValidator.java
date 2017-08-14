@@ -23,7 +23,7 @@ import ch.vd.uniregctb.validation.fors.ForDebiteurPrestationImposableValidator;
 
 public class AddForDebiteurValidator extends AddForAvecMotifsValidator {
 
-	private HibernateTemplate hibernateTemplate;
+	private final HibernateTemplate hibernateTemplate;
 
 	public AddForDebiteurValidator(ServiceInfrastructureService infraService, HibernateTemplate hibernateTemplate) {
 		super(infraService);

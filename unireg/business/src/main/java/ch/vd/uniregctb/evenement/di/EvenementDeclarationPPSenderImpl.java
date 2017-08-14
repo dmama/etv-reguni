@@ -43,7 +43,7 @@ public class EvenementDeclarationPPSenderImpl implements EvenementDeclarationPPS
 	 */
 	private boolean enabled = true;
 
-	private ObjectFactory objectFactory = new ObjectFactory();
+	private final ObjectFactory objectFactory = new ObjectFactory();
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceDestination(String serviceDestination) {

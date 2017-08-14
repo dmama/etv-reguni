@@ -23,7 +23,7 @@ public abstract class AnnulableHelper {
 	 */
 	public static class AnnulesApresWrappingComparator<T extends Annulable> implements Comparator<T> {
 
-		private Comparator<? super T> wrapped;
+		private final Comparator<? super T> wrapped;
 
 		public AnnulesApresWrappingComparator(Comparator<? super T> wrapped) {
 			this.wrapped = wrapped;

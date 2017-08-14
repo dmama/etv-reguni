@@ -27,8 +27,8 @@ public class WorkingQueue<T> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WorkingQueue.class);
 
 	private static class Element<T> {
-		private Instant creationTime = InstantHelper.get();
-		private T data;
+		private final Instant creationTime = InstantHelper.get();
+		private final T data;
 
 		private Element(T data) {
 			this.data = data;
@@ -52,7 +52,7 @@ public class WorkingQueue<T> {
 		long userTime;
 		long execTime;
 
-		int threadsCount;
+		final int threadsCount;
 		int deadThreadsCount;
 
 		public WorkStats(int threadsCount) {
@@ -653,7 +653,7 @@ public class WorkingQueue<T> {
 	private static class BatchListener<T> extends Listener<T> {
 
 		private final BatchWorker<T> worker;
-		private int batchSize;
+		private final int batchSize;
 
 		private BatchListener(WorkingQueue<T> master, BlockingQueue<Element<T>> queue, BatchWorker<T> worker) {
 			super(master, queue);

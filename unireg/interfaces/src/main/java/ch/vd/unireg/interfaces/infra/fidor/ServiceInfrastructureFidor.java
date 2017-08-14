@@ -73,7 +73,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	 * Cache des URLs de Fidor
 	 */
 	private Map<ApplicationFiscale, String> urlsApplication = null;
-	private SimpleCacheStats urlsStats = new SimpleCacheStats();
+	private final SimpleCacheStats urlsStats = new SimpleCacheStats();
 
 	private long lastTentative = 0;
 	private static final long fiveMinutes = 5L * 60L * 1000000000L; // en nanosecondes

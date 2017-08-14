@@ -33,7 +33,7 @@ public class PartyBuilder {
 	private static final NaturalPersonStrategy naturalPersonStrategy = new NaturalPersonStrategy();
 	private static final CorporationStrategy corporationStrategy = new CorporationStrategy();
 	private static final AdminAuthStrategy adminAuthStrategy = new AdminAuthStrategy();
-	private static Map<Class, PartyStrategy<?>> strategies = new HashMap<>();
+	private static final Map<Class, PartyStrategy<?>> strategies = new HashMap<>();
 
 	static {
 		strategies.put(Debtor.class, debtorStrategy);

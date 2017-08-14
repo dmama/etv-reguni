@@ -8,8 +8,8 @@ public class OrigineRCPers implements Origine, Serializable {
 
 	private static final long serialVersionUID = 9205836493560510209L;
 
-	private String nomLieu;
-	private String sigleCanton;
+	private final String nomLieu;
+	private final String sigleCanton;
 
 	public OrigineRCPers(PlaceOfOrigin placeOfOrigin) {
 		this.nomLieu = placeOfOrigin.getOriginName();

@@ -8,7 +8,7 @@ import org.springframework.web.servlet.tags.form.TagWriter;
 
 class StringEditor implements Editor {
 
-	private EditorParams params;
+	private final EditorParams params;
 
 	StringEditor(EditorParams params) {
 		this.params = params;

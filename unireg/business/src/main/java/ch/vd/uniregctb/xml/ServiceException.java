@@ -4,7 +4,7 @@ import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 
 public class ServiceException extends Exception {
 
-	private ServiceExceptionInfo info;
+	private final ServiceExceptionInfo info;
 
 	public ServiceException(ServiceExceptionInfo info) {
 		super(info.getMessage());

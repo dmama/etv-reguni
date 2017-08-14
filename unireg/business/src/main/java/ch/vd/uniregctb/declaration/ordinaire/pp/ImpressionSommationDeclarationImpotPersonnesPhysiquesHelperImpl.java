@@ -386,8 +386,8 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 	 */
 	class TraitementRemplissageSommationSepares extends TraitementRemplissageSommation {
 
-		private PersonnePhysique separe1;
-		private PersonnePhysique separe2;
+		private final PersonnePhysique separe1;
+		private final PersonnePhysique separe2;
 
 		TraitementRemplissageSommationSepares (PersonnePhysique separe1, PersonnePhysique separe2) {
 			this.separe1 = separe1;

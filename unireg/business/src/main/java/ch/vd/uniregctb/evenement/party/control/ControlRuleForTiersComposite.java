@@ -14,7 +14,7 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public abstract class ControlRuleForTiersComposite<T extends Enum<T>> extends AbstractControlRule<T> {
 
-	protected AbstractControlRule<T> controlRule;
+	protected final AbstractControlRule<T> controlRule;
 
 	protected ControlRuleForTiersComposite(TiersService tiersService, @NotNull AbstractControlRule<T> controlRule) {
 		super(tiersService);

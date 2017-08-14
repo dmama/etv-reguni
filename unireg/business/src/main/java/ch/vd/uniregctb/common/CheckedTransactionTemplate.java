@@ -24,7 +24,7 @@ public class CheckedTransactionTemplate {
 
 	}
 
-	private TransactionTemplate template;
+	private final TransactionTemplate template;
 
 	public CheckedTransactionTemplate(PlatformTransactionManager transactionManager) {
 		this.template = new TransactionTemplate(transactionManager);

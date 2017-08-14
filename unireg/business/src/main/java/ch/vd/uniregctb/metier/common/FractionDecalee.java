@@ -15,7 +15,7 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public class FractionDecalee extends Fraction {
 
-	private DateRange periodeImpact;
+	private final DateRange periodeImpact;
 
 	public FractionDecalee(@NotNull RegDate date, DateRange periodeImpact, MotifFor motifOuverture, MotifFor motifFermeture) {
 		super(date, motifOuverture, motifFermeture);

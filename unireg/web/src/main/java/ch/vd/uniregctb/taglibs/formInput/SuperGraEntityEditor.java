@@ -9,7 +9,7 @@ import ch.vd.uniregctb.supergra.EntityType;
 
 class SuperGraEntityEditor implements Editor {
 
-	private EditorParams params;
+	private final EditorParams params;
 
 	public SuperGraEntityEditor(EditorParams params) {
 		this.params = params;

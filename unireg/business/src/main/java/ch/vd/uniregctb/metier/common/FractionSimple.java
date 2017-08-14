@@ -16,7 +16,7 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public class FractionSimple extends Fraction {
 
-	private DateRange periodeImpact;
+	private final DateRange periodeImpact;
 
 	public FractionSimple(@NotNull RegDate date, MotifFor motifOuverture, MotifFor motifFermeture) {
 		super(date, motifOuverture, motifFermeture);

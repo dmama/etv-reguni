@@ -16,7 +16,7 @@ public class AnnonceIDE extends AnnonceIDEData implements AnnonceIDEEnvoyee, Ser
 	/**
 	 * Identifiant métier de l'annonce
 	 */
-	private Long numero;
+	private final Long numero;
 
 	public AnnonceIDE(Long numero, TypeAnnonce type, Date dateAnnonce, Utilisateur utilisateur, TypeDeSite typeDeSite, Statut statut, InfoServiceIDEObligEtendues infos) {
 		super(type, dateAnnonce, utilisateur, typeDeSite, statut, infos);

@@ -126,10 +126,10 @@ public abstract class EvenementOrganisationInterne {
 
 //	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationInterne.class);
 
-	private EvenementOrganisation evenement;
+	private final EvenementOrganisation evenement;
 	private Entreprise entreprise;
-	private Organisation organisation;
-	private String organisationDescription;
+	private final Organisation organisation;
+	private final String organisationDescription;
 
 	private HandleStatus status = HandleStatus.REDONDANT;
 

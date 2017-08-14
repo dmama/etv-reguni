@@ -2,23 +2,23 @@ package ch.vd.uniregctb.taglibs.formInput;
 
 class EditorParams {
 
-	private String id;
+	private final String id;
 
-	private String path;
+	private final String path;
 
 	/**
 	 * Le type de la valeur saisie
 	 */
-	private Class type;
+	private final Class type;
 
 	/**
 	 * (Optionnel) catégorie de haut niveau (NPA, numéro de rue, type d'entité, ...) permettant d'instancier un éditeur spécifique.
 	 */
-	private Object categorie;
+	private final Object categorie;
 
-	private boolean readonly;
+	private final boolean readonly;
 
-	private String contextPath;
+	private final String contextPath;
 
 	EditorParams(String id, String path, Class type, Object categorie, boolean readonly, String contextPath) {
 		this.id = id;

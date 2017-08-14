@@ -25,7 +25,7 @@ public class JSONExceptionResolver implements HandlerExceptionResolver, Ordered 
 	protected final Logger LOGGER = LoggerFactory.getLogger(JSONExceptionResolver.class);
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
-	private MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
+	private final MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setOrder(int order) {

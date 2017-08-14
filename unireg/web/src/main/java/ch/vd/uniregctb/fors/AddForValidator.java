@@ -10,7 +10,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class AddForValidator implements Validator {
 
-	private ServiceInfrastructureService infraService;
+	private final ServiceInfrastructureService infraService;
 
 	protected AddForValidator(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;

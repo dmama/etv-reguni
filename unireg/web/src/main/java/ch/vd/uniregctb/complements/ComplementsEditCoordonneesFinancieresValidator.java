@@ -11,7 +11,7 @@ import ch.vd.uniregctb.iban.IbanValidator;
 
 public class ComplementsEditCoordonneesFinancieresValidator implements Validator {
 
-	private IbanValidator ibanValidator;
+	private final IbanValidator ibanValidator;
 
 	public ComplementsEditCoordonneesFinancieresValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;

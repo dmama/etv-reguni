@@ -31,11 +31,11 @@ import ch.vd.uniregctb.type.MotifRattachement;
 public class CreateEntrepriseHorsVD extends EvenementOrganisationInterneDeTraitement {
 
 	private RegDate dateDeCreation;
-	private boolean isCreation;
+	private final boolean isCreation;
 
-	final private SiteOrganisation sitePrincipal;
-	final private List<SiteOrganisation> succursalesRCVD;
-	final private Domicile autoriteFiscalePrincipale;
+	private final SiteOrganisation sitePrincipal;
+	private final List<SiteOrganisation> succursalesRCVD;
+	private final Domicile autoriteFiscalePrincipale;
 
 	protected CreateEntrepriseHorsVD(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                 EvenementOrganisationContext context,

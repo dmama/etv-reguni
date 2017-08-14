@@ -62,8 +62,8 @@ public class AssujettisParSubstitutionResults extends AbstractJobResults<Long,As
 
 
 	public static class Erreur{
-		public long idRapport;
-		public String description;
+		public final long idRapport;
+		public final String description;
 		public Erreur(long idRapport,String description) {
 			this.idRapport=idRapport;
 			this.description = description;

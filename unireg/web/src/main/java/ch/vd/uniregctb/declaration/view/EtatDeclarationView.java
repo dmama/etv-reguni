@@ -21,12 +21,12 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Annulable {
 
-	private Long id;
-	private RegDate dateObtention;
-	private Date logCreationDate;
-	private boolean annule;
-	private TypeEtatDeclaration etat;
-	private String etatMessage;
+	private final Long id;
+	private final RegDate dateObtention;
+	private final Date logCreationDate;
+	private final boolean annule;
+	private final TypeEtatDeclaration etat;
+	private final String etatMessage;
 
 	/**
 	 * La source de quittancement dans le cas ou #etat == "RETOURNEE".

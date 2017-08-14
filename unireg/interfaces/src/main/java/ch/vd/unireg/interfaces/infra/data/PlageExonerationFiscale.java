@@ -7,8 +7,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PlageExonerationFiscale extends PlagePeriodesFiscales {
 
-	private GenreImpotExoneration genreImpot;
-	private ModeExoneration mode;
+	private final GenreImpotExoneration genreImpot;
+	private final ModeExoneration mode;
 
 	public PlageExonerationFiscale(int periodeDebut, @Nullable Integer periodeFin, GenreImpotExoneration genreImpot, ModeExoneration mode) {
 		super(periodeDebut, periodeFin);

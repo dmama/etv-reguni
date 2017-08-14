@@ -10,11 +10,11 @@ import ch.vd.uniregctb.common.XmlUtils;
  */
 public class EtatDemande {
 
-	private String champLibre;
-	private Date date;
-	private Integer codeRaison;
-	private String descriptionRaison;
-	private TypeEtatDemande type;
+	private final String champLibre;
+	private final Date date;
+	private final Integer codeRaison;
+	private final String descriptionRaison;
+	private final TypeEtatDemande type;
 
 	public static EtatDemande newEtatDemandeFactice(TypeEtatDemande type) {
 		return new EtatDemande(type);

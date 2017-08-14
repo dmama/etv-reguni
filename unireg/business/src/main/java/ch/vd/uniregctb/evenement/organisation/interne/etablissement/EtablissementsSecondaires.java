@@ -38,10 +38,10 @@ public class EtablissementsSecondaires extends EvenementOrganisationInterneDeTra
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
 
-	private List<Etablissement> etablissementsAFermer;
-	private List<SiteOrganisation> sitesACreer;
+	private final List<Etablissement> etablissementsAFermer;
+	private final List<SiteOrganisation> sitesACreer;
 
-	private List<EtablissementsSecondaires.Demenagement> demenagements;
+	private final List<EtablissementsSecondaires.Demenagement> demenagements;
 
 	public EtablissementsSecondaires(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                 EvenementOrganisationContext context,

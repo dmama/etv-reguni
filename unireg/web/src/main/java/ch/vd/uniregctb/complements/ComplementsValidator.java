@@ -13,7 +13,7 @@ public class ComplementsValidator implements Validator, InitializingBean {
 
 	private IbanValidator ibanValidator;
 
-	private Map<Class<?>, Validator> subValidators = new HashMap<>();
+	private final Map<Class<?>, Validator> subValidators = new HashMap<>();
 
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;

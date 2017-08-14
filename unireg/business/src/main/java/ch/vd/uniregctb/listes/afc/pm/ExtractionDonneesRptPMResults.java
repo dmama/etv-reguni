@@ -80,10 +80,10 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 	}
 
 	public static class InfoCtbAvecDecisionACI extends InfoCtbBase<InfoCtbAvecDecisionACI> {
-		public final  int numeroOfs;
-		public RegDate dateDebut;
-		public RegDate dateFin;
-		public Date dateCreation;
+		public final int numeroOfs;
+		public final RegDate dateDebut;
+		public final RegDate dateFin;
+		public final Date dateCreation;
 		private static final String[] NOMS_COLONNES = {"NO_CTB", "FOR_DEFINI","DATE_DEBUT","DATE_FIN","DATE_CREATION"};
 
 		public InfoCtbAvecDecisionACI(long noCtb, int numeroOfs,RegDate dateDebut,RegDate dateFin, Date dateCreation) {

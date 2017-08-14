@@ -36,7 +36,7 @@ public class EvenementOrganisationDetailView implements Serializable {
 	private String evtCommentaireTraitement;
 	private long annonceIDEId;
 	private boolean correctionDansLePasse;
-	private List<ErreurEvenementOrganisationView> evtErreurs = new ArrayList<>();
+	private final List<ErreurEvenementOrganisationView> evtErreurs = new ArrayList<>();
 
 	private Long foscNumero;
 	private RegDate foscDate;
@@ -47,7 +47,7 @@ public class EvenementOrganisationDetailView implements Serializable {
 	private String organisationError;
 	private AdresseEnvoi adresse;
 	private TiersAssocieView tiersAssocie;
-	private Set<String> erreursTiersAssocies = new LinkedHashSet<>();     // pour éviter les doublons mais conserver l'ordre d'insertion
+	private final Set<String> erreursTiersAssocies = new LinkedHashSet<>();     // pour éviter les doublons mais conserver l'ordre d'insertion
 
 	private List<EvenementOrganisationBasicInfo> nonTraitesSurMemeOrganisation;
 

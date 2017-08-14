@@ -49,8 +49,8 @@ public abstract class JobResults<E, R extends JobResults<E, R>> extends Abstract
 		}
 	}
 
-	private AdresseService adresseService;
-	private TiersService tiersService;
+	private final AdresseService adresseService;
+	private final TiersService tiersService;
 
 	/**
 	 * Retourne le nom et le prénom ou la désignation du tiers spécifié.

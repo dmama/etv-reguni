@@ -6,7 +6,7 @@ import org.springframework.web.servlet.tags.form.TagWriter;
 
 class DateEditor implements Editor {
 
-	private EditorParams params;
+	private final EditorParams params;
 
 	DateEditor(EditorParams params) {
 		this.params = params;

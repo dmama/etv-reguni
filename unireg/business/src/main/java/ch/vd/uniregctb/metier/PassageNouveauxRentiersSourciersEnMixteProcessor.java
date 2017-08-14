@@ -62,7 +62,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 	private final int ageRentierHomme;
 	private final int ageRentierFemme;
 
-	private Set<Long> conjointAIgnorerGlobal = new HashSet<>();
+	private final Set<Long> conjointAIgnorerGlobal = new HashSet<>();
 
 	public PassageNouveauxRentiersSourciersEnMixteProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService,
 	                                                        AdresseService adresseService, ServiceInfrastructureService serviceInfra, ServiceCivilCacheWarmer serviceCivilCacheWarmer,
@@ -444,8 +444,8 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		private boolean menage;
 		private boolean domicilieSurVD;
 
-		private int ageRentierHomme;
-		private int ageRentierFemme;
+		private final int ageRentierHomme;
+		private final int ageRentierFemme;
 
 		SourcierData(int ageRentierHomme, int ageRentierFemme) {
 			this.ageRentierFemme = ageRentierFemme;

@@ -24,7 +24,7 @@ public class Indexation extends EvenementOrganisationInterneInformationPure {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Indexation.class);
 
-	EvenementOrganisation event;
+	final EvenementOrganisation event;
 
 	public Indexation(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                  EvenementOrganisationContext context, EvenementOrganisationOptions options) throws

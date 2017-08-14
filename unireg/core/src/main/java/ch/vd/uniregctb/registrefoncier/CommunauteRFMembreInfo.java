@@ -14,7 +14,7 @@ public class CommunauteRFMembreInfo {
 	/**
 	 * Le nombre de membres de la communauté.
 	 */
-	private int count;
+	private final int count;
 
 	/**
 	 * Les ids des tiers Unireg qui correspondent aux tiers RF de la communauté (donc, en passant par la table de rapprochement).

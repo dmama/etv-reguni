@@ -46,7 +46,7 @@ public enum UniteDecalageDate implements DecalageDate {
 		}
 	};
 
-	private String code;
+	private final String code;
 
 	private static final Map<String, UniteDecalageDate> byCode = buildByCodeMap();
 

@@ -7,7 +7,7 @@ import org.springframework.web.servlet.tags.form.TagWriter;
 
 class BooleanEditor implements Editor {
 
-	private EditorParams params;
+	private final EditorParams params;
 
 	BooleanEditor(EditorParams params) {
 		this.params = params;

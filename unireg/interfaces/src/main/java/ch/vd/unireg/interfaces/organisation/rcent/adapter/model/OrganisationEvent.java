@@ -8,9 +8,9 @@ import ch.vd.registre.base.date.RegDate;
  * @author Raphaël Marmier, 2016-04-13, <raphael.marmier@vd.ch>
  */
 public class OrganisationEvent {
-	private long eventNumber;
+	private final long eventNumber;
 
-	private Long targetLocationId;
+	private final Long targetLocationId;
 
 	private Long commercialRegisterEntryNumber;
 	private RegDate commercialRegisterEntryDate;
@@ -18,7 +18,7 @@ public class OrganisationEvent {
 	private String documentNumberFOSC;
 	private RegDate publicationDateFOSC;
 
-	private Organisation pseudoHistory;
+	private final Organisation pseudoHistory;
 
 	public OrganisationEvent(long eventNumber, Long targetLocationId, @NotNull Organisation pseudoHistory) {
 		this.eventNumber = eventNumber;

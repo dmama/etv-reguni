@@ -22,10 +22,10 @@ public class AdresseCivilView implements DateRange, Annulable {
 	private String casePostale;
 	private String localite;
 	private Integer paysOFS;
-	private Integer egid;
-	private Integer ewid;
-	private LocalisationView localisationPrecedente;
-	private LocalisationView localisationSuivante;
+	private final Integer egid;
+	private final Integer ewid;
+	private final LocalisationView localisationPrecedente;
+	private final LocalisationView localisationSuivante;
 
 	public AdresseCivilView(Adresse adresse, TypeAdresseCivil type) {
 		this.usageCivil = type;

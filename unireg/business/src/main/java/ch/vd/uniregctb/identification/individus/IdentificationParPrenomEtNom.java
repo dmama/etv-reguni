@@ -12,7 +12,7 @@ import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 
 public class IdentificationParPrenomEtNom implements StrategieIdentification {
 
-	private RcPersClient rcPersClient;
+	private final RcPersClient rcPersClient;
 
 	public IdentificationParPrenomEtNom(RcPersClient rcPersClient) {
 		this.rcPersClient = rcPersClient;

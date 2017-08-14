@@ -18,10 +18,10 @@ import ch.vd.uniregctb.tiers.Etablissement;
  */
 public class RattachementOrganisationResult {
 
-	private Entreprise entrepriseRattachee;
-	private List<Etablissement> etablissementsRattaches = new ArrayList<>();
-	private List<Etablissement> etablissementsNonRattaches = new ArrayList<>();
-	private List<SiteOrganisation> sitesNonRattaches = new ArrayList<>();
+	private final Entreprise entrepriseRattachee;
+	private final List<Etablissement> etablissementsRattaches = new ArrayList<>();
+	private final List<Etablissement> etablissementsNonRattaches = new ArrayList<>();
+	private final List<SiteOrganisation> sitesNonRattaches = new ArrayList<>();
 
 	public RattachementOrganisationResult(Entreprise entrepriseRattachee) {
 		this.entrepriseRattachee = entrepriseRattachee;

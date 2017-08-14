@@ -24,8 +24,8 @@ public class AttributeView {
 	/**
 	 * Type d'entité si le {@link #type} est {@link EntityKey}.
 	 */
-	private EntityType entityType;
-	private Object category;
+	private final EntityType entityType;
+	private final Object category;
 	private boolean entityForeignKey;
 	private final boolean collection;
 	private final boolean readonly;

@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.tiers.vignette;
 
 public class UrlVersView {
-	private String name;
-	private String label;
-	private String appName;
+	private final String name;
+	private final String label;
+	private final String appName;
 
 	public UrlVersView(String name, String label, String appName) {
 		this.name = name;

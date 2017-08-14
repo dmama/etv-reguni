@@ -36,7 +36,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public abstract class ExtractionDonneesRptAssujettissementResults extends ExtractionDonneesRptResults {
 
-	private AssujettissementService assujettissementService;
+	private final AssujettissementService assujettissementService;
 
 	public ExtractionDonneesRptAssujettissementResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService,
 	                                                   AssujettissementService assujettissementService, AdresseService adresseService) {

@@ -12,8 +12,8 @@ import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 
 public class EditModeImpositionValidator implements Validator {
 
-	private HibernateTemplate hibernateTemplate;
-	private AutorisationManager autorisationManager;
+	private final HibernateTemplate hibernateTemplate;
+	private final AutorisationManager autorisationManager;
 
 	public EditModeImpositionValidator(HibernateTemplate hibernateTemplate, AutorisationManager autorisationManager) {
 		this.hibernateTemplate = hibernateTemplate;

@@ -13,11 +13,10 @@ public class EntreeJournalRC implements Serializable {
 
 	private static final long serialVersionUID = -8712830699880613304L;
 
-	private TypeEntree type;
-	private RegDate date;
-	private Long numero;
-
-	private PublicationFOSC publicationFOSC;
+	private final TypeEntree type;
+	private final RegDate date;
+	private final Long numero;
+	private final PublicationFOSC publicationFOSC;
 
 	public EntreeJournalRC(TypeEntree type, @NotNull RegDate date, @NotNull Long numero, @NotNull PublicationFOSC publicationFOSC) {
 		this.type = type;

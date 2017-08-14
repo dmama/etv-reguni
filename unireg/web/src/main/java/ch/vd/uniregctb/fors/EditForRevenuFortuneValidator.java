@@ -11,7 +11,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 
 public abstract class EditForRevenuFortuneValidator extends EditForAvecMotifsValidator {
 
-	private HibernateTemplate hibernateTemplate;
+	private final HibernateTemplate hibernateTemplate;
 
 	protected EditForRevenuFortuneValidator(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;

@@ -13,9 +13,9 @@ public class PublicationFOSC implements Serializable {
 
 	private static final long serialVersionUID = 27174353644323034L;
 
-	private RegDate date;
-	private String numero;
-	private String texte;
+	private final RegDate date;
+	private final String numero;
+	private final String texte;
 
 	public PublicationFOSC(@NotNull RegDate date, @NotNull String numero, @NotNull String texte) {
 		this.date = date;

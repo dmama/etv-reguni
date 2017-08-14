@@ -15,7 +15,7 @@ public enum ApplicationFiscale {
 	DPERM_DOCUMENT("label.DPERM"),
 	CAPITASTRA("label.CAPITASTRA");
 
-	private String messageKey;
+	private final String messageKey;
 
 	ApplicationFiscale(String messageKey) {
 		this.messageKey = messageKey;

@@ -29,7 +29,7 @@ public class SuppressionOIDResults extends JobResults<Long, SuppressionOIDResult
 
 	public static class Traite extends Info {
 
-		private String raison;
+		private final String raison;
 
 		public Traite(long noCtb, Integer officeImpotID, String nomCtb, Set<String> tables) {
 			super(noCtb, officeImpotID, null, nomCtb);

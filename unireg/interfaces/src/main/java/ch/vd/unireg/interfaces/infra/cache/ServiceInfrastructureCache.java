@@ -360,8 +360,8 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 		@NotNull
 		private final String nomOfficiel;
-		private boolean includeFaitieres;
-		private boolean includeFractions;
+		private final boolean includeFaitieres;
+		private final boolean includeFractions;
 		@Nullable
 		private final RegDate date;
 

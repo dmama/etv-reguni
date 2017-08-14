@@ -12,18 +12,18 @@ public class EvenementCivilRegPPElementListeView implements Serializable {
 
 	private static final long serialVersionUID = -3314742942975357599L;
 
-	private Long id;
-	private TypeEvenementCivil type;
-	private EtatEvenementCivil etat = EtatEvenementCivil.A_TRAITER;
-	private Date dateTraitement;
-	private RegDate dateEvenement;
-	private Long numeroIndividuPrincipal;
-	private Long numeroIndividuConjoint;
-	private Integer numeroOfsCommuneAnnonce;
+	private final Long id;
+	private final TypeEvenementCivil type;
+	private final EtatEvenementCivil etat;
+	private final Date dateTraitement;
+	private final RegDate dateEvenement;
+	private final Long numeroIndividuPrincipal;
+	private final Long numeroIndividuConjoint;
+	private final Integer numeroOfsCommuneAnnonce;
 	private Long numeroCTB;
 	private String nom1;
 	private String nom2;
-	private String commentaireTraitement;
+	private final String commentaireTraitement;
 
 	public EvenementCivilRegPPElementListeView(EvenementCivilRegPP evt) {
 		this.id = evt.getId();

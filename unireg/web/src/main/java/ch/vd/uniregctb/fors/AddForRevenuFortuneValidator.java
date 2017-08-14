@@ -14,7 +14,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class AddForRevenuFortuneValidator extends AddForAvecMotifsValidator {
 
-	private HibernateTemplate hibernateTemplate;
+	private final HibernateTemplate hibernateTemplate;
 
 	protected AddForRevenuFortuneValidator(ServiceInfrastructureService infraService, HibernateTemplate hibernateTemplate) {
 		super(infraService);

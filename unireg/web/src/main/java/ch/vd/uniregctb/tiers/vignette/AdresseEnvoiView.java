@@ -3,12 +3,12 @@ package ch.vd.uniregctb.tiers.vignette;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 
 public class AdresseEnvoiView {
-	private String ligne1;
-	private String ligne2;
-	private String ligne3;
-	private String ligne4;
-	private String ligne5;
-	private String ligne6;
+	private final String ligne1;
+	private final String ligne2;
+	private final String ligne3;
+	private final String ligne4;
+	private final String ligne5;
+	private final String ligne6;
 
 	public AdresseEnvoiView(AdresseEnvoi adresse) {
 		this.ligne1 = adresse.getLigne1();

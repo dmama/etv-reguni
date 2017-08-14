@@ -18,7 +18,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 
 public class EditForDebiteurValidator extends EditForAvecMotifsValidator {
 
-	private HibernateTemplate hibernateTemplate;
+	private final HibernateTemplate hibernateTemplate;
 
 	public EditForDebiteurValidator(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;

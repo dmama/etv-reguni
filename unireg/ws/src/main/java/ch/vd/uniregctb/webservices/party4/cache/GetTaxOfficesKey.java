@@ -4,8 +4,8 @@ import ch.vd.unireg.xml.common.v1.Date;
 
 public class GetTaxOfficesKey {
 
-	private int municipalityFSOId;
-	private Date date;
+	private final int municipalityFSOId;
+	private final Date date;
 
 	public GetTaxOfficesKey(int municipalityFSOId, Date date) {
 		this.municipalityFSOId = municipalityFSOId;

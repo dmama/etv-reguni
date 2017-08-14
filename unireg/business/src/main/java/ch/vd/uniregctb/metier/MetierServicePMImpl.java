@@ -368,9 +368,9 @@ public class MetierServicePMImpl implements MetierServicePM {
 	 * Classe implémentant une clé représentant le couple domicile civil - activite de l'établissement
 	 */
 	private static class DomicileStatutKey {
-		private int noOfsAutirteFiscale;
-		private TypeAutoriteFiscale typeAutoriteFiscale;
-		private boolean active;
+		private final int noOfsAutirteFiscale;
+		private final TypeAutoriteFiscale typeAutoriteFiscale;
+		private final boolean active;
 
 		public DomicileStatutKey(int noOfsAutirteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, boolean active) {
 			this.noOfsAutirteFiscale = noOfsAutirteFiscale;

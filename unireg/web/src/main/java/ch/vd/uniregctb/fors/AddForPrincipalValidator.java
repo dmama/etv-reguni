@@ -18,8 +18,8 @@ import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 
 public class AddForPrincipalValidator extends AddForRevenuFortuneValidator {
 
-	private HibernateTemplate hibernateTemplate;
-	private AutorisationManager autorisationManager;
+	private final HibernateTemplate hibernateTemplate;
+	private final AutorisationManager autorisationManager;
 
 	public AddForPrincipalValidator(ServiceInfrastructureService infraService, HibernateTemplate hibernateTemplate, AutorisationManager autorisationManager) {
 		super(infraService, hibernateTemplate);

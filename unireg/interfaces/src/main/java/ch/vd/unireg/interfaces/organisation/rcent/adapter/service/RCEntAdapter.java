@@ -33,8 +33,8 @@ import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 public class RCEntAdapter {
 
 	private static final int RCENT_ERROR_NO_DATA_BEFORE = 9;
-	private RcEntClient rcentClient;
-	private OrganisationHistorizer historizer;
+	private final RcEntClient rcentClient;
+	private final OrganisationHistorizer historizer;
 
 	public RCEntAdapter(RcEntClient rcentClient, OrganisationHistorizer historizer) {
 		this.rcentClient = rcentClient;

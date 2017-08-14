@@ -306,9 +306,9 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	}
 
 	protected static class InformationDeDateEtDeCreation {
-		RegDate dateDeCreation;
-		RegDate dateOuvertureFiscale;
-		boolean isCreation;
+		final RegDate dateDeCreation;
+		final RegDate dateOuvertureFiscale;
+		final boolean isCreation;
 
 		public InformationDeDateEtDeCreation(RegDate dateDeCreation, RegDate dateOuvertureFiscale, boolean isCreation) {
 			this.dateDeCreation = dateDeCreation;

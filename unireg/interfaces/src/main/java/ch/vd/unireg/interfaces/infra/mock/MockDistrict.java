@@ -5,7 +5,8 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 
 public class MockDistrict extends MockEntiteFiscale implements District {
 
-	private Region region;
+	private final Region region;
+
 	public static final MockDistrict Aigle = new MockDistrict(1, "Aigle", MockRegion.Vevey);
 	public static final MockDistrict Echallens = new MockDistrict(2, "Echallens", MockRegion.Yverdon);
 	public static final MockDistrict Grandson = new MockDistrict(3, "Grandson", MockRegion.Yverdon);

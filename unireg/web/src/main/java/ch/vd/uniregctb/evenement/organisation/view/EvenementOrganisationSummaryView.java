@@ -28,7 +28,7 @@ public class EvenementOrganisationSummaryView implements Serializable {
 	private EtatEvenementOrganisation evtEtat;
 	private Date evtDateTraitement;
 	private String evtCommentaireTraitement;
-	private List<ErreurEvenementOrganisationView> evtErreurs = new ArrayList<>();
+	private final List<ErreurEvenementOrganisationView> evtErreurs = new ArrayList<>();
 	private String erreursEvt;
 
 	private boolean recyclable;

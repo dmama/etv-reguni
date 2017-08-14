@@ -15,16 +15,16 @@ public class EvenementCivilEchElementListeRechercheView implements Serializable 
 
 	private static final long serialVersionUID = 3596946976206609859L;
 
-	private Long id;
-	private TypeEvenementCivilEch type;
-	private EtatEvenementCivil etat;
-	private ActionEvenementCivilEch action;
-	private Date dateTraitement;
-	private RegDate dateEvenement;
-	private Long numeroIndividu;
+	private final Long id;
+	private final TypeEvenementCivilEch type;
+	private final EtatEvenementCivil etat;
+	private final ActionEvenementCivilEch action;
+	private final Date dateTraitement;
+	private final RegDate dateEvenement;
+	private final Long numeroIndividu;
 	private Long numeroCTB;
 	private String nom;
-	private String commentaireTraitement;
+	private final String commentaireTraitement;
 
 	private IndividuView individu;
 	private AdresseEnvoi adresse;

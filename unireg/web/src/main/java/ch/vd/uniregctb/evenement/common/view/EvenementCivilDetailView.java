@@ -23,13 +23,13 @@ abstract public class EvenementCivilDetailView implements Serializable {
 	private RegDate evtDate;
 	private Date evtDateTraitement;
 	private String evtCommentaireTraitement;
-	private List<ErreurEvenementCivilView> evtErreurs = new ArrayList<>();
+	private final List<ErreurEvenementCivilView> evtErreurs = new ArrayList<>();
 	private Long noIndividu;
 	private IndividuView individu;
 	private String individuError;
 	private AdresseEnvoi adresse;
-	private List<TiersAssocieView> tiersAssocies = new ArrayList<>();
-	private Set<String> erreursTiersAssocies = new LinkedHashSet<>();     // pour éviter les doublons mais conserver l'ordre d'insertion
+	private final List<TiersAssocieView> tiersAssocies = new ArrayList<>();
+	private final Set<String> erreursTiersAssocies = new LinkedHashSet<>();     // pour éviter les doublons mais conserver l'ordre d'insertion
 
 	@SuppressWarnings("unused")
 	public Long getEvtId() {

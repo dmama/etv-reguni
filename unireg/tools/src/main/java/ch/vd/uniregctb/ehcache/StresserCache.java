@@ -338,7 +338,7 @@ public class StresserCache {
 	}
 
 	private static class ChargerCacheLot implements Runnable {
-		private  List<List<Integer>> lots;
+		private final List<List<Integer>> lots;
 
 		private ChargerCacheLot(List<List<Integer>> lots) {
 			this.lots = lots;

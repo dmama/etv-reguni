@@ -30,7 +30,7 @@ public class AdresseTimelineView {
 	 * Représente une ligne dans la table
 	 */
 	public static class Row {
-		public Map<AdresseCouche, TimelineCell> columns = new EnumMap<>(AdresseCouche.class);
+		public final Map<AdresseCouche, TimelineCell> columns = new EnumMap<>(AdresseCouche.class);
 		public final DateRange periode;
 
 		public Row(DateRange periode, List<AdresseCouche> cols) {

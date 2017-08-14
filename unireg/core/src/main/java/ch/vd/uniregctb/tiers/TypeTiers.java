@@ -12,7 +12,7 @@ public enum TypeTiers {
 	AUTRE_COMMUNAUTE("Autre communauté"),
 	DEBITEUR_PRESTATION_IMPOSABLE("Débiteur prestation imposable");
 
-	private String description;
+	private final String description;
 
 	TypeTiers(String description) {
 		this.description = description;

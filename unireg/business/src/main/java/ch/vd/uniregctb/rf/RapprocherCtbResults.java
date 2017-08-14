@@ -47,7 +47,7 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 	}
 
 	//Données en entrée
-	public RegDate dateTraitement;
+	public final RegDate dateTraitement;
 
 	// Données de processing
 	public int nbCtbsTotal = 0;

@@ -10,7 +10,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class AddDecisionAciValidator  implements Validator {
 
-	private ServiceInfrastructureService infraService;
+	private final ServiceInfrastructureService infraService;
 
 	public AddDecisionAciValidator(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;

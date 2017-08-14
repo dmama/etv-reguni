@@ -11,9 +11,9 @@ public class ServiceOrganisationEvent implements Serializable {
 
 	private static final long serialVersionUID = 8598759066120296877L;
 
-	private long noEvenement;
+	private final long noEvenement;
 
-	private Long siteCible;
+	private final Long siteCible;
 
 	private Long numeroEntreeJournalRC;
 	private RegDate dateEntreeJournalRC;
@@ -21,7 +21,7 @@ public class ServiceOrganisationEvent implements Serializable {
 	private Long numeroDocumentFOSC;
 	private RegDate datePublicationFOSC;
 
-	private Organisation pseudoHistory;
+	private final Organisation pseudoHistory;
 
 	public ServiceOrganisationEvent(long noEvenement, Long siteCible, Organisation pseudoHistory) {
 		this.noEvenement = noEvenement;

@@ -9,7 +9,7 @@ import ch.vd.registre.base.utils.Assert;
 
 class EnumEditor implements Editor {
 
-	private EditorParams params;
+	private final EditorParams params;
 
 	EnumEditor(EditorParams params) {
 		this.params = params;

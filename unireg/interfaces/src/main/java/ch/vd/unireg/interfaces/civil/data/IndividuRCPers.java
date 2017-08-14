@@ -59,19 +59,19 @@ public class IndividuRCPers implements Individu, Serializable {
 	private static final long serialVersionUID = 9048462821163407226L;
 	protected final Logger LOGGER = LoggerFactory.getLogger(IndividuRCPers.class);
 
-	private long noTechnique;
-	private StatutIndividu statut;
-	private String prenomUsuel;
-	private String tousPrenoms;
-	private String nom;
-	private String nomNaissance;
-	private String noAVS11;
-	private String nouveauNoAVS;
-	private String numeroRCE;
-	private Sexe sexe;
-	private RegDate deces;
-	private RegDate naissance;
-	private RegDate dateArriveeVD;
+	private final long noTechnique;
+	private final StatutIndividu statut;
+	private final String prenomUsuel;
+	private final String tousPrenoms;
+	private final String nom;
+	private final String nomNaissance;
+	private final String noAVS11;
+	private final String nouveauNoAVS;
+	private final String numeroRCE;
+	private final Sexe sexe;
+	private final RegDate deces;
+	private final RegDate naissance;
+	private final RegDate dateArriveeVD;
 	private Collection<Origine> origines;
 	private Collection<Adresse> adresses;
 	private EtatCivilList etatsCivils;
@@ -80,8 +80,8 @@ public class IndividuRCPers implements Individu, Serializable {
 	private PermisList permis;
 	private Collection<Nationalite> nationalites;
 	private final Set<AttributeIndividu> availableParts = EnumSet.noneOf(AttributeIndividu.class);
-	private NomPrenom nomOfficielMere;
-	private NomPrenom nomOfficielPere;
+	private final NomPrenom nomOfficielMere;
+	private final NomPrenom nomOfficielPere;
 
 	public static Individu get(Person target, boolean history, ServiceInfrastructureRaw infraService) {
 		if (target == null) {
@@ -110,6 +110,11 @@ public class IndividuRCPers implements Individu, Serializable {
 			this.nouveauNoAVS = EchHelper.avs13FromEch(upiPerson.getVn());
 			this.nomOfficielMere = buildNomPrenom(upiPerson.getMothersName());
 			this.nomOfficielPere = buildNomPrenom(upiPerson.getFathersName());
+		}
+		else {
+			this.nouveauNoAVS = null;
+			this.nomOfficielMere = null;
+			this.nomOfficielPere = null;
 		}
 		this.numeroRCE = initNumeroRCE(identity.getOtherPersonId());
 		this.dateArriveeVD = initDateArriveeVD(person.getResidenceHistory());

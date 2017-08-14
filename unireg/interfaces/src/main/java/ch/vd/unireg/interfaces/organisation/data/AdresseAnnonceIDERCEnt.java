@@ -199,9 +199,9 @@ public class AdresseAnnonceIDERCEnt implements AdresseAnnonceIDE, Serializable {
 
 		private static final long serialVersionUID = 710711448241742510L;
 
-		protected Integer noOfs;
-		protected String codeISO2;
-		protected String nomCourt;
+		protected final Integer noOfs;
+		protected final String codeISO2;
+		protected final String nomCourt;
 
 		public PaysRCEnt(Integer noOfs, String codeISO2, String nomCourt) {
 			this.noOfs = noOfs;

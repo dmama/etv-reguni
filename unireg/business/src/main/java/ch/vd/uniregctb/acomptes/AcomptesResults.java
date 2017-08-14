@@ -44,7 +44,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
     private final List<InfoContribuableAssujetti> contribuablesAssujettis = new LinkedList<>();
 
 	private final List<InfoContribuableIgnore> contribuablesIgnores = new LinkedList<>();
-	private AssujettissementService assujettissementService;
+	private final AssujettissementService assujettissementService;
 
 	public static class InfoContribuableAssujetti {
         private final long numeroCtb;

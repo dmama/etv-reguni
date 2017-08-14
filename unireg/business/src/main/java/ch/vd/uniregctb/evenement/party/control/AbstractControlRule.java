@@ -41,8 +41,8 @@ public abstract class AbstractControlRule<T extends Enum<T>> implements TaxLiabi
 	public abstract Set<T> getSourceAssujettissement(@NotNull Contribuable ctb) throws ControlRuleException;
 
 	public class AssujettissementStatut {
-		 boolean isAssujetti;
-		 boolean assujettissementNonConforme;
+		final boolean isAssujetti;
+		final boolean assujettissementNonConforme;
 
 		public AssujettissementStatut(boolean isAssujetti, boolean assujettissementNonConforme) {
 			this.isAssujetti = isAssujetti;

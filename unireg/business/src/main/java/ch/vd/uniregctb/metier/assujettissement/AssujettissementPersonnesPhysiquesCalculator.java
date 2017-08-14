@@ -445,8 +445,8 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 	private static class CasParticuliers {
 
-		private boolean menageCommun;
-		private Map<Integer, Mutation> mariagesDivorces = new HashMap<>();
+		private final boolean menageCommun;
+		private final Map<Integer, Mutation> mariagesDivorces = new HashMap<>();
 
 		private CasParticuliers(boolean menageCommun) {
 			this.menageCommun = menageCommun;
@@ -517,8 +517,8 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 			DIVORCE
 		}
 
-		private RegDate date;
-		private Type type;
+		private final RegDate date;
+		private final Type type;
 
 		private Mutation(RegDate date, Type type) {
 			this.date = date;

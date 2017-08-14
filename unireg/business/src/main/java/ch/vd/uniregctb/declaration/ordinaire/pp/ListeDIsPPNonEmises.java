@@ -21,11 +21,11 @@ public class ListeDIsPPNonEmises extends AbstractEnvoiDIsPPResults<ListeDIsPPNon
 	 */
 	public static class LigneRapport {
 
-		private String nbCtb;
-		private String dateDebut;
-		private String dateFin;
-		private String raison;
-		private String details;
+		private final String nbCtb;
+		private final String dateDebut;
+		private final String dateFin;
+		private final String raison;
+		private final String details;
 
 		public LigneRapport(String nbCtb, String dateDebut, String dateFin, String raison, String details) {
 			super();
@@ -52,19 +52,9 @@ public class ListeDIsPPNonEmises extends AbstractEnvoiDIsPPResults<ListeDIsPPNon
 			return dateDebut;
 		}
 
-		public void setDateDebut(String dateDebut) {
-			this.dateDebut = dateDebut;
-		}
-
 		public String getDateFin() {
 			return dateFin;
 		}
-
-		public void setDateFin(String dateFin) {
-			this.dateFin = dateFin;
-		}
-
-
 	}
 
 

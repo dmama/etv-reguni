@@ -24,7 +24,7 @@ public enum HandleStatus {
 		}
 	};
 
-	private int index;
+	private final int index;
 
 	HandleStatus(int index) {
 		this.index = index;

@@ -7,7 +7,7 @@ import org.springframework.web.servlet.tags.form.TagWriter;
 
 class NumberEditor implements Editor {
 
-	private EditorParams params;
+	private final EditorParams params;
 
 	NumberEditor(EditorParams params) {
 		this.params = params;

@@ -32,7 +32,7 @@ public class RaisonSociale extends EvenementOrganisationInterneDeTraitement {
 	/**
 	 * Chaque paire représente un message de changement de raison sociale de l'établissement associé à l'état de warning désiré.
 	 */
-	private Map<Etablissement, List<Pair<String, Boolean>>> changementsRaison;
+	private final Map<Etablissement, List<Pair<String, Boolean>>> changementsRaison;
 
 	public RaisonSociale(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context,
 	                     EvenementOrganisationOptions options, Map<Etablissement, List<Pair<String, Boolean>>> changementsRaison) throws EvenementOrganisationException {

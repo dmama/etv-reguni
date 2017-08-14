@@ -19,7 +19,7 @@ public class IdentificationContribuableCache {
 	private Map<IdentificationContribuableEtatFilter, Collection<Integer>> periodesFiscales;
 	private Map<IdentificationContribuableEtatFilter, Collection<IdentificationContribuable.Etat>> etats;
 
-	private Map<TypeDemande, Map<IdentificationContribuableEtatFilter, Collection<String>>> typesMessagesParTypeDemande = new EnumMap<>(TypeDemande.class);
+	private final Map<TypeDemande, Map<IdentificationContribuableEtatFilter, Collection<String>>> typesMessagesParTypeDemande = new EnumMap<>(TypeDemande.class);
 
 	private List<String> listTraitementUsers = new ArrayList<>();
 

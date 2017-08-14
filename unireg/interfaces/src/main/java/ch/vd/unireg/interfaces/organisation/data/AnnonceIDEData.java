@@ -15,18 +15,18 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 	private static final long serialVersionUID = -7064921061708627093L;
 
-	private TypeAnnonce type;
-	private Date dateAnnonce;
+	private final TypeAnnonce type;
+	private final Date dateAnnonce;
 
-	private Utilisateur utilisateur;
-	private InfoServiceIDEObligEtendues infoServiceIDEObligEtendues;
+	private final Utilisateur utilisateur;
+	private final InfoServiceIDEObligEtendues infoServiceIDEObligEtendues;
 
-	private Statut statut;
+	private final Statut statut;
 
 	/**
 	 * Indique si on a affaire à un site principal ou secondaire.
 	 */
-	private TypeDeSite typeDeSite;
+	private final TypeDeSite typeDeSite;
 
 	/**
 	 * Numéro IDE (temporaire ou non) de l'entreprise.
@@ -85,7 +85,6 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 		this.noIdeEtablissementPrincipal = modele.getNoIdeEtablissementPrincipal();
 		this.raisonDeRadiation = modele.getRaisonDeRadiation();
 		this.commentaire = modele.getCommentaire();
-		this.infoServiceIDEObligEtendues = modele.getInfoServiceIDEObligEtendues();
 		this.contenu = modele.getContenu();
 	}
 
@@ -340,9 +339,9 @@ public abstract class AnnonceIDEData implements BaseAnnonceIDE, Serializable {
 
 		private static final long serialVersionUID = 6395078590109220344L;
 
-		private StatutAnnonce statut;
-		private Date dateStatut;
-		private List<Pair<String, String>> erreurs;
+		private final StatutAnnonce statut;
+		private final Date dateStatut;
+		private final List<Pair<String, String>> erreurs;
 
 		public StatutImpl(StatutAnnonce statut, Date dateStatut, List<Pair<String, String>> erreurs) {
 			this.statut = statut;
