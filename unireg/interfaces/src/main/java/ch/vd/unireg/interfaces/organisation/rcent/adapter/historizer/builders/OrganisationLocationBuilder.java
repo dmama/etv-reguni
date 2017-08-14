@@ -130,9 +130,7 @@ public class OrganisationLocationBuilder {
 				                                   kindOfLocations.get(e.getKey()),
 				                                   legalForm.get(e.getKey()),
 				                                   seats.get(e.getKey()),
-				                                   businessPublication.get(e.getKey()) == null
-						                                   ? null
-						                                   : businessPublication.get(e.getKey()),
+				                                   businessPublication.get(e.getKey()),
 				                                   function.get(e.getKey()) == null
 						                                   ? null
 						                                   : MultivalueListConverter.toMapOfListsOfDateRangedValues(function.get(e.getKey()), f -> f.getParty().getPerson().getName(), OrganisationFunction::new),

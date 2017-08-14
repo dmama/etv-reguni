@@ -488,10 +488,9 @@ public class ListeRecapitulativeController {
 				final PeriodeDecompte periodeDecompteSuivante = periodiciteSuivante.getPeriodeDecompte();
 				//SIFISC-15772 Si la période de décompte est differente entre les deux périodicités, il faut prendre la nouvelle sinon on se retrouve à proposer l'ancienne
 				//période de décompte
-				final PeriodeDecompte periode = periodeDecomptePrecedente == periodeDecompteSuivante ? periodeDecomptePrecedente:periodeDecompteSuivante;
 				//En cas de changement de periode de décompte il faut également changer la date de référence pour le calcul de période
 				final RegDate dateReferencePourCalculPeriode = periodeDecomptePrecedente == periodeDecompteSuivante ? dateFinLRPrecedente:dateDebutPeriodeSuivante;
-				final DateRange periodeUnique = periode.getPeriodeSuivante(dateReferencePourCalculPeriode);
+				final DateRange periodeUnique = periodeDecompteSuivante.getPeriodeSuivante(dateReferencePourCalculPeriode);
 				dateDebutPeriode = periodeUnique.getDateDebut();
 				dateFinPeriode =  periodeUnique.getDateFin();
 			}
