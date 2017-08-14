@@ -24,7 +24,6 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -58,9 +57,6 @@ public class CorrectionForsHCJob extends JobDefinition {
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
-	}
-
-	public void setMetierService(MetierService metierService) {
 	}
 
 	public void setTiersService(TiersService tiersService) {

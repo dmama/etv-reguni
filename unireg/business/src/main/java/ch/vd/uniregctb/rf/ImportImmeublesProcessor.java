@@ -166,11 +166,6 @@ public class ImportImmeublesProcessor {
 			}
 
 			@Override
-			public void afterTransactionRollback(Exception e, boolean willRetry) {
-				super.afterTransactionRollback(e, willRetry);    //To change body of overridden methods use File | Settings | File Templates.
-			}
-
-			@Override
 			public boolean doInTransaction(List<String> batch, ImportImmeublesResults rapport) throws Exception {
 
 				for (String line : batch) {

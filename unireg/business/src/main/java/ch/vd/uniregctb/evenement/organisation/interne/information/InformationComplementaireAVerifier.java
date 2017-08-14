@@ -5,7 +5,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -29,8 +28,4 @@ public class InformationComplementaireAVerifier extends InformationComplementair
 		warnings.addWarning("Une vérification manuelle est requise pour contrôler la situation de faillite ou le transfert à l’étranger.");
 	}
 
-	@Override
-	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		super.validateSpecific(erreurs, warnings, suivis);
-	}
 }

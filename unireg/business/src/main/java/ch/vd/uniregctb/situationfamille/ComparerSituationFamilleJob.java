@@ -34,11 +34,6 @@ public class ComparerSituationFamilleJob extends JobDefinition {
 		addParameterDefinition(param, 4);
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();	
-	}
-
 	public void setSituationFamilleService(SituationFamilleService situationFamilleService) {
 		this.situationFamilleService = situationFamilleService;
 	}

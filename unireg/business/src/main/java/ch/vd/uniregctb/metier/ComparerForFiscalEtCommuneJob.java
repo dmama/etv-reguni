@@ -35,12 +35,6 @@ public class ComparerForFiscalEtCommuneJob extends JobDefinition{
 		addParameterDefinition(param, 4);
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();	
-	}
-
-
 	public MetierService getMetierService() {
 		return metierService;
 	}

@@ -274,15 +274,6 @@ public class HtmlTextWriter extends TextWriter {
         return null;
     }
 
-    protected static void registerAttribute(String name, HtmlTextWriterAttribute key) {
-    }
-
-    protected static void registerStyle(String name, HtmlTextWriterStyle key) {
-    }
-
-    protected static void registerTag(String name, HtmlTextWriterTag key) {
-    }
-
     public void addAttribute(HtmlTextWriterAttribute key, String value, boolean fEncode) {
         if (fEncode)
             value = HttpUtilities.htmlAttributeEncode(value);
