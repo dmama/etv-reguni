@@ -7,15 +7,14 @@ import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 public class FourreNeutreServiceImpl implements FourreNeutreService {
-	private  TiersDAO tiersDAO;
+	private TiersDAO tiersDAO;
 	private EditiqueCompositionService editiqueCompositionService;
 	private EvenementFiscalService evenementFiscalService;
 	private FourreNeutreHelper helper;
@@ -56,16 +55,16 @@ public class FourreNeutreServiceImpl implements FourreNeutreService {
 	@Override
 	public Integer getPremierePeriodeSelonType(long tiersId) {
 		final Tiers tiers = tiersDAO.get(tiersId);
-		if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
+		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
 			return helper.getPremierePeriodePP();
 		}
 		else if (tiers instanceof Entreprise) {
 			return helper.getPremierePeriodePM();
 		}
-		else  if (tiers instanceof DebiteurPrestationImposable){
+		else  if (tiers instanceof DebiteurPrestationImposable) {
 			return helper.getPremierePeriodeIS();
 		}
-		else{
+		else {
 			throw new IllegalArgumentException("type de tiers non pris en charge:" + tiers.getClass().getName());
 		}
 	}

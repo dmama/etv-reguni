@@ -1041,7 +1041,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionFourreNeutreHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionFourreNeutreHelper.construitIdDocument(fourreNeutre);
 		final String description = String.format("Fourre neutre pour le contribuable %s et la période %d",
-				FormatNumeroHelper.numeroCTBToDisplay(fourreNeutre.getTiers().getNumero()),fourreNeutre.getPeriodeFIscale());
+				FormatNumeroHelper.numeroCTBToDisplay(fourreNeutre.getTiers().getNumero()),fourreNeutre.getPeriodeFiscale());
 
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument,typeDocument,FormatDocumentEditique.PCL,root,false,description );
 	}

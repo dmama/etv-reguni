@@ -21,11 +21,10 @@ import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 
 public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl implements ImpressionFourreNeutreHelper {
@@ -43,7 +42,7 @@ public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl
 		try {
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(tiers), tiers);
 			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(tiers, dateTraitement, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACI(), infraService.getCAT());
-			final FichierImpression.Document.FourreNeutre fourreNeutre = new FichierImpression.Document.FourreNeutre(XmlUtils.regdate2xmlcal(RegDate.get(fourre.getPeriodeFIscale())),codeBarre);
+			final FichierImpression.Document.FourreNeutre fourreNeutre = new FichierImpression.Document.FourreNeutre(XmlUtils.regdate2xmlcal(RegDate.get(fourre.getPeriodeFiscale())), codeBarre);
 			final FichierImpression.Document document = new FichierImpression.Document();
 			document.setInfoDocument(infoDocument);
 			document.setInfoEnteteDocument(infoEnteteDocument);
@@ -59,7 +58,7 @@ public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl
 	public String construitIdDocument(FourreNeutre fourreNeutre) {
 		return String.format("FRNTR %09d %04d %s",
 				fourreNeutre.getTiers().getNumero(),
-				fourreNeutre.getPeriodeFIscale(),
+				fourreNeutre.getPeriodeFiscale(),
 				new SimpleDateFormat("MMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 	}
 
@@ -85,24 +84,22 @@ public class ImpressionFourreNeutreHelperImpl extends EditiqueAbstractHelperImpl
 		return infoDoc;
 	}
 
-	 String calculCodeBarre(FourreNeutre f) {
+	static String calculCodeBarre(FourreNeutre f) {
 		final Tiers tiers = f.getTiers();
-			return String.format("%04d%09d%04d",f.getPeriodeFIscale(),tiers.getNumero(),0);
+		return String.format("%04d%09d%04d", f.getPeriodeFiscale(), tiers.getNumero(), 0);
 	}
 
-
-
-	private static String getConstantesEditiqueValue(Tiers tiers){
-		if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
+	private static String getConstantesEditiqueValue(Tiers tiers) {
+		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
 			return ConstantesEditique.POPULATION_PP;
 		}
 		else if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
 			return ConstantesEditique.POPULATION_PM;
 		}
-		else  if (tiers instanceof DebiteurPrestationImposable){
+		else  if (tiers instanceof DebiteurPrestationImposable) {
 			return ConstantesEditique.POPULATION_IS;
 		}
-		else{
+		else {
 			throw new IllegalArgumentException("type de tiers non pris en charge:" + tiers.getClass().getName());
 		}
 

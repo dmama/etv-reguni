@@ -14,16 +14,7 @@ import ch.vd.uniregctb.type.Sexe;
 
 public class ImpressionFourreNeutreHelperImplTest extends BusinessTest {
 
-	private ImpressionFourreNeutreHelperImpl helper;
 	final static String CODE_DOCUMENT_FOURRE_NEUTRE = "060140005";
-
-
-	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
-
-		helper = new ImpressionFourreNeutreHelperImpl();
-	}
 
 	@Test
 	public void testCodeBarrePourPP() throws Exception {
@@ -31,22 +22,18 @@ public class ImpressionFourreNeutreHelperImplTest extends BusinessTest {
 		final long idTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-
 				final PersonnePhysique pp = addNonHabitant("Francis", "Orange", null, Sexe.MASCULIN);
-
-
 				return pp.getNumero();
 			}
 		});
 
-		// demande d'impression de confirmation de délai
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final Tiers pp = hibernateTemplate.get(Tiers.class, idTiers);
-				FourreNeutre fourre = new FourreNeutre(pp,2015);
+				final FourreNeutre fourre = new FourreNeutre(pp,2015);
 
-				final String codeBarre = CODE_DOCUMENT_FOURRE_NEUTRE +helper.calculCodeBarre(fourre);
+				final String codeBarre = CODE_DOCUMENT_FOURRE_NEUTRE + ImpressionFourreNeutreHelperImpl.calculCodeBarre(fourre);
 				final String attendu = "06014000520150" + pp.getNumero()+"0000";
 				Assert.assertEquals(attendu,codeBarre);
 			}
@@ -59,21 +46,17 @@ public class ImpressionFourreNeutreHelperImplTest extends BusinessTest {
 		final long idTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-
-				final Entreprise es = addEntrepriseInconnueAuCivil(1);
-
-
+				final Entreprise es = addEntrepriseInconnueAuCivil();
 				return es.getNumero();
 			}
 		});
 
-		// demande d'impression de confirmation de délai
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final Tiers es = hibernateTemplate.get(Tiers.class, idTiers);
 				FourreNeutre fourre = new FourreNeutre(es,2010);
-				final String codeBarre = CODE_DOCUMENT_FOURRE_NEUTRE+helper.calculCodeBarre(fourre);
+				final String codeBarre = CODE_DOCUMENT_FOURRE_NEUTRE + ImpressionFourreNeutreHelperImpl.calculCodeBarre(fourre);
 				final String attendu = "060140005201000000000" + es.getNumero()+"0000";
 				Assert.assertEquals(attendu,codeBarre);
 			}
@@ -86,21 +69,17 @@ public class ImpressionFourreNeutreHelperImplTest extends BusinessTest {
 		final long idTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-
-				final Entreprise es = addEntrepriseInconnueAuCivil(12345);
-
-
+				final Entreprise es = addEntrepriseInconnueAuCivil();
 				return es.getNumero();
 			}
 		});
 
-		// demande d'impression de confirmation de délai
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final Tiers es = hibernateTemplate.get(Tiers.class, idTiers);
-				FourreNeutre fourre = new FourreNeutre(es,2010);
-				final String codeBarre = CODE_DOCUMENT_FOURRE_NEUTRE+helper.calculCodeBarre(fourre);
+				final FourreNeutre fourre = new FourreNeutre(es,2010);
+				final String codeBarre = CODE_DOCUMENT_FOURRE_NEUTRE + ImpressionFourreNeutreHelperImpl.calculCodeBarre(fourre);
 				final String attendu = "06014000520100000" + es.getNumero()+"0000";
 				Assert.assertEquals(attendu,codeBarre);
 			}

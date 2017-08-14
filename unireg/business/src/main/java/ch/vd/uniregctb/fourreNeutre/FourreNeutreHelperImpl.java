@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.fourreNeutre;
 
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 
 public class FourreNeutreHelperImpl implements FourreNeutreHelper {
@@ -58,7 +57,7 @@ public class FourreNeutreHelperImpl implements FourreNeutreHelper {
 
 	@Override
 	public boolean isTiersAutorisePourFourreNeutre(Tiers tiers) {
-		final boolean okPourPP = (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) && fourreNeutreAutoriseePourPP;
+		final boolean okPourPP = tiers instanceof ContribuableImpositionPersonnesPhysiques && fourreNeutreAutoriseePourPP;
 		final boolean okPourPM = tiers instanceof Entreprise && fourreNeutreAutoriseePourPM;
 		final boolean okPourIS = tiers instanceof DebiteurPrestationImposable && fourreNeutreAutoriseePourIS;
 		return okPourPP || okPourPM || okPourIS;

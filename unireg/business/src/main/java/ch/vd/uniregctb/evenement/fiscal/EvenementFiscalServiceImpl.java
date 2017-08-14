@@ -253,7 +253,7 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 
 	@Override
 	public void publierEvenementFiscalImpressionFourreNeutre(FourreNeutre fourreNeutre, RegDate dateTraitement) {
-		saveAndPublish(new EvenementFiscalImpressionFourreNeutre(fourreNeutre.getTiers(), fourreNeutre.getPeriodeFIscale(), dateTraitement));
+		saveAndPublish(new EvenementFiscalImpressionFourreNeutre(fourreNeutre.getTiers(), fourreNeutre.getPeriodeFiscale(), dateTraitement));
 	}
 
 	@Override
