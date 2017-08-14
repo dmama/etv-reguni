@@ -22,9 +22,7 @@ public class AbstractRapportPrestationController extends AbstractSimpleFormContr
 	 */
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-
-		Map<String, Object> data = new HashMap<>();
-		return data;
+		return new HashMap<>();
 	}
 
 }

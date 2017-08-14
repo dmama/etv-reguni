@@ -242,13 +242,7 @@ public class ValidationJob extends JobDefinition {
 	private ValidationJobRapport generateRapport(final ValidationJobResults results, final StatusManager statusManager) {
 		statusManager.setMessage("Génération du rapport...");
 		final TransactionTemplate t = new TransactionTemplate(transactionManager);
-		final ValidationJobRapport rapport = t.execute(new TransactionCallback<ValidationJobRapport>() {
-			@Override
-			public ValidationJobRapport doInTransaction(TransactionStatus s) {
-				return rapportService.generateRapport(results, statusManager);
-			}
-		});
-		return rapport;
+		return t.execute(s -> rapportService.generateRapport(results, statusManager));
 	}
 
 	@Override

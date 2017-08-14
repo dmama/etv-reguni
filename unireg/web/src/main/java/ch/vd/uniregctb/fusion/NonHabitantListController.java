@@ -52,8 +52,7 @@ public class NonHabitantListController  extends  AbstractTiersListController {
 
 		HttpSession session = request.getSession();
 		TiersCriteriaView bean = (TiersCriteriaView) session.getAttribute(NON_HABITANT_CRITERIA_NAME);
-		ModelAndView mav = showFormForList(request, response, errors, model, NON_HABITANT_CRITERIA_NAME, NON_HABITANT_LIST_ATTRIBUTE_NAME, bean, true);
-		return mav;
+		return showFormForList(request, response, errors, model, NON_HABITANT_CRITERIA_NAME, NON_HABITANT_LIST_ATTRIBUTE_NAME, bean, true);
 	}
 
 

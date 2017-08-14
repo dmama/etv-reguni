@@ -459,8 +459,7 @@ public class HtmlTextWriter extends TextWriter {
     protected String getAttributeDefined(HtmlTextWriterAttribute key) {
         for (int i = 0; i <= attrs_pos; i++)
             if (attrs[i].key == key) {
-                String value = attrs[i].value;
-                return value;
+                return attrs[i].value;
             }
 
         return null;
@@ -473,8 +472,7 @@ public class HtmlTextWriter extends TextWriter {
     protected String getStyleAttributeDefined(HtmlTextWriterStyle key) {
         for (int i = 0; i <= styles_pos; i++)
             if (styles[i].key == key) {
-                String value = styles[i].value;
-                return value;
+                return styles[i].value;
             }
 
         return null;

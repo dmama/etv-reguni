@@ -370,8 +370,7 @@ public class PostgreSQL83Dialect extends Dialect {
 	@Override
 	public ResultSet getResultSet(CallableStatement ps) throws SQLException {
 		ps.execute();
-		ResultSet rs = (ResultSet) ps.getObject(1);
-		return rs;
+		return (ResultSet) ps.getObject(1);
 	}
 
 	@Override

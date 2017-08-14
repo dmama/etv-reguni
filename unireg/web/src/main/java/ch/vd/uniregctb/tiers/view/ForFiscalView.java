@@ -480,7 +480,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(ForFiscalView forFiscalView) {
+	public int compareTo(@NotNull ForFiscalView forFiscalView) {
 		Date dateDebut = getDateOuverture();
 		if (dateDebut == null) {
 			dateDebut = getDateEvenement();
@@ -489,8 +489,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 		if (autreDateDebut == null) {
 			autreDateDebut = getDateEvenement();
 		}
-		int value = -dateDebut.compareTo(autreDateDebut);
-		return value;
+		return - dateDebut.compareTo(autreDateDebut);
 	}
 
 	public void setLibPays(String libPays) {

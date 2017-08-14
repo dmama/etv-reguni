@@ -151,9 +151,8 @@ public abstract class ForFiscal extends LocalisationDatee implements Comparable<
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(ForFiscal o) {
-		int value = getDateDebut().compareTo(o.getDateDebut());
-		return value;
+	public int compareTo(@NotNull ForFiscal o) {
+		return getDateDebut().compareTo(o.getDateDebut());
 	}
 
 	@Transient

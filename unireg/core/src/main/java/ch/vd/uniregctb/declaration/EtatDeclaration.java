@@ -218,10 +218,9 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(EtatDeclaration other) {
+	public int compareTo(@NotNull EtatDeclaration other) {
 		// Descending =>   * -1
-		int value = (-1) * DateRangeComparator.compareRanges(this, other);
-		return value;
+		return - DateRangeComparator.compareRanges(this, other);
 	}
 
 	/**

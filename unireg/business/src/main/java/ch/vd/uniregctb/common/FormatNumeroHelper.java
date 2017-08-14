@@ -49,8 +49,7 @@ public class FormatNumeroHelper {
 		String s = "";
 
 		if (numero != null) {
-			String sNumero = String.valueOf(numero);
-			s = sNumero;
+			s = String.valueOf(numero);
 		}
 
 		return s;

@@ -892,15 +892,13 @@ public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends Edit
 		final Integer officeImpotId = getNumeroOfficeImpotGestion(informationsDocument);
 		Assert.notNull(officeImpotId);
 		final Integer idDocument = informationsDocument.getIdDocument();
-		String codbarr = StringUtils.leftPad(tiers.getNumero().toString(), 9, "0") + anneeDeclaration
+		return StringUtils.leftPad(tiers.getNumero().toString(), 9, "0") + anneeDeclaration
 				+ StringUtils.leftPad(idDocument.toString(), 2, "0")
 				+ StringUtils.leftPad(officeImpotId.toString(), 2, "0");
-		return codbarr;
 	}
 
 	private EtatCivil calculEtatCivil(PersonnePhysique pp, RegDate date) {
-		EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, date, true);
-		return etatCivil;
+		return situationFamilleService.getEtatCivil(pp, date, true);
 	}
 
 	private String calculIndividuNomPrenom(PersonnePhysique pp) throws EditiqueException {

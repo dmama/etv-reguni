@@ -5394,8 +5394,7 @@ public class TiersServiceImpl implements TiersService {
 			final RegDate dateMinimalEffet = FiscalDateHelper.getDateMinimalePourEffetDecisionAci();
 			final Set<Contribuable> contribuablesToCheck = new HashSet<>();
 
-			final int ageMaximumLienVersTiers = AGE_MAXIMUM_LIEN_VERS_TIERS;
-			construireListeTiersLies(ctb, contribuablesToCheck, ageMaximumLienVersTiers);
+			construireListeTiersLies(ctb, contribuablesToCheck, AGE_MAXIMUM_LIEN_VERS_TIERS);
 			//Verification sur tous les ctb trouvés
 			for (Contribuable ctbToCheck : contribuablesToCheck) {
 				if (ctbToCheck.hasDecisionRecenteFor(dateMinimalEffet)) {

@@ -26,13 +26,12 @@ public class IndividuNotFoundException extends ObjectNotFoundException {
 	}
 
 	private static String buildMessage(PersonnePhysique personne) {
-		final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne.getNumeroIndividu(),
-				personne.getNumero());
-		return message;
+		return String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d",
+		                     personne.getNumeroIndividu(),
+		                     personne.getNumero());
 	}
 
 	private static String buildMessage(long noIndividu) {
-		final String message = String.format("Impossible de trouver l'individu n°%d", noIndividu);
-		return message;
+		return String.format("Impossible de trouver l'individu n°%d", noIndividu);
 	}
 }

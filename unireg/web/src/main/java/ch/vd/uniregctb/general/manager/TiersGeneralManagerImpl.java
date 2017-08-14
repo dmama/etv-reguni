@@ -57,8 +57,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	@Override
 	@Transactional(readOnly = true)
 	public TiersGeneralView getDebiteur(DebiteurPrestationImposable dpi, boolean etendu) {
-		TiersGeneralView tiersGeneralView = getTiers(dpi, true);
-		return tiersGeneralView;
+		return getTiers(dpi, true);
 	}
 
 

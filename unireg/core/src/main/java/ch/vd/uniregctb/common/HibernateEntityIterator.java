@@ -37,9 +37,7 @@ public class HibernateEntityIterator<T extends HibernateEntity> implements Itera
 
 		// Récupère l'objet réel (pas le proxy)
 		p.tellMeAboutYou(param);
-		T n = (T)param.getValue();
-
-		return n;
+		return (T) param.getValue();
 	}
 
 	@Override

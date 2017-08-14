@@ -154,14 +154,13 @@ public class IcGlobalIndexTest extends InContainerTest {
 	 * @param tiers le tiers à sauver
 	 */
 	private Long save(final Tiers tiers) {
-		Long id = executeInTransaction(new TransactionCallback<Long>() {
+		return executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Session session = getSessionFactory().getCurrentSession();
 				return (Long) session.save(tiers);
 			}
 		});
-		return id;
 	}
 
 }

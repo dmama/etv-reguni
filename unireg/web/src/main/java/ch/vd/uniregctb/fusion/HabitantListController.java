@@ -68,8 +68,7 @@ public class HabitantListController  extends  AbstractTiersListController {
 
 		HttpSession session = request.getSession();
 		FusionListView bean = (FusionListView) session.getAttribute(HABITANT_CRITERIA_NAME);
-		ModelAndView mav = showFormForList(request, response, errors, model, HABITANT_CRITERIA_NAME, HABITANT_LIST_ATTRIBUTE_NAME, bean, true);
-		return mav;
+		return showFormForList(request, response, errors, model, HABITANT_CRITERIA_NAME, HABITANT_LIST_ATTRIBUTE_NAME, bean, true);
 	}
 
 	/**

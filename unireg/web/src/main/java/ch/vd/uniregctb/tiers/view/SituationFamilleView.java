@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers.view;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -173,9 +175,8 @@ public class SituationFamilleView implements Comparable<SituationFamilleView>, A
 	}
 
 	@Override
-	public int compareTo(SituationFamilleView o) {
-		int value = -  getDateDebut().compareTo(o.getDateDebut());
-		return value;
+	public int compareTo(@NotNull SituationFamilleView o) {
+		return - getDateDebut().compareTo(o.getDateDebut());
 	}
 
 	public boolean isEditable() {

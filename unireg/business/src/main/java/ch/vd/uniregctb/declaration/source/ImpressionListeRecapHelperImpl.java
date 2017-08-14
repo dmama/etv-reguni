@@ -397,12 +397,11 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractLegacyHelper
 	}
 
 	private String calculCodeBarre(DeclarationImpotSource lr) {
-		Tiers tiers = lr.getTiers();
-		String codbarr = 	StringUtils.leftPad(tiers.getNumero().toString(), 8, "0")
+		final Tiers tiers = lr.getTiers();
+		return StringUtils.leftPad(tiers.getNumero().toString(), 8, "0")
 							+ String.valueOf(lr.getDateDebut().index())
 							+ String.valueOf(lr.getDateFin().index())
 							+ "01";
-		return codbarr;
 	}
 
 	/**
