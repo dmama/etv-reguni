@@ -41,7 +41,7 @@ public class ImpressionFourreNeutreHelperImplTest extends BusinessTest {
 	}
 
 	@Test
-	public void testCodeBarrePourPMAvecIdentifiantCourt() throws Exception {
+	public void testCodeBarrePourPM() throws Exception {
 		// mise en place
 		final long idTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -57,30 +57,7 @@ public class ImpressionFourreNeutreHelperImplTest extends BusinessTest {
 				final Tiers es = hibernateTemplate.get(Tiers.class, idTiers);
 				FourreNeutre fourre = new FourreNeutre(es,2010);
 				final String codeBarre = CODE_DOCUMENT_FOURRE_NEUTRE + ImpressionFourreNeutreHelperImpl.calculCodeBarre(fourre);
-				final String attendu = "060140005201000000000" + es.getNumero()+"0000";
-				Assert.assertEquals(attendu,codeBarre);
-			}
-		});
-	}
-
-	@Test
-	public void testCodeBarrePourPMAvecIdentifiantLong() throws Exception {
-		// mise en place
-		final long idTiers = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise es = addEntrepriseInconnueAuCivil();
-				return es.getNumero();
-			}
-		});
-
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final Tiers es = hibernateTemplate.get(Tiers.class, idTiers);
-				final FourreNeutre fourre = new FourreNeutre(es,2010);
-				final String codeBarre = CODE_DOCUMENT_FOURRE_NEUTRE + ImpressionFourreNeutreHelperImpl.calculCodeBarre(fourre);
-				final String attendu = "06014000520100000" + es.getNumero()+"0000";
+				final String attendu = "06014000520100" + String.format("%08d", es.getNumero()) +"0000";
 				Assert.assertEquals(attendu,codeBarre);
 			}
 		});
