@@ -28,6 +28,8 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 	private static final long NANO_TO_MILLI = TimeUnit.MILLISECONDS.toNanos(1);
 	private static final int RECENTS_SIZE = 5; // 5 minutes d'activité récente
 
+	private static final Data[] NO_RECENTS = new Data[0];
+
 	/**
 	 * Statistiques d'appel pour un service ou une méthode
 	 */
@@ -59,7 +61,7 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 				}
 			}
 			else {
-				this.recents = null;
+				this.recents = NO_RECENTS;
 			}
 		}
 
@@ -75,7 +77,7 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 				}
 			}
 			else {
-				this.recents = null;
+				this.recents = NO_RECENTS;
 			}
 		}
 
@@ -444,7 +446,7 @@ public final class ServiceTracing implements ServiceTracingInterface, ServiceTra
 	}
 
 	/**
-	 * Les temps de réponses (voir méthode {@link #end(long, String, Supplier<String>) end()}) sont loggués en niveau INFO ;
+	 * Les temps de réponses (voir méthode {@link #end(long, String, Supplier) end()}) sont loggués en niveau INFO ;
 	 * cette méthode permet d'inclure un peu plus de détails seulement en mode debug
 	 * @return <code>true</code> si le logguer est actif au niveau DEBUG, <code>false</code> sinon
 	 */
