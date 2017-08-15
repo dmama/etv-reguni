@@ -89,10 +89,10 @@ public abstract class Assujettissement implements CollatableDateRange<Assujettis
 	@Override
 	public boolean isCollatable(Assujettissement next) {
 		// dans le cas d'un départ HS et d'une arrivée HC, on ne veut pas collater les deux assujettissements
-		final boolean departHSEtArriveeHC = (this.motifFin == MotifAssujettissement.DEPART_HS && ((Assujettissement) next).motifDebut == MotifAssujettissement.ARRIVEE_HC);
+		final boolean departHSEtArriveeHC = (this.motifFin == MotifAssujettissement.DEPART_HS && next.motifDebut == MotifAssujettissement.ARRIVEE_HC);
 
 		// vente du dernier immeuble une année et rachat d'un autre l'année suivante
-		final boolean venteDernierImmeubleEtRachatAnneeSuivante = this.motifFin == MotifAssujettissement.VENTE_IMMOBILIER && ((Assujettissement) next).motifDebut == MotifAssujettissement.ACHAT_IMMOBILIER && AssujettissementHelper.isYearSwitch(this.dateFin, next.getDateDebut());
+		final boolean venteDernierImmeubleEtRachatAnneeSuivante = this.motifFin == MotifAssujettissement.VENTE_IMMOBILIER && next.motifDebut == MotifAssujettissement.ACHAT_IMMOBILIER && AssujettissementHelper.isYearSwitch(this.dateFin, next.getDateDebut());
 
 		return !departHSEtArriveeHC && !venteDernierImmeubleEtRachatAnneeSuivante && getClass() == next.getClass() && DateRangeHelper.isCollatable(this, next);
 	}
