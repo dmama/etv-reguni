@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.common;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -79,6 +81,14 @@ public class ParamPagination implements Serializable {
 	}
 
 	public QueryFragment buildOrderClause(String tableAlias, @Nullable String defaultField, boolean defaultAsc, @Nullable CustomOrderByGenerator customGenerator) {
+		return buildOrderClause(tableAlias, new ParamSorting(defaultField == null ? "id" : defaultField, defaultAsc), customGenerator);
+	}
+
+	public QueryFragment buildOrderClause(String tableAlias, @Nullable ParamSorting defaultSorting, @Nullable CustomOrderByGenerator customGenerator) {
+		return buildOrderClause(tableAlias, customGenerator, defaultSorting);
+	}
+
+	public QueryFragment buildOrderClause(String tableAlias, @Nullable CustomOrderByGenerator customGenerator, @Nullable ParamSorting... defaultSortings) {
 		QueryFragment clauseOrder = new QueryFragment();
 		final String champ = sorting.getField();
 		if (champ != null) {
@@ -102,17 +112,20 @@ public class ParamPagination implements Serializable {
 			}
 		}
 		else {
-			if (defaultField == null) {
-				clauseOrder.add("order by " + tableAlias + ".id " + (defaultAsc ? "asc" : "desc"));
+			if (defaultSortings == null || defaultSortings.length == 0) {
+				clauseOrder.add("order by " + tableAlias + ".id asc");
 			}
 			else {
-				clauseOrder.add("order by " + tableAlias + "." + defaultField + " " + (defaultAsc ? "asc" : "desc"));
+				final String orderClause = Arrays.stream(defaultSortings)
+						.map(p -> tableAlias + "." + p.getField() + " " + (p.isAscending() ? "asc" : "desc"))
+						.collect(Collectors.joining(", "));
+				clauseOrder.add("order by " + orderClause);
 			}
 		}
 
 		// [SIFISC-4227] si on ne trie pas sur un index unique, on a des problèmes potentiels avec la pagination
 		// donc on ajoute la colonne id dans l'order by comme work-around
-		if ((champ != null && !"id".equals(champ)) || defaultField != null) {
+		if ((champ != null && !"id".equals(champ)) || defaultSortings != null) {
 			clauseOrder.add(", " + tableAlias + ".id asc");
 		}
 
