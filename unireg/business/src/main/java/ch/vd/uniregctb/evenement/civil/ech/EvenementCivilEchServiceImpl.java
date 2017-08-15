@@ -23,7 +23,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;

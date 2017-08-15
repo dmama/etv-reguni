@@ -32,7 +32,7 @@ import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;

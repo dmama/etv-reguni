@@ -15,7 +15,7 @@ import org.apache.lucene.search.TopDocs;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.simpleindexer.DocGetter;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;

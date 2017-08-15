@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeCriteria;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
@@ -47,7 +47,7 @@ public class ListeRecapListManagerImpl implements ListeRecapListManager{
 	}
 
 	/**
-	 * @see ch.vd.uniregctb.lr.manager.ListeRecapListManager#find(ListeRecapitulativeCriteria, ch.vd.uniregctb.common.ParamPagination)
+	 * @see ch.vd.uniregctb.lr.manager.ListeRecapListManager#find(ListeRecapitulativeCriteria, ParamPagination)
 	 */
 	@Override
 	@Transactional(readOnly = true)

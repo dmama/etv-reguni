@@ -9,7 +9,7 @@ import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.security.DroitAccesException;
 

@@ -8,7 +8,7 @@ import ch.vd.uniregctb.acces.copie.view.ConfirmCopieView;
 import ch.vd.uniregctb.acces.copie.view.ConfirmedDataView;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.security.DroitAccesConflitAvecDonneesContribuable;
 
 public interface CopieDroitAccesManager {

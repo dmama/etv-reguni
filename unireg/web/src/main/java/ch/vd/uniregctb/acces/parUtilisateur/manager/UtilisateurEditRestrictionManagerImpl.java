@@ -26,7 +26,7 @@ import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.extraction.BatchableExtractor;
 import ch.vd.uniregctb.extraction.ExtractionJob;

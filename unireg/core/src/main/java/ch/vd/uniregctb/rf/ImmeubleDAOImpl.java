@@ -7,7 +7,7 @@ import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 
 public class ImmeubleDAOImpl extends BaseDAOImpl<Immeuble, Long> implements ImmeubleDAO {
 

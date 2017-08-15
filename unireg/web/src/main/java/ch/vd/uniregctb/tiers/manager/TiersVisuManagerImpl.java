@@ -27,7 +27,7 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.decision.aci.DecisionAciViewComparator;
 import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.hibernate.HibernateCallback;

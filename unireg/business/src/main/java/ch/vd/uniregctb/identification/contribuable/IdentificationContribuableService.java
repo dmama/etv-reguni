@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;

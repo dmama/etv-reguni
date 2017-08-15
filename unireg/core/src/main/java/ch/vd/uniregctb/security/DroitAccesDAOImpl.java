@@ -12,7 +12,7 @@ import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.tiers.DroitAcces;
 
 public class DroitAccesDAOImpl extends BaseDAOImpl<DroitAcces, Long> implements DroitAccesDAO {

@@ -53,7 +53,7 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.decision.aci.DecisionAciViewComparator;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;

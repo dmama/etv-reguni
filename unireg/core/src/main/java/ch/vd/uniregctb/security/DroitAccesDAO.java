@@ -5,7 +5,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.tiers.DroitAcces;
 
 /**

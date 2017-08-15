@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.HttpHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImportDAO;

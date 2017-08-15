@@ -4,7 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 
 public interface AuditLineDAO extends GenericDAO<AuditLine, Long> {
 

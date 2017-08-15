@@ -18,7 +18,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.tiers.TypeTiers;
 
 import static org.junit.Assert.assertEquals;

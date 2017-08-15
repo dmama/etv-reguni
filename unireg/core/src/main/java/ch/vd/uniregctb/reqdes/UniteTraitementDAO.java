@@ -3,7 +3,7 @@ package ch.vd.uniregctb.reqdes;
 import java.util.List;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 
 /**
  * Interface d'accès aux objets persistés de type {@link UniteTraitement}

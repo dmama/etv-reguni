@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 

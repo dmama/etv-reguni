@@ -26,7 +26,7 @@ import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.type.TypeEtatTache;

@@ -25,7 +25,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.mouvement.manager.MouvementMasseManager;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;

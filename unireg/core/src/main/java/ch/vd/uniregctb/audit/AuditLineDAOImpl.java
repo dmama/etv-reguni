@@ -20,7 +20,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 
 public class AuditLineDAOImpl extends BaseDAOImpl<AuditLine, Long> implements AuditLineDAO, InitializingBean {

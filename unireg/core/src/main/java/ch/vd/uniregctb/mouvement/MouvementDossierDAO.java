@@ -5,8 +5,8 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.common.ParamSorting;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamSorting;
 
 public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> {
 

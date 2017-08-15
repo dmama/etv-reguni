@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 
 /**
  * Le DAO pour les message d'identification de contribuable.

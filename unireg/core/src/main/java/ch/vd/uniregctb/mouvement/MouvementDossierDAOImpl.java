@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.HibernateQueryHelper;
-import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.common.ParamSorting;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamSorting;
 import ch.vd.uniregctb.type.TypeMouvement;
 
 public class MouvementDossierDAOImpl extends BaseDAOImpl<MouvementDossier, Long> implements MouvementDossierDAO {

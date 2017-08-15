@@ -8,7 +8,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationServiceImpl implements EvenementOrganisationService {

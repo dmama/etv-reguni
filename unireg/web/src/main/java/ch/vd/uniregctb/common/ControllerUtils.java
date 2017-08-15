@@ -2,6 +2,7 @@ package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletRequest;
 
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.security.AccessDeniedException;
 
 /**

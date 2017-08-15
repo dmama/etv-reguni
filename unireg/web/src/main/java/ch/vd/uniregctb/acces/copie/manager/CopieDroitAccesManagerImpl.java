@@ -19,7 +19,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
 import ch.vd.uniregctb.general.view.UtilisateurView;
 import ch.vd.uniregctb.security.DroitAccesConflit;

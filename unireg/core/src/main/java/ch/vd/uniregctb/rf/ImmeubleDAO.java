@@ -3,7 +3,7 @@ package ch.vd.uniregctb.rf;
 import java.util.List;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 
 public interface ImmeubleDAO extends GenericDAO<Immeuble, Long> {
 

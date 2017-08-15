@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.common;
+package ch.vd.uniregctb.common.pagination;
 
 import java.io.Serializable;
 import java.util.regex.Matcher;

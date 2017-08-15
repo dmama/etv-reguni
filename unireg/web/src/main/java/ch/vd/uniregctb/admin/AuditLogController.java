@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import ch.vd.uniregctb.admin.AuditLogBean.AuditView;
 import ch.vd.uniregctb.audit.AuditLineDAO;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 
 /**

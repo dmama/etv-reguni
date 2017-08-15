@@ -9,7 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;

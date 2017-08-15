@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.civil.ech;
 
 import java.util.List;
 
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;

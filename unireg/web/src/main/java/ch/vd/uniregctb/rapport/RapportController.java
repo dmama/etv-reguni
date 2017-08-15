@@ -39,7 +39,7 @@ import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;

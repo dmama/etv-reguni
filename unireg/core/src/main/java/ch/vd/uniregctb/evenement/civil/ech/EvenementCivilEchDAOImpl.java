@@ -15,7 +15,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.AbstractEvenementCivilDAOImpl;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;

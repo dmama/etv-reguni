@@ -5,7 +5,7 @@ import java.util.List;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPDetailView;

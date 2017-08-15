@@ -6,8 +6,8 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.common.ParamSorting;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamSorting;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.extraction.ExtractionJob;

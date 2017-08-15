@@ -38,7 +38,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.common.MockMessageSource;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;

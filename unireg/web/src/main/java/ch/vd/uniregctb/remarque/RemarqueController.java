@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;

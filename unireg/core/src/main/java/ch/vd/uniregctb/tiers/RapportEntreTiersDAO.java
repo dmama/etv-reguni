@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 import ch.vd.registre.base.dao.GenericDAO;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long> {

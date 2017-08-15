@@ -46,7 +46,7 @@ import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HttpHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
 import ch.vd.uniregctb.general.view.UtilisateurView;

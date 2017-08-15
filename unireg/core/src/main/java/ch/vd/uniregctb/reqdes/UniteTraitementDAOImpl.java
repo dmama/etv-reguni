@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BaseDAOImpl;
-import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.common.ParamSorting;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamSorting;
 
 public class UniteTraitementDAOImpl extends BaseDAOImpl<UniteTraitement, Long> implements UniteTraitementDAO {
 

@@ -53,7 +53,7 @@ import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NumeroCtbStringRenderer;
-import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;

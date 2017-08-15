@@ -1,10 +1,12 @@
-package ch.vd.uniregctb.common;
+package ch.vd.uniregctb.common.pagination;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
+
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 
 
 public class WebParamPagination extends ParamPagination {
