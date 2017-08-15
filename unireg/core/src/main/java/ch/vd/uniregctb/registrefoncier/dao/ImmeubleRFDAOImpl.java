@@ -115,7 +115,8 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 		final Query query = getCurrentSession().createQuery("select distinct immeuble.id from DroitProprieteRF where dateFinMetier is null and dateFin is not null");
 		final List<?> list = query.list();
 		return list.stream()
-				.map(n -> ((Number) n).longValue())
+				.map(Number.class::cast)
+				.map(Number::longValue)
 				.collect(Collectors.toList());
 	}
 }

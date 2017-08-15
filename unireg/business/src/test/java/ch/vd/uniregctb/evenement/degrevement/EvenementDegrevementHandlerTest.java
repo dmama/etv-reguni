@@ -191,8 +191,8 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 				Assert.assertNotNull(entreprise);
 
 				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(af -> af instanceof DegrevementICI)
-						.map(af -> (DegrevementICI) af)
+						.filter(DegrevementICI.class::isInstance)
+						.map(DegrevementICI.class::cast)
 						.collect(Collectors.toList());
 				Assert.assertEquals(0, degrevements.size());
 			}
@@ -295,8 +295,8 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 				Assert.assertNotNull(entreprise);
 
 				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(af -> af instanceof DegrevementICI)
-						.map(af -> (DegrevementICI) af)
+						.filter(DegrevementICI.class::isInstance)
+						.map(DegrevementICI.class::cast)
 						.collect(Collectors.toList());
 				Assert.assertEquals(1, degrevements.size());
 
@@ -421,8 +421,8 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 
 				// vérification de l'absence de dégrèvement entré
 				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(af -> af instanceof DegrevementICI)
-						.map(af -> (DegrevementICI) af)
+						.filter(DegrevementICI.class::isInstance)
+						.map(DegrevementICI.class::cast)
 						.collect(Collectors.toList());
 				Assert.assertEquals(1, degrevements.size());
 
@@ -551,8 +551,8 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 				Assert.assertNotNull(entreprise);
 
 				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(af -> af instanceof DegrevementICI)
-						.map(af -> (DegrevementICI) af)
+						.filter(DegrevementICI.class::isInstance)
+						.map(DegrevementICI.class::cast)
 						.collect(Collectors.toList());
 				Assert.assertEquals(1, degrevements.size());
 
@@ -681,8 +681,8 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 				Assert.assertNotNull(entreprise);
 
 				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(af -> af instanceof DegrevementICI)
-						.map(af -> (DegrevementICI) af)
+						.filter(DegrevementICI.class::isInstance)
+						.map(DegrevementICI.class::cast)
 						.collect(Collectors.toList());
 				Assert.assertEquals(1, degrevements.size());
 
@@ -819,9 +819,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 				Assert.assertNotNull(entreprise);
 
 				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(af -> af instanceof DegrevementICI)
+						.filter(DegrevementICI.class::isInstance)
 						.sorted(Comparator.comparing(AllegementFoncier::getDateDebut).thenComparingLong(AllegementFoncier::getId))
-						.map(af -> (DegrevementICI) af)
+						.map(DegrevementICI.class::cast)
 						.collect(Collectors.toList());
 				Assert.assertEquals(5, degrevements.size());
 
@@ -1051,9 +1051,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 				Assert.assertNotNull(entreprise);
 
 				final List<DegrevementICI> degrevements = entreprise.getAllegementsFonciers().stream()
-						.filter(af -> af instanceof DegrevementICI)
+						.filter(DegrevementICI.class::isInstance)
 						.sorted(Comparator.comparing(AllegementFoncier::getDateDebut).thenComparingLong(AllegementFoncier::getId))
-						.map(af -> (DegrevementICI) af)
+						.map(DegrevementICI.class::cast)
 						.collect(Collectors.toList());
 				Assert.assertEquals(2, degrevements.size());
 

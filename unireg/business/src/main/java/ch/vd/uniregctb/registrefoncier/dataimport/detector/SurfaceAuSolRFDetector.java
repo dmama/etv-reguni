@@ -198,7 +198,7 @@ public class SurfaceAuSolRFDetector {
 			final Set<String> existingImmeublesAvecSurfaces = immeubleRFDAO.findWithActiveSurfacesAuSol();
 			//noinspection UnnecessaryLocalVariable
 			final Set<String> nouveauImmeublesAvecSurfaces = cacheSurfaces.keySet().stream()
-					.map(k -> (IdRfCacheKey) k)
+					.map(IdRfCacheKey.class::cast)
 					.map(IdRfCacheKey::getIdRF)
 					.collect(Collectors.toSet());
 

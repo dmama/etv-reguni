@@ -4067,8 +4067,8 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 				// les fors principaux
 				final List<ForFiscalPrincipalPP> ffps = pp.getForsFiscaux().stream()
-						.filter(ff -> ff instanceof ForFiscalPrincipalPP)
-						.map(ff -> (ForFiscalPrincipalPP) ff)
+						.filter(ForFiscalPrincipalPP.class::isInstance)
+						.map(ForFiscalPrincipalPP.class::cast)
 						.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()))
 						.collect(Collectors.toList());
 				Assert.assertEquals(4, ffps.size());
@@ -4123,8 +4123,8 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 				// le for secondaire ne doit pas avoir bougé
 				final List<ForFiscalSecondaire> ffss = pp.getForsFiscaux().stream()
-						.filter(ff -> ff instanceof ForFiscalSecondaire)
-						.map(ff -> (ForFiscalSecondaire) ff)
+						.filter(ForFiscalSecondaire.class::isInstance)
+						.map(ForFiscalSecondaire.class::cast)
 						.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()))
 						.collect(Collectors.toList());
 				Assert.assertEquals(1, ffss.size());

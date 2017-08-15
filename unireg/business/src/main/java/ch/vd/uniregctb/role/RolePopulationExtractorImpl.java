@@ -86,8 +86,8 @@ public abstract class RolePopulationExtractorImpl<T extends Contribuable> implem
 		final DateRange rangeReference = new DateRangeHelper.Range(debutAnnee, dateReferenceDansAnnee);
 		final List<ForFiscalSecondaire> forsSecondaires = contribuable.getForsFiscaux().stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.filter(ff -> ff instanceof ForFiscalSecondaire)
-				.map(ff -> (ForFiscalSecondaire) ff)
+				.filter(ForFiscalSecondaire.class::isInstance)
+				.map(ForFiscalSecondaire.class::cast)
 				.filter(this::isForAPrendreEnCompte)
 				.filter(ff -> DateRangeHelper.intersect(ff, rangeReference))
 				.sorted(DateRangeComparator::compareRanges)

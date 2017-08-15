@@ -1471,8 +1471,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	private DemandeDegrevementICI addNumeroSequenceAndSave(Entreprise e, DemandeDegrevementICI demande) {
 		final int pf = demande.getPeriodeFiscale();
 		final int maxNosUtilises = Optional.ofNullable(e.getAutresDocumentsFiscaux()).orElseGet(Collections::emptySet).stream()
-				.filter(doc -> doc instanceof DemandeDegrevementICI)
-				.map(doc -> (DemandeDegrevementICI) doc)
+				.filter(DemandeDegrevementICI.class::isInstance)
+				.map(DemandeDegrevementICI.class::cast)
 				.filter(dd -> dd.getPeriodeFiscale() == pf)
 				.mapToInt(DemandeDegrevementICI::getNumeroSequence)
 				.max()

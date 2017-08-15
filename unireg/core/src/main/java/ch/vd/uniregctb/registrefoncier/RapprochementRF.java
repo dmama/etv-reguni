@@ -139,8 +139,9 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 		final List<CommunauteRF> communautes = Optional.of(tiersRF)
 				.map(AyantDroitRF::getDroitsPropriete)   // la collection peut être nulle si l'entité vient juste d'être créée
 				.map(l -> l.stream()
-						.filter(d -> d instanceof DroitProprietePersonneRF)
-						.map(d -> ((DroitProprietePersonneRF) d).getCommunaute())
+						.filter(DroitProprietePersonneRF.class::isInstance)
+						.map(DroitProprietePersonneRF.class::cast)
+						.map(DroitProprietePersonneRF::getCommunaute)
 						.filter(Objects::nonNull)
 						.collect(Collectors.toList()))
 				.orElseGet(Collections::emptyList);

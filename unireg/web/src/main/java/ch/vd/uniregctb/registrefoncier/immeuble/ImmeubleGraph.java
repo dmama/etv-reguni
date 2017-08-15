@@ -219,9 +219,9 @@ public class ImmeubleGraph {
 					.filter(d -> !(d instanceof DroitProprieteImmeubleRF))
 					.forEach(this::addDroitPropriete);
 			immeuble.getDroitsPropriete().stream()
-					.filter(d -> d instanceof DroitProprieteImmeubleRF)
 					.filter(d -> d.isValidAt(today))
-					.map(d -> (DroitProprieteImmeubleRF) d)
+					.filter(DroitProprieteImmeubleRF.class::isInstance)
+					.map(DroitProprieteImmeubleRF.class::cast)
 					.map(DroitProprieteRF::getAyantDroit)
 					.map(ImmeubleBeneficiaireRF.class::cast)
 					.map(ImmeubleBeneficiaireRF::getImmeuble)

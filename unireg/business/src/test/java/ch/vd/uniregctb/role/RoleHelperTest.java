@@ -290,7 +290,7 @@ public class RoleHelperTest extends BusinessTest {
 				final List<Entreprise> entreprises = Stream.of(ids.pm)
 						.map(tiersService::getTiers)
 						.filter(Objects::nonNull)
-						.map(tiers -> (Entreprise) tiers)
+						.map(Entreprise.class::cast)
 						.collect(Collectors.toList());
 				Assert.assertEquals(1, entreprises.size());
 
@@ -321,7 +321,7 @@ public class RoleHelperTest extends BusinessTest {
 				final List<ContribuableImpositionPersonnesPhysiques> contribuables = Stream.of(ids.pp, ids.mc)
 						.map(tiersService::getTiers)
 						.filter(Objects::nonNull)
-						.map(tiers -> (ContribuableImpositionPersonnesPhysiques) tiers)
+						.map(ContribuableImpositionPersonnesPhysiques.class::cast)
 						.collect(Collectors.toList());
 				Assert.assertEquals(2, contribuables.size());
 

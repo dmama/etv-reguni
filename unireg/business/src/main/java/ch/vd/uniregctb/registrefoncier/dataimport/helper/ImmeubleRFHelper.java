@@ -137,7 +137,8 @@ public abstract class ImmeubleRFHelper {
 				.findFirst()
 				.orElse(null);
 		final GrundstueckFlaeche grundstueckFlaeche = Optional.of(grundstueck)
-				.map(g -> g instanceof GrundstueckMitFlaeche ? (GrundstueckMitFlaeche) g : null)    // seuls certains immeubles possèdent une surface totale
+				.filter(GrundstueckMitFlaeche.class::isInstance)        // seuls certains immeubles possèdent une surface totale
+				.map(GrundstueckMitFlaeche.class::cast)
 				.map(GrundstueckMitFlaeche::getGrundstueckFlaeche)
 				.orElse(null);
 
@@ -208,7 +209,8 @@ public abstract class ImmeubleRFHelper {
 
 		// on ajoute la surface totale, si renseignée
 		Optional.of(grundstueck)
-				.map(g -> g instanceof GrundstueckMitFlaeche ? (GrundstueckMitFlaeche) g : null)    // seuls certains immeubles possèdent une surface totale
+				.filter(GrundstueckMitFlaeche.class::isInstance)                // seuls certains immeubles possèdent une surface totale
+				.map(GrundstueckMitFlaeche.class::cast)
 				.map(GrundstueckMitFlaeche::getGrundstueckFlaeche)
 				.map(GrundstueckFlaeche::getFlaeche)
 				.ifPresent(flaeche -> {

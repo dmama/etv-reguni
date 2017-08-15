@@ -355,8 +355,8 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			final EtatDeclarationSommee etatSomme = entreprise.getDeclarations().stream()
 					.map(Declaration::getEtats)
 					.flatMap(Collection::stream)
-					.filter(etat -> etat instanceof EtatDeclarationSommee)
-					.map(etat -> (EtatDeclarationSommee) etat)
+					.filter(EtatDeclarationSommee.class::isInstance)
+					.map(EtatDeclarationSommee.class::cast)
 					.findFirst()
 					.orElse(null);
 

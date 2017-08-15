@@ -173,11 +173,11 @@ public class IdentCtbDAOImpl extends BaseDAOImpl<IdentificationContribuable, Lon
 
 	private static final Function<Object, Integer> INTEGER_UNMARSHALLER = o -> Optional.ofNullable((Number) o).map(Number::intValue).orElse(null);
 
-	private static final Function<Object, String> STRING_UNMARSHALLER = o -> (String) o;
+	private static final Function<Object, String> STRING_UNMARSHALLER = String.class::cast;
 
-	private static final Function<Object, Etat> ETAT_UNMARSHALLER = o -> (Etat) o;
+	private static final Function<Object, Etat> ETAT_UNMARSHALLER = Etat.class::cast;
 
-	private static final Function<Object, PrioriteEmetteur> PRIORITE_UNMARSHALLER = o -> (PrioriteEmetteur) o;
+	private static final Function<Object, PrioriteEmetteur> PRIORITE_UNMARSHALLER = PrioriteEmetteur.class::cast;
 
 	/**
 	 * Récupère la liste des valeurs d'un champ particulier par état de la demande d'identification

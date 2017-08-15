@@ -80,7 +80,8 @@ public class SeparationController {
 
 	private static TiersCriteriaView getCriteriaFromSessionOrNew(HttpSession session) {
 		return Optional.of(session)
-				.map(s -> (TiersCriteriaView) s.getAttribute(CRITERIA_SESSION_NAME))
+				.map(s -> s.getAttribute(CRITERIA_SESSION_NAME))
+				.map(TiersCriteriaView.class::cast)
 				.orElseGet(TiersCriteriaView::new);
 	}
 

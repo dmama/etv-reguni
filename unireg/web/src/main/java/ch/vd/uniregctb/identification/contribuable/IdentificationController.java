@@ -290,7 +290,7 @@ public class IdentificationController {
 
 		final TiersCriteriaView searchCriteria = Optional.of(CTB_SEARCH_CRITERIA_SESSION_NAME)
 				.map(session::getAttribute)
-				.map(obj -> (TiersCriteriaView) obj)
+				.map(TiersCriteriaView.class::cast)
 				.orElseGet(() -> buildPrefilledSearchCriteria(view.getDemandeIdentificationView()));
 		if (view.getDemandeIdentificationView().getTypeContribuable() != null) {
 			searchCriteria.setTypesTiersImperatifs(Collections.singleton(view.getDemandeIdentificationView().getTypeContribuable()));

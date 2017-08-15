@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
@@ -109,6 +110,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	protected Ehcache getEhCache() {
 		return cache;
 	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (cacheManager == null || cacheName == null) {
@@ -549,17 +551,27 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	}
 
 	/**
+	 * Vide le cache des clés de type donné qui satisfont au prédicat donné
+	 * @param keyClass classe des clés recherchées
+	 * @param keyFilter prédicat sur les clés de ce type
+	 * @param <K> type de la clé
+	 */
+	private <K> void evictFromCache(Class<K> keyClass, Predicate<? super K> keyFilter) {
+		final List<?> keys = cache.getKeys();
+		keys.stream()
+				.filter(keyClass::isInstance)
+				.map(keyClass::cast)
+				.filter(keyFilter)
+				.forEach(cache::remove);
+	}
+
+	/**
 	 * Vide le cache de toute donnée concernant le tiers dont le numéro est donné
 	 *
 	 * @param partyNo numéro du tiers à oublier
 	 */
 	public void evictParty(long partyNo) {
-		final List<?> keys = cache.getKeys();
-		for (Object k : keys) {
-			if (k instanceof PartyCacheKey && ((PartyCacheKey) k).partyNo == partyNo) {
-				cache.remove(k);
-			}
-		}
+		evictFromCache(PartyCacheKey.class, k -> k.partyNo == partyNo);
 	}
 
 	/**
@@ -568,10 +580,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	 * @param immoId l'id technique Unireg de l'immeuble
 	 */
 	public void evictImmovableProperty(long immoId) {
-		final List<?> keys = cache.getKeys();
-		keys.stream()
-				.filter(k -> k instanceof GetImmovablePropertyKey && ((GetImmovablePropertyKey) k).getImmoId() == immoId)
-				.forEach(k -> cache.remove(k));
+		evictFromCache(GetImmovablePropertyKey.class, k -> k.getImmoId() == immoId);
 	}
 
 	/**
@@ -580,9 +589,6 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	 * @param buildingId l'id technique Unireg du bâtiment
 	 */
 	public void evictBuilding(long buildingId) {
-		final List<?> keys = cache.getKeys();
-		keys.stream()
-				.filter(k -> k instanceof GetBuildingKey && ((GetBuildingKey) k).getBuildingId() == buildingId)
-				.forEach(k -> cache.remove(k));
+		evictFromCache(GetBuildingKey.class, k -> k.getBuildingId() == buildingId);
 	}
 }

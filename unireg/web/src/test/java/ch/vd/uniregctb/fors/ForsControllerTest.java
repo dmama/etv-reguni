@@ -1800,8 +1800,8 @@ public class ForsControllerTest extends WebTestSpring3 {
 
 				final Optional<ForFiscalSecondaire> ffsYverdon = pp.getForsFiscaux().stream()
 						.filter(AnnulableHelper::nonAnnule)
-						.filter(f -> f instanceof ForFiscalSecondaire)
-						.map(f -> (ForFiscalSecondaire) f)
+						.filter(ForFiscalSecondaire.class::isInstance)
+						.map(ForFiscalSecondaire.class::cast)
 						.filter(f -> f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && f.getNumeroOfsAutoriteFiscale() == MockCommune.YverdonLesBains.getNoOFS())
 						.findAny();
 				Assert.assertTrue(ffsYverdon.isPresent());
@@ -1943,8 +1943,8 @@ public class ForsControllerTest extends WebTestSpring3 {
 
 				final Optional<ForFiscalSecondaire> ffsYverdon = pp.getForsFiscaux().stream()
 						.filter(AnnulableHelper::nonAnnule)
-						.filter(f -> f instanceof ForFiscalSecondaire)
-						.map(f -> (ForFiscalSecondaire) f)
+						.filter(ForFiscalSecondaire.class::isInstance)
+						.map(ForFiscalSecondaire.class::cast)
 						.filter(f -> f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && f.getNumeroOfsAutoriteFiscale() == MockCommune.YverdonLesBains.getNoOFS())
 						.findAny();
 				Assert.assertTrue(ffsYverdon.isPresent());

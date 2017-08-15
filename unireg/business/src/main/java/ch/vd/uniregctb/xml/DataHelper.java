@@ -23,6 +23,7 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
@@ -1181,7 +1182,8 @@ public abstract class DataHelper {
 		// Récupère les appartenances ménages du tiers
 		final Set<RapportEntreTiers> rapports = tiers.getRapportsSujet();
 		final List<RapportEntreTiers> rapportsMenage = rapports.stream()
-				.filter(rapport -> !rapport.isAnnule() && rapport instanceof AppartenanceMenage)
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(AppartenanceMenage.class::isInstance)
 				.collect(Collectors.toList());
 
 		if (rapportsMenage.isEmpty()) {

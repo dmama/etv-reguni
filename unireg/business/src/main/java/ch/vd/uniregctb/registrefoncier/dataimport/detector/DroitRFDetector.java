@@ -254,8 +254,8 @@ public class DroitRFDetector {
 		//        elles sont fournies en tant qu'entité implicite dans la liste des droits. Dans Unireg, nous sommes partis sur le principe
 		//        de traiter les communautés comme des ayant-droits et de les stocker dans la base.
 		droits.stream()
-				.filter(e -> e instanceof PersonEigentumAnteil)
-				.map(e -> (PersonEigentumAnteil) e)
+				.filter(PersonEigentumAnteil.class::isInstance)
+				.map(PersonEigentumAnteil.class::cast)
 				.map(PersonEigentumAnteil::getGemeinschaft)
 				.filter(Objects::nonNull)
 				.forEach(g -> processAyantDroit(parentImport, g));
@@ -267,8 +267,8 @@ public class DroitRFDetector {
 		//       Dans Unireg, les immeubles dominants sont considérés comme des ayants-droits à part entière et doivent être
 		//       persistés dans la base.
 		droits.stream()
-				.filter(e -> e instanceof GrundstueckEigentumAnteil)
-				.map(e -> (GrundstueckEigentumAnteil) e)
+				.filter(GrundstueckEigentumAnteil.class::isInstance)
+				.map(GrundstueckEigentumAnteil.class::cast)
 				.map(GrundstueckEigentumAnteil::getBerechtigtesGrundstueckIDREF)
 				.filter(idRf -> !blacklistRFHelper.isBlacklisted(idRf))
 				.map(DroitRFDetector::newDummyGrundstueck)
@@ -291,7 +291,8 @@ public class DroitRFDetector {
 
 			final Set<String> existingAyantsDroits = ayantDroitRFDAO.findAvecDroitsActifs(typeDroit);
 			final Set<String> nouveauAyantsDroits = cacheDroits.keySet().stream()
-					.map(k -> ((IdRfCacheKey) k).getIdRF())
+					.map(IdRfCacheKey.class::cast)
+					.map(IdRfCacheKey::getIdRF)
 					.collect(Collectors.toSet());
 
 			// on ne garde que les ayants-droits existants dans la DB qui n'existent pas dans le fichier XML

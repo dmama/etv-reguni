@@ -353,7 +353,7 @@ public class MandataireController implements MessageSourceAware, InitializingBea
 		if (rets != null && !rets.isEmpty()) {
 			forEach(rets,
 			        ret -> ret instanceof Mandat && targetTypes.contains(((Mandat) ret).getTypeMandat()),
-					ret -> (Mandat) ret,
+					Mandat.class::cast,
 					job);
 		}
 	}

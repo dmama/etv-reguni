@@ -137,7 +137,8 @@ public class TiersActivationController implements MessageSourceAware {
 	private static TiersCriteriaView getCriteriaFromSessionOrNew(HttpSession session, ActivationMode mode, TypePopulation typePopulation) {
 		final String name = buildCriteriaSessionName(mode, typePopulation);
 		return Optional.of(session)
-				.map(s -> (TiersCriteriaView) s.getAttribute(name))
+				.map(s -> s.getAttribute(name))
+				.map(TiersCriteriaView.class::cast)
 				.orElseGet(TiersCriteriaView::new);
 	}
 

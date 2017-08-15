@@ -180,7 +180,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		if (assujettissements != null) {
 
 			// on enlève donc tous les assujettissements de type "sourcier pur"
-			assujettissements.removeIf(a -> a instanceof SourcierPur);
+			assujettissements.removeIf(SourcierPur.class::isInstance);
 
 			// si la collection d'asujettissements est maintenant vide, cela signifie que nous avions affaire
 			// à un sourcier pur qui l'a toujours été -> contribuable ignoré

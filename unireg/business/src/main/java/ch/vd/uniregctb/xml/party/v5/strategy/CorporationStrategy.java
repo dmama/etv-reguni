@@ -469,26 +469,28 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		final List<IfoncExemption> exemptions = to.getIfoncExemptions();
 		entreprise.getAllegementsFonciers().stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.filter(a -> a instanceof ExonerationIFONC)
+				.filter(ExonerationIFONC.class::isInstance)
+				.map(ExonerationIFONC.class::cast)
 				.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
-				.map(a -> LandTaxLighteningBuilder.buildIfoncExemption((ExonerationIFONC) a))
+				.map(LandTaxLighteningBuilder::buildIfoncExemption)
 				.forEach(exemptions::add);
 
 		// les dégrèvements
 		final List<IciAbatement> abatements = to.getIciAbatements();
 		entreprise.getAllegementsFonciers().stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.filter(a -> a instanceof DegrevementICI)
+				.filter(DegrevementICI.class::isInstance)
+				.map(DegrevementICI.class::cast)
 				.sorted(new DateRangeComparator<AllegementFoncier>().thenComparing(a -> a.getImmeuble().getId()))
-				.map(a -> LandTaxLighteningBuilder.buildIciAbatement((DegrevementICI) a))
+				.map(LandTaxLighteningBuilder::buildIciAbatement)
 				.forEach(abatements::add);
 
 		// les demandes de dégrèvements
 		final List<IciAbatementRequest> requests = to.getIciAbatementRequests();
 		entreprise.getAutresDocumentsFiscaux().stream()
-				.filter(d -> d instanceof DemandeDegrevementICI)
 				.filter(AnnulableHelper::nonAnnule)
-				.map (a -> (DemandeDegrevementICI)a)
+				.filter(DemandeDegrevementICI.class::isInstance)
+				.map(DemandeDegrevementICI.class::cast)
 				.sorted(Comparator.<DemandeDegrevementICI, RegDate>comparing(AutreDocumentFiscal::getDateEnvoi).thenComparing(a -> a.getImmeuble().getId()))
 				.map(LandTaxLighteningBuilder::buildIciAbatementRequest)
 				.forEach(requests::add);

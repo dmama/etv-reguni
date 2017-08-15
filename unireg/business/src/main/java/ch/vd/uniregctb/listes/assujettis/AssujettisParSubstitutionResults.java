@@ -164,7 +164,7 @@ public class AssujettisParSubstitutionResults extends AbstractJobResults<Long,As
 		else {
 
 			//  on ne doit pas tenir compte des assujettissement source pure, on les enlève maintenant
-			assujettissements.removeIf(assujettissement -> assujettissement instanceof SourcierPur);
+			assujettissements.removeIf(SourcierPur.class::isInstance);
 
 			// s'il ne reste plus rien, c'est que le contribuable était toujours sourcier pur...
 			if (assujettissements.isEmpty()) {
