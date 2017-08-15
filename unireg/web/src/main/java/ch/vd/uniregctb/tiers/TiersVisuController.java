@@ -19,6 +19,7 @@ import ch.vd.uniregctb.tache.manager.TacheListManager;
 import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.manager.TiersVisuManager;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.HttpSessionConstants;
 import ch.vd.uniregctb.utils.HttpSessionUtils;
@@ -83,11 +84,12 @@ public class TiersVisuController extends AbstractTiersController {
 				if(!SecurityHelper.isGranted(securityProvider, Role.VISU_LIMITE)){
 					throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 				}
-				//pas de droits pour les inactifs, les DPI et les gris
-				if(tiersVisuView.isDebiteurInactif() ||
+				// pas de droits pour les inactifs, les DPI et les gris (selon SIFISC-25963, gris = non-habitant avec for vaudois source-pure)
+				if (tiersVisuView.isDebiteurInactif() ||
 						tiersVisuView.getNatureTiers() == NatureTiers.DebiteurPrestationImposable ||
-					(tiersVisuView.getNatureTiers() == NatureTiers.NonHabitant &&
-						tiersVisuView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)){
+						(tiersVisuView.getNatureTiers() == NatureTiers.NonHabitant &&
+								tiersVisuView.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+								tiersVisuView.getModeImposition() == ModeImposition.SOURCE)) {
 					isAllowed = false;
 					tiersVisuView.setTiers(null);
 				}

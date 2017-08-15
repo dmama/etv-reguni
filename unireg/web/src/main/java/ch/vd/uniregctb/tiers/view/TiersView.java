@@ -3,9 +3,12 @@ package ch.vd.uniregctb.tiers.view;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,16 +30,17 @@ import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.DecisionAciView;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
@@ -191,33 +195,44 @@ public class TiersView {
 	 * @return la nature du tiers (	Entreprise / Etablissement / Habitant / Non Habitant / AutreCommunaute / MenageCommun)
 	 */
 	public NatureTiers getNatureTiers() {
-		if (tiers != null) {
-			return tiers.getNatureTiers();
-		}
-		return null;
+		return tiers != null ? tiers.getNatureTiers() : null;
 	}
 
 	/**
 	 * @return si le tiers est inactif (ancien I107)
 	 */
 	public boolean isDebiteurInactif() {
-		if (tiers != null)
-			return tiers.isDebiteurInactif();
-		return true;
+		return tiers == null || tiers.isDebiteurInactif();
+	}
+
+	private <T extends ForFiscalPrincipal> Optional<T> getForFiscalPrincipalCourant(Class<T> clazz) {
+		return Stream.of(tiers)
+				.filter(Objects::nonNull)
+				.map(t -> t.getForsFiscauxValidAt(null))
+				.flatMap(List::stream)
+				.filter(clazz::isInstance)
+				.map(clazz::cast)
+				.findFirst();
 	}
 
 	/**
 	 * @return le type d'autorité fiscale du for principal actif
 	 */
+	@Nullable
 	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
-		TypeAutoriteFiscale result = null;
-		if (tiers instanceof Contribuable) {
-			ForFiscalPrincipal forFiscal = ((Contribuable) tiers).getForFiscalPrincipalAt(null);
-			if (forFiscal != null) {
-				result = forFiscal.getTypeAutoriteFiscale();
-			}
-		}
-		return result;
+		return getForFiscalPrincipalCourant(ForFiscalPrincipal.class)
+				.map(ForFiscalPrincipal::getTypeAutoriteFiscale)
+				.orElse(null);
+	}
+
+	/**
+	 * @return le mode d'imposition du for principal PP actif
+	 */
+	@Nullable
+	public ModeImposition getModeImposition() {
+		return getForFiscalPrincipalCourant(ForFiscalPrincipalPP.class)
+				.map(ForFiscalPrincipalPP::getModeImposition)
+				.orElse(null);
 	}
 
 	public PersonnePhysique getTiersConjoint() {
