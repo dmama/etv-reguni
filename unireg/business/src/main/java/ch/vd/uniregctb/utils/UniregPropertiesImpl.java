@@ -85,7 +85,7 @@ public class UniregPropertiesImpl implements UniregProperties, InitializingBean 
 		}
 		Collections.sort(list);
 
-		String str = "";
+		final StringBuilder str = new StringBuilder();
 		for (String key : list) {
 			String value;
 			if (hidePasswords && PASSWORD_PATTERN.matcher(key).find()) {
@@ -94,9 +94,9 @@ public class UniregPropertiesImpl implements UniregProperties, InitializingBean 
 			else {
 				value = properties.getString(key);
 			}
-			str += " * " + key + " => " + value + '\n';
+			str.append(" * ").append(key).append(" => ").append(value).append('\n');
 		}
-		return str;
+		return str.toString();
 	}
 
 	public String getProperty(String key) {

@@ -25,6 +25,7 @@ import ch.vd.unireg.xml.party.taxpayer.v1.FamilyStatus;
 import ch.vd.unireg.xml.party.taxpayer.v1.MaritalStatus;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
 import ch.vd.unireg.xml.party.v1.Party;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
 
 /**
@@ -76,16 +77,7 @@ public class EtatCivilCompThread extends Thread {
 				return "<none>";
 			}
 			else {
-				String s = null;
-				for (PartyPart e : parts) {
-					if (s == null) {
-						s = e.name();
-					}
-					else {
-						s += '+' + e.name();
-					}
-				}
-				return s;
+				return CollectionsUtils.toString(parts, PartyPart::name, "+");
 			}
 		}
 
