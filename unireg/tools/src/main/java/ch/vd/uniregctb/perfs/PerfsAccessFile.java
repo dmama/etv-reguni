@@ -132,15 +132,7 @@ public class PerfsAccessFile {
 		calls.sort(new Comparator<Call>() {
 			@Override
 			public int compare(Call o1, Call o2) {
-				if (o1.getMillisecondes() < o2.getMillisecondes()) {
-					return -1;
-				}
-				else if (o1.getMillisecondes() > o2.getMillisecondes()) {
-					return +1;
-				}
-				else {
-					return 0;
-				}
+				return Long.compare(o1.getMillisecondes(), o2.getMillisecondes());
 			}
 		});
 

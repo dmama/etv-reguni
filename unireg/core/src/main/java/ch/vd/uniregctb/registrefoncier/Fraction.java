@@ -72,14 +72,6 @@ public class Fraction implements Comparable<Fraction> {
 		// otherwise see which is less
 		long first = (long) this.numerateur * (long) other.denominateur;
 		long second = (long) other.numerateur * (long) this.denominateur;
-		if (first == second) {
-			return 0;
-		}
-		else if (first < second) {
-			return -1;
-		}
-		else {
-			return 1;
-		}
+		return Long.compare(first, second);
 	}
 }

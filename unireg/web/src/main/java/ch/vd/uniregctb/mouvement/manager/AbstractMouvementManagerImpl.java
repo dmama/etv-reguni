@@ -153,7 +153,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 					public int compare(MouvementDetailView o1, MouvementDetailView o2) {
 						final long no1 = o1.getContribuable().getNumero();
 						final long no2 = o2.getContribuable().getNumero();
-						return no1 < no2 ? -1 : (no1 > no2 ? 1 : 0);
+						return Long.compare(no1, no2);
 					}
 				});
 			}

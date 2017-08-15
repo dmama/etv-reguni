@@ -44,7 +44,7 @@ public final class AdresseViewComparator implements Comparator<AdresseView> {
 
 	@Override
 	public int compare(AdresseView o1, AdresseView o2) {
-		int compare = Boolean.valueOf(o1.isAnnule()).compareTo(o2.isAnnule());
+		int compare = Boolean.compare(o1.isAnnule(), o2.isAnnule());
 
 		if (compare == 0) {
 			compare = comparatorUsageAdresseCivile.compare(o1.getUsageCivil(), o2.getUsageCivil());

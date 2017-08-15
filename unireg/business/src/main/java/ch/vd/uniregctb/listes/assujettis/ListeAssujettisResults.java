@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -49,8 +50,8 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 		}
 
 		@Override
-		public int compareTo(T o) {
-			return (noCtb < o.noCtb ? -1 : (noCtb > o.noCtb ? 1 : 0));
+		public int compareTo(@NotNull T o) {
+			return Long.compare(noCtb, o.noCtb);
 		}
 	}
 
@@ -71,7 +72,7 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 		}
 
 		@Override
-		public int compareTo(InfoCtbAssujetti o) {
+		public int compareTo(@NotNull InfoCtbAssujetti o) {
 			int comparison = super.compareTo(o);
 			if (comparison == 0) {
 				if (debutAssujettissement != o.debutAssujettissement) {

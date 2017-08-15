@@ -13,7 +13,7 @@ public class EvenementOrganisationComparator implements Comparator<EvenementOrga
 	public int compare(EvenementOrganisation o1, EvenementOrganisation o2) {
 		int comp = o1.getDateEvenement().compareTo(o2.getDateEvenement());
 		if (comp == 0) {
-			comp = (o1.getId() < o2.getId() ? -1 : (o1.getId() > o2.getId() ? 1 : 0));
+			comp = Long.compare(o1.getId(), o2.getId());
 		}
 		return comp;
 	}

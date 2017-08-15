@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -25,8 +26,8 @@ public class ImportCodesSegmentResults extends JobResults<ContribuableAvecCodeSe
 		}
 
 		@Override
-		public int compareTo(Info o) {
-			return noTiers < o.noTiers ? -1 : (noTiers > o.noTiers ? 1 : 0);
+		public int compareTo(@NotNull Info o) {
+			return Long.compare(noTiers, o.noTiers);
 		}
 	}
 

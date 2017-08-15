@@ -147,7 +147,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 			final Instant now = InstantHelper.get();
 			final long myDelay = getDelay(TimeUnit.NANOSECONDS, now);
 			final long yourDelay = ((DelayedIndividu) o).getDelay(TimeUnit.NANOSECONDS, now);
-			return myDelay < yourDelay ? -1 : (myDelay > yourDelay ? 1 : 0);
+			return Long.compare(myDelay, yourDelay);
 		}
 
 		@Override

@@ -22,7 +22,7 @@ public class DecisionAciViewComparator implements Comparator<DecisionAciView> {
 	}
 	@Override
 	public int compare(DecisionAciView o1, DecisionAciView o2) {
-		int compare = Boolean.valueOf(o1.isAnnule()).compareTo(o2.isAnnule());
+		int compare = Boolean.compare(o1.isAnnule(), o2.isAnnule());
 		if (compare == 0) {
 			compare = - compareNullable(o1.getDateDebut(), o2.getDateDebut(), false);
 		}

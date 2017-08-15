@@ -20,7 +20,7 @@ public class EvenementCivilEchBasicInfoComparator implements Comparator<Evenemen
 			comp = TYPE_PRIORITY_COMPARATOR.compare(o1.getType(), o2.getType());
 		}
 		if (comp == 0) {
-			comp = (o1.getId() < o2.getId() ? -1 : (o1.getId() > o2.getId() ? 1 : 0));
+			comp = Long.compare(o1.getId(), o2.getId());
 		}
 		return comp;
 	}

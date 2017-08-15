@@ -148,7 +148,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationService;
 			final Instant now = InstantHelper.get();
 			final long myDelay = getDelay(TimeUnit.NANOSECONDS, now);
 			final long yourDelay = ((DelayedOrganisation) o).getDelay(TimeUnit.NANOSECONDS, now);
-			return myDelay < yourDelay ? -1 : (myDelay > yourDelay ? 1 : 0);
+			return Long.compare(myDelay, yourDelay);
 		}
 
 		@Override
