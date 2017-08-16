@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.commons.lang3.tuple.Pair;
@@ -5719,11 +5720,13 @@ debut PF                                                                        
 		assertEquals(2, enfantsForDeclaration.size());
 	}
 
-
-	//Couple avec Enfant  ayant des EGID different
+	/**
+	 * Couple marié avec Papa et Maman qui n'habitent pas au même endroit
+	 * [SIFISC-22155] -> les enfants sont maintenant sur la DI du couple
+	 */
 	@Test
 	@Transactional
-	public void testGetEnfantsForDeclarationEGIDDifferent() throws Exception {
+	public void testGetEnfantsForDeclarationParentsMariesResidentsEndroitsDifferents() throws Exception {
 
 		final long indMere = 1;
 		final long indPere = 2;
@@ -5747,7 +5750,7 @@ debut PF                                                                        
 				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRouteDeLausanne, 1, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
 				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFils, null);
-				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
+				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Grandvaux.BatimentRouteDeLausanne, 1, null, dateNaissanceFille, null);
 			}
 		});
 
@@ -5789,7 +5792,96 @@ debut PF                                                                        
 		final Contribuable menageCommun = (Contribuable) tiersDAO.get(idMenage);
 		List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(menageCommun, date(2011, 12, 31));
 		assertNotNull(enfantsForDeclaration);
-		assertEquals(0, enfantsForDeclaration.size());
+		assertEquals(2, enfantsForDeclaration.size());
+	}
+
+	/**
+	 * Couple en concubinage avec enfants
+	 * [SIFISC-22155] -> les enfants doivent être sur la DI de leur(s) parent(s)
+	 */
+	@Test
+	@Transactional
+	public void testGetEnfantsForDeclarationParentsEnConcubinage() throws Exception {
+
+		final long indMere = 1;
+		final long indPere = 2;
+		final long indFils = 3;
+		final long indFille = 4;
+		final long indEnfantCommun = 42;
+		final RegDate dateNaissanceFils = date(2000, 2, 8);
+		final RegDate dateNaissanceFille = date(2007, 2, 8);
+		final RegDate dateNaissanceEnfantCommun = date(2012, 11, 22);
+
+		// On crée la situation de départ : une mère, un père, un fils mineur et une fille majeur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu mere = addIndividu(indMere, date(1960, 1, 1), "Champagne", "Josette", Sexe.FEMININ);
+				final MockIndividu pere = addIndividu(indPere, date(1960, 1, 1), "Cognac", "Guy", Sexe.MASCULIN);
+				final MockIndividu filsAPapa = addIndividu(indFils, dateNaissanceFils, "Cognac", "Yvan", Sexe.MASCULIN);
+				final MockIndividu filleAMaman = addIndividu(indFille, dateNaissanceFille, "Champagne", "Eva", Sexe.FEMININ);
+				final MockIndividu enfantCommun = addIndividu(indEnfantCommun, dateNaissanceEnfantCommun, "Champagne", "Trublion", Sexe.MASCULIN);
+
+				// chacun ses enfants
+				addLiensFiliation(filsAPapa, pere, null, dateNaissanceFils, null);
+				addLiensFiliation(filleAMaman, null, mere, dateNaissanceFille, null);
+				addLiensFiliation(enfantCommun, pere, mere, dateNaissanceEnfantCommun, null);
+
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
+				addAdresse(filsAPapa, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFils, null);
+				addAdresse(filleAMaman, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);
+				addAdresse(enfantCommun, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceEnfantCommun, null);
+			}
+		});
+
+		final class Ids {
+			Long mere;
+			Long pere;
+			Long fils;
+			Long fille;
+			Long enfantCommun;
+		}
+
+		final Ids ids = doInNewTransaction(new TxCallback<Ids>() {
+			@Override
+			public Ids execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique mere = addHabitant(indMere);
+				final PersonnePhysique pere = addHabitant(indPere);
+				final PersonnePhysique fils = addHabitant(indFils);
+				final PersonnePhysique fille = addHabitant(indFille);
+				final PersonnePhysique enfantCommun = addHabitant(indEnfantCommun);
+
+				addParente(fils, pere, dateNaissanceFils, null);
+				addParente(fille, mere, dateNaissanceFille, null);
+				addParente(enfantCommun, pere, dateNaissanceEnfantCommun, null);
+				addParente(enfantCommun, mere, dateNaissanceEnfantCommun, null);
+
+				final Ids ids = new Ids();
+				ids.mere = mere.getId();
+				ids.pere = pere.getId();
+				ids.fils = fils.getId();
+				ids.fille = fille.getId();
+				ids.enfantCommun = enfantCommun.getId();
+				return ids;
+			}
+		});
+
+		// déclaration du monsieur
+		{
+			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(ids.pere);
+			final List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(ctb, date(2012, 12, 31));
+			assertNotNull(enfantsForDeclaration);
+			assertEquals(Arrays.asList(ids.fils, ids.enfantCommun), enfantsForDeclaration.stream().map(PersonnePhysique::getNumero).sorted().collect(Collectors.toList()));
+		}
+
+		// déclaration de madame
+		{
+			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(ids.mere);
+			final List<PersonnePhysique> enfantsForDeclaration = tiersService.getEnfantsForDeclaration(ctb, date(2012, 12, 31));
+			assertNotNull(enfantsForDeclaration);
+			assertEquals(Arrays.asList(ids.fille, ids.enfantCommun), enfantsForDeclaration.stream().map(PersonnePhysique::getNumero).sorted().collect(Collectors.toList()));
+		}
 	}
 
 	//Couple avec Enfant  ayant des EWID differents (le garage ?)

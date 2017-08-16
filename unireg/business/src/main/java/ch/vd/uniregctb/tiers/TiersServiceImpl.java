@@ -2141,54 +2141,64 @@ public class TiersServiceImpl implements TiersService {
     }
 
     /**
-     * Le couple EGID/EWID de l’adresse domicile doit être le même entre l’enfant et le CTB à la fin de la période d’imposition. Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID/EWID
-     * identique à celui de l’enfant. Si deux membres d’un ménage commun habitent à des adresses vaudoises (EGID/EWID) différentes, l’enfant ne doit pas figurer sur la DI. Si les deux parents ne sont pas en
-     * ménage commun alors qu’ils ont le même EGID/EWID, l’enfant ne doit figurer sur aucune des deux DI.
+     * Le couple EGID/EWID de l’adresse domicile doit être le même entre l’enfant et le CTB à la fin de la période d’imposition. Dans le cadre d’un ménage commun, il faut que l'un des deux parents ait un EGID/EWID
+     * identique à celui de l’enfant. Si deux membres d’un ménage commun habitent à des adresses vaudoises (EGID/EWID) différentes, l’enfant doit figurer sur la DI du parent chez qui il réside.
+     * Si les deux parents ne sont pas en ménage commun alors qu’ils ont le même EGID/EWID, l’enfant doit figurer sur les deux DI (SIFISC-22155).
      *
      * @param parent               le contribuable  <i>PersonnePhysique</i> ou <i>MenageCommun</i>
-     * @param enfant               qui est succeptible d'être rajouter sur la DI
+     * @param enfant               qui est succeptible d'être ajouté sur la DI
      * @param finPeriodeImposition date de fin de période d'imposition
      * @return <i>TRUE</i> si les egid sont cohérents, <i>FALSE</i>  des incoherences sont trouvées entre l'egid de l'enfant et des parents
      */
     private boolean areEgidEwidCoherents(Contribuable parent, PersonnePhysique enfant, RegDate finPeriodeImposition) {
-        try {
-            final AdresseGenerique adresseDomicileParent = adresseService.getAdresseFiscale(parent, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
-            final AdresseGenerique adresseDomicileEnfant = adresseService.getAdresseFiscale(enfant, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
-            //Les EGID/EWID ne peuvent être déterminées, on retourne false
-            if (adresseDomicileEnfant == null || adresseDomicileParent == null) {
-                return false;
-            }
 
-            if (parent instanceof PersonnePhysique) {
-                //Si les deux parents ne sont pas en ménage commun alors qu’ils ont le même EGID, l’enfant ne doit figurer sur aucune des deux DI.
-                final boolean hasParentsAvecEgidDifferents = TiersHelper.hasParentsAvecEgidEwidDifferents(enfant, (PersonnePhysique) parent, adresseDomicileParent, finPeriodeImposition, adresseService, this);
-                if (hasParentsAvecEgidDifferents) {
-                    //On compare l'egid/ewid du parent et de l'enfant
-                    return TiersHelper.isSameEgidEwid(adresseDomicileEnfant, adresseDomicileParent);
-                }
-            }
-            else if (parent instanceof MenageCommun) {
-                final EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCouple((MenageCommun) parent, finPeriodeImposition);
-                final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
-                final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
-                if (conjoint != null) {
-                    final AdresseGenerique adresseDomicilePrincipal = adresseService.getAdresseFiscale(principal, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
-                    final AdresseGenerique adresseDomicileConjoint = adresseService.getAdresseFiscale(conjoint, TypeAdresseFiscale.DOMICILE, finPeriodeImposition, false);
+        final AdresseGenerique adresseDomicileParent = getAdresseFiscaleDomicile(parent, finPeriodeImposition);
+        final AdresseGenerique adresseDomicileEnfant = getAdresseFiscaleDomicile(enfant, finPeriodeImposition);
 
-                    //Dans le cadre d’un ménage commun, il faut que chacun des deux parents ait un EGID/EWID identique à celui de l’enfant.
-	                return TiersHelper.isSameEgidEwid(adresseDomicilePrincipal, adresseDomicileConjoint) && TiersHelper.isSameEgidEwid(adresseDomicileEnfant, adresseDomicileParent);
-                }
-                else {
-                    //Marié(e) seul(e)
-                    return TiersHelper.isSameEgidEwid(adresseDomicileEnfant, adresseDomicileParent);
-                }
-            }
-        } catch (AdresseException e) {
-            // rien à faire...
-            LOGGER.warn("Test de la coherence d'egid: Impossible de déterminer l'adresse des tiers parent " + parent.getNumero() + " et enfant " + enfant.getNumero(), e);
+        // les EGID/EWID ne peuvent être déterminés, on retourne false
+        if (adresseDomicileEnfant == null || adresseDomicileParent == null) {
+            return false;
         }
-        //Dans tous les autres cas, on retourne faux, on ne prend pas de risque
+
+        if (parent instanceof PersonnePhysique) {
+            // [SIFISC-22155] nouvelle règle : l'enfant mineur apparaît sur les DI de ses parents non-mariés (habitant ensemble ou pas) chez qui il habite
+            // (il peut donc potentiellement apparaître sur les deux DI si toute la famille habite en un seul endroit)
+            return TiersHelper.isSameEgidEwid(adresseDomicileEnfant, adresseDomicileParent);
+        }
+        else if (parent instanceof MenageCommun) {
+            final EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCouple((MenageCommun) parent, finPeriodeImposition);
+            final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
+            final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
+
+            // [SIFISC-22155] parents mariés ou pas, il suffit maintenant que l'enfant mineur réside à la même adresse que l'un de ses parents
+            // dont on édite maintenant la DI pour qu'il y apparaisse : par rapport à la règle précédemment implémentée, les enfants d'un couple
+            // marié dont les membres (parents) ne résident pas au même endroit apparaîtront maintenant sur la DI du couple
+	        return Stream.of(principal, conjoint)
+			        .filter(Objects::nonNull)
+			        .map(pp -> getAdresseFiscaleDomicile(pp, finPeriodeImposition))
+			        .filter(Objects::nonNull)
+			        .anyMatch(adresseParent -> TiersHelper.isSameEgidEwid(adresseParent, adresseDomicileEnfant));
+        }
+
+        // dans tous les autres cas, on retourne faux, on ne prend pas de risque
         return false;
+    }
+
+	/**
+	 * @param ctb           un contribuable
+	 * @param dateReference la date de référence
+	 * @return l'adresse domicile du contribuable à la date donnée, ou <code>null</code> en cas de souci
+	 */
+	@Nullable
+    private AdresseGenerique getAdresseFiscaleDomicile(Contribuable ctb, RegDate dateReference) {
+    	try {
+    		return adresseService.getAdresseFiscale(ctb, TypeAdresseFiscale.DOMICILE, dateReference, false);
+	    }
+	    catch (AdresseException e) {
+    		// un petit log et puis s'en va
+		    LOGGER.warn("Impossible de déterminer l'adresse du tiers " + ctb.getNumero());
+		    return null;
+	    }
     }
 
 	@NotNull
