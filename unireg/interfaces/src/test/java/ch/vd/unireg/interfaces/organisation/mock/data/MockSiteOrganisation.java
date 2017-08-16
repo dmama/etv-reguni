@@ -21,6 +21,7 @@ import ch.vd.unireg.interfaces.organisation.data.Domicile;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.InscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationActiviteHelper;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.PublicationBusiness;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -338,7 +339,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	@Override
 	public boolean isActif(RegDate date) {
-		return OrganisationHelper.isActif(this, date);
+		return OrganisationActiviteHelper.isActif(this, date);
 	}
 
 	@Override

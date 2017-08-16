@@ -277,7 +277,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	@Override
 	public boolean isActif(RegDate date) {
-		return OrganisationHelper.isActif(this, date);
+		return OrganisationActiviteHelper.isActif(this, date);
 	}
 
 	/**
