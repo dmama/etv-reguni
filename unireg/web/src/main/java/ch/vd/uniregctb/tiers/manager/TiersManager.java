@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -52,6 +53,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NpaEtLocalite;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.pagination.WebParamPagination;
 import ch.vd.uniregctb.decision.aci.DecisionAciViewComparator;
@@ -808,9 +810,7 @@ public class TiersManager implements MessageSourceAware {
 				.map(ImmeubleRF::getSituations)
 				.flatMap(Set::stream)
 				.filter(AnnulableHelper::nonAnnule)
-				.map(SituationRF::getCommune)
-				.filter(AnnulableHelper::nonAnnule)
-				.map(commune -> communesVaudoises.computeIfAbsent(commune.getNoOfs(), ofs -> buildCommuneInconnue(commune)))
+				.map(situation -> resolveCommune(situation, communesVaudoises))
 				.map(commune -> new CommuneView(commune.getNoOFS(), commune.getNomOfficiel()))
 				.collect(Collectors.toMap(CommuneView::getNoOfs,
 				                          Function.identity(),
@@ -833,6 +833,30 @@ public class TiersManager implements MessageSourceAware {
 		return communes.values().stream()
 				.sorted(Comparator.comparing(CommuneView::getNom))
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Extrait la commune de la situation et complète la map des communes à la volée.
+	 *
+	 * @param situation         une situation d'immeuble
+	 * @param communesVaudoises une map des communes
+	 * @return la commune correspondant à la situation spécifiée
+	 */
+	private static EntiteOFS resolveCommune(@NotNull SituationRF situation, @NotNull Map<Integer, EntiteOFS> communesVaudoises) {
+
+		final Integer communeSurchargee = situation.getNoOfsCommuneSurchargee();
+		if (communeSurchargee != null) {
+			// [SIFISC-24367] on expose que le numéro Ofs de la commune surchargée
+			final EntiteOFS commune = communesVaudoises.get(communeSurchargee);
+			if (commune == null) {
+				throw new ObjectNotFoundException("La commune avec le numéro Ofs=" + communeSurchargee + " n'existe pas.");
+			}
+			return commune;
+		}
+
+		// on complète - si nécessaire - la liste des communes vaudoises avec la commune venant du RF
+		final int noOfs = situation.getCommune().getNoOfs();
+		return communesVaudoises.computeIfAbsent(noOfs, ofs -> buildCommuneInconnue(situation.getCommune()));
 	}
 
 	private static EntiteOFS buildCommuneInconnue(CommuneRF communeRF) {

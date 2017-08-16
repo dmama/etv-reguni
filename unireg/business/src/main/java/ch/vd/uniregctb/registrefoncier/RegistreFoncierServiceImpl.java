@@ -333,10 +333,8 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	public Commune getCommune(ImmeubleRF immeuble, RegDate dateReference) {
 		final SituationRF situation = getSituation(immeuble, dateReference);
 		return Optional.ofNullable(situation)
-				.map(SituationRF::getCommune)
-				.map(CommuneRF::getNoOfs)
+				.map(SituationRF::getNoOfsCommune)
 				.map(ofs -> infraService.getCommuneByNumeroOfs(ofs, dateReference))
-				.filter(Objects::nonNull)           // au cas où le numéro de commune est inconnu de l'infrastructure (c'est possible), pour ne pas finir sur une NPE...
 				.orElse(null);
 	}
 

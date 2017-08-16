@@ -14,11 +14,11 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AbstractJobResults;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
@@ -31,6 +31,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
@@ -41,6 +42,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 
 	public final RegDate dateReference;
 	public final int nbThreads;
+	private final RegistreFoncierService registreFoncierService;
 
 	public static class NomPrenomRaisonSocialeDateNaissance {
 		public final String prenom;
@@ -142,7 +144,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 				.orElse(null);
 	}
 
-	public static class InfoImmeuble {
+	public class InfoImmeuble {
 		public final Long idImmeuble;
 		public final String egrid;
 		public final RegDate dateRadiationImmeuble;
@@ -163,9 +165,15 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 				index2 = situation.getIndex2();
 				index3 = situation.getIndex3();
 
-				final CommuneRF commune = situation.getCommune();
-				nomCommune = commune.getNomRf();
-				noOfsCommune = commune.getNoOfs();
+				final Commune commune = registreFoncierService.getCommune(immeuble, situation.getDateDebut());
+				if (commune != null) {
+					nomCommune = commune.getNomOfficiel();
+					noOfsCommune = commune.getNoOFS();
+				}
+				else {
+					nomCommune = null;
+					noOfsCommune = null;
+				}
 			}
 			else {
 				noParcelle = null;
@@ -178,7 +186,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		}
 	}
 
-	public static class InfoExtraction {
+	public class InfoExtraction {
 
 		public final Long idContribuable;
 		public final Long idCommunaute;
@@ -306,7 +314,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		}
 	}
 
-	public static class ImmeubleIgnore {
+	public class ImmeubleIgnore {
 		public final InfoImmeuble infoImmeuble;
 		public final String raison;
 
@@ -321,9 +329,10 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 	private final List<ImmeubleIgnore> immeublesIgnores = new LinkedList<>();
 	private final List<ErreurImmeuble> erreurs = new LinkedList<>();
 
-	public InitialisationIFoncResults(RegDate dateReference, int nbThreads) {
+	public InitialisationIFoncResults(RegDate dateReference, int nbThreads, @NotNull RegistreFoncierService registreFoncierService) {
 		this.dateReference = dateReference;
 		this.nbThreads = nbThreads;
+		this.registreFoncierService = registreFoncierService;
 	}
 
 	@Override
