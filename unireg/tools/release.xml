@@ -41,7 +41,7 @@
 		</file>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-tools-7.2.2-SNAPSHOT.jar</source>
+			<source>target/uniregctb-tools-7.2.2.jar</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>tools/lib</outputDirectory>
 			<destName>uniregctb-tools.jar</destName>
