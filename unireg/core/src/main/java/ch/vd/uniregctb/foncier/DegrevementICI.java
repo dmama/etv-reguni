@@ -7,7 +7,10 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -111,5 +114,47 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 
 	public void setNonIntegrable(Boolean nonIntegrable) {
 		this.nonIntegrable = nonIntegrable;
+	}
+
+	/**
+	 * @return la valeur (entre 0 et 100) calculée à partir des valeurs arrêtées du pourcentage de dégrèvement global (en prenant
+	 * en compte la part de propre usage complète, et la part de location déterminée par le contrôle sur la loi sur le logement)
+	 */
+	@Transient
+	@Nullable
+	public BigDecimal getPourcentageDegrevement() {
+		final Optional<BigDecimal> loc = Optional.ofNullable(this.location).map(DonneesUtilisation::getPourcentageArrete);
+		final Optional<BigDecimal> pu = Optional.ofNullable(this.propreUsage).map(DonneesUtilisation::getPourcentageArrete);
+		if (loc.isPresent() || pu.isPresent()) {
+			// si l'un des deux est là, on peut déduire l'autre, au pire
+			final BigDecimal cent = BigDecimal.valueOf(100L);
+			//noinspection ConstantConditions
+			final BigDecimal location = loc.orElseGet(() -> cent.subtract(pu.get()));
+			final BigDecimal propreUsage = pu.orElseGet(() -> cent.subtract(location));
+			if (propreUsage.compareTo(cent) >= 0) {
+				// de toute façon, on ne pourra pas faire plus...
+				return cent;
+			}
+
+			// prise en compte de la loi sur le logement
+			final Optional<BigDecimal> loiLogement = this.loiLogement != null && this.loiLogement.getControleOfficeLogement() != null && this.loiLogement.getControleOfficeLogement()
+					? Optional.ofNullable(this.loiLogement.getPourcentageCaractereSocial())
+					: Optional.of(BigDecimal.ZERO);
+			if (loiLogement.isPresent()) {
+				// PU + (LL * LOC)
+				final BigDecimal calc = propreUsage.add(loiLogement.get().multiply(location).movePointLeft(2));
+
+				// limitation à la plage autorisée 0-100
+				//noinspection ConstantConditions
+				return Stream.of(BigDecimal.ZERO,
+				                 Stream.of(calc, cent).min(Comparator.naturalOrder()).get())
+						.max(Comparator.naturalOrder())
+						.get()
+						.stripTrailingZeros();
+			}
+		}
+
+		// cas de valeur non-définie
+		return null;
 	}
 }

@@ -36,6 +36,7 @@ public class LandTaxLighteningBuilder {
 		abatement.setRentalUse(buildUseData(degrev.getLocation()));
 		abatement.setHousingAct(buildHousingAct(degrev.getLoiLogement()));
 		abatement.setImmovablePropertyId(degrev.getImmeuble().getId());
+		abatement.setAbatementPercent(degrev.getPourcentageDegrevement());
 		return abatement;
 	}
 
