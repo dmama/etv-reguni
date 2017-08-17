@@ -162,7 +162,7 @@
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Donnes d'utilisation en location.</jxb:javadoc>
+									<jxb:javadoc>Données d'utilisation en location.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
@@ -171,7 +171,7 @@
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Donnes d'utilisation en propre.</jxb:javadoc>
+									<jxb:javadoc>Données d'utilisation en propre.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
@@ -180,12 +180,30 @@
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Donnes sur la loi sur le logement.</jxb:javadoc>
+									<jxb:javadoc>Données sur la loi sur le logement.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="abatementPercent" type="common:percentTwoDigitsType" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le pourcentage de dégrèvement calculé à partir des valeurs arrêtées (0-100, 2 décimales).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding2" type="xs:int">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
