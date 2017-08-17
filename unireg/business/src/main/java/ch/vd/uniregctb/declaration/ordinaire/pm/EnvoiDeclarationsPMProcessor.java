@@ -282,14 +282,12 @@ public class EnvoiDeclarationsPMProcessor {
 			di.setCodeSegment(declarationImpotService.computeCodeSegment((Entreprise) pm, tache.getDateFin(), tache.getTypeDocument()));
 		}
 
-		final DeclarationImpotOrdinairePM savedDi = hibernateTemplate.merge(di);
-
 		// ajout de l'état initial de la DI
-		savedDi.addEtat(new EtatDeclarationEmise(dateTraitement));
+		di.addEtat(new EtatDeclarationEmise(dateTraitement));
 
 		// ajout du délai initial de retour
 		final DatesDelaiInitial datesDelaiInitial = getDelaiInitialRetour(tache.getTypeContribuable(), tache.getDateFin(), dateTraitement, periodeFiscale);
-		savedDi.setDelaiRetourImprime(datesDelaiInitial.getDateImprimee());
+		di.setDelaiRetourImprime(datesDelaiInitial.getDateImprimee());
 
 		final DelaiDeclaration delaiInitial = new DelaiDeclaration();
 		delaiInitial.setEtat(EtatDelaiDeclaration.ACCORDE);
@@ -297,9 +295,10 @@ public class EnvoiDeclarationsPMProcessor {
 		delaiInitial.setDateDemande(dateTraitement);
 		delaiInitial.setDateTraitement(dateTraitement);
 		delaiInitial.setDelaiAccordeAu(datesDelaiInitial.getDateEffective());
-		savedDi.addDelai(delaiInitial);
+		di.addDelai(delaiInitial);
 
 		// emvoyer le document à l'éditique
+		final DeclarationImpotOrdinairePM savedDi = hibernateTemplate.merge(di);
 		declarationImpotService.envoiDIForBatch(savedDi, dateTraitement);
 
 		informationsFiscales.addNouvelleDeclaration(pm, savedDi);

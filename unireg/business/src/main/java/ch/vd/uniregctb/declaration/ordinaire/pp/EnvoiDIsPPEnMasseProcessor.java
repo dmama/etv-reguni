@@ -634,6 +634,10 @@ public class EnvoiDIsPPEnMasseProcessor {
 		ajouterDelaisDeRetourInitial(di, dateTraitement, dateExpedition);
 		ajouterAdresseRetour(di, tache, cache);
 
+		// [SIFISC-24443] nouvelle sauvegarde de la DI (déjà sauvegardée dans le creerDI plus haut)
+		// (pour s'assurer que les états, délais... placés sur la DI ont bien un ID aussi, nécessaire pour la récupération de la clé d'accès dans le DPerm du document initial)
+		hibernateTemplate.merge(di);
+
 		// Impression de la déclaration proprement dites
 		if (!simul) {
 			imprimerDI(di, dateTraitement);

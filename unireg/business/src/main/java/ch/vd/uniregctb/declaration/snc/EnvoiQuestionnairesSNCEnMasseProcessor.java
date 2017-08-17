@@ -176,10 +176,11 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 				questionnaire.setModeleDocument(pf.get(TypeDocument.QUESTIONNAIRE_SNC));
 				questionnaire.setNumero(getNewSequenceNumber(entreprise, pf.getAnnee()));
 				questionnaire.setTiers(entreprise);
-				final QuestionnaireSNC saved = hibernateTemplate.merge(questionnaire);
 
-				saved.addEtat(new EtatDeclarationEmise(dateTraitement));
-				addDelaiRetourInitial(saved, dateTraitement, pf.getParametrePeriodeFiscaleSNC());
+				questionnaire.addEtat(new EtatDeclarationEmise(dateTraitement));
+				addDelaiRetourInitial(questionnaire, dateTraitement, pf.getParametrePeriodeFiscaleSNC());
+
+				final QuestionnaireSNC saved = hibernateTemplate.merge(questionnaire);
 				entreprise.addDeclaration(saved);
 				questionnaireService.envoiQuestionnaireSNCForBatch(saved, dateTraitement);
 				rapport.addQuestionnaireEnvoye(saved);
