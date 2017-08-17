@@ -287,7 +287,7 @@
 						</li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_SUIVI_IMPORT_RF">
+					<authz:authorize ifAnyGranted="ROLE_GEST_FRACTIONS_COMMUNE_RF">
 						<li><fmt:message key="label.registre.foncier"/>
 							<ul>
 								<li><a href="<c:url value='/registrefoncier/situation/surcharge/list.do'/>"><fmt:message key="label.fraction.communes"/></a></li>
