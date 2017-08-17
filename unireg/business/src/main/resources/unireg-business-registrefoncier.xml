@@ -9,7 +9,9 @@
 		<property name="batimentRFDAO" ref="batimentRFDAO"/>
 		<property name="immeubleRFDAO" ref="immeubleRFDAO"/>
 		<property name="ayantDroitRFDAO" ref="ayantDroitRFDAO"/>
+		<property name="situationRFDAO" ref="situationRFDAO"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="evenementFiscalService" ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="communeRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.CommuneRFValidator" parent="dateRangeEntityValidator" />

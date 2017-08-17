@@ -151,7 +151,7 @@ public class SituationSurchargeRFController {
 		}
 
 		// on met-à-jour la situation
-		situation.setNoOfsCommuneSurchargee(surcharge.getNoOfsSurcharge());
+		registreFoncierService.surchargerCommuneFiscaleSituation(situation.getId(), surcharge.getNoOfsSurcharge());
 		Flash.message("La fraction de commune a bien été renseignée sur la parcelle n°" + situation.getNoParcelle() + " de la commune " + situation.getCommune().getNomRf(), 4000);
 
 		return "redirect:/registrefoncier/situation/surcharge/list.do";

@@ -23,11 +23,13 @@ import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.SituationRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -39,7 +41,9 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	private ImmeubleRFDAO immeubleRFDAO;
 	private BatimentRFDAO batimentRFDAO;
 	private AyantDroitRFDAO ayantDroitRFDAO;
+	private SituationRFDAO situationRFDAO;
 	private ServiceInfrastructureService infraService;
+	private EvenementFiscalService evenementFiscalService;
 
 	public void setDroitRFDAO(DroitRFDAO droitRFDAO) {
 		this.droitRFDAO = droitRFDAO;
@@ -61,8 +65,16 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
 	}
 
+	public void setSituationRFDAO(SituationRFDAO situationRFDAO) {
+		this.situationRFDAO = situationRFDAO;
+	}
+
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
+	}
+
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	@Override
@@ -380,5 +392,20 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.filter(AnnulableHelper::nonAnnule)
 				.max(Comparator.comparing(SituationRF::getDateFin, NullDateBehavior.LATEST::compare))
 				.orElse(null);
+	}
+
+	@Override
+	public void surchargerCommuneFiscaleSituation(long situationId, @Nullable Integer noOfsCommune) {
+
+		final SituationRF situation = situationRFDAO.get(situationId);
+		if (situation == null) {
+			throw new ObjectNotFoundException("La situation avec l'id=[" + situationId + "] n'existe pas.");
+		}
+
+		// on met-à-jour la situation
+		situation.setNoOfsCommuneSurchargee(noOfsCommune);
+
+		// on publie un événement fiscal
+		evenementFiscalService.publierModificationSituationImmeuble(situation.getDateDebut(), situation.getImmeuble());
 	}
 }

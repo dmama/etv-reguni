@@ -122,4 +122,12 @@ public interface RegistreFoncierService {
 	 */
 	@Nullable
 	SituationRF getSituation(ImmeubleRF immeuble, RegDate dateReference);
+
+	/**
+	 * Met-à-jour la commune fiscale surchargée sur une situation d'immeuble RF existante.
+	 *
+	 * @param situationId  l'id d'une situation existante
+	 * @param noOfsCommune le numéro Ofs de la commune de surcharge
+	 */
+	void surchargerCommuneFiscaleSituation(long situationId, @Nullable Integer noOfsCommune);
 }
