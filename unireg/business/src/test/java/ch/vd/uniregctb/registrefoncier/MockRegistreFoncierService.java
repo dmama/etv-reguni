@@ -76,4 +76,9 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 	public @Nullable SituationRF getSituation(ImmeubleRF immeuble, RegDate dateReference) {
 		throw new NotImplementedException();
 	}
+
+	@Override
+	public void surchargerCommuneFiscaleSituation(long situationId, @Nullable Integer noOfsCommune) {
+		throw new NotImplementedException();
+	}
 }
