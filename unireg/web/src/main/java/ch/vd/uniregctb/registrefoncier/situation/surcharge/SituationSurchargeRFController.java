@@ -39,7 +39,7 @@ import ch.vd.uniregctb.tiers.view.CommuneView;
 @RequestMapping(value = "/registrefoncier/situation/surcharge")
 public class SituationSurchargeRFController {
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec de surcharge des communes faîtières";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec de gestion des fractions de communes RF";
 	private static final String TABLE_SITUATIONS = "situation";
 	private static final int SITUATION_PAGE_SIZE = 25;
 
@@ -133,7 +133,7 @@ public class SituationSurchargeRFController {
 		binder.setValidator(new SituationSurchargeValidator());
 	}
 
-	@SecurityCheck(rolesToCheck = {Role.SUIVI_IMPORT_RF}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.GEST_FRACTIONS_COMMUNE_RF}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/show.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	public String apply(@Valid @ModelAttribute("surcharge") final SituationSurchargeView surcharge, BindingResult result, Model model) {
