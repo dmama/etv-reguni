@@ -69,6 +69,11 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	}
 
 	@Override
+	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		throw new NotImplementedException();
 	}

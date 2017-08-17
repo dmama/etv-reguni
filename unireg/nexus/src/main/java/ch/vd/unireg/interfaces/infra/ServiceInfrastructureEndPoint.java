@@ -129,6 +129,17 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
+	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getListeCommunesFaitieres"));
+		try {
+			return target.getListeCommunesFaitieres();
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		loadMeter.start(new MethodCallDescriptor("getCommunes"));
 		try {

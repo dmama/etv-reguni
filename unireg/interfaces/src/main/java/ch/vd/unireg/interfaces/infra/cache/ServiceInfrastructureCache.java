@@ -652,6 +652,46 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
+	private static class KeyGetListeCommunesFaitieres {
+
+		@Override
+		public int hashCode() {
+			return -483823;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			return getClass() == obj.getClass();
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+		final List<Commune> resultat;
+
+		final KeyGetListeCommunesFaitieres key = new KeyGetListeCommunesFaitieres();
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getListeCommunesFaitieres();
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (List<Commune>) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
 
 	private static class KeyGetLocalitesByONRP {
 		final int onrp;

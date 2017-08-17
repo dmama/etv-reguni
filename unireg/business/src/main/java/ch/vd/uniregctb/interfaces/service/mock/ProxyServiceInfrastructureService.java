@@ -332,6 +332,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
+	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+		return target.getListeCommunesFaitieres();
+	}
+
+	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		return target.getCommunes();
 	}

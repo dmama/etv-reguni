@@ -94,6 +94,7 @@
 	<bean id="ayantDroitRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAOImpl" parent="hibernateDao" />
 	<bean id="surfaceAuSolRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.SurfaceAuSolRFDAOImpl" parent="hibernateDao" />
 	<bean id="batimentRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAOImpl" parent="hibernateDao" />
+	<bean id="situationRFDAO" class="ch.vd.uniregctb.registrefoncier.dao.SituationRFDAOImpl" parent="hibernateDao" />
 
 	<!-- Audit -->
 	<bean id="auditLineDAO" class="ch.vd.uniregctb.audit.AuditLineDAOImpl" parent="hibernateDao">

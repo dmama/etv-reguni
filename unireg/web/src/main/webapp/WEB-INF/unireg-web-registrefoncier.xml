@@ -36,6 +36,13 @@
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
+	<bean id="situationSurchargeRFController" class="ch.vd.uniregctb.registrefoncier.situation.surcharge.SituationSurchargeRFController">
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+		<property name="situationRFDAO" ref="situationRFDAO"/>
+		<property name="registreFoncierService" ref="serviceRF"/>
+		<property name="urlGeoVD" value="${extprop.geo.vd.url}"/>
+	</bean>
+
 	<!-- Rapprochement des tiers RF avec les contribuables Unireg -->
 
 	<bean id="rapprochementManuelTiersRFService" class="ch.vd.uniregctb.registrefoncier.RapprochementManuelTiersRFServiceImpl">

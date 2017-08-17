@@ -107,6 +107,12 @@ public interface ServiceInfrastructureRaw {
 	List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException;
 
 	/**
+	 * @return La liste des communes vaudoise faîtières (excluant les fractions et les communes non-fractionnées)
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
+	 */
+	List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException;
+
+	/**
 	 * Charge les communes
 	 *
 	 * @return toutes les communes de Suisse
