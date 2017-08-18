@@ -62,6 +62,9 @@ public class CommunityOfOwnersBuilderTest {
 		immeuble.setId(123456L);
 
 		final DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
+		droit.setId(2332L);
+		droit.setMasterIdRF("28288228");
+		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
@@ -89,6 +92,7 @@ public class CommunityOfOwnersBuilderTest {
 
 		final LandOwnershipRight landRight = community.getLandRight();
 		assertNotNull(landRight);
+		assertEquals(2332L, landRight.getId());
 		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, landRight.getType());
 		assertShare(1, 1, landRight.getShare());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landRight.getDateFrom()));

@@ -34,16 +34,17 @@ public class JsonLandRightHelperTest extends WithoutSpringTest {
 
 	private static final Random RND = new Random();
 
-	private static LandOwnershipRight buildLandOwnershipRight(Date dateFrom, Date dateTo, String startReason, String endReason, CaseIdentifier caseIdentifier, RightHolder rightHolder, long immovablePropertyId, Share share, OwnershipType type, Long communityId, List<AcquisitionReason> acquisitionReasons) {
-		return new LandOwnershipRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolder, immovablePropertyId, share, type, communityId, acquisitionReasons, 0, null);
+	private static LandOwnershipRight buildLandOwnershipRight(long id, Date dateFrom, Date dateTo, String startReason, String endReason, CaseIdentifier caseIdentifier, RightHolder rightHolder, long immovablePropertyId, Share share,
+	                                                          OwnershipType type, Long communityId, List<AcquisitionReason> acquisitionReasons) {
+		return new LandOwnershipRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolder, immovablePropertyId, share, type, communityId, acquisitionReasons, 0, id, null);
 	}
 
-	private static UsufructRight buildUsufructRight(Date dateFrom, Date dateTo, String startReason, String endReason, CaseIdentifier caseIdentifier, List<RightHolder> rightHolders, List<Long> immovablePropertyIds) {
-		return new UsufructRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolders.get(0), immovablePropertyIds.get(0), rightHolders, immovablePropertyIds, 0, null);
+	private static UsufructRight buildUsufructRight(long id, Date dateFrom, Date dateTo, String startReason, String endReason, CaseIdentifier caseIdentifier, List<RightHolder> rightHolders, List<Long> immovablePropertyIds) {
+		return new UsufructRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolders.get(0), immovablePropertyIds.get(0), rightHolders, immovablePropertyIds, 0, id, null);
 	}
 
-	private static HousingRight buildHousingRight(Date dateFrom, Date dateTo, String startReason, String endReason, CaseIdentifier caseIdentifier, List<RightHolder> rightHolders, List<Long> immovablePropertyIds) {
-		return new HousingRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolders.get(0), immovablePropertyIds.get(0), rightHolders, immovablePropertyIds, 0, null);
+	private static HousingRight buildHousingRight(long id, Date dateFrom, Date dateTo, String startReason, String endReason, CaseIdentifier caseIdentifier, List<RightHolder> rightHolders, List<Long> immovablePropertyIds) {
+		return new HousingRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolders.get(0), immovablePropertyIds.get(0), rightHolders, immovablePropertyIds, 0, id, null);
 	}
 
 	private static LandRight doTest(LandRight src, LandRightType expectedType) {
@@ -191,23 +192,23 @@ public class JsonLandRightHelperTest extends WithoutSpringTest {
 	@Test
 	public void testMutationWithNulls() throws Exception {
 		assertNull(JsonLandRightHelper.jsonEquivalentOf(null));
-		doTest(buildLandOwnershipRight(null, null, null, null, null, generateRandomRightHolder(), generateRandomLongId(), generateRandomShare(), generateRandomOwnershipType(), null, null), LandRightType.OWNERSHIP);
-		doTest(buildUsufructRight(null, null, null, null, null, generateRandomRightHolders(), generateRandomImmovablePropertyIds()), LandRightType.USUFRUCT);
-		doTest(buildHousingRight(null, null, null, null, null, generateRandomRightHolders(), generateRandomImmovablePropertyIds()), LandRightType.HOUSING);
+		doTest(buildLandOwnershipRight(generateRandomLongId(), null, null, null, null, null, generateRandomRightHolder(), generateRandomLongId(), generateRandomShare(), generateRandomOwnershipType(), null, null), LandRightType.OWNERSHIP);
+		doTest(buildUsufructRight(generateRandomLongId(), null, null, null, null, null, generateRandomRightHolders(), generateRandomImmovablePropertyIds()), LandRightType.USUFRUCT);
+		doTest(buildHousingRight(generateRandomLongId(), null, null, null, null, null, generateRandomRightHolders(), generateRandomImmovablePropertyIds()), LandRightType.HOUSING);
 	}
 
 	@Test
 	public void testMutationNonNulls() throws Exception {
-		doTest(buildLandOwnershipRight(generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolder(), generateRandomLongId(), generateRandomShare(), generateRandomOwnershipType(), generateOptionalRandomLongId(), generateRandomAcquisitionReasons()), LandRightType.OWNERSHIP);
-		doTest(buildUsufructRight(generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolders(), generateRandomImmovablePropertyIds()), LandRightType.USUFRUCT);
-		doTest(buildHousingRight(generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolders(), generateRandomImmovablePropertyIds()), LandRightType.HOUSING);
+		doTest(buildLandOwnershipRight(generateRandomLongId(), generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolder(), generateRandomLongId(), generateRandomShare(), generateRandomOwnershipType(), generateOptionalRandomLongId(), generateRandomAcquisitionReasons()), LandRightType.OWNERSHIP);
+		doTest(buildUsufructRight(generateRandomLongId(), generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolders(), generateRandomImmovablePropertyIds()), LandRightType.USUFRUCT);
+		doTest(buildHousingRight(generateRandomLongId(), generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolders(), generateRandomImmovablePropertyIds()), LandRightType.HOUSING);
 	}
 
 	@Test
 	public void testAlreadyJson() throws Exception {
-		doTestAlreadyJson(buildLandOwnershipRight(generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolder(), generateRandomLongId(), generateRandomShare(), generateRandomOwnershipType(), generateOptionalRandomLongId(), generateRandomAcquisitionReasons()));
-		doTestAlreadyJson(buildUsufructRight(generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolders(), generateRandomImmovablePropertyIds()));
-		doTestAlreadyJson(buildHousingRight(generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolders(), generateRandomImmovablePropertyIds()));
+		doTestAlreadyJson(buildLandOwnershipRight(generateRandomLongId(), generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolder(), generateRandomLongId(), generateRandomShare(), generateRandomOwnershipType(), generateOptionalRandomLongId(), generateRandomAcquisitionReasons()));
+		doTestAlreadyJson(buildUsufructRight(generateRandomLongId(), generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolders(), generateRandomImmovablePropertyIds()));
+		doTestAlreadyJson(buildHousingRight(generateRandomLongId(), generateRandomDate(), generateRandomDate(), generateRandomString(), generateRandomString(), generateRandomCaseIdentifier(), generateRandomRightHolders(), generateRandomImmovablePropertyIds()));
 	}
 
 	private static void doTestAlreadyJson(LandRight nonJson) {

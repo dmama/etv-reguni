@@ -121,7 +121,7 @@ public class ImmovablePropertyBuilderTest {
 		ppe.addQuotePart(new QuotePartRF(dateAchat, dateRemaniement.getOneDayBefore(), new Fraction(1, 23)));
 		ppe.addQuotePart(new QuotePartRF(dateRemaniement, null, new Fraction(2, 18)));
 
-		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
 		pp.setServitudes(Collections.emptySet());
@@ -201,7 +201,7 @@ public class ImmovablePropertyBuilderTest {
 		pcp.addQuotePart(new QuotePartRF(dateAchat, dateRemaniement.getOneDayBefore(), new Fraction(1, 1)));
 		pcp.addQuotePart(new QuotePartRF(dateRemaniement, null, new Fraction(2, 18)));
 
-		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, pcp);
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, pcp);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
 		pp.setServitudes(Collections.emptySet());
@@ -276,7 +276,7 @@ public class ImmovablePropertyBuilderTest {
 		implantation.setImmeuble(ddp);
 		ddp.setDateRadiation(null);
 
-		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ddp);
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ddp);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
 		pp.setServitudes(Collections.emptySet());
@@ -344,7 +344,7 @@ public class ImmovablePropertyBuilderTest {
 		implantation.setImmeuble(m);
 		m.setDateRadiation(null);
 
-		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, m);
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, m);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
 		pp.setServitudes(Collections.emptySet());
@@ -416,7 +416,7 @@ public class ImmovablePropertyBuilderTest {
 		implantation.setImmeuble(bienFonds);
 		bienFonds.setDateRadiation(null);
 
-		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, bienFonds);
+		final DroitProprietePersonnePhysiqueRF droit = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, bienFonds);
 
 		pp.setDroitsPropriete(Collections.singleton(droit));
 		pp.setServitudes(Collections.emptySet());
@@ -494,14 +494,14 @@ public class ImmovablePropertyBuilderTest {
 		ppe.setEquivalentBeneficiaire(beneficiaire);
 
 		// la PPE possède une part du bien-fonds
-		final DroitProprieteImmeubleRF droit0 = newDroitProprieteImm("0293929", new Fraction(1, 30), GenrePropriete.PPE, RegDate.get(1993, 5, 13), "Consitution de PPE", beneficiaire, bienFonds);
+		final DroitProprieteImmeubleRF droit0 = newDroitProprieteImm(4343L, "0293929", new Fraction(1, 30), GenrePropriete.PPE, RegDate.get(1993, 5, 13), "Consitution de PPE", beneficiaire, bienFonds);
 		beneficiaire.setDroitsPropriete(Collections.singleton(droit0));
 		beneficiaire.setServitudes(Collections.emptySet());
 		bienFonds.setDroitsPropriete(Collections.singleton(droit0));
 		bienFonds.setServitudes(Collections.emptySet());
 
 		// la personne physique possède la PPE
-		final DroitProprietePersonnePhysiqueRF droit1 = newDroitProprietePP("389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
+		final DroitProprietePersonnePhysiqueRF droit1 = newDroitProprietePP(2332L, "389239478", new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, RegDate.get(2000, 1, 1), "Achat", pp, ppe);
 		pp.setDroitsPropriete(Collections.singleton(droit1));
 		pp.setServitudes(Collections.emptySet());
 		ppe.setDroitsPropriete(Collections.singleton(droit1));
@@ -662,9 +662,9 @@ public class ImmovablePropertyBuilderTest {
 		assertNull(DataHelper.xmlToCore(landRight.getDateTo()));
 	}
 
-	@NotNull
-	private static DroitProprietePersonnePhysiqueRF newDroitProprietePP(String masterIdRF, Fraction part, GenrePropriete regime, RegDate dateDebut, String motifDebut, PersonnePhysiqueRF pp, ImmeubleRF immeuble) {
+	private static DroitProprietePersonnePhysiqueRF newDroitProprietePP(long id, String masterIdRF, Fraction part, GenrePropriete regime, RegDate dateDebut, String motifDebut, PersonnePhysiqueRF pp, ImmeubleRF immeuble) {
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setId(id);
 		droit.setAyantDroit(pp);
 		droit.setPart(part);
 		droit.setRegime(regime);
@@ -677,9 +677,9 @@ public class ImmovablePropertyBuilderTest {
 		return droit;
 	}
 
-	@NotNull
-	private static DroitProprieteImmeubleRF newDroitProprieteImm(String masterIdRF, Fraction part, GenrePropriete regime, RegDate dateDebut, String motifDebut, ImmeubleBeneficiaireRF beneficiaire, ImmeubleRF immeuble) {
+	private static DroitProprieteImmeubleRF newDroitProprieteImm(long id, String masterIdRF, Fraction part, GenrePropriete regime, RegDate dateDebut, String motifDebut, ImmeubleBeneficiaireRF beneficiaire, ImmeubleRF immeuble) {
 		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
+		droit.setId(id);
 		droit.setAyantDroit(beneficiaire);
 		droit.setPart(part);
 		droit.setRegime(regime);
