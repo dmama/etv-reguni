@@ -107,6 +107,7 @@ public abstract class LandRightBuilder {
 
 	private static void fillLandOwnershipRight(@NotNull DroitProprieteRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, LandOwnershipRight right) {
 		fillLandRight(droitRF, right);
+		right.setId(droitRF.getId());
 		right.setType(EnumHelper.coreToXMLv5(droitRF.getRegime()));
 		right.setShare(getShare(droitRF.getPart()));
 		right.setCaseIdentifier(getFirstCaseIdentifier(droitRF));
@@ -132,6 +133,7 @@ public abstract class LandRightBuilder {
 
 	public static UsufructRight newUsufructRight(@NotNull UsufruitRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final UsufructRight right = new UsufructRight();
+		right.setId(usufruitRF.getId());
 		fillEasementRight(usufruitRF, right, ctbIdProvider, rightHolderComparator);
 		return right;
 	}
@@ -149,6 +151,7 @@ public abstract class LandRightBuilder {
 
 	public static HousingRight newHousingRight(@NotNull DroitHabitationRF droitHabitationRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final HousingRight right = new HousingRight();
+		right.setId(droitHabitationRF.getId());
 		fillEasementRight(droitHabitationRF, right, ctbIdProvider, rightHolderComparator);
 		return right;
 	}

@@ -96,6 +96,7 @@ public class LandRightBuilderTest {
 		immeuble.setId(123456L);
 
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setId(2332L);
 		droit.setMasterIdRF("28288228");
 		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
@@ -116,6 +117,7 @@ public class LandRightBuilderTest {
 
 		final LandOwnershipRight landOwnershipRight = (LandOwnershipRight) landRight;
 		assertNotNull(landOwnershipRight);
+		assertEquals(2332L, landOwnershipRight.getId());
 		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, landOwnershipRight.getType());
 		assertShare(2, 5, landOwnershipRight.getShare());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
@@ -144,6 +146,7 @@ public class LandRightBuilderTest {
 		immeuble.setId(123456L);
 
 		final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
+		droit.setId(2332L);
 		droit.setMasterIdRF("28288228");
 		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
@@ -163,6 +166,7 @@ public class LandRightBuilderTest {
 
 		final LandOwnershipRight landOwnershipRight = (LandOwnershipRight) landRight;
 		assertNotNull(landOwnershipRight);
+		assertEquals(2332L, landOwnershipRight.getId());
 		assertEquals(OwnershipType.SOLE_OWNERSHIP, landOwnershipRight.getType());
 		assertShare(3, 5, landOwnershipRight.getShare());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
@@ -199,6 +203,7 @@ public class LandRightBuilderTest {
 		servant.setId(servantId);
 
 		final DroitProprieteImmeubleRF droit = new DroitProprieteImmeubleRF();
+		droit.setId(2332L);
 		droit.setMasterIdRF("28288228");
 		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
@@ -217,6 +222,7 @@ public class LandRightBuilderTest {
 
 		final LandOwnershipRight landOwnershipRight = (LandOwnershipRight) landRight;
 		assertNotNull(landOwnershipRight);
+		assertEquals(2332L, landOwnershipRight.getId());
 		assertEquals(OwnershipType.DOMINANT_OWNERSHIP, landOwnershipRight.getType());
 		assertShare(3, 5, landOwnershipRight.getShare());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
@@ -273,6 +279,7 @@ public class LandRightBuilderTest {
 		immeuble1.setId(servantId);
 
 		final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
+		droit0.setId(23320L);
 		droit0.setMasterIdRF("28288228");
 		droit0.setVersionIdRF("1");
 		droit0.setDateFinMetier(RegDate.get(2017, 4, 14));
@@ -284,6 +291,7 @@ public class LandRightBuilderTest {
 		droit0.calculateDateEtMotifDebut(p -> null);
 
 		final DroitProprieteImmeubleRF droit1 = new DroitProprieteImmeubleRF();
+		droit1.setId(23321L);
 		droit1.setMasterIdRF("4734733");
 		droit1.setVersionIdRF("1");
 		droit1.setRegime(GenrePropriete.FONDS_DOMINANT);
@@ -325,6 +333,7 @@ public class LandRightBuilderTest {
 		// le chemin pp -> immeuble0
 		final LandOwnershipRight path0 = paths.get(0);
 		assertNotNull(path0);
+		assertEquals(23320L, path0.getId());
 		assertEquals(OwnershipType.SOLE_OWNERSHIP, path0.getType());
 		assertShare(1, 1, path0.getShare());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(path0.getDateFrom()));
@@ -339,6 +348,7 @@ public class LandRightBuilderTest {
 		// le chemin immeuble0 -> immeuble1
 		final LandOwnershipRight path1 = paths.get(1);
 		assertNotNull(path1);
+		assertEquals(23321L, path1.getId());
 		assertEquals(OwnershipType.DOMINANT_OWNERSHIP, path1.getType());
 		assertShare(3, 5, path1.getShare());
 		assertEquals(RegDate.get(2000, 1, 1), DataHelper.xmlToCore(path1.getDateFrom()));
@@ -367,6 +377,7 @@ public class LandRightBuilderTest {
 		servant.setId(servantId);
 
 		final DroitProprieteCommunauteRF droit = new DroitProprieteCommunauteRF();
+		droit.setId(2332L);
 		droit.setMasterIdRF("28288228");
 		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
@@ -385,6 +396,7 @@ public class LandRightBuilderTest {
 
 		final LandOwnershipRight landOwnershipRight = (LandOwnershipRight) landRight;
 		assertNotNull(landOwnershipRight);
+		assertEquals(2332L, landOwnershipRight.getId());
 		assertEquals(OwnershipType.DOMINANT_OWNERSHIP, landOwnershipRight.getType());
 		assertShare(3, 5, landOwnershipRight.getShare());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(landOwnershipRight.getDateFrom()));
@@ -442,6 +454,7 @@ public class LandRightBuilderTest {
 		immeuble2.setServitudes(Collections.emptySet());
 
 		final UsufruitRF usufruit = new UsufruitRF();
+		usufruit.setId(2332L);
 		usufruit.setDateDebut(RegDate.get(2016, 11, 3));
 		usufruit.setDateFin(RegDate.get(2017, 9, 22));
 		usufruit.setMotifDebut("Convention");
@@ -459,6 +472,7 @@ public class LandRightBuilderTest {
 
 		final UsufructRight usufructRight = (UsufructRight) landRight;
 		assertNotNull(usufructRight);
+		assertEquals(2332L, usufructRight.getId());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(usufructRight.getDateFrom()));
 		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(usufructRight.getDateTo()));
 		assertEquals("Convention", usufructRight.getStartReason());
@@ -537,6 +551,7 @@ public class LandRightBuilderTest {
 		beneficiaire0.setImmeuble(immeuble0);
 
 		final UsufruitRF usufruit = new UsufruitRF();
+		usufruit.setId(23320L);
 		usufruit.setDateDebut(RegDate.get(2016, 11, 3));
 		usufruit.setDateFin(RegDate.get(2017, 9, 22));
 		usufruit.setMotifDebut("Convention");
@@ -549,6 +564,7 @@ public class LandRightBuilderTest {
 		usufruit.addImmeuble(immeuble1);
 
 		final DroitProprieteImmeubleRF droit1 = new DroitProprieteImmeubleRF();
+		droit1.setId(23321L);
 		droit1.setMasterIdRF("28288228");
 		droit1.setVersionIdRF("1");
 		droit1.setRegime(GenrePropriete.FONDS_DOMINANT);
@@ -589,6 +605,7 @@ public class LandRightBuilderTest {
 		// le chemin pp -> immeuble0
 		final UsufructRight path0 = (UsufructRight) paths.get(0);
 		assertNotNull(path0);
+		assertEquals(23320L, path0.getId());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(path0.getDateFrom()));
 		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(path0.getDateTo()));
 		assertEquals("Convention", path0.getStartReason());
@@ -598,6 +615,7 @@ public class LandRightBuilderTest {
 		// le chemin immeuble0 -> immeuble1
 		final LandOwnershipRight path1 = (LandOwnershipRight) paths.get(1);
 		assertNotNull(path1);
+		assertEquals(23321L, path1.getId());
 		assertEquals(OwnershipType.DOMINANT_OWNERSHIP, path1.getType());
 		assertShare(3, 5, path1.getShare());
 		assertEquals(RegDate.get(2000, 1, 1), DataHelper.xmlToCore(path1.getDateFrom()));
@@ -650,6 +668,7 @@ public class LandRightBuilderTest {
 		immeuble2.setServitudes(Collections.emptySet());
 
 		final DroitHabitationRF droitHabitation = new DroitHabitationRF();
+		droitHabitation.setId(2332L);
 		droitHabitation.setDateDebut(RegDate.get(2016, 11, 3));
 		droitHabitation.setDateFin(RegDate.get(2017, 9, 22));
 		droitHabitation.setMotifDebut("Convention");
@@ -667,6 +686,7 @@ public class LandRightBuilderTest {
 
 		final HousingRight housingRight = (HousingRight) landRight;
 		assertNotNull(housingRight);
+		assertEquals(2332L, housingRight.getId());
 		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(housingRight.getDateFrom()));
 		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(housingRight.getDateTo()));
 		assertEquals("Convention", housingRight.getStartReason());
