@@ -24,6 +24,7 @@ import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.event.data.v1.BatimentChangeEvent;
+import ch.vd.unireg.xml.event.data.v1.CommunauteChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.DataEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseLoadEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseTruncateEvent;
@@ -79,6 +80,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		addToMap(map, RelationChangeEvent.class, new RelationChangeEventHandler());
 		addToMap(map, ImmeubleChangeEvent.class, new ImmeubleChangeEventHandler());
 		addToMap(map, BatimentChangeEvent.class, new BatimentChangeEventHandler());
+		addToMap(map, CommunauteChangeEvent.class, new CommunauteChangeEventHandler());
 		addToMap(map, FiscalEventSendRequestEvent.class, new EvenementFiscalSendRequestHandler());
 		return map;
 	}
@@ -241,6 +243,16 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 				LOGGER.debug("Traitement d'un événement db de changement sur le bâtiment n°" + event.getId());
 			}
 			dataEventService.onBatimentChange(event.getId());
+		}
+	}
+
+	private final class CommunauteChangeEventHandler implements Handler<CommunauteChangeEvent> {
+		@Override
+		public void onEvent(CommunauteChangeEvent event) throws Exception {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Traitement d'un événement db de changement sur la communauté n°" + event.getId());
+			}
+			dataEventService.onCommunauteChange(event.getId());
 		}
 	}
 
