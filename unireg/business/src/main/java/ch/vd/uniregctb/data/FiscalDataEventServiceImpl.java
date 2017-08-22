@@ -50,6 +50,11 @@ public class FiscalDataEventServiceImpl implements FiscalDataEventService, Fisca
 	}
 
 	@Override
+	public void onCommunauteChange(long communauteId) {
+		dispatch(listener -> listener.onCommunauteChange(communauteId));
+	}
+
+	@Override
 	public void onRelationshipChange(TypeRapportEntreTiers type, long sujetId, long objetId) {
 		dispatch(listener -> listener.onRelationshipChange(type, sujetId, objetId));
 	}

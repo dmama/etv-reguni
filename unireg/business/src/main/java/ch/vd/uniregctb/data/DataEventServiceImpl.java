@@ -53,6 +53,11 @@ public class DataEventServiceImpl implements DataEventService {
 	}
 
 	@Override
+	public void onCommunauteChange(long communauteId) {
+		fiscal.onCommunauteChange(communauteId);
+	}
+
+	@Override
 	public void onIndividuChange(long id) {
 		civil.onIndividuChange(id);
 	}

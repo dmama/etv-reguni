@@ -11,6 +11,7 @@ public class MockDataEventService implements DataEventService {
 	public final Set<Long> changedTiers = new HashSet<>();
 	public final Set<Long> changedImmeubles = new HashSet<>();
 	public final Set<Long> changedBatiments = new HashSet<>();
+	public final Set<Long> changedCommunautes = new HashSet<>();
 
 	@Override
 	public void register(CivilDataEventListener listener) {
@@ -36,6 +37,7 @@ public class MockDataEventService implements DataEventService {
 		changedTiers.clear();
 		changedImmeubles.clear();
 		changedBatiments.clear();
+		changedCommunautes.clear();
 	}
 
 	@Override
@@ -64,6 +66,11 @@ public class MockDataEventService implements DataEventService {
 	@Override
 	public void onBatimentChange(long batimentId) {
 		changedBatiments.add(batimentId);
+	}
+
+	@Override
+	public void onCommunauteChange(long communauteId) {
+		changedCommunautes.add(communauteId);
 	}
 
 	@Override

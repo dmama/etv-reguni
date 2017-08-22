@@ -30,6 +30,11 @@ public class BusinessWebServiceCacheEventListener implements WebServiceEventInte
 	}
 
 	@Override
+	public void onCommunauteChange(long communauteId) {
+		cache.evictCommunityOfOwners(communauteId);
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		cache.reset();
 	}

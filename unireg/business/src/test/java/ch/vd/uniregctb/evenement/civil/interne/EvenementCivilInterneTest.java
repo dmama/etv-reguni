@@ -203,6 +203,10 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		}
 
 		@Override
+		public void onCommunauteChange(long communauteId) {
+		}
+
+		@Override
 		public void onLoadDatabase() {
 		}
 

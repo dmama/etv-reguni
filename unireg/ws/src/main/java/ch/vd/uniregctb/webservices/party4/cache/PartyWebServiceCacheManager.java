@@ -35,6 +35,11 @@ public class PartyWebServiceCacheManager implements WebServiceEventInterface {
 	}
 
 	@Override
+	public void onCommunauteChange(long communauteId) {
+		// rien à faire, les communautés de propriétaires n'existaient pas dans le v4
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		cache.reset();
 	}

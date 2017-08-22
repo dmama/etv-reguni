@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 
 import ch.vd.unireg.xml.event.data.v1.BatimentChangeEvent;
+import ch.vd.unireg.xml.event.data.v1.CommunauteChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.DataEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseLoadEvent;
 import ch.vd.unireg.xml.event.data.v1.DatabaseTruncateEvent;
@@ -195,6 +196,7 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 		private final Set<Long> droitsAccesChange = new HashSet<>();
 		private final Set<Long> immeubleChange = new HashSet<>();
 		private final Set<Long> batimentChange = new HashSet<>();
+		private final Set<Long> communauteChange = new HashSet<>();
 		private final Set<RelationshipKey> relationshipChange = new HashSet<>();
 
 		/**
@@ -251,6 +253,14 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 		 */
 		public boolean addBatimentChange(Long id) {
 			return batimentChange.add(id);
+		}
+
+		/**
+		 * @param id identifiant de la communauté qui a été modifiée
+		 * @return <code>true</code> si cet identifiant n'était pas encore connu comme celui d'une communauté modifiée
+		 */
+		public boolean addCommunauteChange(Long id) {
+			return communauteChange.add(id);
 		}
 	}
 
@@ -432,6 +442,19 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 				LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement sur le bâtiment n°" + id + " (une émission est déjà prévue dans la transaction courante)");
 			}
 		}
+
+		public void onCommunauteChange(long id) {
+			final OnNotificationAction action = data -> data.addCommunauteChange(id);
+			if (onNewNotification(action)) {
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Emission d'un événement DB de changement sur la communauté n°" + id);
+				}
+				collectNotification(new CommunauteChangeEvent(id));
+			}
+			else if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Pas de nouvelle émission d'un événement DB de changement sur la communauté n°" + id + " (une émission est déjà prévue dans la transaction courante)");
+			}
+		}
 	}
 
 	@Override
@@ -523,6 +546,11 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 	@Override
 	public void onBatimentChange(long batimentId) {
 		delegate(data -> data.onBatimentChange(batimentId));
+	}
+
+	@Override
+	public void onCommunauteChange(long communauteId) {
+		delegate(data -> data.onCommunauteChange(communauteId));
 	}
 
 	@Override

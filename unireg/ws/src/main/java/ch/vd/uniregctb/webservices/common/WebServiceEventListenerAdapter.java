@@ -91,6 +91,11 @@ public class WebServiceEventListenerAdapter implements DataEventListener, Initia
 	}
 
 	@Override
+	public void onCommunauteChange(long communauteId) {
+		listeners.forEach(l -> l.onCommunauteChange(communauteId));
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		for (WebServiceEventInterface listener : listeners) {
 			try {

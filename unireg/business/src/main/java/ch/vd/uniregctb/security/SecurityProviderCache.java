@@ -409,6 +409,11 @@ public class SecurityProviderCache implements UniregCacheInterface, KeyDumpableC
 	}
 
 	@Override
+	public void onCommunauteChange(long communauteId) {
+		// rien à faire, car il n'y a pas de droit d'accès particulier sur les communautés de propriétaires
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		clearCaches();
 	}

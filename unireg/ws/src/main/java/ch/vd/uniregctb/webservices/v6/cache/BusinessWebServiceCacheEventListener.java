@@ -30,6 +30,11 @@ public class BusinessWebServiceCacheEventListener implements WebServiceEventInte
 	}
 
 	@Override
+	public void onCommunauteChange(long communauteId) {
+		// rien à faire, les communautés de propriétaires n'existaient pas dans le v6
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		cache.reset();
 	}

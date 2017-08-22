@@ -24,10 +24,12 @@ import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
+import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
@@ -1002,5 +1004,62 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEquals(2, eventService.changedTiers.size());
 		assertTrue(eventService.changedTiers.contains(ids.nextTiers));
 		assertTrue(eventService.changedTiers.contains(ids.previousTiers));
+	}
+
+	/**
+	 * [SIFISC-26119] détection de la propagation de la création d'un nouveau rapprochement sur les communautés
+	 * dont fait partie le tiers RF rapproché
+	 */
+	@Test
+	public void testDetectChangementCommunauteDansRapprochement() throws Exception {
+
+		assertEmpty(eventService.changedCommunautes);
+
+		final class Ids {
+			long previousTiers;
+			long nextTiers;
+			long rapprochement;
+			long communaute;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique previous = addNonHabitant("Philippe", "Levieux", date(1978, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique next = addNonHabitant("Philippo", "Lenouvo", date(1987, 3, 1), Sexe.MASCULIN);
+			final PersonnePhysiqueRF rf = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitRF droit = addDroitPropriete(rf, immeuble, communaute, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1), date(2005, 3, 2), null, date(2005, 3, 2), null, "Succession", null, new IdentifiantAffaireRF(42, 2005, 32, 1), "573853733gdbtq", "1");
+
+			final RapprochementRF rapprochement = addRapprochementRF(previous, rf, null, null, TypeRapprochementRF.AUTO);
+
+			final Ids res = new Ids();
+			res.previousTiers = previous.getNumero();
+			res.nextTiers = next.getNumero();
+			res.rapprochement = rapprochement.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedCommunautes);
+
+		// on modifie le tiers sur le rapprochement (= superGRA)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final RapprochementRF rapprochementRF = hibernateTemplate.get(RapprochementRF.class, ids.rapprochement);
+				assertNotNull(rapprochementRF);
+				assertEquals((Long) ids.previousTiers, rapprochementRF.getContribuable().getNumero());
+
+				// changement
+				final PersonnePhysique newTiers = hibernateTemplate.get(PersonnePhysique.class, ids.nextTiers);
+				assertNotNull(newTiers);
+				rapprochementRF.setContribuable(newTiers);
+			}
+		});
+
+		// on vérifie l'envoi de notification de changement de communauté sur la communauté existante
+		assertEquals(1, eventService.changedCommunautes.size());
+		assertTrue(eventService.changedCommunautes.contains(ids.communaute));
 	}
 }

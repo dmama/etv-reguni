@@ -308,6 +308,11 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 	}
 
 	@Override
+	public void onCommunauteChange(long communauteId) {
+		// rien à faire, il n'y a pas d'autorisation sur les communautés de propriétaires
+	}
+
+	@Override
 	public void onTruncateDatabase() {
 		reset();
 	}

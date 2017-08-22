@@ -591,4 +591,11 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 	public void evictBuilding(long buildingId) {
 		evictFromCache(GetBuildingKey.class, k -> k.getBuildingId() == buildingId);
 	}
+
+	/**
+	 * Vide le cache de toutes les données concernant la communauté de propriétaires specifiée
+	 */
+	public void evictCommunityOfOwners(long communityId) {
+		evictFromCache(GetCommunityOfOwnersKey.class, k -> k.getCommunityId() == communityId);
+	}
 }

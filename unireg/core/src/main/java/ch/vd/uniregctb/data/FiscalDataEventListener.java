@@ -56,6 +56,15 @@ public interface FiscalDataEventListener {
 	void onBatimentChange(long batimentId);
 
 	/**
+	 * Cette méthode est appelée lorsqu'une communauté de propriétaires RF va être ajoutée/modifiée dans la base de données.
+	 * <p/>
+	 * Note: toute exception levée durant l'exécution du callback sera ignorée.
+	 *
+	 * @param communauteId l'id technique Unireg de la communauté
+	 */
+	void onCommunauteChange(long communauteId);
+
+	/**
 	 * Cette méthode est appelée lorsque la base de données va être entièrement vidée (avant le chargement d'un script DBunit, par exemple).
 	 * <p/>
 	 * Note: toute exception levée durant l'exécution du callback sera ignorée.

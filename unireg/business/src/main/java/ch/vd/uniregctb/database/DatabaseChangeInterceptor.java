@@ -14,6 +14,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DroitAcces;
@@ -92,6 +93,14 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 				dataEventService.onBatimentChange(i);
 			}
 		}
+		else if (entity instanceof CommunauteRF) {
+			// une communauté de propriétaires a été modifiée en base => on envoie un événement correspondant
+			final CommunauteRF communaute = (CommunauteRF) entity;
+			final Long i = communaute.getId();
+			if (i != null) {
+				dataEventService.onCommunauteChange(i);
+			}
+		}
 		else if (entity instanceof RapportEntreTiers) {
 			final RapportEntreTiers ret = (RapportEntreTiers) entity;
 			dataEventService.onRelationshipChange(ret.getType(), ret.getSujetId(), ret.getObjetId());
@@ -112,6 +121,10 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			final Set<BatimentRF> batiments = tiersService.getLinkedEntities(child, BatimentRF.class, LinkedEntity.Context.DATA_EVENT, isAnnulation);
 			for (BatimentRF b : batiments) {
 				dataEventService.onBatimentChange(b.getId());
+			}
+			final Set<CommunauteRF> communautes = tiersService.getLinkedEntities(child, CommunauteRF.class, LinkedEntity.Context.DATA_EVENT, isAnnulation);
+			for (CommunauteRF c : communautes) {
+				dataEventService.onCommunauteChange(c.getId());
 			}
 		}
 		else if (entity instanceof DroitAcces) {

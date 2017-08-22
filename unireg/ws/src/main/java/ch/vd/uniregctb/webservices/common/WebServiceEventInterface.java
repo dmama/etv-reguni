@@ -28,9 +28,18 @@ public interface WebServiceEventInterface {
 	 * <p/>
 	 * Note: toute exception levée durant l'exécution du callback sera ignorée.
 	 *
-	 * @param batimentId l'id technique Unireg de l'immeuble.
+	 * @param batimentId l'id technique Unireg du bâtiment.
 	 */
 	void onBatimentChange(long batimentId);
+
+	/**
+	 * Cette méthode est appelée lorsqu'une communauté de propriétaires RF a été ajoutée/modifiée dans la base de données.
+	 * <p/>
+	 * Note: toute exception levée durant l'exécution du callback sera ignorée.
+	 *
+	 * @param communauteId l'id technique Unireg de la communauté.
+	 */
+	void onCommunauteChange(long communauteId);
 
 	/**
 	 * Cette méthode est appelée lorsque la base de données a été entièrement vidée (avant le chargement d'un script DBunit, par exemple).
