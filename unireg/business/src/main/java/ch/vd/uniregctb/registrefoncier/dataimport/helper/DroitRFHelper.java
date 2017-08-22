@@ -182,7 +182,9 @@ public abstract class DroitRFHelper {
 				immeubleEquals(left.getImmeuble(), right.getImmeuble()) &&
 				partEquals(left.getPart(), right.getPart()) &&
 				left.getRegime() == right.getRegime() &&
-				// note : les dates métiers et les motifs sont déduits des raisons d'acquisition, on ne les compare pas.
+				// notes :
+				//  - la date de début métiers et le motif de début sont déduits des raisons d'acquisition, on ne les compare pas.
+				//  - la date de fin métier n'est pas renseignée dans le fichier d'entrée, on ne la compare pas
 				RaisonAcquisitionRFHelper.dataEquals(left.getRaisonsAcquisition(), right.getRaisonsAcquisition());
 	}
 
