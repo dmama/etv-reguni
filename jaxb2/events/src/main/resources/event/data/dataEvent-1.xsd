@@ -53,6 +53,12 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="communauteChangeEvent">
+		<xs:complexContent>
+			<xs:extension base="dataChangeEventType"/>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="relationChangeEventType">
 		<xs:complexContent>
 			<xs:extension base="dataEventType">
