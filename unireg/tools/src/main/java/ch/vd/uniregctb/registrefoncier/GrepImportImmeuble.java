@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.ResourceUtils;
@@ -119,8 +120,17 @@ public class GrepImportImmeuble {
 			}
 		};
 
-		try (InputStream is = new FileInputStream(file)) {
-			parser.processFile(is, callback);
+		if (FilenameUtils.isExtension(file.getPath(), "zip")) {
+			try (FileInputStream fis = new FileInputStream(file);
+			     ZipInputStream zis = new ZipInputStream(fis)) {
+				zis.getNextEntry();
+				parser.processFile(zis, callback);
+			}
+		}
+		else {
+			try (InputStream is = new FileInputStream(file)) {
+				parser.processFile(is, callback);
+			}
 		}
 
 		final long end = System.nanoTime();
@@ -146,11 +156,4 @@ public class GrepImportImmeuble {
 	private String toXMLString(Bodenbedeckung obj) {
 		return xmlHelper.toXMLString(obj);
 	}
-
-	@NotNull
-	private static QName buildQName(@NotNull Object o) {
-		final String simpleName = o.getClass().getSimpleName().replaceAll("Element$", "");
-		return new QName(FichierImmeublesRFParser.GRUNDSTUECK_NAMESPACE, simpleName);
-	}
-
 }
