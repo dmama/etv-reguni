@@ -35,8 +35,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -48,6 +50,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -6636,5 +6639,147 @@ public class TacheServiceTest extends BusinessTest {
 				}
 			});
 		}
+	}
+
+	/**
+	 * [SIFISC-26163] Tâches d'annulation de questionnaires SNC pourtant valides (= les questionnaires) qui ne sont pas annulées (= les tâches) dans la synchro
+	 * --> cas nominal, vérification de l'annulation de la tâche d'annulation invalide
+	 */
+	@Test
+	public void testAnnulationTacheAnnulationQuestionnaireSNC() throws Exception {
+
+		final int lastYear = RegDate.get().year() - 1;
+		final RegDate dateDebut = date(lastYear - 1, 6, 30);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		// mise en place fiscale (sans synchronisation des taches...)
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRaisonSociale(entreprise, dateDebut, null, "Truculenterie entre nous");
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(lastYear, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+
+			// création des modèles de document et QSNC pour toutes les années précédentes
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			final List<QuestionnaireSNC> questionnaires = new ArrayList<>();
+			for (int annee = dateDebut.year() ; annee <= lastYear ; ++ annee) {
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(annee);
+				questionnaires.add(addQuestionnaireSNC(entreprise, pf));
+			}
+
+			// création d'une tâche d'annulation de questionnaire sur le dernier d'entre eux
+			addTacheAnnulationQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, null, CollectionsUtils.getLastElement(questionnaires), entreprise, oipm);
+
+			return entreprise.getNumero();
+		});
+
+		// lancement du recalcul
+		final TacheSyncResults results = doInNewTransactionAndSession(status -> tacheService.synchronizeTachesDeclarations(Collections.singletonList(pmId)));
+		Assert.assertNotNull(results);
+		Assert.assertEquals(0, results.getExceptions().size());
+		Assert.assertEquals(1, results.getActions().size());
+
+		// vérification de l'état des questionnaires (tous OK) et de la tâche d'annulation (= devrait être annulée)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
+
+				entreprise.getDeclarationsTriees(QuestionnaireSNC.class, true).stream()
+						.filter(Annulable::isAnnule)
+						.forEach(q -> Assert.fail("Aucun questionnaire n'aurait dû être annulé"));
+
+				final List<Tache> taches = tacheDAO.find(pmId);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertTrue(tache.isAnnule());            // <-- c'est ça, l'action, la tâche est maintenant annulée
+				Assert.assertEquals(TypeTache.TacheAnnulationQuestionnaireSNC, tache.getTypeTache());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-26163] Tâches d'annulation de questionnaires SNC pourtant valides (= les questionnaires) qui ne sont pas annulées (= les tâches) dans la synchro
+	 * --> cas alternatif : si la tâche d'annulation est justifiée, il faut la garder
+	 */
+	@Test
+	public void testNonAnnulationTacheAnnulationQuestionnaireSNC() throws Exception {
+
+		final int lastYear = RegDate.get().year() - 1;
+		final RegDate dateDebut = date(lastYear - 1, 6, 30);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		// mise en place fiscale (sans synchronisation des taches...)
+		final long pmId = doInNewTransactionAndSessionUnderSwitch(tacheSynchronizer, false, status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRaisonSociale(entreprise, dateDebut, null, "Truculenterie entre nous");
+			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(lastYear - 1, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+
+			// création des modèles de document et QSNC pour toutes les années précédentes
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			final List<QuestionnaireSNC> questionnaires = new ArrayList<>();
+			for (int annee = dateDebut.year() ; annee <= lastYear ; ++ annee) {
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(annee);
+				questionnaires.add(addQuestionnaireSNC(entreprise, pf));
+			}
+
+			// création d'une tâche d'annulation de questionnaire sur le dernier d'entre eux (pas de for sur cette année-là...)
+			addTacheAnnulationQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, null, CollectionsUtils.getLastElement(questionnaires), entreprise, oipm);
+
+			return entreprise.getNumero();
+		});
+
+		// lancement du recalcul
+		final TacheSyncResults results = doInNewTransactionAndSession(status -> tacheService.synchronizeTachesDeclarations(Collections.singletonList(pmId)));
+		Assert.assertNotNull(results);
+		Assert.assertEquals(0, results.getExceptions().size());
+		Assert.assertEquals(0, results.getActions().size());
+
+		// vérification de l'état des questionnaires (tous OK) et de la tâche d'annulation (= devrait être annulée)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				Assert.assertNotNull(entreprise);
+
+				entreprise.getDeclarationsTriees(QuestionnaireSNC.class, true).stream()
+						.filter(Annulable::isAnnule)
+						.forEach(q -> Assert.fail("Aucun questionnaire n'aurait dû être annulé"));
+
+				final List<Tache> taches = tacheDAO.find(pmId);
+				Assert.assertNotNull(taches);
+				Assert.assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());           // la tâche d'annulation du QSNC ne doit pas être annulée...
+				Assert.assertEquals(TypeTache.TacheAnnulationQuestionnaireSNC, tache.getTypeTache());
+			}
+		});
 	}
 }

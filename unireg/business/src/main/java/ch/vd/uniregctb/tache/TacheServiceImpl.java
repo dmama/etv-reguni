@@ -850,7 +850,7 @@ public class TacheServiceImpl implements TacheService {
 		}
 
 		for (TacheAnnulationQuestionnaireSNC annulation : tachesAnnulation) {
-			if (!isTacheAnnulationQuestionnaireSNCValide(annulation, periodesSNC, updates, today)) {
+			if (!isTacheAnnulationQuestionnaireSNCValide(annulation, periodesSNC, updates)) {
 				cancels.add(new AnnuleTache(annulation));
 			}
 		}
@@ -1431,10 +1431,9 @@ public class TacheServiceImpl implements TacheService {
 	 * @param annulation    une tâche d'annulation
 	 * @param periodes      les périodes d'imposition théorique du contribuable
 	 * @param updates les actions prévues de mise-à-jour des déclarations
-	 * @param dateReference date de référence
 	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
 	 */
-	private static boolean isTacheAnnulationQuestionnaireSNCValide(TacheAnnulationQuestionnaireSNC annulation, List<DateRange> periodes, List<UpdateQSNC> updates, RegDate dateReference) {
+	private static boolean isTacheAnnulationQuestionnaireSNCValide(TacheAnnulationQuestionnaireSNC annulation, List<DateRange> periodes, List<UpdateQSNC> updates) {
 
 		final QuestionnaireSNC questionnaire = annulation.getDeclaration();
 		if (questionnaire.isAnnule()) {
@@ -1447,14 +1446,9 @@ public class TacheServiceImpl implements TacheService {
 			return false;
 		}
 
+		// si on trouve une période théorique correspondante à ce questionnaire, la tâche d'annulation n'est plus valide, et l'est dans le cas contraire
 		final DateRange periode = getMatchingRangeAt(periodes, questionnaire);
-		if (periode == null) {
-			// il n'y a pas de questionnaire théorique correspondant, la tâche d'annulation est donc valide
-			return true;
-		}
-
-		// finalement, la tâche est valide
-		return true;
+		return periode == null;
 	}
 
 	/**
