@@ -3,6 +3,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -25,17 +26,27 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.QuotePartRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
+import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestCase;
+import ch.vd.uniregctb.rf.GenrePropriete;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -49,6 +60,8 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 	private EvenementRFMutationDAO evenementRFMutationDAO;
 	private EvenementFiscalDAO evenementFiscalDAO;
 
+	private AyantDroitRFDAO ayantDroitRFDAO;
+	private DroitRFDAO droitRFDAO;
 	private CommuneRFDAO communeRFDAO;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private ImmeubleRFProcessor processor;
@@ -56,6 +69,8 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+		this.ayantDroitRFDAO = getBean(AyantDroitRFDAO.class, "ayantDroitRFDAO");
+		this.droitRFDAO = getBean(DroitRFDAO.class, "droitRFDAO");
 		this.communeRFDAO = getBean(CommuneRFDAO.class, "communeRFDAO");
 		this.evenementRFMutationDAO = getBean(EvenementRFMutationDAO.class, "evenementRFMutationDAO");
 		this.evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
@@ -1548,6 +1563,141 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				assertEquals(1, quoteParts.size());
 				assertEquals(veilleImport, quoteParts.iterator().next().getDateFin());
 			}
+		});
+	}
+
+	/**
+	 * [SIFISC-24968] Ce test vérifie que le processing de suppression d'un immeuble ferme bien les droits rattachés à cet immeuble.
+	 */
+	@Test
+	public void testProcessMutationSuppressionImmeuble() throws Exception {
+
+		final RegDate dateImport = RegDate.get(2016, 10, 1);
+		final RegDate veilleImport = dateImport.getOneDayBefore();
+
+		// précondition : il y a déjà un immeuble dans la base avec des droits qui pointent vers lui
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				CommuneRF commune = new CommuneRF();
+				commune.setNoRf(13);
+				commune.setNomRf("Pétahouchnok");
+				commune.setNoOfs(66666);
+				commune = communeRFDAO.save(commune);
+
+				ProprieteParEtageRF ppe = new ProprieteParEtageRF();
+				ppe.setIdRF("_8af80e62567f816f01571d91f3e56a38");
+				ppe.setEgrid("CH776584246539");
+				ppe.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
+
+				final SituationRF situation = new SituationRF();
+				situation.setDateDebut(RegDate.get(1988, 1, 1));
+				situation.setCommune(commune);
+				situation.setNoParcelle(917);
+				situation.setIndex1(106);
+				ppe.addSituation(situation);
+
+				final EstimationRF estimation = new EstimationRF();
+				estimation.setDateDebut(RegDate.get(1988, 1, 1));
+				estimation.setMontant(240000L);
+				estimation.setReference("RG88");
+				estimation.setAnneeReference(1988);
+				estimation.setDateDebutMetier(RegDate.get(1988, 1, 1));
+				estimation.setEnRevision(false);
+				ppe.addEstimation(estimation);
+
+				ppe = (ProprieteParEtageRF) immeubleRFDAO.save(ppe);
+				assertEquals(1, immeubleRFDAO.getAll().size());
+
+				PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+				pp.setIdRF("3893728273382823");
+				pp.setNom("Schulz");
+				pp.setPrenom("Alodie");
+				pp.setDateNaissance(RegDate.get(1900, 1, 1));
+				pp = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp);
+
+				PersonneMoraleRF pm = new PersonneMoraleRF();
+				pm.setIdRF("48349384890202");
+				pm.setNoRF(3727);
+				pm.setNoContribuable(827288022L);
+				pm.setRaisonSociale("Raison sociale");
+				pm = (PersonneMoraleRF) ayantDroitRFDAO.save(pm);
+
+				DroitProprietePersonnePhysiqueRF droitPP = new DroitProprietePersonnePhysiqueRF();
+				droitPP.setMasterIdRF("1f109152381009be0138100c87276e68");
+				droitPP.setVersionIdRF("1f109152381009be0138100e4c7c00e5");
+				droitPP.setDateDebut(RegDate.get(2005,2,12));
+				droitPP.setAyantDroit(pp);
+				droitPP.setImmeuble(ppe);
+				droitPP.setPart(new Fraction(1, 2));
+				droitPP.setRegime(GenrePropriete.COPROPRIETE);
+				droitPP.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 1, 1), "Achat", new IdentifiantAffaireRF(13, 2005, 173, 0)));
+				droitPP.calculateDateEtMotifDebut(p -> null);
+				droitRFDAO.save(droitPP);
+
+				DroitProprietePersonneMoraleRF droitPM = new DroitProprietePersonneMoraleRF();
+				droitPM.setMasterIdRF("9a9c9e94923");
+				droitPM.setVersionIdRF("1");
+				droitPM.setAyantDroit(pm);
+				droitPM.setImmeuble(ppe);
+				droitPM.setCommunaute(null);
+				droitPM.setDateDebut(RegDate.get(2010, 6, 1));
+				droitPM.setDateFin(null);
+				droitPM.setMotifFin(null);
+				droitPM.setPart(new Fraction(1, 2));
+				droitPM.setRegime(GenrePropriete.COPROPRIETE);
+				droitPM.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
+				droitPM.calculateDateEtMotifDebut(p -> null);
+				droitRFDAO.save(droitPM);
+			}
+		});
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(null, dateImport, TypeEntiteRF.IMMEUBLE, TypeMutationRF.SUPPRESSION, "_8af80e62567f816f01571d91f3e56a38", null);
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation, false, null);
+			}
+		});
+
+		// postcondition : la mutation est traitée, l'immeuble est radié et les droits sont fermés
+		doInNewTransaction(new TxCallbackWithoutResult() {
+
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+				assertEquals(1, immeubles.size());
+
+				// l'immeuble est radié
+				final ProprieteParEtageRF ppe = (ProprieteParEtageRF) immeubles.get(0);
+				assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe.getIdRF());
+				assertEquals("CH776584246539", ppe.getEgrid());
+				assertEquals(veilleImport, ppe.getDateRadiation());
+
+				// la situation est fermée
+				final Set<SituationRF> situations = ppe.getSituations();
+				assertEquals(1, situations.size());
+				assertEquals(veilleImport, situations.iterator().next().getDateFin());
+
+				// les droits sont fermés
+				final Set<DroitProprieteRF> droits = ppe.getDroitsPropriete();
+				assertEquals(2, droits.size());
+				final Iterator<DroitProprieteRF> iterator = droits.iterator();
+
+				final DroitProprieteRF droit0 = iterator.next();
+				assertEquals(veilleImport, droit0.getDateFinMetier());
+				assertEquals("Radiation", droit0.getMotifFin());
+
+				final DroitProprieteRF droit1 = iterator.next();
+				assertEquals(veilleImport, droit1.getDateFinMetier());
+				assertEquals("Radiation", droit1.getMotifFin());
+}
 		});
 	}
 }
