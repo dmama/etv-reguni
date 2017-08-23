@@ -312,6 +312,11 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return rawService.getListeFractionsCommunes();
 	}
 
+	@Override
+	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+		return rawService.getListeCommunesFaitieres();
+	}
+
 	/**
 	 * Si la collection de candidats ne contient aucun élément, renvoie <code>null</code>, si elle contient 1 élément, renvoie celui-là, et si elle contient plus d'un élément, renvoie le premier élément
 	 * trouvé valide à la date donnée (<code>null</code> si aucun n'est valide à la date donnée).

@@ -286,7 +286,15 @@
 
 						</li>
 					</authz:authorize>
-					
+
+					<authz:authorize ifAnyGranted="ROLE_SUIVI_IMPORT_RF">
+						<li><fmt:message key="label.registre.foncier"/>
+							<ul>
+								<li><a href="<c:url value='/registrefoncier/situation/surcharge/list.do'/>"><fmt:message key="label.fraction.communes"/></a></li>
+							</ul>
+						</li>
+					</authz:authorize>
+
 					<authz:authorize ifAnyGranted="ROLE_TESTER, ROLE_ADMIN">
 						<li><fmt:message key="label.action.admin" />
 							<ul>

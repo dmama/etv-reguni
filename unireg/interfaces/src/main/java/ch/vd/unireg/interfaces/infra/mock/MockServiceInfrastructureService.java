@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -183,6 +184,11 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	@Override
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		return communesVaud;
+	}
+
+	@Override
+	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+		throw new NotImplementedException();
 	}
 
 	public List<Commune> getListeCommunes(String cantonAsString) throws ServiceInfrastructureException {

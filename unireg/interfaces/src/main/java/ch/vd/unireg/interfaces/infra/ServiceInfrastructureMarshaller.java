@@ -153,6 +153,11 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
+	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+		return fidorService.getListeCommunesFaitieres();
+	}
+
+	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		return fidorService.getCommunes();
 	}

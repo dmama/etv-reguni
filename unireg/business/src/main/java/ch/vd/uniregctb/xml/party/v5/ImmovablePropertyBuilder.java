@@ -3,7 +3,6 @@ package ch.vd.uniregctb.xml.party.v5;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +23,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
 import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
+import ch.vd.uniregctb.registrefoncier.CapitastraURLProvider;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
@@ -45,12 +45,6 @@ import ch.vd.uniregctb.xml.EnumHelper;
 public abstract class ImmovablePropertyBuilder {
 
 	private ImmovablePropertyBuilder() {
-	}
-
-	/**
-	 * Permet de récupérer l'URL vers Capitastra à partir de l'id d'un immeuble.
-	 */
-	public interface CapitastraURLProvider extends Function<Long, String> {
 	}
 
 	@FunctionalInterface

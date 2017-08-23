@@ -243,6 +243,24 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
+	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+		try {
+			final List<CommuneFiscale> all = fidorClient.getToutesLesCommunes();
+			if (all == null || all.isEmpty()) {
+				return Collections.emptyList();
+			}
+
+			return all.stream()
+					.filter(CommuneFiscale::isEstUneCommuneFaitiere)
+					.map(CommuneImpl::get)
+					.collect(Collectors.toList());
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
+
+	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getToutesLesCommunes();

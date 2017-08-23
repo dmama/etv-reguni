@@ -249,6 +249,25 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
+	public List<Commune> getListeCommunesFaitieres() throws ServiceInfrastructureException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<Commune> list = target.getListeCommunesFaitieres();
+			items = list == null ? 0 : list.size();
+			return list;
+		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getListeCommunesFaitieres", items, null);
+		}
+	}
+
+	@Override
 	public List<Localite> getLocalitesByONRP(final int onrp) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
