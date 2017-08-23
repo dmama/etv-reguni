@@ -55,6 +55,9 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 			addTableSimple(2, table -> {
 				table.addLigne("Date de référence :", RegDateHelper.dateToDisplayString(results.dateReference));
 				table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+				if (results.ofsCommune != null) {
+					table.addLigne("Commune ciblée :", String.valueOf(results.ofsCommune));
+				}
 			});
 		}
 
@@ -141,7 +144,8 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 				b.append("NOM_COMMUNE").append(COMMA);
 				b.append("AYANT_DROIT_IDRF").append(COMMA);
 				b.append("AYANT_DROIT_NORF").append(COMMA);
-				b.append("IMMEUBLE_BENEFICIAIRE_ID");
+				b.append("IMMEUBLE_BENEFICIAIRE_ID").append(COMMA);
+				b.append("ESTIMATION_FISCALE");
 			}
 
 			@Override
@@ -172,7 +176,8 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 				b.append(Optional.ofNullable(extrait.infoImmeuble).map(info -> info.nomCommune).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.idRFAyantDroit).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(extrait.noRFAyantDroit).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
-				b.append(Optional.ofNullable(extrait.idImmeubleBeneficiaire).map(String::valueOf).orElse(StringUtils.EMPTY));
+				b.append(Optional.ofNullable(extrait.idImmeubleBeneficiaire).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
+				b.append(Optional.ofNullable(extrait.infoImmeuble).map(info -> info.montantEstimationFiscale).map(String::valueOf).orElse(StringUtils.EMPTY));
 				return true;
 			}
 		});
@@ -191,6 +196,7 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 				b.append("INDEX3").append(COMMA);
 				b.append("OFS_COMMUNE").append(COMMA);
 				b.append("NOM_COMMUNE").append(COMMA);
+				b.append("ESTIMATION_FISCALE").append(COMMA);
 				b.append("RAISON");
 			}
 
@@ -205,6 +211,7 @@ public class PdfInitialisationIFoncRapport extends PdfRapport {
 				b.append(Optional.ofNullable(ignore.infoImmeuble.index3).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(ignore.infoImmeuble.noOfsCommune).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(Optional.ofNullable(ignore.infoImmeuble.nomCommune).map(CsvHelper::escapeChars).orElse(StringUtils.EMPTY)).append(COMMA);
+				b.append(Optional.ofNullable(ignore.infoImmeuble.montantEstimationFiscale).map(String::valueOf).orElse(StringUtils.EMPTY)).append(COMMA);
 				b.append(CsvHelper.escapeChars(ignore.raison));
 				return true;
 			}

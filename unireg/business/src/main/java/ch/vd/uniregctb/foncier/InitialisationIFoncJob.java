@@ -16,6 +16,7 @@ import ch.vd.uniregctb.registrefoncier.dao.RapprochementRFDAO;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamCommune;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
 
@@ -27,6 +28,7 @@ public class InitialisationIFoncJob extends JobDefinition {
 	private static final String NAME = "InitialisationIFoncJob";
 	private static final String DATE_PARAM = "DATE";
 	private static final String NB_THREADS_PARAM = "NB_THREADS";
+	private static final String COMMUNE_PARAM = "COMMUNE";
 
 	private PlatformTransactionManager transactionManager;
 	private RapportService rapportService;
@@ -69,6 +71,15 @@ public class InitialisationIFoncJob extends JobDefinition {
 		{
 			final JobParam param = new JobParam();
 			param.setEnabled(true);
+			param.setDescription("Commune cible");
+			param.setMandatory(false);
+			param.setName(COMMUNE_PARAM);
+			param.setType(new JobParamCommune(JobParamCommune.TypeCommune.COMMUNE_VD));
+			addParameterDefinition(param, null);
+		}
+		{
+			final JobParam param = new JobParam();
+			param.setEnabled(true);
 			param.setDescription("Nombre de threads");
 			param.setMandatory(true);
 			param.setName(NB_THREADS_PARAM);
@@ -81,8 +92,9 @@ public class InitialisationIFoncJob extends JobDefinition {
 	protected void doExecute(Map<String, Object> params) throws Exception {
 		final RegDate dateReference = getRegDateValue(params, DATE_PARAM);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS_PARAM);
+		final Integer ofsCommune = getOptionalIntegerValue(params, COMMUNE_PARAM);
 		final InitialisationIFoncProcessor processor = new InitialisationIFoncProcessor(transactionManager, hibernateTemplate, rapprochementRFDAO, registreFoncierService);
-		final InitialisationIFoncResults results = processor.run(dateReference, nbThreads, getStatusManager());
+		final InitialisationIFoncResults results = processor.run(dateReference, nbThreads, ofsCommune, getStatusManager());
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);

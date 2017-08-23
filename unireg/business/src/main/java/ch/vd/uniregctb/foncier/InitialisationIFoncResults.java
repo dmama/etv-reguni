@@ -26,6 +26,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
+import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -42,6 +43,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 
 	public final RegDate dateReference;
 	public final int nbThreads;
+	public final Integer ofsCommune;
 	private final RegistreFoncierService registreFoncierService;
 
 	public static class NomPrenomRaisonSocialeDateNaissance {
@@ -154,8 +156,9 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		public final Integer index3;
 		public final String nomCommune;
 		public final Integer noOfsCommune;
+		public final Long montantEstimationFiscale;
 
-		public InfoImmeuble(ImmeubleRF immeuble, @Nullable SituationRF situation) {
+		public InfoImmeuble(ImmeubleRF immeuble, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
 			idImmeuble = immeuble.getId();
 			egrid = immeuble.getEgrid();
 			dateRadiationImmeuble = immeuble.getDateRadiation();
@@ -183,6 +186,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 				nomCommune = null;
 				noOfsCommune = null;
 			}
+			montantEstimationFiscale = Optional.ofNullable(estimationFiscale).map(EstimationRF::getMontant).filter(montant -> montant > 0L).orElse(null);
 		}
 	}
 
@@ -204,7 +208,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		public final InfoImmeuble infoImmeuble;
 		public final Long idImmeubleBeneficiaire;
 
-		public InfoExtraction(@Nullable Contribuable contribuable, @NotNull DroitProprieteRF droit, @Nullable SituationRF situation) {
+		public InfoExtraction(@Nullable Contribuable contribuable, @NotNull DroitProprieteRF droit, @Nullable SituationRF situation, @Nullable EstimationRF estimationfiscale) {
 			// information du contribuable
 			if (contribuable != null) {
 				idContribuable = contribuable.getNumero();
@@ -235,10 +239,10 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			idImmeubleBeneficiaire = getIdImmeubleBeneficiaire(droit);
 
 			// les données de l'immeuble et de sa situation
-			infoImmeuble = new InfoImmeuble(droit.getImmeuble(), situation);
+			infoImmeuble = new InfoImmeuble(droit.getImmeuble(), situation, estimationfiscale);
 		}
 
-		public InfoExtraction(@Nullable Contribuable contribuable, @NotNull ServitudeRF servitude, @Nullable SituationRF situation) {
+		public InfoExtraction(@Nullable Contribuable contribuable, @NotNull ServitudeRF servitude, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
 
 			// préconditions
 			final Set<AyantDroitRF> ayantDroits = servitude.getAyantDroits();
@@ -280,10 +284,10 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			idImmeubleBeneficiaire = getIdImmeubleBeneficiaire(servitude);
 
 			// les données de l'immeuble et de sa situation
-			infoImmeuble = new InfoImmeuble(immeubles.iterator().next(), situation);
+			infoImmeuble = new InfoImmeuble(immeubles.iterator().next(), situation, estimationFiscale);
 		}
 
-		public InfoExtraction(ImmeubleRF immeuble, @Nullable SituationRF situation) {
+		public InfoExtraction(ImmeubleRF immeuble, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
 			idContribuable = null;
 			idCommunaute = null;
 			identificationRF = null;
@@ -298,7 +302,7 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 			motifFin = null;
 			part = null;
 			idImmeubleBeneficiaire = null;
-			infoImmeuble = new InfoImmeuble(immeuble, situation);
+			infoImmeuble = new InfoImmeuble(immeuble, situation, estimationFiscale);
 		}
 	}
 
@@ -318,8 +322,8 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		public final InfoImmeuble infoImmeuble;
 		public final String raison;
 
-		public ImmeubleIgnore(ImmeubleRF immeuble, @Nullable SituationRF situation, String raison) {
-			this.infoImmeuble = new InfoImmeuble(immeuble, situation);
+		public ImmeubleIgnore(ImmeubleRF immeuble, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale, String raison) {
+			this.infoImmeuble = new InfoImmeuble(immeuble, situation, estimationFiscale);
 			this.raison = raison;
 		}
 	}
@@ -329,9 +333,10 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 	private final List<ImmeubleIgnore> immeublesIgnores = new LinkedList<>();
 	private final List<ErreurImmeuble> erreurs = new LinkedList<>();
 
-	public InitialisationIFoncResults(RegDate dateReference, int nbThreads, @NotNull RegistreFoncierService registreFoncierService) {
+	public InitialisationIFoncResults(RegDate dateReference, int nbThreads, @Nullable Integer ofsCommune, @NotNull RegistreFoncierService registreFoncierService) {
 		this.dateReference = dateReference;
 		this.nbThreads = nbThreads;
+		this.ofsCommune = ofsCommune;
 		this.registreFoncierService = registreFoncierService;
 	}
 
@@ -340,20 +345,20 @@ public class InitialisationIFoncResults extends AbstractJobResults<Long, Initial
 		this.erreurs.add(new ErreurImmeuble(idImmeuble, e));
 	}
 
-	public void addDroitPropriete(@Nullable Contribuable contribuable, @NotNull DroitProprieteRF droit, @Nullable SituationRF situation) {
-		this.lignesExtraites.add(new InfoExtraction(contribuable, droit, situation));
+	public void addDroitPropriete(@Nullable Contribuable contribuable, @NotNull DroitProprieteRF droit, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
+		this.lignesExtraites.add(new InfoExtraction(contribuable, droit, situation, estimationFiscale));
 	}
 
-	public void addServitude(@Nullable Contribuable contribuable, @NotNull ServitudeRF servitude, @Nullable SituationRF situation) {
-		this.lignesExtraites.add(new InfoExtraction(contribuable, servitude, situation));
+	public void addServitude(@Nullable Contribuable contribuable, @NotNull ServitudeRF servitude, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
+		this.lignesExtraites.add(new InfoExtraction(contribuable, servitude, situation, estimationFiscale));
 	}
 
-	public void addImmeubleSansDroit(ImmeubleRF immeuble, @Nullable SituationRF situation) {
-		this.lignesExtraites.add(new InfoExtraction(immeuble, situation));
+	public void addImmeubleSansDroit(ImmeubleRF immeuble, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
+		this.lignesExtraites.add(new InfoExtraction(immeuble, situation, estimationFiscale));
 	}
 
-	public void addImmeubleSansDroitADateReference(ImmeubleRF immeuble, @Nullable SituationRF situation) {
-		this.immeublesIgnores.add(new ImmeubleIgnore(immeuble, situation, "Aucun droit valide à la date de référence."));
+	public void addImmeubleSansDroitADateReference(ImmeubleRF immeuble, @Nullable SituationRF situation, @Nullable EstimationRF estimationFiscale) {
+		this.immeublesIgnores.add(new ImmeubleIgnore(immeuble, situation, estimationFiscale, "Aucun droit valide à la date de référence."));
 	}
 
 	public void onNewImmeuble() {
