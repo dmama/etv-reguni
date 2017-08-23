@@ -43,11 +43,11 @@ public class DataEventJmsHandlerTest extends BusinessTest {
 
 	@Test
 	public void testCompletudeMapHandlers() throws Exception {
-		final Map<Class<? extends DataEvent>, DataEventJmsHandler.Handler> handlers = handler.getHandlers();
+		final Map<Class<? extends DataEvent>, DataEventJmsHandler.Handler<? extends DataEvent>> handlers = handler.getHandlers();
 		Assert.assertNotNull(handlers);
 
 		// vérifions que tous les handlers sont non-nuls
-		for (Map.Entry<Class<? extends DataEvent>, DataEventJmsHandler.Handler> entry : handlers.entrySet()) {
+		for (Map.Entry<Class<? extends DataEvent>, DataEventJmsHandler.Handler<? extends DataEvent>> entry : handlers.entrySet()) {
 			Assert.assertNotNull("Le handler pour la classe " + entry.getKey().getName() + " est null...", entry.getValue());
 		}
 
@@ -62,6 +62,6 @@ public class DataEventJmsHandlerTest extends BusinessTest {
 				++ nbSubclassesFound;
 			}
 		}
-		Assert.assertEquals("Il semblerait que le classpath des tests ne soit pas complet (ou que certaines clés de la map des handlers soient out-of-bounds...", handlers.size(), nbSubclassesFound);
+		Assert.assertEquals("Il semblerait que le classpath des tests ne soit pas complet (ou que certaines clés de la map des handlers soient out-of-bounds...)", handlers.size(), nbSubclassesFound);
 	}
 }

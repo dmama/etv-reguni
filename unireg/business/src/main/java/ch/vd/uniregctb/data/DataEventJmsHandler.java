@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -63,14 +64,14 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 
 	private JAXBContext jaxbContext;
 
-	private Map<Class<? extends DataEvent>, Handler> handlers;
+	private Map<Class<? extends DataEvent>, Handler<? extends DataEvent>> handlers;
 
-	private static <T extends DataEvent> void addToMap(Map<Class<? extends DataEvent>, Handler> map, Class<T> clazz, Handler<T> handler) {
+	private static <T extends DataEvent> void addToMap(Map<Class<? extends DataEvent>, Handler<? extends DataEvent>> map, Class<T> clazz, Handler<T> handler) {
 		map.put(clazz, handler);
 	}
 
-	private Map<Class<? extends DataEvent>, Handler> buildHandlers() {
-		final Map<Class<? extends DataEvent>, Handler> map = new HashMap<>();
+	private Map<Class<? extends DataEvent>, Handler<? extends DataEvent>> buildHandlers() {
+		final Map<Class<? extends DataEvent>, Handler<? extends DataEvent>> map = new HashMap<>();
 		addToMap(map, DatabaseLoadEvent.class, new DatabaseLoadEventHandler());
 		addToMap(map, DatabaseTruncateEvent.class, new DatabaseTruncateEventHandler());
 		addToMap(map, DroitAccesChangeEvent.class, new DroitAccesChangeEventHandler());
@@ -85,11 +86,18 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		return map;
 	}
 
+	private <T extends DataEvent> Handler<T> getHandler(@NotNull T event) {
+		// évidemment, ce cast n'est sûr que parce que les éléments ont été introduits dans la map au travers de la méthode addToMap
+		// (méthode qui impose une correspondance entre chaque clé et sa valeur associée)
+		//noinspection unchecked
+		return (Handler<T>) handlers.get(event.getClass());
+	}
+
 	/**
 	 * Pour les tests seulements !!! (test que toutes les sous-classes concrètes de DataEvent sont présentes dans la map)
 	 * @return la map des handlers enregistrés
 	 */
-	final Map<Class<? extends DataEvent>, Handler> getHandlers() {
+	final Map<Class<? extends DataEvent>, Handler<? extends DataEvent>> getHandlers() {
 		return Collections.unmodifiableMap(handlers);
 	}
 
@@ -301,11 +309,11 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 
 		final Unmarshaller u = jaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
-		final JAXBElement element = (JAXBElement) u.unmarshal(msg.getBodyAsSource());
+		//noinspection unchecked
+		final JAXBElement<Events> element = (JAXBElement<Events>) u.unmarshal(msg.getBodyAsSource());
 
 		final List<DataEvent> events = Optional.ofNullable(element)
 				.map(JAXBElement::getValue)
-				.map(Events.class::cast)
 				.map(Events::getEvent)
 				.orElseGet(Collections::emptyList);
 		if (!events.isEmpty()) {
@@ -313,21 +321,8 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			AuthenticationHelper.pushPrincipal("JMS-DataEvent(" + msg.getBusinessId() + ')');
 			try {
 				// un message contient plusieurs instructions... suivons les dans l'ordre
-				for (DataEvent event : events) {
-					final Handler handler = handlers.get(event.getClass());
-					if (handler == null) {
-						LOGGER.error("Pas de handler enregistré pour le message " + msg.getMessageId() + " de classe " + event.getClass().getSimpleName());
-						continue;
-					}
-
-					try {
-						//noinspection unchecked
-						handler.onEvent(event);
-					}
-					catch (Exception e) {
-						LOGGER.error("Exception levée lors du traitement de la portion " + event + " du message n°" + msg.getMessageId(), e);
-					}
-				}
+				final String msgId = msg.getMessageId();
+				events.forEach(event -> handle(event, msgId));
 			}
 			catch (Exception e) {
 				LOGGER.error("Erreur lors de la réception/du traitement du message n°" + msg.getMessageId(), e);
@@ -335,6 +330,21 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 			finally {
 				AuthenticationHelper.popPrincipal();
 			}
+		}
+	}
+
+	private <T extends DataEvent> void handle(T event, String messageId) {
+		final Handler<T> handler = getHandler(event);
+		if (handler == null) {
+			LOGGER.error("Pas de handler enregistré pour le message " + messageId + " de classe " + event.getClass().getSimpleName());
+			return;
+		}
+
+		try {
+			handler.onEvent(event);
+		}
+		catch (Exception e) {
+			LOGGER.error("Exception levée lors du traitement de la portion " + event + " du message n°" + messageId, e);
 		}
 	}
 
