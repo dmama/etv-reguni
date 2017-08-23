@@ -172,6 +172,9 @@ public class JspTagBatchForm extends BodyTagSupport {
 			b.append(" value=\"").append(defaultBalue).append('\"');
 		}
 		b.append("/>");
+		if (param.isMandatory()) {
+			b.append("<span class=\"mandatory\">*</span>");
+		}
 		return b.toString();
 	}
 
@@ -182,12 +185,12 @@ public class JspTagBatchForm extends BodyTagSupport {
 		final StringBuilder b = new StringBuilder();
 		b.append("<select name=\"").append(getBatchParamNameInForm(param)).append("\">\n");
 		b.append("<option value=\"true\"");
-		if (defaultValue == Boolean.TRUE) {
+		if (defaultValue != null && defaultValue) {
 			b.append(" selected=\"selected\"");
 		}
 		b.append(">true</option>\n");
 		b.append("<option value=\"false\"");
-		if (defaultValue == Boolean.FALSE) {
+		if (defaultValue != null && !defaultValue) {
 			b.append(" selected=\"selected\"");
 		}
 		b.append(">false</option>\n");
@@ -255,6 +258,9 @@ public class JspTagBatchForm extends BodyTagSupport {
 			b.append(" value=\"").append(RegDateHelper.dateToDisplayString(defaultValue)).append('\"');
 		}
 		b.append(" id=\"").append(id).append("\" size=\"10\" maxlength =\"10\" class=\"date\" />\n");
+		if (param.isMandatory()) {
+			b.append("<span class=\"mandatory\">*</span>");
+		}
 
 		// calendar
 		b.append("<script>\n");
@@ -284,6 +290,9 @@ public class JspTagBatchForm extends BodyTagSupport {
 			b.append(" value=\"").append(defaultBalue).append('\"');
 		}
 		b.append("/>");
+		if (param.isMandatory()) {
+			b.append("<span class=\"mandatory\">*</span>");
+		}
 		return b.toString();
 	}
 
@@ -324,6 +333,9 @@ public class JspTagBatchForm extends BodyTagSupport {
 			default:
 				throw new RuntimeException("Catégorie de commune inconnue... : " + type.getType());
 		}
+		if (param.isMandatory()) {
+			b.append("<span class=\"mandatory\">*</span>");
+		}
 
 		// système de recherche ajax de l'OID
 		b.append("<script>\n");
@@ -363,6 +375,10 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 		// champ contenant le numéro invisible à l'utilisateur
 		b.append("<input id=\"").append(idInputNoColAdm).append("\" name=\"").append(nameInputNoColAdm).append("\" type=\"hidden\" value=\"").append(defaultNoColAdm).append("\" />\n");
+
+		if (param.isMandatory()) {
+			b.append("<span class=\"mandatory\">*</span>");
+		}
 
 		// système de recherche ajax de l'OID
 		b.append("<script>\n");
