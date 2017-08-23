@@ -710,13 +710,15 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 				final List<DroitRF> droits = droitRFDAO.getAll();
 				assertEquals(1, droits.size());
 
+				// [SIFISC-24968] on vérifie que le droit est bien fermé
 				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
 				{
 					assertNull(droit0.getDateDebut());      // date vide en import initial
 					assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
 					assertEquals(RegDate.get(1997, 6, 19), droit0.getDateDebutMetier());
 					assertEquals("Achat", droit0.getMotifDebut());
-					assertNull(droit0.getMotifFin());
+					assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFinMetier());
+					assertEquals("Radiation", droit0.getMotifFin());
 					assertEquals("1f1091523810039001381005be485efd", droit0.getMasterIdRF());
 					assertEquals("_1f10915238100390013810052537624b", droit0.getImmeuble().getIdRF());
 					assertEquals(new Fraction(1, 1), droit0.getPart());

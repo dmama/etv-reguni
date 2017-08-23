@@ -328,30 +328,45 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 			throw new IllegalArgumentException("L'immeuble idRF=[" + idRF + "] est déjà radié à la date du [" + RegDateHelper.dateToDisplayString(persisted.getDateRadiation()) + "].");
 		}
 
+		final RegDate dateRadiation = dateValeur.getOneDayBefore();
+
 		// on ferme les situation, estimation fiscale, surface totale et quote-part courantes (note : les implantations ne sont pas possédées par l'immeuble, on ne les touche pas)
 		persisted.getSituations().stream()
 				.filter(s -> s.getDateFin() == null)
-				.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
+				.forEach(s -> s.setDateFin(dateRadiation));
 		persisted.getEstimations().stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(e -> e.getDateFin() == null)
 				.forEach(e -> {
-					e.setDateFin(dateValeur.getOneDayBefore());
-					e.setDateFinMetier(dateValeur.getOneDayBefore());
+					e.setDateFin(dateRadiation);
+					e.setDateFinMetier(dateRadiation);
 				});
 		persisted.getSurfacesTotales().stream()
 				.filter(s -> s.getDateFin() == null)
-				.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
+				.forEach(s -> s.setDateFin(dateRadiation));
+
+		// [SIFISC-24968] on assigne aussi la date de fin métier sur les droits pointés sur cet immeuble, car le batch de calcul
+		// des dates de fin métier des droits ne fonctionne qu'en cas de vente/achat de droits.
+		persisted.getDroitsPropriete().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(d -> d.getDateFinMetier() == null)
+				.forEach(d -> {
+					if (d.getDateFin() == null) {   // normalement, la date de fin technique est déjà renseignée par le processeur de mutation des droits, mais on ne prend pas de risque
+						d.setDateFin(dateRadiation);
+					}
+					d.setDateFinMetier(dateRadiation);
+					d.setMotifFin("Radiation");
+				});
 
 		if (persisted instanceof ImmeubleAvecQuotePartRF) {
 			final ImmeubleAvecQuotePartRF persistedAvecQuote = (ImmeubleAvecQuotePartRF) persisted;
 			persistedAvecQuote.getQuotesParts().stream()
 					.filter(s -> s.getDateFin() == null)
-					.forEach(s -> s.setDateFin(dateValeur.getOneDayBefore()));
+					.forEach(s -> s.setDateFin(dateRadiation));
 		}
 
 		// on radie l'immeuble
-		persisted.setDateRadiation(dateValeur.getOneDayBefore());
+		persisted.setDateRadiation(dateRadiation);
 
 		// on publie l'événement fiscal correspondant
 		evenementFiscalService.publierRadiationImmeuble(dateValeur, persisted);
