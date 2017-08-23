@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AbstractJobResults;
-import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
@@ -90,6 +90,7 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 		public ImmeubleInfo(@NotNull ImmeubleRF immeuble, RegDate dateTraitement, OutputInfoBaseAvecImmeubles parent) {
 			this.idImmeuble = immeuble.getId();
 			final SituationRF situation = registreFoncierService.getSituation(immeuble, dateTraitement);
+			final Commune commune = registreFoncierService.getCommune(immeuble, dateTraitement);
 			if (situation == null) {
 				this.nomCommune = null;
 				this.noOfsCommune = null;
@@ -99,8 +100,14 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 				this.index3 = null;
 			}
 			else {
-				this.nomCommune = situation.getCommune().getNomRf();
-				this.noOfsCommune = situation.getCommune().getNoOfs();
+				if (commune != null) {
+					this.nomCommune = commune.getNomOfficiel();
+					this.noOfsCommune = commune.getNoOFS();
+				}
+				else {
+					this.nomCommune = null;
+					this.noOfsCommune = null;
+				}
 				this.noParcelle = situation.getNoParcelle();
 				this.index1 = situation.getIndex1();
 				this.index2 = situation.getIndex2();
@@ -207,8 +214,9 @@ public class EnvoiFormulairesDemandeDegrevementICIResults extends AbstractJobRes
 			this.idImmeuble = Optional.ofNullable(immeuble).map(ImmeubleRF::getId).orElse(null);
 
 			final Optional<SituationRF> situation = Optional.ofNullable(immeuble).map(i -> registreFoncierService.getSituation(i, dateTraitement));
-			this.nomCommune = situation.map(SituationRF::getCommune).map(CommuneRF::getNomRf).orElse(null);
-			this.noOfsCommune = situation.map(SituationRF::getCommune).map(CommuneRF::getNoOfs).orElse(null);
+			final Optional<Commune> commune = Optional.ofNullable(immeuble).map(i -> registreFoncierService.getCommune(i, dateTraitement));
+			this.nomCommune = commune.map(Commune::getNomOfficiel).orElse(null);
+			this.noOfsCommune = commune.map(Commune::getNoOFS).orElse(null);
 			this.noParcelle = situation.map(SituationRF::getNoParcelle).orElse(null);
 			this.index1 = situation.map(SituationRF::getIndex1).orElse(null);
 			this.index2 = situation.map(SituationRF::getIndex2).orElse(null);

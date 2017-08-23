@@ -205,7 +205,7 @@ public abstract class ImmovablePropertyBuilder {
 		loc.setIndex1(situation.getIndex1());
 		loc.setIndex2(situation.getIndex2());
 		loc.setIndex3(situation.getIndex3());
-		loc.setMunicipalityFsoId(situation.getCommune().getNoOfs());
+		loc.setMunicipalityFsoId(situation.getNoOfsCommune());
 		return loc;
 	}
 

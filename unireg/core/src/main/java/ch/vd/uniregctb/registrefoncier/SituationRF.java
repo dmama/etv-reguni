@@ -19,6 +19,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -64,6 +65,12 @@ public class SituationRF extends HibernateDateRangeEntity implements LinkedEntit
 	 * La commune sur laquelle est sis l'immeuble.
 	 */
 	private CommuneRF commune;
+
+	/**
+	 * Le numéro OFS de la commune surchargée (= la fraction dans la cas de commune fractionnée).
+	 */
+	@Nullable
+	private Integer noOfsCommuneSurchargee;
 
 	/**
 	 * L'immeuble concerné par la situation.
@@ -133,6 +140,26 @@ public class SituationRF extends HibernateDateRangeEntity implements LinkedEntit
 
 	public void setCommune(CommuneRF commune) {
 		this.commune = commune;
+	}
+
+	@Nullable
+	@Column(name = "NO_OFS_COMMUNE_SURCHARGE")
+	public Integer getNoOfsCommuneSurchargee() {
+		return noOfsCommuneSurchargee;
+	}
+
+	public void setNoOfsCommuneSurchargee(@Nullable Integer noOfsCommuneSurchargee) {
+		this.noOfsCommuneSurchargee = noOfsCommuneSurchargee;
+	}
+
+	/**
+	 * [SIFISC-24367]
+	 *
+	 * @return le numéro Ofs de la commune à utiliser pour le fiscal. Cette méthode retourne soit la commune du RF soit la commune surchargée au niveau fiscal.
+	 */
+	@Transient
+	public int getNoOfsCommune() {
+		return noOfsCommuneSurchargee == null ? commune.getNoOfs() : noOfsCommuneSurchargee;
 	}
 
 	// configuration hibernate : l'immeuble possède les situations

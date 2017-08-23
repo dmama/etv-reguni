@@ -1620,7 +1620,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble2, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
-			Assert.assertEquals("Yverdon", envoi.nomCommune);
+			Assert.assertEquals("Yverdon-les-Bains", envoi.nomCommune);
 			Assert.assertEquals((Integer) MockCommune.YverdonLesBains.getNoOFS(), envoi.noOfsCommune);
 			Assert.assertEquals((Integer) 142, envoi.noParcelle);
 			Assert.assertNull(envoi.index1);
@@ -1749,7 +1749,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			Assert.assertEquals(dateDebutDroit.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble2, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
-			Assert.assertEquals("Yverdon", envoi.nomCommune);
+			Assert.assertEquals("Yverdon-les-Bains", envoi.nomCommune);
 			Assert.assertEquals((Integer) MockCommune.YverdonLesBains.getNoOFS(), envoi.noOfsCommune);
 			Assert.assertEquals((Integer) 142, envoi.noParcelle);
 			Assert.assertNull(envoi.index1);

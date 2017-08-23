@@ -62,7 +62,7 @@ public class InitialisationIFoncProcessor {
 	public InitialisationIFoncResults run(RegDate dateReference, int nbThreads, StatusManager s) {
 
 		final StatusManager statusManager = s != null ? s : new LoggingStatusManager(LOGGER);
-		final InitialisationIFoncResults rapportFinal = new InitialisationIFoncResults(dateReference, nbThreads);
+		final InitialisationIFoncResults rapportFinal = new InitialisationIFoncResults(dateReference, nbThreads, registreFoncierService);
 
 		// on commence en allant chercher les immeubles et leurs droits
 		statusManager.setMessage("Récupération des immeubles...");
@@ -121,7 +121,7 @@ public class InitialisationIFoncProcessor {
 
 			@Override
 			public InitialisationIFoncResults createSubRapport() {
-				return new InitialisationIFoncResults(dateReference, nbThreads);
+				return new InitialisationIFoncResults(dateReference, nbThreads, registreFoncierService);
 			}
 
 		}, progressMonitor);

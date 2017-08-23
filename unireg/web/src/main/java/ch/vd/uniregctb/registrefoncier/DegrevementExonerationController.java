@@ -225,7 +225,7 @@ public class DegrevementExonerationController {
 	private static SituationRF getSituationSurCommune(ImmeubleRF immeuble, int noOfsCommune) {
 		return immeuble.getSituations().stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.filter(situation -> situation.getCommune().getNoOfs() == noOfsCommune)
+				.filter(situation -> situation.getNoOfsCommune() == noOfsCommune)
 				.max(Comparator.naturalOrder())
 				.orElse(null);
 	}
