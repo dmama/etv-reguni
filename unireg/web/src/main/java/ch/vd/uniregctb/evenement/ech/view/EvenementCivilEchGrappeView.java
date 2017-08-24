@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 
@@ -17,6 +19,7 @@ public class EvenementCivilEchGrappeView implements Serializable, Iterable<Evene
 		this.grappe = grappe;
 	}
 
+	@NotNull
 	@Override
 	public Iterator<EvenementCivilEchBasicInfo> iterator() {
 		return grappe.iterator();

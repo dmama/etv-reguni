@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -100,6 +101,7 @@ public abstract class Fractionnements<FFP extends ForFiscalPrincipal> implements
 		return map.isEmpty();
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Fraction> iterator() {
 		return map.values().stream()

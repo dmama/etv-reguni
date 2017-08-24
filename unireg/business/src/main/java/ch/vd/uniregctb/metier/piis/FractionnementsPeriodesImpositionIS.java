@@ -290,6 +290,7 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 		return last;
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Fraction> iterator() {
 		return fractionnements.iterator();

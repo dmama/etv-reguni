@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -114,14 +116,14 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends T> c) {
+	public boolean addAll(@NotNull Collection<? extends T> c) {
 		boolean r = list.addAll(c);
 		initSets();
 		return r;
 	}
 
 	@Override
-	public boolean addAll(int index, Collection<? extends T> c) {
+	public boolean addAll(int index, @NotNull Collection<? extends T> c) {
 		boolean r = list.addAll(index, c);
 		initSets();
 		return r;
@@ -142,7 +144,7 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public boolean containsAll(@NotNull Collection<?> c) {
 		return list.containsAll(c);
 	}
 
@@ -161,6 +163,7 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 		return list.isEmpty();
 	}
 
+	@NotNull
 	@Override
 	public Iterator<T> iterator() {
 		return list.iterator();
@@ -171,11 +174,13 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 		return list.lastIndexOf(o);
 	}
 
+	@NotNull
 	@Override
 	public ListIterator<T> listIterator() {
 		return list.listIterator();
 	}
 
+	@NotNull
 	@Override
 	public ListIterator<T> listIterator(int index) {
 		return list.listIterator(index);
@@ -192,12 +197,12 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 	}
 
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		throw new NotImplementedException();
 	}
 
@@ -211,19 +216,22 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 		return list.size();
 	}
 
+	@NotNull
 	@Override
 	public List<T> subList(int fromIndex, int toIndex) {
 		throw new NotImplementedException();
 	}
 
+	@NotNull
 	@Override
 	public Object[] toArray() {
 		return list.toArray();
 	}
 
+	@NotNull
 	@Override
 	@SuppressWarnings("hiding")
-	public <T> T[] toArray(T[] a) {
+	public <T> T[] toArray(@NotNull T[] a) {
 		return list.toArray(a);
 	}
 
