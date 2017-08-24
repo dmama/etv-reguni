@@ -148,8 +148,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	@Nullable
-	private DroitProprieteRF findDroitPrecedent(@NotNull DroitRFKey key) {
-		return droitRFDAO.findDroitPrecedent(key);
+	private DroitProprieteRF findDroitPrecedent(@NotNull DroitProprieteRF droit) {
+		return droitRFDAO.findDroitPrecedent(new DroitRFKey(droit));
 	}
 
 	@Nullable

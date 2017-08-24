@@ -35,7 +35,6 @@ import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
 public abstract class DroitRFHelper {
@@ -123,7 +122,7 @@ public abstract class DroitRFHelper {
 	}
 
 	@Nullable
-	private static DroitProprieteRF simplisticDroitPrecedentProvider(@NotNull DroitRFKey key) {
+	private static DroitProprieteRF simplisticDroitPrecedentProvider(@NotNull DroitProprieteRF key) {
 		return null;
 	}
 
@@ -292,7 +291,7 @@ public abstract class DroitRFHelper {
 	                                          @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
 	                                          @NotNull Function<String, CommunauteRF> communauteProvider,
 	                                          @NotNull Function<String, ImmeubleRF> immeubleProvider,
-	                                          @NotNull Function<DroitRFKey, DroitProprieteRF> droitPrecedentProvider) {
+	                                          @NotNull Function<DroitProprieteRF, DroitProprieteRF> droitPrecedentProvider) {
 
 		final DroitProprieteRF droit;
 		if (eigentumAnteil instanceof PersonEigentumAnteil) {
@@ -395,7 +394,7 @@ public abstract class DroitRFHelper {
 	                                   @NotNull Function<String, AyantDroitRF> ayantDroitProvider,
 	                                   @NotNull Function<String, CommunauteRF> communauteProvider,
 	                                   @NotNull Function<String, ImmeubleRF> immeubleProvider,
-	                                   @NotNull Function<DroitRFKey, DroitProprieteRF> droitPrecedentProvider) {
+	                                   @NotNull Function<DroitProprieteRF, DroitProprieteRF> droitPrecedentProvider) {
 		if (eigentumAnteil == null) {
 			return null;
 		}

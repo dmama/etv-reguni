@@ -36,4 +36,10 @@ public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
 	 */
 	@NotNull
 	List<Long> findImmeubleIdsAvecDatesDeFinDroitsACalculer();
+
+	/**
+	 * @return les ids de tous les immeubles existants et non-annulés (mais y compris les radiés).
+	 */
+	@NotNull
+	List<Long> getAllIds();
 }
