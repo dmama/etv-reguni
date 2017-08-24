@@ -98,6 +98,7 @@ import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport;
+import ch.vd.uniregctb.document.RattraperDatesDebutDroitProcessorRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
@@ -150,6 +151,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.TraitementFinsDeDroitRFResults;
 import ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
+import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFProcessorResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
 import ch.vd.uniregctb.role.RolePMCommunesResults;
@@ -1921,6 +1923,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 					final PdfMigrationMandatairesSpeciauxRapport document = new PdfMigrationMandatairesSpeciauxRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RattraperDatesDebutDroitProcessorRapport generateRapport(RattraperDatesDebutDroitRFProcessorResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportRattrapageDatesDebutDroitRF";
+		final String description = "Rapport d'exécution du job de rattrapage des dates de début des droits RF.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RattraperDatesDebutDroitProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRattrapageDatesDebutDroitRFRapport document = new PdfRattrapageDatesDebutDroitRFRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
 		catch (Exception e) {

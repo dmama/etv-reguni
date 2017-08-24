@@ -33,7 +33,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Contribuable;
 
@@ -212,14 +211,15 @@ public abstract class DroitProprieteRF extends DroitRF {
 
 	/**
 	 * Calcule la date de début métier et le motif d'acquisition à partir de l'historique des raisons d'acquisition.
-	 * @param droitPrecedentProvider un provider qui retourne le droit précédent chronologiquement) avec le même masterId qui spécifié.
+	 *
+	 * @param droitPrecedentProvider un provider qui retourne le droit précédent (chronologiquement) du droit spécifié.
 	 */
-	public void calculateDateEtMotifDebut(@NotNull Function<DroitRFKey, DroitProprieteRF> droitPrecedentProvider) {
+	public void calculateDateEtMotifDebut(@NotNull Function<DroitProprieteRF, DroitProprieteRF> droitPrecedentProvider) {
 		if (raisonsAcquisition == null || raisonsAcquisition.isEmpty()) {
 			setDebutRaisonAcquisition(null);
 		}
 		else {
-			final DroitProprieteRF precedent = droitPrecedentProvider.apply(new DroitRFKey(getMasterIdRF(), getVersionIdRF()));
+			final DroitProprieteRF precedent = droitPrecedentProvider.apply(this);
 			if (precedent == null || precedent.getRaisonsAcquisition() == null) {
 				// il n'y a pas de droit précédent : on prend la raison d'acquisition la plus vieille comme référence
 				final RaisonAcquisitionRF first = raisonsAcquisition.stream()
