@@ -18,7 +18,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults.Erreur;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults.ErreurType;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -175,7 +175,7 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
-				addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationSommee(declaration, dateSommation,dateSommation.addDays(3), null);
 				return declaration.getId();
 			}
@@ -204,7 +204,7 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(marco, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2008, 1, 15));
-				addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, date(2008, 1, 15), date(2008, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationSommee(declaration, dateSommation,dateSommation.addDays(3), null);
 				return declaration.getId();
 			}
@@ -226,7 +226,7 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 				assertNotNull(di);
-				assertEquals(TypeEtatDeclaration.ECHUE, di.getDernierEtat().getEtat());
+				assertEquals(TypeEtatDeclaration.ECHUE, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});

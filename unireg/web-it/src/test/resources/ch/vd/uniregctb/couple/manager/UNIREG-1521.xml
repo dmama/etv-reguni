@@ -5013,6 +5013,7 @@
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>DECLARATION_ID</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>15791143</value>
       <null/>
@@ -5027,6 +5028,7 @@
       <value>20080128</value>
       <value>20081031</value>
       <value>15791137</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>15791145</value>
@@ -5042,6 +5044,7 @@
       <value>20080428</value>
       <value>20081031</value>
       <value>15791137</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>15791165</value>
@@ -5057,6 +5060,7 @@
       <value>20090526</value>
       <value>20090930</value>
       <value>15791162</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>15791168</value>
@@ -5072,6 +5076,7 @@
       <value>20090130</value>
       <value>20090930</value>
       <value>15791162</value>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
 </dataset>

@@ -102,7 +102,7 @@ public class EvenementDeclarationServiceTest extends BusinessTest {
 				assertEquals(1, list.size());
 
 				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				final EtatDeclaration etat = declaration.getDernierEtat();
+				final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
 				assertTrue(etat instanceof EtatDeclarationRetournee);
 
 				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;

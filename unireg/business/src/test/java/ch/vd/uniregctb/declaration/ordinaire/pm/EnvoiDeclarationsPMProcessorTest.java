@@ -149,8 +149,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
 					Assert.assertNotNull(e);
-					Assert.assertNotNull(e.getDeclarations());
-					Assert.assertEquals(0, e.getDeclarations().size());
+					Assert.assertNotNull(e.getDocumentsFiscaux());
+					Assert.assertEquals(0, e.getDocumentsFiscaux().size());
 
 					final List<Tache> taches = tacheDAO.find(e.getNumero());
 					Assert.assertNotNull(taches);
@@ -208,11 +208,11 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), declaration.getDateFin());
 					Assert.assertEquals(dateTraitement, declaration.getDateExpedition());
 					Assert.assertEquals(null, declaration.getDateRetour());
-					Assert.assertNotNull(declaration.getDernierEtat());
-					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtat().getEtat());
-					Assert.assertNotNull(declaration.getDelais());
-					Assert.assertEquals(1, declaration.getDelais().size());
-					final DelaiDeclaration delai = declaration.getDelais().iterator().next();
+					Assert.assertNotNull(declaration.getDernierEtatDeclaration());
+					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtatDeclaration().getEtat());
+					Assert.assertNotNull(declaration.getDelaisDeclaration());
+					Assert.assertEquals(1, declaration.getDelaisDeclaration().size());
+					final DelaiDeclaration delai = declaration.getDelaisDeclaration().iterator().next();
 					Assert.assertNotNull(delai);
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
@@ -324,8 +324,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
 					Assert.assertNotNull(e);
-					Assert.assertNotNull(e.getDeclarations());
-					Assert.assertEquals(0, e.getDeclarations().size());
+					Assert.assertNotNull(e.getDocumentsFiscaux());
+					Assert.assertEquals(0, e.getDocumentsFiscaux().size());
 
 					final List<Tache> taches = tacheDAO.find(e.getNumero());
 					Assert.assertNotNull(taches);
@@ -383,11 +383,11 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), declaration.getDateFin());
 					Assert.assertEquals(dateTraitement, declaration.getDateExpedition());
 					Assert.assertEquals(null, declaration.getDateRetour());
-					Assert.assertNotNull(declaration.getDernierEtat());
-					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtat().getEtat());
-					Assert.assertNotNull(declaration.getDelais());
-					Assert.assertEquals(1, declaration.getDelais().size());
-					final DelaiDeclaration delai = declaration.getDelais().iterator().next();
+					Assert.assertNotNull(declaration.getDernierEtatDeclaration());
+					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtatDeclaration().getEtat());
+					Assert.assertNotNull(declaration.getDelaisDeclaration());
+					Assert.assertEquals(1, declaration.getDelaisDeclaration().size());
+					final DelaiDeclaration delai = declaration.getDelaisDeclaration().iterator().next();
 					Assert.assertNotNull(delai);
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
@@ -498,8 +498,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
 					Assert.assertNotNull(e);
-					Assert.assertNotNull(e.getDeclarations());
-					Assert.assertEquals(0, e.getDeclarations().size());
+					Assert.assertNotNull(e.getDocumentsFiscaux());
+					Assert.assertEquals(0, e.getDocumentsFiscaux().size());
 
 					final List<Tache> taches = tacheDAO.find(e.getNumero());
 					Assert.assertNotNull(taches);
@@ -557,12 +557,12 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), declaration.getDateFin());
 					Assert.assertEquals(dateTraitement, declaration.getDateExpedition());
 					Assert.assertEquals(null, declaration.getDateRetour());
-					Assert.assertNotNull(declaration.getDernierEtat());
-					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtat().getEtat());
+					Assert.assertNotNull(declaration.getDernierEtatDeclaration());
+					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtatDeclaration().getEtat());
 					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_APM_BATCH, declaration.getModeleDocument().getTypeDocument());
-					Assert.assertNotNull(declaration.getDelais());
-					Assert.assertEquals(1, declaration.getDelais().size());
-					final DelaiDeclaration delai = declaration.getDelais().iterator().next();
+					Assert.assertNotNull(declaration.getDelaisDeclaration());
+					Assert.assertEquals(1, declaration.getDelaisDeclaration().size());
+					final DelaiDeclaration delai = declaration.getDelaisDeclaration().iterator().next();
 					Assert.assertNotNull(delai);
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
@@ -679,8 +679,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
 					Assert.assertNotNull(e);
-					Assert.assertNotNull(e.getDeclarations());
-					Assert.assertEquals(0, e.getDeclarations().size());
+					Assert.assertNotNull(e.getDocumentsFiscaux());
+					Assert.assertEquals(0, e.getDocumentsFiscaux().size());
 
 					final List<Tache> taches = tacheDAO.find(e.getNumero());
 					Assert.assertNotNull(taches);
@@ -781,11 +781,11 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 31), declaration.getDateFin());
 					Assert.assertEquals(dateTraitement, declaration.getDateExpedition());
 					Assert.assertEquals(null, declaration.getDateRetour());
-					Assert.assertNotNull(declaration.getDernierEtat());
-					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtat().getEtat());
-					Assert.assertNotNull(declaration.getDelais());
-					Assert.assertEquals(1, declaration.getDelais().size());
-					final DelaiDeclaration delai = declaration.getDelais().iterator().next();
+					Assert.assertNotNull(declaration.getDernierEtatDeclaration());
+					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtatDeclaration().getEtat());
+					Assert.assertNotNull(declaration.getDelaisDeclaration());
+					Assert.assertEquals(1, declaration.getDelaisDeclaration().size());
+					final DelaiDeclaration delai = declaration.getDelaisDeclaration().iterator().next();
 					Assert.assertNotNull(delai);
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
@@ -897,11 +897,11 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf, 1, 15), declaration.getDateFin());
 					Assert.assertEquals(dateTraitement, declaration.getDateExpedition());
 					Assert.assertEquals(null, declaration.getDateRetour());
-					Assert.assertNotNull(declaration.getDernierEtat());
-					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtat().getEtat());
-					Assert.assertNotNull(declaration.getDelais());
-					Assert.assertEquals(1, declaration.getDelais().size());
-					final DelaiDeclaration delai = declaration.getDelais().iterator().next();
+					Assert.assertNotNull(declaration.getDernierEtatDeclaration());
+					Assert.assertEquals(TypeEtatDeclaration.EMISE, declaration.getDernierEtatDeclaration().getEtat());
+					Assert.assertNotNull(declaration.getDelaisDeclaration());
+					Assert.assertEquals(1, declaration.getDelaisDeclaration().size());
+					final DelaiDeclaration delai = declaration.getDelaisDeclaration().iterator().next();
 					Assert.assertNotNull(delai);
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
@@ -1005,8 +1005,8 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 				protected void doInTransactionWithoutResult(TransactionStatus status) {
 					final Entreprise e = (Entreprise) tiersDAO.get(pmId);
 					Assert.assertNotNull(e);
-					Assert.assertNotNull(e.getDeclarations());
-					Assert.assertEquals(0, e.getDeclarations().size());
+					Assert.assertNotNull(e.getDocumentsFiscaux());
+					Assert.assertEquals(0, e.getDocumentsFiscaux().size());
 
 					final List<Tache> taches = tacheDAO.find(e.getNumero());
 					Assert.assertNotNull(taches);
@@ -1117,9 +1117,9 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(date(pf - 1, 5, 3), declaration.getDateDebut());
 					Assert.assertEquals(date(pf, 6, 30), declaration.getDateFin());
 					Assert.assertEquals(date(pf, 7, 4), declaration.getDateRetour());
-					Assert.assertNotNull(declaration.getDernierEtat());
-					Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
-					Assert.assertNotNull(declaration.getDelais());
+					Assert.assertNotNull(declaration.getDernierEtatDeclaration());
+					Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatDeclaration().getEtat());
+					Assert.assertNotNull(declaration.getDelaisDeclaration());
 
 					final List<Tache> taches = tacheDAO.find(e.getNumero());
 					Assert.assertNotNull(taches);

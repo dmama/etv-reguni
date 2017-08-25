@@ -54,7 +54,7 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 				.orElse(null);
 		this.annule = lr.isAnnule();
 
-		final EtatDeclaration dernierEtat = lr.getDernierEtat();
+		final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
 		this.etat = dernierEtat.getEtat();
 		this.dateObtentionEtat = dernierEtat.getDateObtention();
 		this.imprimable = !lr.isAnnule();
@@ -88,7 +88,7 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 	}
 
 	private static List<DelaiDeclarationView> buildDelais(DeclarationImpotSource lr, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		final List<DelaiDeclarationView> delais = lr.getDelais().stream()
+		final List<DelaiDeclarationView> delais = lr.getDelaisDeclaration().stream()
 				.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(DelaiDeclaration::getDateDemande).reversed()))
 				.map(delai -> new DelaiDeclarationView(delai, infraService, messageSource))
 				.collect(Collectors.toList());

@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
@@ -219,7 +219,7 @@ public class DeclarationsHandler implements CategoryHandler {
 		b.append(", ");
 		b.append(dateDelai.index());
 		b.append(", ID, '");
-		b.append(EtatDelaiDeclaration.ACCORDE);
+		b.append(EtatDelaiDocumentFiscal.ACCORDE);
 		b.append("', 0").append(System.lineSeparator());
 		b.append("FROM DECLARATION WHERE LOG_CUSER='").append(TEMP_DECLARATION_VISA).append("';").append(System.lineSeparator());
 		b.append(System.lineSeparator());

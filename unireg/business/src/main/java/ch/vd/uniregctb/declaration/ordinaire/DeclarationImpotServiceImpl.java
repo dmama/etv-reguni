@@ -92,7 +92,7 @@ import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -359,7 +359,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
-			final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE);
 			if (etatRetour != null) {
 				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
 			}
@@ -387,7 +387,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
-			final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE);
 			if (etatRetour != null) {
 				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
 			}
@@ -491,7 +491,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		// [SIFISC-5208] Dorénavant, on stocke scrupuleusement tous les états de quittancement de type 'retournés', *sans* annuler les états précédents.
 		// [SIFISC-8436] certaines sources ne supportent pas le multi-quittancement
 		if (sourcesMonoQuittancement.contains(source)) {
-			for (EtatDeclaration etat : di.getEtats()) {
+			for (EtatDeclaration etat : di.getEtatsDeclaration()) {
 				if (!etat.isAnnule() && etat instanceof EtatDeclarationRetournee && source.equals(((EtatDeclarationRetournee) etat).getSource())) {
 					etat.setAnnule(true);
 				}
@@ -699,7 +699,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throw new IllegalArgumentException("Délai " + delai.getId() + " sur une déclaration non-supportée : " + declaration.getClass().getName());
 		}
 
-		if (delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {
+		if (delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE) {
 			if (delai.isSursis()) {
 				return TypeDocumentEditique.SURSIS;
 			}
@@ -707,7 +707,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				return TypeDocumentEditique.ACCORD_DELAI_PM;
 			}
 		}
-		else if (delai.getEtat() == EtatDelaiDeclaration.REFUSE) {
+		else if (delai.getEtat() == EtatDelaiDocumentFiscal.REFUSE) {
 			return TypeDocumentEditique.REFUS_DELAI_PM;
 		}
 		else {

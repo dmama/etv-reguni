@@ -444,7 +444,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final DeclarationImpotOrdinaire di = dis.get(0);
 				assertNotNull(di);
 
-				final EtatDeclaration dernierEtat = di.getDernierEtat();
+				final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
 				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
 				assertEquals(date(2007, 5, 12), di.getDateRetour());
 
@@ -480,7 +480,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final DeclarationImpotOrdinaire di = dis.get(0);
 				assertNotNull(di);
 
-				final EtatDeclaration dernierEtat = di.getDernierEtat();
+				final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
 				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
 				assertEquals(date(2007, 8, 8), di.getDateRetour());
 
@@ -2080,7 +2080,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertNotNull(di);
 				assertEquals(date(2007, 5, 12), di.getDateRetour());
 
-				final Set<EtatDeclaration> etats = di.getEtats();
+				final Set<EtatDeclaration> etats = di.getEtatsDeclaration();
 				assertNotNull(etats);
 				assertEquals(1, etats.size());
 
@@ -2093,8 +2093,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertFalse(etat0.isAnnule());
 
 				// l'état retourné est le dernier, comme il se doit
-				assertSame(etat0, di.getDernierEtat());
-				assertSame(etat0, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				assertSame(etat0, di.getDernierEtatDeclaration());
+				assertSame(etat0, di.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE));
 				return null;
 			}
 		});
@@ -2125,7 +2125,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertNotNull(di);
 				assertEquals(date(2007, 10, 28), di.getDateRetour());
 
-				final List<EtatDeclaration> etats = di.getEtatsSorted();
+				final List<EtatDeclaration> etats = di.getEtatsDeclarationSorted();
 				assertNotNull(etats);
 				assertEquals(2, etats.size());
 
@@ -2142,8 +2142,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertFalse(etat1.isAnnule());
 
 				// le nouvel état retourné doit être le dernier
-				assertSame(etat1, di.getDernierEtat());
-				assertSame(etat1, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				assertSame(etat1, di.getDernierEtatDeclaration());
+				assertSame(etat1, di.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE));
 				return null;
 			}
 		});
@@ -2217,7 +2217,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertNotNull(di);
 				assertEquals(date(2007, 5, 12), di.getDateRetour());
 
-				final Set<EtatDeclaration> etats = di.getEtats();
+				final Set<EtatDeclaration> etats = di.getEtatsDeclaration();
 				assertNotNull(etats);
 				assertEquals(1, etats.size());
 
@@ -2230,8 +2230,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertFalse(etat0.isAnnule());
 
 				// l'état retourné est le dernier, comme il se doit
-				assertSame(etat0, di.getDernierEtat());
-				assertSame(etat0, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				assertSame(etat0, di.getDernierEtatDeclaration());
+				assertSame(etat0, di.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE));
 				return null;
 			}
 		});
@@ -2276,7 +2276,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertNotNull(di);
 				assertEquals(date(2007, 10, 28), di.getDateRetour());
 
-				final List<EtatDeclaration> etats = di.getEtatsSorted();
+				final List<EtatDeclaration> etats = di.getEtatsDeclarationSorted();
 				assertNotNull(etats);
 				assertEquals(3, etats.size());
 
@@ -2299,8 +2299,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertFalse(etat2.isAnnule());
 
 				// le nouvel état retourné doit être le dernier
-				assertSame(etat2, di.getDernierEtat());
-				assertSame(etat2, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				assertSame(etat2, di.getDernierEtatDeclaration());
+				assertSame(etat2, di.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE));
 				return null;
 			}
 		});

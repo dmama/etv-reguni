@@ -208,7 +208,7 @@ public class EnvoiSommationsDIsPMProcessor {
 	}
 
 	private boolean checkEtat(DeclarationImpotOrdinaire di, EnvoiSommationsDIsPMResults r) {
-		if (TypeEtatDeclaration.EMISE != di.getDernierEtat().getEtat() && TypeEtatDeclaration.SUSPENDUE != di.getDernierEtat().getEtat()) {
+		if (TypeEtatDeclaration.EMISE != di.getDernierEtatDeclaration().getEtat() && TypeEtatDeclaration.SUSPENDUE != di.getDernierEtatDeclaration().getEtat()) {
 			// Ce cas pourrait eventuellement se produire dans le cas où une DI aurait 2 états à la même date,
 			// il s'agirait alors de données corrompues ...
 			final String msg = String.format("La di [id: %s] n'est ni à l'état 'EMISE', et ne peut donc être sommée", di.getId().toString());
@@ -230,7 +230,7 @@ public class EnvoiSommationsDIsPMProcessor {
 	 * Si la DI est dans un état SUSPENDUE, il ne faut pas la sommer
 	 */
 	private boolean isSuspendue(DeclarationImpotOrdinaire di) {
-		final EtatDeclaration dernierEtat = di.getDernierEtat();
+		final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
 		return dernierEtat != null && dernierEtat.getEtat() == TypeEtatDeclaration.SUSPENDUE;
 	}
 

@@ -32,15 +32,15 @@ public abstract class DeclarationValidator<T extends Declaration> extends DateRa
 			}
 
 			// il faut également valider les états et les délais
-			final List<EtatDeclaration> etats = declaration.getEtatsSorted();
+			final List<EtatDeclaration> etats = declaration.getEtatsDeclarationSorted();
 			if (etats != null) {
-				for (EtatDeclaration etat : declaration.getEtatsSorted()) {
+				for (EtatDeclaration etat : declaration.getEtatsDeclarationSorted()) {
 					vr.merge(getValidationService().validate(etat));
 				}
 			}
-			final List<DelaiDeclaration> delais = declaration.getDelaisSorted();
+			final List<DelaiDeclaration> delais = declaration.getDelaisDeclarationSorted();
 			if (delais != null) {
-				for (DelaiDeclaration delai : declaration.getDelaisSorted()) {
+				for (DelaiDeclaration delai : declaration.getDelaisDeclarationSorted()) {
 					vr.merge(getValidationService().validate(delai));
 				}
 			}

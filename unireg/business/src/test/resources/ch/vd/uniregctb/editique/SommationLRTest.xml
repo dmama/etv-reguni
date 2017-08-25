@@ -506,6 +506,7 @@
     <column>ETAT</column>
     <column>SURSIS</column>
     <column>ANNULATION_DATE</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -516,6 +517,7 @@
       <value>ACCORDE</value>
       <value>0</value>
       <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -527,6 +529,7 @@
       <value>ACCORDE</value>
       <value>0</value>
       <value>2008-03-25</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -538,6 +541,7 @@
       <value>ACCORDE</value>
       <value>0</value>
       <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
   <table name="ETAT_DECLARATION">

@@ -103,7 +103,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -847,7 +847,7 @@ public class DeclarationImpotController {
 		if (dis != null && !dis.isEmpty()) {
 			for (DeclarationImpotOrdinaire di : dis) {
 				if (di.isAnnule() && DateRangeHelper.equals(di, periode)) {
-					final EtatDeclaration etat = di.getDernierEtat();
+					final EtatDeclaration etat = di.getDernierEtatDeclaration();
 					if (etat != null && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
 						diAnnulee = di;
 						break;
@@ -1068,22 +1068,22 @@ public class DeclarationImpotController {
 	}
 
 	private static boolean isJusteEmise(DeclarationImpotOrdinaire di) {
-		final EtatDeclaration etat = di.getDernierEtat();
+		final EtatDeclaration etat = di.getDernierEtatDeclaration();
 		return etat == null || etat.getEtat() == TypeEtatDeclaration.EMISE;
 	}
 
 	private static boolean isSommee(DeclarationImpotOrdinaire di) {
-		final EtatDeclaration etat = di.getDernierEtat();
+		final EtatDeclaration etat = di.getDernierEtatDeclaration();
 		return etat != null && etat.getEtat() == TypeEtatDeclaration.SOMMEE;
 	}
 
 	private static boolean isSuspendue(DeclarationImpotOrdinaire di) {
-		final EtatDeclaration etat = di.getDernierEtat();
+		final EtatDeclaration etat = di.getDernierEtatDeclaration();
 		return etat != null && etat.getEtat() == TypeEtatDeclaration.SUSPENDUE;
 	}
 
 	private boolean isLiberable(DeclarationImpotOrdinaire di) {
-		final List<EtatDeclaration> etatsRetournes = di.getEtatsOfType(TypeEtatDeclaration.RETOURNEE, false);
+		final List<EtatDeclaration> etatsRetournes = di.getEtatsDeclarationOfType(TypeEtatDeclaration.RETOURNEE, false);
 		final Set<String> sources = new HashSet<>(etatsRetournes.size());
 		for (EtatDeclaration etat : etatsRetournes) {
 			sources.add(((EtatDeclarationRetournee) etat).getSource());
@@ -1329,7 +1329,7 @@ public class DeclarationImpotController {
 		});
 
 		// On ajoute le délai
-		final Long idDelai = manager.saveNouveauDelai(id, view.getDateDemande(), view.getDelaiAccordeAu(), EtatDelaiDeclaration.ACCORDE, false);
+		final Long idDelai = manager.saveNouveauDelai(id, view.getDateDemande(), view.getDelaiAccordeAu(), EtatDelaiDocumentFiscal.ACCORDE, false);
 		if (view.isConfirmationEcrite()) {
 
 			// On imprime le document
@@ -1420,7 +1420,7 @@ public class DeclarationImpotController {
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final boolean sursis = di.getDernierEtat() != null && di.getDernierEtat().getEtat() == TypeEtatDeclaration.SOMMEE;
+		final boolean sursis = di.getDernierEtatDeclaration() != null && di.getDernierEtatDeclaration().getEtat() == TypeEtatDeclaration.SOMMEE;
 		final RegDate delaiAccordeAu = determineDateAccordDelaiPMParDefaut(di.getDelaiAccordeAu());
 		model.addAttribute("command", new NouvelleDemandeDelaiDeclarationView(di, delaiAccordeAu, sursis));
 		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());
@@ -1474,7 +1474,7 @@ public class DeclarationImpotController {
 		});
 
 		// On ajoute le délai
-		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDeclaration.ACCORDE ? view.getDelaiAccordeAu() : null;
+		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE ? view.getDelaiAccordeAu() : null;
 		final Long idDelai = manager.saveNouveauDelai(id, view.getDateDemande(), delaiAccordeAu, view.getDecision(), view.isSursis());
 		return gererImpressionCourrierDelaiDeclarationPM(idDelai, id, view.getTypeImpression(), response);
 	}
@@ -1492,7 +1492,7 @@ public class DeclarationImpotController {
 		if (delai == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
-		if (delai.getEtat() != EtatDelaiDeclaration.DEMANDE) {
+		if (delai.getEtat() != EtatDelaiDocumentFiscal.DEMANDE) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.finalise", null, WebContextUtils.getDefaultLocale()));
 		}
 
@@ -1537,7 +1537,7 @@ public class DeclarationImpotController {
 				if (delai == null) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
 				}
-				if (delai.getEtat() != EtatDelaiDeclaration.DEMANDE) {
+				if (delai.getEtat() != EtatDelaiDocumentFiscal.DEMANDE) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.delai.finalise", null, WebContextUtils.getDefaultLocale()));
 				}
 
@@ -1555,7 +1555,7 @@ public class DeclarationImpotController {
 		});
 
 		// On modifie le délai
-		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDeclaration.ACCORDE ? view.getDelaiAccordeAu() : null;
+		final RegDate delaiAccordeAu = view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE ? view.getDelaiAccordeAu() : null;
 		manager.saveDelai(view.getIdDelai(), view.getDecision(), delaiAccordeAu);
 		return gererImpressionCourrierDelaiDeclarationPM(view.getIdDelai(), diId, view.getTypeImpression(), response);
 	}

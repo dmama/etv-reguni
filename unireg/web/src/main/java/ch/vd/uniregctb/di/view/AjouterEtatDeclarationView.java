@@ -55,12 +55,12 @@ public class AjouterEtatDeclarationView {
 		this.periodeFiscale = di.getDateFin().year();
 		this.dateDebutPeriodeImposition = di.getDateDebut();
 		this.dateFinPeriodeImposition = di.getDateFin();
-		this.etats = initEtats(di.getEtats(), infraService, messageSource);
+		this.etats = initEtats(di.getEtatsDeclaration(), infraService, messageSource);
 		this.typeDocumentEditable = typeDocumentEditable;
 	}
 
 	public static TypeEtatDeclaration getDernierEtat(DeclarationImpotOrdinaire di) {
-		final EtatDeclaration etatDI = di.getDernierEtat();
+		final EtatDeclaration etatDI = di.getDernierEtatDeclaration();
 		return etatDI == null ? null : etatDI.getEtat();
 	}
 

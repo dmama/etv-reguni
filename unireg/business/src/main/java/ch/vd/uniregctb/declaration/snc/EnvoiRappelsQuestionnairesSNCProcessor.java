@@ -112,7 +112,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 		// il faut vérifier que le délai administratif est passé...
 
 		// si le questionnaire n'est plus dans l'état "EMISE", c'est qu'il vient de bouger et ne doit pas être rappelé
-		final EtatDeclaration dernierEtat = questionnaire.getDernierEtat();
+		final EtatDeclaration dernierEtat = questionnaire.getDernierEtatDeclaration();
 		if (dernierEtat == null || dernierEtat.getEtat() != TypeEtatDeclaration.EMISE) {
 			rapport.addQuestionnaireNonEmis(questionnaire, dernierEtat);
 		}

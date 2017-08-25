@@ -5385,6 +5385,7 @@
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>DECLARATION_ID</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>8839529</value>
       <null/>
@@ -5399,6 +5400,7 @@
       <value>20060125</value>
       <value>20060315</value>
       <value>8839528</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839533</value>
@@ -5414,6 +5416,7 @@
       <value>20080125</value>
       <value>20080930</value>
       <value>8839532</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839534</value>
@@ -5429,6 +5432,7 @@
       <value>20080513</value>
       <value>20080930</value>
       <value>8839532</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839538</value>
@@ -5444,6 +5448,7 @@
       <value>20050113</value>
       <value>20050315</value>
       <value>8839537</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839542</value>
@@ -5459,6 +5464,7 @@
       <value>20070220</value>
       <value>20070915</value>
       <value>8839541</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839543</value>
@@ -5474,6 +5480,7 @@
       <value>20070120</value>
       <value>20070915</value>
       <value>8839541</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839547</value>
@@ -5489,6 +5496,7 @@
       <value>20090626</value>
       <value>20090930</value>
       <value>8839546</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839548</value>
@@ -5504,6 +5512,7 @@
       <value>20090128</value>
       <value>20090930</value>
       <value>8839546</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839551</value>
@@ -5519,6 +5528,7 @@
       <value>20040117</value>
       <value>20040315</value>
       <value>8839550</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342524</value>
@@ -5534,6 +5544,7 @@
       <value>20060113</value>
       <value>20060315</value>
       <value>3342518</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342590</value>
@@ -5549,6 +5560,7 @@
       <value>20080125</value>
       <value>20080315</value>
       <value>3342584</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342624</value>
@@ -5564,6 +5576,7 @@
       <value>20040121</value>
       <value>20040315</value>
       <value>3342615</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342651</value>
@@ -5579,6 +5592,7 @@
       <value>20050114</value>
       <value>20050315</value>
       <value>3342643</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342676</value>
@@ -5594,6 +5608,7 @@
       <value>20090116</value>
       <value>20090315</value>
       <value>3342669</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342557</value>
@@ -5609,6 +5624,7 @@
       <value>20070115</value>
       <value>20070315</value>
       <value>3342552</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342795</value>
@@ -5624,6 +5640,7 @@
       <value>20080125</value>
       <value>20080315</value>
       <value>3342786</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342821</value>
@@ -5639,6 +5656,7 @@
       <value>20050114</value>
       <value>20050315</value>
       <value>3342815</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342856</value>
@@ -5654,6 +5672,7 @@
       <value>20090128</value>
       <value>20090315</value>
       <value>3342849</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342881</value>
@@ -5669,6 +5688,7 @@
       <value>20070120</value>
       <value>20070315</value>
       <value>3342875</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342920</value>
@@ -5684,6 +5704,7 @@
       <value>20040121</value>
       <value>20040315</value>
       <value>3342914</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342942</value>
@@ -5699,6 +5720,7 @@
       <value>20060125</value>
       <value>20060315</value>
       <value>3342935</value>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
 </dataset>

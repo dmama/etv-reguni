@@ -13,7 +13,7 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, Annulable {
@@ -32,7 +32,7 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 	private DateRange declarationRange;
 	private String logModifUser;
 	private Timestamp logModifDate;
-	private EtatDelaiDeclaration etat;
+	private EtatDelaiDocumentFiscal etat;
 	private String etatMessage;
 	private boolean sursis;
 	private boolean annule;
@@ -191,7 +191,7 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 		this.first = first;
 	}
 
-	public EtatDelaiDeclaration getEtat() {
+	public EtatDelaiDocumentFiscal getEtat() {
 		return etat;
 	}
 

@@ -126,7 +126,7 @@ public class EchoirDIsPMProcessor {
 		final DeclarationImpotOrdinairePM di = hibernateTemplate.get(DeclarationImpotOrdinairePM.class, ident.getIdDeclaration());
 		Assert.notNull(di, "La déclaration n'existe pas.");
 
-		final EtatDeclaration etat = di.getDernierEtat();
+		final EtatDeclaration etat = di.getDernierEtatDeclaration();
 		Assert.notNull(etat, "La déclaration ne possède pas d'état.");
 
 		if (etat.getEtat() == TypeEtatDeclaration.SUSPENDUE) {
@@ -141,7 +141,7 @@ public class EchoirDIsPMProcessor {
 		}
 
 		// vérification de la présence d'un éventuel sursis accordé
-		final DelaiDeclaration dernierDelai = di.getDernierDelaiAccorde();
+		final DelaiDeclaration dernierDelai = di.getDernierDelaiDeclarationAccorde();
 		if (dernierDelai != null) {
 			final RegDate delaiEffectif = getSeuilEcheanceApresDelaiOfficiel(dernierDelai.getDelaiAccordeAu());
 			if (delaiEffectif.isAfterOrEqual(rapport.dateTraitement)) {
@@ -155,7 +155,7 @@ public class EchoirDIsPMProcessor {
 		rapport.addDeclarationTraitee(di);
 
 		// un peu de paranoïa ne fait pas de mal
-		Assert.isTrue(di.getDernierEtat().getEtat() == TypeEtatDeclaration.ECHUE, "L'état après traitement n'est pas ECHUE.");
+		Assert.isTrue(di.getDernierEtatDeclaration().getEtat() == TypeEtatDeclaration.ECHUE, "L'état après traitement n'est pas ECHUE.");
 	}
 
 	/**

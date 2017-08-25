@@ -606,17 +606,19 @@ public abstract class Contribuable extends Tiers {
 			final DeclarationAvecNumeroSequence avecNumero = (DeclarationAvecNumeroSequence) declaration;
 			if (avecNumero.getNumero() == null) {
 				// assignation d'un nouveau numéro de séquence par période fiscale
-				final Set<Declaration> declarations = getOrCreateDeclarationSet();
+				final Set<Declaration> declarations = getDeclarations();
 				final int pf = declaration.getPeriode().getAnnee();
 				int numero = 0;
 				Integer maxFound = null;
-				for (Declaration existante : declarations) {
-					if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationAvecNumeroSequence) {
-						++ numero;
+				if (declarations != null) {
+					for (Declaration existante : declarations) {
+						if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationAvecNumeroSequence) {
+							++numero;
 
-						final Integer numeroExistante = ((DeclarationAvecNumeroSequence) existante).getNumero();
-						if (numeroExistante != null && (maxFound == null || numeroExistante > maxFound)) {
-							maxFound = numeroExistante;
+							final Integer numeroExistante = ((DeclarationAvecNumeroSequence) existante).getNumero();
+							if (numeroExistante != null && (maxFound == null || numeroExistante > maxFound)) {
+								maxFound = numeroExistante;
+							}
 						}
 					}
 				}

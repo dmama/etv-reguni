@@ -27,6 +27,7 @@
 		<value>ch.vd.uniregctb.documentfiscal.DemandeBilanFinal</value>
 		<value>ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation</value>
 		<value>ch.vd.uniregctb.audit.AuditLine</value>
+		<value>ch.vd.uniregctb.declaration.DocumentFiscal</value>
 		<value>ch.vd.uniregctb.declaration.Declaration</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire</value>
@@ -34,7 +35,9 @@
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotSource</value>
 		<value>ch.vd.uniregctb.declaration.QuestionnaireSNC</value>
+		<value>ch.vd.uniregctb.declaration.DelaiDocumentFiscal</value>
 		<value>ch.vd.uniregctb.declaration.DelaiDeclaration</value>
+		<value>ch.vd.uniregctb.declaration.EtatDocumentFiscal</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclaration</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationSommee</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationRappelee</value>

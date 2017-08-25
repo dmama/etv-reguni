@@ -37,7 +37,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -154,7 +154,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2009, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
 				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, periodeFiscale, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
-				di.setEtats(Collections.<EtatDeclaration>singleton(new EtatDeclarationEmise(date(2009, 1, 1))));
+				di.setEtatsDeclaration(Collections.<EtatDeclaration>singleton(new EtatDeclarationEmise(date(2009, 1, 1))));
 				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.batch(di, false, RegDate.get(), null);
 				try {
 					impressionSommationDIHelper.remplitSommationDI(params);
@@ -424,7 +424,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
 
 				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 				delai.setDateDemande(dateEmission);
 				delai.setDelaiAccordeAu(dateDelaiInitial);
 				declaration.addDelai(delai);

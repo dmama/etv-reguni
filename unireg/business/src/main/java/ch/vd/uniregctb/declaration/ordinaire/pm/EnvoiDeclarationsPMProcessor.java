@@ -59,7 +59,7 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -290,7 +290,7 @@ public class EnvoiDeclarationsPMProcessor {
 		di.setDelaiRetourImprime(datesDelaiInitial.getDateImprimee());
 
 		final DelaiDeclaration delaiInitial = new DelaiDeclaration();
-		delaiInitial.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delaiInitial.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		delaiInitial.setCleArchivageCourrier(null);
 		delaiInitial.setDateDemande(dateTraitement);
 		delaiInitial.setDateTraitement(dateTraitement);

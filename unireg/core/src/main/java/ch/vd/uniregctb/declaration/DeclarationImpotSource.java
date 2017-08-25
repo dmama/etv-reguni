@@ -132,7 +132,7 @@ public class DeclarationImpotSource extends Declaration {
 	public RegDate getDateSommation() {
 		RegDate dateSommation = null;
 		GregorianCalendar calSommation = new GregorianCalendar();
-		Set<EtatDeclaration> etatsDocument = getEtats();
+		Set<EtatDeclaration> etatsDocument = getEtatsDeclaration();
 		if (etatsDocument.size() == 1) {
 			Iterator<EtatDeclaration> itEtat = etatsDocument.iterator();
 			EtatDeclaration etat = itEtat.next();

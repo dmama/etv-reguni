@@ -23,7 +23,7 @@ public class ListeRecapitulativeView implements Annulable, DateRange {
 		this.dateFin = lr.getDateFin();
 		this.dateRetour = lr.getDateRetour();
 		this.delaiAccorde = lr.getDelaiAccordeAu();
-		this.etat = lr.getDernierEtat().getEtat();
+		this.etat = lr.getDernierEtatDeclaration().getEtat();
 	}
 
 	public long getId() {

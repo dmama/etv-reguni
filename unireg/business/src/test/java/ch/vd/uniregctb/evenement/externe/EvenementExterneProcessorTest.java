@@ -154,7 +154,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final DeclarationImpotSource lr = dpi.getDerniereDeclaration(DeclarationImpotSource.class);
 				Assert.assertNotNull(lr);
 				Assert.assertEquals(dateDebut, lr.getDateDebut());
-				final EtatDeclaration etat = lr.getDernierEtat();
+				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());
 				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
@@ -231,7 +231,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final DeclarationImpotSource lr = dpi.getDerniereDeclaration(DeclarationImpotSource.class);
 				Assert.assertNotNull(lr);
 				Assert.assertEquals(dateDebut, lr.getDateDebut());
-				final EtatDeclaration etat = lr.getDernierEtat();
+				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());
 				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
@@ -317,7 +317,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final DeclarationImpotSource lr = dpi.getDerniereDeclaration(DeclarationImpotSource.class);
 				Assert.assertNotNull(lr);
 				Assert.assertEquals(dateDebut, lr.getDateDebut());
-				final Set<EtatDeclaration> etats = lr.getEtats();
+				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
 				Assert.assertNotNull(etats);
 				Assert.assertEquals(3, etats.size());       // "EMISE", 2x "RETOURNEE", dont un annulé
 
@@ -332,7 +332,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				Assert.assertTrue(etatRetourneAnnuleTrouve);
 
 				// test de l'état final de la déclaration après traitement de l'événement
-				final EtatDeclaration etat = lr.getDernierEtat();
+				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());       // la date de quittancement a été changée
 				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
@@ -460,7 +460,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final DeclarationImpotSource lr = dpi.getDerniereDeclaration(DeclarationImpotSource.class);
 				Assert.assertNotNull(lr);
 				Assert.assertEquals(dateDebut, lr.getDateDebut());
-				final Set<EtatDeclaration> etats = lr.getEtats();
+				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
 				Assert.assertNotNull(etats);
 				Assert.assertEquals(4, etats.size());       // "EMISE", 2x "RETOURNEE et annulée", 1 RETOURNEE
 
@@ -487,7 +487,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				Assert.assertEquals(1,nombreRetournee);
 
 				// test de l'état final de la déclaration après traitement de tous ces événements
-				final EtatDeclaration etat = lr.getDernierEtat();
+				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());       // la date de quittancement a été changée
 				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
@@ -566,12 +566,12 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final DeclarationImpotSource lr = dpi.getDerniereDeclaration(DeclarationImpotSource.class);
 				Assert.assertNotNull(lr);
 				Assert.assertEquals(dateDebut, lr.getDateDebut());
-				final Set<EtatDeclaration> etats = lr.getEtats();
+				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
 				Assert.assertNotNull(etats);
 				Assert.assertEquals(1, etats.size());       // "EMISE"
 
 				// test de l'état final de la déclaration après non-traitement de l'événement
-				final EtatDeclaration etat = lr.getDernierEtat();
+				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(dateFin, etat.getDateObtention());
 				Assert.assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());

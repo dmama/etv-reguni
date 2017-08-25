@@ -268,7 +268,7 @@ public class ProduireStatsDIsProcessor {
 	 * @return l'état courant de la DI spécifiée
 	 */
 	private TypeEtatDeclaration getEtat(DeclarationImpotOrdinaire di) {
-		return di.getDernierEtat().getEtat();
+		return di.getDernierEtatDeclaration().getEtat();
 	}
 
 	private static final String queryDIsPP = // ------------------------------------------------

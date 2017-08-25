@@ -1527,6 +1527,7 @@
 		<column>DATE_TRAITEMENT</column>
 		<column>DELAI_ACCORDE_AU</column>
 		<column>DECLARATION_ID</column>
+		<column>DELAI_TYPE</column>
 		<row>
 			<value>1</value>
 			<null />
@@ -1541,6 +1542,7 @@
 			<value>20080215</value>
 			<value>20080228</value>
 			<value>1</value>
+			<value>DELAI_DECLARATION</value>
 		</row>
 	</table>
 </dataset>

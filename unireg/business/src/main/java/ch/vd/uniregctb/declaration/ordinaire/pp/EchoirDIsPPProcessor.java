@@ -128,7 +128,7 @@ public class EchoirDIsPPProcessor {
 		final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ident.getIdDeclaration());
 		Assert.notNull(di, "La déclaration n'existe pas.");
 
-		final EtatDeclaration etat = di.getDernierEtat();
+		final EtatDeclaration etat = di.getDernierEtatDeclaration();
 		Assert.notNull(etat, "La déclaration ne possède pas d'état.");
 
 		// Vérifie l'état de la DI (en cas de bug)
@@ -142,7 +142,7 @@ public class EchoirDIsPPProcessor {
 		rapport.addDeclarationTraitee(di);
 
 		// un peu de paranoïa ne fait pas de mal
-		Assert.isTrue(di.getDernierEtat().getEtat() == TypeEtatDeclaration.ECHUE, "L'état après traitement n'est pas ECHUE.");
+		Assert.isTrue(di.getDernierEtatDeclaration().getEtat() == TypeEtatDeclaration.ECHUE, "L'état après traitement n'est pas ECHUE.");
 	}
 
 	/**

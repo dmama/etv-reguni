@@ -28,7 +28,7 @@ public class DeleteDIPP extends DeleteDI<DeclarationImpotOrdinairePP> {
 
 		// Voir la spécification "Engendrer une tâche en instance" : lorsqu'une DI émise ou sommée (mais pas retournée ni échue) doit être annulée,
 		// on l'annule immédiatement (généralisation des cas particuliers des départs HC, des mariages et des divorces).
-		final EtatDeclaration dernierEtat = declaration.getDernierEtat();
+		final EtatDeclaration dernierEtat = declaration.getDernierEtatDeclaration();
 		this.directAnnulation = (dernierEtat != null && (dernierEtat.getEtat() == TypeEtatDeclaration.EMISE || dernierEtat.getEtat() == TypeEtatDeclaration.SOMMEE));
 	}
 

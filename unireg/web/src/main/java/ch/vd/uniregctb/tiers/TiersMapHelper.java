@@ -32,7 +32,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.FormeJuridique;
@@ -111,7 +111,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeDroitAcces, String> mapDroitAcces;
 	private Map<TypeOperation, String> mapTypeOperation;
 	private Map<EtatTraitement, String> mapEtatTraitementReqDes;
-	private Map<EtatDelaiDeclaration, String> mapEtatDelaiDeclaration;
+	private Map<EtatDelaiDocumentFiscal, String> mapEtatDelaiDeclaration;
 	private Map<AllegementFiscal.TypeCollectivite, String> mapTypeCollectiviteAllegement;
 	private Map<AllegementFiscal.TypeImpot, String> mapTypeImpotAllegement;
 	private Map<AllegementFiscalConfederation.Type, String> mapTypesIFDAllegement;
@@ -714,9 +714,9 @@ public class TiersMapHelper extends CommonMapHelper {
 	 * Initialise la map des différents états que peut prendre une demande de délai de déclaration
 	 * @return une map
 	 */
-	public Map<EtatDelaiDeclaration, String> getTypesEtatsDelaiDeclaration() {
+	public Map<EtatDelaiDocumentFiscal, String> getTypesEtatsDelaiDeclaration() {
 		if (mapEtatDelaiDeclaration == null) {
-			mapEtatDelaiDeclaration = initMapEnum(ApplicationConfig.masterKeyEtatDelaiDeclaration, EtatDelaiDeclaration.class);
+			mapEtatDelaiDeclaration = initMapEnum(ApplicationConfig.masterKeyEtatDelaiDeclaration, EtatDelaiDocumentFiscal.class);
 		}
 		return mapEtatDelaiDeclaration;
 	}

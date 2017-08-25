@@ -67,7 +67,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.transaction.TransactionHelper;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
@@ -358,7 +358,7 @@ public class QuestionnaireSNCController {
 				delai.setDateDemande(dateTraitement);
 				delai.setDateTraitement(dateTraitement);
 				delai.setDelaiAccordeAu(view.getDelaiAccorde());
-				delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 				questionnaire.addDelai(delai);
 				questionnaire.setDelaiRetourImprime(view.getDelaiAccorde());
 

@@ -146,7 +146,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
@@ -578,7 +578,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 							if (di.isAnnule()) {
 								response = new DeadlineResponse(DeadlineStatus.ERROR_CANCELLED_DECLARATION, null);
 							}
-							else if (di.getDernierEtat().getEtat() != TypeEtatDeclaration.EMISE) {
+							else if (di.getDernierEtatDeclaration().getEtat() != TypeEtatDeclaration.EMISE) {
 								response = new DeadlineResponse(DeadlineStatus.ERROR_BAD_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'EMISE'.");
 							}
 							else if (RegDateHelper.isAfter(dateObtention, today, NullDateBehavior.LATEST)) {
@@ -588,13 +588,13 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 								response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un nouveau délai ne peut pas être demandé dans le passé de la date du jour.");
 							}
 							else {
-								final RegDate delaiActuel = di.getDernierDelaiAccorde().getDelaiAccordeAu();
+								final RegDate delaiActuel = di.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
 								if (RegDateHelper.isBeforeOrEqual(nouveauDelai, delaiActuel, NullDateBehavior.LATEST)) {
 									response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_DEADLINE, "Un délai plus lointain existe déjà.");
 								}
 								else {
 									final DelaiDeclaration delai = new DelaiDeclaration();
-									delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+									delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 									delai.setDateTraitement(RegDate.get());
 									delai.setCleArchivageCourrier(null);
 									delai.setDateDemande(dateObtention);

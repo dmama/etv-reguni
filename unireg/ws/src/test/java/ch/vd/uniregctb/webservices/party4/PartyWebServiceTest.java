@@ -112,7 +112,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -481,7 +481,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument modele = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				assertNull(di.getDernierEtatOfType(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE));
+				assertNull(di.getDernierEtatDeclarationOfType(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE));
 
 				final EtatDeclaration retour = new EtatDeclarationRetournee(RegDate.get(), "TEST");
 				di.addEtat(retour);
@@ -524,8 +524,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
 				assertNotNull(di);
-				assertNotNull(di.getDernierEtat());
-				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
+				assertNotNull(di.getDernierEtatDeclaration());
+				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.RETOURNEE, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});
@@ -567,7 +567,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				di.addEtat(new EtatDeclarationEmise(dateEmission));
 
 				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 				delai.setDateTraitement(dateEmission);
 				delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
 				di.addDelai(delai);
@@ -616,8 +616,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
 				assertNotNull(di);
-				assertNotNull(di.getDernierEtat());
-				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE, di.getDernierEtat().getEtat());
+				assertNotNull(di.getDernierEtatDeclaration());
+				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});
@@ -674,7 +674,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final RegDate dateEmission = date(annee + 1, 1, 11);
 				di.addEtat(new EtatDeclarationEmise(dateEmission));
 				final DelaiDeclaration delai = new DelaiDeclaration();
-				delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 				delai.setDateTraitement(dateEmission);
 				delai.setDelaiAccordeAu(date(annee + 1, 6, 30));
 				di.addDelai(delai);
@@ -728,13 +728,13 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire diValide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(0).idDi);
 				assertNotNull(diValide);
-				assertNotNull(diValide.getDernierEtat());
-				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.RETOURNEE, diValide.getDernierEtat().getEtat());
+				assertNotNull(diValide.getDernierEtatDeclaration());
+				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.RETOURNEE, diValide.getDernierEtatDeclaration().getEtat());
 
 				final DeclarationImpotOrdinaire diInvalide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(1).idDi);
 				assertNotNull(diInvalide);
-				assertNotNull(diInvalide.getDernierEtat());
-				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE, diInvalide.getDernierEtat().getEtat());
+				assertNotNull(diInvalide.getDernierEtatDeclaration());
+				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE, diInvalide.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});
@@ -980,7 +980,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				assertNotNull(di);
 				assertEquals(RegDate.get(), di.getDateRetour());
 
-				final EtatDeclaration etat = di.getDernierEtat();
+				final EtatDeclaration etat = di.getDernierEtatDeclaration();
 				assertNotNull(etat);
 				assertInstanceOf(EtatDeclarationRetournee.class, etat);
 
@@ -1910,7 +1910,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
 				final Ids ids = new Ids();
 				ids.ppId = pp.getNumero();
@@ -1986,7 +1986,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationEmise(di, date(annee + 1, 1, 15));
 				addEtatDeclarationRetournee(di, date(annee + 1, 4, 23), "TEST");
 
@@ -2069,8 +2069,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30), EtatDelaiDeclaration.ACCORDE);
-				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
+				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
 				final Ids ids = new Ids();
 				ids.ppId = pp.getNumero();
@@ -2153,7 +2153,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationEmise(di, date(annee + 1, 1, 7));
 				addEtatDeclarationRetournee(di, date(annee + 1, 7, 31));
 				addEtatDeclarationSommee(di, date(annee + 1, 7, 20), date(annee + 1, 7, 18), null);
@@ -2266,7 +2266,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
-				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationEmise(di, date(annee, 1, 30));
 				return di;
 			}
@@ -2370,7 +2370,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di2011);
 				assertNotNull(di);
 
-				final List<DelaiDeclaration> delais = di.getDelaisSorted();
+				final List<DelaiDeclaration> delais = di.getDelaisDeclarationSorted();
 				assertNotNull(delais);
 				assertEquals(2, delais.size());
 

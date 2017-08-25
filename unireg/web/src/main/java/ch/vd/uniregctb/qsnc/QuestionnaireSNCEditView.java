@@ -21,7 +21,7 @@ public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 	}
 
 	private static TypeEtatDeclaration getDernierEtat(QuestionnaireSNC q) {
-		final EtatDeclaration dernierEtat = q.getDernierEtat();
+		final EtatDeclaration dernierEtat = q.getDernierEtatDeclaration();
 		return dernierEtat == null ? null : dernierEtat.getEtat();
 	}
 

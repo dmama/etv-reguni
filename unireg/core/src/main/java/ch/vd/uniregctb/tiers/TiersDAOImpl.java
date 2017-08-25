@@ -40,6 +40,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DocumentFiscal;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
@@ -325,10 +326,10 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			periodes.list();
 
 			// on charge toutes les declarations en vrac
-			final List<Declaration> declarations = queryObjectsByIds("from Declaration as d where d.tiers.id in (:ids)", ids, session);
+			final List<DocumentFiscal> declarations = queryObjectsByIds("from Declaration as d where d.tiers.id in (:ids)", ids, session);
 
-			final TiersIdGetter<Declaration> getter = entity -> entity.getTiers().getId();
-			final EntitySetSetter<Declaration> setter = Tiers::setDeclarations;
+			final TiersIdGetter<DocumentFiscal> getter = entity -> entity.getTiers().getId();
+			final EntitySetSetter<DocumentFiscal> setter = Tiers::setDocumentsFiscaux;
 
 			// on associe les déclarations avec les tiers à la main
 			associate(session, declarations, tiers, getter, setter);

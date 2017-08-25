@@ -39,7 +39,7 @@ public class DeclarationView implements Annulable {
 		this.dateFin = declaration.getDateFin();
 		this.annule = declaration.isAnnule();
 
-		final EtatDeclaration etat = declaration.getDernierEtat();
+		final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
 		this.etat = (etat == null ? null : etat.getEtat());
 		if (etat instanceof EtatDeclarationRetournee) {
 			this.sourceRetour = ((EtatDeclarationRetournee) etat).getSource();
@@ -48,8 +48,8 @@ public class DeclarationView implements Annulable {
 			this.sourceRetour = null;
 		}
 
-		this.etats = initEtats(declaration.getEtats(), infraService, messageSource);
-		this.delais = initDelais(declaration.getDelais(), declaration.getPremierDelai(), infraService, messageSource);
+		this.etats = initEtats(declaration.getEtatsDeclaration(), infraService, messageSource);
+		this.delais = initDelais(declaration.getDelaisDeclaration(), declaration.getPremierDelai(), infraService, messageSource);
 
 		this.delaiAccorde = declaration.getDelaiAccordeAu();
 		this.dateRetour = declaration.getDateRetour();

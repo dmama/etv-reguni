@@ -26,7 +26,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
@@ -136,7 +136,7 @@ public class DemandeDelaiCollectiveProcessor {
 	private static DelaiDeclaration newDelaiDeclaration(RegDate delai, RegDate dateTraitement) {
 		final DelaiDeclaration dd = new DelaiDeclaration();
 		dd.setCleArchivageCourrier(null);
-		dd.setEtat(EtatDelaiDeclaration.ACCORDE);
+		dd.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		dd.setDateDemande(dateTraitement);
 		dd.setDateTraitement(dateTraitement);
 		dd.setDelaiAccordeAu(delai);
@@ -159,7 +159,7 @@ public class DemandeDelaiCollectiveProcessor {
 
 		for (DeclarationImpotOrdinaire d : declarations) {
 			Assert.isFalse(d.isAnnule());
-			final TypeEtatDeclaration etatDeclaration = d.getDernierEtat().getEtat();
+			final TypeEtatDeclaration etatDeclaration = d.getDernierEtatDeclaration().getEtat();
 			switch (etatDeclaration) {
 			case EMISE: {
 				final RegDate delaiExistant = d.getDelaiAccordeAu();

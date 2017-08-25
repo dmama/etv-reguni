@@ -16,7 +16,7 @@ public final class EtatDeclarationAddAndSaveAccessor<D extends Declaration, E ex
 
 	@Override
 	public Collection<? extends HibernateEntity> getEntities(D container) {
-		return container.getEtats();
+		return container.getEtatsDeclaration();
 	}
 
 	@Override

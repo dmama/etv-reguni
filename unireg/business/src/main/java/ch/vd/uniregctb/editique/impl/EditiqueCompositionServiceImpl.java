@@ -84,7 +84,7 @@ import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -686,7 +686,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	private void envoieNotificationLettreDecisionDelai(DeclarationImpotOrdinairePM di, DelaiDeclaration delai, CTypeInfoArchivage infoArchivage, boolean local) {
 		if (infoArchivage != null)  {
-			final EtatDelaiDeclaration etatDelai = delai.getEtat();
+			final EtatDelaiDocumentFiscal etatDelai = delai.getEtat();
 			switch (etatDelai) {
 			case ACCORDE:
 				if (delai.isSursis()) {

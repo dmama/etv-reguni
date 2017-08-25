@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -72,7 +72,7 @@ public class DelaiDeclarationTest extends WithoutSpringTest {
 	private static DelaiDeclaration newDelaiDeclaration(RegDate delai) {
 		DelaiDeclaration d = new DelaiDeclaration();
 		d.setDelaiAccordeAu(delai);
-		d.setEtat(EtatDelaiDeclaration.ACCORDE);
+		d.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		return d;
 	}
 }

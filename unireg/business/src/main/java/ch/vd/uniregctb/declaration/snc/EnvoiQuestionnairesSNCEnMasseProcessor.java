@@ -43,7 +43,7 @@ import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
@@ -199,7 +199,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessor {
 
 	private void addDelaiRetourInitial(QuestionnaireSNC questionnaire, RegDate dateTraitement, ParametrePeriodeFiscaleSNC parametres) {
 		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		delai.setDateDemande(dateTraitement);
 		delai.setDateTraitement(dateTraitement);
 		delai.setDelaiAccordeAu(parametres.getTermeGeneralRappelEffectif());

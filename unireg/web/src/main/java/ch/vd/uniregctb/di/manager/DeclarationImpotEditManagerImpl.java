@@ -83,7 +83,7 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -518,7 +518,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		delai.setDelaiAccordeAu(delaiAccorde);
 		delai.setDateDemande(RegDate.get());
 		delai.setDateTraitement(RegDate.get());
@@ -628,7 +628,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public Long saveNouveauDelai(Long idDeclaration, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDeclaration etat, boolean sursis) {
+	public Long saveNouveauDelai(Long idDeclaration, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat, boolean sursis) {
 		final DeclarationImpotOrdinaire di = diDAO.get(idDeclaration);
 		DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
@@ -642,7 +642,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void saveDelai(Long idDelai, EtatDelaiDeclaration etat, RegDate delaiAccordeAu) {
+	public void saveDelai(Long idDelai, EtatDelaiDocumentFiscal etat, RegDate delaiAccordeAu) {
 		final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
 		delai.setDateTraitement(RegDate.get());
 		delai.setEtat(etat);

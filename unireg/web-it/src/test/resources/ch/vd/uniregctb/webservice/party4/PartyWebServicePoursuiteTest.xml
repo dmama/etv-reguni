@@ -1427,6 +1427,7 @@
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>DECLARATION_ID</column>
+    <column>DELAI_TYPE</column>
   </table>
   <table name="BORDEREAU_MVT_DOSSIER">
     <column>ID</column>

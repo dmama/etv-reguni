@@ -53,7 +53,7 @@ public class ListeRecapitulativeSearchResult implements Annulable {
 		this.dateFinPeriode = lr.getDateFin();
 		this.dateRetour = lr.getDateRetour();
 		this.delaiAccorde = lr.getDelaiAccordeAu();
-		this.etat = Optional.ofNullable(lr.getDernierEtat()).map(EtatDeclaration::getEtat).orElse(null);
+		this.etat = Optional.ofNullable(lr.getDernierEtatDeclaration()).map(EtatDeclaration::getEtat).orElse(null);
 		this.annule = lr.isAnnule();
 	}
 

@@ -12267,6 +12267,7 @@
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>DECLARATION_ID</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>1</value>
       <null/>
@@ -12281,8 +12282,7 @@
       <null/>
       <value>20080430</value>
       <value>1</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2</value>
@@ -12298,8 +12298,7 @@
       <null/>
       <value>20060315</value>
       <value>2</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3</value>
@@ -12315,8 +12314,7 @@
       <value>20060220</value>
       <value>20060731</value>
       <value>2</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>4</value>
@@ -12332,8 +12330,7 @@
       <null/>
       <value>20070315</value>
       <value>3</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>5</value>
@@ -12349,8 +12346,7 @@
       <null/>
       <value>20080315</value>
       <value>4</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>6</value>
@@ -12366,8 +12362,7 @@
       <value>20080412</value>
       <value>20080915</value>
       <value>4</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>7</value>
@@ -12383,8 +12378,7 @@
       <null/>
       <value>20080731</value>
       <value>5</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8</value>
@@ -12400,8 +12394,7 @@
       <value>20080625</value>
       <value>20080930</value>
       <value>5</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
   <table name="BORDEREAU_MVT_DOSSIER">

@@ -107,18 +107,18 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
 				assertNotNull(lr);
 
-				final Set<EtatDeclaration> etats = lr.getEtats();
+				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
 				assertNotNull(etats);
 				assertEquals(2, etats.size());      // l'état "EMISE" et l'état "RETOURNEE"
 
-				final EtatDeclaration etatEmission = lr.getDernierEtatOfType(TypeEtatDeclaration.EMISE);
+				final EtatDeclaration etatEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDeclaration.EMISE);
 				assertNotNull(etatEmission);
 				assertTrue(etats.contains(etatEmission));
 				assertEquals(TypeEtatDeclaration.EMISE, etatEmission.getEtat());
 				assertEquals(dateFin, etatEmission.getDateObtention());
 				assertFalse(etatEmission.isAnnule());
 
-				final EtatDeclaration etatRetour = lr.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+				final EtatDeclaration etatRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE);
 				assertNotNull(etatRetour);
 				assertTrue(etats.contains(etatRetour));
 				assertEquals(TypeEtatDeclaration.RETOURNEE, etatRetour.getEtat());
@@ -217,7 +217,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
 				assertNotNull(lr);
 
-				final Set<EtatDeclaration> etats = lr.getEtats();
+				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
 				assertNotNull(etats);
 				assertEquals(1, etats.size());      // l'état "EMISE"
 
@@ -329,7 +329,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
 				assertNotNull(lr);
 
-				final List<EtatDeclaration> etats = lr.getEtatsSorted();
+				final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
 				assertNotNull(etats);
 				assertEquals(2, etats.size());      // états "EMISE" et "RETOURNEE" (ce dernier annulé)
 
@@ -397,7 +397,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
 				assertNotNull(lr);
 
-				final List<EtatDeclaration> etats = lr.getEtatsSorted();
+				final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
 				assertNotNull(etats);
 				assertEquals(3, etats.size());      // l'état "EMISE", puis les deux états "RETOURNEE", dont l'un est annulé
 
@@ -419,7 +419,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 				assertEquals(dateQuittancement, etatValide.getDateObtention());
 				assertFalse(etatValide.isAnnule());
 
-				final EtatDeclaration dernierEtat = lr.getDernierEtat();
+				final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
 				assertNotNull(dernierEtat);
 				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
 				assertFalse(dernierEtat.isAnnule());
@@ -476,7 +476,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
 				assertNotNull(lr);
 
-				final List<EtatDeclaration> etats = lr.getEtatsSorted();
+				final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
 				assertNotNull(etats);
 				assertEquals(3, etats.size());      // "EMISE", et deux "RETOURNEE", dont un est annulé
 
@@ -498,7 +498,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 				assertEquals(dateQuittancement, etatValide.getDateObtention());
 				assertFalse(etatValide.isAnnule());
 
-				final EtatDeclaration dernierEtat = lr.getDernierEtat();
+				final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
 				assertNotNull(dernierEtat);
 				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
 				assertFalse(dernierEtat.isAnnule());
@@ -554,7 +554,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
 				assertNotNull(lr);
 
-				final List<EtatDeclaration> etats = lr.getEtatsSorted();
+				final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
 				assertNotNull(etats);
 				assertEquals(2, etats.size());      // l'état "EMISE", puis les deux états "RETOURNEE", dont l'un est annulé
 
@@ -565,7 +565,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 				assertFalse(etatEmission.isAnnule());
 
 
-				final EtatDeclaration dernierEtat = lr.getDernierEtat();
+				final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
 				assertNotNull(dernierEtat);
 				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
 				assertFalse(dernierEtat.isAnnule());

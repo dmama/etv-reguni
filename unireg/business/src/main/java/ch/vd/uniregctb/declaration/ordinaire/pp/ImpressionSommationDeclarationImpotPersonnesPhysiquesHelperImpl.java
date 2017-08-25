@@ -291,7 +291,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 			final PeriodeFiscale pf = di.getPeriode();
 			final String pfStr = pf.getAnnee().toString();
 			periode.setAnneeFiscale(pfStr);
-			periode.setDateDecompte(RegDateHelper.toIndexString(di.getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention()));
+			periode.setDateDecompte(RegDateHelper.toIndexString(di.getDernierEtatDeclarationOfType(TypeEtatDeclaration.EMISE).getDateObtention()));
 			periode.setDatDerCalculAc("");
 			final Entete entete = periode.addNewEntete();
 			final Tit tit = entete.addNewTit();

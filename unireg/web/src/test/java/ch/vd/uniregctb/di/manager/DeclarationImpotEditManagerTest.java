@@ -578,7 +578,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 				assertEquals(date(2011, 4, 12), di.getDateRetour());
 
-				final EtatDeclaration dernier = di.getDernierEtat();
+				final EtatDeclaration dernier = di.getDernierEtatDeclaration();
 				assertNotNull(dernier);
 				assertInstanceOf(EtatDeclarationRetournee.class, dernier);
 

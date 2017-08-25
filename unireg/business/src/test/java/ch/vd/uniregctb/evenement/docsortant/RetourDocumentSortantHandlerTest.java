@@ -46,7 +46,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
@@ -341,7 +341,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(anneeDeclaration, 1, 1), date(anneeDeclaration, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 			addEtatDeclarationEmise(di, dateEnvoiDocument);
-			addDelaiDeclaration(di, dateEnvoiDocument, delaiRetour, EtatDelaiDeclaration.ACCORDE);      // délai initial
+			addDelaiDeclaration(di, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);      // délai initial
 			addEtatDeclarationSommee(di, dateSommation, dateSommation, null);
 
 			return entreprise.getNumero();
@@ -353,7 +353,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			Assert.assertNotNull(entreprise);
 
 			final EtatDeclarationSommee etatSomme = entreprise.getDeclarations().stream()
-					.map(Declaration::getEtats)
+					.map(Declaration::getEtatsDeclaration)
 					.flatMap(Collection::stream)
 					.filter(EtatDeclarationSommee.class::isInstance)
 					.map(EtatDeclarationSommee.class::cast)
@@ -419,8 +419,8 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(anneeDeclaration, 1, 1), date(anneeDeclaration, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 			addEtatDeclarationEmise(di, dateEnvoiDocument);
-			addDelaiDeclaration(di, dateEnvoiDocument, delaiRetour, EtatDelaiDeclaration.ACCORDE);      // délai initial
-			addDelaiDeclaration(di, dateObtentionNouveauDelai, delaiRetour.addMonths(1), EtatDelaiDeclaration.ACCORDE);     // nouveau délai
+			addDelaiDeclaration(di, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);      // délai initial
+			addDelaiDeclaration(di, dateObtentionNouveauDelai, delaiRetour.addMonths(1), EtatDelaiDocumentFiscal.ACCORDE);     // nouveau délai
 
 			return entreprise.getNumero();
 		});
@@ -431,7 +431,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			Assert.assertNotNull(entreprise);
 
 			final DelaiDeclaration dernierDelai = entreprise.getDeclarations().stream()
-					.map(Declaration::getDelais)
+					.map(Declaration::getDelaisDeclaration)
 					.flatMap(Collection::stream)
 					.max(Comparator.comparing(DelaiDeclaration::getDelaiAccordeAu))
 					.orElse(null);

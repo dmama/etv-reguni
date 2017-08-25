@@ -84,7 +84,7 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 		periode.setHorsSuisse("");
 		periode.setHorsCanton("");
 		periode.setAnneeFiscale(params.getDi().getPeriode().getAnnee().toString());
-		periode.setDateDecompte(RegDateHelper.toIndexString(params.getDi().getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention()));
+		periode.setDateDecompte(RegDateHelper.toIndexString(params.getDi().getDernierEtatDeclarationOfType(TypeEtatDeclaration.EMISE).getDateObtention()));
 		periode.setDatDerCalculAc("");
 
 		final Entete entete = periode.addNewEntete();

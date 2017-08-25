@@ -1319,7 +1319,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertNotNull(decl);
 
-		final List<EtatDeclaration> etats = decl.getEtatsSorted();
+		final List<EtatDeclaration> etats = decl.getEtatsDeclarationSorted();
 		assertNotNull(etats);
 		assertEquals(2, etats.size());
 

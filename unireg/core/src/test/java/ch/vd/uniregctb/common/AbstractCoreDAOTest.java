@@ -151,7 +151,7 @@ import ch.vd.uniregctb.tiers.TransfertPatrimoine;
 import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.ModeleFeuille;
@@ -589,7 +589,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declaration;
 		assertEquals(debut, di.getDateDebut());
 		assertEquals(fin, di.getDateFin());
-		final EtatDeclaration e = di.getDernierEtat();
+		final EtatDeclaration e = di.getDernierEtatDeclaration();
 		assertEquals(etat, (e == null ? null : e.getEtat()));
 		assertEquals(typeContribuable, di.getTypeContribuable());
 		assertEquals(typeDocument, di.getModeleDocument().getTypeDocument());
@@ -1275,7 +1275,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return etat;
 	}
 
-	protected DelaiDeclaration addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu, EtatDelaiDeclaration etat) {
+	protected DelaiDeclaration addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat) {
 		final DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setEtat(etat);
 		delai.setDateTraitement(dateTraitement);

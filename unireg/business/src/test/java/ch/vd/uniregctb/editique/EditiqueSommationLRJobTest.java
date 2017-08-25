@@ -63,7 +63,7 @@ public class EditiqueSommationLRJobTest extends JobTest {
 		Set<Declaration> declarations = tiers.getDeclarations();
 		Iterator<Declaration> itDec = declarations.iterator();
 		DeclarationImpotSource lr = (DeclarationImpotSource) itDec.next();
-		Assert.assertEquals(TypeEtatDeclaration.SOMMEE, lr.getDernierEtat().getEtat());
+		Assert.assertEquals(TypeEtatDeclaration.SOMMEE, lr.getDernierEtatDeclaration().getEtat());
 
 		//Verification que la LR n'a pas été SOMME
 		//Debiteur 12500002 avec delai en 2020
@@ -72,7 +72,7 @@ public class EditiqueSommationLRJobTest extends JobTest {
 		declarations = tiers.getDeclarations();
 		itDec = declarations.iterator();
 		lr = (DeclarationImpotSource) itDec.next();
-		Assert.assertEquals(TypeEtatDeclaration.EMISE, lr.getDernierEtat().getEtat());
+		Assert.assertEquals(TypeEtatDeclaration.EMISE, lr.getDernierEtatDeclaration().getEtat());
 	}
 
 }

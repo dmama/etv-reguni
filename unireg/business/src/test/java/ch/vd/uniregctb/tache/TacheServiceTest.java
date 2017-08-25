@@ -4721,7 +4721,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertFalse(di.isLibre());      // la DI a été adaptée au for
 				assertEquals(date(anneeCourante, 1, 1), di.getDateDebut());
 				assertEquals(aujourdhui.addDays(-2), di.getDateFin());
-				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
+				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtatDeclaration().getEtat());
 
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
@@ -4789,7 +4789,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertFalse(diAAnnuler.isLibre());      // la DI a été adaptée au for
 				assertEquals(date(anneeCourante, 1, 1), diAAnnuler.getDateDebut());
 				assertEquals(aujourdhui.addDays(-2), diAAnnuler.getDateFin());
-				assertEquals(TypeEtatDeclaration.RETOURNEE, diAAnnuler.getDernierEtat().getEtat());
+				assertEquals(TypeEtatDeclaration.RETOURNEE, diAAnnuler.getDernierEtatDeclaration().getEtat());
 
 				return null;
 			}

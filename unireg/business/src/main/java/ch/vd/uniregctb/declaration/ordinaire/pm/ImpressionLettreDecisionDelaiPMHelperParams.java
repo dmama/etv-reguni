@@ -48,7 +48,7 @@ public class ImpressionLettreDecisionDelaiPMHelperParams {
 		}
 
 		if (this.typeLettre == TypeLettre.ACCORD_SURSIS) {
-			final EtatDeclarationSommee sommation = (EtatDeclarationSommee) di.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE);
+			final EtatDeclarationSommee sommation = (EtatDeclarationSommee) di.getDernierEtatDeclarationOfType(TypeEtatDeclaration.SOMMEE);
 			if (sommation == null) {
 				throw new EditiqueException("Tentative (vouée à l'échec) de génération d'un document de sursis alors que la déclaration n'est même pas sommée !");
 			}

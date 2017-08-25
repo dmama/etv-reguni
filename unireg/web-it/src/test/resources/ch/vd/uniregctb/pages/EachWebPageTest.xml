@@ -1515,6 +1515,7 @@
     <column>DELAI_ACCORDE_AU</column>
     <column>ETAT</column>
     <column>SURSIS</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -1524,6 +1525,7 @@
       <value>20080430</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1534,6 +1536,7 @@
       <value>20080731</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1544,6 +1547,7 @@
       <value>20080930</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1554,6 +1558,7 @@
       <value>20060315</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1564,6 +1569,7 @@
       <value>20060731</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1574,6 +1580,7 @@
       <value>20070315</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1584,6 +1591,7 @@
       <value>20080315</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1594,6 +1602,7 @@
       <value>20080915</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
   <table name="ETAT_DECLARATION">

@@ -225,6 +225,7 @@
     <column>DELAI_ACCORDE_AU</column>
     <column>ETAT</column>
     <column>SURSIS</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>2008-01-01</value>
       <value>310</value>
@@ -234,6 +235,7 @@
       <value>20090228</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -244,6 +246,7 @@
       <value>20090331</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
   <table name="ETAT_DECLARATION">

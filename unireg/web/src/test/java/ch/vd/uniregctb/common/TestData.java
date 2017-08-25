@@ -43,7 +43,7 @@ import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
@@ -771,7 +771,7 @@ public class TestData {
 		mc0.setLogModifDate(new Timestamp(1199142000000L));
 		mc0.setOfficeImpotId(10);
 		mc0.setAdressesTiers(new HashSet());
-		mc0.setDeclarations(new HashSet());
+		mc0.setDocumentsFiscaux(new HashSet());
 		mc0.setForsFiscaux(new HashSet());
 		mc0.setRapportsObjet(new HashSet());
 		mc0.setRapportsSujet(new HashSet());
@@ -794,7 +794,7 @@ public class TestData {
 		pp0.setOfficeImpotId(10);
 		pp0.setHabitant(false);
 		pp0.setAdressesTiers(new HashSet());
-		pp0.setDeclarations(new HashSet());
+		pp0.setDocumentsFiscaux(new HashSet());
 		pp0.setDroitsAccesAppliques(new HashSet());
 		pp0.setForsFiscaux(new HashSet());
 		pp0.setRapportsObjet(new HashSet());
@@ -818,7 +818,7 @@ public class TestData {
 		pp1.setOfficeImpotId(10);
 		pp1.setHabitant(false);
 		pp1.setAdressesTiers(new HashSet());
-		pp1.setDeclarations(new HashSet());
+		pp1.setDocumentsFiscaux(new HashSet());
 		pp1.setDroitsAccesAppliques(new HashSet());
 		pp1.setForsFiscaux(new HashSet());
 		pp1.setRapportsObjet(new HashSet());
@@ -851,7 +851,7 @@ public class TestData {
 		pp2.setPersonneContact("MAURICE DUPONT");
 		pp2.setHabitant(false);
 		pp2.setAdressesTiers(new HashSet());
-		pp2.setDeclarations(new HashSet());
+		pp2.setDocumentsFiscaux(new HashSet());
 		pp2.setDroitsAccesAppliques(new HashSet());
 		pp2.setForsFiscaux(new HashSet());
 		pp2.setRapportsObjet(new HashSet());
@@ -871,7 +871,7 @@ public class TestData {
 		pp3.setOfficeImpotId(10);
 		pp3.setHabitant(true);
 		pp3.setAdressesTiers(new HashSet());
-		pp3.setDeclarations(new HashSet());
+		pp3.setDocumentsFiscaux(new HashSet());
 		pp3.setDroitsAccesAppliques(new HashSet());
 		pp3.setForsFiscaux(new HashSet());
 		pp3.setRapportsObjet(new HashSet());
@@ -890,7 +890,7 @@ public class TestData {
 		pp4.setOfficeImpotId(10);
 		pp4.setHabitant(true);
 		pp4.setAdressesTiers(new HashSet());
-		pp4.setDeclarations(new HashSet());
+		pp4.setDocumentsFiscaux(new HashSet());
 		pp4.setDroitsAccesAppliques(new HashSet());
 		pp4.setForsFiscaux(new HashSet());
 		pp4.setRapportsObjet(new HashSet());
@@ -909,7 +909,7 @@ public class TestData {
 		pp5.setOfficeImpotId(10);
 		pp5.setHabitant(true);
 		pp5.setAdressesTiers(new HashSet());
-		pp5.setDeclarations(new HashSet());
+		pp5.setDocumentsFiscaux(new HashSet());
 		pp5.setDroitsAccesAppliques(new HashSet());
 		pp5.setForsFiscaux(new HashSet());
 		pp5.setRapportsObjet(new HashSet());
@@ -926,7 +926,7 @@ public class TestData {
 		dpi0.setLogModifDate(new Timestamp(1199142000000L));
 		dpi0.setModeCommunication(ModeCommunication.PAPIER);
 		dpi0.setAdressesTiers(new HashSet());
-		dpi0.setDeclarations(new HashSet());
+		dpi0.setDocumentsFiscaux(new HashSet());
 		dpi0.setForsFiscaux(new HashSet());
 		dpi0.setRapportsObjet(new HashSet());
 		dpi0.setRapportsSujet(new HashSet());
@@ -950,7 +950,7 @@ public class TestData {
 		dpi1.setLogModifDate(new Timestamp(1199142000000L));
 		dpi1.setModeCommunication(ModeCommunication.PAPIER);
 		dpi1.setAdressesTiers(new HashSet());
-		dpi1.setDeclarations(new HashSet());
+		dpi1.setDocumentsFiscaux(new HashSet());
 		dpi1.setForsFiscaux(new HashSet());
 		dpi1.setRapportsObjet(new HashSet());
 		dpi1.setRapportsSujet(new HashSet());
@@ -993,7 +993,7 @@ public class TestData {
 		pp6.setPersonneContact("");
 		pp6.setHabitant(false);
 		pp6.setAdressesTiers(new HashSet());
-		pp6.setDeclarations(new HashSet());
+		pp6.setDocumentsFiscaux(new HashSet());
 		pp6.setDroitsAccesAppliques(new HashSet());
 		pp6.setForsFiscaux(new HashSet());
 		pp6.setRapportsObjet(new HashSet());
@@ -1013,7 +1013,7 @@ public class TestData {
 		pp7.setOfficeImpotId(10);
 		pp7.setHabitant(true);
 		pp7.setAdressesTiers(new HashSet());
-		pp7.setDeclarations(new HashSet());
+		pp7.setDocumentsFiscaux(new HashSet());
 		pp7.setDroitsAccesAppliques(new HashSet());
 		pp7.setForsFiscaux(new HashSet());
 		pp7.setRapportsObjet(new HashSet());
@@ -1037,7 +1037,7 @@ public class TestData {
 		pp8.setOfficeImpotId(10);
 		pp8.setHabitant(true);
 		pp8.setAdressesTiers(new HashSet());
-		pp8.setDeclarations(new HashSet());
+		pp8.setDocumentsFiscaux(new HashSet());
 		pp8.setDroitsAccesAppliques(new HashSet());
 		pp8.setForsFiscaux(new HashSet());
 		pp8.setRapportsObjet(new HashSet());
@@ -1057,7 +1057,7 @@ public class TestData {
 		pp9.setOfficeImpotId(10);
 		pp9.setHabitant(true);
 		pp9.setAdressesTiers(new HashSet());
-		pp9.setDeclarations(new HashSet());
+		pp9.setDocumentsFiscaux(new HashSet());
 		pp9.setDroitsAccesAppliques(new HashSet());
 		pp9.setForsFiscaux(new HashSet());
 		pp9.setRapportsObjet(new HashSet());
@@ -1076,7 +1076,7 @@ public class TestData {
 		pp10.setOfficeImpotId(10);
 		pp10.setHabitant(true);
 		pp10.setAdressesTiers(new HashSet());
-		pp10.setDeclarations(new HashSet());
+		pp10.setDocumentsFiscaux(new HashSet());
 		pp10.setDroitsAccesAppliques(new HashSet());
 		pp10.setForsFiscaux(new HashSet());
 		pp10.setRapportsObjet(new HashSet());
@@ -1095,7 +1095,7 @@ public class TestData {
 		pp11.setOfficeImpotId(10);
 		pp11.setHabitant(true);
 		pp11.setAdressesTiers(new HashSet());
-		pp11.setDeclarations(new HashSet());
+		pp11.setDocumentsFiscaux(new HashSet());
 		pp11.setDroitsAccesAppliques(new HashSet());
 		pp11.setForsFiscaux(new HashSet());
 		pp11.setRapportsObjet(new HashSet());
@@ -1119,7 +1119,7 @@ public class TestData {
 		mc1.setOfficeImpotId(10);
 		mc1.setPersonneContact("MAURICE DUPONT");
 		mc1.setAdressesTiers(new HashSet());
-		mc1.setDeclarations(new HashSet());
+		mc1.setDocumentsFiscaux(new HashSet());
 		mc1.setForsFiscaux(new HashSet());
 		mc1.setRapportsObjet(new HashSet());
 		mc1.setRapportsSujet(new HashSet());
@@ -1134,7 +1134,7 @@ public class TestData {
 		e0.setLogModifDate(new Timestamp(1199142000000L));
 		e0.setOfficeImpotId(10);
 		e0.setAdressesTiers(new HashSet());
-		e0.setDeclarations(new HashSet());
+		e0.setDocumentsFiscaux(new HashSet());
 		e0.setForsFiscaux(new HashSet());
 		e0.setRapportsObjet(new HashSet());
 		e0.setRapportsSujet(new HashSet());
@@ -1166,7 +1166,7 @@ public class TestData {
 		pp12.setPersonneContact("MAURICE DUPONT");
 		pp12.setHabitant(false);
 		pp12.setAdressesTiers(new HashSet());
-		pp12.setDeclarations(new HashSet());
+		pp12.setDocumentsFiscaux(new HashSet());
 		pp12.setDroitsAccesAppliques(new HashSet());
 		pp12.setForsFiscaux(new HashSet());
 		pp12.setRapportsObjet(new HashSet());
@@ -1200,7 +1200,7 @@ public class TestData {
 		pp13.setPersonneContact("MAURICE DUPONT");
 		pp13.setHabitant(false);
 		pp13.setAdressesTiers(new HashSet());
-		pp13.setDeclarations(new HashSet());
+		pp13.setDocumentsFiscaux(new HashSet());
 		pp13.setDroitsAccesAppliques(new HashSet());
 		pp13.setForsFiscaux(new HashSet());
 		pp13.setRapportsObjet(new HashSet());
@@ -1219,7 +1219,7 @@ public class TestData {
 		ac0.setNumeroTelephonePortable("Chopard");
 		ac0.setOfficeImpotId(10);
 		ac0.setAdressesTiers(new HashSet());
-		ac0.setDeclarations(new HashSet());
+		ac0.setDocumentsFiscaux(new HashSet());
 		ac0.setForsFiscaux(new HashSet());
 		ac0.setRapportsObjet(new HashSet());
 		ac0.setRapportsSujet(new HashSet());
@@ -1235,7 +1235,7 @@ public class TestData {
 			ca0.setLogModifDate(new Timestamp(1199142000000L));
 			ca0.setNumeroCollectiviteAdministrative(1013);
 			ca0.setAdressesTiers(new HashSet());
-			ca0.setDeclarations(new HashSet());
+			ca0.setDocumentsFiscaux(new HashSet());
 			ca0.setForsFiscaux(new HashSet());
 			ca0.setRapportsObjet(new HashSet());
 			ca0.setRapportsSujet(new HashSet());
@@ -1249,7 +1249,7 @@ public class TestData {
 			ca1.setLogModifDate(new Timestamp(1199142000000L));
 			ca1.setNumeroCollectiviteAdministrative(10);
 			ca1.setAdressesTiers(new HashSet());
-			ca1.setDeclarations(new HashSet());
+			ca1.setDocumentsFiscaux(new HashSet());
 			ca1.setForsFiscaux(new HashSet());
 			ca1.setRapportsObjet(new HashSet());
 			ca1.setRapportsSujet(new HashSet());
@@ -1500,7 +1500,7 @@ public class TestData {
 
 		DelaiDeclaration dd0 = new DelaiDeclaration();
 		dd0.setCleArchivageCourrier(null);
-		dd0.setEtat(EtatDelaiDeclaration.ACCORDE);
+		dd0.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		dd0.setDelaiAccordeAu(RegDate.get(2008, 4, 30));
 		dd0.setLogModifDate(new Timestamp(1199142000000L));
 		dd0.setDateTraitement(RegDate.get(2007, 4, 30));
@@ -1509,7 +1509,7 @@ public class TestData {
 
 		DelaiDeclaration dd1 = new DelaiDeclaration();
 		dd1.setCleArchivageCourrier(null);
-		dd1.setEtat(EtatDelaiDeclaration.ACCORDE);
+		dd1.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		dd1.setDelaiAccordeAu(RegDate.get(2008, 7, 31));
 		dd1.setLogModifDate(new Timestamp(1199142000000L));
 		dd1.setDateTraitement(RegDate.get(2007, 4, 30));
@@ -1518,7 +1518,7 @@ public class TestData {
 
 		DelaiDeclaration dd2 = new DelaiDeclaration();
 		dd2.setCleArchivageCourrier(null);
-		dd2.setEtat(EtatDelaiDeclaration.ACCORDE);
+		dd2.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		dd2.setDateDemande(RegDate.get(2008, 6, 25));
 		dd2.setDateTraitement(RegDate.get(2008, 6, 25));
 		dd2.setDelaiAccordeAu(RegDate.get(2008, 9, 30));
@@ -1528,7 +1528,7 @@ public class TestData {
 
 		DelaiDeclaration dd3 = new DelaiDeclaration();
 		dd3.setCleArchivageCourrier(null);
-		dd3.setEtat(EtatDelaiDeclaration.ACCORDE);
+		dd3.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		dd3.setDelaiAccordeAu(RegDate.get(2006, 3, 15));
 		dd3.setLogModifDate(new Timestamp(1199142000000L));
 		dd3.setDateTraitement(RegDate.get(2007, 4, 30));
@@ -1537,7 +1537,7 @@ public class TestData {
 
 		DelaiDeclaration dd4 = new DelaiDeclaration();
 		dd4.setCleArchivageCourrier(null);
-		dd4.setEtat(EtatDelaiDeclaration.ACCORDE);
+		dd4.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		dd4.setDateDemande(RegDate.get(2006, 2, 20));
 		dd4.setDateTraitement(RegDate.get(2006, 2, 20));
 		dd4.setDelaiAccordeAu(RegDate.get(2006, 7, 31));
@@ -1547,7 +1547,7 @@ public class TestData {
 
 		DelaiDeclaration dd5 = new DelaiDeclaration();
 		dd5.setCleArchivageCourrier(null);
-		dd5.setEtat(EtatDelaiDeclaration.ACCORDE);
+		dd5.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		dd5.setDelaiAccordeAu(RegDate.get(2007, 3, 15));
 		dd5.setLogModifDate(new Timestamp(1199142000000L));
 		dd5.setDateTraitement(RegDate.get(2007, 4, 30));
@@ -1556,7 +1556,7 @@ public class TestData {
 
 		DelaiDeclaration dd6 = new DelaiDeclaration();
 		dd6.setCleArchivageCourrier(null);
-		dd6.setEtat(EtatDelaiDeclaration.ACCORDE);
+		dd6.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		dd6.setDelaiAccordeAu(RegDate.get(2008, 3, 15));
 		dd6.setLogModifDate(new Timestamp(1199142000000L));
 		dd6.setDateTraitement(RegDate.get(2007, 4, 30));
@@ -1565,7 +1565,7 @@ public class TestData {
 
 		DelaiDeclaration dd7 = new DelaiDeclaration();
 		dd7.setCleArchivageCourrier(null);
-		dd7.setEtat(EtatDelaiDeclaration.ACCORDE);
+		dd7.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		dd7.setDateDemande(RegDate.get(2008, 4, 12));
 		dd7.setDateTraitement(RegDate.get(2008, 4, 12));
 		dd7.setDelaiAccordeAu(RegDate.get(2008, 9, 15));

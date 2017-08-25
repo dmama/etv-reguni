@@ -269,7 +269,7 @@ public class EnvoiSommationsDIsPPProcessor {
 	}
 
 	private boolean checkEtat(DeclarationImpotOrdinaire di, EnvoiSommationsDIsPPResults r) {
-		if (TypeEtatDeclaration.EMISE != di.getDernierEtat().getEtat()) {
+		if (TypeEtatDeclaration.EMISE != di.getDernierEtatDeclaration().getEtat()) {
 			// Ce cas pourrait eventuellement se produire dans le cas ou une di aurait 2 états à la même date,
 			// il s'agirait alors de donnée corrompue ...
 			final String msg = String.format("La di [id: %s] n'est pas à l'état 'EMISE' et ne peut donc être sommée",	di.getId().toString());

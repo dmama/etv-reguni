@@ -49,6 +49,7 @@ import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DocumentFiscal;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -114,7 +115,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	private Set<RapportEntreTiers> rapportsObjet;
 	private Set<RapportEntreTiers> rapportsSujet;
 	private Set<AdresseTiers> adressesTiers;
-	private Set<Declaration> declarations;
+	private Set<DocumentFiscal> documentsFiscaux;
 	private Set<ForFiscal> forsFiscaux;
 	private Set<Remarque> remarques;
 	private Set<EtiquetteTiers> etiquettes;
@@ -471,12 +472,27 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	@OneToMany(mappedBy = "tiers", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@ForeignKey(name = "FK_DECL_TRS_ID")
-	public Set<Declaration> getDeclarations() {
-		return declarations;
+	public Set<DocumentFiscal> getDocumentsFiscaux() {
+		return documentsFiscaux;
 	}
 
-	public void setDeclarations(Set<Declaration> theDeclarations) {
-		declarations = theDeclarations;
+	/**
+	 * @return les déclarations fiscales dans un {@link Set<Declaration>} en lecture seule.
+	 */
+	@Transient
+	public Set<Declaration> getDeclarations() {
+		if (documentsFiscaux == null) {
+			return null;
+		}
+		final Set<Declaration> declarations = documentsFiscaux.stream()
+				.filter(d -> Declaration.class.isAssignableFrom(d.getClass()))
+				.map(d -> (Declaration) d)
+				.collect(Collectors.toSet());
+		return Collections.unmodifiableSet(declarations);
+	}
+
+	public void setDocumentsFiscaux(Set<DocumentFiscal> theDocumentsFiscaux) {
+		documentsFiscaux = theDocumentsFiscaux;
 	}
 
 	/**
@@ -491,6 +507,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@NotNull
 	@Transient
 	public <T extends Declaration> List<T> getDeclarationsTriees(Class<T> clazz, boolean avecAnnulees) {
+		final Set<Declaration> declarations = getDeclarations();
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -505,6 +522,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@NotNull
 	@Transient
 	public <T extends Declaration> List<T> getDeclarationsDansPeriode(Class<T> clazz, int pf, boolean avecAnnulees) {
+		final Set<Declaration> declarations = getDeclarations();
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -662,19 +680,20 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		adressesTiers.add(adresse);
 	}
 
-	@Transient
-	@NotNull
-	protected synchronized Set<Declaration> getOrCreateDeclarationSet() {
-		if (declarations == null) {
-			declarations = new HashSet<>();
-		}
-		return declarations;
-	}
-
 	public synchronized void addDeclaration(Declaration declaration) {
 		Assert.notNull(declaration);
-		getOrCreateDeclarationSet().add(declaration);
+		if (documentsFiscaux == null) {
+			documentsFiscaux = new HashSet<>();
+		}
+		documentsFiscaux.add(declaration);
 		declaration.setTiers(this);
+	}
+
+	void addAllDeclarations(Set<Declaration> declarations) {
+		if (documentsFiscaux == null) {
+			documentsFiscaux = new HashSet<>();
+		}
+		documentsFiscaux.addAll(declarations);
 	}
 
 	@Transient
@@ -914,7 +933,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				&& ComparisonHelper.areEqual(blocageRemboursementAutomatique, obj.blocageRemboursementAutomatique)
 				&& ComparisonHelper.areEqual(complementNom, obj.complementNom)
 				&& ComparisonHelper.areEqual(debiteurInactif, obj.debiteurInactif)
-				&& ComparisonHelper.areEqual(declarations, obj.declarations)
+				&& ComparisonHelper.areEqual(documentsFiscaux, obj.documentsFiscaux)
 				&& ComparisonHelper.areEqual(forsFiscaux, obj.forsFiscaux)
 				&& ComparisonHelper.areEqual(numero, obj.numero)
 				&& ComparisonHelper.areEqual(numeroTelecopie, obj.numeroTelecopie)

@@ -130,10 +130,10 @@ private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.c
 	}
 
 	protected void traiteLR(DeclarationImpotSource lr, RegDate dateTraitement, EnvoiSommationLRsResults rapport) throws Exception {
-		if (lr.getDernierEtat().getEtat() == TypeEtatDeclaration.EMISE) {
+		if (lr.getDernierEtatDeclaration().getEtat() == TypeEtatDeclaration.EMISE) {
 			RegDate dateDelaiSommation;
 			if (lr.getDelaiAccordeAu() == null) {
-				final RegDate dateExpedition = lr.getDernierEtat().getDateObtention();
+				final RegDate dateExpedition = lr.getDernierEtatDeclaration().getDateObtention();
 				// Délai de retour des listes
 				dateDelaiSommation = delaisService.getDateFinDelaiRetourListeRecapitulative(dateExpedition, lr.getDateFin());
 				// Ajout du délai administratif avant l'envoi de la sommation
