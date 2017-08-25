@@ -52,7 +52,12 @@ public class MockDroitRFDAO implements DroitRFDAO {
 	}
 
 	@Override
-	public @Nullable DroitProprieteRF findDroitPrecedent(@NotNull DroitRFKey key) {
+	public @Nullable DroitProprieteRF findDroitPrecedentByMasterId(@NotNull DroitRFKey key) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public @Nullable DroitProprieteRF findDroitPrecedentByAyantDroit(@NotNull DroitProprieteRF droit) {
 		throw new NotImplementedException();
 	}
 

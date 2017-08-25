@@ -34,5 +34,12 @@ public interface DroitRFDAO extends GenericDAO<DroitRF, Long> {
 	 * @return le droit de propriété avec le même masterId et la version immédiatement précédente aux valeurs fournies dans la clé.
 	 */
 	@Nullable
-	DroitProprieteRF findDroitPrecedent(@NotNull DroitRFKey key);
+	DroitProprieteRF findDroitPrecedentByMasterId(@NotNull DroitRFKey key);
+
+	/**
+	 * @param droit un droit de propriété.
+	 * @return le droit de propriété avec le même ayant-droit et immédiatement précédent (date de fin = date de début du droit spécifié)
+	 */
+	@Nullable
+	DroitProprieteRF findDroitPrecedentByAyantDroit(@NotNull DroitProprieteRF droit);
 }

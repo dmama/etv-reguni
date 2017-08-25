@@ -149,7 +149,21 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 	@Nullable
 	private DroitProprieteRF findDroitPrecedent(@NotNull DroitProprieteRF droit) {
-		return droitRFDAO.findDroitPrecedent(new DroitRFKey(droit));
+
+		// 1. on recherche le droit précédent par masterId (SIFISC-24987)
+		DroitProprieteRF precedent = droitRFDAO.findDroitPrecedentByMasterId(new DroitRFKey(droit));
+		if (precedent != null) {
+			return precedent;
+		}
+
+		// 2. on recherche le droit précédent par propriétaire (SIFISC-25971)
+		precedent = droitRFDAO.findDroitPrecedentByAyantDroit(droit);
+		if (precedent != null) {
+			return precedent;
+		}
+
+		// pas trouvé
+		return null;
 	}
 
 	@Nullable

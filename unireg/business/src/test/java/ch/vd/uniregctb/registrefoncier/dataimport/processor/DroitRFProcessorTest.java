@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
@@ -24,6 +26,8 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
@@ -34,6 +38,7 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -323,7 +328,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			droit0.setPart(new Fraction(1, 1));
 			droit0.setRegime(GenrePropriete.INDIVIDUELLE);
 			// motif différent
-			droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2007, 2, 7), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0)));
+			droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2004, 2, 7), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0)));
 			droit0.calculateDateEtMotifDebut(p -> null);
 			droitRFDAO.save(droit0);
 
@@ -382,14 +387,14 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(dateImportInitial, droit0.getDateDebut());
 			assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
 			assertEquals("Appropriation illégitime", droit0.getMotifDebut());
-			assertEquals(RegDate.get(2007, 2, 7), droit0.getDateDebutMetier());
+			assertEquals(RegDate.get(2004, 2, 7), droit0.getDateDebutMetier());
 			assertEquals("_1f109152381009be0138100ba7e31031", droit0.getImmeuble().getIdRF());
 			assertEquals(new Fraction(1, 1), droit0.getPart());
 			assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
 
 			final Set<RaisonAcquisitionRF> raisons0 = droit0.getRaisonsAcquisition();
 			assertEquals(1, raisons0.size());
-			assertRaisonAcquisition(RegDate.get(2007, 2, 7), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0), raisons0.iterator().next());
+			assertRaisonAcquisition(RegDate.get(2004, 2, 7), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0), raisons0.iterator().next());
 
 			// un nouveau droit doit remplacer le droit1
 			final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droitList.get(1);
@@ -577,8 +582,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/**
-	 * [SIFISC-24423] Ce test vérifie que la processing d'une mutation de modification <i>partielle et substentielle</i>
-	 * (par exemple, un changement de part de co-propriété) de droits entre immeuble ferme bien l'ancien droit et en crée un nouveau.
+	 * [SIFISC-24423] Ce test vérifie que la processing d'une mutation de modification <i>partielle et substentielle</i> (par exemple, un changement de part de co-propriété) de droits entre immeuble ferme bien l'ancien droit et en crée un nouveau.
 	 */
 	@Test
 	public void testProcessMutationModificationPartielleDroitEntreImmeubles() throws Exception {
@@ -707,9 +711,8 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/**
-	 * [SIFISC-24987] Ce test vérifie que la processing d'une mutation de modification <i>partielle et substentielle</i>
-	 * (par exemple, un changement de part de co-propriété) calcule bien une date de début du nouveau droit à partir de
-	 * la nouvelle raison d'acquisition.
+	 * [SIFISC-24987] Ce test vérifie que la processing d'une mutation de modification <i>partielle et substentielle</i> (par exemple, un changement de part de co-propriété) calcule bien une date de début du nouveau droit à partir de la nouvelle
+	 * raison d'acquisition.
 	 */
 	@Test
 	public void testProcessMutationModificationPartielleDroitAvecNouvelleRaisonAcquisition() throws Exception {
@@ -832,6 +835,175 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(RegDate.get(2015, 1, 1), event0.getDateValeur());
 			assertEquals("_1f109152381009be0138100ba7e31031", event0.getDroit().getImmeuble().getIdRF());
 			assertEquals(immId, event0.getDroit().getAyantDroit().getId());
+
+			// note : l'événement fiscal de fermeture du droit est envoyé par le DateFinDroitsRFProcessor
+
+			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-25971] Ce test vérifie que la processing d'une mutation de création d'un nouveau droit (nouveau masterId) utilise bien la <b>plus ancienne des nouvelles raisons d'acquisition</b> lorsque :
+	 * <ul>
+	 *     <li>le nouveau droit possède plusieurs raisons d'acquisition</li>
+	 *     <li>il existe un droit fermé dans la même affaire pour le même propriétaire</li>
+	 * </ul>
+	 */
+	@Test
+	public void testProcessMutationModificationDroitProprietaireExistantAvecNouvelleRaisonAcquisition() throws Exception {
+
+		final String idImmeubleRF = "_8af806fc4a35927c014ae2a6e76041b8";
+		final String pp1RF = "_1f109152381009be0138100a1d442eee";
+		final RegDate dateImportInitial = RegDate.get(2015, 3, 17);
+		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
+
+		final RegDate dateSuccession = RegDate.get(2003, 1, 1);
+		final RegDate dateAchat = RegDate.get(2014, 12, 23);
+		final IdentifiantAffaireRF affaireSuccession = new IdentifiantAffaireRF(6, 2003, 9593, 0);
+
+		class Ids {
+			Long immeuble;
+			Long pp1;
+		}
+		final Ids ids = new Ids();
+
+		// précondition : un immeuble possédé par une communauté de deux personnes
+		doInNewTransaction(status -> {
+
+			BienFondsRF immeuble = new BienFondsRF();
+			immeuble.setIdRF(idImmeubleRF);
+			immeuble = (BienFondsRF) immeubleRFDAO.save(immeuble);
+
+			CommunauteRF communaute = new CommunauteRF();
+			communaute.setType(TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			communaute.setIdRF("a8283ee322");
+			communaute = (CommunauteRF) ayantDroitRFDAO.save(communaute);
+
+			PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
+			pp1.setIdRF(pp1RF);
+			pp1.setNom("Schulz");
+			pp1.setPrenom("Alodie");
+			pp1.setDateNaissance(RegDate.get(1900, 1, 1));
+			pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
+
+			PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
+			pp2.setIdRF("_1f109152381009be0138100a1d442xxx");
+			pp2.setNom("Schulz");
+			pp2.setPrenom("Marcel");
+			pp2.setDateNaissance(RegDate.get(1900, 1, 1));
+			pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
+
+			DroitProprieteCommunauteRF droitCommunaute = new DroitProprieteCommunauteRF();
+			droitCommunaute.setMasterIdRF("29922929");
+			droitCommunaute.setVersionIdRF("1");
+			droitCommunaute.setPart(new Fraction(1, 1));
+			droitCommunaute.setRegime(GenrePropriete.COMMUNE);
+			droitCommunaute.setDateDebut(dateImportInitial);
+			droitCommunaute.setDateDebutMetier(dateSuccession);
+			droitCommunaute.setMotifDebut("Succession");
+			droitCommunaute.addRaisonAcquisition(new RaisonAcquisitionRF(dateSuccession, "Succession", affaireSuccession));
+			droitCommunaute.setAyantDroit(communaute);
+			droitCommunaute.setImmeuble(immeuble);
+			droitRFDAO.save(droitCommunaute);
+
+			DroitProprietePersonnePhysiqueRF droitPP1 = new DroitProprietePersonnePhysiqueRF();
+			droitPP1.setMasterIdRF("378378237");
+			droitPP1.setVersionIdRF("1");
+			droitPP1.setPart(new Fraction(1, 1));
+			droitPP1.setRegime(GenrePropriete.COMMUNE);
+			droitPP1.setDateDebut(dateImportInitial);
+			droitPP1.setDateDebutMetier(dateSuccession);
+			droitPP1.setMotifDebut("Succession");
+			droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(dateSuccession, "Succession", affaireSuccession));
+			droitPP1.setAyantDroit(pp1);
+			droitPP1.setImmeuble(immeuble);
+			droitPP1.setCommunaute(communaute);
+			droitRFDAO.save(droitPP1);
+
+			DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
+			droitPP2.setMasterIdRF("509389228");
+			droitPP2.setVersionIdRF("1");
+			droitPP2.setPart(new Fraction(1, 1));
+			droitPP2.setRegime(GenrePropriete.COMMUNE);
+			droitPP2.setDateDebut(dateImportInitial);
+			droitPP2.setDateDebutMetier(dateSuccession);
+			droitPP2.setMotifDebut("Succession");
+			droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(dateSuccession, "Succession", affaireSuccession));
+			droitPP2.setAyantDroit(pp2);
+			droitPP2.setImmeuble(immeuble);
+			droitPP2.setCommunaute(communaute);
+			droitRFDAO.save(droitPP2);
+
+			ids.immeuble = immeuble.getId();
+			ids.pp1 = pp1.getId();
+			return null;
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_droit_plusieurs_raisons_acquisition_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.DROIT, TypeMutationRF.MODIFICATION, pp1RF, null);
+
+		// on process la mutation
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
+		});
+
+		// postcondition : la mutation est traitée et :
+		//  - les anciens droits sont fermés
+		//  - un nouveau droit est créé avec une date de début métier = 2014-12-23
+		doInNewTransaction(status -> {
+
+			final BienFondsRF imm = (BienFondsRF) immeubleRFDAO.get(ids.immeuble);
+			assertNotNull(imm);
+
+			final List<DroitProprieteRF> droits = imm.getDroitsPropriete().stream()
+					.filter(d -> d.getAyantDroit().getIdRF().equals(pp1RF)) // on ne s'intéresse qu'aux droits du propriétaire pp1
+					.collect(Collectors.toList());
+			assertNotNull(droits);
+			assertEquals(2, droits.size());
+
+			final List<DroitRF> droitList = new ArrayList<>(droits);
+			droitList.sort(new DateRangeComparator<>());
+
+			// l'ancien droit doit être fermé (date de fermeture technique, la date de fermeture métier étant calculée par un batch)
+			final DroitProprieteRF droit0 = (DroitProprieteRF) droitList.get(0);
+			assertNotNull(droit0);
+			assertEquals(dateImportInitial, droit0.getDateDebut());
+			assertEquals(dateSecondImport.getOneDayBefore(), droit0.getDateFin());
+			assertEquals("Succession", droit0.getMotifDebut());
+			assertEquals(dateSuccession, droit0.getDateDebutMetier());
+
+			// le nouveau droit doit avoir une date de début métier = 2014-12-23
+			final DroitProprieteRF droit1 = (DroitProprieteRF) droitList.get(1);
+			assertNotNull(droit1);
+			assertEquals(dateSecondImport, droit1.getDateDebut());
+			assertNull(droit1.getDateFin());
+			assertEquals("Achat", droit1.getMotifDebut());
+			assertEquals(dateAchat, droit1.getDateDebutMetier());
+
+			final List<RaisonAcquisitionRF> raisons1 = new ArrayList<>(droit1.getRaisonsAcquisition());
+			assertEquals(2, raisons1.size());
+			raisons1.sort(Comparator.comparing(RaisonAcquisitionRF::getDateAcquisition));
+			assertRaisonAcquisition(dateSuccession, "Succession", new IdentifiantAffaireRF(6, 2003, 9593, 0), raisons1.get(0));
+			assertRaisonAcquisition(dateAchat, "Achat", new IdentifiantAffaireRF(6, 2014, 9593, 0), raisons1.get(1));
+
+			return null;
+		});
+
+		// postcondition : les événements fiscaux correspondants ont été envoyés
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(1, events.size());
+
+			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
+			assertEquals(dateAchat, event0.getDateValeur());
+			assertEquals(idImmeubleRF, event0.getDroit().getImmeuble().getIdRF());
+			assertEquals(ids.pp1, event0.getDroit().getAyantDroit().getId());
 
 			// note : l'événement fiscal de fermeture du droit est envoyé par le DateFinDroitsRFProcessor
 
