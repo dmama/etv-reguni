@@ -324,7 +324,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit1.setPart(new Fraction(1, 1));
 				droit1.setRegime(GenrePropriete.INDIVIDUELLE);
 				// motif différent
-				droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2007, 2, 7), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0)));
+				droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2004, 2, 7), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0)));
 				droit1.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit1);
 
@@ -490,14 +490,14 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(dateImportInitial, droit11.getDateDebut());
 				assertEquals(dateSecondImport.getOneDayBefore(), droit11.getDateFin());
 				assertEquals("Appropriation illégitime", droit11.getMotifDebut());
-				assertEquals(RegDate.get(2007, 2, 7), droit11.getDateDebutMetier());
+				assertEquals(RegDate.get(2004, 2, 7), droit11.getDateDebutMetier());
 				assertEquals("_1f109152381009be0138100ba7e31031", droit11.getImmeuble().getIdRF());
 				assertEquals(new Fraction(1, 1), droit11.getPart());
 				assertEquals(GenrePropriete.INDIVIDUELLE, droit11.getRegime());
 
 				final Set<RaisonAcquisitionRF> raisons11 = droit11.getRaisonsAcquisition();
 				assertEquals(1, raisons11.size());
-				assertRaisonAcquisition(RegDate.get(2007, 2, 7), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0), raisons11.iterator().next());
+				assertRaisonAcquisition(RegDate.get(2004, 2, 7), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0), raisons11.iterator().next());
 
 				// un nouveau droit a été créé
 				final DroitProprietePersonnePhysiqueRF droit12 = (DroitProprietePersonnePhysiqueRF) droits1.get(1);

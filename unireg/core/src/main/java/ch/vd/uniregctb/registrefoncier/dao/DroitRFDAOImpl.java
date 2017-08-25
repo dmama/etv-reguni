@@ -99,7 +99,7 @@ public class DroitRFDAOImpl extends BaseDAOImpl<DroitRF, Long> implements DroitR
 	}
 
 	@Override
-	public @Nullable DroitProprieteRF findDroitPrecedent(@NotNull DroitRFKey key) {
+	public @Nullable DroitProprieteRF findDroitPrecedentByMasterId(@NotNull DroitRFKey key) {
 		// on veut retourner le droit immédiatement précédant le droit spécifié par la clé. Il faut donc :
 		//  - filtrer sur le même masterIdRF
 		//  - exclure le droit courant (= celui qui correspond au versionIdRF de la clé)
@@ -108,6 +108,39 @@ public class DroitRFDAOImpl extends BaseDAOImpl<DroitRF, Long> implements DroitR
 		query.setParameter("masterIdRF", key.getMasterIdRF());
 		query.setParameter("versionIdRF", key.getVersionIdRF());
 		query.setMaxResults(1);
+		return (DroitProprieteRF) query.uniqueResult();
+	}
+
+	@Override
+	public @Nullable DroitProprieteRF findDroitPrecedentByAyantDroit(@NotNull DroitProprieteRF droit) {
+		// on veut retourner le droit immédiatement précédant le droit spécifié. Il faut donc :
+		//  - filtrer sur le même ayantDroitId
+		//  - exclure les droits existants fermés
+		//  - exclure le droit courant (même masterId/versionId)
+		//  - retourner le droit le plus récemment créé (= tri sur les ids, car on ne peut pas se baser sur les versionIdRF qui sont des codes de hashage sans valeur d'ordonnancement)
+		//
+		// Note : le droit reçu en paramètre vient certainement d'être construit à partir des données d'import RF : il ne contient pas
+		//        encore de dates techniques de début et de fin (à ce stade, on ne sait pas encore s'il s'agit d'un droit inchangé, d'un nouveau
+		//        droit ou d'un droit modifié, de toutes façons). D'autre part, comme l'import est en cours de traitement, les droits existants dans
+		//        la DB n'ont pas encore été mis-à-jour : pour un droit qui n'existe plus dans l'import et devrait être fermé, sa date de fin
+		//        technique est encore nulle.
+		//        Logiquement, on devrait donc rechercher le droit immédiatement précédent au droit spécifié et s'assurer que la date de fin technique
+		//        du droit précédent = veille de la date de début technique du droit spécifié. Mais comme il n'y a pas de date de début/fin technique,
+		//        on prend un raccourci et on spécifie simplement que la date de fin technique du droit précédent ne doit pas être renseignée
+		//        (= le droit était valide avant l'import, pour ignorer des droits fermés plus anciens).
+		final String queryString = "from DroitProprieteRF where annulationDate is null " +
+				"and ayantDroit.id = :ayantDroitId " +
+				"and immeuble.id = :immeubleId " +
+				"and dateFin is null " +
+				"and (masterIdRF != :masterIdRF or versionIdRF != :versionIdRF) order by id desc";
+
+		final Query query = getCurrentSession().createQuery(queryString);
+		query.setParameter("ayantDroitId", droit.getAyantDroit().getId());
+		query.setParameter("immeubleId", droit.getImmeuble().getId());
+		query.setParameter("masterIdRF", droit.getMasterIdRF());
+		query.setParameter("versionIdRF", droit.getVersionIdRF());
+		query.setMaxResults(1);
+
 		return (DroitProprieteRF) query.uniqueResult();
 	}
 }
