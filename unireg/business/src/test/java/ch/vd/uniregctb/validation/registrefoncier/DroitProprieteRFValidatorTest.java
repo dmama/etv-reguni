@@ -21,6 +21,7 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 
 import static ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidatorTest.assertErrors;
 import static ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidatorTest.assertValide;
+import static ch.vd.uniregctb.validation.registrefoncier.EstimationRFValidatorTest.assertWarnings;
 
 public class DroitProprieteRFValidatorTest {
 
@@ -53,7 +54,7 @@ public class DroitProprieteRFValidatorTest {
 			droit.setDateDebutMetier(RegDate.get(2000, 1, 1));
 			droit.setMotifDebut(null);
 			droit.setRaisonsAcquisition(Collections.emptySet());
-			assertErrors(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
+			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
 					                                       "une date de début métier renseignée (01.01.2000) alors qu'il n'y a pas de raison d'acquisition"), validator.validate(droit));
 		}
 
@@ -65,7 +66,7 @@ public class DroitProprieteRFValidatorTest {
 			droit.setDateDebutMetier(null);
 			droit.setMotifDebut("Trouvé dans la rue");
 			droit.setRaisonsAcquisition(Collections.emptySet());
-			assertErrors(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
+			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
 					                                       "un motif de début métier renseigné (Trouvé dans la rue) alors qu'il n'y a pas de raison d'acquisition"), validator.validate(droit));
 		}
 	}
@@ -106,7 +107,7 @@ public class DroitProprieteRFValidatorTest {
 			droit.setMotifDebut("Succession");
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1990, 1, 1), "Succession", null));
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Vente forcée", new IdentifiantAffaireRF(12, "2000/22/0")));
-			assertErrors(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
+			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
 					                                       "une date de début métier () et un motif (Succession) qui ne correspondent à aucune des raisons d'acquisition"), validator.validate(droit));
 		}
 
@@ -119,7 +120,7 @@ public class DroitProprieteRFValidatorTest {
 			droit.setMotifDebut(null);
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1990, 1, 1), "Succession", null));
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Vente forcée", new IdentifiantAffaireRF(12, "2000/22/0")));
-			assertErrors(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
+			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
 					                                       "une date de début métier (01.01.1990) et un motif (null) qui ne correspondent à aucune des raisons d'acquisition"), validator.validate(droit));
 		}
 	}

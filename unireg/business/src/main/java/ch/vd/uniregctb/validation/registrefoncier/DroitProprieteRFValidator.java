@@ -52,13 +52,13 @@ public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF
 
 			if (premiereRaison == null) {
 				if (entity.getDateDebutMetier() != null) {
-					results.addError(String.format("%s %s possède une date de début métier renseignée (%s) alors qu'il n'y a pas de raison d'acquisition",
+					results.addWarning(String.format("%s %s possède une date de début métier renseignée (%s) alors qu'il n'y a pas de raison d'acquisition",
 					                               getEntityCategoryName(),
 					                               getEntityDisplayString(entity),
 					                               RegDateHelper.dateToDisplayString(entity.getDateDebutMetier())));
 				}
 				if (StringUtils.isNotBlank(entity.getMotifDebut())) {
-					results.addError(String.format("%s %s possède un motif de début métier renseigné (%s) alors qu'il n'y a pas de raison d'acquisition",
+					results.addWarning(String.format("%s %s possède un motif de début métier renseigné (%s) alors qu'il n'y a pas de raison d'acquisition",
 					                               getEntityCategoryName(),
 					                               getEntityDisplayString(entity),
 					                               entity.getMotifDebut()));
@@ -73,7 +73,7 @@ public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF
 					if (raisons.stream()
 							.filter(AnnulableHelper::nonAnnule)
 							.noneMatch(r -> entity.getDateDebutMetier() == r.getDateAcquisition() && Objects.equals(entity.getMotifDebut(), r.getMotifAcquisition()))) {
-						results.addError(String.format("%s %s possède une date de début métier (%s) et un motif (%s) qui ne correspondent à aucune des raisons d'acquisition",
+						results.addWarning(String.format("%s %s possède une date de début métier (%s) et un motif (%s) qui ne correspondent à aucune des raisons d'acquisition",
 						                               getEntityCategoryName(),
 						                               getEntityDisplayString(entity),
 						                               RegDateHelper.dateToDisplayString(entity.getDateDebutMetier()),
