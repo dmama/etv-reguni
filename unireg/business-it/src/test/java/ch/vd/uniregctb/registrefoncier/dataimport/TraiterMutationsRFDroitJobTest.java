@@ -319,13 +319,14 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit1.setMasterIdRF("1f109152381009be0138100c87000000");
 				droit1.setVersionIdRF("1f109152381009be0138100c87000001");
 				droit1.setDateDebut(dateImportInitial);
+				droit1.setDateDebutMetier(RegDate.get(2004, 2, 7));
+				droit1.setMotifDebut("Appropriation illégitime");
 				droit1.setAyantDroit(pp1);
 				droit1.setImmeuble(immeuble1);
 				droit1.setPart(new Fraction(1, 1));
 				droit1.setRegime(GenrePropriete.INDIVIDUELLE);
 				// motif différent
 				droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2004, 2, 7), "Appropriation illégitime", new IdentifiantAffaireRF(13, 2007, 173, 0)));
-				droit1.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit1);
 
 				BienFondsRF immeuble2 = new BienFondsRF();
@@ -337,12 +338,13 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit2.setMasterIdRF("8af806fa4a4dd302014b16fc17266a0b");
 				droit2.setVersionIdRF("8af806fa4a4dd302014b16fc17256a06");
 				droit2.setDateDebut(dateImportInitial);
+				droit2.setDateDebutMetier(RegDate.get(2014, 12, 23));
+				droit2.setMotifDebut("Achat");
 				droit2.setAyantDroit(pp2);
 				droit2.setImmeuble(immeuble2);
 				droit2.setPart(new Fraction(1, 2));
 				droit2.setRegime(GenrePropriete.COPROPRIETE);
 				droit2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2014, 12, 23), "Achat", new IdentifiantAffaireRF(6, 2014, 9593, 0)));
-				droit2.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit2);
 			}
 		});
@@ -585,12 +587,13 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit1.setMasterIdRF("1f109152381009be0138100c87000000");
 				droit1.setVersionIdRF("1f109152381009be0138100c87000001");
 				droit1.setDateDebut(dateImportInitial);
+				droit1.setDateDebutMetier(RegDate.get(2007, 2, 7));
+				droit1.setMotifDebut("Donation");
 				droit1.setAyantDroit(pp1);
 				droit1.setImmeuble(immeuble1);
 				droit1.setPart(new Fraction(1, 1));
 				droit1.setRegime(GenrePropriete.INDIVIDUELLE);
 				droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2007, 2, 7), "Donation", new IdentifiantAffaireRF(13, 2007, 173, 0)));
-				droit1.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit1);
 
 				BienFondsRF immeuble2 = new BienFondsRF();
@@ -601,13 +604,14 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				droit2.setMasterIdRF("8af806fa4a4dd302014b16fc17266a0b");
 				droit2.setVersionIdRF("8af806fa4a4dd302014b16fc17266a0a");
 				droit2.setDateDebut(dateImportInitial);
+				droit2.setDateDebutMetier(RegDate.get(2003, 1, 1));
+				droit2.setMotifDebut("Succession");
 				droit2.setAyantDroit(pp2);
 				droit2.setImmeuble(immeuble2);
 				droit2.setPart(new Fraction(1, 2));
 				droit2.setRegime(GenrePropriete.COPROPRIETE);
 				droit2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2003, 1, 1), "Succession", new IdentifiantAffaireRF(6, 2003, 9593, 0)));
 				droit2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2014, 12, 23), "Achat", new IdentifiantAffaireRF(6, 2014, 9593, 0)));
-				droit2.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droit2);
 			}
 		});

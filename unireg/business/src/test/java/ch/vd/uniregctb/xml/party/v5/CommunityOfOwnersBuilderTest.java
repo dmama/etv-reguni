@@ -67,13 +67,14 @@ public class CommunityOfOwnersBuilderTest {
 		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
+		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit.setMotifDebut("Succession");
 		droit.setRegime(GenrePropriete.COMMUNE);
 		droit.setPart(new Fraction(1, 1));
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Succession", new IdentifiantAffaireRF(21, 2016, 322, 3)));
 		droit.setAyantDroit(communaute);
 		droit.setImmeuble(immeuble);
-		droit.calculateDateEtMotifDebut(p -> null);
 		communaute.addDroitPropriete(droit);
 
 		final CommunauteRFMembreInfo membreInfo = new CommunauteRFMembreInfo(4, Collections.singletonList(2727272L), Arrays.asList(ppRF, pmRF, collRF));

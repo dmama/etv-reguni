@@ -525,11 +525,12 @@ public class DroitRFDetectorTest {
 		droitPP1.setCommunaute(null);
 		droitPP1.setDateDebut(dateImportInitial);
 		droitPP1.setDateFin(null);
+		droitPP1.setDateDebutMetier(RegDate.get(2010, 4, 23));
+		droitPP1.setMotifDebut("Achat");
 		droitPP1.setMotifFin(null);
 		droitPP1.setPart(new Fraction(1, 2));
 		droitPP1.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP1.calculateDateEtMotifDebut(p -> null);
 		pp1.addDroitPropriete(droitPP1);
 		immeuble1.addDroitPropriete(droitPP1);
 
@@ -541,11 +542,12 @@ public class DroitRFDetectorTest {
 		droitPP2.setCommunaute(null);
 		droitPP2.setDateDebut(dateImportInitial);
 		droitPP2.setDateFin(null);
+		droitPP2.setDateDebutMetier(RegDate.get(2010, 4, 23));
+		droitPP2.setMotifDebut("Achat");
 		droitPP2.setMotifFin(null);
 		droitPP2.setPart(new Fraction(1, 2));
 		droitPP2.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP2.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP2);
 		immeuble1.addDroitPropriete(droitPP2);
 
@@ -557,11 +559,12 @@ public class DroitRFDetectorTest {
 		droitPP3.setCommunaute(null);
 		droitPP3.setDateDebut(dateImportInitial);
 		droitPP3.setDateFin(null);
+		droitPP3.setDateDebutMetier(RegDate.get(2010, 3, 28));
+		droitPP3.setMotifDebut("Achat");
 		droitPP3.setMotifFin(null);
 		droitPP3.setPart(new Fraction(1, 1));
 		droitPP3.setRegime(GenrePropriete.INDIVIDUELLE);
 		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
-		droitPP3.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP3);
 		immeuble2.addDroitPropriete(droitPP3);
 
@@ -572,11 +575,12 @@ public class DroitRFDetectorTest {
 		droitImm4.setImmeuble(immeuble1);
 		droitImm4.setDateDebut(dateImportInitial);
 		droitImm4.setDateFin(null);
+		droitImm4.setDateDebutMetier(RegDate.get(2010, 4, 4));
+		droitImm4.setMotifDebut("Constitution de PPE");
 		droitImm4.setMotifFin(null);
 		droitImm4.setPart(new Fraction(1,14));
 		droitImm4.setRegime(GenrePropriete.PPE);
 		droitImm4.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 4), "Constitution de PPE", new IdentifiantAffaireRF(6, 2014, 203, 0)));
-		droitImm4.calculateDateEtMotifDebut(p -> null);
 		ib3.addDroitPropriete(droitImm4);
 		immeuble1.addDroitPropriete(droitImm4);
 
@@ -763,11 +767,12 @@ public class DroitRFDetectorTest {
 		droitPP1.setCommunaute(null);
 		droitPP1.setDateDebut(dateImportInitial);
 		droitPP1.setDateFin(null);
+		droitPP1.setDateDebutMetier(RegDate.get(2010, 4, 23));
+		droitPP1.setMotifDebut("Achat");
 		droitPP1.setMotifFin(null);
 		droitPP1.setPart(new Fraction(1, 2));
 		droitPP1.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP1.calculateDateEtMotifDebut(p -> null);
 		pp1.addDroitPropriete(droitPP1);
 		immeuble1.addDroitPropriete(droitPP1);
 
@@ -779,11 +784,12 @@ public class DroitRFDetectorTest {
 		droitPP2.setCommunaute(null);
 		droitPP2.setDateDebut(dateImportInitial);
 		droitPP2.setDateFin(null);
+		droitPP2.setDateDebutMetier(RegDate.get(2010, 4, 23));
+		droitPP2.setMotifDebut("Achat");
 		droitPP2.setMotifFin(null);
 		droitPP2.setPart(new Fraction(1, 2));
 		droitPP2.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP2.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP2);
 		immeuble1.addDroitPropriete(droitPP2);
 
@@ -795,11 +801,12 @@ public class DroitRFDetectorTest {
 		droitPP3.setCommunaute(null);
 		droitPP3.setDateDebut(dateImportInitial);
 		droitPP3.setDateFin(null);
+		droitPP3.setDateDebutMetier(RegDate.get(2010, 3, 28));
+		droitPP3.setMotifDebut("Achat");
 		droitPP3.setMotifFin(null);
 		droitPP3.setPart(new Fraction(1, 1));
 		droitPP3.setRegime(GenrePropriete.INDIVIDUELLE);
 		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
-		droitPP3.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP3);
 		immeuble2.addDroitPropriete(droitPP3);
 
@@ -810,11 +817,12 @@ public class DroitRFDetectorTest {
 		droitImm4.setImmeuble(immeuble1);
 		droitImm4.setDateDebut(dateImportInitial);
 		droitImm4.setDateFin(null);
+		droitImm4.setDateDebutMetier(RegDate.get(2010, 4, 4));
+		droitImm4.setMotifDebut("Constitution de PPE");
 		droitImm4.setMotifFin(null);
 		droitImm4.setPart(new Fraction(1,14));
 		droitImm4.setRegime(GenrePropriete.PPE);
 		droitImm4.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 4), "Constitution de PPE", new IdentifiantAffaireRF(6, 2014, 203, 0)));
-		droitImm4.calculateDateEtMotifDebut(p -> null);
 		ib3.addDroitPropriete(droitImm4);
 		immeuble1.addDroitPropriete(droitImm4);
 
@@ -894,11 +902,12 @@ public class DroitRFDetectorTest {
 		droitPP1.setCommunaute(null);
 		droitPP1.setDateDebut(dateImportInitial);
 		droitPP1.setDateFin(null);
+		droitPP1.setDateDebutMetier(RegDate.get(2010, 4, 23));
+		droitPP1.setMotifDebut("Achat");
 		droitPP1.setMotifFin(null);
 		droitPP1.setPart(new Fraction(1, 2));
 		droitPP1.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP1.calculateDateEtMotifDebut(p -> null);
 		pp1.addDroitPropriete(droitPP1);
 		immeuble1.addDroitPropriete(droitPP1);
 
@@ -910,11 +919,12 @@ public class DroitRFDetectorTest {
 		droitPP2.setCommunaute(null);
 		droitPP2.setDateDebut(dateImportInitial);
 		droitPP2.setDateFin(null);
+		droitPP2.setDateDebutMetier(RegDate.get(2010, 4, 23));
+		droitPP2.setMotifDebut("Achat");
 		droitPP2.setMotifFin(null);
 		droitPP2.setPart(new Fraction(1, 2));
 		droitPP2.setRegime(GenrePropriete.COPROPRIETE);
 		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
-		droitPP2.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP2);
 		immeuble1.addDroitPropriete(droitPP2);
 
@@ -926,11 +936,12 @@ public class DroitRFDetectorTest {
 		droitPP3.setCommunaute(null);
 		droitPP3.setDateDebut(dateImportInitial);
 		droitPP3.setDateFin(null);
+		droitPP3.setDateDebutMetier(RegDate.get(2010, 3, 28));
+		droitPP3.setMotifDebut("Achat");
 		droitPP3.setMotifFin(null);
 		droitPP3.setPart(new Fraction(1, 1));
 		droitPP3.setRegime(GenrePropriete.INDIVIDUELLE);
 		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
-		droitPP3.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP3);
 		immeuble2.addDroitPropriete(droitPP3);
 
@@ -941,11 +952,12 @@ public class DroitRFDetectorTest {
 		droitImm4.setImmeuble(immeuble1);
 		droitImm4.setDateDebut(dateImportInitial);
 		droitImm4.setDateFin(null);
+		droitImm4.setDateDebutMetier(RegDate.get(2010, 4, 4));
+		droitImm4.setMotifDebut("Constitution de PPE");
 		droitImm4.setMotifFin(null);
 		droitImm4.setPart(new Fraction(1,14));
 		droitImm4.setRegime(GenrePropriete.PPE);
 		droitImm4.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 4), "Constitution de PPE", new IdentifiantAffaireRF(6, 2014, 203, 0)));
-		droitImm4.calculateDateEtMotifDebut(p -> null);
 		ib3.addDroitPropriete(droitImm4);
 		immeuble1.addDroitPropriete(droitImm4);
 
