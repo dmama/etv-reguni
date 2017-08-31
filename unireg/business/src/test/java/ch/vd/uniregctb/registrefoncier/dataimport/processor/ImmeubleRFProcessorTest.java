@@ -1628,12 +1628,13 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				droitPP.setMasterIdRF("1f109152381009be0138100c87276e68");
 				droitPP.setVersionIdRF("1f109152381009be0138100e4c7c00e5");
 				droitPP.setDateDebut(RegDate.get(2005,2,12));
+				droitPP.setDateDebutMetier(RegDate.get(2005, 1, 1));
+				droitPP.setMotifDebut("Achat");
 				droitPP.setAyantDroit(pp);
 				droitPP.setImmeuble(ppe);
 				droitPP.setPart(new Fraction(1, 2));
 				droitPP.setRegime(GenrePropriete.COPROPRIETE);
 				droitPP.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 1, 1), "Achat", new IdentifiantAffaireRF(13, 2005, 173, 0)));
-				droitPP.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droitPP);
 
 				DroitProprietePersonneMoraleRF droitPM = new DroitProprietePersonneMoraleRF();
@@ -1644,11 +1645,12 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				droitPM.setCommunaute(null);
 				droitPM.setDateDebut(RegDate.get(2010, 6, 1));
 				droitPM.setDateFin(null);
+				droitPM.setDateDebutMetier(RegDate.get(2010, 4, 23));
+				droitPM.setMotifDebut("Achat");
 				droitPM.setMotifFin(null);
 				droitPM.setPart(new Fraction(1, 2));
 				droitPM.setRegime(GenrePropriete.COPROPRIETE);
 				droitPM.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
-				droitPM.calculateDateEtMotifDebut(p -> null);
 				droitRFDAO.save(droitPM);
 			}
 		});

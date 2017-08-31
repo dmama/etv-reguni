@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -31,6 +29,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRF;
 
 public class RattraperDatesDebutDroitRFProcessor {
 
@@ -110,86 +109,6 @@ public class RattraperDatesDebutDroitRFProcessor {
 		return rapportFinal;
 	}
 
-	/**
-	 * Les droits fermés et ouverts <i>pour un immeuble particulier</i> suite à un import particulier des données RF.
-	 */
-	private static class ChangementsDroits {
-		private final RegDate dateImport;
-		private final List<DroitProprieteRF> fermes;
-		private final List<DroitProprieteRF> ouverts;
-
-		public ChangementsDroits(@NotNull RegDate dateImport, @NotNull List<DroitProprieteRF> droits) {
-			final RegDate veilleImport = dateImport.getOneDayBefore();
-			this.dateImport = dateImport;
-			this.fermes = droits.stream()
-					.filter(d -> d.getDateFin() == veilleImport)
-					.collect(Collectors.toList());
-			this.ouverts = droits.stream()
-					.filter(d -> d.getDateDebut() == dateImport)
-					.collect(Collectors.toList());
-		}
-
-		/**
-		 * @return la date de l'import qui a provoqué la fermeture et l'ouverture des droits
-		 */
-		public RegDate getDateImport() {
-			return dateImport;
-		}
-
-		/**
-		 * Recalcule les dates de début des droits ouverts suite à l'improt.
-		 *
-		 * @param rapport le rapport d'exécution à mettre-à-jour
-		 */
-		public void recalculerDatesDebutDroitsOuverts(@NotNull RattraperDatesDebutDroitRFProcessorResults rapport) {
-			ouverts.forEach(d -> recalculerDateDebut(d, rapport));
-		}
-
-		private void recalculerDateDebut(@NotNull DroitProprieteRF droit, @NotNull RattraperDatesDebutDroitRFProcessorResults rapport) {
-			final RegDate dateDebutOriginale = droit.getDateDebutMetier();
-			final String motifDebutOriginal = droit.getMotifDebut();
-
-			// on force le recalcul de la date de début du droit
-			droit.calculateDateEtMotifDebut(this::findDroitPrecedent);
-
-			final RegDate dateDebutCourant = droit.getDateDebutMetier();
-			final String motifDebutCourant = droit.getMotifDebut();
-
-			if (dateDebutCourant != dateDebutOriginale || !Objects.equals(motifDebutCourant, motifDebutOriginal)) {
-				// le droit a été mis-à-jour
-				rapport.addUpdated(droit, dateDebutOriginale, motifDebutOriginal);
-			}
-			else {
-				rapport.addUntouched(droit);
-			}
-		}
-
-		@Nullable
-		private DroitProprieteRF findDroitPrecedent(@NotNull DroitProprieteRF courant) {
-
-			// 1. on recherche le droit précédent par masterId (SIFISC-24987)
-			DroitProprieteRF droitPrecedent = fermes.stream()
-					.filter(d -> d.getMasterIdRF().equals(courant.getMasterIdRF()))
-					.max(new DateRangeComparator<>())
-					.orElse(null);
-			if (droitPrecedent != null) {
-				return droitPrecedent;
-			}
-
-			// 2. on recherche le droit précédent par propriétaire (SIFISC-25971)
-			droitPrecedent = fermes.stream()
-					.filter(d -> d.getAyantDroit().getId().equals(courant.getAyantDroit().getId()))
-					.max(new DateRangeComparator<>())
-					.orElse(null);
-			if (droitPrecedent != null) {
-				return droitPrecedent;
-			}
-
-			// pas trouvé
-			return null;
-		}
-	}
-
 	void processImmeuble(long id, @NotNull RattraperDatesDebutDroitRFProcessorResults rapport) {
 		final ImmeubleRF immeuble = immeubleRFDAO.get(id);
 		if (immeuble == null) {
@@ -210,13 +129,13 @@ public class RattraperDatesDebutDroitRFProcessor {
 				.collect(Collectors.toSet());
 
 		// on analyse les droits et construit la liste des changements pour chaque date d'import
-		final List<ChangementsDroits> changements = datesImport.stream()
-				.map(d -> new ChangementsDroits(d, droits))
+		final List<AffaireRF> changements = datesImport.stream()
+				.map(d -> new AffaireRF(d, immeuble, droits))
 				.collect(Collectors.toList());
-		changements.sort(Comparator.comparing(ChangementsDroits::getDateImport));
+		changements.sort(Comparator.comparing(AffaireRF::getDateValeur));
 
 		// on recalcule et rattrape si nécessaire les dates de début sur les droits ouverts
-		changements.forEach(c -> c.recalculerDatesDebutDroitsOuverts(rapport));
+		changements.forEach(c -> c.refreshDatesDebutMetier(rapport));
 	}
 
 	/**

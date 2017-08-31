@@ -101,7 +101,9 @@ public class LandRightBuilderTest {
 		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
+		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit.setMotifDebut("Achat");
 		droit.setRegime(GenrePropriete.COMMUNE);
 		droit.setCommunaute(communaute);
 		droit.setPart(new Fraction(2, 5));
@@ -109,7 +111,6 @@ public class LandRightBuilderTest {
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2017, 3, 2), "Succession", new IdentifiantAffaireRF(21, 2017, 17, 0)));
 		droit.setAyantDroit(new PersonnePhysiqueRF());
 		droit.setImmeuble(immeuble);
-		droit.calculateDateEtMotifDebut(p -> null);
 
 		final LandRight landRight = LandRightBuilder.newLandRight(droit, t -> ctbId, rightHolderComparator);
 		assertNotNull(landRight);
@@ -151,14 +152,15 @@ public class LandRightBuilderTest {
 		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
+		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit.setMotifDebut("Achat");
 		droit.setRegime(GenrePropriete.INDIVIDUELLE);
 		droit.setCommunaute(null);
 		droit.setPart(new Fraction(3, 5));
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
 		droit.setAyantDroit(new PersonneMoraleRF());
 		droit.setImmeuble(immeuble);
-		droit.calculateDateEtMotifDebut(p -> null);
 
 		final LandRight landRight = LandRightBuilder.newLandRight(droit, t -> ctbId, rightHolderComparator);
 		assertNotNull(landRight);
@@ -208,13 +210,14 @@ public class LandRightBuilderTest {
 		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
+		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit.setMotifDebut("Constitution de PPE");
 		droit.setRegime(GenrePropriete.FONDS_DOMINANT);
 		droit.setPart(new Fraction(3, 5));
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Constitution de PPE", new IdentifiantAffaireRF(21, 2016, 322, 3)));
 		droit.setAyantDroit(beneficiaire);
 		droit.setImmeuble(servant);
-		droit.calculateDateEtMotifDebut(p -> null);
 
 		final LandRight landRight = LandRightBuilder.newLandRight(droit, t -> null, rightHolderComparator);
 		assertNotNull(landRight);
@@ -282,24 +285,26 @@ public class LandRightBuilderTest {
 		droit0.setId(23320L);
 		droit0.setMasterIdRF("28288228");
 		droit0.setVersionIdRF("1");
+		droit0.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit0.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit0.setMotifDebut("Achat");
 		droit0.setRegime(GenrePropriete.INDIVIDUELLE);
 		droit0.setPart(new Fraction(1, 1));
 		droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
 		droit0.setAyantDroit(pp);
 		droit0.setImmeuble(immeuble0);
-		droit0.calculateDateEtMotifDebut(p -> null);
 
 		final DroitProprieteImmeubleRF droit1 = new DroitProprieteImmeubleRF();
 		droit1.setId(23321L);
 		droit1.setMasterIdRF("4734733");
 		droit1.setVersionIdRF("1");
+		droit1.setDateDebutMetier(RegDate.get(2000, 1, 1));
+		droit1.setMotifDebut("Constitution de PPE");
 		droit1.setRegime(GenrePropriete.FONDS_DOMINANT);
 		droit1.setPart(new Fraction(3, 5));
 		droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Constitution de PPE", new IdentifiantAffaireRF(21, 2000, 1, 0)));
 		droit1.setAyantDroit(beneficiaire0);
 		droit1.setImmeuble(immeuble1);
-		droit1.calculateDateEtMotifDebut(p -> null);
 
 		final DroitProprieteVirtuelRF droit2 = new DroitProprieteVirtuelRF();
 		droit2.setMasterIdRF("03030232");
@@ -382,13 +387,14 @@ public class LandRightBuilderTest {
 		droit.setVersionIdRF("1");
 		droit.setDateDebut(RegDate.get(2016, 11, 3));
 		droit.setDateFin(RegDate.get(2017, 9, 22));
+		droit.setDateDebutMetier(RegDate.get(2016, 9, 22));
 		droit.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit.setMotifDebut("Achat");
 		droit.setRegime(GenrePropriete.FONDS_DOMINANT);
 		droit.setPart(new Fraction(3, 5));
 		droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
 		droit.setAyantDroit(communaute);
 		droit.setImmeuble(servant);
-		droit.calculateDateEtMotifDebut(p -> null);
 
 		final LandRight landRight = LandRightBuilder.newLandRight(droit, t -> null, rightHolderComparator);
 		assertNotNull(landRight);
@@ -567,12 +573,13 @@ public class LandRightBuilderTest {
 		droit1.setId(23321L);
 		droit1.setMasterIdRF("28288228");
 		droit1.setVersionIdRF("1");
+		droit1.setDateDebutMetier(RegDate.get(2000, 1, 1));
+		droit1.setMotifDebut("Constitution de PPE");
 		droit1.setRegime(GenrePropriete.FONDS_DOMINANT);
 		droit1.setPart(new Fraction(3, 5));
 		droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Constitution de PPE", new IdentifiantAffaireRF(21, 2000, 1, 0)));
 		droit1.setAyantDroit(beneficiaire0);
 		droit1.setImmeuble(immeuble1);
-		droit1.calculateDateEtMotifDebut(p -> null);
 
 		final UsufruitVirtuelRF droit2 = new UsufruitVirtuelRF();
 		droit2.setMasterIdRF("478347347");

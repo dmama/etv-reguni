@@ -15,8 +15,9 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRFAudit;
 
-public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long, RattraperDatesDebutDroitRFProcessorResults> {
+public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long, RattraperDatesDebutDroitRFProcessorResults> implements AffaireRFAudit {
 
 	private final RattrapageDataSelection dataSelection;
 	private final int nbThreads;
@@ -319,10 +320,17 @@ public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long,
 		processed.add(new Processed(immeuble, registreFoncierService));
 	}
 
-	public void addUpdated(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutOriginale, @Nullable String motifDebutOriginal) {
-		updated.add(new Updated(droit, dateDebutOriginale, motifDebutOriginal));
+	@Override
+	public void addCreated(DroitProprieteRF droit) {
+
 	}
 
+	@Override
+	public void addUpdated(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutMetierPrecedente, @Nullable String motifDebutPrecedent) {
+		updated.add(new Updated(droit, dateDebutMetierPrecedente, motifDebutPrecedent));
+	}
+
+	@Override
 	public void addUntouched(@NotNull DroitProprieteRF droit) {
 		untouched.add(new Untouched(droit));
 	}

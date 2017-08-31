@@ -1,19 +1,29 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.uniregctb.registrefoncier.dataimport.processor;
+
+import java.util.Collections;
 
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@SuppressWarnings("Duplicates")
-public class DroitProprieteRFTest {
+public class AffaireRFTest {
+
+	private ImmeubleRF immeuble = new BienFondsRF();
 
 	@Test
 	public void testCalculateDateEtMotifDebutAucuneRaisonAcquisition() throws Exception {
 		final DroitProprieteRF d = new DroitProprietePersonnePhysiqueRF();
-		d.calculateDateEtMotifDebut(p -> null);
+
+		final AffaireRF muts = new AffaireRF(null, immeuble, Collections.singletonList(d), Collections.emptyList(), Collections.emptyList());
+		muts.refreshDatesDebutMetier(null);
 		assertNull(d.getDateDebutMetier());
 		assertNull(d.getMotifDebut());
 	}
@@ -24,7 +34,9 @@ public class DroitProprieteRFTest {
 		d.setMasterIdRF("28288228");
 		d.setVersionIdRF("1");
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 3, 23), "Achat", null));
-		d.calculateDateEtMotifDebut(p -> null);
+
+		final AffaireRF muts = new AffaireRF(null, immeuble, Collections.singletonList(d), Collections.emptyList(), Collections.emptyList());
+		muts.refreshDatesDebutMetier(null);
 		assertEquals(RegDate.get(2000, 3, 23), d.getDateDebutMetier());
 		assertEquals("Achat", d.getMotifDebut());
 	}
@@ -35,7 +47,9 @@ public class DroitProprieteRFTest {
 		d.setMasterIdRF("28288228");
 		d.setVersionIdRF("1");
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(null, "Achat", null));
-		d.calculateDateEtMotifDebut(p -> null);
+
+		final AffaireRF muts = new AffaireRF(null, immeuble, Collections.singletonList(d), Collections.emptyList(), Collections.emptyList());
+		muts.refreshDatesDebutMetier(null);
 		assertNull(d.getDateDebutMetier());
 		assertEquals("Achat", d.getMotifDebut());
 	}
@@ -47,7 +61,9 @@ public class DroitProprieteRFTest {
 		d.setVersionIdRF("1");
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 3, 23), "Succession", null));
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1996, 10, 1), "Achat", null));
-		d.calculateDateEtMotifDebut(p -> null);
+
+		final AffaireRF muts = new AffaireRF(null, immeuble, Collections.singletonList(d), Collections.emptyList(), Collections.emptyList());
+		muts.refreshDatesDebutMetier(null);
 		assertEquals(RegDate.get(1996, 10, 1), d.getDateDebutMetier());
 		assertEquals("Achat", d.getMotifDebut());
 	}
@@ -59,7 +75,9 @@ public class DroitProprieteRFTest {
 		d.setVersionIdRF("1");
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 3, 23), "Succession", null));
 		d.addRaisonAcquisition(new RaisonAcquisitionRF(null, "Achat", null));
-		d.calculateDateEtMotifDebut(p -> null);
+
+		final AffaireRF muts = new AffaireRF(null, immeuble, Collections.singletonList(d), Collections.emptyList(), Collections.emptyList());
+		muts.refreshDatesDebutMetier(null);
 		assertNull(d.getDateDebutMetier());
 		assertEquals("Achat", d.getMotifDebut());
 	}
@@ -69,18 +87,20 @@ public class DroitProprieteRFTest {
 	 */
 	@Test
 	public void testCalculateDateEtMotifDebutAvecDroitPrecedent() throws Exception {
+
 		final DroitProprieteRF precedent = new DroitProprietePersonnePhysiqueRF();
 		precedent.setMasterIdRF("28288228");
 		precedent.setVersionIdRF("1");
 		precedent.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 3, 23), "Achat", null));
-		precedent.calculateDateEtMotifDebut(p -> null);
 
 		final DroitProprieteRF nouveau = new DroitProprietePersonnePhysiqueRF();
 		nouveau.setMasterIdRF("28288228");
 		nouveau.setVersionIdRF("2");
 		nouveau.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 3, 23), "Achat", null));
 		nouveau.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2005, 8, 2), "Remaniement PPE", null));
-		nouveau.calculateDateEtMotifDebut(p -> precedent);
+
+		final AffaireRF muts = new AffaireRF(null, immeuble, Collections.singletonList(nouveau), Collections.emptyList(), Collections.singletonList(precedent));
+		muts.refreshDatesDebutMetier(null);
 		assertEquals(RegDate.get(2005, 8, 2), nouveau.getDateDebutMetier());
 		assertEquals("Remaniement PPE", nouveau.getMotifDebut());
 	}

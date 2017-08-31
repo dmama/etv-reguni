@@ -5,7 +5,6 @@ import javax.xml.bind.Unmarshaller;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
@@ -25,7 +24,6 @@ import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
@@ -33,12 +31,8 @@ import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.EigentumAnteilListElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
-import ch.vd.uniregctb.registrefoncier.dataimport.helper.RaisonAcquisitionRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
-import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
-
-import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.masterIdAndVersionIdEquals;
 
 /**
  * Processeur spécialisé pour traiter les mutations des droits de propriété.
@@ -57,8 +51,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
-	@NotNull
-	private final EvenementFiscalService evenementFiscalService;
+	private final AffaireRFAudit evenementFiscalSender;
 
 	public DroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull DroitRFDAO droitRFDAO, @NotNull XmlHelperRF xmlHelperRF,
 	                        @NotNull EvenementFiscalService evenementFiscalService) {
@@ -66,7 +59,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.droitRFDAO = droitRFDAO;
 
-		unmarshaller = ThreadLocal.withInitial(() -> {
+		this.unmarshaller = ThreadLocal.withInitial(() -> {
 			try {
 				return xmlHelperRF.getDroitListContext().createUnmarshaller();
 			}
@@ -74,7 +67,27 @@ public class DroitRFProcessor implements MutationRFProcessor {
 				throw new RuntimeException(e);
 			}
 		});
-		this.evenementFiscalService = evenementFiscalService;
+
+		this.evenementFiscalSender = new AffaireRFAudit() {
+			@Override
+			public void addUntouched(@NotNull DroitProprieteRF droit) {
+				// rien à faire
+			}
+
+			@Override
+			public void addCreated(DroitProprieteRF droit) {
+				// on publie l'événement fiscal correspondant
+				evenementFiscalService.publierOuvertureDroitPropriete(droit.getDateDebutMetier(), droit);
+			}
+
+			@Override
+			public void addUpdated(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutMetierPrecedente, String motifDebutPrecedent) {
+				// on publie l'événement fiscal correspondant
+				evenementFiscalService.publierModificationDroitPropriete(droit.getDateDebutMetier(), droit);
+			}
+
+			// note : l'émission des événements fiscaux de fermeture est faite dans le DateFinDroitsRFProcessor
+		};
 	}
 
 	@Override
@@ -111,7 +124,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 		// on crée les droits en mémoire
 		final List<DroitProprieteRF> droits = droitList.stream()
-				.map(e -> DroitRFHelper.newDroitRF(e, this::findAyantDroit, this::findCommunaute, id -> immeuble, this::findDroitPrecedent))
+				.map(e -> DroitRFHelper.newDroitRF(e, this::findAyantDroit, this::findCommunaute, id -> immeuble))
 				.collect(Collectors.toList());
 
 		// on les insère en DB
@@ -145,25 +158,6 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	@Nullable
-	private DroitProprieteRF findDroitPrecedent(@NotNull DroitProprieteRF droit) {
-
-		// 1. on recherche le droit précédent par masterId (SIFISC-24987)
-		DroitProprieteRF precedent = droitRFDAO.findDroitPrecedentByMasterId(new DroitRFKey(droit));
-		if (precedent != null) {
-			return precedent;
-		}
-
-		// 2. on recherche le droit précédent par propriétaire (SIFISC-25971)
-		precedent = droitRFDAO.findDroitPrecedentByAyantDroit(droit);
-		if (precedent != null) {
-			return precedent;
-		}
-
-		// pas trouvé
-		return null;
-	}
-
-	@Nullable
 	private CommunauteRF findCommunaute(@Nullable String idRf) {
 		if (idRf == null) {
 			return null;
@@ -184,17 +178,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		}
 
 		// on sauve les nouveaux droits
-		droits.forEach(d -> {
-			d.setDateDebut(dateValeur);
-			d = (DroitProprieteRF) droitRFDAO.save(d);
-
-			// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
-			immeuble.addDroitPropriete(d);
-			d.getAyantDroit().addDroitPropriete(d);
-
-			// on publie l'événement fiscal correspondant
-			evenementFiscalService.publierOuvertureDroitPropriete(d.getDateDebutMetier(), d);
-		});
+		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, droits, Collections.emptyList(), Collections.emptyList());
+		affaire.apply(droitRFDAO, evenementFiscalSender);
 	}
 
 	/**
@@ -218,55 +203,16 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		final List<DroitProprieteRF> toAddList = new LinkedList<>(droits);
 		final List<DroitProprieteRF> toCloseList = new LinkedList<>(persisted);
 
-		// on supprime tous les droits qui n'ont pas changé
+		// on enlève des deux liste tous les droits qui n'ont pas changé
 		CollectionsUtils.removeCommonElements(toAddList, toCloseList, DroitRFHelper::dataEquals);
 
 		// on détermine les changements qui ne concernent que les raisons d'acquisition (= masterIdRF et versionIdRF égaux)
 		// (tous les autres droits doivent être fermés / ouverts normalement)
 		final List<Pair<DroitProprieteRF, DroitProprieteRF>> toUpdateList = CollectionsUtils.extractCommonElements(toAddList, toCloseList, DroitRFHelper::masterIdAndVersionIdEquals);
 
-		// on met-à-jour tous les droits qui changent (c'est-à-dire les changements dans les raisons d'acquisition)
-		toUpdateList.forEach(p -> processModification(p.getFirst(), p.getSecond()));
-
-		// on ferme toutes les droits à fermer
-		toCloseList.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
-
-		// on ajoute toutes les nouveaux droits
-		toAddList.forEach(d -> {
-			d.setDateDebut(dateValeur);
-			d = (DroitProprieteRF) droitRFDAO.save(d);
-
-			// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
-			immeuble.addDroitPropriete(d);
-			d.getAyantDroit().addDroitPropriete(d);
-
-			// on publie l'événement fiscal correspondant
-			evenementFiscalService.publierOuvertureDroitPropriete(d.getDateDebutMetier(), d);
-		});
-	}
-
-	private void processModification(@NotNull DroitProprieteRF droit, @NotNull DroitProprieteRF persisted) {
-		if (!masterIdAndVersionIdEquals(droit, persisted)) {
-			throw new IllegalArgumentException("Les mastersIdRF/versionIdRF sont différents : [" + droit.getMasterIdRF() + "/" + droit.getVersionIdRF() + "] " +
-					                                   "et [" + persisted.getMasterIdRF() + "/" + persisted.getVersionIdRF() + "]");
-		}
-		if (!Objects.equals(droit.getPart(), persisted.getPart())) {
-			throw new IllegalArgumentException("Les parts ne sont pas égales entre l'ancien et le nouveau avec le masterIdRF=[" + droit.getMasterIdRF() + "]");
-		}
-
-		final List<RaisonAcquisitionRF> toDelete = CollectionsUtils.newList(persisted.getRaisonsAcquisition());
-		final List<RaisonAcquisitionRF> toAdd = CollectionsUtils.newList(droit.getRaisonsAcquisition());
-		CollectionsUtils.removeCommonElements(toDelete, toAdd, RaisonAcquisitionRFHelper::dataEquals);   // on supprime les raison d'acquisition qui n'ont pas changé
-
-		// on annule toutes les raisons en trop (on ne maintient pas d'historique dans les raisons d'acquisition car il s'agit déjà d'un historique)
-		toDelete.forEach(r -> r.setAnnule(true));
-
-		// on ajoute toutes les nouvelles raisons
-		toAdd.forEach(persisted::addRaisonAcquisition);
-		persisted.calculateDateEtMotifDebut(this::findDroitPrecedent);
-
-		// on publie l'événement fiscal correspondant
-		evenementFiscalService.publierModificationDroitPropriete(persisted.getDateDebutMetier(), persisted);
+		// on applique les changements détectés
+		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, toAddList, toUpdateList, toCloseList);
+		affaire.apply(droitRFDAO, evenementFiscalSender);
 	}
 
 	/**
@@ -274,10 +220,11 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	 */
 	private void processSuppression(@NotNull RegDate dateValeur, ImmeubleRF immeuble) {
 		// on ferme tous les droits de propriété encore ouverts
-		immeuble.getDroitsPropriete().stream()
-				.filter(d -> d.isValidAt(null))
-				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
+		final List<DroitProprieteRF> toCloseList = immeuble.getDroitsPropriete().stream()
+				.filter(d -> d.getDateFin() == null)
+				.collect(Collectors.toList());
 
-		// note : l'émission des événements fiscaux de fermeture est faite dans le DateFinDroitsRFProcessor
+		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, Collections.emptyList(), Collections.emptyList(), toCloseList);
+		affaire.apply(droitRFDAO, evenementFiscalSender);
 	}
 }
