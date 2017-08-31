@@ -47,6 +47,7 @@ public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF
 		final Set<RaisonAcquisitionRF> raisons = entity.getRaisonsAcquisition();
 		if (raisons != null) {  // note: si la collection n'est pas renseignée, c'est qu'on est dans la première phase (save) : on attend la seconde phase (update) pour vérifier la cohérence.
 			final RaisonAcquisitionRF premiereRaison = raisons.stream()
+					.filter(AnnulableHelper::nonAnnule)
 					.min(Comparator.naturalOrder())
 					.orElse(null);
 

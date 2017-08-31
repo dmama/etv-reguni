@@ -1229,8 +1229,8 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals("1f109152381009be0138100e4c7c00e5", droit0.getVersionIdRF());
 			assertEquals(dateImportInitial, droit0.getDateDebut());
 			assertNull(droit0.getDateFin());
-			assertEquals("Achat", droit0.getMotifDebut());
-			assertEquals(RegDate.get(2005, 1, 1), droit0.getDateDebutMetier());
+			assertNull(droit0.getMotifDebut());
+			assertNull(droit0.getDateDebutMetier());
 			assertEquals("_1f109152381009be0138100ba7e31031", droit0.getImmeuble().getIdRF());
 			assertEquals(new Fraction(1, 1), droit0.getPart());
 			assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
@@ -1249,7 +1249,7 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION, event0.getType());
-			assertEquals(RegDate.get(2005, 1, 1), event0.getDateValeur());
+			assertNull(event0.getDateValeur());
 			assertEquals("_1f109152381009be0138100ba7e31031", event0.getDroit().getImmeuble().getIdRF());
 			assertEquals(ppId, event0.getDroit().getAyantDroit().getId());
 

@@ -19,6 +19,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitHabitationRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -114,6 +115,7 @@ public abstract class LandRightBuilder {
 		right.setRightHolder(RightHolderBuilder.getRightHolder(droitRF.getAyantDroit(), ctbIdProvider));
 		right.setImmovablePropertyId(droitRF.getImmeuble().getId());
 		right.getAcquisitionReasons().addAll(droitRF.getRaisonsAcquisition().stream()
+				                                     .filter(AnnulableHelper::nonAnnule)
 				                                     .sorted()
 				                                     .map(AcquisitionReasonBuilder::get)
 				                                     .collect(Collectors.toList()));
