@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -223,6 +224,7 @@ public abstract class DroitProprieteRF extends DroitRF {
 			if (precedent == null || precedent.getRaisonsAcquisition() == null) {
 				// il n'y a pas de droit précédent : on prend la raison d'acquisition la plus vieille comme référence
 				final RaisonAcquisitionRF first = raisonsAcquisition.stream()
+						.filter(AnnulableHelper::nonAnnule)
 						.min(Comparator.naturalOrder())
 						.orElse(null);
 				setDebutRaisonAcquisition(first);
@@ -230,10 +232,12 @@ public abstract class DroitProprieteRF extends DroitRF {
 			else {
 				// il y a bien un droit précédent : on prend la nouvelle raison d'acquisition comme référence
 				final RegDate derniereDate = precedent.getRaisonsAcquisition().stream()
+						.filter(AnnulableHelper::nonAnnule)
 						.map(RaisonAcquisitionRF::getDateAcquisition)
 						.max(Comparator.naturalOrder())
 						.orElse(null);
 				final RaisonAcquisitionRF nouvelle = raisonsAcquisition.stream()
+						.filter(AnnulableHelper::nonAnnule)
 						.filter(r -> RegDateHelper.isAfter(r.getDateAcquisition(), derniereDate, NullDateBehavior.EARLIEST))
 						.min(Comparator.naturalOrder())
 						.orElse(null);
@@ -252,5 +256,11 @@ public abstract class DroitProprieteRF extends DroitRF {
 			setDateDebutMetier(raison.getDateAcquisition());
 			setMotifDebut(raison.getMotifAcquisition());
 		}
+	}
+
+	@Transient
+	@Override
+	protected String getBusinessName() {
+		return super.getBusinessName() + " " + getMasterIdRF() + "/" + getVersionIdRF();
 	}
 }

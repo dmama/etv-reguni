@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.validation.registrefoncier;
 
 import java.util.Collections;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,8 @@ public class DroitProprieteRFValidatorTest {
 		// un droit sans date de début ni motif
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setMasterIdRF("masterId");
+			droit.setVersionIdRF("versionId");
 			droit.setAyantDroit(new PersonnePhysiqueRF());
 			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(null);
@@ -49,24 +52,28 @@ public class DroitProprieteRFValidatorTest {
 		// un droit avec une date de début
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setMasterIdRF("masterId");
+			droit.setVersionIdRF("versionId");
 			droit.setAyantDroit(new PersonnePhysiqueRF());
 			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(RegDate.get(2000, 1, 1));
 			droit.setMotifDebut(null);
 			droit.setRaisonsAcquisition(Collections.emptySet());
-			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
+			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF masterId/versionId (? - ?) possède " +
 					                                       "une date de début métier renseignée (01.01.2000) alors qu'il n'y a pas de raison d'acquisition"), validator.validate(droit));
 		}
 
 		// un droit avec un motif de début
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setMasterIdRF("masterId");
+			droit.setVersionIdRF("versionId");
 			droit.setAyantDroit(new PersonnePhysiqueRF());
 			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(null);
 			droit.setMotifDebut("Trouvé dans la rue");
 			droit.setRaisonsAcquisition(Collections.emptySet());
-			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
+			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF masterId/versionId (? - ?) possède " +
 					                                       "un motif de début métier renseigné (Trouvé dans la rue) alors qu'il n'y a pas de raison d'acquisition"), validator.validate(droit));
 		}
 	}
@@ -77,6 +84,8 @@ public class DroitProprieteRFValidatorTest {
 		// un droit avec date de début et motif
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setMasterIdRF("masterId");
+			droit.setVersionIdRF("versionId");
 			droit.setAyantDroit(new PersonnePhysiqueRF());
 			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(RegDate.get(1990, 1, 1));
@@ -89,6 +98,8 @@ public class DroitProprieteRFValidatorTest {
 		// un droit avec date de début et motif nuls (cas spécial de la raison d'acquisition incomplète)
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setMasterIdRF("masterId");
+			droit.setVersionIdRF("versionId");
 			droit.setAyantDroit(new PersonnePhysiqueRF());
 			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(null);
@@ -101,27 +112,80 @@ public class DroitProprieteRFValidatorTest {
 		// un droit sans une date de début
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setMasterIdRF("masterId");
+			droit.setVersionIdRF("versionId");
 			droit.setAyantDroit(new PersonnePhysiqueRF());
 			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(null);
 			droit.setMotifDebut("Succession");
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1990, 1, 1), "Succession", null));
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Vente forcée", new IdentifiantAffaireRF(12, "2000/22/0")));
-			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
+			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF masterId/versionId (? - ?) possède " +
 					                                       "une date de début métier () et un motif (Succession) qui ne correspondent à aucune des raisons d'acquisition"), validator.validate(droit));
 		}
 
 		// un droit sans motif de début
 		{
 			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setMasterIdRF("masterId");
+			droit.setVersionIdRF("versionId");
 			droit.setAyantDroit(new PersonnePhysiqueRF());
 			droit.setRegime(GenrePropriete.INDIVIDUELLE);
 			droit.setDateDebutMetier(RegDate.get(1990, 1, 1));
 			droit.setMotifDebut(null);
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(1990, 1, 1), "Succession", null));
 			droit.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Vente forcée", new IdentifiantAffaireRF(12, "2000/22/0")));
-			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF (? - ?) possède " +
+			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF masterId/versionId (? - ?) possède " +
 					                                       "une date de début métier (01.01.1990) et un motif (null) qui ne correspondent à aucune des raisons d'acquisition"), validator.validate(droit));
+		}
+	}
+
+	@Test
+	public void testDroitAvecRaisonsAcquisitionsAnnulees() throws Exception {
+
+		final RaisonAcquisitionRF ra = new RaisonAcquisitionRF(RegDate.get(1990, 1, 1), "Succession", null);
+		ra.setAnnule(true);
+		final Set<RaisonAcquisitionRF> raisonsAnnulees = Collections.singleton(ra);
+
+		// un droit sans date de début ni motif
+		{
+			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setMasterIdRF("masterId");
+			droit.setVersionIdRF("versionId");
+			droit.setAyantDroit(new PersonnePhysiqueRF());
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
+			droit.setDateDebutMetier(null);
+			droit.setMotifDebut(null);
+			droit.setRaisonsAcquisition(raisonsAnnulees);
+			assertValide(validator.validate(droit));
+		}
+
+		// un droit avec une date de début
+		{
+			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setMasterIdRF("masterId");
+			droit.setVersionIdRF("versionId");
+			droit.setAyantDroit(new PersonnePhysiqueRF());
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
+			droit.setDateDebutMetier(RegDate.get(2000, 1, 1));
+			droit.setMotifDebut(null);
+			droit.setRaisonsAcquisition(raisonsAnnulees);
+			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF masterId/versionId (? - ?) possède " +
+					                                       "une date de début métier renseignée (01.01.2000) alors qu'il n'y a pas de raison d'acquisition"), validator.validate(droit));
+		}
+
+		// un droit avec un motif de début
+		{
+			DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+			droit.setMasterIdRF("masterId");
+			droit.setVersionIdRF("versionId");
+			droit.setAyantDroit(new PersonnePhysiqueRF());
+			droit.setRegime(GenrePropriete.INDIVIDUELLE);
+			droit.setDateDebutMetier(null);
+			droit.setMotifDebut("Trouvé dans la rue");
+			droit.setRaisonsAcquisition(raisonsAnnulees);
+			assertWarnings(Collections.singletonList("Le droit de propriété RF DroitProprietePersonnePhysiqueRF masterId/versionId (? - ?) possède " +
+					                                       "un motif de début métier renseigné (Trouvé dans la rue) alors qu'il n'y a pas de raison d'acquisition"), validator.validate(droit));
 		}
 	}
 
@@ -133,6 +197,8 @@ public class DroitProprieteRFValidatorTest {
 
 		// un droit avec plusieurs raisons d'acquisition à la même date => les raisons d'acquisition sont triées par date puis par identifiant d'affaire et c'est la première qui doit être utilisée
 		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setMasterIdRF("masterId");
+		droit.setVersionIdRF("versionId");
 		droit.setAyantDroit(new PersonnePhysiqueRF());
 		droit.setRegime(GenrePropriete.INDIVIDUELLE);
 		droit.setDateDebutMetier(RegDate.get(2005, 9, 30));
