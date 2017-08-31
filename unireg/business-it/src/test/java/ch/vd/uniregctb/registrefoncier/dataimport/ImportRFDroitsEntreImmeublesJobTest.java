@@ -139,9 +139,9 @@ public class ImportRFDroitsEntreImmeublesJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 				assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
 				assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
-				assertEquals("_1f1091523810912201381096f93f6bfe", mut1.getIdRF());
+				assertEquals("_1f1091523810912201381096f5f65a60", mut1.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <GrundstueckEigentumAnteil VersionID=\"1f109152381091220138109daa84404c\" MasterID=\"1f109152381091220138109daa7e4012\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>32</AnteilZaehler>\n" +
@@ -161,7 +161,7 @@ public class ImportRFDroitsEntreImmeublesJobTest extends ImportRFTestClass {
 						             "            <BelegAlt>489253</BelegAlt>\n" +
 						             "        </Rechtsgruende>\n" +
 						             "    </GrundstueckEigentumAnteil>\n" +
-						             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
+						             "</EigentumAnteilList>\n", mut1.getXmlContent());
 
 				final EvenementRFMutation mut2 = mutations.get(2);
 				assertEquals(importId, mut2.getParentImport().getId());

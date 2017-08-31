@@ -116,9 +116,9 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
 				mut0.setTypeEntite(TypeEntiteRF.DROIT);
 				mut0.setTypeMutation(TypeMutationRF.CREATION);
-				mut0.setIdRF("_1f109152381009be0138100a1d442eee");
+				mut0.setIdRF("_8af806fc4a35927c014ae2a6e76041b8");
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						                   "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <PersonEigentumAnteil VersionID=\"8af806fa4a4dd302014b16fc17256a06\" MasterID=\"8af806fa4a4dd302014b16fc17266a0b\">\n" +
 						                   "        <Quote>\n" +
 						                   "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -153,7 +153,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 						                   "        </NatuerlichePersonGb>\n" +
 						                   "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 						                   "    </PersonEigentumAnteil>\n" +
-						                   "</PersonEigentumAnteilList>\n");
+						                   "</EigentumAnteilList>\n");
 				evenementRFMutationDAO.save(mut0);
 
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
@@ -161,9 +161,9 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
 				mut1.setTypeEntite(TypeEntiteRF.DROIT);
 				mut1.setTypeMutation(TypeMutationRF.CREATION);
-				mut1.setIdRF("_22222222222222222222222222222222");
+				mut1.setIdRF("_1f109152381009be0138100ba7e31031");
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						                   "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <PersonEigentumAnteil VersionID=\"1f109152381009be0138100e4c7c00e5\" MasterID=\"1f109152381009be0138100c87276e68\">\n" +
 						                   "        <Quote>\n" +
 						                   "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -199,7 +199,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 						                   "        <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>\n" +
 						                   "        <AnzahlPaquiers>0</AnzahlPaquiers>\n" +
 						                   "    </PersonEigentumAnteil>\n" +
-						                   "</PersonEigentumAnteilList>\n");
+						                   "</EigentumAnteilList>\n");
 				evenementRFMutationDAO.save(mut1);
 
 				return importEvent.getId();
@@ -364,9 +364,9 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
 				mut0.setTypeEntite(TypeEntiteRF.DROIT);
 				mut0.setTypeMutation(TypeMutationRF.MODIFICATION);
-				mut0.setIdRF("_1f109152381009be0138100a1d442eee");
+				mut0.setIdRF("_1f109152381009be0138100ba7e31031");
 				mut0.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						                   "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <PersonEigentumAnteil VersionID=\"1f109152381009be0138100e4c7c00e5\" MasterID=\"1f109152381009be0138100c87276e68\">\n" +
 						                   "        <Quote>\n" +
 						                   "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -402,7 +402,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 						                   "        <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>\n" +
 						                   "        <AnzahlPaquiers>0</AnzahlPaquiers>\n" +
 						                   "    </PersonEigentumAnteil>\n" +
-						                   "</PersonEigentumAnteilList>\n");
+						                   "</EigentumAnteilList>\n");
 				evenementRFMutationDAO.save(mut0);
 
 				final EvenementRFMutation mut1 = new EvenementRFMutation();
@@ -410,9 +410,9 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
 				mut1.setTypeEntite(TypeEntiteRF.DROIT);
 				mut1.setTypeMutation(TypeMutationRF.MODIFICATION);
-				mut1.setIdRF("_22222222222222222222222222222222");
+				mut1.setIdRF("_8af806fc4a35927c014ae2a6e76041b8");
 				mut1.setXmlContent("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						                   "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						                   "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						                   "    <PersonEigentumAnteil VersionID=\"8af806fa4a4dd302014b16fc17256a06\" MasterID=\"8af806fa4a4dd302014b16fc17266a0b\">\n" +
 						                   "        <Quote>\n" +
 						                   "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -447,7 +447,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 						                   "        </NatuerlichePersonGb>\n" +
 						                   "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 						                   "    </PersonEigentumAnteil>\n" +
-						                   "</PersonEigentumAnteilList>\n");
+						                   "</EigentumAnteilList>\n");
 				evenementRFMutationDAO.save(mut1);
 				return importEvent.getId();
 			}
@@ -624,13 +624,13 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				importEvent.setFileUrl("http://turlututu");
 				importEvent = evenementRFImportDAO.save(importEvent);
 
-				// des mutations de types suppression, c'est-à-dire que le propriétaire ne possède plus d'immeuble
+				// des mutations de types suppression, c'est-à-dire que l'immeuble n'est plus possédé
 				final EvenementRFMutation mut0 = new EvenementRFMutation();
 				mut0.setParentImport(importEvent);
 				mut0.setEtat(EtatEvenementRF.A_TRAITER);
 				mut0.setTypeEntite(TypeEntiteRF.DROIT);
 				mut0.setTypeMutation(TypeMutationRF.SUPPRESSION);
-				mut0.setIdRF("_1f109152381009be0138100a1d442eee");
+				mut0.setIdRF("_1f109152381009be0138100ba7e31031");
 				mut0.setXmlContent(null);
 				evenementRFMutationDAO.save(mut0);
 
@@ -639,7 +639,7 @@ public class TraiterMutationsRFDroitJobTest extends ImportRFTestClass {
 				mut1.setEtat(EtatEvenementRF.A_TRAITER);
 				mut1.setTypeEntite(TypeEntiteRF.DROIT);
 				mut1.setTypeMutation(TypeMutationRF.SUPPRESSION);
-				mut1.setIdRF("_22222222222222222222222222222222");
+				mut1.setIdRF("_8af806fc4a35927c014ae2a6e76041b8");
 				mut1.setXmlContent(null);
 				evenementRFMutationDAO.save(mut1);
 				return importEvent.getId();

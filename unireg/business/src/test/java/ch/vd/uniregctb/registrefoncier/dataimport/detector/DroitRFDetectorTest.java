@@ -47,7 +47,9 @@ import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.MockAyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.MockImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationComparator;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRFImpl;
@@ -66,6 +68,7 @@ public class DroitRFDetectorTest {
 	private XmlHelperRF xmlHelperRF;
 	private BlacklistRFHelperImpl blacklistRFHelper;
 	private PlatformTransactionManager transactionManager;
+	private ImmeubleRFDAO immeubleRFDAO;
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private PersistentCache<ArrayList<EigentumAnteil>> cacheDroits;
 
@@ -75,6 +78,7 @@ public class DroitRFDetectorTest {
 		blacklistRFHelper = new BlacklistRFHelperImpl();
 		blacklistRFHelper.setBlacklistedImmeubles(new String[]{"_1f1091523810108101381012b3d64cb4", "_1f1091523810190f0138101cd6404148"});
 		transactionManager = new MockTransactionManager();
+		immeubleRFDAO = new MockImmeubleRFDAO();
 		ayantDroitRFDAO = new MockAyantDroitRFDAO();
 		cacheDroits = new MockPersistentCache<>();
 		AuthenticationHelper.pushPrincipal("test-user");
@@ -101,21 +105,24 @@ public class DroitRFDetectorTest {
 			}
 		};
 
+		final String idRfImmeuble1 = "202930c0e0f3";
+		final String idRfImmeuble2 = "382929efa218";
+
 		// un mock qui mémorise toutes les mutations sauvées
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
 		final AyantDroitRFDetector ayantDroitRFDetector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie trois nouveaux droits sur deux propriétaires qui concernent deux immeubles
-		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
-		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "1", "029191d4fec44", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
-		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "1", "029191d4fec44", "202930c0e0f3", new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
+		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", idRfImmeuble1, new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
+		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "1", "029191d4fec44", idRfImmeuble1, new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
+		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "1", "029191d4fec44", idRfImmeuble2, new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
 
 		final List<EigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
 		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
 
-		// on devrait avoir deux événements de mutation de type CREATION sur chacun des propriétaires
+		// on devrait avoir deux événements de mutation de type CREATION sur chacun des immeubles
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 		assertEquals(2, mutations.size());
 		mutations.sort(new MutationComparator());
@@ -125,63 +132,15 @@ public class DroitRFDetectorTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 		assertEquals(TypeEntiteRF.DROIT, mut0.getTypeEntite());
 		assertEquals(TypeMutationRF.CREATION, mut0.getTypeMutation());
-		assertEquals("029191d4fec44", mut0.getIdRF());  // le premier propriétaire
+		assertEquals(idRfImmeuble1, mut0.getIdRF());  // le premier immeuble
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"45729cd9e20\">\n" +
-				             "        <Quote>\n" +
-				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
-				             "            <AnteilNenner>2</AnteilNenner>\n" +
-				             "        </Quote>\n" +
-				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
-				             "        <NatuerlichePersonGb>\n" +
-				             "            <Rechtsgruende>\n" +
-				             "                <AmtNummer>6</AmtNummer>\n" +
-				             "                <RechtsgrundCode>\n" +
-				             "                    <TextFr>Achat</TextFr>\n" +
-				             "                </RechtsgrundCode>\n" +
-				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
-				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
-				             "            </Rechtsgruende>\n" +
-				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
-				             "        </NatuerlichePersonGb>\n" +
-				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
-				             "    </PersonEigentumAnteil>\n" +
-				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"38458fa0ac3\">\n" +
-				             "        <Quote>\n" +
-				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
-				             "            <AnteilNenner>1</AnteilNenner>\n" +
-				             "        </Quote>\n" +
-				             "        <BelastetesGrundstueckIDREF>202930c0e0f3</BelastetesGrundstueckIDREF>\n" +
-				             "        <NatuerlichePersonGb>\n" +
-				             "            <Rechtsgruende>\n" +
-				             "                <AmtNummer>6</AmtNummer>\n" +
-				             "                <RechtsgrundCode>\n" +
-				             "                    <TextFr>Achat</TextFr>\n" +
-				             "                </RechtsgrundCode>\n" +
-				             "                <BelegDatum>2010-03-28</BelegDatum>\n" +
-				             "                <BelegAlt>2013/28/4</BelegAlt>\n" +
-				             "            </Rechtsgruende>\n" +
-				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
-				             "        </NatuerlichePersonGb>\n" +
-				             "        <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>\n" +
-				             "    </PersonEigentumAnteil>\n" +
-				             "</PersonEigentumAnteilList>\n", mut0.getXmlContent());
-
-		final EvenementRFMutation mut1 = mutations.get(1);
-		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
-		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
-		assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
-		assertEquals("37838sc9d94de", mut1.getIdRF());  // le second propriétaire
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"9a9c9e94923\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>2</AnteilNenner>\n" +
 				             "        </Quote>\n" +
-				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <BelastetesGrundstueckIDREF>202930c0e0f3</BelastetesGrundstueckIDREF>\n" +
 				             "        <NatuerlichePersonGb>\n" +
 				             "            <Rechtsgruende>\n" +
 				             "                <AmtNummer>6</AmtNummer>\n" +
@@ -195,7 +154,55 @@ public class DroitRFDetectorTest {
 				             "        </NatuerlichePersonGb>\n" +
 				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"45729cd9e20\">\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>2</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>202930c0e0f3</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Achat</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
+				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
+				             "    </PersonEigentumAnteil>\n" +
+				             "</EigentumAnteilList>\n", mut0.getXmlContent());
+
+		final EvenementRFMutation mut1 = mutations.get(1);
+		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
+		assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
+		assertEquals(idRfImmeuble2, mut1.getIdRF());  // le second immeuble
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"38458fa0ac3\">\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>1</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Achat</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-03-28</BelegDatum>\n" +
+				             "                <BelegAlt>2013/28/4</BelegAlt>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>\n" +
+				             "    </PersonEigentumAnteil>\n" +
+				             "</EigentumAnteilList>\n", mut1.getXmlContent());
 	}
 
 	/**
@@ -218,7 +225,7 @@ public class DroitRFDetectorTest {
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
 		final AyantDroitRFDetector ayantDroitRFDetector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		final String idRfPP1 = "029191d4fec44";
 		final String idRfPP2 = "37838sc9d94de";
@@ -236,11 +243,11 @@ public class DroitRFDetectorTest {
 		final List<EigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
 		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
 
-		// on devrait avoir 4 événements de mutation de type CREATION :
-		//  - 3 pour chacun droits (2 propriétaires pp + 1 propriétaire communauté)
+		// on devrait avoir 2 événements de mutation de type CREATION :
+		//  - 1 pour les droits de l'immeuble
 		//  - 1 pour la communauté (ayant-droit)
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-		assertEquals(4, mutations.size());
+		assertEquals(2, mutations.size());
 		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
@@ -268,9 +275,9 @@ public class DroitRFDetectorTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
 		assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
-		assertEquals(idRfPP1, mut1.getIdRF());  // le premier propriétaire
+		assertEquals(idRfImmeuble, mut1.getIdRF());  // l'immeuble
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"9a9c9e94923\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -291,16 +298,6 @@ public class DroitRFDetectorTest {
 				             "        </NatuerlichePersonGb>\n" +
 				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
-
-		final EvenementRFMutation mut2 = mutations.get(2);
-		assertEquals(IMPORT_ID, mut2.getParentImport().getId());
-		assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-		assertEquals(TypeEntiteRF.DROIT, mut2.getTypeEntite());
-		assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
-		assertEquals(idRfPP2, mut2.getIdRF());  // le deuxième propriétaire
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"45729cd9e20\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -321,16 +318,6 @@ public class DroitRFDetectorTest {
 				             "        </NatuerlichePersonGb>\n" +
 				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</PersonEigentumAnteilList>\n", mut2.getXmlContent());
-
-		final EvenementRFMutation mut3 = mutations.get(3);
-		assertEquals(IMPORT_ID, mut3.getParentImport().getId());
-		assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
-		assertEquals(TypeEntiteRF.DROIT, mut3.getTypeEntite());
-		assertEquals(TypeMutationRF.CREATION, mut3.getTypeMutation());
-		assertEquals(idRFCommunaute, mut3.getIdRF());  // le troisième propriétaire
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil MasterID=\"38458fa0ac3\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -351,7 +338,7 @@ public class DroitRFDetectorTest {
 				             "        </Gemeinschaft>\n" +
 				             "        <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</PersonEigentumAnteilList>\n", mut3.getXmlContent());
+				             "</EigentumAnteilList>\n", mut1.getXmlContent());
 	}
 
 	/**
@@ -374,7 +361,7 @@ public class DroitRFDetectorTest {
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
 		final AyantDroitRFDetector ayantDroitRFDetector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie un nouveau droit entre deux immeubles
 		final GrundstueckEigentumAnteil droit1 = newDroitImm("3838292", "1", "48238919011", "202930c0e0f3", new Fraction(1, 1), GrundstueckEigentumsform.DOMINIERENDES_GRUNDSTUECK, RegDate.get(2010, 4, 11), new IdentifiantAffaireRF(6, 2013, 17, 0), "Constitution de PPE");
@@ -404,9 +391,9 @@ public class DroitRFDetectorTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
 		assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
-		assertEquals("48238919011", mut1.getIdRF());  // l'immeuble dominant (= ayant-droit)
+		assertEquals("202930c0e0f3", mut1.getIdRF());  // l'immeuble servant
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <GrundstueckEigentumAnteil VersionID=\"1\" MasterID=\"3838292\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -424,7 +411,7 @@ public class DroitRFDetectorTest {
 				             "            <BelegAlt>2013/17/0</BelegAlt>\n" +
 				             "        </Rechtsgruende>\n" +
 				             "    </GrundstueckEigentumAnteil>\n" +
-				             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
+				             "</EigentumAnteilList>\n", mut1.getXmlContent());
 	}
 
 	/**
@@ -447,7 +434,7 @@ public class DroitRFDetectorTest {
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
 		final AyantDroitRFDetector ayantDroitRFDetector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie un nouveau droit qui concerne un immeuble blacklisté
 		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", "_1f1091523810108101381012b3d64cb4", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
@@ -480,7 +467,7 @@ public class DroitRFDetectorTest {
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
 		final AyantDroitRFDetector ayantDroitRFDetector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie un nouveau droit entre deux immeubles avec l'immeuble dominant blacklisté
 		final GrundstueckEigentumAnteil droit1 = newDroitImm("3838292", "1", "_1f1091523810190f0138101cd6404148", "202930c0e0f3",
@@ -502,6 +489,9 @@ public class DroitRFDetectorTest {
 	public void testDroitsModifies() throws Exception {
 
 		final RegDate dateImportInitial = RegDate.get(2010, 6, 1);
+		final String idRfImmeuble1 = "202930c0e0f3";
+		final String idRfImmeuble2 = "382929efa218";
+		final String idRfImmeuble3 = "48238919011";
 
 		// les données déjà existantes dans le DB
 		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
@@ -511,16 +501,21 @@ public class DroitRFDetectorTest {
 		pp2.setIdRF("029191d4fec44");
 
 		final ImmeubleBeneficiaireRF ib3 = new ImmeubleBeneficiaireRF();
-		ib3.setIdRF("48238919011");
+		ib3.setIdRF(idRfImmeuble3);
 
 		final BienFondsRF immeuble1 = new BienFondsRF();
-		immeuble1.setIdRF("382929efa218");
+		immeuble1.setIdRF(idRfImmeuble1);
 
 		final BienFondsRF immeuble2 = new BienFondsRF();
-		immeuble2.setIdRF("202930c0e0f3");
+		immeuble2.setIdRF(idRfImmeuble2);
 
 		final ProprieteParEtageRF immeuble3 = new ProprieteParEtageRF();
 		immeuble3.setIdRF(ib3.getIdRF());
+
+		immeubleRFDAO.save(immeuble1);
+		immeubleRFDAO.save(immeuble2);
+		immeubleRFDAO.save(immeuble3);
+		immeuble3.setDroitsPropriete(Collections.emptySet());
 
 		final DroitProprietePersonnePhysiqueRF droitPP1 = new DroitProprietePersonnePhysiqueRF();
 		droitPP1.setMasterIdRF("9a9c9e94923");
@@ -536,6 +531,7 @@ public class DroitRFDetectorTest {
 		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
 		droitPP1.calculateDateEtMotifDebut(p -> null);
 		pp1.addDroitPropriete(droitPP1);
+		immeuble1.addDroitPropriete(droitPP1);
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
 		droitPP2.setMasterIdRF("45729cd9e20");
@@ -551,6 +547,7 @@ public class DroitRFDetectorTest {
 		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
 		droitPP2.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP2);
+		immeuble1.addDroitPropriete(droitPP2);
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
 		droitPP3.setMasterIdRF("38458fa0ac3");
@@ -566,6 +563,7 @@ public class DroitRFDetectorTest {
 		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
 		droitPP3.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP3);
+		immeuble2.addDroitPropriete(droitPP3);
 
 		final DroitProprieteImmeubleRF droitImm4 = new DroitProprieteImmeubleRF();
 		droitImm4.setMasterIdRF("282002020");
@@ -580,6 +578,7 @@ public class DroitRFDetectorTest {
 		droitImm4.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 4), "Constitution de PPE", new IdentifiantAffaireRF(6, 2014, 203, 0)));
 		droitImm4.calculateDateEtMotifDebut(p -> null);
 		ib3.addDroitPropriete(droitImm4);
+		immeuble1.addDroitPropriete(droitImm4);
 
 		// un mock avec les ayants-droits.
 		ayantDroitRFDAO.save(pp1);
@@ -600,32 +599,32 @@ public class DroitRFDetectorTest {
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
 		final AyantDroitRFDetector ayantDroitRFDetector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie trois droits différents sur les mêmes propriétaires et immeubles
 		//  - part différente
-		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", "382929efa218",
+		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", idRfImmeuble1,
 		                                               new Fraction(2, 5), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23),
 		                                               new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
 		//  - motif différent
-		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "1", "029191d4fec44", "382929efa218",
+		final PersonEigentumAnteil droit2 = newDroitPP("45729cd9e20", "1", "029191d4fec44", idRfImmeuble1,
 		                                               new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23),
 		                                               new IdentifiantAffaireRF(6, 2013, 33, 1), "Vol autorisé");
 		//  - type de propriété différent
-		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "1", "029191d4fec44", "202930c0e0f3",
+		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "1", "029191d4fec44", idRfImmeuble2,
 		                                               new Fraction(1, 1), PersonEigentumsform.GESAMTEIGENTUM, RegDate.get(2010, 3, 28),
 		                                               new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
 		//  - raison d'acquisition différente
-		final GrundstueckEigentumAnteil droit4 = newDroitImm("282002020", "1", "48238919011", "382929efa218",
+		final GrundstueckEigentumAnteil droit4 = newDroitImm("282002020", "1", idRfImmeuble3, idRfImmeuble1,
 		                                                     new Fraction(1, 14), GrundstueckEigentumsform.STOCKWERK, RegDate.get(2016, 4, 4),
 		                                                     new IdentifiantAffaireRF(6, 2016, 1, 0), "Remaniement parcellaire");
 
 		final List<EigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3, droit4);
 		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
 
-		// on devrait avoir 3 événements de mutation de type MODIFICATION (un par propriétaire)
+		// on devrait avoir 2 événements de mutation de type MODIFICATION (un par immeuble concerné)
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-		assertEquals(3, mutations.size());
+		assertEquals(2, mutations.size());
 		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
@@ -633,63 +632,15 @@ public class DroitRFDetectorTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 		assertEquals(TypeEntiteRF.DROIT, mut0.getTypeEntite());
 		assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
-		assertEquals("029191d4fec44", mut0.getIdRF());  // le premier propriétaire
+		assertEquals(idRfImmeuble1, mut0.getIdRF());  // le premier immeuble
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
-				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"45729cd9e20\">\n" +
-				             "        <Quote>\n" +
-				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
-				             "            <AnteilNenner>2</AnteilNenner>\n" +
-				             "        </Quote>\n" +
-				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
-				             "        <NatuerlichePersonGb>\n" +
-				             "            <Rechtsgruende>\n" +
-				             "                <AmtNummer>6</AmtNummer>\n" +
-				             "                <RechtsgrundCode>\n" +
-				             "                    <TextFr>Vol autorisé</TextFr>\n" +
-				             "                </RechtsgrundCode>\n" +
-				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
-				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
-				             "            </Rechtsgruende>\n" +
-				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
-				             "        </NatuerlichePersonGb>\n" +
-				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
-				             "    </PersonEigentumAnteil>\n" +
-				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"38458fa0ac3\">\n" +
-				             "        <Quote>\n" +
-				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
-				             "            <AnteilNenner>1</AnteilNenner>\n" +
-				             "        </Quote>\n" +
-				             "        <BelastetesGrundstueckIDREF>202930c0e0f3</BelastetesGrundstueckIDREF>\n" +
-				             "        <NatuerlichePersonGb>\n" +
-				             "            <Rechtsgruende>\n" +
-				             "                <AmtNummer>6</AmtNummer>\n" +
-				             "                <RechtsgrundCode>\n" +
-				             "                    <TextFr>Achat</TextFr>\n" +
-				             "                </RechtsgrundCode>\n" +
-				             "                <BelegDatum>2010-03-28</BelegDatum>\n" +
-				             "                <BelegAlt>2013/28/4</BelegAlt>\n" +
-				             "            </Rechtsgruende>\n" +
-				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
-				             "        </NatuerlichePersonGb>\n" +
-				             "        <PersonEigentumsForm>gesamteigentum</PersonEigentumsForm>\n" +
-				             "    </PersonEigentumAnteil>\n" +
-				             "</PersonEigentumAnteilList>\n", mut0.getXmlContent());
-
-		final EvenementRFMutation mut1 = mutations.get(1);
-		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
-		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
-		assertEquals(TypeMutationRF.MODIFICATION, mut1.getTypeMutation());
-		assertEquals("37838sc9d94de", mut1.getIdRF());  // le second propriétaire
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"9a9c9e94923\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>2</AnteilZaehler>\n" +
 				             "            <AnteilNenner>5</AnteilNenner>\n" +
 				             "        </Quote>\n" +
-				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <BelastetesGrundstueckIDREF>202930c0e0f3</BelastetesGrundstueckIDREF>\n" +
 				             "        <NatuerlichePersonGb>\n" +
 				             "            <Rechtsgruende>\n" +
 				             "                <AmtNummer>6</AmtNummer>\n" +
@@ -703,22 +654,31 @@ public class DroitRFDetectorTest {
 				             "        </NatuerlichePersonGb>\n" +
 				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 				             "    </PersonEigentumAnteil>\n" +
-				             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
-
-		final EvenementRFMutation mut2 = mutations.get(2);
-		assertEquals(IMPORT_ID, mut2.getParentImport().getId());
-		assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-		assertEquals(TypeEntiteRF.DROIT, mut2.getTypeEntite());
-		assertEquals(TypeMutationRF.MODIFICATION, mut2.getTypeMutation());
-		assertEquals("48238919011", mut2.getIdRF());  // l'immeuble dominant
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"45729cd9e20\">\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>2</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>202930c0e0f3</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Vol autorisé</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-04-23</BelegDatum>\n" +
+				             "                <BelegAlt>2013/33/1</BelegAlt>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
+				             "    </PersonEigentumAnteil>\n" +
 				             "    <GrundstueckEigentumAnteil VersionID=\"1\" MasterID=\"282002020\">\n" +
 				             "        <Quote>\n" +
 				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
 				             "            <AnteilNenner>14</AnteilNenner>\n" +
 				             "        </Quote>\n" +
-				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <BelastetesGrundstueckIDREF>202930c0e0f3</BelastetesGrundstueckIDREF>\n" +
 				             "        <BerechtigtesGrundstueckIDREF>48238919011</BerechtigtesGrundstueckIDREF>\n" +
 				             "        <GrundstueckEigentumsForm>Stockwerk</GrundstueckEigentumsForm>\n" +
 				             "        <Rechtsgruende>\n" +
@@ -730,7 +690,36 @@ public class DroitRFDetectorTest {
 				             "            <BelegAlt>2016/1/0</BelegAlt>\n" +
 				             "        </Rechtsgruende>\n" +
 				             "    </GrundstueckEigentumAnteil>\n" +
-				             "</PersonEigentumAnteilList>\n", mut2.getXmlContent());
+				             "</EigentumAnteilList>\n", mut0.getXmlContent());
+
+		final EvenementRFMutation mut1 = mutations.get(1);
+		assertEquals(IMPORT_ID, mut1.getParentImport().getId());
+		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
+		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
+		assertEquals(TypeMutationRF.MODIFICATION, mut1.getTypeMutation());
+		assertEquals(idRfImmeuble2, mut1.getIdRF());  // le second immeuble
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+				             "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+				             "    <PersonEigentumAnteil VersionID=\"1\" MasterID=\"38458fa0ac3\">\n" +
+				             "        <Quote>\n" +
+				             "            <AnteilZaehler>1</AnteilZaehler>\n" +
+				             "            <AnteilNenner>1</AnteilNenner>\n" +
+				             "        </Quote>\n" +
+				             "        <BelastetesGrundstueckIDREF>382929efa218</BelastetesGrundstueckIDREF>\n" +
+				             "        <NatuerlichePersonGb>\n" +
+				             "            <Rechtsgruende>\n" +
+				             "                <AmtNummer>6</AmtNummer>\n" +
+				             "                <RechtsgrundCode>\n" +
+				             "                    <TextFr>Achat</TextFr>\n" +
+				             "                </RechtsgrundCode>\n" +
+				             "                <BelegDatum>2010-03-28</BelegDatum>\n" +
+				             "                <BelegAlt>2013/28/4</BelegAlt>\n" +
+				             "            </Rechtsgruende>\n" +
+				             "            <PersonstammIDREF>029191d4fec44</PersonstammIDREF>\n" +
+				             "        </NatuerlichePersonGb>\n" +
+				             "        <PersonEigentumsForm>gesamteigentum</PersonEigentumsForm>\n" +
+				             "    </PersonEigentumAnteil>\n" +
+				             "</EigentumAnteilList>\n", mut1.getXmlContent());
 	}
 
 	/**
@@ -761,6 +750,11 @@ public class DroitRFDetectorTest {
 		final ProprieteParEtageRF immeuble3 = new ProprieteParEtageRF();
 		immeuble3.setIdRF(ib3.getIdRF());
 
+		immeubleRFDAO.save(immeuble1);
+		immeubleRFDAO.save(immeuble2);
+		immeubleRFDAO.save(immeuble3);
+		immeuble3.setDroitsPropriete(Collections.emptySet());
+
 		final DroitProprietePersonnePhysiqueRF droitPP1 = new DroitProprietePersonnePhysiqueRF();
 		droitPP1.setMasterIdRF("9a9c9e94923");
 		droitPP1.setVersionIdRF("1");
@@ -775,6 +769,7 @@ public class DroitRFDetectorTest {
 		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
 		droitPP1.calculateDateEtMotifDebut(p -> null);
 		pp1.addDroitPropriete(droitPP1);
+		immeuble1.addDroitPropriete(droitPP1);
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
 		droitPP2.setMasterIdRF("45729cd9e20");
@@ -790,6 +785,7 @@ public class DroitRFDetectorTest {
 		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
 		droitPP2.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP2);
+		immeuble1.addDroitPropriete(droitPP2);
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
 		droitPP3.setMasterIdRF("38458fa0ac3");
@@ -805,6 +801,7 @@ public class DroitRFDetectorTest {
 		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
 		droitPP3.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP3);
+		immeuble2.addDroitPropriete(droitPP3);
 
 		final DroitProprieteImmeubleRF droitImm4 = new DroitProprieteImmeubleRF();
 		droitImm4.setMasterIdRF("282002020");
@@ -819,6 +816,7 @@ public class DroitRFDetectorTest {
 		droitImm4.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 4), "Constitution de PPE", new IdentifiantAffaireRF(6, 2014, 203, 0)));
 		droitImm4.calculateDateEtMotifDebut(p -> null);
 		ib3.addDroitPropriete(droitImm4);
+		immeuble1.addDroitPropriete(droitImm4);
 
 		// un mock avec les deux ayants-droits.
 		ayantDroitRFDAO.save(pp1);
@@ -839,7 +837,7 @@ public class DroitRFDetectorTest {
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
 		final AyantDroitRFDetector ayantDroitRFDetector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie les trois mêmes droits sur les mêmes propriétaires et immeubles
 		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", "382929efa218", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
@@ -883,6 +881,11 @@ public class DroitRFDetectorTest {
 		final ProprieteParEtageRF immeuble3 = new ProprieteParEtageRF();
 		immeuble3.setIdRF(ib3.getIdRF());
 
+		immeubleRFDAO.save(immeuble1);
+		immeubleRFDAO.save(immeuble2);
+		immeubleRFDAO.save(immeuble3);
+		immeuble3.setDroitsPropriete(Collections.emptySet());
+
 		final DroitProprietePersonnePhysiqueRF droitPP1 = new DroitProprietePersonnePhysiqueRF();
 		droitPP1.setMasterIdRF("9a9c9e94923");
 		droitPP1.setVersionIdRF("1");
@@ -897,6 +900,7 @@ public class DroitRFDetectorTest {
 		droitPP1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
 		droitPP1.calculateDateEtMotifDebut(p -> null);
 		pp1.addDroitPropriete(droitPP1);
+		immeuble1.addDroitPropriete(droitPP1);
 
 		final DroitProprietePersonnePhysiqueRF droitPP2 = new DroitProprietePersonnePhysiqueRF();
 		droitPP2.setMasterIdRF("45729cd9e20");
@@ -912,6 +916,7 @@ public class DroitRFDetectorTest {
 		droitPP2.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2013, 33, 1)));
 		droitPP2.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP2);
+		immeuble1.addDroitPropriete(droitPP2);
 
 		final DroitProprietePersonnePhysiqueRF droitPP3 = new DroitProprietePersonnePhysiqueRF();
 		droitPP3.setMasterIdRF("38458fa0ac3");
@@ -927,6 +932,7 @@ public class DroitRFDetectorTest {
 		droitPP3.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 3, 28), "Achat", new IdentifiantAffaireRF(6, 2013, 28, 4)));
 		droitPP3.calculateDateEtMotifDebut(p -> null);
 		pp2.addDroitPropriete(droitPP3);
+		immeuble2.addDroitPropriete(droitPP3);
 
 		final DroitProprieteImmeubleRF droitImm4 = new DroitProprieteImmeubleRF();
 		droitImm4.setMasterIdRF("282002020");
@@ -941,6 +947,7 @@ public class DroitRFDetectorTest {
 		droitImm4.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 4), "Constitution de PPE", new IdentifiantAffaireRF(6, 2014, 203, 0)));
 		droitImm4.calculateDateEtMotifDebut(p -> null);
 		ib3.addDroitPropriete(droitImm4);
+		immeuble1.addDroitPropriete(droitImm4);
 
 		// un mock avec les deux ayants-droits.
 		ayantDroitRFDAO.save(pp1);
@@ -961,14 +968,14 @@ public class DroitRFDetectorTest {
 		final EvenementRFMutationDAO evenementRFMutationDAO = new MockEvenementRFMutationDAO();
 
 		final AyantDroitRFDetector ayantDroitRFDetector = new AyantDroitRFDetector(xmlHelperRF, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager);
-		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie une liste de droits vide
 		detector.processDroitsPropriete(IMPORT_ID, 2, Collections.<EigentumAnteil>emptyList().iterator(), false, null);
 
-		// on devrait avoir 3 événements de mutation de type SUPPRESSION (un par propriétaire)
+		// on devrait avoir 2 événements de mutation de type SUPPRESSION (un par immeuble ayant des droits)
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-		assertEquals(3, mutations.size());
+		assertEquals(2, mutations.size());
 		mutations.sort(new MutationComparator());
 
 		final EvenementRFMutation mut0 = mutations.get(0);
@@ -976,7 +983,7 @@ public class DroitRFDetectorTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 		assertEquals(TypeEntiteRF.DROIT, mut0.getTypeEntite());
 		assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());
-		assertEquals("029191d4fec44", mut0.getIdRF());  // le premier propriétaire
+		assertEquals("202930c0e0f3", mut0.getIdRF());  // le premier immeuble
 		assertNull(mut0.getXmlContent());
 
 		final EvenementRFMutation mut1 = mutations.get(1);
@@ -984,16 +991,8 @@ public class DroitRFDetectorTest {
 		assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 		assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
 		assertEquals(TypeMutationRF.SUPPRESSION, mut1.getTypeMutation());
-		assertEquals("37838sc9d94de", mut1.getIdRF());  // le second propriétaire
+		assertEquals("382929efa218", mut1.getIdRF());  // le second immeuble
 		assertNull(mut1.getXmlContent());
-
-		final EvenementRFMutation mut2 = mutations.get(2);
-		assertEquals(IMPORT_ID, mut2.getParentImport().getId());
-		assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-		assertEquals(TypeEntiteRF.DROIT, mut2.getTypeEntite());
-		assertEquals(TypeMutationRF.SUPPRESSION, mut2.getTypeMutation());
-		assertEquals("48238919011", mut2.getIdRF());  // l'immeuble dominant
-		assertNull(mut2.getXmlContent());
 	}
 
 	private static PersonEigentumAnteil newDroitPP(String idRfDroit, String versionIdDroit, String idRfPP, String idRfImmeuble, Fraction part, PersonEigentumsform typePropriete, RegDate dateDebutEffective, IdentifiantAffaireRF affaire,

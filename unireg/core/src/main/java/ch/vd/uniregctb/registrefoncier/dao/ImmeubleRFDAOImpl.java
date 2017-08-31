@@ -11,8 +11,10 @@ import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.TypeDroit;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements ImmeubleRFDAO {
@@ -70,5 +72,26 @@ public class ImmeubleRFDAOImpl extends BaseDAOImpl<ImmeubleRF, Long> implements 
 				.map(Number.class::cast)
 				.map(Number::longValue)
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public @NotNull Set<String> findAvecDroitsActifs(TypeDroit typeDroit) {
+		final Query query;
+		if (typeDroit == TypeDroit.DROIT_PROPRIETE) {
+			final String queryString = "select i.idRF from ImmeubleRF i left join i.droitsPropriete d where d.dateFin is null and i.droitsPropriete is not empty";
+			query = getCurrentSession().createQuery(queryString);
+		}
+		else if (typeDroit == TypeDroit.SERVITUDE) {
+			final String queryString = "select i.idRF from ImmeubleRF i left join i.servitudes d where (d.dateFin is null or :today < d.dateFin) and i.servitudes is not empty";
+			query = getCurrentSession().createQuery(queryString);
+			query.setParameter("today", RegDate.get());
+		}
+		else {
+			throw new IllegalArgumentException("Type de droit inconnu = [" + typeDroit + "]");
+		}
+
+		//noinspection unchecked
+		return new HashSet<>(query.list());
+
 	}
 }

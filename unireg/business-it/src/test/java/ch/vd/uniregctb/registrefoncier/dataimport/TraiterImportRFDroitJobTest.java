@@ -126,7 +126,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(6, mutations.size());    // il y a 1 commune + 1 immeuble + 3 droits + 1 ayant-droit dans le fichier d'import et la DB était vide
+				assertEquals(4, mutations.size());    // il y a 1 commune + 1 immeuble + 3 droits sur 1 immeuble + 1 ayant-droit dans le fichier d'import et la DB était vide
 				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
@@ -156,9 +156,9 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 				assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
 				assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
-				assertEquals("029191d4fec44", mut1.getIdRF());
+				assertEquals("_1f109152381009be0138100bc9f139e0", mut1.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <PersonEigentumAnteil VersionID=\"9a9c9e94922\" MasterID=\"9a9c9e94923\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -181,16 +181,6 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 						             "        </NatuerlichePersonGb>\n" +
 						             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 						             "    </PersonEigentumAnteil>\n" +
-						             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
-
-				final EvenementRFMutation mut2 = mutations.get(2);
-				assertEquals(importId, mut2.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(TypeEntiteRF.DROIT, mut2.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
-				assertEquals("37838sc9d94de", mut2.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <PersonEigentumAnteil VersionID=\"45729cd9e19\" MasterID=\"45729cd9e20\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -213,16 +203,6 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 						             "        </NatuerlichePersonGb>\n" +
 						             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 						             "    </PersonEigentumAnteil>\n" +
-						             "</PersonEigentumAnteilList>\n", mut2.getXmlContent());
-
-				final EvenementRFMutation mut3 = mutations.get(3);
-				assertEquals(importId, mut3.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
-				assertEquals(TypeEntiteRF.DROIT, mut3.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut3.getTypeMutation());
-				assertEquals("72828ce8f830a", mut3.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <PersonEigentumAnteil VersionID=\"38458fa0ac2\" MasterID=\"38458fa0ac3\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -245,14 +225,14 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 						             "        </Gemeinschaft>\n" +
 						             "        <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>\n" +
 						             "    </PersonEigentumAnteil>\n" +
-						             "</PersonEigentumAnteilList>\n", mut3.getXmlContent());
+						             "</EigentumAnteilList>\n", mut1.getXmlContent());
 
-				final EvenementRFMutation mut4 = mutations.get(4);
-				assertEquals(importId, mut4.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut4.getEtat());
-				assertEquals(TypeEntiteRF.IMMEUBLE, mut4.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut4.getTypeMutation());
-				assertEquals("_1f109152381009be0138100bc9f139e0", mut4.getIdRF());
+				final EvenementRFMutation mut2 = mutations.get(2);
+				assertEquals(importId, mut2.getParentImport().getId());
+				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
+				assertEquals(TypeEntiteRF.IMMEUBLE, mut2.getTypeEntite());
+				assertEquals(TypeMutationRF.CREATION, mut2.getTypeMutation());
+				assertEquals("_1f109152381009be0138100bc9f139e0", mut2.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<Liegenschaft xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <GrundstueckID>_1f109152381009be0138100bc9f139e0</GrundstueckID>\n" +
@@ -294,20 +274,20 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 						             "        <GeometrischDarstellbar>false</GeometrischDarstellbar>\n" +
 						             "        <UeberlagerndeRechte>false</UeberlagerndeRechte>\n" +
 						             "    </GrundstueckFlaeche>\n" +
-						             "</Liegenschaft>\n", mut4.getXmlContent());
+						             "</Liegenschaft>\n", mut2.getXmlContent());
 
-				final EvenementRFMutation mut5 = mutations.get(5);
-				assertEquals(importId, mut5.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut5.getEtat());
-				assertEquals(TypeEntiteRF.COMMUNE, mut5.getTypeEntite());
-				assertEquals(TypeMutationRF.CREATION, mut5.getTypeMutation());
-				assertEquals("273", mut5.getIdRF());
+				final EvenementRFMutation mut3 = mutations.get(3);
+				assertEquals(importId, mut3.getParentImport().getId());
+				assertEquals(EtatEvenementRF.A_TRAITER, mut3.getEtat());
+				assertEquals(TypeEntiteRF.COMMUNE, mut3.getTypeEntite());
+				assertEquals(TypeMutationRF.CREATION, mut3.getTypeMutation());
+				assertEquals("273", mut3.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 						             "<GrundstueckNummer xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <BfsNr>273</BfsNr>\n" +
 						             "    <Gemeindenamen>Rances</Gemeindenamen>\n" +
 						             "    <StammNr>0</StammNr>\n" +
-						             "</GrundstueckNummer>\n", mut5.getXmlContent());
+						             "</GrundstueckNummer>\n", mut3.getXmlContent());
 
 			}
 		});
@@ -532,7 +512,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(3, mutations.size());    // les 3 droits dans le fichier d'import sont différents
+				assertEquals(1, mutations.size());    // les 3 droits dans le fichier d'import sont différents et pointent vers le même immeuble -> 1 mutation
 				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
@@ -540,9 +520,9 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 				assertEquals(TypeEntiteRF.DROIT, mut0.getTypeEntite());
 				assertEquals(TypeMutationRF.MODIFICATION, mut0.getTypeMutation());
-				assertEquals("029191d4fec44", mut0.getIdRF());
+				assertEquals("_1f109152381009be0138100bc9f139e0", mut0.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <PersonEigentumAnteil VersionID=\"9a9c9e94922\" MasterID=\"9a9c9e94923\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -565,16 +545,6 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 						             "        </NatuerlichePersonGb>\n" +
 						             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 						             "    </PersonEigentumAnteil>\n" +
-						             "</PersonEigentumAnteilList>\n", mut0.getXmlContent());
-
-				final EvenementRFMutation mut1 = mutations.get(1);
-				assertEquals(importId, mut1.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-				assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
-				assertEquals(TypeMutationRF.MODIFICATION, mut1.getTypeMutation());
-				assertEquals("37838sc9d94de", mut1.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <PersonEigentumAnteil VersionID=\"45729cd9e19\" MasterID=\"45729cd9e20\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -597,16 +567,6 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 						             "        </NatuerlichePersonGb>\n" +
 						             "        <PersonEigentumsForm>miteigentum</PersonEigentumsForm>\n" +
 						             "    </PersonEigentumAnteil>\n" +
-						             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
-
-				final EvenementRFMutation mut2 = mutations.get(2);
-				assertEquals(importId, mut2.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(TypeEntiteRF.DROIT, mut2.getTypeEntite());
-				assertEquals(TypeMutationRF.MODIFICATION, mut2.getTypeMutation());
-				assertEquals("72828ce8f830a", mut2.getIdRF());
-				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <PersonEigentumAnteil VersionID=\"38458fa0ac2\" MasterID=\"38458fa0ac3\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -629,13 +589,13 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 						             "        </Gemeinschaft>\n" +
 						             "        <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>\n" +
 						             "    </PersonEigentumAnteil>\n" +
-						             "</PersonEigentumAnteilList>\n", mut2.getXmlContent());
+						             "</EigentumAnteilList>\n", mut0.getXmlContent());
 			}
 		});
 	}
 
 	/**
-	 * Ce test vérifie que des mutations de suppression sont créées si des propriétaires avec des droits dans la DB n'en ont plus dans le fichier d'import.
+	 * Ce test vérifie que des mutations de suppression sont créées si des immeubles avec des droits dans la DB n'en ont plus dans le fichier d'import.
 	 */
 	@Test
 	public void testImportSuppressionDeDroits() throws Exception {
@@ -732,7 +692,7 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
-				assertEquals(3, mutations.size());    // les 3 droits qui existent dans la DB devront être fermés
+				assertEquals(1, mutations.size());    // les 3 droits qui existent pointent vers le même immeuble -> 1 mutation
 				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
@@ -740,24 +700,8 @@ public class TraiterImportRFDroitJobTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut0.getEtat());
 				assertEquals(TypeEntiteRF.DROIT, mut0.getTypeEntite());
 				assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());
-				assertEquals("029191d4fec44", mut0.getIdRF());
+				assertEquals("_1f109152381009be0138100bc9f139e0", mut0.getIdRF());
 				assertNull(mut0.getXmlContent());
-
-				final EvenementRFMutation mut1 = mutations.get(1);
-				assertEquals(importId, mut1.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
-				assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
-				assertEquals(TypeMutationRF.SUPPRESSION, mut1.getTypeMutation());
-				assertEquals("37838sc9d94de", mut1.getIdRF());
-				assertNull(mut1.getXmlContent());
-
-				final EvenementRFMutation mut2 = mutations.get(2);
-				assertEquals(importId, mut2.getParentImport().getId());
-				assertEquals(EtatEvenementRF.A_TRAITER, mut2.getEtat());
-				assertEquals(TypeEntiteRF.DROIT, mut2.getTypeEntite());
-				assertEquals(TypeMutationRF.SUPPRESSION, mut2.getTypeMutation());
-				assertEquals("72828ce8f830a", mut2.getIdRF());
-				assertNull(mut2.getXmlContent());
 			}
 		});
 	}

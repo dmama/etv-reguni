@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.TypeDroit;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
@@ -42,4 +43,11 @@ public interface ImmeubleRFDAO extends GenericDAO<ImmeubleRF, Long> {
 	 */
 	@NotNull
 	List<Long> getAllIds();
+
+	/**
+	 * @param typeDroit le type de droit à considérer
+	 * @return la liste des ids RF des immeubles vers lesquels pointent 1 ou plusieurs droits actifs.
+	 */
+	@NotNull
+	Set<String> findAvecDroitsActifs(TypeDroit typeDroit);
 }

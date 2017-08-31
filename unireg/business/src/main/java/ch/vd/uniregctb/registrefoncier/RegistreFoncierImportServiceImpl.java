@@ -172,8 +172,8 @@ public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportSe
 		case AYANT_DROIT:
 			return ayantDroitRFDAO.find(new AyantDroitRFKey(idRF), null);
 		case DROIT:
-			// dans le cas d'un droit, l'idRf correspond à l'ayant-droit auxquels il est rattaché
-			return ayantDroitRFDAO.find(new AyantDroitRFKey(idRF), null);
+			// dans le cas d'un droit, l'idRf correspond à l'immeuble servant
+			return immeubleRFDAO.find(new ImmeubleRFKey(idRF), null);
 		case SERVITUDE:
 			if (versionIdRF == null) {
 				throw new IllegalArgumentException("Le versionId est obligsatoire pour les droits de propriété et les servitudes");

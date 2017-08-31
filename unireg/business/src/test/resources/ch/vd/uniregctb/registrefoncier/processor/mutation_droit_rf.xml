@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<PersonEigentumAnteilList xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+<EigentumAnteilList xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
 	<PersonEigentumAnteil VersionID="8af806fa4a4dd302014b16fc17256a06" MasterID="8af806fa4a4dd302014b16fc17266a0b">
 		<Quote>
 			<AnteilZaehler>1</AnteilZaehler>
@@ -45,50 +45,37 @@
 		</NatuerlichePersonGb>
 		<PersonEigentumsForm>miteigentum</PersonEigentumsForm>
 	</PersonEigentumAnteil>
-	<PersonEigentumAnteil VersionID="1f109152381009be0138100e4c7c00e5" MasterID="1f109152381009be0138100c87276e68">
+	<PersonEigentumAnteil VersionID="1f10915238100390013810067ae35d4a" MasterID="1f1091523810039001381005be485efd" xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
 		<Quote>
 			<AnteilZaehler>1</AnteilZaehler>
-			<AnteilNenner>1</AnteilNenner>
+			<AnteilNenner>2</AnteilNenner>
 			<QuoteUnbekannt>false</QuoteUnbekannt>
 		</Quote>
-		<BelastetesGrundstueckIDREF>_1f109152381009be0138100ba7e31031</BelastetesGrundstueckIDREF>
-		<NatuerlichePersonGb VersionID="1f109152381009be0138100c87296e9a" MasterID="1f109152381009be0138100e4c7c00e6">
-			<Name>Schulz</Name>
+		<BelastetesGrundstueckIDREF>_8af806fc4a35927c014ae2a6e76041b8</BelastetesGrundstueckIDREF>
+		<NatuerlichePersonGb VersionID="1f1091523810039001381005be4b5f2f" MasterID="1f10915238100390013810067ae35d4b">
+			<Name>Claude</Name>
 			<Status>definitiv</Status>
 			<Rechtsgruende>
-				<AmtNummer>13</AmtNummer>
+				<AmtNummer>3</AmtNummer>
 				<RechtsgrundCode>
 					<TextDe>*Achat</TextDe>
 					<TextFr>Achat</TextFr>
 				</RechtsgrundCode>
-				<BelegDatum>2005-01-01</BelegDatum>
-				<BelegJahr>2005</BelegJahr>
-				<BelegNummer>173</BelegNummer>
-				<BelegNummerIndex>0</BelegNummerIndex>
+				<BelegDatum>1997-06-19</BelegDatum>
+				<BelegAlt>74'677</BelegAlt>
 			</Rechtsgruende>
-			<Rechtsgruende>
-				<AmtNummer>13</AmtNummer>
-				<RechtsgrundCode>
-					<TextDe>*Donation</TextDe>
-					<TextFr>Donation</TextFr>
-				</RechtsgrundCode>
-				<BelegDatum>2007-02-07</BelegDatum>
-				<BelegJahr>2007</BelegJahr>
-				<BelegNummer>173</BelegNummer>
-				<BelegNummerIndex>0</BelegNummerIndex>
-			</Rechtsgruende>
-			<Vorname>Alodie</Vorname>
+			<Vorname>Daniel</Vorname>
 			<Geburtsdatum>
-				<Tag>5</Tag>
-				<Monat>11</Monat>
-				<Jahr>1987</Jahr>
+				<Tag>7</Tag>
+				<Monat>2</Monat>
+				<Jahr>1945</Jahr>
 			</Geburtsdatum>
 			<Zivilstand>unbekannt</Zivilstand>
-			<NameEltern>Claude</NameEltern>
-			<WeitereVornamen>Lydia</WeitereVornamen>
-			<PersonstammIDREF>_1f109152381009be0138100a1d442eee</PersonstammIDREF>
+			<NameEltern>Joseph</NameEltern>
+			<WeitereVornamen>François</WeitereVornamen>
+			<PersonstammIDREF>_1f1091523810039001381003da8b72ac</PersonstammIDREF>
 		</NatuerlichePersonGb>
-		<PersonEigentumsForm>alleineigentum</PersonEigentumsForm>
+		<PersonEigentumsForm>miteigentum</PersonEigentumsForm>
 		<AnzahlPaquiers>0</AnzahlPaquiers>
 	</PersonEigentumAnteil>
-</PersonEigentumAnteilList>
+</EigentumAnteilList>
