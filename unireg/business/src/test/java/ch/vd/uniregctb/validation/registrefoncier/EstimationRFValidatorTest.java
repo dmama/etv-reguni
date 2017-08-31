@@ -70,6 +70,12 @@ public class EstimationRFValidatorTest {
 		assertEquals(0, results.getWarnings().size());
 	}
 
+	public static void assertWarnings(List<String> warnings, ValidationResults results) {
+		assertNotNull(results);
+		assertEquals(warnings, results.getWarnings());
+		assertEquals(0, results.getErrors().size());
+	}
+
 	@NotNull
 	private static EstimationRF newEstimationRF(RegDate dateDebutMetier, RegDate dateFinMetier) {
 		final EstimationRF estimation = new EstimationRF();
