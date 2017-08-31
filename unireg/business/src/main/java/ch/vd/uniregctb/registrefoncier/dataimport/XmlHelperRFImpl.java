@@ -23,6 +23,7 @@ import ch.vd.capitastra.rechteregister.LastRechtGruppe;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.BergwerkElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.BodenbedeckungElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.BodenbedeckungListElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.EigentumAnteilListElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.FolioElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GebaeudeElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GemeinschaftElement;
@@ -34,7 +35,6 @@ import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.Juristische
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.LiegenschaftElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.NatuerlichePersonstammElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilListElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.SdrElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.StockwerksEinheitElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.UnbekanntesGrundstueckElement;
@@ -64,7 +64,7 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 		                                          LiegenschaftElement.class, SdrElement.class, StockwerksEinheitElement.class,
 		                                          UnbekanntesGrundstueckElement.class);
 		droitContext = JAXBContext.newInstance(PersonEigentumAnteilElement.class, GrundstueckEigentumAnteilElement.class, HerrenlosEigentumElement.class);
-		droitListContext = JAXBContext.newInstance(PersonEigentumAnteilListElement.class);
+		droitListContext = JAXBContext.newInstance(EigentumAnteilListElement.class);
 		ayantDroitContext = JAXBContext.newInstance(NatuerlichePersonstammElement.class,
 		                                            JuristischePersonstammElement.class,
 		                                            GemeinschaftElement.class,
@@ -256,13 +256,13 @@ public class XmlHelperRFImpl implements XmlHelperRF {
 	}
 
 	@Override
-	public String toXMLString(PersonEigentumAnteilListElement obj) {
+	public String toXMLString(EigentumAnteilListElement obj) {
 		try {
 			final Marshaller m = droitListContext.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			final StringWriter w = new StringWriter();
 			final QName name = buildGrundstueckQName(obj);
-			m.marshal(new JAXBElement<>(name, (Class<PersonEigentumAnteilListElement>) obj.getClass(), null, obj), w);
+			m.marshal(new JAXBElement<>(name, (Class<EigentumAnteilListElement>) obj.getClass(), null, obj), w);
 			return w.toString();
 		}
 		catch (JAXBException e) {

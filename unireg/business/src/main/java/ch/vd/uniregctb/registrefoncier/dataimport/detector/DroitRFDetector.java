@@ -37,15 +37,15 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
-import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.TypeDroit;
-import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilListElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.EigentumAnteilListElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.BlacklistRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
-import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
+import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 public class DroitRFDetector {
 
@@ -54,7 +54,7 @@ public class DroitRFDetector {
 	private final int batchSize;
 	private final XmlHelperRF xmlHelperRF;
 	private final BlacklistRFHelper blacklistRFHelper;
-	private final AyantDroitRFDAO ayantDroitRFDAO;
+	private final ImmeubleRFDAO immeubleRFDAO;
 	private final EvenementRFImportDAO evenementRFImportDAO;
 	private final EvenementRFMutationDAO evenementRFMutationDAO;
 	private final PlatformTransactionManager transactionManager;
@@ -64,19 +64,19 @@ public class DroitRFDetector {
 
 	public DroitRFDetector(XmlHelperRF xmlHelperRF,
 	                       BlacklistRFHelper blacklistRFHelper,
-	                       AyantDroitRFDAO ayantDroitRFDAO,
+	                       ImmeubleRFDAO immeubleRFDAO,
 	                       EvenementRFImportDAO evenementRFImportDAO,
 	                       EvenementRFMutationDAO evenementRFMutationDAO,
 	                       PlatformTransactionManager transactionManager,
 	                       AyantDroitRFDetector ayantDroitRFDetector,
 	                       PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
-		this(20, xmlHelperRF, blacklistRFHelper, ayantDroitRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
+		this(20, xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 	}
 
 	public DroitRFDetector(int batchSize,
 	                       XmlHelperRF xmlHelperRF,
 	                       BlacklistRFHelper blacklistRFHelper,
-	                       AyantDroitRFDAO ayantDroitRFDAO,
+	                       ImmeubleRFDAO immeubleRFDAO,
 	                       EvenementRFImportDAO evenementRFImportDAO,
 	                       EvenementRFMutationDAO evenementRFMutationDAO,
 	                       PlatformTransactionManager transactionManager,
@@ -85,7 +85,7 @@ public class DroitRFDetector {
 		this.batchSize = batchSize;
 		this.xmlHelperRF = xmlHelperRF;
 		this.blacklistRFHelper = blacklistRFHelper;
-		this.ayantDroitRFDAO = ayantDroitRFDAO;
+		this.immeubleRFDAO = immeubleRFDAO;
 		this.evenementRFImportDAO = evenementRFImportDAO;
 		this.evenementRFMutationDAO = evenementRFMutationDAO;
 		this.transactionManager = transactionManager;
@@ -103,15 +103,15 @@ public class DroitRFDetector {
 		//       du tout intéressé par le côté persistent des données, on commence donc par tout effacer.
 		cacheDroits.clear();
 
-		// on regroupe tous les droits par ayant-droit
-		groupByAyantDroit(iterator, cacheDroits);
+		// on regroupe tous les droits par immeubles
+		groupByImmeuble(iterator, cacheDroits);
 
 		if (statusManager != null) {
 			statusManager.setMessage("Détection des mutations sur les droits de propriété...", 50);
 		}
 
 		// on détecte les mutations qui doivent être générées
-		forEachAyantDroit(cacheDroits, this::detecterMutationsDroitsPropriete, importId, importInitial, nbThreads, statusManager);
+		forEachImmeuble(cacheDroits, this::detecterMutationsDroitsPropriete, importId, nbThreads, statusManager);
 
 		// détection des mutations de type SUPRESSION
 		detectMutationsDeSuppression(cacheDroits, TypeDroit.DROIT_PROPRIETE, importId);
@@ -120,7 +120,7 @@ public class DroitRFDetector {
 		cacheDroits.clear();
 	}
 
-	private void groupByAyantDroit(Iterator<EigentumAnteil> iterator, PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
+	private void groupByImmeuble(Iterator<EigentumAnteil> iterator, PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
 		while (iterator.hasNext()) {
 			final EigentumAnteil eigentumAnteil = iterator.next();
 			if (eigentumAnteil == null) {
@@ -132,7 +132,7 @@ public class DroitRFDetector {
 				// on ignore les droits sur les immeubles blacklistés
 				continue;
 			}
-			final String idRF = DroitRFHelper.getAyantDroitIdRF(eigentumAnteil);
+			final String idRF = DroitRFHelper.getImmeubleIdRF(eigentumAnteil);
 			final IdRfCacheKey key = new IdRfCacheKey(idRF);
 			ArrayList<EigentumAnteil> list = cacheDroits.get(key);
 			if (list == null) {
@@ -145,15 +145,14 @@ public class DroitRFDetector {
 
 	@FunctionalInterface
 	private interface MutationsSurUnAyantDroitDetector<T> {
-		void apply(@NotNull String idRF, @NotNull List<T> droits, @NotNull EvenementRFImport parentImport, boolean importInitial);
+		void apply(@NotNull String idRF, @NotNull List<T> droits, @NotNull EvenementRFImport parentImport);
 	}
 
-	private <T> void forEachAyantDroit(@NotNull final PersistentCache<ArrayList<T>> cacheDroits,
-	                                   @NotNull MutationsSurUnAyantDroitDetector<T> detector,
-	                                   final long importId,
-	                                   final boolean importInitial,
-	                                   final int nbThreads,
-	                                   @Nullable final StatusManager statusManager) {
+	private <T> void forEachImmeuble(@NotNull final PersistentCache<ArrayList<T>> cacheDroits,
+	                                 @NotNull MutationsSurUnAyantDroitDetector<T> detector,
+	                                 final long importId,
+	                                 final int nbThreads,
+	                                 @Nullable final StatusManager statusManager) {
 
 		final ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<T>>> template
 				= new ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<T>>>(cacheDroits.entrySet().iterator(),
@@ -185,9 +184,9 @@ public class DroitRFDetector {
 				final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
 				batch.forEach(e -> {
-					final String idRF = ((IdRfCacheKey) e.getKey()).getIdRF();  // l'idRF de l'ayant-droit
-					final List<T> nouveauxDroits = e.getValue();                // les droits de l'ayant-droit
-					detector.apply(idRF, nouveauxDroits, parentImport, importInitial);
+					final String idRF = ((IdRfCacheKey) e.getKey()).getIdRF();  // l'idRF de l'immeuble
+					final List<T> nouveauxDroits = e.getValue();                // les droits de l'immeuble
+					detector.apply(idRF, nouveauxDroits, parentImport);
 				});
 
 				processed.addAndGet(batch.size());
@@ -201,7 +200,7 @@ public class DroitRFDetector {
 			@Override
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
 				if (!willRetry) {
-					LOGGER.error("Exception sur le traitement des droits de l'ayant-droit idRF=[" + first.get().getKey() + "]", e);
+					LOGGER.error("Exception sur le traitement des droits de l'immeuble idRF=[" + first.get().getKey() + "]", e);
 					throw new RuntimeException(e);
 				}
 			}
@@ -209,25 +208,25 @@ public class DroitRFDetector {
 	}
 
 	/**
-	 * Cette méthode détecte les changements (création ou update) sur les droits de propriété d'un ayant-droit et crée les mutations correspondantes.
+	 * Cette méthode détecte les changements (création ou update) sur les droits de propriété qui pointent vers un immeuble et crée les mutations correspondantes.
 	 */
-	private void detecterMutationsDroitsPropriete(@NotNull String idRF, @NotNull List<EigentumAnteil> droits, @NotNull EvenementRFImport parentImport, boolean importInitial) {
+	private void detecterMutationsDroitsPropriete(@NotNull String idRF, @NotNull List<EigentumAnteil> droits, @NotNull EvenementRFImport parentImport) {
 
-		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRF), FlushMode.MANUAL);
-		if (ayantDroit == null) {
-			// l'ayant-droit n'existe pas : il va être créé et on doit donc sauver une mutation en mode création.
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRF), FlushMode.MANUAL);
+		if (immeuble == null) {
+			// l'immeuble n'existe pas : il va être créé et on doit donc sauver une mutation en mode création.
 			final EvenementRFMutation mutation = new EvenementRFMutation();
 			mutation.setParentImport(parentImport);
 			mutation.setEtat(EtatEvenementRF.A_TRAITER);
 			mutation.setTypeEntite(TypeEntiteRF.DROIT);
 			mutation.setTypeMutation(TypeMutationRF.CREATION);
-			mutation.setIdRF(idRF); // idRF de l'ayant-droit
-			mutation.setXmlContent(xmlHelperRF.toXMLString(new PersonEigentumAnteilListElement(droits)));
+			mutation.setIdRF(idRF); // idRF de l'immeuble
+			mutation.setXmlContent(xmlHelperRF.toXMLString(new EigentumAnteilListElement(droits)));
 			evenementRFMutationDAO.save(mutation);
 		}
 		else {
 			// on récupère les droits actifs actuels
-			final Set<DroitProprieteRF> activesDroits = ayantDroit.getDroitsPropriete().stream()
+			final Set<DroitProprieteRF> activesDroits = immeuble.getDroitsPropriete().stream()
 					.filter(d -> d.isValidAt(null))
 					.collect(Collectors.toSet());
 
@@ -239,8 +238,8 @@ public class DroitRFDetector {
 				mutation.setEtat(EtatEvenementRF.A_TRAITER);
 				mutation.setTypeEntite(TypeEntiteRF.DROIT);
 				mutation.setTypeMutation(TypeMutationRF.MODIFICATION);
-				mutation.setIdRF(idRF); // idRF de l'ayant-droit
-				mutation.setXmlContent(xmlHelperRF.toXMLString(new PersonEigentumAnteilListElement(droits)));
+				mutation.setIdRF(idRF); // idRF de l'immeuble
+				mutation.setXmlContent(xmlHelperRF.toXMLString(new EigentumAnteilListElement(droits)));
 				evenementRFMutationDAO.save(mutation);
 			}
 			else {
@@ -289,22 +288,22 @@ public class DroitRFDetector {
 		template.execute(s -> {
 			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 
-			final Set<String> existingAyantsDroits = ayantDroitRFDAO.findAvecDroitsActifs(typeDroit);
-			final Set<String> nouveauAyantsDroits = cacheDroits.keySet().stream()
+			final Set<String> immeublesInDB = immeubleRFDAO.findAvecDroitsActifs(typeDroit);
+			final Set<String> immeublesInImport = cacheDroits.keySet().stream()
 					.map(k -> ((IdRfCacheKey) k).getIdRF())
 					.collect(Collectors.toSet());
 
-			// on ne garde que les ayants-droits existants dans la DB qui n'existent pas dans le fichier XML
-			existingAyantsDroits.removeAll(nouveauAyantsDroits);
+			// on enlève tous les immeubles qui existent à la fois dans la DB et dans l'import
+			immeublesInDB.removeAll(immeublesInImport);
 
-			// on crée des mutations de suppression de droits pour tous ces ayants-droits
-			existingAyantsDroits.forEach(idRF -> {
+			// on crée des mutations de suppression de droits pour tous les immeubles qui existent dans la DB et pas dans l'import
+			immeublesInDB.forEach(idRF -> {
 				final EvenementRFMutation mutation = new EvenementRFMutation();
 				mutation.setParentImport(parentImport);
 				mutation.setEtat(EtatEvenementRF.A_TRAITER);
 				mutation.setTypeEntite(typeDroit == TypeDroit.DROIT_PROPRIETE ? TypeEntiteRF.DROIT : TypeEntiteRF.SERVITUDE);
 				mutation.setTypeMutation(TypeMutationRF.SUPPRESSION);
-				mutation.setIdRF(idRF); // idRF de l'ayant-droit
+				mutation.setIdRF(idRF); // idRF de l'immeuble
 				mutation.setXmlContent(null);
 				evenementRFMutationDAO.save(mutation);
 			});

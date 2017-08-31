@@ -13,8 +13,8 @@ import ch.vd.capitastra.grundstueck.Personstamm;
 import ch.vd.capitastra.rechteregister.Dienstbarkeit;
 import ch.vd.capitastra.rechteregister.DienstbarkeitExtended;
 import ch.vd.capitastra.rechteregister.LastRechtGruppe;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.EigentumAnteilListElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.GrundstueckNummerElement;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilListElement;
 
 /**
  * Classe de manipulation XML des entités propres à l'import du registre foncier.
@@ -129,7 +129,7 @@ public interface XmlHelperRF {
 	/**
 	 * Converti la communauté spécifiée dans sa représentation XML.
 	 */
-	String toXMLString(PersonEigentumAnteilListElement gemeinschaft);
+	String toXMLString(EigentumAnteilListElement gemeinschaft);
 
 	/**
 	 * Converti l'ayant-droit spécifié dans sa représentation XML.

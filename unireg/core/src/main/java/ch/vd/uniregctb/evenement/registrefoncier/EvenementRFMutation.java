@@ -137,7 +137,7 @@ public class EvenementRFMutation extends HibernateEntity {
 	 * Valeur de l'id RF en fonction du type d'entité :
 	 * <ul>
 	 *     <li>AYANT_DROIT : l'idRF de l'ayant-droit lui-même</li>
-	 *     <li>DROIT : idRF de l'ayant-droit qui possède le droit</li>
+	 *     <li>DROIT : idRF de l'immeuble servant (= vers lequel pointent les droits)</li>
 	 *     <li>SERVITUDE : masterIdRF de la servitude</li>
 	 *     <li>IMMEUBLE : idRF de l'immeuble lui-même</li>
 	 *     <li>SURFACE_AU_SOL : idRF de l'immeuble qui possède les surfaces au sol</li>

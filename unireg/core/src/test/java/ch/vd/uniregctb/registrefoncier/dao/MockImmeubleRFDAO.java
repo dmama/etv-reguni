@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.TypeDroit;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
 
 public class MockImmeubleRFDAO implements ImmeubleRFDAO {
@@ -77,6 +78,19 @@ public class MockImmeubleRFDAO implements ImmeubleRFDAO {
 	@Override
 	public @NotNull List<Long> getAllIds() {
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public @NotNull Set<String> findAvecDroitsActifs(TypeDroit typeDroit) {
+		return db.stream()
+				.filter(a -> hasDroitOfType(a, typeDroit))
+				.map(ImmeubleRF::getIdRF)
+				.collect(Collectors.toSet());
+	}
+
+	private static boolean hasDroitOfType(@NotNull ImmeubleRF immeuble, @NotNull TypeDroit typeDroit) {
+		return immeuble.getDroitsPropriete().stream()
+				.anyMatch(d -> !d.isAnnule() && d.getTypeDroit() == typeDroit);
 	}
 
 	@Override

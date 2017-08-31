@@ -31,7 +31,7 @@ import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
-import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.PersonEigentumAnteilListElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.elements.principal.EigentumAnteilListElement;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.RaisonAcquisitionRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
@@ -86,10 +86,10 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 		final RegDate dateValeur = mutation.getParentImport().getDateEvenement();
 
-		final String ayantDroitIdRF = mutation.getIdRF();
-		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(ayantDroitIdRF), FlushMode.MANUAL);
-		if (ayantDroit == null) {
-			throw new IllegalArgumentException("L'ayant-droit avec l'idRF=[" + ayantDroitIdRF + "] n'existe pas.");
+		final String immeubleIdRF = mutation.getIdRF();
+		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(immeubleIdRF), FlushMode.MANUAL);
+		if (immeuble == null) {
+			throw new IllegalArgumentException("L'immeuble avec l'idRF=[" + immeubleIdRF + "] n'existe pas.");
 		}
 
 		// on interpète le XML
@@ -101,7 +101,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 			}
 			else {
 				final StringSource source = new StringSource(content);
-				final PersonEigentumAnteilListElement droitListImport = (PersonEigentumAnteilListElement) unmarshaller.get().unmarshal(source);
+				final EigentumAnteilListElement droitListImport = (EigentumAnteilListElement) unmarshaller.get().unmarshal(source);
 				droitList = droitListImport.getPersonEigentumAnteilOrGrundstueckEigentumAnteilOrHerrenlosEigentum();
 			}
 		}
@@ -111,19 +111,19 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 		// on crée les droits en mémoire
 		final List<DroitProprieteRF> droits = droitList.stream()
-				.map(e -> DroitRFHelper.newDroitRF(e, idRef -> ayantDroit, this::findCommunaute, this::findImmeuble, this::findDroitPrecedent))
+				.map(e -> DroitRFHelper.newDroitRF(e, this::findAyantDroit, this::findCommunaute, id -> immeuble, this::findDroitPrecedent))
 				.collect(Collectors.toList());
 
 		// on les insère en DB
 		switch (mutation.getTypeMutation()) {
 		case CREATION:
-			processCreation(importInitial ? null : dateValeur, ayantDroit, droits);
+			processCreation(importInitial ? null : dateValeur, immeuble, droits);
 			break;
 		case MODIFICATION:
-			processModification(dateValeur, ayantDroit, droits);
+			processModification(dateValeur, immeuble, droits);
 			break;
 		case SUPPRESSION:
-			processSuppression(dateValeur, ayantDroit);
+			processSuppression(dateValeur, immeuble);
 			break;
 		default:
 			throw new IllegalArgumentException("Type de mutation inconnu = [" + mutation.getTypeMutation() + "]");
@@ -136,15 +136,12 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	@NotNull
-	private ImmeubleRF findImmeuble(@NotNull String idRf) {
-		final ImmeubleRF immeuble = immeubleRFDAO.find(new ImmeubleRFKey(idRf), FlushMode.MANUAL);
-		if (immeuble == null) {
-			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] n'existe pas dans la DB.");
+	private AyantDroitRF findAyantDroit(@NotNull String idRf) {
+		final AyantDroitRF ayantDroit = ayantDroitRFDAO.find(new AyantDroitRFKey(idRf), FlushMode.MANUAL);
+		if (ayantDroit == null) {
+			throw new IllegalArgumentException("L'ayant-droit idRF=[" + idRf + "] n'existe pas dans la DB.");
 		}
-		if (immeuble.getDateRadiation() != null) {
-			throw new IllegalArgumentException("L'immeuble idRF=[" + idRf + "] est radié, il ne devrait plus changer.");
-		}
-		return immeuble;
+		return ayantDroit;
 	}
 
 	@Nullable
@@ -179,22 +176,21 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	/**
-	 * Traite l'ajout des droits de propriété sur un ayant-droit qui vient d'être créé.
+	 * Traite l'ajout des droits de propriété sur un immeuble qui vient d'être créé.
 	 */
-	private void processCreation(@Nullable RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<DroitProprieteRF> droits) {
-		if (!ayantDroit.getDroitsPropriete().isEmpty()) {
-			throw new IllegalArgumentException("L'ayant-droit idRF=[" + ayantDroit.getIdRF() + "] possède déjà des droits alors que la mutation est de type CREATION.");
+	private void processCreation(@Nullable RegDate dateValeur, ImmeubleRF immeuble, @NotNull List<DroitProprieteRF> droits) {
+		if (!immeuble.getDroitsPropriete().isEmpty()) {
+			throw new IllegalArgumentException("L'immeuble idRF=[" + immeuble.getIdRF() + "] possède déjà des droits alors que la mutation est de type CREATION.");
 		}
 
 		// on sauve les nouveaux droits
 		droits.forEach(d -> {
-			d.setAyantDroit(ayantDroit);
 			d.setDateDebut(dateValeur);
 			d = (DroitProprieteRF) droitRFDAO.save(d);
 
 			// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
-			d.getImmeuble().addDroitPropriete(d);
-			ayantDroit.addDroitPropriete(d);
+			immeuble.addDroitPropriete(d);
+			d.getAyantDroit().addDroitPropriete(d);
 
 			// on publie l'événement fiscal correspondant
 			evenementFiscalService.publierOuvertureDroitPropriete(d.getDateDebutMetier(), d);
@@ -202,19 +198,19 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	/**
-	 * Traite la modification des droits de propriété sur un ayant-droit qui existe déjà et - potentiellement - possède déjà des droits.
+	 * Traite la modification des droits de propriété sur un immeuble qui existe déjà et - potentiellement - possède déjà des droits.
 	 * <p/>
-	 * L'expérience montre qu'il y a trois types de changements possibles sur les droits d'un ayant-droit :
+	 * L'expérience montre qu'il y a trois types de changements possibles sur les droits d'un immeuble :
 	 * <ol>
 	 *     <li><b>les droits changent complètement</b> (= vente ou achat) : les <i>masterIdRF</i> et les <i>versionIdRF</i> changent.</li>
 	 *     <li><b>les droits changent partiellement et de manière substentielle</b> (= modification de PPE, par exemple changement de la part ce co-propriété) : les <i>masterIdRF</i> restent les mêmes mais les <i>versionIdRF</i> changent.</li>
 	 *     <li><b>les droits changent partiellement mais de manière non-substentielle</b> (=  modification d'intitulé) . les <i>masterIdRF</i> et les <i>versionIdRF</i> ne changent pas.</li>
 	 * </ol>
 	 */
-	private void processModification(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit, @NotNull List<DroitProprieteRF> droits) {
+	private void processModification(@NotNull RegDate dateValeur, ImmeubleRF immeuble, @NotNull List<DroitProprieteRF> droits) {
 
 		// on va chercher les droits de propriété actifs actuellement persistés
-		final List<DroitProprieteRF> persisted = ayantDroit.getDroitsPropriete().stream()
+		final List<DroitProprieteRF> persisted = immeuble.getDroitsPropriete().stream()
 				.filter(d -> d.isValidAt(null))
 				.collect(Collectors.toList());
 
@@ -237,9 +233,12 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 		// on ajoute toutes les nouveaux droits
 		toAddList.forEach(d -> {
-			d.setAyantDroit(ayantDroit);
 			d.setDateDebut(dateValeur);
 			d = (DroitProprieteRF) droitRFDAO.save(d);
+
+			// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+			immeuble.addDroitPropriete(d);
+			d.getAyantDroit().addDroitPropriete(d);
 
 			// on publie l'événement fiscal correspondant
 			evenementFiscalService.publierOuvertureDroitPropriete(d.getDateDebutMetier(), d);
@@ -271,11 +270,11 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	}
 
 	/**
-	 * Traite la suppression (= fermeture) de tous les droits de propriété d'un ayant-droit.
+	 * Traite la suppression (= fermeture) de tous les droits de propriété d'un immeuble.
 	 */
-	private void processSuppression(@NotNull RegDate dateValeur, @NotNull AyantDroitRF ayantDroit) {
+	private void processSuppression(@NotNull RegDate dateValeur, ImmeubleRF immeuble) {
 		// on ferme tous les droits de propriété encore ouverts
-		ayantDroit.getDroitsPropriete().stream()
+		immeuble.getDroitsPropriete().stream()
 				.filter(d -> d.isValidAt(null))
 				.forEach(d -> d.setDateFin(dateValeur.getOneDayBefore()));
 

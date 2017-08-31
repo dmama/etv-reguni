@@ -11,13 +11,13 @@ import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.capitastra.grundstueck.GrundstueckExport;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "PersonEigentumAnteilList", namespace = "http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck")
-public class PersonEigentumAnteilListElement extends GrundstueckExport.EigentumList {
+@XmlRootElement(name = "EigentumAnteilList", namespace = "http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck")
+public class EigentumAnteilListElement extends GrundstueckExport.EigentumList {
 
-	public PersonEigentumAnteilListElement() {
+	public EigentumAnteilListElement() {
 	}
 
-	public PersonEigentumAnteilListElement(@NotNull List<EigentumAnteil> eigentumAnteils) {
+	public EigentumAnteilListElement(@NotNull List<EigentumAnteil> eigentumAnteils) {
 		this.personEigentumAnteilOrGrundstueckEigentumAnteilOrHerrenlosEigentum = eigentumAnteils;
 	}
 }

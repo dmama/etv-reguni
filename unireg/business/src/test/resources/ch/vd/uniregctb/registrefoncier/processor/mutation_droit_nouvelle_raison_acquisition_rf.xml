@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<PersonEigentumAnteilList xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
+<EigentumAnteilList xmlns="http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck">
 	<GrundstueckEigentumAnteil VersionID="3838291" MasterID="3838292">
 		<Quote>
 			<AnteilZaehler>1</AnteilZaehler>
@@ -25,4 +25,4 @@
 			<BelegAlt>2015/1/0</BelegAlt>
 		</Rechtsgruende>
 	</GrundstueckEigentumAnteil>
-</PersonEigentumAnteilList>
+</EigentumAnteilList>

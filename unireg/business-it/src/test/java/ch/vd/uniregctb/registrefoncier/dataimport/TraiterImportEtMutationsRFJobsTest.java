@@ -2,7 +2,6 @@ package ch.vd.uniregctb.registrefoncier.dataimport;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +145,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(6, mutations.size());    // il y a 3 communes + 4 immeubles dans le fichier d'import et la DB était vide
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(importId, mut0.getParentImport().getId());
@@ -190,9 +189,9 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 				assertEquals(EtatEvenementRF.A_TRAITER, mut1.getEtat());
 				assertEquals(TypeEntiteRF.DROIT, mut1.getTypeEntite());
 				assertEquals(TypeMutationRF.CREATION, mut1.getTypeMutation());
-				assertEquals("_1f1091523810039001381003da8b72ac", mut1.getIdRF());
+				assertEquals("_1f10915238100390013810052537624b", mut1.getIdRF());
 				assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-						             "<PersonEigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
+						             "<EigentumAnteilList xmlns=\"http://bedag.ch/capitastra/schemas/A51/v20140310/Datenexport/Grundstueck\">\n" +
 						             "    <PersonEigentumAnteil VersionID=\"1f10915238100390013810067ae35d4a\" MasterID=\"1f1091523810039001381005be485efd\">\n" +
 						             "        <Quote>\n" +
 						             "            <AnteilZaehler>1</AnteilZaehler>\n" +
@@ -226,7 +225,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 						             "        <PersonEigentumsForm>alleineigentum</PersonEigentumsForm>\n" +
 						             "        <AnzahlPaquiers>0</AnzahlPaquiers>\n" +
 						             "    </PersonEigentumAnteil>\n" +
-						             "</PersonEigentumAnteilList>\n", mut1.getXmlContent());
+						             "</EigentumAnteilList>\n", mut1.getXmlContent());
 
 				final EvenementRFMutation mut2 = mutations.get(2);
 				assertEquals(importId, mut2.getParentImport().getId());
@@ -357,7 +356,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(6, mutations.size());
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 				mutations.forEach(m -> {
 					assertEquals(EtatEvenementRF.TRAITE, m.getEtat());
 				});
@@ -568,7 +567,7 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 			public void execute(TransactionStatus status) throws Exception {
 				final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
 				assertEquals(6, mutations.size());
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 				mutations.forEach(m -> {
 					assertEquals(EtatEvenementRF.TRAITE, m.getEtat());
 				});
@@ -653,14 +652,14 @@ public class TraiterImportEtMutationsRFJobsTest extends ImportRFTestClass {
 						.filter(m -> m.getParentImport().getId().equals(secondImportId))
 						.collect(Collectors.toList());
 				assertEquals(4, mutations.size());
-				Collections.sort(mutations, new MutationComparator());
+				mutations.sort(new MutationComparator());
 
 				final EvenementRFMutation mut0 = mutations.get(0);
 				assertEquals(secondImportId, mut0.getParentImport().getId());
 				assertEquals(EtatEvenementRF.TRAITE, mut0.getEtat());
 				assertEquals(TypeEntiteRF.DROIT, mut0.getTypeEntite());
-				assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());   // suppression car l'ayant-droit n'existe plus
-				assertEquals("_1f1091523810039001381003da8b72ac", mut0.getIdRF());
+				assertEquals(TypeMutationRF.SUPPRESSION, mut0.getTypeMutation());   // suppression car les droits n'existent plus
+				assertEquals("_1f10915238100390013810052537624b", mut0.getIdRF());
 				assertNull(mut0.getXmlContent());
 
 				final EvenementRFMutation mut1 = mutations.get(1);

@@ -256,35 +256,8 @@ public abstract class DroitRFHelper {
 		return Objects.equals(left.getIdRF(), right.getIdRF());
 	}
 
-	public static String getAyantDroitIdRF(@NotNull EigentumAnteil eigentumAnteil) {
-
-		if (eigentumAnteil instanceof PersonEigentumAnteil) {
-			final PersonEigentumAnteil pea =(PersonEigentumAnteil) eigentumAnteil;
-			final Gemeinschaft gemeinschaft = pea.getGemeinschaft();
-			final NatuerlichePersonGb natuerlichePerson = pea.getNatuerlichePersonGb();
-			final JuristischePersonGb juristischePerson = pea.getJuristischePersonGb();
-
-			if (gemeinschaft != null) {
-				return gemeinschaft.getGemeinschatID();
-			}
-			else if (natuerlichePerson != null) {
-				return natuerlichePerson.getPersonstammIDREF();
-			}
-			else if (juristischePerson != null) {
-				return juristischePerson.getPersonstammIDREF();
-			}
-			else {
-				throw new IllegalArgumentException("Type de droit inconnu masterIdRF=[" + eigentumAnteil.getMasterID() + "]");
-			}
-		}
-		else if (eigentumAnteil instanceof GrundstueckEigentumAnteil) {
-			final GrundstueckEigentumAnteil gea =(GrundstueckEigentumAnteil) eigentumAnteil;
-			// l'IDRef du fonds dominant est utilisé comme IDRef de l'ayant-droit.
-			return gea.getBerechtigtesGrundstueckIDREF();
-		}
-		else {
-			throw new IllegalArgumentException("Type de droit inconnu = [" + eigentumAnteil.getClass().getSimpleName() + "]");
-		}
+	public static String getImmeubleIdRF(@NotNull EigentumAnteil eigentumAnteil) {
+		return eigentumAnteil.getBelastetesGrundstueckIDREF();
 	}
 
 	public static DroitProprieteRF newDroitRF(@NotNull EigentumAnteil eigentumAnteil,
