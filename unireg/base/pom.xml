@@ -687,8 +687,8 @@
 		<wsparty4.version>4.1</wsparty4.version>
 		<ws.v5.version>5.5.1</ws.v5.version>
 		<ws.v6.version>6.5.1</ws.v6.version>
-		<ws.v7.version>7.7.1-SNAPSHOT</ws.v7.version>
-		<unireg.jaxb2.version>6.5.1-SNAPSHOT</unireg.jaxb2.version>
+		<ws.v7.version>7.7.1</ws.v7.version>
+		<unireg.jaxb2.version>6.5.1</unireg.jaxb2.version>
 
 		<!-- Testing dependency versions -->
 		<junit.version>4.12</junit.version>
