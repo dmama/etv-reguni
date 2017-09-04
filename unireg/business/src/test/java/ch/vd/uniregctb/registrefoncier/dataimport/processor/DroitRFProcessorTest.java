@@ -1260,13 +1260,22 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		// postcondition : les événements fiscaux correspondants ont été envoyés
 		doInNewTransaction(status -> {
 			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
-			assertEquals(1, events.size());
+			assertEquals(2, events.size());
+			events.sort(Comparator.comparing(EvenementFiscal::getId));
 
+			// 1er événement : ajout de la raison d'acquisition
 			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
 			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION, event0.getType());
-			assertNull(event0.getDateValeur());
+			assertEquals(RegDate.get(2005, 1, 1), event0.getDateValeur());
 			assertEquals(idImmeubleRF1, event0.getDroit().getImmeuble().getIdRF());
 			assertEquals(idPPRF, event0.getDroit().getAyantDroit().getIdRF());
+
+			// 2ème événement : modification de la date de début métier
+			final EvenementFiscalDroitPropriete event1 = (EvenementFiscalDroitPropriete) events.get(1);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.MODIFICATION, event1.getType());
+			assertNull(event1.getDateValeur());
+			assertEquals(idImmeubleRF1, event1.getDroit().getImmeuble().getIdRF());
+			assertEquals(idPPRF, event1.getDroit().getAyantDroit().getIdRF());
 
 			return null;
 		});

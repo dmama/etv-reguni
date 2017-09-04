@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -26,7 +27,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.helper.RaisonAcquisitionRFHelp
 import static ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper.masterIdAndVersionIdEquals;
 
 /**
- * Contient les droits fermés et ouverts <i>pour un immeuble particulier</i> suite à un import des données RF à une date particulière.
+ * Représente les changements sur les droits pour <i>pour un immeuble particulier</i> à une date particulière.
  */
 public class AffaireRF {
 
@@ -38,9 +39,9 @@ public class AffaireRF {
 	private final List<DroitProprieteRF> fermes;
 
 	/**
-	 * Crée une mutation des droit RF qui n'a pas encore été traitée et qui devra être appliquée sur les données de la DB.
+	 * Crée une affaire qui n'a pas encore été traitée et dont les changements doivent être appliquée sur les données de la DB.
 	 *
-	 * @param dateValeur la date de valeur (non-métier) de changements sur les droits
+	 * @param dateValeur la date d'import en DB de l'affaire
 	 * @param immeuble   l'immeuble concerné
 	 * @param ouverts    les droits ouverts et à persister
 	 * @param miseajour  les droits dont les raisons d'acquisition doivent être mises-à-jour (paire : nouveau droit -> droit déjà persisté)
@@ -59,9 +60,9 @@ public class AffaireRF {
 	}
 
 	/**
-	 * Crée une mutation sur des droits à partir de données déjà sauvées en DB.
+	 * Crée une affaire dont les données ont déjà été sauvées en DB.
 	 *
-	 * @param dateValeur la date technique de changements sur les droits
+	 * @param dateValeur la date d'import en DB de l'affaire
 	 * @param immeuble   l'immeuble concerné
 	 * @param droits     les droits de l'immeuble (sans les droits annulés)
 	 */
@@ -79,7 +80,7 @@ public class AffaireRF {
 	}
 
 	/**
-	 * @return la date de l'import qui a provoqué la fermeture et l'ouverture des droits (nul pour l'import initial)
+	 * @return la date de l'affaire (nul si l'affaire a été traitée dans l'import initial)
 	 */
 	@Nullable
 	public RegDate getDateValeur() {
@@ -87,49 +88,96 @@ public class AffaireRF {
 	}
 
 	/**
-	 * Applique la mutation en DB : sauve les nouveaux droits, met-à-jour les droits existants et ferme les droits à fermer.
+	 * Applique le mutations en DB : sauve les nouveaux droits, met-à-jour les droits existants et ferme les droits à fermer.
 	 *
-	 * @param audit un callback pour auditer les changements
+	 * @param listener un callback pour écouter les changements
 	 */
-	public void apply(@NotNull DroitRFDAO droitRFDAO, @Nullable AffaireRFAudit audit) {
+	public void apply(@NotNull DroitRFDAO droitRFDAO, @Nullable AffaireRFListener listener) {
 
 		// on ajoute toutes les nouveaux droits
-		ouverts.forEach(d -> processOuverture(d, droitRFDAO, audit));
+		final List<DroitProprieteRF> persisted = ouverts.stream()
+				.map(d -> processOuverture(d, droitRFDAO))
+				.collect(Collectors.toList());
+		ouverts.clear();
+		ouverts.addAll(persisted);
 
 		// on met-à-jour tous les droits qui changent (c'est-à-dire les changements dans les raisons d'acquisition)
-		miseajour.forEach(p -> processMiseAJour(p.getFirst(), p.getSecond(), audit));
+		miseajour.forEach(p -> processMiseAJour(p.getFirst(), p.getSecond(), listener));
 
 		// on ferme toutes les droits à fermer
 		fermes.forEach(this::processFermeture);
+
+		// on calcule tous les dates de début métier
+		final List<Mutation> mutations = new ArrayList<>(ouverts.size() + miseajour.size());
+		ouverts.stream()
+				.map(d -> new Mutation(d, MutationType.CREATION))
+				.forEach(mutations::add);
+		miseajour.stream()
+				.map(d -> new Mutation(d.getSecond(), MutationType.UPDATE))
+				.forEach(mutations::add);
+		calculateDatesDebutMetier(mutations, listener);
 	}
 
 	/**
 	 * Recalcule les dates de début <i>métier</i> des droits ouverts ou modifiés à la date de valeur des changements.
 	 *
-	 * @param audit un callback pour auditer les changements
+	 * @param listener un callback pour écouter les changements
 	 */
-	public void refreshDatesDebutMetier(@Nullable AffaireRFAudit audit) {
-		ouverts.forEach(d -> refreshDateDebutMetier(d, audit));
-		miseajour.forEach(pair -> refreshDateDebutMetier(pair.getSecond(), audit));
+	public void refreshDatesDebutMetier(@Nullable AffaireRFListener listener) {
+
+		// on recalcule tous les dates de début métier
+		final List<Mutation> mutations = new ArrayList<>(ouverts.size() + miseajour.size());
+		ouverts.stream()
+				.map(d -> new Mutation(d, MutationType.UPDATE)) // update : car l'événement de création a déjà été envoyé
+				.forEach(mutations::add);
+		miseajour.stream()
+				.map(d -> new Mutation(d.getSecond(), MutationType.UPDATE))
+				.forEach(mutations::add);
+		calculateDatesDebutMetier(mutations, listener);
 	}
 
-	private void processOuverture(@NotNull DroitProprieteRF droit, @NotNull DroitRFDAO droitRFDAO, @Nullable AffaireRFAudit audit) {
+	/**
+	 * Calcule ou recalcule les dates de début métier des droits spécifiés.
+	 *
+	 * @param mutations les droits et le context dans lequel ils sont traités
+	 * @param listener     un callback pour écouter les changements
+	 */
+	private void calculateDatesDebutMetier(@NotNull List<Mutation> mutations, @Nullable AffaireRFListener listener) {
+
+		// on calcule la date de début métier sur tous les droits
+		mutations.forEach(m -> m.calculateDateEtMotifDebut(findDroitPrecedent(m.getDroit())));
+
+		// on chercher la date de début métier la plus ancienne
+		final RaisonAcquisitionRF raisonAcquisition = mutations.stream()
+				.filter(m -> m.getDroit().getDateDebutMetier() != null || m.getDroit().getMotifDebut() != null)
+				.min(Comparator.comparing(m -> m.getDroit().getDateDebutMetier()))
+				.map(m -> new RaisonAcquisitionRF(m.getDroit().getDateDebutMetier(), m.getDroit().getMotifDebut(), null))
+				.orElse(null);
+
+		// [SIFISC-25583] on applique la date de début la plus ancienne sur tous les droits pour lesquels
+		// la date de début métiet n'a pas pu être calculée de manière traditionnelle.
+		mutations.stream()
+				.filter(m -> m.getDroit().getDateDebutMetier() == null && m.getDroit().getMotifDebut() == null)
+				.forEach(m -> m.setDebutRaisonAcquisition(raisonAcquisition));
+
+		// on notifie le listener des changements si nécessaire
+		if (listener != null) {
+			mutations.forEach(m -> m.notifyAudit(listener));
+		}
+	}
+
+	@NotNull
+	private DroitProprieteRF processOuverture(@NotNull DroitProprieteRF droit, @NotNull DroitRFDAO droitRFDAO) {
 
 		// on insère le droit en DB
 		droit.setDateDebut(dateValeur);
 		droit = (DroitProprieteRF) droitRFDAO.save(droit);
 
-		// on calcule la date de début métier
-		calculateDateEtMotifDebut(droit);
-
 		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
 		immeuble.addDroitPropriete(droit);
 		droit.getAyantDroit().addDroitPropriete(droit);
 
-		// on publie l'événement fiscal correspondant
-		if (audit != null) {
-			audit.addCreated(droit);
-		}
+		return droit;
 	}
 
 	private void processFermeture(@NotNull DroitProprieteRF d) {
@@ -139,7 +187,7 @@ public class AffaireRF {
 		d.setDateFin(dateValeur.getOneDayBefore());
 	}
 
-	private void processMiseAJour(@NotNull DroitProprieteRF droit, @NotNull DroitProprieteRF persisted, @Nullable AffaireRFAudit audit) {
+	private void processMiseAJour(@NotNull DroitProprieteRF droit, @NotNull DroitProprieteRF persisted, @Nullable AffaireRFListener listener) {
 		if (!masterIdAndVersionIdEquals(droit, persisted)) {
 			throw new IllegalArgumentException("Les mastersIdRF/versionIdRF sont différents : [" + droit.getMasterIdRF() + "/" + droit.getVersionIdRF() + "] " +
 					                                   "et [" + persisted.getMasterIdRF() + "/" + persisted.getVersionIdRF() + "]");
@@ -158,79 +206,97 @@ public class AffaireRF {
 		// on ajoute toutes les nouvelles raisons
 		toAdd.forEach(persisted::addRaisonAcquisition);
 
-		final RegDate dateDebutMetierPrecedent = persisted.getDateDebutMetier();
-		final String motifDebutPrecedent = persisted.getMotifDebut();
-
-		// on recalcule la date de début métier
-		calculateDateEtMotifDebut(persisted);
-
-		// on publie l'événement fiscal correspondant
-		if (audit != null) {
-			audit.addUpdated(persisted, dateDebutMetierPrecedent, motifDebutPrecedent);
+		// le droit a été mis-à-jour, on notifie le listener
+		if (listener !=  null) {
+			listener.addUpdated(persisted, persisted.getDateDebutMetier(), persisted.getMotifDebut());
 		}
 	}
 
-	private void refreshDateDebutMetier(@NotNull DroitProprieteRF droit, @Nullable AffaireRFAudit audit) {
-		final RegDate dateDebutPrecedente = droit.getDateDebutMetier();
-		final String motifDebutPrecedent = droit.getMotifDebut();
+	private enum MutationType {
+		CREATION,
+		UPDATE
+	}
 
-		// on force le recalcul de la date de début du droit
-		calculateDateEtMotifDebut(droit);
+	private static class Mutation {
+		private final DroitProprieteRF droit;
+		private final MutationType type;
 
-		if (audit != null) {
+		private final RegDate dateDebutInitiale;
+		private final String motifDebutInitial;
+
+		public Mutation(@NotNull DroitProprieteRF droit, @NotNull MutationType type) {
+			this.droit = droit;
+			this.type = type;
+			this.dateDebutInitiale = droit.getDateDebutMetier();
+			this.motifDebutInitial = droit.getMotifDebut();
+		}
+
+		public DroitProprieteRF getDroit() {
+			return droit;
+		}
+
+		public MutationType getType() {
+			return type;
+		}
+
+		public void calculateDateEtMotifDebut(@Nullable DroitProprieteRF precedent) {
+			final Set<RaisonAcquisitionRF> raisonsAcquisition = droit.getRaisonsAcquisition();
+			if (raisonsAcquisition == null || raisonsAcquisition.isEmpty()) {
+				setDebutRaisonAcquisition(null);
+			}
+			else {
+				if (precedent == null || precedent.getRaisonsAcquisition() == null) {
+					// il n'y a pas de droit précédent : on prend la raison d'acquisition la plus vieille comme référence
+					final RaisonAcquisitionRF first = raisonsAcquisition.stream()
+							.filter(AnnulableHelper::nonAnnule)
+							.min(Comparator.naturalOrder())
+							.orElse(null);
+					setDebutRaisonAcquisition(first);
+				}
+				else {
+					// il y a bien un droit précédent : on prend la nouvelle raison d'acquisition comme référence
+					final RegDate derniereDate = precedent.getRaisonsAcquisition().stream()
+							.filter(AnnulableHelper::nonAnnule)
+							.map(RaisonAcquisitionRF::getDateAcquisition)
+							.max(Comparator.naturalOrder())
+							.orElse(null);
+					final RaisonAcquisitionRF nouvelle = raisonsAcquisition.stream()
+							.filter(AnnulableHelper::nonAnnule)
+							.filter(r -> RegDateHelper.isAfter(r.getDateAcquisition(), derniereDate, NullDateBehavior.EARLIEST))
+							.min(Comparator.naturalOrder())
+							.orElse(null);
+					setDebutRaisonAcquisition(nouvelle);
+				}
+			}
+		}
+
+		public void setDebutRaisonAcquisition(@Nullable RaisonAcquisitionRF raison) {
+			if (raison == null) {
+				droit.setDateDebutMetier(null);
+				droit.setMotifDebut(null);
+			}
+			else {
+				droit.setDateDebutMetier(raison.getDateAcquisition());
+				droit.setMotifDebut(raison.getMotifAcquisition());
+			}
+		}
+
+		public void notifyAudit(@NotNull AffaireRFListener listener) {
+
 			final RegDate dateDebutCourant = droit.getDateDebutMetier();
 			final String motifDebutCourant = droit.getMotifDebut();
 
-			if (dateDebutCourant != dateDebutPrecedente || !Objects.equals(motifDebutCourant, motifDebutPrecedent)) {
-				// le droit a été mis-à-jour
-				audit.addUpdated(droit, dateDebutPrecedente, motifDebutPrecedent);
+			if ((dateDebutCourant != dateDebutInitiale || !Objects.equals(motifDebutCourant, motifDebutInitial))) {
+				if (type == MutationType.CREATION) {
+					listener.addCreated(droit);
+				}
+				else {
+					listener.addUpdated(droit, dateDebutInitiale, motifDebutInitial);
+				}
 			}
 			else {
-				audit.addUntouched(droit);
+				listener.addUntouched(droit);
 			}
-		}
-	}
-
-	void calculateDateEtMotifDebut(@NotNull DroitProprieteRF droit) {
-		final Set<RaisonAcquisitionRF> raisonsAcquisition = droit.getRaisonsAcquisition();
-		if (raisonsAcquisition == null || raisonsAcquisition.isEmpty()) {
-			setDebutRaisonAcquisition(droit, null);
-		}
-		else {
-			final DroitProprieteRF precedent = findDroitPrecedent(droit);
-			if (precedent == null || precedent.getRaisonsAcquisition() == null) {
-				// il n'y a pas de droit précédent : on prend la raison d'acquisition la plus vieille comme référence
-				final RaisonAcquisitionRF first = raisonsAcquisition.stream()
-						.filter(AnnulableHelper::nonAnnule)
-						.min(Comparator.naturalOrder())
-						.orElse(null);
-				setDebutRaisonAcquisition(droit, first);
-			}
-			else {
-				// il y a bien un droit précédent : on prend la nouvelle raison d'acquisition comme référence
-				final RegDate derniereDate = precedent.getRaisonsAcquisition().stream()
-						.filter(AnnulableHelper::nonAnnule)
-						.map(RaisonAcquisitionRF::getDateAcquisition)
-						.max(Comparator.naturalOrder())
-						.orElse(null);
-				final RaisonAcquisitionRF nouvelle = raisonsAcquisition.stream()
-						.filter(AnnulableHelper::nonAnnule)
-						.filter(r -> RegDateHelper.isAfter(r.getDateAcquisition(), derniereDate, NullDateBehavior.EARLIEST))
-						.min(Comparator.naturalOrder())
-						.orElse(null);
-				setDebutRaisonAcquisition(droit, nouvelle);
-			}
-		}
-	}
-
-	private static void setDebutRaisonAcquisition(@NotNull DroitProprieteRF droit, @Nullable RaisonAcquisitionRF raison) {
-		if (raison == null) {
-			droit.setDateDebutMetier(null);
-			droit.setMotifDebut(null);
-		}
-		else {
-			droit.setDateDebutMetier(raison.getDateAcquisition());
-			droit.setMotifDebut(raison.getMotifAcquisition());
 		}
 	}
 

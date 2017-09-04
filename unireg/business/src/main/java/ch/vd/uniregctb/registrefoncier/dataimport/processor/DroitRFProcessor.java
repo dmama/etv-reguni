@@ -51,7 +51,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
-	private final AffaireRFAudit evenementFiscalSender;
+	private final AffaireRFListener evenementFiscalSender;
 
 	public DroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull DroitRFDAO droitRFDAO, @NotNull XmlHelperRF xmlHelperRF,
 	                        @NotNull EvenementFiscalService evenementFiscalService) {
@@ -68,7 +68,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 			}
 		});
 
-		this.evenementFiscalSender = new AffaireRFAudit() {
+		this.evenementFiscalSender = new AffaireRFListener() {
 			@Override
 			public void addUntouched(@NotNull DroitProprieteRF droit) {
 				// rien à faire

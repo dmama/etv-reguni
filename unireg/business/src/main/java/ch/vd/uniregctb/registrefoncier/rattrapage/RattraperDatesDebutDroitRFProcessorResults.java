@@ -15,9 +15,9 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRFAudit;
+import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRFListener;
 
-public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long, RattraperDatesDebutDroitRFProcessorResults> implements AffaireRFAudit {
+public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long, RattraperDatesDebutDroitRFProcessorResults> implements AffaireRFListener {
 
 	private final RattrapageDataSelection dataSelection;
 	private final int nbThreads;

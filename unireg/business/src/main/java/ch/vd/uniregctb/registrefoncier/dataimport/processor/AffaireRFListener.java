@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 
-public interface AffaireRFAudit {
+public interface AffaireRFListener {
 
 	void addUntouched(@NotNull DroitProprieteRF droit);
 

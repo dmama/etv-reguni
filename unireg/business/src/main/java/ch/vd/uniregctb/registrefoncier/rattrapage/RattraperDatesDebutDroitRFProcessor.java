@@ -128,14 +128,14 @@ public class RattraperDatesDebutDroitRFProcessor {
 				.flatMap(Collection::stream)
 				.collect(Collectors.toSet());
 
-		// on analyse les droits et construit la liste des changements pour chaque date d'import
-		final List<AffaireRF> changements = datesImport.stream()
+		// on analyse les droits et construit la liste des affaires pour chaque date d'import
+		final List<AffaireRF> affaires = datesImport.stream()
 				.map(d -> new AffaireRF(d, immeuble, droits))
 				.collect(Collectors.toList());
-		changements.sort(Comparator.comparing(AffaireRF::getDateValeur));
+		affaires.sort(Comparator.comparing(AffaireRF::getDateValeur));
 
 		// on recalcule et rattrape si nécessaire les dates de début sur les droits ouverts
-		changements.forEach(c -> c.refreshDatesDebutMetier(rapport));
+		affaires.forEach(c -> c.refreshDatesDebutMetier(rapport));
 	}
 
 	/**
