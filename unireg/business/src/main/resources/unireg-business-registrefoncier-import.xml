@@ -169,12 +169,6 @@
 		<constructor-arg ref="evenementFiscalService"/>
 	</bean>
 
-	<bean id="dateFinDroitsRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.DateFinDroitsRFProcessor">
-		<constructor-arg ref="immeubleRFDAO" />
-		<constructor-arg ref="transactionManager" />
-		<constructor-arg ref="evenementFiscalService" />
-	</bean>
-
 	<bean id="cleanupRFProcessor" class="ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessor">
 		<constructor-arg ref="evenementRFImportDAO"/>
 		<constructor-arg ref="evenementRFMutationDAO"/>
@@ -187,6 +181,7 @@
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="transactionManager" />
 		<constructor-arg ref="serviceRF" />
+		<constructor-arg ref="evenementFiscalService"/>
 	</bean>
 
 </beans>

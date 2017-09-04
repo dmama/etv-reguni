@@ -108,22 +108,15 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
-	<bean id="traiterFinsDeDroitsRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.dataimport.TraiterFinsDeDroitsRFJob">
-		<constructor-arg value="111"/>
-		<constructor-arg value="Calculer les dates de fin métier sur les droits RF"/>
-		<property name="processor" ref="dateFinDroitsRFProcessor"/>
-		<property name="rapportService" ref="rapportService"/>
-	</bean>
-
 	<bean id="cleanupImportRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.importcleanup.CleanupImportRFJob">
-		<constructor-arg value="112"/>
+		<constructor-arg value="111"/>
 		<constructor-arg value="Nettoyer les anciennes données d'import RF"/>
 		<property name="processor" ref="cleanupRFProcessor"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
 	<bean id="rattraperDatesDebutDroitRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFJob">
-		<constructor-arg value="113"/>
+		<constructor-arg value="112"/>
 		<constructor-arg value="Recalculer les dates de début des droits RF"/>
 		<property name="processor" ref="rattraperDatesDebutDroitRFProcessor"/>
 		<property name="rapportService" ref="rapportService"/>

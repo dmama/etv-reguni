@@ -28,7 +28,6 @@ public class TraiterMutationsRFJob extends JobDefinition {
 	public static final String NAME = "TraiterMutationsRFJob";
 	public static final String ID = "eventId";
 	public static final String NB_THREADS = "NB_THREADS";
-	public static final String CONTINUE_WITH_DATES_FIN_JOB = "CONTINUE_WITH_DATES_FIN_JOB";
 	public static final String CONTINUE_WITH_IDENTIFICATION_JOB = "CONTINUE_WITH_IDENTIFICATION_JOB";
 
 	private MutationsRFProcessor processor;
@@ -60,18 +59,11 @@ public class TraiterMutationsRFJob extends JobDefinition {
 		addParameterDefinition(param2, 8);
 
 		final JobParam param3 = new JobParam();
-		param3.setDescription("Continuer avec le job de calcul des dates de fin des droits");
-		param3.setName(CONTINUE_WITH_DATES_FIN_JOB);
+		param3.setDescription("Continuer avec le job de rapprochement des propriétaires");
+		param3.setName(CONTINUE_WITH_IDENTIFICATION_JOB);
 		param3.setMandatory(true);
 		param3.setType(new JobParamBoolean());
 		addParameterDefinition(param3, true);
-
-		final JobParam param4 = new JobParam();
-		param4.setDescription("Continuer avec le job de rapprochement des propriétaires");
-		param4.setName(CONTINUE_WITH_IDENTIFICATION_JOB);
-		param4.setMandatory(true);
-		param4.setType(new JobParamBoolean());
-		addParameterDefinition(param4, true);
 	}
 
 	@Override
@@ -79,7 +71,6 @@ public class TraiterMutationsRFJob extends JobDefinition {
 
 		final long importId = getLongValue(params, ID);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
-		final boolean startDatesFinJob = getBooleanValue(params, CONTINUE_WITH_DATES_FIN_JOB);
 		final boolean startRapprochementJob = getBooleanValue(params, CONTINUE_WITH_IDENTIFICATION_JOB);
 
 		final StatusManager statusManager = getStatusManager();
@@ -90,13 +81,6 @@ public class TraiterMutationsRFJob extends JobDefinition {
 		final MutationsRFProcessorRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
 		Audit.success("Le traitement de l'import RF (traitement des mutations) est terminé.", rapport);
-
-		// si demandé, on démarre le job de calcul des dates de fin
-		if (startDatesFinJob) {
-			final Map<String, Object> datesFinParams = new HashMap<>();
-			datesFinParams.put(TraiterFinsDeDroitsRFJob.NB_THREADS, nbThreads);
-			batchScheduler.startJob(TraiterFinsDeDroitsRFJob.NAME, datesFinParams);
-		}
 
 		// si demandé, on démarre le job de rapprochement des propriétaires
 		if (startRapprochementJob) {

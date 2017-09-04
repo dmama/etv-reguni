@@ -8,9 +8,13 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 
 public interface AffaireRFListener {
 
-	void addUntouched(@NotNull DroitProprieteRF droit);
+	void onCreation(DroitProprieteRF droit);
 
-	void addCreated(DroitProprieteRF droit);
+	void onUpdateDateDebut(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutMetierInitiale, @Nullable String motifDebutInitial);
 
-	void addUpdated(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutMetierPrecedente, @Nullable String motifDebutPrecedent);
+	void onUpdateDateFin(@NotNull DroitProprieteRF droit, @Nullable RegDate dateFinMetierInitiale, @Nullable String motifFinInitial);
+
+	void onOtherUpdate(@NotNull DroitProprieteRF droit);
+
+	void onClosing(@NotNull DroitProprieteRF droit);
 }

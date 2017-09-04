@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,11 +26,14 @@ import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.ProgrammingException;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRF;
+import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRFListener;
 
 public class RattraperDatesDebutDroitRFProcessor {
 
@@ -38,13 +42,16 @@ public class RattraperDatesDebutDroitRFProcessor {
 	private final ImmeubleRFDAO immeubleRFDAO;
 	private final PlatformTransactionManager transactionManager;
 	private final RegistreFoncierService registreFoncierService;
+	private final EvenementFiscalService evenementFiscalService;
 
 	public RattraperDatesDebutDroitRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO,
 	                                           @NotNull PlatformTransactionManager transactionManager,
-	                                           @NotNull RegistreFoncierService registreFoncierService) {
+	                                           @NotNull RegistreFoncierService registreFoncierService,
+	                                           @NotNull EvenementFiscalService evenementFiscalService) {
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.transactionManager = transactionManager;
 		this.registreFoncierService = registreFoncierService;
+		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	/**
@@ -121,6 +128,7 @@ public class RattraperDatesDebutDroitRFProcessor {
 		final List<DroitProprieteRF> droits = immeuble.getDroitsPropriete().stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.collect(Collectors.toList());
+		final Set<DroitProprieteRF> untouched = new HashSet<>(droits);
 
 		// on déduit les dates d'import où les droits ont été modifiés à partir de leurs dates de début/fin
 		final Set<RegDate> datesImport = droits.stream()
@@ -135,7 +143,42 @@ public class RattraperDatesDebutDroitRFProcessor {
 		affaires.sort(Comparator.comparing(AffaireRF::getDateValeur));
 
 		// on recalcule et rattrape si nécessaire les dates de début sur les droits ouverts
-		affaires.forEach(c -> c.refreshDatesDebutMetier(rapport));
+		affaires.forEach(c -> c.refreshDatesMetier(new AffaireRFListener() {
+
+			@Override
+			public void onCreation(DroitProprieteRF droit) {
+				throw new ProgrammingException();   // on ne devrait jamais avoir de droits nouvellement ouverts
+			}
+
+			@Override
+			public void onUpdateDateDebut(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutMetierInitiale, @Nullable String motifDebutInitial) {
+				untouched.remove(droit);
+				rapport.addDebutUpdated(droit, dateDebutMetierInitiale, motifDebutInitial);
+				// on publie l'événement fiscal correspondant
+				evenementFiscalService.publierModificationDroitPropriete(droit.getDateDebutMetier(), droit);
+
+			}
+
+			@Override
+			public void onUpdateDateFin(@NotNull DroitProprieteRF droit, @Nullable RegDate dateFinMetierInitiale, @Nullable String motifFinInitial) {
+				untouched.remove(droit);
+				rapport.addFinUpdated(droit, dateFinMetierInitiale, motifFinInitial);
+				// on publie l'événement fiscal correspondant
+				evenementFiscalService.publierModificationDroitPropriete(droit.getDateFinMetier(), droit);
+			}
+
+			@Override
+			public void onOtherUpdate(@NotNull DroitProprieteRF droit) {
+				throw new ProgrammingException();   // on ne devrait jamais avoir de droits modifiés pour d'autres raisons
+			}
+
+			@Override
+			public void onClosing(@NotNull DroitProprieteRF droit) {
+				throw new ProgrammingException();   // on ne devrait jamais avoir de droits nouvellement fermés
+			}
+		}));
+
+		untouched.forEach(rapport::addUntouched);
 	}
 
 	/**

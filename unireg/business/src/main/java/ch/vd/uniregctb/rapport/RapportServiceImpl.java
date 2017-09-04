@@ -72,7 +72,6 @@ import ch.vd.uniregctb.document.EnvoiSommationsDIsPPRapport;
 import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
 import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.document.ExtractionRegimesFiscauxRapport;
-import ch.vd.uniregctb.document.FinsDeDroitRFRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableFromListeRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
@@ -148,7 +147,6 @@ import ch.vd.uniregctb.regimefiscal.extraction.ExtractionRegimesFiscauxResults;
 import ch.vd.uniregctb.regimefiscal.rattrapage.RattrapageRegimesFiscauxJobResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
-import ch.vd.uniregctb.registrefoncier.dataimport.TraitementFinsDeDroitRFResults;
 import ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFProcessorResults;
@@ -1799,25 +1797,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(RappelFormulairesDemandeDegrevementICIRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfRappelFormulairesDemandeDegrevementICIRapport document = new PdfRappelFormulairesDemandeDegrevementICIRapport();
-				document.write(results, nom, description, dateGeneration, os, status);
-			});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public FinsDeDroitRFRapport generateRapport(TraitementFinsDeDroitRFResults results, StatusManager s) {
-		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-
-		final String nom = "RapportFinsDeDroitsRF";
-		final String description = "Rapport d'exécution du batch de calcul des dates de fin métier sur les droits RF.";
-		final Date dateGeneration = DateHelper.getCurrentDate();
-
-		try {
-			return docService.newDoc(FinsDeDroitRFRapport.class, nom, description, "pdf", (doc, os) -> {
-				final PdfFinsDeDroitRFRapport document = new PdfFinsDeDroitRFRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}
