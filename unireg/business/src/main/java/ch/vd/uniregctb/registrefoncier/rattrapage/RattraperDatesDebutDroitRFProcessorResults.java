@@ -15,9 +15,8 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRFListener;
 
-public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long, RattraperDatesDebutDroitRFProcessorResults> implements AffaireRFListener {
+public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long, RattraperDatesDebutDroitRFProcessorResults> {
 
 	private final RattrapageDataSelection dataSelection;
 	private final int nbThreads;
@@ -26,7 +25,8 @@ public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long,
 
 	private boolean interrompu = false;
 	private final List<Processed> processed = new LinkedList<>();
-	private final List<Updated> updated = new LinkedList<>();
+	private final List<DebutUpdated> debutUpdated = new LinkedList<>();
+	private final List<FinUpdated> finUpdated = new LinkedList<>();
 	private final List<Untouched> untouched = new LinkedList<>();
 	private final List<Erreur> erreurs = new LinkedList<>();
 
@@ -119,29 +119,28 @@ public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long,
 		}
 	}
 
-
-	public static final class Updated {
+	public static final class DebutUpdated {
 
 		private final long droitId;
 		private final long immeubleId;
 		private final String egrid;
 		private final RegDate dateDebut;
 		private final RegDate dateFin;
-		private final RegDate dateDebutMetierOriginale;
-		private final String motifDebutOriginal;
+		private final RegDate dateDebutMetierInitiale;
+		private final String motifDebutInitial;
 		private final RegDate dateDebutMetierCorrigee;
 		private final String motifDebutCorrige;
 		private final RegDate dateFinMetier;
 		private final String motifFin;
 
-		public Updated(@NotNull DroitProprieteRF droit, RegDate dateDebutMetierOriginale, String motifDebutOriginal) {
+		public DebutUpdated(@NotNull DroitProprieteRF droit, RegDate dateDebutMetierInitiale, String motifDebutInitial) {
 			this.droitId = droit.getId();
 			this.immeubleId = droit.getImmeuble().getId();
 			this.egrid = droit.getImmeuble().getEgrid();
 			this.dateDebut = droit.getDateDebut();
 			this.dateFin = droit.getDateFin();
-			this.dateDebutMetierOriginale = dateDebutMetierOriginale;
-			this.motifDebutOriginal = motifDebutOriginal;
+			this.dateDebutMetierInitiale = dateDebutMetierInitiale;
+			this.motifDebutInitial = motifDebutInitial;
 			this.dateDebutMetierCorrigee = droit.getDateDebutMetier();
 			this.motifDebutCorrige = droit.getMotifDebut();
 			this.dateFinMetier = droit.getDateFinMetier();
@@ -168,12 +167,12 @@ public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long,
 			return dateFin;
 		}
 
-		public RegDate getDateDebutMetierOriginale() {
-			return dateDebutMetierOriginale;
+		public RegDate getDateDebutMetierInitiale() {
+			return dateDebutMetierInitiale;
 		}
 
-		public String getMotifDebutOriginal() {
-			return motifDebutOriginal;
+		public String getMotifDebutInitial() {
+			return motifDebutInitial;
 		}
 
 		public RegDate getDateDebutMetierCorrigee() {
@@ -190,6 +189,79 @@ public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long,
 
 		public String getMotifFin() {
 			return motifFin;
+		}
+	}
+
+	public static final class FinUpdated {
+
+		private final long droitId;
+		private final long immeubleId;
+		private final String egrid;
+		private final RegDate dateDebut;
+		private final RegDate dateFin;
+		private final RegDate dateDebutMetier;
+		private final String motifDebut;
+		private final RegDate dateFinMetierInitiale;
+		private final String motifFinInitial;
+		private final RegDate dateFinMetierCorrigee;
+		private final String motifFinCorrige;
+
+		public FinUpdated(@NotNull DroitProprieteRF droit, RegDate dateFinMetierInitiale, String motifFinInitial) {
+			this.droitId = droit.getId();
+			this.immeubleId = droit.getImmeuble().getId();
+			this.egrid = droit.getImmeuble().getEgrid();
+			this.dateDebut = droit.getDateDebut();
+			this.dateFin = droit.getDateFin();
+			this.dateDebutMetier= droit.getDateDebutMetier();
+			this.motifDebut= droit.getMotifDebut();
+			this.dateFinMetierInitiale = dateFinMetierInitiale;
+			this.motifFinInitial = motifFinInitial;
+			this.dateFinMetierCorrigee = droit.getDateFinMetier();
+			this.motifFinCorrige = droit.getMotifFin();
+		}
+
+		public long getDroitId() {
+			return droitId;
+		}
+
+		public long getImmeubleId() {
+			return immeubleId;
+		}
+
+		public String getEgrid() {
+			return egrid;
+		}
+
+		public RegDate getDateDebut() {
+			return dateDebut;
+		}
+
+		public RegDate getDateFin() {
+			return dateFin;
+		}
+
+		public RegDate getDateDebutMetier() {
+			return dateDebutMetier;
+		}
+
+		public String getMotifDebut() {
+			return motifDebut;
+		}
+
+		public RegDate getDateFinMetierInitiale() {
+			return dateFinMetierInitiale;
+		}
+
+		public String getMotifFinInitial() {
+			return motifFinInitial;
+		}
+
+		public RegDate getDateFinMetierCorrigee() {
+			return dateFinMetierCorrigee;
+		}
+
+		public String getMotifFinCorrige() {
+			return motifFinCorrige;
 		}
 	}
 
@@ -285,8 +357,12 @@ public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long,
 		return processed;
 	}
 
-	public List<Updated> getUpdated() {
-		return updated;
+	public List<DebutUpdated> getDebutUpdated() {
+		return debutUpdated;
+	}
+
+	public List<FinUpdated> getFinUpdated() {
+		return finUpdated;
 	}
 
 	public List<Untouched> getUntouched() {
@@ -320,17 +396,14 @@ public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long,
 		processed.add(new Processed(immeuble, registreFoncierService));
 	}
 
-	@Override
-	public void addCreated(DroitProprieteRF droit) {
-
+	public void addDebutUpdated(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutMetierInitiale, @Nullable String motifDebutInitial) {
+		debutUpdated.add(new DebutUpdated(droit, dateDebutMetierInitiale, motifDebutInitial));
 	}
 
-	@Override
-	public void addUpdated(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutMetierPrecedente, @Nullable String motifDebutPrecedent) {
-		updated.add(new Updated(droit, dateDebutMetierPrecedente, motifDebutPrecedent));
+	public void addFinUpdated(@NotNull DroitProprieteRF droit, @Nullable RegDate dateFinMetierInitiale, @Nullable String motifFinInitial) {
+		finUpdated.add(new FinUpdated(droit, dateFinMetierInitiale, motifFinInitial));
 	}
 
-	@Override
 	public void addUntouched(@NotNull DroitProprieteRF droit) {
 		untouched.add(new Untouched(droit));
 	}
@@ -338,7 +411,8 @@ public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long,
 	@Override
 	public void addAll(RattraperDatesDebutDroitRFProcessorResults right) {
 		processed.addAll(right.processed);
-		updated.addAll(right.updated);
+		debutUpdated.addAll(right.debutUpdated);
+		finUpdated.addAll(right.finUpdated);
 		untouched.addAll(right.untouched);
 		erreurs.addAll(right.erreurs);
 	}

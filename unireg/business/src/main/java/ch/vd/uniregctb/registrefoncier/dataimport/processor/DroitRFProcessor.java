@@ -70,23 +70,34 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 		this.evenementFiscalSender = new AffaireRFListener() {
 			@Override
-			public void addUntouched(@NotNull DroitProprieteRF droit) {
-				// rien à faire
-			}
-
-			@Override
-			public void addCreated(DroitProprieteRF droit) {
+			public void onCreation(DroitProprieteRF droit) {
 				// on publie l'événement fiscal correspondant
 				evenementFiscalService.publierOuvertureDroitPropriete(droit.getDateDebutMetier(), droit);
 			}
 
 			@Override
-			public void addUpdated(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutMetierPrecedente, String motifDebutPrecedent) {
+			public void onUpdateDateDebut(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutMetierInitiale, @Nullable String motifDebutInitial) {
 				// on publie l'événement fiscal correspondant
 				evenementFiscalService.publierModificationDroitPropriete(droit.getDateDebutMetier(), droit);
 			}
 
-			// note : l'émission des événements fiscaux de fermeture est faite dans le DateFinDroitsRFProcessor
+			@Override
+			public void onUpdateDateFin(@NotNull DroitProprieteRF droit, @Nullable RegDate dateFinMetierInitiale, @Nullable String motifFinInitial) {
+				// on publie l'événement fiscal correspondant
+				evenementFiscalService.publierModificationDroitPropriete(droit.getDateFinMetier(), droit);
+			}
+
+			@Override
+			public void onOtherUpdate(@NotNull DroitProprieteRF droit) {
+				// on publie l'événement fiscal correspondant
+				evenementFiscalService.publierModificationDroitPropriete(droit.getDateDebutMetier(), droit);
+			}
+
+			@Override
+			public void onClosing(@NotNull DroitProprieteRF droit) {
+				// on publie l'événement fiscal correspondant
+				evenementFiscalService.publierFermetureDroitPropriete(droit.getDateFinMetier(), droit);
+			}
 		};
 	}
 

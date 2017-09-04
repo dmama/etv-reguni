@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,6 +22,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
@@ -66,7 +70,7 @@ public class AffaireRF {
 	 * @param immeuble   l'immeuble concerné
 	 * @param droits     les droits de l'immeuble (sans les droits annulés)
 	 */
-	public AffaireRF(@NotNull RegDate dateValeur, @NotNull ImmeubleRF immeuble, @NotNull List<DroitProprieteRF> droits) {
+	public AffaireRF(@NotNull RegDate dateValeur, @NotNull ImmeubleRF immeuble, @NotNull Collection<DroitProprieteRF> droits) {
 		final RegDate veilleImport = dateValeur.getOneDayBefore();
 		this.dateValeur = dateValeur;
 		this.immeuble = immeuble;
@@ -102,53 +106,81 @@ public class AffaireRF {
 		ouverts.addAll(persisted);
 
 		// on met-à-jour tous les droits qui changent (c'est-à-dire les changements dans les raisons d'acquisition)
-		miseajour.forEach(p -> processMiseAJour(p.getFirst(), p.getSecond(), listener));
+		miseajour.forEach(p -> processMiseAJour(p.getFirst(), p.getSecond()));
 
 		// on ferme toutes les droits à fermer
 		fermes.forEach(this::processFermeture);
 
 		// on calcule tous les dates de début métier
-		final List<Mutation> mutations = new ArrayList<>(ouverts.size() + miseajour.size());
+		final List<Mutation> mutations = new ArrayList<>(fermes.size() + ouverts.size() + miseajour.size());
+		fermes.stream()
+				.map(d -> new Mutation(d, MutationType.CLOSING))
+				.forEach(mutations::add);
 		ouverts.stream()
 				.map(d -> new Mutation(d, MutationType.CREATION))
 				.forEach(mutations::add);
 		miseajour.stream()
 				.map(d -> new Mutation(d.getSecond(), MutationType.UPDATE))
 				.forEach(mutations::add);
-		calculateDatesDebutMetier(mutations, listener);
+		calculateDatesMetier(mutations, Context.APPLY, listener);
 	}
 
 	/**
-	 * Recalcule les dates de début <i>métier</i> des droits ouverts ou modifiés à la date de valeur des changements.
+	 * Recalcule les dates de début/fin <i>métier</i> des droits ouverts ou modifiés à la date de valeur des changements.
 	 *
 	 * @param listener un callback pour écouter les changements
 	 */
-	public void refreshDatesDebutMetier(@Nullable AffaireRFListener listener) {
+	public void refreshDatesMetier(@Nullable AffaireRFListener listener) {
 
 		// on recalcule tous les dates de début métier
-		final List<Mutation> mutations = new ArrayList<>(ouverts.size() + miseajour.size());
+		final List<Mutation> mutations = new ArrayList<>(fermes.size() + ouverts.size() + miseajour.size());
+		fermes.stream()
+				.map(d -> new Mutation(d, MutationType.CLOSING))
+				.forEach(mutations::add);
 		ouverts.stream()
-				.map(d -> new Mutation(d, MutationType.UPDATE)) // update : car l'événement de création a déjà été envoyé
+				.map(d -> new Mutation(d, MutationType.CREATION))
 				.forEach(mutations::add);
 		miseajour.stream()
 				.map(d -> new Mutation(d.getSecond(), MutationType.UPDATE))
 				.forEach(mutations::add);
-		calculateDatesDebutMetier(mutations, listener);
+		calculateDatesMetier(mutations, Context.REFRESH, listener);
+	}
+
+	/**
+	 * Calcule ou recalcule les dates de début/fin métier des droits spécifiés.
+	 *
+	 * @param mutations les droits et le context dans lequel ils sont traités
+	 * @param context   le context du calcul/recalcul des dates métier
+	 * @param listener  un callback pour écouter les changements
+	 */
+	private void calculateDatesMetier(@NotNull List<Mutation> mutations, @NotNull Context context, @Nullable AffaireRFListener listener) {
+
+		calculateDatesDebutMetier(mutations);
+		calculateDatesFinMetier(mutations);
+
+		// on notifie le listener des changements si nécessaire
+		if (listener != null) {
+			mutations.forEach(m -> m.notifyAudit(context, listener));
+		}
 	}
 
 	/**
 	 * Calcule ou recalcule les dates de début métier des droits spécifiés.
 	 *
 	 * @param mutations les droits et le context dans lequel ils sont traités
-	 * @param listener     un callback pour écouter les changements
 	 */
-	private void calculateDatesDebutMetier(@NotNull List<Mutation> mutations, @Nullable AffaireRFListener listener) {
+	private void calculateDatesDebutMetier(@NotNull List<Mutation> mutations) {
+
+		// on ne recalcule pas les dates de début sur les droits fermés (car ils dépendent d'une autre affaire)
+		final List<Mutation> filtered = mutations.stream()
+				.filter(m -> m.getType() == MutationType.CREATION || m.getType() == MutationType.UPDATE)
+				.collect(Collectors.toList());
 
 		// on calcule la date de début métier sur tous les droits
-		mutations.forEach(m -> m.calculateDateEtMotifDebut(findDroitPrecedent(m.getDroit())));
+		filtered.forEach(m -> m.calculateDateEtMotifDebut(findDroitPrecedent(m.getDroit())));
 
 		// on chercher la date de début métier la plus ancienne
-		final RaisonAcquisitionRF raisonAcquisition = mutations.stream()
+		final RaisonAcquisitionRF raisonAcquisition = filtered.stream()
 				.filter(m -> m.getDroit().getDateDebutMetier() != null || m.getDroit().getMotifDebut() != null)
 				.min(Comparator.comparing(m -> m.getDroit().getDateDebutMetier()))
 				.map(m -> new RaisonAcquisitionRF(m.getDroit().getDateDebutMetier(), m.getDroit().getMotifDebut(), null))
@@ -156,14 +188,9 @@ public class AffaireRF {
 
 		// [SIFISC-25583] on applique la date de début la plus ancienne sur tous les droits pour lesquels
 		// la date de début métiet n'a pas pu être calculée de manière traditionnelle.
-		mutations.stream()
+		filtered.stream()
 				.filter(m -> m.getDroit().getDateDebutMetier() == null && m.getDroit().getMotifDebut() == null)
 				.forEach(m -> m.setDebutRaisonAcquisition(raisonAcquisition));
-
-		// on notifie le listener des changements si nécessaire
-		if (listener != null) {
-			mutations.forEach(m -> m.notifyAudit(listener));
-		}
 	}
 
 	@NotNull
@@ -187,7 +214,7 @@ public class AffaireRF {
 		d.setDateFin(dateValeur.getOneDayBefore());
 	}
 
-	private void processMiseAJour(@NotNull DroitProprieteRF droit, @NotNull DroitProprieteRF persisted, @Nullable AffaireRFListener listener) {
+	private void processMiseAJour(@NotNull DroitProprieteRF droit, @NotNull DroitProprieteRF persisted) {
 		if (!masterIdAndVersionIdEquals(droit, persisted)) {
 			throw new IllegalArgumentException("Les mastersIdRF/versionIdRF sont différents : [" + droit.getMasterIdRF() + "/" + droit.getVersionIdRF() + "] " +
 					                                   "et [" + persisted.getMasterIdRF() + "/" + persisted.getVersionIdRF() + "]");
@@ -205,16 +232,17 @@ public class AffaireRF {
 
 		// on ajoute toutes les nouvelles raisons
 		toAdd.forEach(persisted::addRaisonAcquisition);
+	}
 
-		// le droit a été mis-à-jour, on notifie le listener
-		if (listener !=  null) {
-			listener.addUpdated(persisted, persisted.getDateDebutMetier(), persisted.getMotifDebut());
-		}
+	private enum Context {
+		APPLY,
+		REFRESH
 	}
 
 	private enum MutationType {
 		CREATION,
-		UPDATE
+		UPDATE,
+		CLOSING
 	}
 
 	private static class Mutation {
@@ -223,12 +251,16 @@ public class AffaireRF {
 
 		private final RegDate dateDebutInitiale;
 		private final String motifDebutInitial;
+		private final RegDate dateFinInitiale;
+		private final String motifFinInitial;
 
 		public Mutation(@NotNull DroitProprieteRF droit, @NotNull MutationType type) {
 			this.droit = droit;
 			this.type = type;
 			this.dateDebutInitiale = droit.getDateDebutMetier();
 			this.motifDebutInitial = droit.getMotifDebut();
+			this.dateFinInitiale = droit.getDateFinMetier();
+			this.motifFinInitial = droit.getMotifFin();
 		}
 
 		public DroitProprieteRF getDroit() {
@@ -281,21 +313,48 @@ public class AffaireRF {
 			}
 		}
 
-		public void notifyAudit(@NotNull AffaireRFListener listener) {
+		public void notifyAudit(@NotNull Context context, @NotNull AffaireRFListener listener) {
 
-			final RegDate dateDebutCourant = droit.getDateDebutMetier();
-			final String motifDebutCourant = droit.getMotifDebut();
+			final boolean debutChanged = droit.getDateDebutMetier() != dateDebutInitiale || !Objects.equals(droit.getMotifDebut(), motifDebutInitial);
+			final boolean finChanged = droit.getDateFinMetier() != dateFinInitiale || !Objects.equals(droit.getMotifFin(), motifFinInitial);
 
-			if ((dateDebutCourant != dateDebutInitiale || !Objects.equals(motifDebutCourant, motifDebutInitial))) {
-				if (type == MutationType.CREATION) {
-					listener.addCreated(droit);
-				}
-				else {
-					listener.addUpdated(droit, dateDebutInitiale, motifDebutInitial);
+			if (context == Context.REFRESH) {
+				if (debutChanged || finChanged) {
+					// dans le context de recalcul des dates métier, toutes les modifications sont des mises-à-jour (puisque les événements initiaux ont déjà été envoyés)
+					if (debutChanged) {
+						listener.onUpdateDateDebut(droit, dateDebutInitiale, motifDebutInitial);
+					}
+					if (finChanged) {
+						listener.onUpdateDateFin(droit, dateFinInitiale, motifFinInitial);
+					}
 				}
 			}
 			else {
-				listener.addUntouched(droit);
+				// dans le context de l'application d'une affaire, on notifie simplement chaque mutation en fonction de son type.
+				switch (type) {
+				case CREATION:
+					listener.onCreation(droit);
+					break;
+				case UPDATE:
+					if (debutChanged || finChanged) {
+						if (debutChanged) {
+							listener.onUpdateDateDebut(droit, dateDebutInitiale, motifDebutInitial);
+						}
+						if (finChanged) {
+							listener.onUpdateDateFin(droit, dateFinInitiale, motifFinInitial);
+						}
+					}
+					else {
+						// quelque chose d'autre à changé (par exemple : ajout d'une raison d'acquisition), on notifie quand même
+						listener.onOtherUpdate(droit);
+					}
+					break;
+				case CLOSING:
+					listener.onClosing(droit);
+					break;
+				default:
+					throw new IllegalArgumentException("Type de mutation inconnu = [" + type + "]");
+				}
 			}
 		}
 	}
@@ -324,4 +383,175 @@ public class AffaireRF {
 		// pas trouvé
 		return null;
 	}
-}
+
+	/**
+	 * [SIFISC-22997] Calcule ou recalcule les dates de fin métier des droits spécifiés.
+	 *
+	 * @param mutations les droits et le context dans lequel ils sont traités
+	 */
+	private void calculateDatesFinMetier(@NotNull List<Mutation> mutations) {
+
+		// on essaie d'abord de calculer les dates de fin en se basant sur les ayant-droits pour regrouper les droits.
+		calculateDatesFinMetier(mutations, GroupingStrategy.AYANT_DROIT);
+
+		// pour tous les droits sans date de fin métier, on se base sur la date technique de l'import (= regroupement de tous les droits ayant changé entre deux imports).
+		calculateDatesFinMetier(mutations, GroupingStrategy.DATE_TRANSACTION);
+	}
+
+	private void calculateDatesFinMetier(@NotNull List<Mutation> mutations, @NotNull GroupingStrategy groupingStrategy) {
+		final List<DroitProprieteRF> droits = mutations.stream()
+				// on ne recalcule pas les dates de fin sur les droits modifiés (car ils ne changent pas vraiment : seules leurs raisons d'acquisition changent)
+				.filter(m -> m.getType() == MutationType.CREATION || m.getType() == MutationType.CLOSING)
+				.map(Mutation::getDroit)
+				.sorted(new DateRangeComparator<>()) // tri par ordre croissant chronologique des dates d'import
+				.collect(Collectors.toList());
+
+		// on regroupe les droits en transactions pour pouvoir lier les débuts de certains droits aux fins des autres
+		final Map<GroupingKey, Transaction> transactions = new HashMap<>();
+		for (DroitProprieteRF droit : droits) {
+			if (droit.getDateFin() != null && droit.getDateFinMetier() == null) {
+				// le droit a été fermé, on l'ajoute à la liste des anciens droits
+				final RegDate dateTransaction = droit.getDateFin().getOneDayAfter();
+				final Transaction transaction = transactions.computeIfAbsent(groupingStrategy.newKey(dateTransaction, droit), key -> new Transaction(key.getDateTransaction()));
+				transaction.addAncientDroit(droit);
+			}
+			if (droit.getDateDebut() != null) {
+				// le droit a été ouvert, on l'ajoute à la liste des nouveaux droits
+				final RegDate dateTransaction = droit.getDateDebut();
+				final Transaction transaction = transactions.get(groupingStrategy.newKey(dateTransaction, droit));
+				if (transaction != null) {  // la transaction peut ne pas exister si tous les anciens droits avaient déjà une date de fin métier
+					transaction.addNouveauDroit(droit);
+				}
+			}
+		}
+
+		// on processe chaque transaction
+		transactions.values().forEach(Transaction::processTransaction);
+	}
+
+	/**
+	 * Stratégie de regroupement des droits en transaction pour la détermination des dates de fin.
+	 */
+	private enum GroupingStrategy {
+		/**
+		 * Regroupement des droits basé sur le couple date d'import + id de l'ayant-droit (critère le plus précis). Utilisé principalement pour détecter les évolutions (changement de quote-part) du droit de propriété d'un propriétaire.
+		 */
+		AYANT_DROIT {
+			@Override
+			public GroupingKey newKey(@NotNull RegDate dateTransaction, DroitProprieteRF droit) {
+				return new GroupingKey(dateTransaction, null, droit.getAyantDroit().getId());
+			}
+		},
+		/**
+		 * Regroupement des droits basé sur la date d'import (critère le plus large). Utilisé en dernier recours lorsque tous les autres modes de regroupement ont échoué.
+		 */
+		DATE_TRANSACTION {
+			@Override
+			public GroupingKey newKey(@NotNull RegDate dateTransaction, DroitProprieteRF droit) {
+				return new GroupingKey(dateTransaction, null, null);
+			}
+		};
+
+		/**
+		 * Crée une clé de regroupement de droits basée sur les paramètres et le mode spécifiés.
+		 *
+		 * @param dateTransaction la date de la transaction
+		 * @param droit           le droit concerné
+		 * @return une clé de regroupement.
+		 */
+		public abstract GroupingKey newKey(@NotNull RegDate dateTransaction, DroitProprieteRF droit);
+	}
+
+	/**
+	 * Clé de regroupement des droits en transactions pour la détermination des dates de fin.
+	 */
+	private static class GroupingKey {
+		@NotNull
+		private final RegDate dateTransaction;
+		@Nullable
+		private final String masterId;
+		@Nullable
+		private final Long ayantDroitId;
+
+		public GroupingKey(@NotNull RegDate dateTransaction, @Nullable String masterId, @Nullable Long ayantDroitId) {
+			this.dateTransaction = dateTransaction;
+			this.masterId = masterId;
+			this.ayantDroitId = ayantDroitId;
+		}
+
+		@NotNull
+		public RegDate getDateTransaction() {
+			return dateTransaction;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			final GroupingKey that = (GroupingKey) o;
+			return Objects.equals(dateTransaction, that.dateTransaction) &&
+					Objects.equals(masterId, that.masterId) &&
+					Objects.equals(ayantDroitId, that.ayantDroitId);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(dateTransaction, masterId, ayantDroitId);
+		}
+	}
+
+	/**
+	 * Représentation d'une transaction constituté de ventes et d'achats simultanés (ou considérés comme tels) concernant un immeuble particulier.
+	 */
+	private static class Transaction {
+
+		private static final String MOTIF_ACHAT = "Achat";
+		private static final String MOTIF_VENTE = "Vente";
+
+		private final RegDate dateTransaction;
+		private final List<DroitRF> anciensDroits = new ArrayList<>();
+		private final List<DroitRF> nouveauxDroits = new ArrayList<>();
+
+		public Transaction(RegDate dateTransaction) {
+			this.dateTransaction = dateTransaction;
+		}
+
+		/**
+		 * Processe la transaction, c'est-à-dire recherche la date début <i>métier</i> de nouveaux droits (selon les règles fournies par Raphaël Carbo) et ferme les anciens droits à la même date.
+		 */
+		public void processTransaction() {
+
+			// on détermine le nouveau droit qui va être utilisé pour fermer les anciens droits
+			final DroitRF droitReference = nouveauxDroits.stream()
+					.filter(d -> d.getDateDebutMetier() != null)
+					.min(Comparator.comparing(DroitRF::getDateDebutMetier))     // on prend le droit avec la date la plus ancienne
+					.orElse(null);
+
+			if (droitReference != null) {
+				// on ferme les anciens droits à la même date que la date de début du droit de référence (voir SIFISC-23525)
+				fermeAnciensDroits(droitReference.getDateDebutMetier(), determineMotifFin(droitReference.getMotifDebut()));
+			}
+		}
+
+		/**
+		 * [SIFISC-23525] dito: "le motif de fin de l'ancien droit doit être égal au motif du nouveau droit, sauf pour le motif "achat" qui doit être traduit en "vente"."
+		 */
+		private static String determineMotifFin(String motifDebut) {
+			return MOTIF_ACHAT.equals(motifDebut) ? MOTIF_VENTE : motifDebut;
+		}
+
+		public void addAncientDroit(DroitRF d) {
+			anciensDroits.add(d);
+		}
+
+		public void addNouveauDroit(DroitRF d) {
+			nouveauxDroits.add(d);
+		}
+
+		private void fermeAnciensDroits(RegDate dateFinMetier, String motifFin) {
+			anciensDroits.forEach(d -> {
+				d.setDateFinMetier(dateFinMetier);
+				d.setMotifFin(motifFin);
+			});
+		}
+	}}

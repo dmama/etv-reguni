@@ -48,7 +48,8 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 
 			addTableSimple(new float[]{.6f, .4f}, table -> {
 				table.addLigne("Nombre d'immeubles traités :", String.valueOf(results.getProcessed().size()));
-				table.addLigne("Nombre de droits modifiés :", String.valueOf(results.getUpdated().size()));
+				table.addLigne("Nombre de date de début modifiées :", String.valueOf(results.getDebutUpdated().size()));
+				table.addLigne("Nombre de date de fin modifiés :", String.valueOf(results.getFinUpdated().size()));
 				table.addLigne("Nombre de droits non-modifiés :", String.valueOf(results.getUntouched().size()));
 				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
 				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
@@ -66,12 +67,22 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 			}
 		}
 
-		// Droits modifiés
+		// Droits avec dates de début modifiées
 		{
-			final String filename = "droits_modifies.csv";
-			final String titre = "Liste des droits modifiés";
+			final String filename = "droits_dates_debut_modifiees.csv";
+			final String titre = "Liste des droits avec dates de début modifiées";
 			final String listeVide = "(aucun)";
-			try (TemporaryFile contenu = genererDroitsModifies(results.getUpdated(), filename, status)) {
+			try (TemporaryFile contenu = genererDroitsDebutModifies(results.getDebutUpdated(), filename, status)) {
+				addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			}
+		}
+
+		// Droits avec dates de fin modifiées
+		{
+			final String filename = "droits_dates_fin_modifiees.csv";
+			final String titre = "Liste des droits avec dates de fin modifiées";
+			final String listeVide = "(aucun)";
+			try (TemporaryFile contenu = genererDroitsFinModifies(results.getFinUpdated(), filename, status)) {
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
 			}
 		}
@@ -132,8 +143,8 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 		});
 	}
 
-	private TemporaryFile genererDroitsModifies(List<RattraperDatesDebutDroitRFProcessorResults.Updated> liste, String filename, StatusManager status) {
-		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesDebutDroitRFProcessorResults.Updated>() {
+	private TemporaryFile genererDroitsDebutModifies(List<RattraperDatesDebutDroitRFProcessorResults.DebutUpdated> liste, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesDebutDroitRFProcessorResults.DebutUpdated>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("DROIT_ID").append(COMMA);
@@ -141,27 +152,62 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 				b.append("EGRID").append(COMMA);
 				b.append("DATE_DEBUT_TECHNIQUE").append(COMMA);
 				b.append("DATE_FIN_TECHNIQUE").append(COMMA);
-				b.append("DATE_DEBUT_METIER_ORIGINALE").append(COMMA);
-				b.append("MOTIF_DEBUT_ORIGINAL").append(COMMA);
-				b.append("DATE_DEBUT_METIER_CORRIGEE").append(COMMA);
-				b.append("MOTIF_DEBUT_CORRIGE").append(COMMA);
+				b.append("DATE_DEBUT_METIER_INITIALE").append(COMMA);
+				b.append("MOTIF_DEBUT_INITIAL").append(COMMA);
+				b.append("DATE_DEBUT_METIER_MODIFIEE").append(COMMA);
+				b.append("MOTIF_DEBUT_MODIFIE").append(COMMA);
 				b.append("DATE_FIN_METIER").append(COMMA);
 				b.append("MOTIF_FIN");
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesDebutDroitRFProcessorResults.Updated elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesDebutDroitRFProcessorResults.DebutUpdated elt) {
 				b.append(elt.getDroitId()).append(COMMA);
 				b.append(elt.getImmeubleId()).append(COMMA);
 				b.append(elt.getEgrid()).append(COMMA);
 				b.append(elt.getDateDebut()).append(COMMA);
 				b.append(elt.getDateFin()).append(COMMA);
-				b.append(elt.getDateDebutMetierOriginale()).append(COMMA);
-				b.append(CsvHelper.asCsvField(elt.getMotifDebutOriginal())).append(COMMA);
+				b.append(elt.getDateDebutMetierInitiale()).append(COMMA);
+				b.append(CsvHelper.asCsvField(elt.getMotifDebutInitial())).append(COMMA);
 				b.append(elt.getDateDebutMetierCorrigee()).append(COMMA);
-				b.append(CsvHelper.asCsvField(elt.getMotifDebutCorrige()));
+				b.append(CsvHelper.asCsvField(elt.getMotifDebutCorrige())).append(COMMA);
 				b.append(elt.getDateFinMetier()).append(COMMA);
 				b.append(CsvHelper.asCsvField(elt.getMotifFin()));
+				return true;
+			}
+		});
+	}
+
+	private TemporaryFile genererDroitsFinModifies(List<RattraperDatesDebutDroitRFProcessorResults.FinUpdated> liste, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesDebutDroitRFProcessorResults.FinUpdated>() {
+			@Override
+			public void fillHeader(CsvHelper.LineFiller b) {
+				b.append("DROIT_ID").append(COMMA);
+				b.append("IMMEUBLE_ID").append(COMMA);
+				b.append("EGRID").append(COMMA);
+				b.append("DATE_DEBUT_TECHNIQUE").append(COMMA);
+				b.append("DATE_FIN_TECHNIQUE").append(COMMA);
+				b.append("DATE_DEBUT_METIER").append(COMMA);
+				b.append("MOTIF_DEBUT").append(COMMA);
+				b.append("DATE_FIN_METIER_INITIALE").append(COMMA);
+				b.append("MOTIF_FIN_INITIAL").append(COMMA);
+				b.append("DATE_FIN_METIER_MODIFIEE").append(COMMA);
+				b.append("MOTIF_FIN_MODIFIE");
+			}
+
+			@Override
+			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesDebutDroitRFProcessorResults.FinUpdated elt) {
+				b.append(elt.getDroitId()).append(COMMA);
+				b.append(elt.getImmeubleId()).append(COMMA);
+				b.append(elt.getEgrid()).append(COMMA);
+				b.append(elt.getDateDebut()).append(COMMA);
+				b.append(elt.getDateFin()).append(COMMA);
+				b.append(elt.getDateDebutMetier()).append(COMMA);
+				b.append(CsvHelper.asCsvField(elt.getMotifDebut())).append(COMMA);
+				b.append(elt.getDateFinMetierInitiale()).append(COMMA);
+				b.append(CsvHelper.asCsvField(elt.getMotifFinInitial())).append(COMMA);
+				b.append(elt.getDateFinMetierCorrigee()).append(COMMA);
+				b.append(CsvHelper.asCsvField(elt.getMotifFinCorrige()));
 				return true;
 			}
 		});
