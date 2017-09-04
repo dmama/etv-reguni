@@ -82,7 +82,7 @@ import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport;
-import ch.vd.uniregctb.document.RattraperDatesDebutDroitProcessorRapport;
+import ch.vd.uniregctb.document.RattraperDatesMetierDroitProcessorRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
@@ -131,7 +131,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
-import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFProcessorResults;
+import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
 import ch.vd.uniregctb.role.RolePMCommunesResults;
@@ -770,11 +770,11 @@ public interface RapportService {
 	MigrationMandatairesSpeciauxRapport generateRapport(MigrationMandatImporterResults results, StatusManager status);
 
 	/**
-	 * Génère le rapport d'exécution du batch de rattrapage des dates de début des droits RF.
+	 * Génère le rapport d'exécution du batch de rattrapage des dates métier des droits RF.
 	 *
 	 * @param results le résultat du batch
 	 * @param status le status manager
 	 * @return le rapport
 	 */
-	RattraperDatesDebutDroitProcessorRapport generateRapport(RattraperDatesDebutDroitRFProcessorResults results, StatusManager status);
+	RattraperDatesMetierDroitProcessorRapport generateRapport(RattraperDatesMetierDroitRFProcessorResults results, StatusManager status);
 }

@@ -10,14 +10,14 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFProcessorResults;
+import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults;
 
 /**
- * Générateur du rapport PDF d'exécution du batch batch de rattrapage des dates de début des droits RF
+ * Générateur du rapport PDF d'exécution du batch batch de rattrapage des dates métier des droits RF
  */
-public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
+public class PdfRattrapageDatesMetierDroitRFRapport extends PdfRapport {
 
-	public void write(final RattraperDatesDebutDroitRFProcessorResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
+	public void write(final RattraperDatesMetierDroitRFProcessorResults results, String nom, String description, final Date dateGeneration, OutputStream os, StatusManager status) throws Exception {
 		Assert.notNull(status);
 
 		// Création du document PDF
@@ -27,7 +27,7 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport du rattrapage des dates de début des droits RF.");
+		addTitrePrincipal("Rapport du rattrapage des dates métier des droits RF.");
 
 		// Paramètres
 		addEntete1("Paramètres");
@@ -112,8 +112,8 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private TemporaryFile genererImmeublesTraites(List<RattraperDatesDebutDroitRFProcessorResults.Processed> liste, String filename, StatusManager status) {
-		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesDebutDroitRFProcessorResults.Processed>() {
+	private TemporaryFile genererImmeublesTraites(List<RattraperDatesMetierDroitRFProcessorResults.Processed> liste, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesMetierDroitRFProcessorResults.Processed>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("IMMEUBLE_ID").append(COMMA);
@@ -128,7 +128,7 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesDebutDroitRFProcessorResults.Processed elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesMetierDroitRFProcessorResults.Processed elt) {
 				b.append(elt.getImmeubleId()).append(COMMA);
 				b.append(elt.getEgrid()).append(COMMA);
 				b.append(elt.getIdRF()).append(COMMA);
@@ -143,8 +143,8 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 		});
 	}
 
-	private TemporaryFile genererDroitsDebutModifies(List<RattraperDatesDebutDroitRFProcessorResults.DebutUpdated> liste, String filename, StatusManager status) {
-		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesDebutDroitRFProcessorResults.DebutUpdated>() {
+	private TemporaryFile genererDroitsDebutModifies(List<RattraperDatesMetierDroitRFProcessorResults.DebutUpdated> liste, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesMetierDroitRFProcessorResults.DebutUpdated>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("DROIT_ID").append(COMMA);
@@ -161,7 +161,7 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesDebutDroitRFProcessorResults.DebutUpdated elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesMetierDroitRFProcessorResults.DebutUpdated elt) {
 				b.append(elt.getDroitId()).append(COMMA);
 				b.append(elt.getImmeubleId()).append(COMMA);
 				b.append(elt.getEgrid()).append(COMMA);
@@ -178,8 +178,8 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 		});
 	}
 
-	private TemporaryFile genererDroitsFinModifies(List<RattraperDatesDebutDroitRFProcessorResults.FinUpdated> liste, String filename, StatusManager status) {
-		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesDebutDroitRFProcessorResults.FinUpdated>() {
+	private TemporaryFile genererDroitsFinModifies(List<RattraperDatesMetierDroitRFProcessorResults.FinUpdated> liste, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesMetierDroitRFProcessorResults.FinUpdated>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("DROIT_ID").append(COMMA);
@@ -196,7 +196,7 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesDebutDroitRFProcessorResults.FinUpdated elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesMetierDroitRFProcessorResults.FinUpdated elt) {
 				b.append(elt.getDroitId()).append(COMMA);
 				b.append(elt.getImmeubleId()).append(COMMA);
 				b.append(elt.getEgrid()).append(COMMA);
@@ -213,8 +213,8 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 		});
 	}
 
-	private TemporaryFile genererDroitsNonModifies(List<RattraperDatesDebutDroitRFProcessorResults.Untouched> liste, String filename, StatusManager status) {
-		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesDebutDroitRFProcessorResults.Untouched>() {
+	private TemporaryFile genererDroitsNonModifies(List<RattraperDatesMetierDroitRFProcessorResults.Untouched> liste, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<RattraperDatesMetierDroitRFProcessorResults.Untouched>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("DROIT_ID").append(COMMA);
@@ -229,7 +229,7 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesDebutDroitRFProcessorResults.Untouched elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesMetierDroitRFProcessorResults.Untouched elt) {
 				b.append(elt.getDroitId()).append(COMMA);
 				b.append(elt.getImmeubleId()).append(COMMA);
 				b.append(elt.getEgrid()).append(COMMA);
@@ -244,8 +244,8 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 		});
 	}
 
-	private TemporaryFile asCsvFileErreurs(List<RattraperDatesDebutDroitRFProcessorResults.Erreur> erreurs, String filename, StatusManager status) {
-		return CsvHelper.asCsvTemporaryFile(erreurs, filename, status, new CsvHelper.FileFiller<RattraperDatesDebutDroitRFProcessorResults.Erreur>() {
+	private TemporaryFile asCsvFileErreurs(List<RattraperDatesMetierDroitRFProcessorResults.Erreur> erreurs, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(erreurs, filename, status, new CsvHelper.FileFiller<RattraperDatesMetierDroitRFProcessorResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("IMMEUBLE_ID").append(COMMA);
@@ -254,7 +254,7 @@ public class PdfRattrapageDatesDebutDroitRFRapport extends PdfRapport {
 			}
 
 			@Override
-			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesDebutDroitRFProcessorResults.Erreur elt) {
+			public boolean fillLine(CsvHelper.LineFiller b, RattraperDatesMetierDroitRFProcessorResults.Erreur elt) {
 				b.append(elt.getImmeubleId()).append(COMMA);
 				b.append(elt.getEgrid()).append(COMMA);
 				b.append(CsvHelper.asCsvField(elt.getMessage()));

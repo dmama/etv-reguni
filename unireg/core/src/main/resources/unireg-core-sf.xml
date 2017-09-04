@@ -236,7 +236,7 @@
 		<value>ch.vd.uniregctb.document.CleanupRFProcessorRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiFormulairesDemandeDegrevementICIRapport</value>
 		<value>ch.vd.uniregctb.document.RappelFormulairesDemandeDegrevementICIRapport</value>
-		<value>ch.vd.uniregctb.document.RattraperDatesDebutDroitProcessorRapport</value>
+		<value>ch.vd.uniregctb.document.RattraperDatesMetierDroitProcessorRapport</value>
 		<value>ch.vd.uniregctb.document.FinsDeDroitRFRapport</value>
 		<value>ch.vd.uniregctb.document.InitialisationIFoncRapport</value>
 		<value>ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport</value>

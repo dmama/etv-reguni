@@ -115,10 +115,10 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
-	<bean id="rattraperDatesDebutDroitRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFJob">
+	<bean id="rattraperDatesMetierDroitRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFJob">
 		<constructor-arg value="112"/>
-		<constructor-arg value="Recalculer les dates de début des droits RF"/>
-		<property name="processor" ref="rattraperDatesDebutDroitRFProcessor"/>
+		<constructor-arg value="Recalculer les dates de début/fin métier des droits RF"/>
+		<property name="processor" ref="rattraperDatesMetierDroitRFProcessor"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 

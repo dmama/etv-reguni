@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.document.RattraperDatesDebutDroitProcessorRapport;
+import ch.vd.uniregctb.document.RattraperDatesMetierDroitProcessorRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -15,19 +15,19 @@ import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamString;
 
-public class RattraperDatesDebutDroitRFJob extends JobDefinition {
+public class RattraperDatesMetierDroitRFJob extends JobDefinition {
 
-	//private static final Logger LOGGER = LoggerFactory.getLogger(RattraperDatesDebutDroitRFJob.class);
+	//private static final Logger LOGGER = LoggerFactory.getLogger(RattraperDatesMetierDroitRFJob.class);
 
-	public static final String NAME = "RattraperDatesDebutDroitRFJob";
+	public static final String NAME = "RattraperDatesMetierDroitRFJob";
 	public static final String DATA_SELECTION = "DATA_SELECTION";
 	public static final String IMMEUBLE_IDS = "IMMEUBLE_IDS";
 	public static final String NB_THREADS = "NB_THREADS";
 
-	private RattraperDatesDebutDroitRFProcessor processor;
+	private RattraperDatesMetierDroitRFProcessor processor;
 	private RapportService rapportService;
 
-	public RattraperDatesDebutDroitRFJob(int sortOrder, String description) {
+	public RattraperDatesMetierDroitRFJob(int sortOrder, String description) {
 		super(NAME, JobCategory.RF, sortOrder, description);
 
 		final JobParam param1 = new JobParam();
@@ -69,13 +69,13 @@ public class RattraperDatesDebutDroitRFJob extends JobDefinition {
 		}
 
 		// démarrage du rattrapage
-		final RattraperDatesDebutDroitRFProcessorResults results = processor.process(dataSelection, immeubleIds, nbThreads, getStatusManager());
-		final RattraperDatesDebutDroitProcessorRapport rapport = rapportService.generateRapport(results, getStatusManager());
+		final RattraperDatesMetierDroitRFProcessorResults results = processor.process(dataSelection, immeubleIds, nbThreads, getStatusManager());
+		final RattraperDatesMetierDroitProcessorRapport rapport = rapportService.generateRapport(results, getStatusManager());
 		setLastRunReport(rapport);
-		Audit.success("Le traitement de l'import RF (détection des mutations) est terminé.", rapport);
+		Audit.success("Le rattrapage des dates métier des droits RF est terminé.", rapport);
 	}
 
-	public void setProcessor(RattraperDatesDebutDroitRFProcessor processor) {
+	public void setProcessor(RattraperDatesMetierDroitRFProcessor processor) {
 		this.processor = processor;
 	}
 

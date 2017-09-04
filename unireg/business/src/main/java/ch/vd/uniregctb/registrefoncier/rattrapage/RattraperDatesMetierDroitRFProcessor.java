@@ -35,19 +35,19 @@ import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRFListener;
 
-public class RattraperDatesDebutDroitRFProcessor {
+public class RattraperDatesMetierDroitRFProcessor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RattraperDatesDebutDroitRFProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RattraperDatesMetierDroitRFProcessor.class);
 
 	private final ImmeubleRFDAO immeubleRFDAO;
 	private final PlatformTransactionManager transactionManager;
 	private final RegistreFoncierService registreFoncierService;
 	private final EvenementFiscalService evenementFiscalService;
 
-	public RattraperDatesDebutDroitRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO,
-	                                           @NotNull PlatformTransactionManager transactionManager,
-	                                           @NotNull RegistreFoncierService registreFoncierService,
-	                                           @NotNull EvenementFiscalService evenementFiscalService) {
+	public RattraperDatesMetierDroitRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO,
+	                                            @NotNull PlatformTransactionManager transactionManager,
+	                                            @NotNull RegistreFoncierService registreFoncierService,
+	                                            @NotNull EvenementFiscalService evenementFiscalService) {
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.transactionManager = transactionManager;
 		this.registreFoncierService = registreFoncierService;
@@ -61,10 +61,10 @@ public class RattraperDatesDebutDroitRFProcessor {
 	 * @param sm            un statut manager
 	 * @return les résultats du processing
 	 */
-	public RattraperDatesDebutDroitRFProcessorResults process(@NotNull RattrapageDataSelection dataSelection,
-	                                                          @Nullable List<Long> immeubleIds,
-	                                                          int nbThreads,
-	                                                          @Nullable StatusManager sm) {
+	public RattraperDatesMetierDroitRFProcessorResults process(@NotNull RattrapageDataSelection dataSelection,
+	                                                           @Nullable List<Long> immeubleIds,
+	                                                           int nbThreads,
+	                                                           @Nullable StatusManager sm) {
 
 		final StatusManager statusManager = (sm == null ? new LoggingStatusManager(LOGGER) : sm);
 
@@ -77,18 +77,18 @@ public class RattraperDatesDebutDroitRFProcessor {
 			ids = findImmeubleIdsToProcess();
 		}
 
-		final RattraperDatesDebutDroitRFProcessorResults rapportFinal = new RattraperDatesDebutDroitRFProcessorResults(dataSelection, nbThreads, immeubleRFDAO, registreFoncierService);
+		final RattraperDatesMetierDroitRFProcessorResults rapportFinal = new RattraperDatesMetierDroitRFProcessorResults(dataSelection, nbThreads, immeubleRFDAO, registreFoncierService);
 
 		// on traite chaque immeuble
 		final SimpleProgressMonitor monitor = new SimpleProgressMonitor();
-		final ParallelBatchTransactionTemplateWithResults<Long, RattraperDatesDebutDroitRFProcessorResults> template =
+		final ParallelBatchTransactionTemplateWithResults<Long, RattraperDatesMetierDroitRFProcessorResults> template =
 				new ParallelBatchTransactionTemplateWithResults<>(ids, 100, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, AuthenticationInterface.INSTANCE);
-		template.execute(rapportFinal, new BatchWithResultsCallback<Long, RattraperDatesDebutDroitRFProcessorResults>() {
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, RattraperDatesMetierDroitRFProcessorResults>() {
 
 			private final ThreadLocal<Long> first = new ThreadLocal<>();
 
 			@Override
-			public boolean doInTransaction(List<Long> immeubleIds, RattraperDatesDebutDroitRFProcessorResults rapport) throws Exception {
+			public boolean doInTransaction(List<Long> immeubleIds, RattraperDatesMetierDroitRFProcessorResults rapport) throws Exception {
 				first.set(immeubleIds.get(0));
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Processing immovables properties ids={}", Arrays.toString(immeubleIds.toArray()));
@@ -107,8 +107,8 @@ public class RattraperDatesDebutDroitRFProcessor {
 			}
 
 			@Override
-			public RattraperDatesDebutDroitRFProcessorResults createSubRapport() {
-				return new RattraperDatesDebutDroitRFProcessorResults(dataSelection, nbThreads, immeubleRFDAO, registreFoncierService);
+			public RattraperDatesMetierDroitRFProcessorResults createSubRapport() {
+				return new RattraperDatesMetierDroitRFProcessorResults(dataSelection, nbThreads, immeubleRFDAO, registreFoncierService);
 			}
 		}, monitor);
 
@@ -116,7 +116,7 @@ public class RattraperDatesDebutDroitRFProcessor {
 		return rapportFinal;
 	}
 
-	void processImmeuble(long id, @NotNull RattraperDatesDebutDroitRFProcessorResults rapport) {
+	void processImmeuble(long id, @NotNull RattraperDatesMetierDroitRFProcessorResults rapport) {
 		final ImmeubleRF immeuble = immeubleRFDAO.get(id);
 		if (immeuble == null) {
 			throw new ObjectNotFoundException("L'immeuble avec l'id=[" + id + "] n'existe pas");
@@ -132,7 +132,7 @@ public class RattraperDatesDebutDroitRFProcessor {
 
 		// on déduit les dates d'import où les droits ont été modifiés à partir de leurs dates de début/fin
 		final Set<RegDate> datesImport = droits.stream()
-				.map(RattraperDatesDebutDroitRFProcessor::extractDatesImport)
+				.map(RattraperDatesMetierDroitRFProcessor::extractDatesImport)
 				.flatMap(Collection::stream)
 				.collect(Collectors.toSet());
 

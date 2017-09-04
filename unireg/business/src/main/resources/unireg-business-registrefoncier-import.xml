@@ -177,7 +177,7 @@
 		<constructor-arg ref="cleanupImportRFRetainSize"/>
 	</bean>
 
-	<bean id="rattraperDatesDebutDroitRFProcessor" class="ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFProcessor">
+	<bean id="rattraperDatesMetierDroitRFProcessor" class="ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessor">
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="transactionManager" />
 		<constructor-arg ref="serviceRF" />
