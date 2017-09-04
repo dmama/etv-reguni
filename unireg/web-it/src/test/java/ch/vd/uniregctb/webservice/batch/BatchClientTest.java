@@ -61,7 +61,7 @@ public class BatchClientTest extends WebitTest {
 		assertEquals("TraiterMutationsRFJob", list.get(i++));
 		assertEquals("RapprocherTiersRFJob", list.get(i++));
 		assertEquals("CleanupImportRFJob", list.get(i++));
-		assertEquals("RattraperDatesDebutDroitRFJob", list.get(i++));
+		assertEquals("RattraperDatesMetierDroitRFJob", list.get(i++));
 		assertEquals("DeterminerMouvementsDossiersEnMasseJob", list.get(i++));
 		assertEquals("ResolutionAdresseJob", list.get(i++));
 		assertEquals("ComparerSituationFamilleJob", list.get(i++));

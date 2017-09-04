@@ -97,7 +97,7 @@ import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport;
-import ch.vd.uniregctb.document.RattraperDatesDebutDroitProcessorRapport;
+import ch.vd.uniregctb.document.RattraperDatesMetierDroitProcessorRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
@@ -149,7 +149,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
-import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFProcessorResults;
+import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
 import ch.vd.uniregctb.role.RolePMCommunesResults;
@@ -1910,16 +1910,16 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 	}
 
 	@Override
-	public RattraperDatesDebutDroitProcessorRapport generateRapport(RattraperDatesDebutDroitRFProcessorResults results, StatusManager s) {
+	public RattraperDatesMetierDroitProcessorRapport generateRapport(RattraperDatesMetierDroitRFProcessorResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final String nom = "RapportRattrapageDatesDebutDroitRF";
-		final String description = "Rapport d'exécution du job de rattrapage des dates de début des droits RF.";
+		final String nom = "RapportRattrapageDatesMetierDroitRF";
+		final String description = "Rapport d'exécution du job de rattrapage des dates métier des droits RF.";
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(RattraperDatesDebutDroitProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
-				final PdfRattrapageDatesDebutDroitRFRapport document = new PdfRattrapageDatesDebutDroitRFRapport();
+			return docService.newDoc(RattraperDatesMetierDroitProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRattrapageDatesMetierDroitRFRapport document = new PdfRattrapageDatesMetierDroitRFRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

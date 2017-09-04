@@ -38,20 +38,20 @@ import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
-import static ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFProcessorResults.DebutUpdated;
-import static ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFProcessorResults.Processed;
-import static ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesDebutDroitRFProcessorResults.Untouched;
+import static ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults.DebutUpdated;
+import static ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults.Processed;
+import static ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults.Untouched;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class RattraperDatesDebutDroitRFProcessorTest extends BusinessTest {
+public class RattraperDatesMetierDroitRFProcessorTest extends BusinessTest {
 
 	private CommuneRFDAO communeRFDAO;
 	private ImmeubleRFDAO immeubleRFDAO;
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private DroitRFDAO droitRFDAO;
-	private RattraperDatesDebutDroitRFProcessor processor;
+	private RattraperDatesMetierDroitRFProcessor processor;
 	private RegistreFoncierService registreFoncierService;
 	private EvenementFiscalDAO evenementFiscalDAO;
 
@@ -62,7 +62,7 @@ public class RattraperDatesDebutDroitRFProcessorTest extends BusinessTest {
 		immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
 		ayantDroitRFDAO = getBean(AyantDroitRFDAO.class, "ayantDroitRFDAO");
 		droitRFDAO = getBean(DroitRFDAO.class, "droitRFDAO");
-		processor = getBean(RattraperDatesDebutDroitRFProcessor.class, "rattraperDatesDebutDroitRFProcessor");
+		processor = getBean(RattraperDatesMetierDroitRFProcessor.class, "rattraperDatesMetierDroitRFProcessor");
 		registreFoncierService = getBean(RegistreFoncierService.class, "serviceRF");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	}
@@ -170,7 +170,7 @@ public class RattraperDatesDebutDroitRFProcessorTest extends BusinessTest {
 		});
 
 		doInNewTransaction(status -> {
-			final RattraperDatesDebutDroitRFProcessorResults rapport = new RattraperDatesDebutDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
+			final RattraperDatesMetierDroitRFProcessorResults rapport = new RattraperDatesMetierDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
 			processor.processImmeuble(ids.immeuble, rapport);
 
 			// l'immeuble est processé
@@ -377,7 +377,7 @@ public class RattraperDatesDebutDroitRFProcessorTest extends BusinessTest {
 		});
 
 		doInNewTransaction(status -> {
-			final RattraperDatesDebutDroitRFProcessorResults rapport = new RattraperDatesDebutDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
+			final RattraperDatesMetierDroitRFProcessorResults rapport = new RattraperDatesMetierDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
 			processor.processImmeuble(ids.immeuble, rapport);
 
 			// l'immeuble est processé
@@ -510,7 +510,7 @@ public class RattraperDatesDebutDroitRFProcessorTest extends BusinessTest {
 
 		// on détecte les dates métiers manquantes sur les droits
 		doInNewTransaction(status -> {
-			final RattraperDatesDebutDroitRFProcessorResults rapport = new RattraperDatesDebutDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
+			final RattraperDatesMetierDroitRFProcessorResults rapport = new RattraperDatesMetierDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
 			processor.processImmeuble(id, rapport);
 			return null;
 		});
@@ -556,7 +556,7 @@ public class RattraperDatesDebutDroitRFProcessorTest extends BusinessTest {
 
 		// on démarre le batch
 		doInNewTransaction(status -> {
-			final RattraperDatesDebutDroitRFProcessorResults rapport = new RattraperDatesDebutDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
+			final RattraperDatesMetierDroitRFProcessorResults rapport = new RattraperDatesMetierDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
 			processor.processImmeuble(id, rapport);
 			return null;
 		});
@@ -612,7 +612,7 @@ public class RattraperDatesDebutDroitRFProcessorTest extends BusinessTest {
 
 		// on détecte les dates métiers manquantes sur les droits
 		doInNewTransaction(status -> {
-			final RattraperDatesDebutDroitRFProcessorResults rapport = new RattraperDatesDebutDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
+			final RattraperDatesMetierDroitRFProcessorResults rapport = new RattraperDatesMetierDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
 			processor.processImmeuble(id, rapport);
 			return null;
 		});
@@ -692,7 +692,7 @@ public class RattraperDatesDebutDroitRFProcessorTest extends BusinessTest {
 
 		// on calcule les dates métiers manquantes sur les droits
 		doInNewTransaction(status -> {
-			final RattraperDatesDebutDroitRFProcessorResults rapport = new RattraperDatesDebutDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
+			final RattraperDatesMetierDroitRFProcessorResults rapport = new RattraperDatesMetierDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
 			processor.processImmeuble(ids.immeuble, rapport);
 			return null;
 		});
@@ -784,7 +784,7 @@ public class RattraperDatesDebutDroitRFProcessorTest extends BusinessTest {
 
 		// on calcule les dates métiers manquantes sur les droits
 		doInNewTransaction(status -> {
-			final RattraperDatesDebutDroitRFProcessorResults rapport = new RattraperDatesDebutDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
+			final RattraperDatesMetierDroitRFProcessorResults rapport = new RattraperDatesMetierDroitRFProcessorResults(RattrapageDataSelection.EXPLICIT_SELECTION, 1, immeubleRFDAO, registreFoncierService);
 			processor.processImmeuble(immeubleId, rapport);
 			return null;
 		});

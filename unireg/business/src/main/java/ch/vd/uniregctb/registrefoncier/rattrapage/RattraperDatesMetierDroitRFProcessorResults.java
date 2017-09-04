@@ -16,7 +16,7 @@ import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 
-public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long, RattraperDatesDebutDroitRFProcessorResults> {
+public class RattraperDatesMetierDroitRFProcessorResults extends JobResults<Long, RattraperDatesMetierDroitRFProcessorResults> {
 
 	private final RattrapageDataSelection dataSelection;
 	private final int nbThreads;
@@ -326,10 +326,10 @@ public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long,
 		}
 	}
 
-	public RattraperDatesDebutDroitRFProcessorResults(@NotNull RattrapageDataSelection dataSelection,
-	                                                  int nbThreads,
-	                                                  @NotNull ImmeubleRFDAO immeubleRFDAO,
-	                                                  @NotNull RegistreFoncierService registreFoncierService) {
+	public RattraperDatesMetierDroitRFProcessorResults(@NotNull RattrapageDataSelection dataSelection,
+	                                                   int nbThreads,
+	                                                   @NotNull ImmeubleRFDAO immeubleRFDAO,
+	                                                   @NotNull RegistreFoncierService registreFoncierService) {
 		super(null, null);
 		this.dataSelection = dataSelection;
 		this.nbThreads = nbThreads;
@@ -409,7 +409,7 @@ public class RattraperDatesDebutDroitRFProcessorResults extends JobResults<Long,
 	}
 
 	@Override
-	public void addAll(RattraperDatesDebutDroitRFProcessorResults right) {
+	public void addAll(RattraperDatesMetierDroitRFProcessorResults right) {
 		processed.addAll(right.processed);
 		debutUpdated.addAll(right.debutUpdated);
 		finUpdated.addAll(right.finUpdated);
