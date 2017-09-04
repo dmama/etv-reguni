@@ -2,6 +2,7 @@ package ch.vd.uniregctb.metier.piis;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,7 @@ import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.FractionContrariante;
 import ch.vd.uniregctb.metier.common.FractionDecalee;
 import ch.vd.uniregctb.metier.common.Fractionnements;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -50,7 +52,7 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 	}
 
 	@NotNull
-	private Localisation getLocalisation(ForFiscalPrincipal forPrincipal) {
+	private Localisation getLocalisation(@Nullable ForFiscalPrincipal forPrincipal) {
 		if (forPrincipal == null) {
 			return Localisation.get(null, infraService);
 		}
@@ -95,6 +97,53 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 		}
 	}
 
+	/**
+	 * [SIFISC-22177] Prédicat <b>stateful</b> qui permet de retrouver la date de début de la PIIS mixte
+	 * en cas d'arrivée HC d'un contribuable au rôle qui se voit attribuer un for mixte 2 sur sol vaudois&nbsp;:
+	 * <ul>
+	 *     <li>si le passage au rôle précédent l'arrivée HC a pour motif {@link MotifFor#MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION mariage} ou {@link MotifFor#PERMIS_C_SUISSE permis C / Suisse},
+	 *         alors il doit y avoir un changement de PIIS au premier jour du mois qui suit le passage au rôle&nbsp;;
+	 *     </li>
+	 *     <li>sinon, la PIIS mixte peut remonter au début de l'année...</li>
+	 * </ul>
+	 * Ce prédicat est prévu pour être appelé pour chacun des fors principaux, dans l'ordre chronologique inverse (= en remontant le temps)
+	 */
+	private class StatefulPredicatePourArriveeHCMixte2 implements Predicate<ForFiscalPrincipalContext<ForFiscalPrincipalPP>> {
+
+		boolean passageAuRoleVu = false;
+
+		@Override
+		public boolean test(ForFiscalPrincipalContext<ForFiscalPrincipalPP> context) {
+			final ForFiscalPrincipalPP ff = context.getCurrent();
+			if (ff != null && isSwiss(ff)) {
+				// une fois qu'on a vu le passage au rôle, on continue (en arrière)
+				// tant que les fors sont en Suisse
+				if (passageAuRoleVu) {
+					return true;
+				}
+
+				// on n'a donc pas encore vu le passage au rôle...
+				// on continue donc tant que :
+				// - le for est toujours au rôle (n'oublions pas que l'on remonte le temps)
+				// - le for est à la source
+				if (ff.getModeImposition().isRole()) {
+					return true;
+				}
+
+				// nous sommes donc arrivés sur un for "SOURCE"
+				passageAuRoleVu = true;     // pour les appels suivants, s'il y en a (c'est ici que le côté _stateful_ est important)
+
+				// quel est le motif du passage au rôle ?
+				final ForFiscalPrincipalPP next = context.getNext();
+				final MotifFor motif = getMotifEffectif(getLocalisation(ff), ff.getMotifFermeture(),
+				                                        getLocalisation(next), next != null ? next.getMotifOuverture() : null);
+				return motif != MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION
+						&& motif != MotifFor.PERMIS_C_SUISSE;
+			}
+			return false;
+		}
+	}
+
 	private Fraction isFractionOuverture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
 		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 		final ForFiscalPrincipalPP previous = forPrincipal.getPrevious();
@@ -129,18 +178,28 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 					// [SIFISC-18817] on revient ;
 					// 1. au premier jour du mois de la même année suivant le passage au rôle s'il y en a eu un dans l'année avant l'arrivée HC
 					// 2. au premier janvier (en fait, non, c'est plutôt "à la dernière arrivée HS dans la PF avant le départ HC", et à défaut au premier janvier) sinon
-					if (current.getModeImposition() == ModeImposition.MIXTE_137_2 && previous != null && !previous.getModeImposition().isRole()) {
-						fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateDebut(), motifEffectif, ff -> ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS);
+					if (current.getModeImposition() == ModeImposition.MIXTE_137_2 && previous != null) {
+						// [SIFISC-22177] arrivée HC et passage de ordinaire à mixte 2 en même temps...
+						if (previous.getModeImposition().isRole()) {
+							fraction = getFractionArriveeDepartHC(forPrincipal,
+							                                      current.getDateDebut(),
+							                                      motifEffectif,
+							                                      Function.identity(),
+							                                      new StatefulPredicatePourArriveeHCMixte2());
+						}
+						else {
+							fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateDebut(), motifEffectif, FractionnementsPeriodesImpositionIS::isSwiss);
+						}
 					}
 					else {
-						fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateDebut(), motifEffectif, ff -> ff.getModeImposition().isRole() && ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS);
+						fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateDebut(), motifEffectif, ff -> ff.getModeImposition().isRole() && isSwiss(ff));
 					}
 				}
 				else if (motifEffectif == MotifFor.DEPART_HC && previous != null && previous.getModeImposition().isRole() && !previous.getModeImposition().isSource()) {
 					// [SIFISC-18817] départ HC d'un "ordinaire", on se ramène
 					// - au premier jour du mois suivant le passage à l'ordinaire, si celui-ci a eu lieu dans la même PF (avant le départ, évidemment...)
 					// - au premier janvier (en fait, non, c'est plutôt "à la dernière arrivée HS dans la PF avant le départ HC", et à défaut au premier janvier) sinon
-					fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateDebut(), motifEffectif, ff -> ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS && ff.getModeImposition().isRole() && !ff.getModeImposition().isSource());
+					fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateDebut(), motifEffectif, ff -> isSwiss(ff) && ff.getModeImposition().isRole() && !ff.getModeImposition().isSource());
 				}
 				else if (motifEffectif == MotifFor.DEPART_HC) {
 					// la date d'ouverture du for est la date d'arrivée dans le nouveau canton
@@ -199,18 +258,28 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 					// [SIFISC-18817] on revient ;
 					// - au premier jour du mois de la même année suivant le passage au rôle s'il y en a eu un dans l'année avant l'arrivée HC
 					// - au premier janvier (en fait, non, c'est plutôt "à la dernière arrivée HS dans la PF avant le départ HC", et à défaut au premier janvier) sinon
-					if (current.getModeImposition().isRole() && next.getModeImposition() != ModeImposition.MIXTE_137_2) {
-						fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateFin(), motifEffectif, ff -> ff.getModeImposition().isRole() && ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS);
+					if (current.getModeImposition().isRole()) {
+						// [SIFISC-22177] arrivée HC et passage de ordinaire à mixte 2 en même temps...
+						if (next.getModeImposition() == ModeImposition.MIXTE_137_2) {
+							fraction = getFractionArriveeDepartHC(forPrincipal,
+							                                      current.getDateFin(),
+							                                      motifEffectif,
+							                                      Function.identity(),
+							                                      new StatefulPredicatePourArriveeHCMixte2());
+						}
+						else {
+							fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateFin(), motifEffectif, ff -> ff.getModeImposition().isRole() && isSwiss(ff));
+						}
 					}
 					else {
-						fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateFin(), motifEffectif, ff -> ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS);
+						fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateFin(), motifEffectif, FractionnementsPeriodesImpositionIS::isSwiss);
 					}
 				}
 				else if (motifEffectif == MotifFor.DEPART_HC && current.getModeImposition().isRole() && !current.getModeImposition().isSource()) {
 					// [SIFISC-18817] départ HC d'un "ordinaire", on se ramène
 					// - au premier jour du mois suivant le passage à l'ordinaire, si celui-ci a eu lieu dans la même PF (avant le départ, évidemment...)
 					// - au premier janvier (en fait, non, c'est plutôt "à la dernière arrivée HS dans la PF avant le départ HC", et à défaut au premier janvier) sinon
-					fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateFin(), motifEffectif, ff -> ff.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS && ff.getModeImposition().isRole() && !ff.getModeImposition().isSource());
+					fraction = getFractionArriveeDepartHC(forPrincipal, current.getDateFin(), motifEffectif, ff -> isSwiss(ff) && ff.getModeImposition().isRole() && !ff.getModeImposition().isSource());
 				}
 				else if (motifEffectif == MotifFor.DEPART_HC) {
 					// la date de fermeture du for est la date de départ dans l'ancien canton
@@ -236,7 +305,15 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 	}
 
 	private <T extends ForFiscalPrincipal> Fraction getFractionArriveeDepartHC(ForFiscalPrincipalContext<T> source, RegDate dateReference, MotifFor motifEffectif, Predicate<? super T> predicate) {
-		final ForFiscalPrincipalContext<T> lastPreviousMatching = slideToLastPreviousMatching(source, predicate);
+		return getFractionArriveeDepartHC(source, dateReference, motifEffectif, ForFiscalPrincipalContext::getCurrent, predicate);
+	}
+
+	private <T extends ForFiscalPrincipal, U> Fraction getFractionArriveeDepartHC(ForFiscalPrincipalContext<T> source,
+	                                                                              RegDate dateReference,
+	                                                                              MotifFor motifEffectif,
+	                                                                              Function<? super ForFiscalPrincipalContext<T>, U> extractor,
+	                                                                              Predicate<? super U> predicate) {
+		final ForFiscalPrincipalContext<T> lastPreviousMatching = slideToLastPreviousMatching(source, extractor, predicate);
 		final T arrivee = lastPreviousMatching.getCurrent();
 		final RegDate dateFraction;
 		if (arrivee.getDateDebut().year() < pf) {
@@ -270,22 +347,37 @@ public class FractionnementsPeriodesImpositionIS implements Iterable<Fraction> {
 	}
 
 	/**
+	 * @param ff un for fiscal
+	 * @return <code>true</code> si le for fiscal est en Suisse
+	 */
+	private static boolean isSwiss(ForFiscal ff) {
+		final TypeAutoriteFiscale taf = ff.getTypeAutoriteFiscale();
+		return taf == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || taf == TypeAutoriteFiscale.COMMUNE_HC;
+	}
+
+	/**
 	 * @param origin point de départ
-	 * @param predicate prédicat de matching
+	 * @param extractor extracteur de données depuis les contextes de fors principaux
+	 * @param predicate prédicat de matching sur les données extraites
 	 * @param <T> type des fors fiscaux principaux
-	 * @return le dernier contexte qui matche le prédicat sur son champ {@link ForFiscalPrincipalContext#current current} en glissant vers les précédents à partir de l'origine donnée
+	 * @param <U> type des données extraites des contextes de fors principaux
+	 * @return le dernier contexte qui matche le prédicat sur son champ en glissant vers les précédents à partir de l'origine donnée
 	 * @throws IllegalArgumentException si l'origine ne satisfait pas au prédicat passé
 	 */
-	private static <T extends ForFiscalPrincipal> ForFiscalPrincipalContext<T> slideToLastPreviousMatching(ForFiscalPrincipalContext<T> origin, Predicate<? super T> predicate) {
-		if (!predicate.test(origin.getCurrent())) {
+	private static <T extends ForFiscalPrincipal, U> ForFiscalPrincipalContext<T> slideToLastPreviousMatching(ForFiscalPrincipalContext<T> origin,
+	                                                                                                          Function<? super ForFiscalPrincipalContext<T>, U> extractor,
+	                                                                                                          Predicate<? super U> predicate) {
+		if (!predicate.test(extractor.apply(origin))) {
 			throw new IllegalArgumentException("Le point origine ne satisfait pas au prédicat.");
 		}
 
 		ForFiscalPrincipalContext<T> last = origin;
 		ForFiscalPrincipalContext<T> cursor = origin.slideToPrevious();
-		while (cursor.getCurrent() != null && predicate.test(cursor.getCurrent())) {
+		U extracted = extractor.apply(cursor);
+		while (extracted != null && predicate.test(extracted)) {
 			last = cursor;
 			cursor = cursor.slideToPrevious();
+			extracted = extractor.apply(cursor);
 		}
 		return last;
 	}
