@@ -51,8 +51,8 @@ public abstract class EtatDeclaration extends EtatDocumentFiscal<TypeEtatDeclara
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
-	@JoinColumn(name = "DECLARATION_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_ET_DI_DI_ID", columnNames = "DECLARATION_ID")
+	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
+	@Index(name = "FK_ET_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
 	public Declaration getDeclaration() {
 		// begin-user-code
 		return (Declaration) getDocumentFiscal();

@@ -39,7 +39,7 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0d5HUOqeEdySTq6PFlf9jQ"
  */
 @Entity
-@Table(name = "ETAT_DECLARATION")
+@Table(name = "ETAT_DOCUMENT_FISCAL")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class EtatDocumentFiscal<T, E extends EtatDocumentFiscal> extends HibernateEntity implements DateRange, Comparable<EtatDocumentFiscal>, LinkedEntity {

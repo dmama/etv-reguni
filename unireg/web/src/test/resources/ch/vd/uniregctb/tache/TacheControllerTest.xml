@@ -106,7 +106,7 @@
       <value>1</value>
     </row>
   </table>
-  <table name="DECLARATION">
+  <table name="DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>ID</column>
     <column>DOCUMENT_TYPE</column>

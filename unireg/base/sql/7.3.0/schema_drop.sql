@@ -10,15 +10,15 @@ drop table AUDIT_LOG cascade constraints;
 
 drop table BORDEREAU_MVT_DOSSIER cascade constraints;
 
-drop table DECLARATION cascade constraints;
+drop table DOCUMENT_FISCAL cascade constraints;
 
-drop table DELAI_DECLARATION cascade constraints;
+drop table DELAI_DOCUMENT_FISCAL cascade constraints;
 
 drop table DOC_INDEX cascade constraints;
 
 drop table DROIT_ACCES cascade constraints;
 
-drop table ETAT_DECLARATION cascade constraints;
+drop table ETAT_DOCUMENT_FISCAL cascade constraints;
 
 drop table EVENEMENT_CIVIL cascade constraints;
 

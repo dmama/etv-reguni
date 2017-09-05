@@ -30,7 +30,7 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 
 @Entity
-@Table(name = "DELAI_DECLARATION")
+@Table(name = "DELAI_DOCUMENT_FISCAL")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DELAI_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class DelaiDocumentFiscal extends HibernateEntity implements Comparable<DelaiDocumentFiscal>, LinkedEntity {

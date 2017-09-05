@@ -13,8 +13,8 @@ import org.hibernate.annotations.Index;
 public class DelaiDeclaration extends DelaiDocumentFiscal {
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
-	@JoinColumn(name = "DECLARATION_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_DE_DI_DI_ID", columnNames = "DECLARATION_ID")
+	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
+	@Index(name = "IDX_DE_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
 	public Declaration getDeclaration() {
 		return (Declaration) getDocumentFiscal();
 	}

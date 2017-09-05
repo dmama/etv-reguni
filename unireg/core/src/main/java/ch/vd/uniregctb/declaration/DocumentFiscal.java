@@ -36,7 +36,7 @@ import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 @Entity
-@Table(name = "DECLARATION")
+@Table(name = "DOCUMENT_FISCAL")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DOCUMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class DocumentFiscal extends HibernateEntity implements LinkedEntity {
@@ -101,7 +101,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	@ManyToOne
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter une déclaration à un tiers sans automatiquement modifier celui-ci (perfs)
 	@JoinColumn(name = "TIERS_ID", nullable = false)
-	@Index(name = "IDX_DECL_TRS_ID", columnNames = "TIERS_ID")
+	@Index(name = "IDX_DOCFISC_TRS_ID", columnNames = "TIERS_ID")
 	public Tiers getTiers() {
 		// begin-user-code
 		return tiers;

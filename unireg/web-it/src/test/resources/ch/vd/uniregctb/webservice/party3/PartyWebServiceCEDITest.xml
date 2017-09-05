@@ -4383,7 +4383,7 @@
     <column>AUTRE_TYPE</column>
     <column>TYPE_PM</column>
   </table>
-  <table name="DECLARATION">
+  <table name="DOCUMENT_FISCAL">
     <column>DOCUMENT_TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
@@ -4877,7 +4877,7 @@
       <value>0</value>
     </row>
   </table>
-  <table name="ETAT_DECLARATION">
+  <table name="ETAT_DOCUMENT_FISCAL">
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
@@ -4888,7 +4888,7 @@
     <column>DATE_OBTENTION</column>
     <column>TYPE</column>
     <column>DATE_ENVOI_COURRIER</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <row>
       <value>8839530</value>
       <null/>
@@ -5371,7 +5371,7 @@
       <value>3342935</value>
     </row>
   </table>
-  <table name="DELAI_DECLARATION">
+  <table name="DELAI_DOCUMENT_FISCAL">
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
@@ -5384,7 +5384,7 @@
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <column>DELAI_TYPE</column>
     <row>
       <value>8839529</value>

@@ -3905,7 +3905,7 @@
       <value>10149508</value>
     </row>
   </table>
-  <table name="DECLARATION">
+  <table name="DOCUMENT_FISCAL">
     <column>DOCUMENT_TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
@@ -4039,7 +4039,7 @@
     <column>CTB_ID</column>
     <column>DECLARATION_ID</column>
   </table>
-  <table name="ETAT_DECLARATION">
+  <table name="ETAT_DOCUMENT_FISCAL">
     <column>TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
@@ -4051,7 +4051,7 @@
     <column>DATE_OBTENTION</column>
     <column>DATE_ENVOI_COURRIER</column>
     <column>SOURCE</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <row>
       <value>EMISE</value>
       <value>1</value>
@@ -4081,7 +4081,7 @@
       <value>3</value>
     </row>
   </table>
-  <table name="DELAI_DECLARATION">
+  <table name="DELAI_DOCUMENT_FISCAL">
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
@@ -4094,7 +4094,7 @@
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <column>DELAI_TYPE</column>
     <row>
       <value>1</value>

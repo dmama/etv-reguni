@@ -113,7 +113,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH }, fetch=FetchType.LAZY)
 	@JoinColumn(name = "PERIODE_ID", nullable = false)
-	@ForeignKey(name = "FK_DECL_PF_ID")
+	@ForeignKey(name = "FK_DOCFISC_PF_ID")
 	public PeriodeFiscale getPeriode() {
 		// begin-user-code
 		return periode;
@@ -194,7 +194,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH }, fetch=FetchType.LAZY)
 	@JoinColumn(name = "MODELE_DOC_ID")
-	@ForeignKey(name = "FK_DECL_DOC_ID")
+	@ForeignKey(name = "FK_DOCFISC_DOC_ID")
 	public ModeleDocument getModeleDocument() {
 		// begin-user-code
 		return modeleDocument;
