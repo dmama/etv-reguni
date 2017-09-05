@@ -592,7 +592,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 		if (parts.declarations) {
 			// On ajoute toutes les collectivités administatives référencées par les déclarations
-			final String sql = "select distinct(RETOUR_COLL_ADMIN_ID) from DECLARATION where RETOUR_COLL_ADMIN_ID is not null";
+			final String sql = "select distinct(RETOUR_COLL_ADMIN_ID) from DOCUMENT_FISCAL where RETOUR_COLL_ADMIN_ID is not null";
 
 			NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 			@SuppressWarnings({"unchecked"})
@@ -648,14 +648,14 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 		if (parts.declarations) {
 
-			final String query1 = String.format("select * from DECLARATION where TIERS_ID in (%s)", idsList);
-			dataSet.addTable("DECLARATION", query1);
+			final String query1 = String.format("select * from DOCUMENT_FISCAL where TIERS_ID in (%s)", idsList);
+			dataSet.addTable("DOCUMENT_FISCAL", query1);
 
-			final String query2 = String.format("select * from ETAT_DECLARATION where DECLARATION_ID in (select ID from DECLARATION where TIERS_ID in (%s))", idsList);
-			dataSet.addTable("ETAT_DECLARATION", query2);
+			final String query2 = String.format("select * from ETAT_DOCUMENT_FISCAL where DOCUMENT_FISCAL_ID in (select ID from DOCUMENT_FISCAL where TIERS_ID in (%s))", idsList);
+			dataSet.addTable("ETAT_DOCUMENT_FISCAL", query2);
 
-			final String query3 = String.format("select * from DELAI_DECLARATION where DECLARATION_ID in (select ID from DECLARATION where TIERS_ID in (%s))", idsList);
-			dataSet.addTable("DELAI_DECLARATION", query3);
+			final String query3 = String.format("select * from DELAI_DOCUMENT_FISCAL where DOCUMENT_FISCAL_ID in (select ID from DOCUMENT_FISCAL where TIERS_ID in (%s))", idsList);
+			dataSet.addTable("DELAI_DOCUMENT_FISCAL", query3);
 		}
 
 		return dataSet;

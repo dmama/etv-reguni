@@ -173,13 +173,13 @@ public class DeclarationsHandler implements CategoryHandler {
 
 	private static void addVisaReset(StringBuilder b) {
 		b.append("-- Remise en place du visa sur la dernière déclaration créée").append(System.lineSeparator());
-		b.append("UPDATE DECLARATION SET LOG_CUSER='").append(Constants.VISA).append("' WHERE LOG_CUSER='").append(TEMP_DECLARATION_VISA).append("';").append(System.lineSeparator());
+		b.append("UPDATE DOCUMENT_FISCAL SET LOG_CUSER='").append(Constants.VISA).append("' WHERE LOG_CUSER='").append(TEMP_DECLARATION_VISA).append("';").append(System.lineSeparator());
 		b.append(System.lineSeparator());
 	}
 
 	private static void addDeclaration(StringBuilder b, long noEntreprise, int pf, RegDate dateDebut, RegDate dateFin) {
 		b.append("-- Déclaration ").append(pf).append(" de l'entreprise ").append(noEntreprise).append(System.lineSeparator());
-		b.append("INSERT INTO DECLARATION (ID, DOCUMENT_TYPE, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, DATE_FIN, NUMERO, LIBRE, PERIODE_ID, TIERS_ID, DATE_DEBUT_EXERCICE, DATE_FIN_EXERCICE)").append(System.lineSeparator());
+		b.append("INSERT INTO DOCUMENT_FISCAL (ID, DOCUMENT_TYPE, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, DATE_FIN, NUMERO, LIBRE, PERIODE_ID, TIERS_ID, DATE_DEBUT_EXERCICE, DATE_FIN_EXERCICE)").append(System.lineSeparator());
 		b.append("SELECT HIBERNATE_SEQUENCE.NEXTVAL, 'DIPM', CURRENT_DATE, '").append(TEMP_DECLARATION_VISA).append("', CURRENT_DATE, '").append(Constants.VISA).append("', ");
 		b.append(dateDebut.index());
 		b.append(", ");
@@ -197,7 +197,7 @@ public class DeclarationsHandler implements CategoryHandler {
 
 	private static void addQuestionnaireSNC(StringBuilder b, long noEntreprise, int pf) {
 		b.append("-- Questionnaire SNC ").append(pf).append(" de l'entreprise ").append(noEntreprise).append(System.lineSeparator());
-		b.append("INSERT INTO DECLARATION (ID, DOCUMENT_TYPE, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, DATE_FIN, NUMERO, LIBRE, PERIODE_ID, TIERS_ID)").append(System.lineSeparator());
+		b.append("INSERT INTO DOCUMENT_FISCAL (ID, DOCUMENT_TYPE, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, DATE_FIN, NUMERO, LIBRE, PERIODE_ID, TIERS_ID)").append(System.lineSeparator());
 		b.append("SELECT HIBERNATE_SEQUENCE.NEXTVAL, 'QSNC', CURRENT_DATE, '").append(TEMP_DECLARATION_VISA).append("', CURRENT_DATE, '").append(Constants.VISA).append("', ");
 		b.append(pf).append("0101");
 		b.append(", ");
@@ -211,7 +211,7 @@ public class DeclarationsHandler implements CategoryHandler {
 
 	private static void addDelai(StringBuilder b, RegDate dateDemande, RegDate dateDelai) {
 		b.append("-- Délai au ").append(RegDateHelper.dateToDisplayString(dateDelai)).append(System.lineSeparator());
-		b.append("INSERT INTO DELAI_DECLARATION (ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEMANDE, DATE_TRAITEMENT, DELAI_ACCORDE_AU, DECLARATION_ID, ETAT, SURSIS)").append(System.lineSeparator());
+		b.append("INSERT INTO DELAI_DOCUMENT_FISCAL (ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEMANDE, DATE_TRAITEMENT, DELAI_ACCORDE_AU, DOCUMENT_FISCAL_ID, ETAT, SURSIS)").append(System.lineSeparator());
 		b.append("SELECT HIBERNATE_SEQUENCE.NEXTVAL, CURRENT_DATE, '").append(Constants.VISA).append("', CURRENT_DATE, '").append(Constants.VISA).append("', ");
 		b.append(dateDemande.index());
 		b.append(", ");
@@ -221,7 +221,7 @@ public class DeclarationsHandler implements CategoryHandler {
 		b.append(", ID, '");
 		b.append(EtatDelaiDocumentFiscal.ACCORDE);
 		b.append("', 0").append(System.lineSeparator());
-		b.append("FROM DECLARATION WHERE LOG_CUSER='").append(TEMP_DECLARATION_VISA).append("';").append(System.lineSeparator());
+		b.append("FROM DOCUMENT_FISCAL WHERE LOG_CUSER='").append(TEMP_DECLARATION_VISA).append("';").append(System.lineSeparator());
 		b.append(System.lineSeparator());
 	}
 
@@ -230,7 +230,7 @@ public class DeclarationsHandler implements CategoryHandler {
 		final String source = (type == TypeEtatDeclaration.RETOURNEE ? "SDI" : null);
 
 		b.append("-- Etat ").append(type).append(" au ").append(RegDateHelper.dateToDisplayString(dateObtention)).append(System.lineSeparator());
-		b.append("INSERT INTO ETAT_DECLARATION (ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_OBTENTION, TYPE, DECLARATION_ID, DATE_ENVOI_COURRIER, SOURCE)").append(System.lineSeparator());
+		b.append("INSERT INTO ETAT_DOCUMENT_FISCAL (ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_OBTENTION, TYPE, DOCUMENT_FISCAL_ID, DATE_ENVOI_COURRIER, SOURCE)").append(System.lineSeparator());
 		b.append("SELECT HIBERNATE_SEQUENCE.NEXTVAL, CURRENT_DATE, '").append(Constants.VISA).append("', CURRENT_DATE, '").append(Constants.VISA).append("', ");
 		b.append(dateObtention.index());
 		b.append(", '");
@@ -249,7 +249,7 @@ public class DeclarationsHandler implements CategoryHandler {
 			b.append("'").append(source).append("'");
 		}
 		b.append(System.lineSeparator());
-		b.append("FROM DECLARATION WHERE LOG_CUSER='").append(TEMP_DECLARATION_VISA).append("';").append(System.lineSeparator());
+		b.append("FROM DOCUMENT_FISCAL WHERE LOG_CUSER='").append(TEMP_DECLARATION_VISA).append("';").append(System.lineSeparator());
 		b.append(System.lineSeparator());
 	}
 }

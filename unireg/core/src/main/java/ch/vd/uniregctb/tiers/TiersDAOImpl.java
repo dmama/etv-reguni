@@ -1766,8 +1766,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 						"UNION                                                                    " +
 						"                                                                         " +
 						"SELECT DI.TIERS_ID AS CTB_ID                                             " +
-						"FROM DECLARATION DI                                                      " +
-						"JOIN ETAT_DECLARATION ED ON ED.DECLARATION_ID = DI.ID                    " +
+						"FROM DOCUMENT_FISCAL DI                                                      " +
+						"JOIN ETAT_DOCUMENT_FISCAL ED ON ED.DOCUMENT_FISCAL_ID = DI.ID                    " +
 						"JOIN FOR_FISCAL FF ON FF.TIERS_ID=DI.TIERS_ID                            " +
 						"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
 						"AND ED.LOG_MDATE >= :debut                                               " +

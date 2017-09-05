@@ -121,7 +121,7 @@ public class ImportCodesSegmentProcessor {
 		hibernateTemplate.execute(new HibernateCallback<Object>() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final SQLQuery query = session.createSQLQuery("UPDATE DECLARATION SET CODE_SEGMENT=:codeSegment, LOG_MDATE=:mdate, LOG_MUSER=:muser WHERE ID=:id");
+				final SQLQuery query = session.createSQLQuery("UPDATE DOCUMENT_FISCAL SET CODE_SEGMENT=:codeSegment, LOG_MDATE=:mdate, LOG_MUSER=:muser WHERE ID=:id");
 				query.setInteger("codeSegment", codeSegment);
 				query.setTimestamp("mdate", DateHelper.getCurrentDate());
 				query.setString("muser", AuthenticationHelper.getCurrentPrincipal());
