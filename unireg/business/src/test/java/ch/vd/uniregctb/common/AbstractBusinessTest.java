@@ -415,7 +415,9 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		droit.setMasterIdRF(masterIdRF);
 		droit.setVersionIdRF(versionIdRF);
 		droit.setImmeuble(immeuble);
-		droit.addRaisonAcquisition(new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire));
+		final RaisonAcquisitionRF raison = new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire);
+		raison.setDateDebut(dateDebut);
+		droit.addRaisonAcquisition(raison);
 		droit = hibernateTemplate.merge(droit);
 
 		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
