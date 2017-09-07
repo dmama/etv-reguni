@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
 import ch.vd.uniregctb.common.Flash;
@@ -107,10 +108,13 @@ public class SituationSurchargeRFController {
 	private void initModelForCurrentSituation(@NotNull Model model, @NotNull SituationRF situation) {
 
 		// on construit la map commune faîtière -> liste des fractions
-		final List<Commune> fractions = serviceInfrastructureService.getListeFractionsCommunes();
+		final List<Commune> communes = serviceInfrastructureService.getCommunesVD();
 		final Map<Integer, List<CommuneView>> mapFaitieresFractions = new HashMap<>();
-		fractions.forEach(fraction -> mapFaitieresFractions.merge(fraction.getOfsCommuneMere(),
-		                                                          Collections.singletonList(new CommuneView(fraction.getNoOFS(), fraction.getNomOfficiel())),
+		communes.stream()
+				.filter(Commune::isFraction)                            // on ne s'intéresse qu'aux fractions
+				.filter(c -> DateRangeHelper.intersect(c, situation))   // [SIFISC-26308] on n'affiche que les fractions valides dans la période de validité de la situation
+				.forEach(fraction -> mapFaitieresFractions.merge(fraction.getOfsCommuneMere(),
+		                                                          Collections.singletonList(new CommuneView(fraction)),
 		                                                          ListUtils::union));
 
 		// La situation courante

@@ -66,7 +66,7 @@
 						<td width="75%">
 							<form:select path="noOfsSurcharge">
 								<form:option value="">-- Choisir --</form:option>
-								<form:options items="${mapFaitieresFractions[currentSituation.communeRF.noOfs]}" itemLabel="nom" itemValue="noOfs"/>
+								<form:options items="${mapFaitieresFractions[currentSituation.communeRF.noOfs]}" itemLabel="nomEtValidite" itemValue="noOfs"/>
 							</form:select>
 							<span class="mandatory">*</span>
 							<form:errors path="noOfsSurcharge" cssClass="error"/>
