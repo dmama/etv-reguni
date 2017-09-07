@@ -154,7 +154,7 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 			}
 		}
 
-		// cas de valeur non-définie
-		return null;
+		// [SIFISC-26123] si aucune valeur n'est arrêtée, le dégrèvement final doit être 0% (et non pas une valeur nulle)
+		return BigDecimal.ZERO;
 	}
 }

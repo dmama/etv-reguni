@@ -9,20 +9,23 @@ import ch.vd.uniregctb.common.WithoutSpringTest;
 
 public class DegrevementICITest extends WithoutSpringTest {
 
+	/**
+	 * [SIFISC-26123] si aucune valeur n'est arrêtée, le dégrèvement final doit être 0% (et non pas une valeur nulle)
+	 */
 	@Test
 	public void testGetPourcentageDegrevementAucuneValeurArretee() throws Exception {
 		final DegrevementICI deg = new DegrevementICI();
-		Assert.assertNull(deg.getPourcentageDegrevement());
+		Assert.assertEquals(BigDecimal.valueOf(0), deg.getPourcentageDegrevement());
 
 		deg.setLoiLogement(new DonneesLoiLogement());
 		deg.setPropreUsage(new DonneesUtilisation());
 		deg.setLocation(new DonneesUtilisation());
-		Assert.assertNull(deg.getPourcentageDegrevement());
+		Assert.assertEquals(BigDecimal.valueOf(0), deg.getPourcentageDegrevement());
 
 		deg.setLoiLogement(new DonneesLoiLogement(Boolean.TRUE, null, null, BigDecimal.TEN));
 		deg.setPropreUsage(new DonneesUtilisation(100L, 100L, 100L, BigDecimal.valueOf(50L), null));
 		deg.setLocation(new DonneesUtilisation(100L, 100L, 100L, BigDecimal.valueOf(50L), null));
-		Assert.assertNull(deg.getPourcentageDegrevement());
+		Assert.assertEquals(BigDecimal.valueOf(0), deg.getPourcentageDegrevement());
 	}
 
 	@Test
