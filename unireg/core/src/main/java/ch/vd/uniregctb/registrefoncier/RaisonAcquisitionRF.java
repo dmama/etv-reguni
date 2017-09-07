@@ -35,6 +35,11 @@ public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<R
 	private Long id;
 
 	/**
+	 * La date de début technique.
+	 */
+	private RegDate dateDebut;
+
+	/**
 	 * La date de début du droit telle que renseignée dans le registre foncier (la date de début normale est une date technique qui correspond à la date d'import de la donnée).
 	 */
 	@Nullable
@@ -81,6 +86,16 @@ public class RaisonAcquisitionRF extends HibernateEntity implements Comparable<R
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	@Column(name = "DATE_DEBUT")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateDebut() {
+		return dateDebut;
+	}
+
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
 	}
 
 	@Nullable

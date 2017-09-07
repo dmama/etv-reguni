@@ -500,7 +500,7 @@ public class RattraperDatesMetierDroitRFProcessorTest extends BusinessTest {
 			final PersonnePhysiqueRF jean = addPersonnePhysiqueRF("02893039", "Jean", "Routourne", RegDate.get(1962, 9, 12));
 			final PersonnePhysiqueRF jacques = addPersonnePhysiqueRF("937823a0a02", "Jacques", "Roubloque", RegDate.get(1968, 1, 24));
 			addDroitPropriete(jean, bienFonds, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
-			                  null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), "Achat", "Vente",
+			                  null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 13), "Achat", "Vente",
 			                  new IdentifiantAffaireRF(8, 1990, 3, 0), "473839273923", "473839273922");
 			addDroitPropriete(jacques, bienFonds, null, GenrePropriete.INDIVIDUELLE, new Fraction(1, 1),
 			                  RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null,
@@ -523,7 +523,7 @@ public class RattraperDatesMetierDroitRFProcessorTest extends BusinessTest {
 			final List<DroitProprieteRF> droits = new ArrayList<>(immeuble.getDroitsPropriete());
 			assertEquals(2, droits.size());
 			droits.sort(new DateRangeComparator<>());
-			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 12), "Achat", "Vente", droits.get(0));
+			assertDatesDroit(null, RegDate.get(2003, 6, 4), RegDate.get(1990, 3, 1), RegDate.get(2003, 5, 13), "Achat", "Vente", droits.get(0));
 			assertDatesDroit(RegDate.get(2003, 6, 5), null, RegDate.get(2003, 5, 13), null, "Achat", null, droits.get(1));
 			return null;
 		});

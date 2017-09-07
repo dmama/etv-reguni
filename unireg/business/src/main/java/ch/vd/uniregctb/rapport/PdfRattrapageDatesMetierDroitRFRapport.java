@@ -48,8 +48,8 @@ public class PdfRattrapageDatesMetierDroitRFRapport extends PdfRapport {
 
 			addTableSimple(new float[]{.6f, .4f}, table -> {
 				table.addLigne("Nombre d'immeubles traités :", String.valueOf(results.getProcessed().size()));
-				table.addLigne("Nombre de date de début modifiées :", String.valueOf(results.getDebutUpdated().size()));
-				table.addLigne("Nombre de date de fin modifiés :", String.valueOf(results.getFinUpdated().size()));
+				table.addLigne("Nombre de dates de début modifiées :", String.valueOf(results.getDebutUpdated().size()));
+				table.addLigne("Nombre de dates de fin modifiées :", String.valueOf(results.getFinUpdated().size()));
 				table.addLigne("Nombre de droits non-modifiés :", String.valueOf(results.getUntouched().size()));
 				table.addLigne("Nombre d'erreurs :", String.valueOf(results.getErreurs().size()));
 				table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
