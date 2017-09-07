@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
@@ -47,9 +48,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 
 	/**
 	 * Alimente la vue
-	 * @param id
 	 * @return la vue
-	 * @throws Exception
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -57,6 +56,9 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		final IdentificationMessagesEditView identificationMessagesEditView = new IdentificationMessagesEditView();
 		identificationMessagesEditView.setDemandeIdentificationView(getDemandeIdentificationView(id));
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(id);
+		if (identificationContribuable == null) {
+			throw new ObjectNotFoundException("L'identification avec l'id=" + id + " n'existe pas.");
+		}
 		if (identificationContribuable.getReponse() != null) {
 			identificationMessagesEditView.setNoCtbIdentifie(identificationContribuable.getReponse().getNoContribuable());
 		}
@@ -65,15 +67,16 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 
 	/**
 	 * Alimente le cartouche de demande d'identification
-	 * @param id
 	 * @return la vue du cartouche
-	 * @throws Exception
 	 */
 	@Override
 	@Transactional(readOnly = true)
 	public DemandeIdentificationView getDemandeIdentificationView(Long id) {
 
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(id);
+		if (identificationContribuable == null) {
+			throw new ObjectNotFoundException("L'identification avec l'id=" + id + " n'existe pas.");
+		}
 		final DemandeIdentificationView demandeIdentificationView = new DemandeIdentificationView();
 		demandeIdentificationView.setId(identificationContribuable.getId());
 		demandeIdentificationView.setEtatMessage(identificationContribuable.getEtat());
@@ -124,14 +127,14 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 
 	/**
 	 * Force l'identification du contribuable
-	 * @param idIdentification
-	 * @param idPersonne
-	 * @throws Exception
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceIdentification(Long idIdentification, Long idPersonne, Etat etat) {
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
+		if (identificationContribuable == null) {
+			throw new ObjectNotFoundException("L'identification avec l'id=" + idIdentification + " n'existe pas.");
+		}
 		final Tiers tiers = tiersDAO.get(idPersonne);
 		if (tiers instanceof PersonnePhysique) {
 			identCtbService.forceIdentification(identificationContribuable, (PersonnePhysique) tiers, etat);
@@ -146,12 +149,14 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 
 	/**
 	 * Donne à expertiser
-	 * @param idIdentification
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void expertiser(Long idIdentification) {
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
+		if (identificationContribuable == null) {
+			throw new ObjectNotFoundException("L'identification avec l'id=" + idIdentification + " n'existe pas.");
+		}
 		identificationContribuable.setEtat(Etat.A_EXPERTISER);
 	}
 
@@ -162,6 +167,9 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	@Transactional(rollbackFor = Throwable.class)
 	public void impossibleAIdentifier(Long idIdentification, IdentificationContribuable.ErreurMessage message) {
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
+		if (identificationContribuable == null) {
+			throw new ObjectNotFoundException("L'identification avec l'id=" + idIdentification + " n'existe pas.");
+		}
 		final Erreur erreur = new Erreur(TypeErreur.METIER, message.getCode(), message.getLibelle());
 		identCtbService.impossibleAIdentifier(identificationContribuable, erreur);
 	}
@@ -170,6 +178,9 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	@Transactional(rollbackFor = Throwable.class)
 	public void verouillerMessage(Long idIdentification) {
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
+		if (identificationContribuable == null) {
+			throw new ObjectNotFoundException("L'identification avec l'id=" + idIdentification + " n'existe pas.");
+		}
 		final String user = AuthenticationHelper.getCurrentPrincipal();
 		identificationContribuable.setUtilisateurTraitant(user);
 	}
@@ -178,6 +189,9 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	@Transactional(rollbackFor = Throwable.class)
 	public void deVerouillerMessage(Long idIdentification, boolean byAdmin) {
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
+		if (identificationContribuable == null) {
+			throw new ObjectNotFoundException("L'identification avec l'id=" + idIdentification + " n'existe pas.");
+		}
 		final String userCourant = AuthenticationHelper.getCurrentPrincipal();
 		if (userCourant.equals(identificationContribuable.getUtilisateurTraitant()) || byAdmin) {
 			identificationContribuable.setUtilisateurTraitant(null);
@@ -188,6 +202,9 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	@Transactional(readOnly = true)
 	public boolean isMessageVerouille(Long idIdentification) {
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
+		if (identificationContribuable == null) {
+			throw new ObjectNotFoundException("L'identification avec l'id=" + idIdentification + " n'existe pas.");
+		}
 		final String utilisateurTraitant = identificationContribuable.getUtilisateurTraitant();
 		final String user = AuthenticationHelper.getCurrentPrincipal();
 		return utilisateurTraitant != null && !user.equals(utilisateurTraitant);
@@ -197,6 +214,9 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	@Transactional(rollbackFor = Throwable.class)
 	public Long relanceIdentificationAuto(long idIdentification) {
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
+		if (identificationContribuable == null) {
+			throw new ObjectNotFoundException("L'identification avec l'id=" + idIdentification + " n'existe pas.");
+		}
 		if (identificationContribuable.getEtat().isEncoreATraiter()) {
 			// on ne tente une relance que si l'état n'est pas déjà terminal
 			if (identCtbService.tenterIdentificationAutomatiqueContribuable(identificationContribuable)) {
