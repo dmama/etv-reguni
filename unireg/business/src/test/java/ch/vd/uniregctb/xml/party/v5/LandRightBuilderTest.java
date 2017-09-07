@@ -501,6 +501,61 @@ public class LandRightBuilderTest {
 	}
 
 	/**
+	 * [SIFISC-26200] Ce test vérifie que les usufruits sans ayant-droit (d'un point de vue métier, ça n'a aucun sens, mais il en existe : exemple immeuble CH827755834593) ne provoque pas de crash.
+	 */
+	@Test
+	public void testNewUsufructRightWithoutRightHolder() throws Exception {
+
+		final BienFondsRF immeuble1 = new BienFondsRF();
+		immeuble1.setIdRF("a8388e8e83");
+		immeuble1.setId(123456L);
+		immeuble1.setDroitsPropriete(Collections.emptySet());
+		immeuble1.setServitudes(Collections.emptySet());
+
+		final BienFondsRF immeuble2 = new BienFondsRF();
+		immeuble2.setIdRF("a26271e8e2");
+		immeuble2.setId(4783711L);
+		immeuble2.setDroitsPropriete(Collections.emptySet());
+		immeuble2.setServitudes(Collections.emptySet());
+
+		final UsufruitRF usufruit = new UsufruitRF();
+		usufruit.setId(2332L);
+		usufruit.setDateDebut(RegDate.get(2016, 11, 3));
+		usufruit.setDateFin(RegDate.get(2017, 9, 22));
+		usufruit.setMotifDebut("Convention");
+		usufruit.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		usufruit.setDateFinMetier(RegDate.get(2017, 4, 14));
+		usufruit.setNumeroAffaire(new IdentifiantAffaireRF(21, 2016, 322, 3));
+		usufruit.setAyantDroits(Collections.emptySet());
+		usufruit.addImmeuble(immeuble1);
+		usufruit.addImmeuble(immeuble2);
+
+		final LandRight landRight = LandRightBuilder.newLandRight(usufruit, AyantDroitRF::getId, rightHolderComparator);
+		assertNotNull(landRight);
+		assertTrue(landRight instanceof UsufructRight);
+
+		final UsufructRight usufructRight = (UsufructRight) landRight;
+		assertNotNull(usufructRight);
+		assertEquals(2332L, usufructRight.getId());
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(usufructRight.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(usufructRight.getDateTo()));
+		assertEquals("Convention", usufructRight.getStartReason());
+		assertNull(usufructRight.getEndReason());
+		assertCaseIdentifier(21, "2016/322/3", usufructRight.getCaseIdentifier());
+
+		final List<RightHolder> rightHolders = usufructRight.getRightHolders();
+		assertEquals(0, rightHolders.size());
+
+		final List<Long> immovablePropertyIds = usufructRight.getImmovablePropertyIds();
+		assertEquals(2, immovablePropertyIds.size());
+		assertEquals(Long.valueOf(123456L), immovablePropertyIds.get(0));
+		assertEquals(Long.valueOf(4783711L), immovablePropertyIds.get(1));
+
+		assertEquals(123456L, usufructRight.getImmovablePropertyId());
+		assertNull(usufructRight.getRightHolder());
+	}
+
+	/**
 	 * <pre>
 	 *                        usufruit                                +------------+
 	 *                     +----------------------------------------->| Immeuble 0 |

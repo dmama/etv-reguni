@@ -60,14 +60,16 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="rightHolder" type="land:rightHolderType">
+			<xs:element name="rightHolder" type="land:rightHolderType" minOccurs="0">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
 							<jxb:javadoc>L'ayant-droit qui possède le droit.
 								Note : pour des raisons historique, l'ayant-droit est exposé dans la classe de base des droits, mais cette situation n'est correcte
 								que dans le cas des droits de propriété : dans le cas des servitudes, il peut en effet y a voir plusieurs ayants-droits concernés.
-								Si le droit est une servitude, il ne faut pas utiliser cet élément mais l'élément 'rightHolders' de la structure 'easementRightType'.</jxb:javadoc>
+								Si le droit est une servitude, il ne faut pas utiliser cet élément mais l'élément 'rightHolders' de la structure 'easementRightType'.
+								Note 2 : dans certains cas rarissimes, il arrive qu'une servitude ne possède aucun ayant-droit (voir SIFISC-26200) : à ce moment-là,
+								l'ayant-droit n'est pas renseigné.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>

@@ -176,7 +176,7 @@ public abstract class LandRightBuilder {
 		right.getImmovablePropertyIds().addAll(immovablePropIds);
 
 		// pour des raisons de compatibilité ascendante, on renseigne encore ces deux propriétés
-		right.setRightHolder(rightHolders.get(0));
+		right.setRightHolder(rightHolders.isEmpty() ? null : rightHolders.get(0)); // SIFISC-26200
 		right.setImmovablePropertyId(immovablePropIds.get(0));
 	}
 
