@@ -230,12 +230,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final List<Commune> list = target.getListeFractionsCommunes();
+			final List<Commune> list = target.getCommunesVD();
 			items = list == null ? 0 : list.size();
 			return list;
 		}
@@ -244,7 +244,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getListeFractionsCommunes", items, null);
+			tracing.end(time, t, "getCommunesVD", items, null);
 		}
 	}
 

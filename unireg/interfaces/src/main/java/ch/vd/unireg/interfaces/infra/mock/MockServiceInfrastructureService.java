@@ -182,7 +182,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
 		return communesVaud;
 	}
 

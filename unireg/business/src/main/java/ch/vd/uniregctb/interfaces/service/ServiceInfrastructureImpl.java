@@ -308,8 +308,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
-		return rawService.getListeFractionsCommunes();
+	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
+		return rawService.getCommunesVD();
 	}
 
 	@Override

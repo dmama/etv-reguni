@@ -89,8 +89,8 @@ public class ServiceInfrastructureHostInterfacesRest implements ServiceInfrastru
 	 */
 	@Override
 	@SuppressWarnings({"unchecked"})
-	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
-		throw new NotImplementedException("La méthode 'getListeFractionsCommunes' ne doit pas être appelée sur le service host-interfaces.");
+	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
+		throw new NotImplementedException("La méthode 'getCommunesVD' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
 	@Override

@@ -612,7 +612,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 
-	private static class KeyGetListeFractionsCommunes {
+	private static class KeyGetCommunesVD {
 
 		@Override
 		public int hashCode() {
@@ -636,13 +636,13 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
 		final List<Commune> resultat;
 
-		final KeyGetListeFractionsCommunes key = new KeyGetListeFractionsCommunes();
+		final KeyGetCommunesVD key = new KeyGetCommunesVD();
 		final Element element = cache.get(key);
 		if (element == null) {
-			resultat = target.getListeFractionsCommunes();
+			resultat = target.getCommunesVD();
 			cache.put(new Element(key, resultat));
 		}
 		else {

@@ -169,7 +169,7 @@ public class AutoCompleteInfraController {
 		}
 
 		if (categories.contains(InfraCategory.COMMUNE_VD)) {
-			final List<Commune> communes = serviceInfrastructureService.getListeFractionsCommunes();
+			final List<Commune> communes = serviceInfrastructureService.getCommunesVD();
 			if (communes != null) {
 				for (Commune commune : communes) {
 					if (StringComparator.toLowerCaseWithoutAccent(commune.getNomOfficiel()).startsWith(term)) {

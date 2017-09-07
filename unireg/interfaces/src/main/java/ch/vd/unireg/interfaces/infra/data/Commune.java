@@ -16,7 +16,7 @@ public interface Commune extends EntiteOFS, DateRange {
 	RegDate getDateFinValidite();
 
 	/**
-	 * @return le numéro Ofs de la commune à laquelle la commune est rattachée
+	 * @return le numéro Ofs de la commune faîtière si la commune est une fraction; ou <b>-1</b> si la commune n'est pas une fraction.
 	 */
 	int getOfsCommuneMere();
 

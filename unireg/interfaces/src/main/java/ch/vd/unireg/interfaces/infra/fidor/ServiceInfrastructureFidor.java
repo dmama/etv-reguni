@@ -222,7 +222,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
+	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
 		try {
 			final List<CommuneFiscale> all = fidorClient.getToutesLesCommunes();
 			if (all == null || all.isEmpty()) {

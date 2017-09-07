@@ -376,8 +376,8 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
-	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
-		return target.getListeFractionsCommunes();
+	public List<Commune> getCommunesVD() throws ServiceInfrastructureException {
+		return target.getCommunesVD();
 	}
 
 	@Override

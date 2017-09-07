@@ -104,7 +104,7 @@ public interface ServiceInfrastructureRaw {
 	 * @return La liste des communes vaudoise (en incluant les fractions mais pas leur commune faîtière)
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException;
+	List<Commune> getCommunesVD() throws ServiceInfrastructureException;
 
 	/**
 	 * @return La liste des communes vaudoise faîtières (excluant les fractions et les communes non-fractionnées)
