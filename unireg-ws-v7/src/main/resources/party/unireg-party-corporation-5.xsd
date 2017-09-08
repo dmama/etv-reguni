@@ -541,6 +541,24 @@
 					<xs:complexType/>
 				</xs:element>
 			</xs:choice>
+			<xs:element name="lighteningType" type="corporation:lighteningTypeType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le type de l'allègement.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="padding" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
@@ -579,6 +597,53 @@
 			<xs:enumeration value="PROFIT">
 				<xs:annotation>
 					<xs:documentation>Bénéfice.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="lighteningTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différents types d'allègement fiscal connus.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="TEMPORARY_91_LI">
+				<xs:annotation>
+					<xs:documentation>Exonération temporaire selon l'article 91 de la loi sur les impôts directs cantonaux (LI).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LIGHTENING_90_LI">
+				<xs:annotation>
+					<xs:documentation>Exonération selon l'article 90 de la loi sur les impôts directs cantonaux (LI).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SERVICES_COMPANY">
+				<xs:annotation>
+					<xs:documentation>Société de services (seulement valable sur les allègements canton-commune).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SUBSIDIZED_BUILDING">
+				<xs:annotation>
+					<xs:documentation>Immeuble subventionné de sociétés immobilières.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SPECIAL_LIGHTENING">
+				<xs:annotation>
+					<xs:documentation>Exonération spéciale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LICENSED_PUBLIC_TRANSPORT">
+				<xs:annotation>
+					<xs:documentation>Transport concessionné.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HOLDING_BUILDING">
+				<xs:annotation>
+					<xs:documentation>Holding immeuble (seulement valable sur les allègements canton-commune).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>

@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.xml.party.corporation.v5.LighteningType;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.uniregctb.avatar.TypeAvatar;
@@ -22,6 +23,8 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.AllegementFiscalCantonCommune;
+import ch.vd.uniregctb.tiers.AllegementFiscalConfederation;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEntreprise;
@@ -4521,6 +4524,52 @@ public abstract class EnumHelper {
 			return OwnershipType.DOMINANT_OWNERSHIP;
 		default:
 			throw new IllegalArgumentException("Genre de proriété inconnu = [" + regime + "]");
+		}
+	}
+
+	@Nullable
+	public static LighteningType coreToXMLv5(@Nullable AllegementFiscalConfederation.Type type) {
+		if (type == null) {
+			return null;
+		}
+		switch (type) {
+		case TEMPORAIRE_91LI:
+			return LighteningType.TEMPORARY_91_LI;
+		case EXONERATION_90LI:
+			return LighteningType.LIGHTENING_90_LI;
+		case IMMEUBLE_SI_SUBVENTIONNEE:
+			return LighteningType.SUBSIDIZED_BUILDING;
+		case EXONERATION_SPECIALE:
+			return LighteningType.SPECIAL_LIGHTENING;
+		case TRANSPORTS_CONCESSIONNES:
+			return LighteningType.LICENSED_PUBLIC_TRANSPORT;
+		default:
+			throw new IllegalArgumentException("Type d'allégement inconnu = [" + type + "]");
+		}
+	}
+
+	@Nullable
+	public static LighteningType coreToXMLv5(@Nullable AllegementFiscalCantonCommune.Type type) {
+		if (type == null) {
+			return null;
+		}
+		switch (type) {
+		case TEMPORAIRE_91LI:
+			return LighteningType.TEMPORARY_91_LI;
+		case EXONERATION_90LI:
+			return LighteningType.LIGHTENING_90_LI;
+		case SOCIETE_SERVICE:
+			return LighteningType.SERVICES_COMPANY;
+		case IMMEUBLE_SI_SUBVENTIONNEE:
+			return LighteningType.SUBSIDIZED_BUILDING;
+		case EXONERATION_SPECIALE:
+			return LighteningType.SPECIAL_LIGHTENING;
+		case TRANSPORTS_CONCESSIONNES:
+			return LighteningType.LICENSED_PUBLIC_TRANSPORT;
+		case HOLDING_IMMEUBLE:
+			return LighteningType.HOLDING_BUILDING;
+		default:
+			throw new IllegalArgumentException("Type d'allégement inconnu = [" + type + "]");
 		}
 	}
 }
