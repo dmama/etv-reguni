@@ -70,11 +70,16 @@ public class RattraperDatesMetierDroitRFProcessor {
 
 		// recherche des immeubles concernés
 		final List<Long> ids;
-		if (dataSelection == RattrapageDataSelection.EXPLICIT_SELECTION) {
+		switch (dataSelection) {
+		case EXPLICIT_SELECTION:
 			ids = immeubleIds;
-		}
-		else {
+			break;
+		case ALL:
+			ids = getAllImmeubleIds();
+			break;
+		default:
 			ids = findImmeubleIdsToProcess();
+			break;
 		}
 
 		final RattraperDatesMetierDroitRFProcessorResults rapportFinal = new RattraperDatesMetierDroitRFProcessorResults(dataSelection, nbThreads, immeubleRFDAO, registreFoncierService);
@@ -202,6 +207,12 @@ public class RattraperDatesMetierDroitRFProcessor {
 		else {
 			return Collections.emptyList();
 		}
+	}
+
+	private List<Long> getAllImmeubleIds() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		return template.execute(status -> immeubleRFDAO.getAllIds());
 	}
 
 	private List<Long> findImmeubleIdsToProcess() {
