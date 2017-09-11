@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
-
-	<!-- Ce fichier a la seule fonction d'inclure les schémas locaux qui doivent être compilés.
-	Cette manière de faire indirecte permet de réutiliser les fichiers bindings.xml entre les différents projets -->
-
-	<xs:import namespace="http://vd.ch/Editique/PM/UniregImpression" schemaLocation="http://www.vd.ch/xmlns/editique/pm/UniregPM_FichierImpression.xsd" />
-
-</xs:schema>

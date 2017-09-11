@@ -1,7 +1,0 @@
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
-
-	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/infra/unireg-taxoffices-1.xsd" uri="infra/unireg-taxoffices-1.xsd" />
-
-	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/" catalog="../../../../common/src/main/resources/catalog.xml" />
-
-</catalog>
