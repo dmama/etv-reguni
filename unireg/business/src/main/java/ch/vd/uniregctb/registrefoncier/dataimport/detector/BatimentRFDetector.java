@@ -68,7 +68,13 @@ public class BatimentRFDetector {
 			statusManager.setMessage("Détection des mutations sur les bâtiments...");
 		}
 
-		final ParallelBatchTransactionTemplate<Gebaeude> template = new ParallelBatchTransactionTemplate<Gebaeude>(iterator, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+		final ParallelBatchTransactionTemplate<Gebaeude> template = new ParallelBatchTransactionTemplate<Gebaeude>(iterator,
+		                                                                                                           batchSize,
+		                                                                                                           nbThreads,
+		                                                                                                           Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                           transactionManager,
+		                                                                                                           statusManager,
+		                                                                                                           AuthenticationInterface.INSTANCE) {
 			@Override
 			protected int getBlockingQueueCapacity() {
 				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement

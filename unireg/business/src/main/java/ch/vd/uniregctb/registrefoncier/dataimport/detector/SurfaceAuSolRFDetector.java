@@ -91,6 +91,9 @@ public class SurfaceAuSolRFDetector {
 			if (bodenbedeckung == null) {
 				break;
 			}
+			if (statusManager != null && statusManager.isInterrupted()) {
+				return;
+			}
 
 			final String idRF = bodenbedeckung.getGrundstueckIDREF();
 			final IdRfCacheKey key = new IdRfCacheKey(idRF);
@@ -108,8 +111,12 @@ public class SurfaceAuSolRFDetector {
 
 		// on détecte les mutations qui doivent être générées
 		final ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<Bodenbedeckung>>> template
-				= new ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<Bodenbedeckung>>>(cacheSurfaces.entrySet().iterator(), batchSize, nbThreads,
-				                                                                                        Behavior.REPRISE_AUTOMATIQUE, transactionManager, null,
+				= new ParallelBatchTransactionTemplate<Map.Entry<ObjectKey, ArrayList<Bodenbedeckung>>>(cacheSurfaces.entrySet().iterator(),
+				                                                                                        batchSize,
+				                                                                                        nbThreads,
+				                                                                                        Behavior.REPRISE_AUTOMATIQUE,
+				                                                                                        transactionManager,
+				                                                                                        statusManager,
 				                                                                                        AuthenticationInterface.INSTANCE) {
 			@Override
 			protected int getBlockingQueueCapacity() {

@@ -25,6 +25,7 @@ import ch.vd.capitastra.grundstueck.PersonEigentumAnteil;
 import ch.vd.capitastra.grundstueck.UnbekanntesGrundstueck;
 import ch.vd.shared.batchtemplate.BatchCallback;
 import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.shared.batchtemplate.Interruptible;
 import ch.vd.uniregctb.cache.ObjectKey;
 import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.common.AuthenticationInterface;
@@ -93,7 +94,7 @@ public class DroitRFDetector {
 		this.cacheDroits = cacheDroits;
 	}
 
-	public void processDroitsPropriete(long importId, int nbThreads, Iterator<EigentumAnteil> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
+	public void processDroitsPropriete(long importId, int nbThreads, Iterator<EigentumAnteil> iterator, @Nullable StatusManager statusManager) {
 
 		if (statusManager != null) {
 			statusManager.setMessage("Détection des mutations sur les droits de propriété... (regroupement)");
@@ -104,14 +105,22 @@ public class DroitRFDetector {
 		cacheDroits.clear();
 
 		// on regroupe tous les droits par immeubles
-		groupByImmeuble(iterator, cacheDroits);
+		groupByImmeuble(iterator, cacheDroits, statusManager);
 
 		if (statusManager != null) {
 			statusManager.setMessage("Détection des mutations sur les droits de propriété...", 50);
 		}
 
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
+
 		// on détecte les mutations qui doivent être générées
 		forEachImmeuble(cacheDroits, this::detecterMutationsDroitsPropriete, importId, nbThreads, statusManager);
+
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
 
 		// détection des mutations de type SUPRESSION
 		detectMutationsDeSuppression(cacheDroits, TypeDroit.DROIT_PROPRIETE, importId);
@@ -120,10 +129,13 @@ public class DroitRFDetector {
 		cacheDroits.clear();
 	}
 
-	private void groupByImmeuble(Iterator<EigentumAnteil> iterator, PersistentCache<ArrayList<EigentumAnteil>> cacheDroits) {
+	private void groupByImmeuble(Iterator<EigentumAnteil> iterator, PersistentCache<ArrayList<EigentumAnteil>> cacheDroits, @Nullable Interruptible interruptible) {
 		while (iterator.hasNext()) {
 			final EigentumAnteil eigentumAnteil = iterator.next();
 			if (eigentumAnteil == null) {
+				break;
+			}
+			if (interruptible != null && interruptible.isInterrupted()) {
 				break;
 			}
 			if (blacklistRFHelper.isBlacklisted(eigentumAnteil.getBelastetesGrundstueckIDREF()) ||  // fond servant
@@ -160,7 +172,7 @@ public class DroitRFDetector {
 				                                                                           nbThreads,
 				                                                                           Behavior.REPRISE_AUTOMATIQUE,
 				                                                                           transactionManager,
-				                                                                           null,
+				                                                                           statusManager,
 				                                                                           AuthenticationInterface.INSTANCE) {
 			@Override
 			protected int getBlockingQueueCapacity() {

@@ -81,7 +81,13 @@ public class ServitudeRFDetector {
 			statusManager.setMessage("Détection des mutations sur les servitudes...");
 		}
 
-		final ParallelBatchTransactionTemplate<DienstbarkeitExtendedElement> template = new ParallelBatchTransactionTemplate<DienstbarkeitExtendedElement>(iterator, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+		final ParallelBatchTransactionTemplate<DienstbarkeitExtendedElement> template = new ParallelBatchTransactionTemplate<DienstbarkeitExtendedElement>(iterator,
+		                                                                                                                                                   batchSize,
+		                                                                                                                                                   nbThreads,
+		                                                                                                                                                   Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                                                                   transactionManager,
+		                                                                                                                                                   statusManager,
+		                                                                                                                                                   AuthenticationInterface.INSTANCE) {
 			@Override
 			protected int getBlockingQueueCapacity() {
 				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement

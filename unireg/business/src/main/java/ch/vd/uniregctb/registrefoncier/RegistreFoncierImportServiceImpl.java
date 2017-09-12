@@ -102,6 +102,9 @@ public class RegistreFoncierImportServiceImpl implements RegistreFoncierImportSe
 		while (loop.booleanValue()) {
 			if (statusManager != null) {
 				statusManager.setMessage("Effacement des mutations de l'import n°" + importId + "... (" + deleted.intValue() + " processées)");
+				if (statusManager.isInterrupted()) {
+					break;
+				}
 			}
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(true);

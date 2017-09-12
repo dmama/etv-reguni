@@ -120,7 +120,7 @@ public class DroitRFDetectorTest {
 		final PersonEigentumAnteil droit3 = newDroitPP("38458fa0ac3", "1", "029191d4fec44", idRfImmeuble2, new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 3, 28), new IdentifiantAffaireRF(6, 2013, 28, 4), "Achat");
 
 		final List<EigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
-		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
+		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on devrait avoir deux événements de mutation de type CREATION sur chacun des immeubles
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -241,7 +241,7 @@ public class DroitRFDetectorTest {
 				newDroitColl("38458fa0ac3", idRFCommunaute, idRfImmeuble, GemeinschaftsArt.ERBENGEMEINSCHAFT, new Fraction(1, 1), PersonEigentumsform.ALLEINEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Héritage");
 
 		final List<EigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3);
-		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
+		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on devrait avoir 2 événements de mutation de type CREATION :
 		//  - 1 pour les droits de l'immeuble
@@ -367,7 +367,7 @@ public class DroitRFDetectorTest {
 		final GrundstueckEigentumAnteil droit1 = newDroitImm("3838292", "1", "48238919011", "202930c0e0f3", new Fraction(1, 1), GrundstueckEigentumsform.DOMINIERENDES_GRUNDSTUECK, RegDate.get(2010, 4, 11), new IdentifiantAffaireRF(6, 2013, 17, 0), "Constitution de PPE");
 
 		final List<EigentumAnteil> droits = Collections.singletonList(droit1);
-		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
+		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on devrait avoir en tout 2 événements de mutation de type CREATION : un pour l'immeuble bénéficiare et un autre pour le droit
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -440,7 +440,7 @@ public class DroitRFDetectorTest {
 		final PersonEigentumAnteil droit1 = newDroitPP("9a9c9e94923", "1", "37838sc9d94de", "_1f1091523810108101381012b3d64cb4", new Fraction(1, 2), PersonEigentumsform.MITEIGENTUM, RegDate.get(2010, 4, 23), new IdentifiantAffaireRF(6, 2013, 33, 1), "Achat");
 
 		final List<EigentumAnteil> droits = Collections.singletonList(droit1);
-		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
+		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on ne devrait pas avoir de mutations
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -475,7 +475,7 @@ public class DroitRFDetectorTest {
 		                                                     new IdentifiantAffaireRF(6, 2013, 17, 0), "Constitution de PPE");
 
 		final List<EigentumAnteil> droits = Collections.singletonList(droit1);
-		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
+		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on ne devrait pas avoir de mutations (= pas de création sur l'immeuble bénéficiaire, ni de création du droit)
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -624,7 +624,7 @@ public class DroitRFDetectorTest {
 		                                                     new IdentifiantAffaireRF(6, 2016, 1, 0), "Remaniement parcellaire");
 
 		final List<EigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3, droit4);
-		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
+		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on devrait avoir 2 événements de mutation de type MODIFICATION (un par immeuble concerné)
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -854,7 +854,7 @@ public class DroitRFDetectorTest {
 		final GrundstueckEigentumAnteil droit4 = newDroitImm("282002020", "1", "48238919011", "382929efa218", new Fraction(1, 14), GrundstueckEigentumsform.STOCKWERK, RegDate.get(2010, 4, 4), new IdentifiantAffaireRF(6, 2014, 203, 0), "Constitution de PPE");
 
 		final List<EigentumAnteil> droits = Arrays.asList(droit1, droit2, droit3, droit4);
-		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), false, null);
+		detector.processDroitsPropriete(IMPORT_ID, 2, droits.iterator(), null);
 
 		// on ne devrait pas avoir de mutation
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();
@@ -983,7 +983,7 @@ public class DroitRFDetectorTest {
 		final DroitRFDetector detector = new DroitRFDetector(xmlHelperRF, blacklistRFHelper, immeubleRFDAO, evenementRFImportDAO, evenementRFMutationDAO, transactionManager, ayantDroitRFDetector, cacheDroits);
 
 		// on envoie une liste de droits vide
-		detector.processDroitsPropriete(IMPORT_ID, 2, Collections.<EigentumAnteil>emptyList().iterator(), false, null);
+		detector.processDroitsPropriete(IMPORT_ID, 2, Collections.<EigentumAnteil>emptyList().iterator(), null);
 
 		// on devrait avoir 2 événements de mutation de type SUPPRESSION (un par immeuble ayant des droits)
 		final List<EvenementRFMutation> mutations = evenementRFMutationDAO.getAll();

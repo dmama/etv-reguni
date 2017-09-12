@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.MutationsRFDetectorRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
@@ -67,13 +68,14 @@ public class TraiterImportRFJob extends JobDefinition {
 		final boolean startMutationJob = getBooleanValue(params, CONTINUE_WITH_MUTATIONS_JOB);
 
 		// démarrage de l'import
-		final MutationsRFDetectorResults results = mutationsDetector.run(importId, nbThreads, getStatusManager());
-		final MutationsRFDetectorRapport rapport = rapportService.generateRapport(results, getStatusManager());
+		final StatusManager statusManager = getStatusManager();
+		final MutationsRFDetectorResults results = mutationsDetector.run(importId, nbThreads, statusManager);
+		final MutationsRFDetectorRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
 		Audit.success("Le traitement de l'import RF (détection des mutations) est terminé.", rapport);
 
 		// si demandé, on démarre le job de traitement des mutations
-		if (startMutationJob) {
+		if (startMutationJob && !statusManager.isInterrupted()) {
 			final Map<String, Object> mutParams = new HashMap<>();
 			mutParams.put(TraiterMutationsRFJob.ID, importId);
 			mutParams.put(TraiterMutationsRFJob.NB_THREADS, nbThreads);

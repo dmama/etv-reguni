@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -135,7 +137,7 @@ public class MutationsRFDetector {
 			// on peut maintenant processer l'import
 			switch (typeImport) {
 			case PRINCIPAL:
-				processImportPrincipal(importId, event.getFileUrl(), importInitial, nbThreads, statusManager);
+				processImportPrincipal(importId, event.getFileUrl(), nbThreads, statusManager);
 				break;
 			case SERVITUDES:
 				processImportServitudes(importId, event.getFileUrl(), nbThreads, rapport, statusManager);
@@ -144,8 +146,14 @@ public class MutationsRFDetector {
 				throw new IllegalArgumentException("Type d'import inconnu = [" + typeImport + "].");
 			}
 
-			// terminé
-			updateEvent(importId, EtatEvenementRF.TRAITE, null);
+			if (statusManager.isInterrupted()) {
+				rapport.setInterrompu(true);
+				updateEvent(importId, EtatEvenementRF.A_TRAITER, new Exception("Traitement interrompu."));
+			}
+			else {
+				// terminé
+				updateEvent(importId, EtatEvenementRF.TRAITE, null);
+			}
 			rapport.end();
 			return rapport;
 		}
@@ -256,7 +264,7 @@ public class MutationsRFDetector {
 		});
 	}
 
-	private void processImportPrincipal(long importId, String fileUrl, boolean importInitial, int nbThreads, @NotNull StatusManager statusManager) {
+	private void processImportPrincipal(long importId, String fileUrl, int nbThreads, @NotNull StatusManager statusManager) {
 		try (InputStream is = zipRaftStore.get(fileUrl)) {
 
 			statusManager.setMessage("Détection des mutations...");
@@ -281,13 +289,25 @@ public class MutationsRFDetector {
 
 			// on détecte les changements et crée les mutations
 			processImmeubles(importId, nbThreads, adapter.getImmeublesIterator(), new SubStatusManager(0, 20, statusManager));   // <-- consommateur des données
-			processDroits(importId, nbThreads, adapter.getDroitsIterator(), importInitial, new SubStatusManager(20, 40, statusManager));
+			processDroits(importId, nbThreads, adapter.getDroitsIterator(), new SubStatusManager(20, 40, statusManager));
 			processProprietaires(importId, nbThreads, adapter.getProprietairesIterator(), new SubStatusManager(40, 60, statusManager));
 			processBatiments(importId, nbThreads, adapter.getConstructionsIterator(), new SubStatusManager(60, 80, statusManager));
 			processSurfaces(importId, nbThreads, adapter.getSurfacesIterator(), new SubStatusManager(80, 100, statusManager));
 
 			// on attend que le parsing soit terminé
-			future.get();
+			boolean finished = false;
+			while (!finished) {
+				try {
+					future.get(1, TimeUnit.SECONDS);
+					finished = true;
+				}
+				catch (TimeoutException e) {
+					// on ignore l'exception mais on teste le statut du manager
+					if (statusManager.isInterrupted()) {
+						finished = true;
+					}
+				}
+			}
 
 			statusManager.setMessage("Traitement terminé.");
 		}
@@ -438,30 +458,51 @@ public class MutationsRFDetector {
 	}
 
 	public void processImmeubles(long importId, final int nbThreads, @NotNull Iterator<Grundstueck> iterator, @Nullable StatusManager statusManager) {
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
 		immeubleRFDetector.processImmeubles(importId, nbThreads, iterator, statusManager);
 	}
 
-	public void processDroits(long importId, int nbThreads, Iterator<EigentumAnteil> iterator, boolean importInitial, @Nullable StatusManager statusManager) {
-		droitRFDetector.processDroitsPropriete(importId, nbThreads, iterator, importInitial, statusManager);
+	public void processDroits(long importId, int nbThreads, Iterator<EigentumAnteil> iterator, @Nullable StatusManager statusManager) {
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
+		droitRFDetector.processDroitsPropriete(importId, nbThreads, iterator, statusManager);
 	}
 
 	public void processServitudes(long importId, int nbThreads, Iterator<DienstbarkeitExtendedElement> iterator, @NotNull MutationsRFDetectorResults rapport, @Nullable StatusManager statusManager) {
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
 		servitudeRFDetector.processServitudes(importId, nbThreads, iterator, rapport, statusManager);
 	}
 
 	private void processBeneficiaires(long importId, int nbThreads, Iterator<ch.vd.capitastra.rechteregister.Personstamm> iterator, StatusManager statusManager) {
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
 		ayantDroitRFDetector.processAyantDroits(importId, nbThreads, iterator, statusManager);
 	}
 
 	public void processProprietaires(long importId, int nbThreads, Iterator<Personstamm> iterator, @Nullable StatusManager statusManager) {
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
 		ayantDroitRFDetector.processAyantDroits(importId, nbThreads, iterator, statusManager);
 	}
 
 	public void processBatiments(long importId, int nbThreads, Iterator<Gebaeude> iterator, @Nullable StatusManager statusManager) {
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
 		batimentRFDetector.processBatiments(importId, nbThreads, iterator, statusManager);
 	}
 
 	public void processSurfaces(long importId, int nbThreads, Iterator<Bodenbedeckung> iterator, @Nullable StatusManager statusManager) {
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
 		surfaceAuSolRFDetector.processSurfaces(importId, nbThreads, iterator, statusManager);
 	}
 }

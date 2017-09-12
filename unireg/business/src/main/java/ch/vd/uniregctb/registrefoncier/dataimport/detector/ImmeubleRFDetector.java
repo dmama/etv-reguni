@@ -91,7 +91,13 @@ public class ImmeubleRFDetector {
 			statusManager.setMessage("Détection des mutations sur les immeubles...");
 		}
 
-		final ParallelBatchTransactionTemplate<Grundstueck> template = new ParallelBatchTransactionTemplate<Grundstueck>(iterator, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, AuthenticationInterface.INSTANCE) {
+		final ParallelBatchTransactionTemplate<Grundstueck> template = new ParallelBatchTransactionTemplate<Grundstueck>(iterator,
+		                                                                                                                 batchSize,
+		                                                                                                                 nbThreads,
+		                                                                                                                 Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                                 transactionManager,
+		                                                                                                                 statusManager,
+		                                                                                                                 AuthenticationInterface.INSTANCE) {
 			@Override
 			protected int getBlockingQueueCapacity() {
 				// on limite la queue interne du template à 10 lots de BATCH_SIZE, autrement
@@ -182,6 +188,10 @@ public class ImmeubleRFDetector {
 			}
 		}, null);
 
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
+
 		// on détecte les radiations d'immeubles
 		final TransactionTemplate t1 = new TransactionTemplate(transactionManager);
 		t1.execute(new TxCallbackWithoutResult() {
@@ -208,6 +218,10 @@ public class ImmeubleRFDetector {
 			}
 		});
 		immeubles.clear();
+
+		if (statusManager != null && statusManager.isInterrupted()) {
+			return;
+		}
 
 		// on détecte les mutations sur les communes (ajout, fusion, annexion par milice armée, ...)
 		final TransactionTemplate t2 = new TransactionTemplate(transactionManager);

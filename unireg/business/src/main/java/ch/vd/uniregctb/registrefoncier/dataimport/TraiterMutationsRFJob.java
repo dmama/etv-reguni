@@ -78,12 +78,12 @@ public class TraiterMutationsRFJob extends JobDefinition {
 		// on traite les mutations
 		statusManager.setMessage("Traitement des mutations...");
 		final MutationsRFProcessorResults results = processor.processImport(importId, nbThreads, statusManager);
-		final MutationsRFProcessorRapport rapport = rapportService.generateRapport(results, getStatusManager());
+		final MutationsRFProcessorRapport rapport = rapportService.generateRapport(results, statusManager);
 		setLastRunReport(rapport);
 		Audit.success("Le traitement de l'import RF (traitement des mutations) est terminé.", rapport);
 
 		// si demandé, on démarre le job de rapprochement des propriétaires
-		if (startRapprochementJob) {
+		if (startRapprochementJob && !statusManager.isInterrupted()) {
 			final Map<String, Object> rapprochementParams = new HashMap<>();
 			rapprochementParams.put(RapprocherTiersRFJob.NB_THREADS, nbThreads);
 			batchScheduler.startJob(RapprocherTiersRFJob.NAME, rapprochementParams);
