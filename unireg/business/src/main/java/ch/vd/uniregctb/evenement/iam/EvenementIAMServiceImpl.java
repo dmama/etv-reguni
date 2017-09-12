@@ -2,6 +2,9 @@ package ch.vd.uniregctb.evenement.iam;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -12,6 +15,7 @@ public class EvenementIAMServiceImpl implements EvenementIAMService, EvenementIA
 
 	private TiersDAO tiersDAO;
 	private ValidationService validationService;
+	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementIAMServiceImpl.class);
 
 	@Override
 	public void onEvent(EvenementIAM event) throws EvenementIAMException {
@@ -44,7 +48,8 @@ public class EvenementIAMServiceImpl implements EvenementIAMService, EvenementIA
 			}
 		}
 		else {
-			throw new EvenementIAMException(EsbBusinessCode.IAM_INCOMPLET, "Informations employeurs absentes pour une action create ou update");
+			LOGGER.info(String.format("Informations employeurs absentes pour une action create ou update," +
+					" le message avec business id %s est ignoré", enregistrement.getBusinessId()));
 		}
 	}
 

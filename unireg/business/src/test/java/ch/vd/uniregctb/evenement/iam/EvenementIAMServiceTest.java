@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.iam;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +75,41 @@ public class EvenementIAMServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testIAMSansInformationsEmployeur() throws Exception {
+
+		// Création d'un débiteur
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				// Un tiers tout ce quil y a de plus ordinaire
+				final DebiteurPrestationImposable siggenAirlines = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2010, 1, 1));
+				return siggenAirlines.getNumero();
+			}
+		});
+
+		try {
+			// Simule la réception d'un enregistrement de debiteur
+			doInNewTransaction(new TxCallback<Object>() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					final InfoEmployeur infoEmployeur = new InfoEmployeur();
+					final EnregistrementEmployeur enregistrementEmployeur = new EnregistrementEmployeur();
+					enregistrementEmployeur.setBusinessId("business-id-de-test");
+					service.onEnregistrementEmployeur(enregistrementEmployeur);
+					return null;
+				}
+			});
+		}catch (EvenementIAMException e){
+			Assert.fail("On ne devrait plus avoir d'exception en cas dinformations employeur absentes");
+		}
+
+
+
 	}
 
 	@Test
