@@ -44,7 +44,7 @@ public class UniregTomcatRunner {
 		// Propriétés normallement configurées par Maven et qu'on spécifie à la main parce qu'on pointe vers le répertoire sources (et non pas target).
 
 		// BEGIN_LVERSION
-		System.setProperty("project.version", "7.2.3-SNAPSHOT");
+		System.setProperty("project.version", "7.2.3");
 		// END_LVERSION
 
 		System.setProperty("project.name", "UniregCTB - Web");
