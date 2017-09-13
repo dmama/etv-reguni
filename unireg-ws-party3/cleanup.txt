@@ -1,9 +1,0 @@
-Cleanup à faire pour une éventuelle version 4 du web-service
-------------------------------------------------------------
-
- - Supprimer le type 'partyPartType' du fichier 'searchparty.xsd' et le remplacer par le même type défini dans le fichier 'unireg-party-1.xsd'.
- - Ajouté la constante MaritalStatus.PARTNERSHIP_SEPARATED.
- - Faire remonter l'attribut 'deadlines' de 'ordinaryTaxDeclarationType' à 'taxDeclarationType'.
- - Remplacer le type 'ordinaryTaxDeclarationKeyType' du fichier 'acknowledgetaxdeclarations.xsd' par le type 'taxDeclarationKeyType' du fichier 'unireg-party-taxdeclaration-1.xsd'.
- - Supprimer l'attribut 'category' qui n'est pas historisé (car l'attribut 'categories' l'est c'est suffisant).
- - Renommer le type 'naturalPersonCategoryType' en 'naturalPersonCategoryTypeType' et le type 'naturalPersonCategoryPeriodType' en 'naturalPersonCategoryType'.
