@@ -194,7 +194,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH }, fetch=FetchType.LAZY)
 	@JoinColumn(name = "MODELE_DOC_ID")
-	@ForeignKey(name = "FK_DOCFISC_DOC_ID")
+	@ForeignKey(name = "FK_DOCFISC_MODOC_ID")
 	public ModeleDocument getModeleDocument() {
 		// begin-user-code
 		return modeleDocument;

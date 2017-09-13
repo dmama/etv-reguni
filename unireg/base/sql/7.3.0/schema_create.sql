@@ -44,7 +44,7 @@ create table BORDEREAU_MVT_DOSSIER (id number(19,0) not null, ANNULATION_DATE ti
 
 create table DOCUMENT_FISCAL (DOCUMENT_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEBUT number(10,0) not null, DATE_FIN number(10,0) not null, CODE_CONTROLE nvarchar2(6), CODE_SEGMENT number(10,0), DATE_IMPR_CHEMISE_TO timestamp, DELAI_RETOUR_IMPRIME number(10,0), LIBRE number(1,0), NUMERO number(10,0), NO_OFS_FOR_GESTION number(10,0), QUALIFICATION nvarchar2(16), RETOUR_COLL_ADMIN_ID number(19,0), TYPE_CTB nvarchar2(17), MODE_COM nvarchar2(12), PERIODICITE nvarchar2(11), SANS_RAPPEL number(1,0), MODELE_DOC_ID number(19,0), PERIODE_ID number(19,0) not null, DATE_DEBUT_EXERCICE NUMBER(10, 0), DATE_FIN_EXERCICE NUMBER(10, 0), TIERS_ID number(19,0) not null, primary key (id));
 
-create table DELAI_DOCUMENT_FISCAL (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEMANDE number(10,0), DATE_TRAITEMENT number(10,0), DELAI_ACCORDE_AU number(10,0), ETAT nvarchar2(10) not null, SURSIS number(1,0) not null, CLE_ARCHIVAGE_COURRIER nvarchar2(40), CLE_DOCUMENT nvarchar2(256), DOCUMENT_FISCAL_ID number(19,0) not null, primary key (id));
+create table DELAI_DOCUMENT_FISCAL (DELAI_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEMANDE number(10,0), DATE_TRAITEMENT number(10,0), DELAI_ACCORDE_AU number(10,0), ETAT nvarchar2(10) not null, SURSIS number(1,0) not null, CLE_ARCHIVAGE_COURRIER nvarchar2(40), CLE_DOCUMENT nvarchar2(256), DOCUMENT_FISCAL_ID number(19,0) not null, primary key (id));
 
 create table DOC_INDEX (DOC_TYPE nvarchar2(50) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DESCRIPTION nvarchar2(255), FILE_EXT nvarchar2(255) not null, FILE_NAME nvarchar2(255) not null, FILE_SIZE number(19,0) not null, NOM nvarchar2(100) not null, SUB_PATH nvarchar2(255) not null, NB_TIERS number(10,0), primary key (id));
 
@@ -254,16 +254,17 @@ CREATE INDEX IDX_ADR_MAND_CTB_ID ON ADRESSE_MANDATAIRE (CTB_ID ASC);
 create index IDX_AUDIT_LOG_DATE on AUDIT_LOG (LOG_DATE);
 
 create index IDX_DOCFISC_TRS_ID on DOCUMENT_FISCAL (TIERS_ID);
+create index IDX_DOCFISC_TYPE_ANNUL_DATE ON DOCUMENT_FISCAL (ANNULATION_DATE, DOCUMENT_TYPE);
 
 alter table DOCUMENT_FISCAL add constraint FK_DOCFISC_TRS_ID foreign key (TIERS_ID) references TIERS;
 
-alter table DOCUMENT_FISCAL add constraint FK_DOCFISC_DOC_ID foreign key (MODELE_DOC_ID) references MODELE_DOCUMENT;
+alter table DOCUMENT_FISCAL add constraint FK_DOCFISC_MODOC_ID foreign key (MODELE_DOC_ID) references MODELE_DOCUMENT;
 
 alter table DOCUMENT_FISCAL add constraint FK_DOCFISC_PF_ID foreign key (PERIODE_ID) references PERIODE_FISCALE;
 
-create index IDX_DE_DOCFISC_DOCFISC_ID on DELAI_DOCUMENT_FISCAL (DOCUMENT_FISCAL_ID);
+create index IDX_DEL_DOCFISC_DOCFISC_ID on DELAI_DOCUMENT_FISCAL (DOCUMENT_FISCAL_ID);
 
-alter table DELAI_DOCUMENT_FISCAL add constraint FK_DOCFISC_DEL_DOCFISC_ID foreign key (DOCUMENT_FISCAL_ID) references DOCUMENT_FISCAL;
+alter table DELAI_DOCUMENT_FISCAL add constraint FK_DEL_DOCFISC_DOCFISC_ID foreign key (DOCUMENT_FISCAL_ID) references DOCUMENT_FISCAL;
 
 create index IDX_DA_TIERS_ID on DROIT_ACCES (TIERS_ID);
 
@@ -271,7 +272,9 @@ create index IDX_NUMERO_IND_OPER on DROIT_ACCES (NUMERO_IND_OPER);
 
 alter table DROIT_ACCES add constraint FK_DA_TRS_ID foreign key (TIERS_ID) references TIERS;
 
-create index IDX_DE_DOCFISC_DOCFISC_ID on ETAT_DOCUMENT_FISCAL (DOCUMENT_FISCAL_ID);
+create index IDX_ET_DOCFISC_DOCFISC_ID on ETAT_DOCUMENT_FISCAL (DOCUMENT_FISCAL_ID);
+create index IDX_ET_DOCFISC_LOG_MDATE on ETAT_DOCUMENT_FISCAL (LOG_MDATE);
+create index IDX_ET_DOCFISC_SOMM_DOCFISC on ETAT_DOCUMENT_FISCAL (DOCUMENT_FISCAL_ID, ANNULATION_DATE, TYPE, DATE_OBTENTION);
 
 alter table ETAT_DOCUMENT_FISCAL add constraint FK_ET_DOCFISC_DOCFISC_ID foreign key (DOCUMENT_FISCAL_ID) references DOCUMENT_FISCAL;
 
@@ -398,8 +401,6 @@ CREATE INDEX IDX_TIERS_NO_ETABLISSEMENT ON TIERS(NUMERO_ETABLISSEMENT ASC);
 create index IDX_TIERS_LOG_MDATE on TIERS (LOG_MDATE);
 
 create index IDX_FF_LOG_MDATE on FOR_FISCAL (LOG_MDATE);
-
-create index IDX_ED_LOG_MDATE on ETAT_DOCUMENT_FISCAL (LOG_MDATE);
 
 create index IDX_EVT_IDENT_CTB_TRAIT_USER on EVENEMENT_IDENTIFICATION_CTB (TRAITEMENT_USER);
 

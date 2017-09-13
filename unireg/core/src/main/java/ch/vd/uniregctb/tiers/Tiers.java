@@ -471,7 +471,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	@OneToMany(mappedBy = "tiers", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@ForeignKey(name = "FK_DECL_TRS_ID")
+	@ForeignKey(name = "FK_DOCFISC_TRS_ID")
 	public Set<DocumentFiscal> getDocumentsFiscaux() {
 		return documentsFiscaux;
 	}

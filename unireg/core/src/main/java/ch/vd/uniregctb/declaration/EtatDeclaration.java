@@ -6,6 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
 import ch.vd.registre.base.date.RegDate;
@@ -52,7 +53,8 @@ public abstract class EtatDeclaration extends EtatDocumentFiscal<TypeEtatDeclara
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "FK_ET_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
+	@ForeignKey(name = "FK_ET_DOCFISC_DOCFISC_ID")
+	@Index(name = "IDX_ET_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
 	public Declaration getDeclaration() {
 		// begin-user-code
 		return (Declaration) getDocumentFiscal();
