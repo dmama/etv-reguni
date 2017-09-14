@@ -112,7 +112,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_R75A8uqgEdySTq6PFlf9jQ?GETTER"
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH }, fetch=FetchType.LAZY)
-	@JoinColumn(name = "PERIODE_ID", nullable = false)
+	@JoinColumn(name = "PERIODE_ID")
 	@ForeignKey(name = "FK_DOCFISC_PF_ID")
 	public PeriodeFiscale getPeriode() {
 		// begin-user-code
@@ -139,7 +139,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_XJ1FcOqgEdySTq6PFlf9jQ?GETTER"
 	 */
 	@Override
-	@Column(name = "DATE_DEBUT", nullable = false)
+	@Column(name = "DATE_DEBUT")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
 		// begin-user-code
@@ -166,7 +166,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ajGHUOqgEdySTq6PFlf9jQ?GETTER"
 	 */
 	@Override
-	@Column(name = "DATE_FIN", nullable = false)
+	@Column(name = "DATE_FIN")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
 		// begin-user-code
