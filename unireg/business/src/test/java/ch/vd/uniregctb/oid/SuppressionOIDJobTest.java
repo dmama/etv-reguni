@@ -181,7 +181,7 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		final SuppressionOIDResults.Traite traite0 = results.traites.get(0);
 		assertNotNull(traite0);
 		assertEquals(ids.pp, traite0.noCtb);
-		assertEquals("Tables impactées : DECLARATION", traite0.getDescriptionRaison());
+		assertEquals("Tables impactées : DOCUMENT_FISCAL", traite0.getDescriptionRaison());
 
 		// on vérifie que les différents offices d'impôt sont bien à jour
 		doInNewTransaction(new TxCallbackWithoutResult() {
@@ -554,7 +554,7 @@ public class SuppressionOIDJobTest extends BusinessTest {
 		final SuppressionOIDResults.Traite traite0 = results.traites.get(0);
 		assertNotNull(traite0);
 		assertEquals(ids.pp, traite0.noCtb);
-		assertEquals("Tables impactées : DECLARATION, TACHE, TIERS", traite0.getDescriptionRaison());
+		assertEquals("Tables impactées : DOCUMENT_FISCAL, TACHE, TIERS", traite0.getDescriptionRaison());
 
 		// on vérifie que les différents offices d'impôt sont bien à jour
 		doInNewTransaction(new TxCallbackWithoutResult() {

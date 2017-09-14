@@ -317,7 +317,7 @@ public class SuppressionOIDJob extends JobDefinition {
 
 		@Override
 		public String getTable() {
-			return "DECLARATION";
+			return "DOCUMENT_FISCAL";
 		}
 
 		@Override

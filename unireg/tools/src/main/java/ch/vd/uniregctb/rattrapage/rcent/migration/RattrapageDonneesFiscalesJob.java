@@ -44,9 +44,13 @@ public class RattrapageDonneesFiscalesJob {
 	}
 
 	public static void main(String[] args) throws IOException {
+
 		final Map<Long, Map<String, List<String>>> data;
 		try (InputStream is = RattrapageDonneesFiscalesJob.class.getResourceAsStream(INPUT_FILE);
 		     Reader r = new InputStreamReader(is, Charset.defaultCharset())) {
+			if (r != null) {
+				throw new UnsupportedOperationException("SIFISC-21866: Ce job n'est plus utilisable, car le schéma de base de données a changé.");
+			}
 
 			data = lectureFichierInput(r);
 		}

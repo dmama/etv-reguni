@@ -1773,6 +1773,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 						"AND ED.LOG_MDATE >= :debut                                               " +
 						"AND ED.LOG_MDATE <= :fin                                                 " +
 						"AND ED.TYPE IN ('EMISE', 'ECHUE')                                        " +
+						"AND DI.DOCUMENT_TYPE IN ('DI', 'DIPM', 'QSNC', 'LR')                     " +
 						"ORDER BY CTB_ID                                                          ";
 
 		final Session session = getCurrentSession();
