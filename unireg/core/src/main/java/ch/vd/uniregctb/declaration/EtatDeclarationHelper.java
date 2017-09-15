@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.declaration;
 
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EtatDeclarationHelper {
 
-	public static EtatDeclaration getInstanceOfEtatDeclaration(TypeEtatDeclaration typeEtat) {
+	public static EtatDeclaration getInstanceOfEtatDeclaration(TypeEtatDocumentFiscal typeEtat) {
 		switch (typeEtat) {
 		case ECHUE:
 			return new EtatDeclarationEchue();
@@ -19,7 +19,7 @@ public class EtatDeclarationHelper {
 		}
 	}
 
-	public static Class<? extends EtatDeclaration> getClasseOfEtatDeclaration(TypeEtatDeclaration typeEtat) {
+	public static Class<? extends EtatDeclaration> getClasseOfEtatDeclaration(TypeEtatDocumentFiscal typeEtat) {
 		switch (typeEtat) {
 		case ECHUE:
 			return EtatDeclarationEchue.class;

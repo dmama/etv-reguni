@@ -95,7 +95,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -359,7 +359,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
-			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE);
 			if (etatRetour != null) {
 				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
 			}
@@ -387,7 +387,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
-			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE);
 			if (etatRetour != null) {
 				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
 			}

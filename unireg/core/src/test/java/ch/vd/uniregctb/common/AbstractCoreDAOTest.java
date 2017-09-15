@@ -166,7 +166,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
@@ -564,7 +564,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param dateRetourImprimee le délai de retour imprimé sur la déclaration
 	 * @param declarations       la collection de déclarations à asserter.
 	 */
-	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
+	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDocumentFiscal etat, TypeContribuable typeContribuable,
 	                                 TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate dateRetourImprimee, List<Declaration> declarations) {
 		assertNotNull(declarations);
 		assertEquals(declarations.size(), 1);
@@ -583,7 +583,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param delaiRetourImprime le délai de retour imprimé sur la déclaration
 	 * @param declaration        la déclaration à asserter.
 	 */
-	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
+	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDocumentFiscal etat, TypeContribuable typeContribuable,
 	                                 TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate delaiRetourImprime, Declaration declaration) {
 		assertNotNull(declaration);
 		DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declaration;

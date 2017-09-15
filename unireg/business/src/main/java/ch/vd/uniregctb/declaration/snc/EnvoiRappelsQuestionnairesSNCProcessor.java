@@ -32,7 +32,7 @@ import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EnvoiRappelsQuestionnairesSNCProcessor {
 
@@ -113,7 +113,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 
 		// si le questionnaire n'est plus dans l'état "EMISE", c'est qu'il vient de bouger et ne doit pas être rappelé
 		final EtatDeclaration dernierEtat = questionnaire.getDernierEtatDeclaration();
-		if (dernierEtat == null || dernierEtat.getEtat() != TypeEtatDeclaration.EMISE) {
+		if (dernierEtat == null || dernierEtat.getEtat() != TypeEtatDocumentFiscal.EMISE) {
 			rapport.addQuestionnaireNonEmis(questionnaire, dernierEtat);
 		}
 		else {

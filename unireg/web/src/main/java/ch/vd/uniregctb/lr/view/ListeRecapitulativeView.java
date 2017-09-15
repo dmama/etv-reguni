@@ -4,7 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class ListeRecapitulativeView implements Annulable, DateRange {
 
@@ -14,7 +14,7 @@ public class ListeRecapitulativeView implements Annulable, DateRange {
 	private final RegDate dateFin;
 	private final RegDate dateRetour;
 	private final RegDate delaiAccorde;
-	private final TypeEtatDeclaration etat;
+	private final TypeEtatDocumentFiscal etat;
 
 	public ListeRecapitulativeView(DeclarationImpotSource lr) {
 		this.id = lr.getId();
@@ -53,7 +53,7 @@ public class ListeRecapitulativeView implements Annulable, DateRange {
 		return delaiAccorde;
 	}
 
-	public TypeEtatDeclaration getEtat() {
+	public TypeEtatDocumentFiscal getEtat() {
 		return etat;
 	}
 }

@@ -22,7 +22,7 @@ import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -226,7 +226,7 @@ public class EchoirDIsPPProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 				assertNotNull(di);
-				assertEquals(TypeEtatDeclaration.ECHUE, di.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.ECHUE, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});

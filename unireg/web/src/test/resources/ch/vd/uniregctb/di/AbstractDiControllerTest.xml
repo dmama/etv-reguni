@@ -554,6 +554,7 @@
     <column>LOG_CDATE</column>
     <column>LOG_MDATE</column>
     <column>ID</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DATE_OBTENTION</column>
     <column>DOCUMENT_FISCAL_ID</column>
@@ -561,6 +562,7 @@
       <value>2008-01-01</value>
       <value>2008-01-01</value>
       <value>401</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20080110</value>
       <value>200</value>
@@ -569,6 +571,7 @@
       <value>2008-01-01</value>
       <value>2008-01-01</value>
       <value>400</value>
+      <value>DI_ECHUE</value>
       <value>ECHUE</value>
       <value>20080120</value>
       <value>200</value>
@@ -577,6 +580,7 @@
       <value>2008-01-01</value>
       <value>2008-01-01</value>
       <value>410</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20080120</value>
       <value>210</value>
@@ -585,6 +589,7 @@
       <value>2008-01-01</value>
       <value>2008-01-01</value>
       <value>420</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20070121</value>
       <value>220</value>
@@ -593,6 +598,7 @@
       <value>2008-01-01</value>
       <value>2008-01-01</value>
       <value>421</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <value>20070120</value>
       <value>220</value>

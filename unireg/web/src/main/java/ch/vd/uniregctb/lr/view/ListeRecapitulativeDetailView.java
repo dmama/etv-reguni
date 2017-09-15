@@ -16,7 +16,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 
@@ -27,7 +27,7 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 	private final RegDate dateRetour;
 	private final RegDate delaiAccorde;
 	private final List<DelaiDeclarationView> delais;
-	private final TypeEtatDeclaration etat;
+	private final TypeEtatDocumentFiscal etat;
 	private final RegDate dateObtentionEtat;
 	private final boolean annule;
 	private final boolean isAllowedDelai;
@@ -60,10 +60,10 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 		this.imprimable = !lr.isAnnule();
 
 		// [SIFISC-17743] ajout de délai seulement autorisée si lr seulement émise
-		this.isAllowedDelai = this.etat == TypeEtatDeclaration.EMISE;
+		this.isAllowedDelai = this.etat == TypeEtatDocumentFiscal.EMISE;
 
 		// [SIFISC-10283] LR annulable si EMISE, SOMMEE ou ECHUE
-		this.annulable = !lr.isAnnule() && this.etat != TypeEtatDeclaration.RETOURNEE;
+		this.annulable = !lr.isAnnule() && this.etat != TypeEtatDocumentFiscal.RETOURNEE;
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 		return delais;
 	}
 
-	public TypeEtatDeclaration getEtat() {
+	public TypeEtatDocumentFiscal getEtat() {
 		return etat;
 	}
 

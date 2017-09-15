@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -44,7 +44,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 	public void testFind() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
 		DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
-		criterion.setEtat(TypeEtatDeclaration.EMISE.toString());
+		criterion.setEtat(TypeEtatDocumentFiscal.EMISE.toString());
 		criterion.setAnnee(2007);
 		List<DeclarationImpotOrdinaire> dis = diDao.find(criterion);
 		assertNotNull(dis);
@@ -76,7 +76,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 		EtatDeclaration etat = diDao.findDerniereDiEnvoyee(new Long(12600001));
 		assertNotNull(etat);
 		assertEquals(Long.valueOf(41), etat.getId());
-		assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());
+		assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
 		assertEquals(new Long(12600001), etat.getDeclaration().getTiers().getNumero());
 	}
 

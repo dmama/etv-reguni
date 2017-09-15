@@ -7,10 +7,10 @@ import javax.persistence.Transient;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 @Entity
-@DiscriminatorValue("EMISE")
+@DiscriminatorValue("DI_EMISE")
 public class EtatDeclarationEmise extends EtatDeclaration implements EtatDeclarationAvecDocumentArchive {
 
 	private String cleDocument;
@@ -23,10 +23,10 @@ public class EtatDeclarationEmise extends EtatDeclaration implements EtatDeclara
 		super(dateObtention);
 	}
 
-	@Override
 	@Transient
-	public TypeEtatDeclaration getEtat() {
-		return TypeEtatDeclaration.EMISE;
+	@Override
+	public TypeEtatDocumentFiscal getType() {
+		return TypeEtatDocumentFiscal.EMISE;
 	}
 
 	@Override

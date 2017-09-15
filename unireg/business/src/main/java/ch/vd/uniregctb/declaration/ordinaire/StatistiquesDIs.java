@@ -14,7 +14,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 
@@ -50,9 +50,9 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 
 		public final int oid;
 		public final TypeContribuable typeCtb;
-		public final TypeEtatDeclaration etat;
+		public final TypeEtatDocumentFiscal etat;
 
-		public Key(int oid, TypeContribuable typeCtb, TypeEtatDeclaration etat) {
+		public Key(int oid, TypeContribuable typeCtb, TypeEtatDocumentFiscal etat) {
 			this.oid = oid;
 			this.typeCtb = typeCtb;
 			this.etat = etat;
@@ -141,7 +141,7 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 		this.population = population;
 	}
 
-	public void addStats(int oid, TypeContribuable typeCtb, TypeEtatDeclaration etat) {
+	public void addStats(int oid, TypeContribuable typeCtb, TypeEtatDocumentFiscal etat) {
 		final Key key = new Key(oid, typeCtb, etat);
 		final Value value = stats.computeIfAbsent(key, k -> new Value());
 		++ value.nombre;

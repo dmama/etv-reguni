@@ -35,7 +35,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDocumentEmolument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 
@@ -675,7 +675,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 					final EtatDeclaration etat = di.getDernierEtatDeclaration();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.SOMMEE, etat.getEtat());
 					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
 					Assert.assertNull(sommation.getEmolument());
 				}
@@ -685,7 +685,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 					final EtatDeclaration etat = di.getDernierEtatDeclaration();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.SOMMEE, etat.getEtat());
 					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
 					Assert.assertEquals((Integer) emolument1, sommation.getEmolument());
 				}
@@ -695,7 +695,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 					final EtatDeclaration etat = di.getDernierEtatDeclaration();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.SOMMEE, etat.getEtat());
 					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
 					Assert.assertEquals((Integer) emolument2, sommation.getEmolument());
 				}

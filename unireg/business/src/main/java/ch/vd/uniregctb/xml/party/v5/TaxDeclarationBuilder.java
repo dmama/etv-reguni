@@ -27,18 +27,18 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
 public class TaxDeclarationBuilder {
 
-	private static final Set<TypeEtatDeclaration> ETATS_EXPOSES = EnumSet.of(TypeEtatDeclaration.ECHUE,
-	                                                                         TypeEtatDeclaration.EMISE,
-	                                                                         TypeEtatDeclaration.RETOURNEE,
-	                                                                         TypeEtatDeclaration.SOMMEE,
-	                                                                         TypeEtatDeclaration.RAPPELEE,
-	                                                                         TypeEtatDeclaration.SUSPENDUE);
+	private static final Set<TypeEtatDocumentFiscal> ETATS_EXPOSES = EnumSet.of(TypeEtatDocumentFiscal.ECHUE,
+	                                                                            TypeEtatDocumentFiscal.EMISE,
+	                                                                            TypeEtatDocumentFiscal.RETOURNEE,
+	                                                                            TypeEtatDocumentFiscal.SOMMEE,
+	                                                                            TypeEtatDocumentFiscal.RAPPELEE,
+	                                                                            TypeEtatDocumentFiscal.SUSPENDUE);
 
 	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(DeclarationImpotOrdinairePP declaration, @Nullable Set<PartyPart> parts) {
 

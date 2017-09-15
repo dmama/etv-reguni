@@ -6,7 +6,7 @@ package ch.vd.uniregctb.type;
 /**
  * Typologie des états de déclaration
  */
-public enum TypeEtatDeclaration {
+public enum TypeEtatDocumentFiscal {
 
 	/**
 	 * Déclaration émise, en attente de retour depuis le tiers. C'est le premier état de toute déclaration.
@@ -41,7 +41,7 @@ public enum TypeEtatDeclaration {
 
 	private final String description;
 
-	TypeEtatDeclaration(String description) {
+	TypeEtatDocumentFiscal(String description) {
 		this.description = description;
 	}
 

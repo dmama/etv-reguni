@@ -19,7 +19,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class ListeRecapitulativeSearchResult implements Annulable {
 
@@ -35,7 +35,7 @@ public class ListeRecapitulativeSearchResult implements Annulable {
 	private final RegDate dateFinPeriode;
 	private final RegDate dateRetour;
 	private final RegDate delaiAccorde;
-	private final TypeEtatDeclaration etat;
+	private final TypeEtatDocumentFiscal etat;
 	private final boolean annule;
 
 	public ListeRecapitulativeSearchResult(DeclarationImpotSource lr, AdresseService adresseService) throws AdresseException {
@@ -124,7 +124,7 @@ public class ListeRecapitulativeSearchResult implements Annulable {
 		return delaiAccorde;
 	}
 
-	public TypeEtatDeclaration getEtat() {
+	public TypeEtatDocumentFiscal getEtat() {
 		return etat;
 	}
 }

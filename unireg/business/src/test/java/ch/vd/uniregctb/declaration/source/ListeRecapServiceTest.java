@@ -26,7 +26,7 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class ListeRecapServiceTest extends BusinessTest {
 
@@ -139,9 +139,9 @@ public class ListeRecapServiceTest extends BusinessTest {
 				final PeriodeFiscale periodeFiscale2008 = addPeriodeFiscale(2008);
 				final PeriodeFiscale periodeFiscale2009 = addPeriodeFiscale(2009);
 
-				addLRPeriodiciteUnique(dpi, date(2008, 2, 1), date(2008, 8, 28), periodeFiscale2008, TypeEtatDeclaration.RETOURNEE);
-				addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDeclaration.RETOURNEE);
-				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDeclaration.RETOURNEE);
+				addLRPeriodiciteUnique(dpi, date(2008, 2, 1), date(2008, 8, 28), periodeFiscale2008, TypeEtatDocumentFiscal.RETOURNEE);
+				addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDocumentFiscal.RETOURNEE);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDocumentFiscal.RETOURNEE);
 				return dpi.getNumero();
 			}
 		});

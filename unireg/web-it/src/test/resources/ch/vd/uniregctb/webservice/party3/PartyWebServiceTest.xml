@@ -4040,6 +4040,7 @@
     <column>DECLARATION_ID</column>
   </table>
   <table name="ETAT_DOCUMENT_FISCAL">
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
@@ -4053,6 +4054,7 @@
     <column>SOURCE</column>
     <column>DOCUMENT_FISCAL_ID</column>
     <row>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>1</value>
       <null/>
@@ -4067,6 +4069,7 @@
       <value>1</value>
     </row>
     <row>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>2</value>
       <value><![CDATA[2009-03-04 00:00:00.0]]></value>

@@ -1088,12 +1088,14 @@
     <column>LOG_MDATE</column>
     <column>ID</column>
     <column>DOCUMENT_FISCAL_ID</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DATE_OBTENTION</column>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
       <value>2</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20060115</value>
     </row>

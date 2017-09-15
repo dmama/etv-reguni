@@ -15,7 +15,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.view.EtatDeclarationView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class AjouterEtatDeclarationView {
 
@@ -59,7 +59,7 @@ public class AjouterEtatDeclarationView {
 		this.typeDocumentEditable = typeDocumentEditable;
 	}
 
-	public static TypeEtatDeclaration getDernierEtat(DeclarationImpotOrdinaire di) {
+	public static TypeEtatDocumentFiscal getDernierEtat(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration etatDI = di.getDernierEtatDeclaration();
 		return etatDI == null ? null : etatDI.getEtat();
 	}

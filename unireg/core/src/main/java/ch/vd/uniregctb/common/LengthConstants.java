@@ -111,7 +111,6 @@ public abstract class LengthConstants {
 	public static final int LOG_MESSAGE = 255;
 
 	public static final int DI_TYPE_CTB = 17;
-	public static final int DI_ETAT = 12;
 	public static final int DI_QUALIF = 16;
 	public static final int DI_ADRESSE_RETOUR = 4;
 	public static final int DI_CODE_CONTROLE = 6;
@@ -140,6 +139,7 @@ public abstract class LengthConstants {
 	public static final int REQDES_TYPE_INSCRIPTION = 15;
 	public static final int REQDES_LIBELLE_ORIGINE = 50;
 
+	public static final int TYPE_ETAT_DOC = 31;
 	public static final int DELAI_DECL_ETAT = 10;
 
 	public static final int CLE_ARCHIVAGE_FOLDERS = 40;

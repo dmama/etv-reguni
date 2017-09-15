@@ -38,7 +38,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 import static noNamespace.InfoDocumentDocument1.InfoDocument;
 import static noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
@@ -279,7 +279,7 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 		}
 		expediteur.setLocaliteExpedition("Lausanne");
 		final RegDate dateExpedition;
-		final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.SOMMEE);
+		final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMMEE);
 		dateExpedition = sommee.getDateEnvoiCourrier();
 		expediteur.setDateExpedition(Integer.toString(dateExpedition.index()));
 		expediteur.setNotreReference(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));

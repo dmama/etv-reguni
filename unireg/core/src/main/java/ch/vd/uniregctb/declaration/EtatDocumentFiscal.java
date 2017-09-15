@@ -5,6 +5,8 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,7 +30,9 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
  * <!-- begin-user-doc -->
@@ -42,8 +46,8 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 @Entity
 @Table(name = "ETAT_DOCUMENT_FISCAL")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class EtatDocumentFiscal<T, E extends EtatDocumentFiscal> extends HibernateEntity implements DateRange, Comparable<EtatDocumentFiscal>, LinkedEntity {
+@DiscriminatorColumn(name = "ETAT_TYPE", discriminatorType = DiscriminatorType.STRING)
+public abstract class EtatDocumentFiscal<E extends EtatDocumentFiscal> extends HibernateEntity implements DateRange, Comparable<EtatDocumentFiscal>, LinkedEntity {
 
 
 	/**
@@ -68,10 +72,14 @@ public abstract class EtatDocumentFiscal<T, E extends EtatDocumentFiscal> extend
 	 */
 	private DocumentFiscal documentFiscal;
 
+	private TypeEtatDocumentFiscal etat;
+
 	public EtatDocumentFiscal() {
+		etat = getType();
 	}
 
 	public EtatDocumentFiscal(RegDate dateObtention) {
+		etat = getType();
 		this.dateObtention = dateObtention;
 
 	}
@@ -99,14 +107,18 @@ public abstract class EtatDocumentFiscal<T, E extends EtatDocumentFiscal> extend
 		this.id = theId;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the etat
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_TNdzAOqfEdySTq6PFlf9jQ?GETTER"
-	 */
+	@Column(name = "TYPE", length = LengthConstants.TYPE_ETAT_DOC, nullable = false)
+	@Enumerated(value = EnumType.STRING)
+	public TypeEtatDocumentFiscal getEtat() {
+		return etat;
+	}
+
+	public void setEtat(TypeEtatDocumentFiscal etat) {
+		this.etat = etat;
+	}
+
 	@Transient
-	public abstract T getEtat();
+	public abstract TypeEtatDocumentFiscal getType();
 
 	@Transient
 	public abstract Comparator<E> getComparator();

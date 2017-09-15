@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class ListeRecapitulativeCriteria implements Serializable {
 
@@ -17,7 +17,7 @@ public class ListeRecapitulativeCriteria implements Serializable {
 	private PeriodiciteDecompte periodicite;
 	private RegDate periode;
 	private CategorieImpotSource categorie;
-	private TypeEtatDeclaration etat;
+	private TypeEtatDocumentFiscal etat;
 	private ModeCommunication modeCommunication;
 
 	@Nullable
@@ -48,11 +48,11 @@ public class ListeRecapitulativeCriteria implements Serializable {
 	}
 
 	@Nullable
-	public TypeEtatDeclaration getEtat() {
+	public TypeEtatDocumentFiscal getEtat() {
 		return etat;
 	}
 
-	public void setEtat(@Nullable TypeEtatDeclaration etat) {
+	public void setEtat(@Nullable TypeEtatDocumentFiscal etat) {
 		this.etat = etat;
 	}
 

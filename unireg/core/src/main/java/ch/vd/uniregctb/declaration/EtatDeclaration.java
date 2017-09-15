@@ -11,7 +11,7 @@ import org.hibernate.annotations.Index;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.LinkedEntity;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
  * <!-- begin-user-doc -->
@@ -23,9 +23,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0d5HUOqeEdySTq6PFlf9jQ"
  */
 @Entity
-public abstract class EtatDeclaration extends EtatDocumentFiscal<TypeEtatDeclaration, EtatDeclaration> implements LinkedEntity {
-
-	private TypeEtatDeclaration etat;
+public abstract class EtatDeclaration extends EtatDocumentFiscal<EtatDeclaration> implements LinkedEntity {
 
 	public EtatDeclaration() {
 		super();
@@ -33,22 +31,6 @@ public abstract class EtatDeclaration extends EtatDocumentFiscal<TypeEtatDeclara
 
 	public EtatDeclaration(RegDate dateObtention) {
 		super(dateObtention);
-	}
-
-	@Override
-	@Transient
-	public abstract TypeEtatDeclaration getEtat();
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theEtat the etat to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_TNdzAOqfEdySTq6PFlf9jQ?SETTER"
-	 */
-	public void setEtat(TypeEtatDeclaration theEtat) {
-		// begin-user-code
-		etat = theEtat;
-		// end-user-code
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
@@ -100,8 +82,8 @@ public abstract class EtatDeclaration extends EtatDocumentFiscal<TypeEtatDeclara
 			}
 
 			// cas exceptionnel : deux états obtenu le même jour.
-			final TypeEtatDeclaration etat1 = o1.getEtat();
-			final TypeEtatDeclaration etat2 = o2.getEtat();
+			final TypeEtatDocumentFiscal etat1 = o1.getEtat();
+			final TypeEtatDocumentFiscal etat2 = o2.getEtat();
 
 			// [SIFISC-17758] dans l'écran SuperGRA, les états ne sont pas toujours renseignés quand on lance la validation
 			if (etat1 == null || etat2 == null) {

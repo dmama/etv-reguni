@@ -89,7 +89,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -210,7 +210,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 		// la DI n'est donc pas annulée... est-elle seulement retournée ?
 		final EtatDeclaration dernierEtat = declarationIdentifiee.getDernierEtatDeclaration();
-		if (dernierEtat == null || dernierEtat.getEtat() != TypeEtatDeclaration.RETOURNEE) {
+		if (dernierEtat == null || dernierEtat.getEtat() != TypeEtatDocumentFiscal.RETOURNEE) {
 			tacheService.genereTacheControleDossier(entreprise, Motifs.DI_NON_QUITTANCEE);
 			addRemarqueDonneesCompletes(entreprise, "Données de DI reçues sur la déclaration non-quittancée " + retour.getPf() + "/" + retour.getNoSequence(), retour);
 			return;
@@ -1203,7 +1203,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		final SortedSet<RegDate> datesQuittancement = new TreeSet<>();
 		for (DeclarationImpotOrdinairePM di : all) {
 			final EtatDeclaration etat = di.getDernierEtatDeclaration();
-			if (etat != null && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+			if (etat != null && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNEE) {
 				datesQuittancement.add(etat.getDateObtention());
 			}
 		}
@@ -1437,7 +1437,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		for (DeclarationImpotOrdinairePM di : all) {
 			if (di.getDateDebut().compareTo(date) > 0) {
 				final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
-				if (dernierEtat != null && dernierEtat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+				if (dernierEtat != null && dernierEtat.getEtat() == TypeEtatDocumentFiscal.RETOURNEE) {
 					return di;
 				}
 			}

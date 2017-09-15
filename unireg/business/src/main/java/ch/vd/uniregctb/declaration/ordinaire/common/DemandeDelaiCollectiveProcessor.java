@@ -27,7 +27,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
  * Processeur qui traite une demande de délais collective.
@@ -159,7 +159,7 @@ public class DemandeDelaiCollectiveProcessor {
 
 		for (DeclarationImpotOrdinaire d : declarations) {
 			Assert.isFalse(d.isAnnule());
-			final TypeEtatDeclaration etatDeclaration = d.getDernierEtatDeclaration().getEtat();
+			final TypeEtatDocumentFiscal etatDeclaration = d.getDernierEtatDeclaration().getEtat();
 			switch (etatDeclaration) {
 			case EMISE: {
 				final RegDate delaiExistant = d.getDelaiAccordeAu();

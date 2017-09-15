@@ -106,7 +106,7 @@ import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.utils.RegDateEditor;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -848,7 +848,7 @@ public class DeclarationImpotController {
 			for (DeclarationImpotOrdinaire di : dis) {
 				if (di.isAnnule() && DateRangeHelper.equals(di, periode)) {
 					final EtatDeclaration etat = di.getDernierEtatDeclaration();
-					if (etat != null && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+					if (etat != null && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNEE) {
 						diAnnulee = di;
 						break;
 					}
@@ -1069,21 +1069,21 @@ public class DeclarationImpotController {
 
 	private static boolean isJusteEmise(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration etat = di.getDernierEtatDeclaration();
-		return etat == null || etat.getEtat() == TypeEtatDeclaration.EMISE;
+		return etat == null || etat.getEtat() == TypeEtatDocumentFiscal.EMISE;
 	}
 
 	private static boolean isSommee(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration etat = di.getDernierEtatDeclaration();
-		return etat != null && etat.getEtat() == TypeEtatDeclaration.SOMMEE;
+		return etat != null && etat.getEtat() == TypeEtatDocumentFiscal.SOMMEE;
 	}
 
 	private static boolean isSuspendue(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration etat = di.getDernierEtatDeclaration();
-		return etat != null && etat.getEtat() == TypeEtatDeclaration.SUSPENDUE;
+		return etat != null && etat.getEtat() == TypeEtatDocumentFiscal.SUSPENDUE;
 	}
 
 	private boolean isLiberable(DeclarationImpotOrdinaire di) {
-		final List<EtatDeclaration> etatsRetournes = di.getEtatsDeclarationOfType(TypeEtatDeclaration.RETOURNEE, false);
+		final List<EtatDeclaration> etatsRetournes = di.getEtatsDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE, false);
 		final Set<String> sources = new HashSet<>(etatsRetournes.size());
 		for (EtatDeclaration etat : etatsRetournes) {
 			sources.add(((EtatDeclarationRetournee) etat).getSource());
@@ -1420,7 +1420,7 @@ public class DeclarationImpotController {
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final boolean sursis = di.getDernierEtatDeclaration() != null && di.getDernierEtatDeclaration().getEtat() == TypeEtatDeclaration.SOMMEE;
+		final boolean sursis = di.getDernierEtatDeclaration() != null && di.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.SOMMEE;
 		final RegDate delaiAccordeAu = determineDateAccordDelaiPMParDefaut(di.getDelaiAccordeAu());
 		model.addAttribute("command", new NouvelleDemandeDelaiDeclarationView(di, delaiAccordeAu, sursis));
 		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());

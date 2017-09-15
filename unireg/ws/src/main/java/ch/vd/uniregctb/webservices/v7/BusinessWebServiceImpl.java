@@ -148,7 +148,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.EvenementFiscalDescriptionHelper;
 import ch.vd.uniregctb.webservices.common.UserLogin;
@@ -578,7 +578,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 							if (di.isAnnule()) {
 								response = new DeadlineResponse(DeadlineStatus.ERROR_CANCELLED_DECLARATION, null);
 							}
-							else if (di.getDernierEtatDeclaration().getEtat() != TypeEtatDeclaration.EMISE) {
+							else if (di.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.EMISE) {
 								response = new DeadlineResponse(DeadlineStatus.ERROR_BAD_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'EMISE'.");
 							}
 							else if (RegDateHelper.isAfter(dateObtention, today, NullDateBehavior.LATEST)) {

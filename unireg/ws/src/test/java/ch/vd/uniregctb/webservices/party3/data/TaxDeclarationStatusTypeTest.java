@@ -12,7 +12,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.webservices.party3.EnumTest;
 import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
 import ch.vd.uniregctb.xml.party.v1.TaxDeclarationBuilder;
@@ -28,11 +28,11 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 	@Test
 	public void testTypeCoherence() {
 		// deux types ne sont pas envoyés par cette version du WS : RAPPELEE et SUSPENDUE
-		final Set<TypeEtatDeclaration> ignored = EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE);
-		assertEquals(TaxDeclarationStatusType.values().length + ignored.size(), TypeEtatDeclaration.values().length);
+		final Set<TypeEtatDocumentFiscal> ignored = EnumSet.of(TypeEtatDocumentFiscal.RAPPELEE, TypeEtatDocumentFiscal.SUSPENDUE);
+		assertEquals(TaxDeclarationStatusType.values().length + ignored.size(), TypeEtatDocumentFiscal.values().length);
 
 		// vérification que toutes les valeurs officiellement renvoyées sont mappées sur quelque chose
-		for (TypeEtatDeclaration type : TypeEtatDeclaration.values()) {
+		for (TypeEtatDocumentFiscal type : TypeEtatDocumentFiscal.values()) {
 			if (!ignored.contains(type)) {
 				assertNotNull(type.name(), EnumHelper.coreToWeb(type));
 			}
@@ -41,11 +41,11 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 
 	@Test
 	public void testTypeFromValue() {
-		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.TypeEtatDeclaration) null));
-		assertEquals(TaxDeclarationStatusType.SENT, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE));
-		assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeEtatDeclaration.SOMMEE));
-		assertEquals(TaxDeclarationStatusType.EXPIRED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeEtatDeclaration.ECHUE));
-		assertEquals(TaxDeclarationStatusType.RETURNED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeEtatDeclaration.RETOURNEE));
+		assertNull(EnumHelper.coreToWeb((TypeEtatDocumentFiscal) null));
+		assertEquals(TaxDeclarationStatusType.SENT, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.EMISE));
+		assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.SOMMEE));
+		assertEquals(TaxDeclarationStatusType.EXPIRED, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.ECHUE));
+		assertEquals(TaxDeclarationStatusType.RETURNED, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.RETOURNEE));
 	}
 
 	/**

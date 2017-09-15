@@ -4886,6 +4886,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>DATE_OBTENTION</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DATE_ENVOI_COURRIER</column>
     <column>DOCUMENT_FISCAL_ID</column>
@@ -4898,6 +4899,7 @@
       <value><![CDATA[2006-05-09 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20060509</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>8839528</value>
@@ -4911,6 +4913,7 @@
       <value><![CDATA[2006-01-25 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20060125</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>8839528</value>
@@ -4924,6 +4927,7 @@
       <value><![CDATA[2008-08-29 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20080829</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>8839532</value>
@@ -4937,6 +4941,7 @@
       <value><![CDATA[2008-01-25 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080125</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>8839532</value>
@@ -4950,6 +4955,7 @@
       <value><![CDATA[2005-01-13 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20050113</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>8839537</value>
@@ -4963,6 +4969,7 @@
       <value><![CDATA[2005-07-05 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20050705</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>8839537</value>
@@ -4976,6 +4983,7 @@
       <value><![CDATA[2007-01-20 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20070120</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>8839541</value>
@@ -4989,6 +4997,7 @@
       <value><![CDATA[2007-06-06 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20070606</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>8839541</value>
@@ -5002,6 +5011,7 @@
       <value><![CDATA[2009-01-28 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20090128</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>8839546</value>
@@ -5015,6 +5025,7 @@
       <value><![CDATA[2004-01-17 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20040117</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>8839550</value>
@@ -5028,6 +5039,7 @@
       <value><![CDATA[2004-06-14 00:00:00.0]]></value>
       <value><![CDATA[ZAINYP  ]]></value>
       <value>20040614</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>8839550</value>
@@ -5041,6 +5053,7 @@
       <value><![CDATA[2006-01-13 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20060113</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342518</value>
@@ -5054,6 +5067,7 @@
       <value><![CDATA[2006-08-14 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20060814</value>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>20060814</value>
       <value>3342518</value>
@@ -5067,6 +5081,7 @@
       <value><![CDATA[2006-09-15 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20060915</value>
+      <value>DI_ECHUE</value>
       <value>ECHUE</value>
       <null/>
       <value>3342518</value>
@@ -5080,6 +5095,7 @@
       <value><![CDATA[2008-01-25 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080125</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342584</value>
@@ -5093,6 +5109,7 @@
       <value><![CDATA[2008-08-05 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080805</value>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>20080805</value>
       <value>3342584</value>
@@ -5106,6 +5123,7 @@
       <value><![CDATA[2008-09-08 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080908</value>
+      <value>DI_ECHUE</value>
       <value>ECHUE</value>
       <null/>
       <value>3342584</value>
@@ -5119,6 +5137,7 @@
       <value><![CDATA[2004-01-21 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20040121</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342615</value>
@@ -5132,6 +5151,7 @@
       <value><![CDATA[2004-05-25 00:00:00.0]]></value>
       <value><![CDATA[ZAIRMC  ]]></value>
       <value>20040525</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>3342615</value>
@@ -5145,6 +5165,7 @@
       <value><![CDATA[2005-01-14 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20050114</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342643</value>
@@ -5158,6 +5179,7 @@
       <value><![CDATA[2005-02-25 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20050225</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>3342643</value>
@@ -5171,6 +5193,7 @@
       <value><![CDATA[2009-01-16 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20090116</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342669</value>
@@ -5184,6 +5207,7 @@
       <value><![CDATA[2007-01-15 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20070115</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342552</value>
@@ -5197,6 +5221,7 @@
       <value><![CDATA[2007-08-06 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20070806</value>
+      <value>DI_ECHUE</value>
       <value>ECHUE</value>
       <null/>
       <value>3342552</value>
@@ -5210,6 +5235,7 @@
       <value><![CDATA[2007-07-03 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20070703</value>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>20070703</value>
       <value>3342552</value>
@@ -5223,6 +5249,7 @@
       <value><![CDATA[2008-07-10 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20080710</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>3342786</value>
@@ -5236,6 +5263,7 @@
       <value><![CDATA[2008-01-25 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080125</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342786</value>
@@ -5249,6 +5277,7 @@
       <value><![CDATA[2005-06-27 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20050627</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>3342815</value>
@@ -5262,6 +5291,7 @@
       <value><![CDATA[2005-01-14 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20050114</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342815</value>
@@ -5275,6 +5305,7 @@
       <value><![CDATA[2009-06-26 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20090630</value>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>20090630</value>
       <value>3342849</value>
@@ -5288,6 +5319,7 @@
       <value><![CDATA[2009-01-28 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20090128</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342849</value>
@@ -5301,6 +5333,7 @@
       <value><![CDATA[2007-01-20 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20070120</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342875</value>
@@ -5314,6 +5347,7 @@
       <value><![CDATA[2007-06-12 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20070612</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>3342875</value>
@@ -5327,6 +5361,7 @@
       <value><![CDATA[2004-01-21 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20040121</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342914</value>
@@ -5340,6 +5375,7 @@
       <value><![CDATA[2004-05-19 00:00:00.0]]></value>
       <value><![CDATA[ZAIMZC  ]]></value>
       <value>20040519</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>3342914</value>
@@ -5353,6 +5389,7 @@
       <value><![CDATA[2006-01-25 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20060125</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <null/>
       <value>3342935</value>
@@ -5366,6 +5403,7 @@
       <value><![CDATA[2006-07-12 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20060712</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <null/>
       <value>3342935</value>

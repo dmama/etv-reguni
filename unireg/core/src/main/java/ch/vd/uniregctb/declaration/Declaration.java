@@ -21,7 +21,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
  * <!-- begin-user-doc -->
@@ -245,7 +245,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	}
 
 	@Transient
-	public EtatDeclaration getDernierEtatDeclarationOfType(TypeEtatDeclaration type) {
+	public EtatDeclaration getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal type) {
 		return (EtatDeclaration) getDernierEtatOfType(type);
 	}
 
@@ -257,7 +257,7 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 
 	@NotNull
 	@Transient
-	public List<EtatDeclaration> getEtatsDeclarationOfType(TypeEtatDeclaration type, boolean withCanceled) {
+	public List<EtatDeclaration> getEtatsDeclarationOfType(TypeEtatDocumentFiscal type, boolean withCanceled) {
 		return getEtatsOfType(type, withCanceled).stream().map(e -> (EtatDeclaration) e).collect(Collectors.toList());
 	}
 

@@ -252,12 +252,14 @@
   <table name="ETAT_DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>ID</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DATE_OBTENTION</column>
     <column>DOCUMENT_FISCAL_ID</column>
     <row>
       <value>2008-01-01</value>
       <value>410</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20090120</value>
       <value>210</value>
@@ -265,6 +267,7 @@
     <row>
       <value>2008-01-01</value>
       <value>420</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20080120</value>
       <value>220</value>
@@ -272,6 +275,7 @@
     <row>
       <value>2008-01-01</value>
       <value>421</value>
+      <value>DI_RETOURNE</value>
       <value>RETOURNE</value>
       <value>20080120</value>
       <value>220</value>

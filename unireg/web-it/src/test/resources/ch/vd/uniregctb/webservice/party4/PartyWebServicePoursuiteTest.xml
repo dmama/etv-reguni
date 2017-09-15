@@ -1410,6 +1410,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>DATE_OBTENTION</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DOCUMENT_FISCAL_ID</column>
   </table>

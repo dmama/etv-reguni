@@ -33,7 +33,7 @@ import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
  * Processeur qui permet de faire passer les déclarations d'impôt ordinaires PM sommées à l'état <i>ECHUES</i> lorsque le délai de retour est
@@ -129,14 +129,14 @@ public class EchoirDIsPMProcessor {
 		final EtatDeclaration etat = di.getDernierEtatDeclaration();
 		Assert.notNull(etat, "La déclaration ne possède pas d'état.");
 
-		if (etat.getEtat() == TypeEtatDeclaration.SUSPENDUE) {
+		if (etat.getEtat() == TypeEtatDocumentFiscal.SUSPENDUE) {
 			rapport.addDISuspendueIgnoree(di);
 			return;
 		}
 
 		// Vérifie l'état de la DI (en cas de bug)
-		if (etat.getEtat() != TypeEtatDeclaration.SOMMEE) {
-			rapport.addErrorEtatIncoherent(di, String.format("Etat attendu=%s, état constaté=%s. Erreur dans la requête SQL ?", TypeEtatDeclaration.SOMMEE, etat.getEtat()));
+		if (etat.getEtat() != TypeEtatDocumentFiscal.SOMMEE) {
+			rapport.addErrorEtatIncoherent(di, String.format("Etat attendu=%s, état constaté=%s. Erreur dans la requête SQL ?", TypeEtatDocumentFiscal.SOMMEE, etat.getEtat()));
 			return;
 		}
 
@@ -155,7 +155,7 @@ public class EchoirDIsPMProcessor {
 		rapport.addDeclarationTraitee(di);
 
 		// un peu de paranoïa ne fait pas de mal
-		Assert.isTrue(di.getDernierEtatDeclaration().getEtat() == TypeEtatDeclaration.ECHUE, "L'état après traitement n'est pas ECHUE.");
+		Assert.isTrue(di.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.ECHUE, "L'état après traitement n'est pas ECHUE.");
 	}
 
 	/**

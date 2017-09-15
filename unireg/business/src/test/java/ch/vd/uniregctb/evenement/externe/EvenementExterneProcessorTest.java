@@ -22,7 +22,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 @SuppressWarnings({"JavaDoc"})
 public class EvenementExterneProcessorTest extends BusinessTest {
@@ -157,7 +157,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());
-				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat.getEtat());
 
 				// et l'événement traité
 				final QuittanceLR evt = hibernateTemplate.get(QuittanceLR.class, ids.evtId);
@@ -234,7 +234,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());
-				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat.getEtat());
 
 				// et l'événement traité
 				final QuittanceLR evt = hibernateTemplate.get(QuittanceLR.class, ids.evtId);
@@ -324,7 +324,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				// vérification que l'état "RETOURNEE" pré-existant a bien été annulé
 				boolean etatRetourneAnnuleTrouve = false;
 				for (EtatDeclaration etat : etats) {
-					if (etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+					if (etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNEE) {
 						etatRetourneAnnuleTrouve = true;
 						Assert.assertEquals(RegDateHelper.get(premierQuittancement), etat.getDateObtention());
 					}
@@ -335,7 +335,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());       // la date de quittancement a été changée
-				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat.getEtat());
 
 				return null;
 			}
@@ -470,13 +470,13 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				int nombreRetourneeAnnule = 0;
 				int nombreRetournee = 0;
 				for (EtatDeclaration etat : etats) {
-					if (etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+					if (etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNEE) {
 						nombreRetourneeAnnule++;
 					}
-					if (!etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.EMISE) {
+					if (!etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.EMISE) {
 						nombreEmise++;
 					}
-					if (!etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+					if (!etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNEE) {
 						nombreRetournee++;
 					}
 
@@ -490,7 +490,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());       // la date de quittancement a été changée
-				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat.getEtat());
 
 				return null;
 			}
@@ -574,7 +574,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(dateFin, etat.getDateObtention());
-				Assert.assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
 
 				return null;
 			}

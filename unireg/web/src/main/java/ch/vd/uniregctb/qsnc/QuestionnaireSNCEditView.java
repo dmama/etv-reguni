@@ -7,7 +7,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.view.QuestionnaireSNCView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 
@@ -20,15 +20,15 @@ public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 		this.duplicable = allowedDuplicata && isDuplicable(questionnaire);
 	}
 
-	private static TypeEtatDeclaration getDernierEtat(QuestionnaireSNC q) {
+	private static TypeEtatDocumentFiscal getDernierEtat(QuestionnaireSNC q) {
 		final EtatDeclaration dernierEtat = q.getDernierEtatDeclaration();
 		return dernierEtat == null ? null : dernierEtat.getEtat();
 	}
 
 	private static boolean isRappelable(QuestionnaireSNC q) {
-		final TypeEtatDeclaration dernierEtat = getDernierEtat(q);
+		final TypeEtatDocumentFiscal dernierEtat = getDernierEtat(q);
 		boolean isRappelable = false;
-		if (dernierEtat == TypeEtatDeclaration.EMISE) {
+		if (dernierEtat == TypeEtatDocumentFiscal.EMISE) {
 			if (q.getDelaiAccordeAu() == null || RegDate.get().isAfter(q.getDelaiAccordeAu())) {
 				isRappelable = true;
 			}

@@ -37,6 +37,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
@@ -410,7 +411,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType coreToXMLv1(ch.vd.uniregctb.type.TypeEtatDeclaration type) {
+	public static ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType coreToXMLv1(TypeEtatDocumentFiscal type) {
 		if (type == null) {
 			return null;
 		}
@@ -429,7 +430,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxdeclaration.v2.TaxDeclarationStatusType coreToXMLv2(ch.vd.uniregctb.type.TypeEtatDeclaration type) {
+	public static ch.vd.unireg.xml.party.taxdeclaration.v2.TaxDeclarationStatusType coreToXMLv2(TypeEtatDocumentFiscal type) {
 		if (type == null) {
 			return null;
 		}
@@ -448,7 +449,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType coreToXMLv3(ch.vd.uniregctb.type.TypeEtatDeclaration type) {
+	public static ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType coreToXMLv3(TypeEtatDocumentFiscal type) {
 		if (type == null) {
 			return null;
 		}
@@ -467,7 +468,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType coreToXMLv4(ch.vd.uniregctb.type.TypeEtatDeclaration type) {
+	public static ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType coreToXMLv4(TypeEtatDocumentFiscal type) {
 		if (type == null) {
 			return null;
 		}
@@ -490,7 +491,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatusType coreToXMLv5(ch.vd.uniregctb.type.TypeEtatDeclaration type) {
+	public static ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatusType coreToXMLv5(TypeEtatDocumentFiscal type) {
 		if (type == null) {
 			return null;
 		}

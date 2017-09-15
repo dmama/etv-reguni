@@ -33,7 +33,7 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 @Entity
 @Table(name = "DOCUMENT_FISCAL")
@@ -197,7 +197,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	 */
 	@Transient
 	public RegDate getDateRetour() {
-		EtatDocumentFiscal etatDeclaration = getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+		EtatDocumentFiscal etatDeclaration = getDernierEtatOfType(TypeEtatDocumentFiscal.RETOURNEE);
 		if (etatDeclaration != null) {
 			return etatDeclaration.getDateObtention();
 		}
@@ -206,7 +206,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 
 	@Transient
 	public RegDate getDateExpedition() {
-		EtatDocumentFiscal etatDeclaration = getDernierEtatOfType(TypeEtatDeclaration.EMISE);
+		EtatDocumentFiscal etatDeclaration = getDernierEtatOfType(TypeEtatDocumentFiscal.EMISE);
 		if (etatDeclaration != null) {
 			return etatDeclaration.getDateObtention();
 		}
@@ -218,7 +218,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	 * @return le dernier état (= le plus récent) non-annulé du type demandé
 	 */
 	@Transient
-	public EtatDocumentFiscal getDernierEtatOfType(TypeEtatDeclaration type) {
+	public EtatDocumentFiscal getDernierEtatOfType(TypeEtatDocumentFiscal type) {
 		// tri par ordre croissant
 		final List<EtatDocumentFiscal> etatsSorted = getEtatsSorted();
 		if (etatsSorted == null || etatsSorted.isEmpty()) {
@@ -227,7 +227,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 		return getDernierEtatOfType(type, etatsSorted);
 	}
 
-	private EtatDocumentFiscal getDernierEtatOfType(TypeEtatDeclaration etatRecherche, List<EtatDocumentFiscal> etatsSorted) {
+	private EtatDocumentFiscal getDernierEtatOfType(TypeEtatDocumentFiscal etatRecherche, List<EtatDocumentFiscal> etatsSorted) {
 		Assert.notNull(etatRecherche, "etatDeclaration required.");
 
 		// récupère le dernier état non-annulé du type spécifié
@@ -242,7 +242,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 
 	@NotNull
 	@Transient
-	public List<EtatDocumentFiscal> getEtatsOfType(TypeEtatDeclaration type, boolean withCanceled) {
+	public List<EtatDocumentFiscal> getEtatsOfType(TypeEtatDocumentFiscal type, boolean withCanceled) {
 		final List<EtatDocumentFiscal> etatsSorted = getEtatsSorted();
 		if (etatsSorted == null || etatsSorted.isEmpty()) {
 			return Collections.emptyList();
@@ -289,13 +289,13 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 		}
 
 		// [UNIREG-2489] : si la déclaration a été retournée, alors son état est retourné, même si les dates ne jouent pas
-		final EtatDocumentFiscal retour = getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE, etatsSorted);
+		final EtatDocumentFiscal retour = getDernierEtatOfType(TypeEtatDocumentFiscal.RETOURNEE, etatsSorted);
 		if (retour != null) {
 			return retour;
 		}
 
 		// l'état "suspendu" est directement derrière l'état "retourné", en termes de priorité
-		final EtatDocumentFiscal suspension = getDernierEtatOfType(TypeEtatDeclaration.SUSPENDUE, etatsSorted);
+		final EtatDocumentFiscal suspension = getDernierEtatOfType(TypeEtatDocumentFiscal.SUSPENDUE, etatsSorted);
 		if (suspension != null) {
 			return suspension;
 		}

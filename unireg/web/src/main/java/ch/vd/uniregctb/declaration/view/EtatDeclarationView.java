@@ -16,7 +16,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Annulable {
@@ -25,7 +25,7 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 	private final RegDate dateObtention;
 	private final Date logCreationDate;
 	private final boolean annule;
-	private final TypeEtatDeclaration etat;
+	private final TypeEtatDocumentFiscal etat;
 	private final String etatMessage;
 
 	/**
@@ -106,7 +106,7 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 		return annule;
 	}
 
-	public TypeEtatDeclaration getEtat() {
+	public TypeEtatDocumentFiscal getEtat() {
 		return etat;
 	}
 

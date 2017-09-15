@@ -1030,12 +1030,14 @@
     <column>LOG_MDATE</column>
     <column>ID</column>
     <column>DOCUMENT_FISCAL_ID</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DATE_OBTENTION</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
       <value>4</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20080115</value>
     </row>
@@ -1043,6 +1045,7 @@
       <value>2008-01-01</value>
       <value>2</value>
       <value>4</value>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>20080715</value>
     </row>

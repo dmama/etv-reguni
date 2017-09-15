@@ -34,7 +34,7 @@ import ch.vd.uniregctb.editique.EditiquePrefixeHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLegacyHelper implements ImpressionConfirmationDelaiPPHelper {
 
@@ -84,7 +84,7 @@ public class ImpressionConfirmationDelaiPPHelperImpl extends EditiqueAbstractLeg
 		periode.setHorsSuisse("");
 		periode.setHorsCanton("");
 		periode.setAnneeFiscale(params.getDi().getPeriode().getAnnee().toString());
-		periode.setDateDecompte(RegDateHelper.toIndexString(params.getDi().getDernierEtatDeclarationOfType(TypeEtatDeclaration.EMISE).getDateObtention()));
+		periode.setDateDecompte(RegDateHelper.toIndexString(params.getDi().getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE).getDateObtention()));
 		periode.setDatDerCalculAc("");
 
 		final Entete entete = periode.addNewEntete();

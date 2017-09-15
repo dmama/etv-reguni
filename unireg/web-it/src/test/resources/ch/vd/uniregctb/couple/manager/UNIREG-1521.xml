@@ -4912,6 +4912,7 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>DATE_OBTENTION</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DOCUMENT_FISCAL_ID</column>
     <row>
@@ -4923,6 +4924,7 @@
       <value><![CDATA[2008-11-05 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20081105</value>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>15791137</value>
     </row>
@@ -4935,6 +4937,7 @@
       <value><![CDATA[2008-01-28 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080128</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>15791137</value>
     </row>
@@ -4947,6 +4950,7 @@
       <value><![CDATA[2008-12-09 00:00:00.0]]></value>
       <value><![CDATA[ZAIRCX  ]]></value>
       <value>20081209</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <value>15791137</value>
     </row>
@@ -4959,6 +4963,7 @@
       <value><![CDATA[2008-12-08 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20081208</value>
+      <value>DI_ECHUE</value>
       <value>ECHUE</value>
       <value>15791137</value>
     </row>
@@ -4971,6 +4976,7 @@
       <value><![CDATA[2009-01-30 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20090130</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>15791162</value>
     </row>
@@ -4983,6 +4989,7 @@
       <value><![CDATA[2009-10-22 11:45:50.829]]></value>
       <value>cedi-interfaces-user</value>
       <value>20091022</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <value>15791162</value>
     </row>
@@ -4995,6 +5002,7 @@
       <value><![CDATA[2009-10-22 11:45:50.959]]></value>
       <value>cedi-interfaces-user</value>
       <value>20091022</value>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>15791162</value>
     </row>

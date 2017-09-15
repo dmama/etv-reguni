@@ -53,7 +53,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -97,7 +97,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<EtatEvenementOrganisation, String> mapEtatEvenementOrganisation;
 	private Map<TypeRapportEntreTiers, String> mapTypeRapportEntreTiers;
 	private Map<EtatEvenementCivil, String> mapEtatsEvenementCivil;
-	private Map<TypeEtatDeclaration, String> mapTypeEtatListeRecapitulative;
+	private Map<TypeEtatDocumentFiscal, String> mapTypeEtatListeRecapitulative;
 	private Map<EtatCivil, String> mapEtatsCivil;
 	private Map<TypeAdresseTiers, String> mapTypeAdresse;
 	private Map<TypeAdresseTiers, String> mapTypeAdresseFiscale;
@@ -493,9 +493,9 @@ public class TiersMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<TypeEtatDeclaration, String> getMapTypeEtatListeRecapitulative() {
+	public Map<TypeEtatDocumentFiscal, String> getMapTypeEtatListeRecapitulative() {
 		if (mapTypeEtatListeRecapitulative == null) {
-			mapTypeEtatListeRecapitulative = initMapEnum(ApplicationConfig.masterKeyTypeEtatDocument, TypeEtatDeclaration.class, TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE);
+			mapTypeEtatListeRecapitulative = initMapEnum(ApplicationConfig.masterKeyTypeEtatDocument, TypeEtatDocumentFiscal.class, TypeEtatDocumentFiscal.RAPPELEE, TypeEtatDocumentFiscal.SUSPENDUE);
 		}
 		return mapTypeEtatListeRecapitulative;
 	}

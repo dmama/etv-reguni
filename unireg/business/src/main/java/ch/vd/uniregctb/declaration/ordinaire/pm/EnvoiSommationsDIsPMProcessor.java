@@ -41,7 +41,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EnvoiSommationsDIsPMProcessor {
 
@@ -208,7 +208,7 @@ public class EnvoiSommationsDIsPMProcessor {
 	}
 
 	private boolean checkEtat(DeclarationImpotOrdinaire di, EnvoiSommationsDIsPMResults r) {
-		if (TypeEtatDeclaration.EMISE != di.getDernierEtatDeclaration().getEtat() && TypeEtatDeclaration.SUSPENDUE != di.getDernierEtatDeclaration().getEtat()) {
+		if (TypeEtatDocumentFiscal.EMISE != di.getDernierEtatDeclaration().getEtat() && TypeEtatDocumentFiscal.SUSPENDUE != di.getDernierEtatDeclaration().getEtat()) {
 			// Ce cas pourrait eventuellement se produire dans le cas où une DI aurait 2 états à la même date,
 			// il s'agirait alors de données corrompues ...
 			final String msg = String.format("La di [id: %s] n'est ni à l'état 'EMISE', et ne peut donc être sommée", di.getId().toString());
@@ -231,7 +231,7 @@ public class EnvoiSommationsDIsPMProcessor {
 	 */
 	private boolean isSuspendue(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
-		return dernierEtat != null && dernierEtat.getEtat() == TypeEtatDeclaration.SUSPENDUE;
+		return dernierEtat != null && dernierEtat.getEtat() == TypeEtatDocumentFiscal.SUSPENDUE;
 	}
 
 	@SuppressWarnings("unchecked")

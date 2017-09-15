@@ -33,7 +33,7 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 
@@ -548,7 +548,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) diDao.get(diId);
 				Assert.assertNotNull(di);
-				Assert.assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDeclaration.SOMMEE));
+				Assert.assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMMEE));
 			}
 		});
 	}

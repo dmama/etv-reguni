@@ -100,7 +100,7 @@ import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.webservices.party4.data.AcknowledgeTaxDeclarationBuilder;
 import ch.vd.uniregctb.webservices.party4.data.BatchPartyBuilder;
 import ch.vd.uniregctb.webservices.party4.data.DebtorInfoBuilder;
@@ -762,8 +762,8 @@ public class PartyWebServiceImpl implements PartyWebService {
 			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_CANCELLED_TAX_DECLARATION, "La déclaration a été annulée entre-temps.");
 		}
 
-		final TypeEtatDeclaration etat = declaration.getDernierEtatDeclaration().getEtat();
-		if (etat != TypeEtatDeclaration.EMISE) {
+		final TypeEtatDocumentFiscal etat = declaration.getDernierEtatDeclaration().getEtat();
+		if (etat != TypeEtatDocumentFiscal.EMISE) {
 			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'émise' (état=[" + etat + "]).");
 		}
 
@@ -893,7 +893,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		// La déclaration est correcte, on la quittance
 		context.diService.quittancementDI(ctb, declaration, dateRetour, demande.getSource(), true);
-		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatDeclaration().getEtat());
+		Assert.isEqual(TypeEtatDocumentFiscal.RETOURNEE, declaration.getDernierEtatDeclaration().getEtat());
 
 		return AcknowledgeTaxDeclarationBuilder.newAcknowledgeTaxDeclarationResponse(demande.getKey(), TaxDeclarationAcknowledgeCode.OK);
 	}

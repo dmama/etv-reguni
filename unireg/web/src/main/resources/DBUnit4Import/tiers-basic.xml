@@ -12064,6 +12064,7 @@
     </row>
   </table>
   <table name="ETAT_DOCUMENT_FISCAL">
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
@@ -12077,6 +12078,7 @@
     <column>SOURCE</column>
     <column>DOCUMENT_FISCAL_ID</column>
     <row>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>1</value>
       <null/>
@@ -12093,6 +12095,7 @@
       <null/>
     </row>
     <row>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>2</value>
       <null/>
@@ -12109,6 +12112,7 @@
       <null/>
     </row>
     <row>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <value>3</value>
       <null/>
@@ -12125,6 +12129,7 @@
       <null/>
     </row>
     <row>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>4</value>
       <null/>
@@ -12141,6 +12146,7 @@
       <null/>
     </row>
     <row>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>5</value>
       <null/>
@@ -12157,6 +12163,7 @@
       <null/>
     </row>
     <row>
+      <value>DI_ECHUE</value>
       <value>ECHUE</value>
       <value>6</value>
       <null/>
@@ -12173,6 +12180,7 @@
       <null/>
     </row>
     <row>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>7</value>
       <null/>
@@ -12189,6 +12197,7 @@
       <null/>
     </row>
     <row>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>8</value>
       <null/>
@@ -12205,6 +12214,7 @@
       <null/>
     </row>
     <row>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>9</value>
       <null/>
@@ -12221,6 +12231,7 @@
       <null/>
     </row>
     <row>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <value>10</value>
       <null/>
@@ -12237,6 +12248,7 @@
       <null/>
     </row>
     <row>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>18</value>
       <null/>

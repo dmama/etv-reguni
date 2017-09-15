@@ -124,6 +124,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.xml.DataHelper;
 
@@ -481,7 +482,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument modele = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				assertNull(di.getDernierEtatDeclarationOfType(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE));
+				assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE));
 
 				final EtatDeclaration retour = new EtatDeclarationRetournee(RegDate.get(), "TEST");
 				di.addEtat(retour);
@@ -525,7 +526,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
 				assertNotNull(di);
 				assertNotNull(di.getDernierEtatDeclaration());
-				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.RETOURNEE, di.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});
@@ -617,7 +618,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
 				assertNotNull(di);
 				assertNotNull(di.getDernierEtatDeclaration());
-				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE, di.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.EMISE, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});
@@ -729,12 +730,12 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final DeclarationImpotOrdinaire diValide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(0).idDi);
 				assertNotNull(diValide);
 				assertNotNull(diValide.getDernierEtatDeclaration());
-				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.RETOURNEE, diValide.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, diValide.getDernierEtatDeclaration().getEtat());
 
 				final DeclarationImpotOrdinaire diInvalide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(1).idDi);
 				assertNotNull(diInvalide);
 				assertNotNull(diInvalide.getDernierEtatDeclaration());
-				assertEquals(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE, diInvalide.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.EMISE, diInvalide.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});

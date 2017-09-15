@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
  * INFO;31745;Active;CHE109345167;101598042;Génération d'une déclaration sur la PF 2012 à partir des dates [01.01.2012 -> 31.12.2012] de l'exercice commercial 17 et du dossier fiscal correspondant.
@@ -48,7 +48,7 @@ public class DeclarationsHandler implements CategoryHandler {
 
 	/**
 	 * 1 -> numéro d'entreprise
-	 * 2 -> type de l'état (cf {@link ch.vd.uniregctb.type.TypeEtatDeclaration})
+	 * 2 -> type de l'état (cf {@link TypeEtatDocumentFiscal})
 	 * 2 -> date d'obtention de l'état en question
 	 */
 	private static final Pattern ETAT_PATTERN = Pattern.compile("INFO;([0-9]+);[A-Za-z]+;[A-Z0-9]*;[0-9]*;Etat '([A-Z_]+)' migré au ([0-9]{2}\\.[0-9]{2}\\.[0-9]{4})\\.");
@@ -120,7 +120,7 @@ public class DeclarationsHandler implements CategoryHandler {
 		map.put(ETAT_PATTERN, new MatcherHandler() {
 			@Override
 			public void handle(StringBuilder b, Matcher matcher, Map<String, Object> context) throws ParseException {
-				final TypeEtatDeclaration type = TypeEtatDeclaration.valueOf(matcher.group(2));
+				final TypeEtatDocumentFiscal type = TypeEtatDocumentFiscal.valueOf(matcher.group(2));
 				final RegDate dateObtention = RegDateHelper.displayStringToRegDate(matcher.group(3), false);
 				addEtat(b, type, dateObtention);
 			}
@@ -225,9 +225,9 @@ public class DeclarationsHandler implements CategoryHandler {
 		b.append(System.lineSeparator());
 	}
 
-	private static void addEtat(StringBuilder b, TypeEtatDeclaration type, RegDate dateObtention) {
-		final RegDate dateEnvoiCourrier = (type == TypeEtatDeclaration.SOMMEE || type == TypeEtatDeclaration.RAPPELEE ? dateObtention : null);
-		final String source = (type == TypeEtatDeclaration.RETOURNEE ? "SDI" : null);
+	private static void addEtat(StringBuilder b, TypeEtatDocumentFiscal type, RegDate dateObtention) {
+		final RegDate dateEnvoiCourrier = (type == TypeEtatDocumentFiscal.SOMMEE || type == TypeEtatDocumentFiscal.RAPPELEE ? dateObtention : null);
+		final String source = (type == TypeEtatDocumentFiscal.RETOURNEE ? "SDI" : null);
 
 		b.append("-- Etat ").append(type).append(" au ").append(RegDateHelper.dateToDisplayString(dateObtention)).append(System.lineSeparator());
 		b.append("INSERT INTO ETAT_DOCUMENT_FISCAL (ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_OBTENTION, TYPE, DOCUMENT_FISCAL_ID, DATE_ENVOI_COURRIER, SOURCE)").append(System.lineSeparator());

@@ -22,7 +22,7 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -287,8 +287,8 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
 				addEtatDeclarationRetournee(lr, date(2007, 1, 12), "TEST");
 
-				final RegDate dateEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDeclaration.EMISE).getDateObtention();
-				final RegDate dateRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE).getDateObtention();
+				final RegDate dateEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE).getDateObtention();
+				final RegDate dateRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE).getDateObtention();
 				assertTrue(dateEmission.isAfter(dateRetour));
 				return null;
 			}

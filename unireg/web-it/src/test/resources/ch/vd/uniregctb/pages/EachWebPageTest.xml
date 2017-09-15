@@ -1609,12 +1609,14 @@
     <column>LOG_MDATE</column>
     <column>ID</column>
     <column>DOCUMENT_FISCAL_ID</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DATE_OBTENTION</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
       <value>1</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20080320</value>
     </row>
@@ -1622,6 +1624,7 @@
       <value>2008-01-01</value>
       <value>8</value>
       <value>1</value>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>20080515</value>
     </row>
@@ -1629,6 +1632,7 @@
       <value>2008-01-01</value>
       <value>10</value>
       <value>1</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <value>20080525</value>
     </row>
@@ -1636,6 +1640,7 @@
       <value>2008-01-01</value>
       <value>9</value>
       <value>5</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20080620</value>
     </row>
@@ -1643,6 +1648,7 @@
       <value>2008-01-01</value>
       <value>2</value>
       <value>2</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20060115</value>
     </row>
@@ -1650,6 +1656,7 @@
       <value>2008-01-01</value>
       <value>3</value>
       <value>2</value>
+      <value>DI_RETOURNEE</value>
       <value>RETOURNEE</value>
       <value>20060413</value>
     </row>
@@ -1657,6 +1664,7 @@
       <value>2008-01-01</value>
       <value>4</value>
       <value>3</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20070116</value>
     </row>
@@ -1664,6 +1672,7 @@
       <value>2008-01-01</value>
       <value>5</value>
       <value>3</value>
+      <value>DI_SOMMEE</value>
       <value>SOMMEE</value>
       <value>20070915</value>
     </row>
@@ -1671,6 +1680,7 @@
       <value>2008-01-01</value>
       <value>6</value>
       <value>3</value>
+      <value>DI_ECHUE</value>
       <value>ECHUE</value>
       <value>20071101</value>
     </row>
@@ -1678,6 +1688,7 @@
       <value>2008-01-01</value>
       <value>7</value>
       <value>4</value>
+      <value>DI_EMISE</value>
       <value>EMISE</value>
       <value>20070115</value>
     </row>

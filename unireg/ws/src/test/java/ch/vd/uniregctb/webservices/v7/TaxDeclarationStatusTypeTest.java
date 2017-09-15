@@ -9,7 +9,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.xml.party.v5.TaxDeclarationBuilder;
 
 import static org.junit.Assert.assertEquals;
@@ -22,21 +22,21 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 
 	@Test
 	public void testTypeCoherence() {
-		assertEnumLengthEquals(TaxDeclarationStatusType.class, TypeEtatDeclaration.class);
+		assertEnumLengthEquals(TaxDeclarationStatusType.class, TypeEtatDocumentFiscal.class);
 
 		// vérification que toutes les valeurs sont mappées sur quelque chose
-		for (TypeEtatDeclaration type : TypeEtatDeclaration.values()) {
+		for (TypeEtatDocumentFiscal type : TypeEtatDocumentFiscal.values()) {
 			assertNotNull(type.name(), EnumHelper.coreToWeb(type));
 		}
 	}
 
 	@Test
 	public void testTypeFromValue() {
-		assertNull(EnumHelper.coreToWeb((TypeEtatDeclaration) null));
-		assertEquals(TaxDeclarationStatusType.SENT, EnumHelper.coreToWeb(TypeEtatDeclaration.EMISE));
-		assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, EnumHelper.coreToWeb(TypeEtatDeclaration.SOMMEE));
-		assertEquals(TaxDeclarationStatusType.EXPIRED, EnumHelper.coreToWeb(TypeEtatDeclaration.ECHUE));
-		assertEquals(TaxDeclarationStatusType.RETURNED, EnumHelper.coreToWeb(TypeEtatDeclaration.RETOURNEE));
+		assertNull(EnumHelper.coreToWeb((TypeEtatDocumentFiscal) null));
+		assertEquals(TaxDeclarationStatusType.SENT, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.EMISE));
+		assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.SOMMEE));
+		assertEquals(TaxDeclarationStatusType.EXPIRED, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.ECHUE));
+		assertEquals(TaxDeclarationStatusType.RETURNED, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.RETOURNEE));
 	}
 
 	/**

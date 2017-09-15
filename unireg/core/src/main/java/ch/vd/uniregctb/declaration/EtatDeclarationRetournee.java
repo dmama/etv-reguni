@@ -6,10 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 @Entity
-@DiscriminatorValue("RETOURNEE")
+@DiscriminatorValue("DI_RETOURNEE")
 public class EtatDeclarationRetournee extends EtatDeclaration {
 
 	/**
@@ -36,15 +36,15 @@ public class EtatDeclarationRetournee extends EtatDeclaration {
 		super();
 	}
 
+	@Transient
+	@Override
+	public TypeEtatDocumentFiscal getType() {
+		return TypeEtatDocumentFiscal.RETOURNEE;
+	}
+
 	public EtatDeclarationRetournee(RegDate dateObtention, String source) {
 		super(dateObtention);
 		this.source = source;
-	}
-
-	@Override
-	@Transient
-	public TypeEtatDeclaration getEtat() {
-		return TypeEtatDeclaration.RETOURNEE;
 	}
 
 	@Column(name = "SOURCE")

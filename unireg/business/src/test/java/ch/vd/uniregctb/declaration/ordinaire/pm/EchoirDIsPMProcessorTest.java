@@ -30,7 +30,7 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -443,7 +443,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 				assertNotNull(di);
-				assertEquals(TypeEtatDeclaration.ECHUE, di.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.ECHUE, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});

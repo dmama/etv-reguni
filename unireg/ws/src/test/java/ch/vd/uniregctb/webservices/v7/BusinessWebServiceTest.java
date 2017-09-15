@@ -218,7 +218,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
@@ -579,10 +579,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 					final EtatDeclaration etat = decl.getDernierEtatDeclaration();
 					if (entry.getValue() == AckStatus.OK) {
-						Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
+						Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat.getEtat());
 					}
 					else {
-						Assert.assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());
+						Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
 					}
 				}
 			}

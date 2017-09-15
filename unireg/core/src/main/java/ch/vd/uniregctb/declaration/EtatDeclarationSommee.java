@@ -13,10 +13,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 @Entity
-@DiscriminatorValue("SOMMEE")
+@DiscriminatorValue("DI_SOMMEE")
 public class EtatDeclarationSommee extends EtatDeclaration implements EtatDeclarationAvecDocumentArchive {
 
 	private RegDate dateEnvoiCourrier;
@@ -27,10 +27,10 @@ public class EtatDeclarationSommee extends EtatDeclaration implements EtatDeclar
 		super();
 	}
 
-	@Override
 	@Transient
-	public TypeEtatDeclaration getEtat() {
-		return TypeEtatDeclaration.SOMMEE;
+	@Override
+	public TypeEtatDocumentFiscal getType() {
+		return TypeEtatDocumentFiscal.SOMMEE;
 	}
 
 	public EtatDeclarationSommee(RegDate dateObtention, RegDate dateEnvoiCourrier, @Nullable Integer emolument) {

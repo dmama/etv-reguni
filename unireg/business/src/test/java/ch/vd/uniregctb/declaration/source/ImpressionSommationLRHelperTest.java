@@ -22,7 +22,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 
@@ -52,7 +52,7 @@ public class ImpressionSommationLRHelperTest extends BusinessTest {
 		addForDebiteur(dpi, date(2009, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bussigny);
 
 		final PeriodeFiscale pf = addPeriodeFiscale(2010);
-		final DeclarationImpotSource lr = addLR(dpi, date(2010, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf, TypeEtatDeclaration.EMISE);
+		final DeclarationImpotSource lr = addLR(dpi, date(2010, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, pf, TypeEtatDocumentFiscal.EMISE);
 		final RegDate dateObtention = date(2011, 1, 17);
 		final RegDate dateEnvoiCourrier = date(2011, 1, 20);
 		final EtatDeclarationSommee sommee = new EtatDeclarationSommee(dateObtention, dateEnvoiCourrier, null);

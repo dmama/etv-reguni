@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -41,7 +41,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 4, 4), "TEST"));
 		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
-		assertEtat(date(2000, 4, 4), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatDeclaration());
+		assertEtat(date(2000, 4, 4), TypeEtatDocumentFiscal.RETOURNEE, declaration.getDernierEtatDeclaration());
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 		declaration.addEtat(new EtatDeclarationSuspendue(date(2000, 1, 6)));
 
-		assertEtat(date(2000, 1, 6), TypeEtatDeclaration.SUSPENDUE, declaration.getDernierEtatDeclaration());
+		assertEtat(date(2000, 1, 6), TypeEtatDocumentFiscal.SUSPENDUE, declaration.getDernierEtatDeclaration());
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationSuspendue(date(2000, 1, 6)));
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 4, 4), "TEST"));
 
-		assertEtat(date(2000, 4, 4), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatDeclaration());
+		assertEtat(date(2000, 4, 4), TypeEtatDocumentFiscal.RETOURNEE, declaration.getDernierEtatDeclaration());
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 2, 2), "TEST"));
 		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
-		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatDeclaration());
+		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.RETOURNEE, declaration.getDernierEtatDeclaration());
 	}
 
 	@Test
@@ -89,7 +89,7 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(etatRetourne);
 		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
-		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getDernierEtatDeclaration());
+		assertEtat(date(2000, 3, 3), TypeEtatDocumentFiscal.ECHUE, declaration.getDernierEtatDeclaration());
 	}
 
 	@Test
@@ -101,10 +101,10 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 4, 4), "TEST"));
 		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
-		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.EMISE));
-		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.SOMMEE));
-		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.ECHUE));
-		assertEtat(date(2000, 4, 4), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE));
+		assertEtat(date(2000, 1, 1), TypeEtatDocumentFiscal.EMISE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE));
+		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.SOMMEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMMEE));
+		assertEtat(date(2000, 3, 3), TypeEtatDocumentFiscal.ECHUE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.ECHUE));
+		assertEtat(date(2000, 4, 4), TypeEtatDocumentFiscal.RETOURNEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE));
 	}
 
 	@Test
@@ -115,10 +115,10 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 2, 2), "TEST"));
 		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
-		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.EMISE));
-		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.SOMMEE));
-		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE));
-		assertNull(declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.ECHUE));
+		assertEtat(date(2000, 1, 1), TypeEtatDocumentFiscal.EMISE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE));
+		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.SOMMEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMMEE));
+		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.RETOURNEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE));
+		assertNull(declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.ECHUE));
 	}
 
 	@Test
@@ -132,10 +132,10 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(etatRetourne);
 		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2), null));
 
-		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.EMISE));
-		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.SOMMEE));
-		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.ECHUE));
-		assertNull(declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE));
+		assertEtat(date(2000, 1, 1), TypeEtatDocumentFiscal.EMISE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE));
+		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.SOMMEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMMEE));
+		assertEtat(date(2000, 3, 3), TypeEtatDocumentFiscal.ECHUE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.ECHUE));
+		assertNull(declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE));
 	}
 
 	@Test
@@ -150,14 +150,14 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationEmise(date(2001, 1, 1)));
 		declaration.addEtat(new EtatDeclarationSommee(date(2001, 2, 2),date(2000, 2, 2), null));
 
-		assertEtat(date(2001, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.EMISE));
-		assertEtat(date(2001, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.SOMMEE));
-		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.ECHUE));
-		assertEtat(date(2000, 4, 4), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDeclaration.RETOURNEE));
+		assertEtat(date(2001, 1, 1), TypeEtatDocumentFiscal.EMISE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE));
+		assertEtat(date(2001, 2, 2), TypeEtatDocumentFiscal.SOMMEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMMEE));
+		assertEtat(date(2000, 3, 3), TypeEtatDocumentFiscal.ECHUE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.ECHUE));
+		assertEtat(date(2000, 4, 4), TypeEtatDocumentFiscal.RETOURNEE, declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE));
 	}
 
 
-	private static void assertEtat(RegDate date, TypeEtatDeclaration type, EtatDeclaration etat) {
+	private static void assertEtat(RegDate date, TypeEtatDocumentFiscal type, EtatDeclaration etat) {
 		assertNotNull(etat);
 		assertEquals(date, etat.getDateObtention());
 		assertEquals(type, etat.getEtat());

@@ -16,7 +16,7 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -58,7 +58,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
         final RegDate dateDebutPeriode = RegDate.get(2008, 1, 1);
 		criterion.setPeriode(dateDebutPeriode);
 		criterion.setModeCommunication(ModeCommunication.PAPIER);
-		criterion.setEtat(TypeEtatDeclaration.EMISE);
+		criterion.setEtat(TypeEtatDocumentFiscal.EMISE);
 		criterion.setCategorie(CategorieImpotSource.ADMINISTRATEURS);
 		final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
 		assertNotNull(lrs);
@@ -88,7 +88,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 		final EtatDeclaration etat = lrDao.findDerniereLrEnvoyee(12500001L);
 		assertNotNull(etat);
-		assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());
+		assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
 		assertEquals(new Long(12500001), etat.getDeclaration().getTiers().getNumero());
 	}
 
@@ -199,7 +199,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
-				criterion.setEtat(TypeEtatDeclaration.RETOURNEE);
+				criterion.setEtat(TypeEtatDocumentFiscal.RETOURNEE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
 				assertNotNull(lrs);
@@ -324,7 +324,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
-				criterion.setEtat(TypeEtatDeclaration.EMISE);
+				criterion.setEtat(TypeEtatDocumentFiscal.EMISE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
 				assertNotNull(lrs);
@@ -437,7 +437,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
-				criterion.setEtat(TypeEtatDeclaration.SOMMEE);
+				criterion.setEtat(TypeEtatDocumentFiscal.SOMMEE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
 				assertNotNull(lrs);
@@ -550,7 +550,7 @@ public class ListeRecapitulativeDAOTest extends CoreDAOTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final ListeRecapitulativeCriteria criterion = new ListeRecapitulativeCriteria();
-				criterion.setEtat(TypeEtatDeclaration.ECHUE);
+				criterion.setEtat(TypeEtatDocumentFiscal.ECHUE);
 
 				final List<DeclarationImpotSource> lrs = lrDao.find(criterion, null);
 				assertNotNull(lrs);

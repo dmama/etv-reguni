@@ -33,7 +33,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class DeclarationImpotControllerValidator implements Validator {
@@ -217,8 +217,8 @@ public class DeclarationImpotControllerValidator implements Validator {
 	}
 
 	private static EtatDeclaration getDernierEtatEmisOuSommee(DeclarationImpotOrdinaire di) {
-		EtatDeclaration emis = di.getDernierEtatDeclarationOfType(TypeEtatDeclaration.EMISE);
-		EtatDeclaration sommee = di.getDernierEtatDeclarationOfType(TypeEtatDeclaration.SOMMEE);
+		EtatDeclaration emis = di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE);
+		EtatDeclaration sommee = di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMMEE);
 		//On aura toujours un état émis sur une déclaration sinon bug
 		if (sommee == null) {
 			return emis;
