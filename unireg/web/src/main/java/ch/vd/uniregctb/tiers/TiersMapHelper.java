@@ -495,7 +495,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<TypeEtatDocumentFiscal, String> getMapTypeEtatListeRecapitulative() {
 		if (mapTypeEtatListeRecapitulative == null) {
-			mapTypeEtatListeRecapitulative = initMapEnum(ApplicationConfig.masterKeyTypeEtatDocument, TypeEtatDocumentFiscal.class, TypeEtatDocumentFiscal.RAPPELEE, TypeEtatDocumentFiscal.SUSPENDUE);
+			mapTypeEtatListeRecapitulative = initMapEnum(ApplicationConfig.masterKeyTypeEtatDocumentF, TypeEtatDocumentFiscal.class, TypeEtatDocumentFiscal.RAPPELE, TypeEtatDocumentFiscal.SUSPENDU);
 		}
 		return mapTypeEtatListeRecapitulative;
 	}

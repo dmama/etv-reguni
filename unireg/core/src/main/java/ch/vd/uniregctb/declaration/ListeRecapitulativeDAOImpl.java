@@ -119,7 +119,7 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 
 	    final TypeEtatDocumentFiscal etat = criterion.getEtat();
 	    if (etat != null) {
-			if (etat != TypeEtatDocumentFiscal.EMISE) {
+			if (etat != TypeEtatDocumentFiscal.EMIS) {
 				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class = ");
 
 				final Class<? extends EtatDeclaration> classeOfEtatDeclaration = EtatDeclarationHelper.getClasseOfEtatDeclaration(etat);
@@ -127,19 +127,19 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 				builder.append(" and etat.annulationDate is null)");
 			}
 
-			if (etat != TypeEtatDocumentFiscal.RETOURNEE) {
+			if (etat != TypeEtatDocumentFiscal.RETOURNE) {
 
 				final List<Class<? extends EtatDeclaration>> classesEtatDeclarationsInterdits = new ArrayList<>(3);
 				classesEtatDeclarationsInterdits.add(EtatDeclarationRetournee.class);
 				switch (etat) {
-					case EMISE:
+					case EMIS:
 						classesEtatDeclarationsInterdits.add(EtatDeclarationSommee.class);
 						classesEtatDeclarationsInterdits.add(EtatDeclarationEchue.class);
 						break;
-					case SOMMEE:
+					case SOMME:
 						classesEtatDeclarationsInterdits.add(EtatDeclarationEchue.class);
 						break;
-					case ECHUE:
+					case ECHU:
 						break;
 					default:
 						throw new IllegalArgumentException("Valeur de l'état non-supportée : " + etat);

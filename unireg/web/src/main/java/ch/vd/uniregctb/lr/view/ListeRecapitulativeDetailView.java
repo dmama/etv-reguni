@@ -60,10 +60,10 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 		this.imprimable = !lr.isAnnule();
 
 		// [SIFISC-17743] ajout de délai seulement autorisée si lr seulement émise
-		this.isAllowedDelai = this.etat == TypeEtatDocumentFiscal.EMISE;
+		this.isAllowedDelai = this.etat == TypeEtatDocumentFiscal.EMIS;
 
-		// [SIFISC-10283] LR annulable si EMISE, SOMMEE ou ECHUE
-		this.annulable = !lr.isAnnule() && this.etat != TypeEtatDocumentFiscal.RETOURNEE;
+		// [SIFISC-10283] LR annulable si EMIS, SOMME ou ECHU
+		this.annulable = !lr.isAnnule() && this.etat != TypeEtatDocumentFiscal.RETOURNE;
 	}
 
 	/**

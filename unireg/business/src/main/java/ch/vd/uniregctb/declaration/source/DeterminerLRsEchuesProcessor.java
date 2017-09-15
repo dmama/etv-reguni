@@ -157,7 +157,7 @@ public class DeterminerLRsEchuesProcessor {
 				for (DeterminerLRsEchuesResults.InfoLrEchue infoLrEchue : infoDebiteur.getLrEchues(pf)) {
 					final DeclarationImpotSource lr = lrDAO.get(infoLrEchue.id);
 
-					// création d'un état "ECHUE"
+					// création d'un état "ECHU"
 					final EtatDeclaration etat = new EtatDeclarationEchue(RegDate.get());
 					lr.addEtat(etat);
 
@@ -185,12 +185,12 @@ public class DeterminerLRsEchuesProcessor {
 
 		final StringBuilder b = new StringBuilder();
 		b.append("SELECT LR.ID, LR.TIERS_ID, LR.DATE_DEBUT, LR.DATE_FIN, ES.DATE_OBTENTION FROM DOCUMENT_FISCAL LR");
-		b.append(" JOIN ETAT_DOCUMENT_FISCAL ES ON ES.DOCUMENT_FISCAL_ID = LR.ID AND ES.ANNULATION_DATE IS NULL AND ES.TYPE='SOMMEE'");
+		b.append(" JOIN ETAT_DOCUMENT_FISCAL ES ON ES.DOCUMENT_FISCAL_ID = LR.ID AND ES.ANNULATION_DATE IS NULL AND ES.TYPE='SOMME'");
 		if (periodeFiscale != null) {
 			b.append(" JOIN PERIODE_FISCALE PF ON LR.PERIODE_ID = PF.ID AND PF.ANNEE=:pf");
 		}
 		b.append(" WHERE LR.DOCUMENT_TYPE='LR' AND LR.ANNULATION_DATE IS NULL");
-		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DOCUMENT_FISCAL ED WHERE ED.DOCUMENT_FISCAL_ID = LR.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNEE', 'ECHUE', 'SUSPENDUE'))");
+		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DOCUMENT_FISCAL ED WHERE ED.DOCUMENT_FISCAL_ID = LR.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNE', 'ECHU', 'SUSPENDU'))");
 		b.append(" ORDER BY LR.TIERS_ID, LR.DATE_DEBUT");
 		final String sql = b.toString();
 

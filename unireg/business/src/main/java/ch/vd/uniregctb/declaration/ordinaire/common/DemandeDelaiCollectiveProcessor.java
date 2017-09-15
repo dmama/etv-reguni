@@ -161,7 +161,7 @@ public class DemandeDelaiCollectiveProcessor {
 			Assert.isFalse(d.isAnnule());
 			final TypeEtatDocumentFiscal etatDeclaration = d.getDernierEtatDeclaration().getEtat();
 			switch (etatDeclaration) {
-			case EMISE: {
+			case EMIS: {
 				final RegDate delaiExistant = d.getDelaiAccordeAu();
 				if (delaiExistant != null && delaiExistant.isAfterOrEqual(nouveauDelai)) {
 					// Le délai accordé est égal ou au delà du délai souhaité
@@ -173,19 +173,19 @@ public class DemandeDelaiCollectiveProcessor {
 				}
 				break;
 			}
-			case RETOURNEE:
+			case RETOURNE:
 				r.addErrorDeclarationRetournee(d);
 				break;
-			case ECHUE:
+			case ECHU:
 				r.addErrorDeclarationEchue(d);
 				break;
-			case RAPPELEE:
+			case RAPPELE:
 				r.addErrorDeclarationRappelee(d);
 				break;
-			case SUSPENDUE:
+			case SUSPENDU:
 				r.addErrorDeclarationSuspendue(d);
 				break;
-			case SOMMEE:
+			case SOMME:
 				r.addErrorDeclarationSommee(d);
 				break;
 			default:

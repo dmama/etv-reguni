@@ -157,7 +157,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());
-				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat.getEtat());
 
 				// et l'événement traité
 				final QuittanceLR evt = hibernateTemplate.get(QuittanceLR.class, ids.evtId);
@@ -234,7 +234,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());
-				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat.getEtat());
 
 				// et l'événement traité
 				final QuittanceLR evt = hibernateTemplate.get(QuittanceLR.class, ids.evtId);
@@ -319,12 +319,12 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				Assert.assertEquals(dateDebut, lr.getDateDebut());
 				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
 				Assert.assertNotNull(etats);
-				Assert.assertEquals(3, etats.size());       // "EMISE", 2x "RETOURNEE", dont un annulé
+				Assert.assertEquals(3, etats.size());       // "EMIS", 2x "RETOURNE", dont un annulé
 
-				// vérification que l'état "RETOURNEE" pré-existant a bien été annulé
+				// vérification que l'état "RETOURNE" pré-existant a bien été annulé
 				boolean etatRetourneAnnuleTrouve = false;
 				for (EtatDeclaration etat : etats) {
-					if (etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNEE) {
+					if (etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNE) {
 						etatRetourneAnnuleTrouve = true;
 						Assert.assertEquals(RegDateHelper.get(premierQuittancement), etat.getDateObtention());
 					}
@@ -335,7 +335,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());       // la date de quittancement a été changée
-				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat.getEtat());
 
 				return null;
 			}
@@ -462,21 +462,21 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				Assert.assertEquals(dateDebut, lr.getDateDebut());
 				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
 				Assert.assertNotNull(etats);
-				Assert.assertEquals(4, etats.size());       // "EMISE", 2x "RETOURNEE et annulée", 1 RETOURNEE
+				Assert.assertEquals(4, etats.size());       // "EMIS", 2x "RETOURNE et annulée", 1 RETOURNE
 
-				// vérification que l'état "RETOURNEE" pré-existant a bien été annulé
+				// vérification que l'état "RETOURNE" pré-existant a bien été annulé
 				boolean etatRetourneAnnuleTrouve = false;
 				int nombreEmise = 0;
 				int nombreRetourneeAnnule = 0;
 				int nombreRetournee = 0;
 				for (EtatDeclaration etat : etats) {
-					if (etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNEE) {
+					if (etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNE) {
 						nombreRetourneeAnnule++;
 					}
-					if (!etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.EMISE) {
+					if (!etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.EMIS) {
 						nombreEmise++;
 					}
-					if (!etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNEE) {
+					if (!etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNE) {
 						nombreRetournee++;
 					}
 
@@ -490,7 +490,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());       // la date de quittancement a été changée
-				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat.getEtat());
 
 				return null;
 			}
@@ -568,13 +568,13 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				Assert.assertEquals(dateDebut, lr.getDateDebut());
 				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
 				Assert.assertNotNull(etats);
-				Assert.assertEquals(1, etats.size());       // "EMISE"
+				Assert.assertEquals(1, etats.size());       // "EMIS"
 
 				// test de l'état final de la déclaration après non-traitement de l'événement
 				final EtatDeclaration etat = lr.getDernierEtatDeclaration();
 				Assert.assertNotNull(etat);
 				Assert.assertEquals(dateFin, etat.getDateObtention());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 
 				return null;
 			}

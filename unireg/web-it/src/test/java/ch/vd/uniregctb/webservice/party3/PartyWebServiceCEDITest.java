@@ -323,7 +323,7 @@ public class PartyWebServiceCEDITest extends AbstractPartyWebServiceTest {
 	/**
 	 * Asserte que la déclaration du contribuable spécifié, pour la période fiscale spécifiée est bien quittancée à la date spécifiée.
 	 *
-	 * @param dateObtention    la date d'obtention (= de retour) de l'état RETOURNEE de la déclaration
+	 * @param dateObtention    la date d'obtention (= de retour) de l'état RETOURNE de la déclaration
 	 * @param ctbID            un numéro de contribuable
 	 * @param periodeFiscale   un période fiscale
 	 * @param numeroSequenceDI le numéro de séquence de la déclaration

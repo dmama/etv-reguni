@@ -279,7 +279,7 @@ public class LegacyEditiqueHelperImpl implements LegacyEditiqueHelper {
 		}
 		expediteur.setLocaliteExpedition("Lausanne");
 		final RegDate dateExpedition;
-		final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMMEE);
+		final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMME);
 		dateExpedition = sommee.getDateEnvoiCourrier();
 		expediteur.setDateExpedition(Integer.toString(dateExpedition.index()));
 		expediteur.setNotreReference(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));

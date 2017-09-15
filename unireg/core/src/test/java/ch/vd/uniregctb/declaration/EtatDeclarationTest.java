@@ -27,10 +27,10 @@ public class EtatDeclarationTest extends WithoutSpringTest {
 		Collections.sort(list, new EtatDeclaration.Comparator());
 
 		assertEquals(4, list.size());
-		assertEtat(date(2000, 1, 1), TypeEtatDocumentFiscal.EMISE, list.get(0));
-		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.SOMMEE, list.get(1));
-		assertEtat(date(2000, 3, 3), TypeEtatDocumentFiscal.ECHUE, list.get(2));
-		assertEtat(date(2000, 4, 4), TypeEtatDocumentFiscal.RETOURNEE, list.get(3));
+		assertEtat(date(2000, 1, 1), TypeEtatDocumentFiscal.EMIS, list.get(0));
+		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.SOMME, list.get(1));
+		assertEtat(date(2000, 3, 3), TypeEtatDocumentFiscal.ECHU, list.get(2));
+		assertEtat(date(2000, 4, 4), TypeEtatDocumentFiscal.RETOURNE, list.get(3));
 	}
 
 	@Test
@@ -44,9 +44,9 @@ public class EtatDeclarationTest extends WithoutSpringTest {
 		Collections.sort(list, new EtatDeclaration.Comparator());
 
 		assertEquals(3, list.size());
-		assertEtat(date(2000, 1, 1), TypeEtatDocumentFiscal.EMISE, list.get(0));
-		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.SOMMEE, list.get(1));
-		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.RETOURNEE, list.get(2));
+		assertEtat(date(2000, 1, 1), TypeEtatDocumentFiscal.EMIS, list.get(0));
+		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.SOMME, list.get(1));
+		assertEtat(date(2000, 2, 2), TypeEtatDocumentFiscal.RETOURNE, list.get(2));
 	}
 
 	private static void assertEtat(RegDate date, TypeEtatDocumentFiscal type, EtatDeclaration etat) {

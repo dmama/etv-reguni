@@ -48,7 +48,7 @@
 				<unireg:regdate regdate="${docFiscal.dateRetour}"/>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.etat.avancement">
-				<fmt:message key="option.etat.avancement.${docFiscal.etat}" />
+				<fmt:message key="option.etat.avancement.m.${docFiscal.etat}" />
 			</display:column>
 			<display:column class="action">
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>

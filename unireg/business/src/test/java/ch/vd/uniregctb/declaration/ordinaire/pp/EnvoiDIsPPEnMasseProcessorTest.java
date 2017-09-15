@@ -644,7 +644,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertEquals(1, declarations.size());
 
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDocumentFiscal.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi,
+		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi,
 		           calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
@@ -761,7 +761,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertEquals(1, declarations.size());
 
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDIPP(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDocumentFiscal.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		assertDIPP(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 		           ids.oidCedi, date(2009, 3, 31), decl);
 	}
 
@@ -821,7 +821,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		// le délai de retour imprimé doit être dateTraitement + 60 jours
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDocumentFiscal.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 		           ids.oidCedi, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
@@ -879,7 +879,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		// le délai de retour imprimé est le délai réglementaire
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDIPP(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDocumentFiscal.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		assertDIPP(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 		           ids.oidCedi, date(2009, 3, 31), decl);
 	}
 
@@ -1138,7 +1138,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 		// [UNIREG-1852] la déclaration doit être émise (et non-retournée immédiatement comme pour les indigents non-décédés) avec la cellule registre comme adresse de retour
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDocumentFiscal.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 		           ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
@@ -1258,7 +1258,7 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDocumentFiscal.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 		           ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
@@ -1324,17 +1324,17 @@ public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 		assertEquals(2, etats.size());
 
 		final EtatDeclaration etat0 = etats.get(0);
-		assertEquals(TypeEtatDocumentFiscal.EMISE, etat0.getEtat());
+		assertEquals(TypeEtatDocumentFiscal.EMIS, etat0.getEtat());
 		assertEquals(dateTraitement, etat0.getDateObtention());
 
 		final EtatDeclaration etat1 = etats.get(1);
-		assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat1.getEtat());
+		assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat1.getEtat());
 
 		final EtatDeclarationRetournee retour1 = (EtatDeclarationRetournee) etat1;
 		assertEquals(dateTraitement, retour1.getDateObtention());
 		assertEquals("INDIGENT", retour1.getSource());
 
-		assertDIPP(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDocumentFiscal.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		assertDIPP(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 		           ids.oidCedi, date(2009, 3, 31), decl);
 	}
 

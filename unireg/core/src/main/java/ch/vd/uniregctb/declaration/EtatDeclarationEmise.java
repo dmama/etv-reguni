@@ -9,6 +9,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
+/**
+ * Déclaration émise, en attente de retour depuis le tiers. C'est le premier état de toute déclaration.
+ */
 @Entity
 @DiscriminatorValue("DI_EMISE")
 public class EtatDeclarationEmise extends EtatDeclaration implements EtatDeclarationAvecDocumentArchive {
@@ -26,7 +29,7 @@ public class EtatDeclarationEmise extends EtatDeclaration implements EtatDeclara
 	@Transient
 	@Override
 	public TypeEtatDocumentFiscal getType() {
-		return TypeEtatDocumentFiscal.EMISE;
+		return TypeEtatDocumentFiscal.EMIS;
 	}
 
 	@Override

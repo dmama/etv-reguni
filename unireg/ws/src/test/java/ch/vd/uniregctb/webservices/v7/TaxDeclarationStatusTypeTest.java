@@ -33,10 +33,10 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 	@Test
 	public void testTypeFromValue() {
 		assertNull(EnumHelper.coreToWeb((TypeEtatDocumentFiscal) null));
-		assertEquals(TaxDeclarationStatusType.SENT, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.EMISE));
-		assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.SOMMEE));
-		assertEquals(TaxDeclarationStatusType.EXPIRED, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.ECHUE));
-		assertEquals(TaxDeclarationStatusType.RETURNED, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.RETOURNEE));
+		assertEquals(TaxDeclarationStatusType.SENT, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.EMIS));
+		assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.SOMME));
+		assertEquals(TaxDeclarationStatusType.EXPIRED, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.ECHU));
+		assertEquals(TaxDeclarationStatusType.RETURNED, EnumHelper.coreToWeb(TypeEtatDocumentFiscal.RETOURNE));
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 	@Test
 	public void testDateObtention() throws Exception {
 
-		// Etat "SOMMEE"
+		// Etat "SOMME"
 		{
 			final RegDate dateObtention = RegDate.get().addDays(-10);
 			final RegDate dateEnvoiCourrier = RegDate.get().addDays(-5);
@@ -56,7 +56,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 			assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv2(dateEnvoiCourrier), etatWeb.getDateFrom());
 		}
 
-		// Etat "EMISE"
+		// Etat "EMIS"
 		{
 			final RegDate dateObtention = RegDate.get().addDays(-10);
 
@@ -66,7 +66,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 			assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv2(dateObtention), etatWeb.getDateFrom());
 		}
 
-		// Etat "RETOURNEE"
+		// Etat "RETOURNE"
 		{
 			final RegDate dateObtention = RegDate.get().addDays(-10);
 
@@ -76,7 +76,7 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 			assertEquals(ch.vd.uniregctb.xml.DataHelper.coreToXMLv2(dateObtention), etatWeb.getDateFrom());
 		}
 
-		// Etat "ECHUE"
+		// Etat "ECHU"
 		{
 			final RegDate dateObtention = RegDate.get().addDays(-10);
 

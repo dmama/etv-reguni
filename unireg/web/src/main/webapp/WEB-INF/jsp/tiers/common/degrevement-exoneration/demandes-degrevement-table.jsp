@@ -45,7 +45,7 @@
 		<unireg:regdate regdate="${demande.dateRetour}"/>
 	</display:column>
 	<display:column titleKey="label.etat.avancement">
-		<fmt:message key="option.etat.avancement.${demande.etat}"/>
+		<fmt:message key="option.etat.avancement.f.${demande.etat}"/>
 	</display:column>
 	<display:column titleKey="label.code.controle">
 		<c:out value="${demande.codeControle}"/>

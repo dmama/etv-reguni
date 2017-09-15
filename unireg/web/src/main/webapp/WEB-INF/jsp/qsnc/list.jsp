@@ -35,7 +35,7 @@
 						<unireg:regdate regdate="${qsnc.dateRetour}"/>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.etat.avancement" >
-						<fmt:message key="option.etat.avancement.${qsnc.etat}" />
+						<fmt:message key="option.etat.avancement.f.${qsnc.etat}" />
 						<c:if test="${qsnc.dateRetour != null}">
 							<c:if test="${qsnc.sourceRetour == null}">
 								(<fmt:message key="option.source.quittancement.UNKNOWN" />)

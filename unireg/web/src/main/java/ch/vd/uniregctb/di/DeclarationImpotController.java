@@ -848,7 +848,7 @@ public class DeclarationImpotController {
 			for (DeclarationImpotOrdinaire di : dis) {
 				if (di.isAnnule() && DateRangeHelper.equals(di, periode)) {
 					final EtatDeclaration etat = di.getDernierEtatDeclaration();
-					if (etat != null && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNEE) {
+					if (etat != null && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNE) {
 						diAnnulee = di;
 						break;
 					}
@@ -1069,21 +1069,21 @@ public class DeclarationImpotController {
 
 	private static boolean isJusteEmise(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration etat = di.getDernierEtatDeclaration();
-		return etat == null || etat.getEtat() == TypeEtatDocumentFiscal.EMISE;
+		return etat == null || etat.getEtat() == TypeEtatDocumentFiscal.EMIS;
 	}
 
 	private static boolean isSommee(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration etat = di.getDernierEtatDeclaration();
-		return etat != null && etat.getEtat() == TypeEtatDocumentFiscal.SOMMEE;
+		return etat != null && etat.getEtat() == TypeEtatDocumentFiscal.SOMME;
 	}
 
 	private static boolean isSuspendue(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration etat = di.getDernierEtatDeclaration();
-		return etat != null && etat.getEtat() == TypeEtatDocumentFiscal.SUSPENDUE;
+		return etat != null && etat.getEtat() == TypeEtatDocumentFiscal.SUSPENDU;
 	}
 
 	private boolean isLiberable(DeclarationImpotOrdinaire di) {
-		final List<EtatDeclaration> etatsRetournes = di.getEtatsDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE, false);
+		final List<EtatDeclaration> etatsRetournes = di.getEtatsDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE, false);
 		final Set<String> sources = new HashSet<>(etatsRetournes.size());
 		for (EtatDeclaration etat : etatsRetournes) {
 			sources.add(((EtatDeclarationRetournee) etat).getSource());
@@ -1420,7 +1420,7 @@ public class DeclarationImpotController {
 		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final boolean sursis = di.getDernierEtatDeclaration() != null && di.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.SOMMEE;
+		final boolean sursis = di.getDernierEtatDeclaration() != null && di.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.SOMME;
 		final RegDate delaiAccordeAu = determineDateAccordDelaiPMParDefaut(di.getDelaiAccordeAu());
 		model.addAttribute("command", new NouvelleDemandeDelaiDeclarationView(di, delaiAccordeAu, sursis));
 		model.addAttribute("decisionsDelai", tiersMapHelper.getTypesEtatsDelaiDeclaration());

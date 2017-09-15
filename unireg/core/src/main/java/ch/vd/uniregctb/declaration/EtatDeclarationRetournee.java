@@ -39,7 +39,7 @@ public class EtatDeclarationRetournee extends EtatDeclaration {
 	@Transient
 	@Override
 	public TypeEtatDocumentFiscal getType() {
-		return TypeEtatDocumentFiscal.RETOURNEE;
+		return TypeEtatDocumentFiscal.RETOURNE;
 	}
 
 	public EtatDeclarationRetournee(RegDate dateObtention, String source) {

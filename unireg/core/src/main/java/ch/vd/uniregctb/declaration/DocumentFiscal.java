@@ -197,7 +197,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	 */
 	@Transient
 	public RegDate getDateRetour() {
-		EtatDocumentFiscal etatDeclaration = getDernierEtatOfType(TypeEtatDocumentFiscal.RETOURNEE);
+		EtatDocumentFiscal etatDeclaration = getDernierEtatOfType(TypeEtatDocumentFiscal.RETOURNE);
 		if (etatDeclaration != null) {
 			return etatDeclaration.getDateObtention();
 		}
@@ -206,7 +206,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 
 	@Transient
 	public RegDate getDateExpedition() {
-		EtatDocumentFiscal etatDeclaration = getDernierEtatOfType(TypeEtatDocumentFiscal.EMISE);
+		EtatDocumentFiscal etatDeclaration = getDernierEtatOfType(TypeEtatDocumentFiscal.EMIS);
 		if (etatDeclaration != null) {
 			return etatDeclaration.getDateObtention();
 		}
@@ -289,13 +289,13 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 		}
 
 		// [UNIREG-2489] : si la déclaration a été retournée, alors son état est retourné, même si les dates ne jouent pas
-		final EtatDocumentFiscal retour = getDernierEtatOfType(TypeEtatDocumentFiscal.RETOURNEE, etatsSorted);
+		final EtatDocumentFiscal retour = getDernierEtatOfType(TypeEtatDocumentFiscal.RETOURNE, etatsSorted);
 		if (retour != null) {
 			return retour;
 		}
 
 		// l'état "suspendu" est directement derrière l'état "retourné", en termes de priorité
-		final EtatDocumentFiscal suspension = getDernierEtatOfType(TypeEtatDocumentFiscal.SUSPENDUE, etatsSorted);
+		final EtatDocumentFiscal suspension = getDernierEtatOfType(TypeEtatDocumentFiscal.SUSPENDU, etatsSorted);
 		if (suspension != null) {
 			return suspension;
 		}

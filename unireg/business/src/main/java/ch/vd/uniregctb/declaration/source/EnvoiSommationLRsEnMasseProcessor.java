@@ -130,7 +130,7 @@ private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.c
 	}
 
 	protected void traiteLR(DeclarationImpotSource lr, RegDate dateTraitement, EnvoiSommationLRsResults rapport) throws Exception {
-		if (lr.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.EMISE) {
+		if (lr.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.EMIS) {
 			RegDate dateDelaiSommation;
 			if (lr.getDelaiAccordeAu() == null) {
 				final RegDate dateExpedition = lr.getDernierEtatDeclaration().getDateObtention();

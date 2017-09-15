@@ -136,7 +136,7 @@ public class DeclarationImpotSource extends Declaration {
 		if (etatsDocument.size() == 1) {
 			Iterator<EtatDeclaration> itEtat = etatsDocument.iterator();
 			EtatDeclaration etat = itEtat.next();
-			if (etat.getEtat() == TypeEtatDocumentFiscal.EMISE) {
+			if (etat.getEtat() == TypeEtatDocumentFiscal.EMIS) {
 				RegDate dateObtention = etat.getDateObtention();
 				calSommation.setTime(dateObtention.asJavaDate());
 				calSommation.add(Calendar.MONTH, 1);

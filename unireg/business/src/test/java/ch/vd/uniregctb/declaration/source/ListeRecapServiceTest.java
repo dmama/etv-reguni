@@ -139,9 +139,9 @@ public class ListeRecapServiceTest extends BusinessTest {
 				final PeriodeFiscale periodeFiscale2008 = addPeriodeFiscale(2008);
 				final PeriodeFiscale periodeFiscale2009 = addPeriodeFiscale(2009);
 
-				addLRPeriodiciteUnique(dpi, date(2008, 2, 1), date(2008, 8, 28), periodeFiscale2008, TypeEtatDocumentFiscal.RETOURNEE);
-				addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDocumentFiscal.RETOURNEE);
-				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDocumentFiscal.RETOURNEE);
+				addLRPeriodiciteUnique(dpi, date(2008, 2, 1), date(2008, 8, 28), periodeFiscale2008, TypeEtatDocumentFiscal.RETOURNE);
+				addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDocumentFiscal.RETOURNE);
+				addLR(dpi, date(2009, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, periodeFiscale2009, TypeEtatDocumentFiscal.RETOURNE);
 				return dpi.getNumero();
 			}
 		});

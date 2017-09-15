@@ -400,7 +400,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = etats.iterator().next();
 				Assert.assertNotNull(etat);
 				Assert.assertFalse(etat.isAnnule());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 				Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
 				// son délai initial
@@ -532,7 +532,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 					final EtatDeclaration etat = etats.iterator().next();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 					Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
 					// son délai initial
@@ -587,7 +587,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 					final EtatDeclaration etat = etats.iterator().next();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 					Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
 					// son délai initial
@@ -708,7 +708,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 					final EtatDeclaration etat = etats.iterator().next();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 					Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
 					// son délai initial
@@ -763,7 +763,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 					final EtatDeclaration etat = etats.iterator().next();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 					Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
 					// son délai initial
@@ -877,7 +877,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 					final EtatDeclaration etat = etats.iterator().next();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 					Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
 					// son délai initial
@@ -998,7 +998,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = etats.iterator().next();
 				Assert.assertNotNull(etat);
 				Assert.assertFalse(etat.isAnnule());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 				Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
 				// son délai initial
@@ -1101,7 +1101,7 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 				final EtatDeclaration etat = etats.iterator().next();
 				Assert.assertNotNull(etat);
 				Assert.assertFalse(etat.isAnnule());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 				Assert.assertEquals(dateTraitement, etat.getDateObtention());
 
 				// son délai initial

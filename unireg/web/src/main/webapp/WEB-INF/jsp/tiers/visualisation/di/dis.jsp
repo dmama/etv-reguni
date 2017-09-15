@@ -29,7 +29,7 @@
 					<unireg:regdate regdate="${di.dateRetour}"/>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.etat.avancement" >
-					<fmt:message key="option.etat.avancement.${di.etat}" />
+					<fmt:message key="option.etat.avancement.f.${di.etat}" />
 					<c:if test="${di.dateRetour != null}">
 						<c:if test="${di.sourceRetour == null}">
 							(<fmt:message key="option.source.quittancement.UNKNOWN" />)

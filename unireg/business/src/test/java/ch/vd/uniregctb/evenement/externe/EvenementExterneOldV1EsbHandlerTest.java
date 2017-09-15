@@ -121,19 +121,19 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 
 				final Set<EtatDeclaration> etats = lr.getEtatsDeclaration();
 				assertNotNull(etats);
-				assertEquals(2, etats.size());      // l'état "EMISE" et l'état "RETOURNEE"
+				assertEquals(2, etats.size());      // l'état "EMIS" et l'état "RETOURNE"
 
-				final EtatDeclaration etatEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE);
+				final EtatDeclaration etatEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS);
 				assertNotNull(etatEmission);
 				assertTrue(etats.contains(etatEmission));
-				assertEquals(TypeEtatDocumentFiscal.EMISE, etatEmission.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
 				assertEquals(dateFin, etatEmission.getDateObtention());
 				assertFalse(etatEmission.isAnnule());
 
-				final EtatDeclaration etatRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE);
+				final EtatDeclaration etatRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE);
 				assertNotNull(etatRetour);
 				assertTrue(etats.contains(etatRetour));
-				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etatRetour.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatRetour.getEtat());
 				assertEquals(dateQuittancement, etatRetour.getDateObtention());
 				assertFalse(etatRetour.isAnnule());
 
@@ -241,7 +241,7 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 
 				final EtatDeclaration etatEmission = etats.iterator().next();
 				assertNotNull(etatEmission);
-				assertEquals(TypeEtatDocumentFiscal.EMISE, etatEmission.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
 				assertEquals(dateFin, etatEmission.getDateObtention());
 				assertFalse(etatEmission.isAnnule());
 
@@ -352,17 +352,17 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 
 				final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
 				assertNotNull(etats);
-				assertEquals(2, etats.size());      // états "EMISE" et "RETOURNEE" (ce dernier annulé)
+				assertEquals(2, etats.size());      // états "EMIS" et "RETOURNE" (ce dernier annulé)
 
 				final EtatDeclaration etatEmission = etats.get(0);
 				assertNotNull(etatEmission);
-				assertEquals(TypeEtatDocumentFiscal.EMISE, etatEmission.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
 				assertEquals(dateFin,  etatEmission.getDateObtention());
 				assertFalse(etatEmission.isAnnule());
 
 				final EtatDeclaration etatRetour = etats.get(1);
 				assertNotNull(etatRetour);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etatRetour.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatRetour.getEtat());
 				assertEquals(dateQuittancement, etatRetour.getDateObtention());
 				assertTrue(etatRetour.isAnnule());
 
@@ -421,29 +421,29 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 
 				final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
 				assertNotNull(etats);
-				assertEquals(3, etats.size());      // l'état "EMISE", puis les deux états "RETOURNEE", dont l'un est annulé
+				assertEquals(3, etats.size());      // l'état "EMIS", puis les deux états "RETOURNE", dont l'un est annulé
 
 				final EtatDeclaration etatEmission = etats.get(0);
 				assertNotNull(etatEmission);
-				assertEquals(TypeEtatDocumentFiscal.EMISE, etatEmission.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
 				assertEquals(dateFin,  etatEmission.getDateObtention());
 				assertFalse(etatEmission.isAnnule());
 
 				final EtatDeclaration etatAnnule = etats.get(1);
 				assertNotNull(etatAnnule);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etatAnnule.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatAnnule.getEtat());
 				assertEquals(dateQuittancement, etatAnnule.getDateObtention());
 				assertTrue(etatAnnule.isAnnule());
 
 				final EtatDeclaration etatValide = etats.get(2);
 				assertNotNull(etatValide);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etatValide.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatValide.getEtat());
 				assertEquals(dateQuittancement, etatValide.getDateObtention());
 				assertFalse(etatValide.isAnnule());
 
 				final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
 				assertNotNull(dernierEtat);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, dernierEtat.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
 				assertFalse(dernierEtat.isAnnule());
 				return null;
 			}
@@ -501,29 +501,29 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 
 				final List<EtatDeclaration> etats = lr.getEtatsDeclarationSorted();
 				assertNotNull(etats);
-				assertEquals(3, etats.size());      // "EMISE", et deux "RETOURNEE", dont un est annulé
+				assertEquals(3, etats.size());      // "EMIS", et deux "RETOURNE", dont un est annulé
 
 				final EtatDeclaration etatEmission = etats.get(0);
 				assertNotNull(etatEmission);
-				assertEquals(TypeEtatDocumentFiscal.EMISE, etatEmission.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.EMIS, etatEmission.getEtat());
 				assertEquals(dateFin,  etatEmission.getDateObtention());
 				assertFalse(etatEmission.isAnnule());
 
 				final EtatDeclaration etatAnnule = etats.get(1);
 				assertNotNull(etatAnnule);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etatAnnule.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatAnnule.getEtat());
 				assertEquals(dateQuittancement, etatAnnule.getDateObtention());
 				assertTrue(etatAnnule.isAnnule());
 
 				final EtatDeclaration etatValide = etats.get(2);
 				assertNotNull(etatValide);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etatValide.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etatValide.getEtat());
 				assertEquals(dateQuittancement, etatValide.getDateObtention());
 				assertFalse(etatValide.isAnnule());
 
 				final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
 				assertNotNull(dernierEtat);
-				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, dernierEtat.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
 				assertFalse(dernierEtat.isAnnule());
 				return null;
 			}

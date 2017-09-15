@@ -4925,7 +4925,7 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20081105</value>
       <value>DI_SOMMEE</value>
-      <value>SOMMEE</value>
+      <value>SOMME</value>
       <value>15791137</value>
     </row>
     <row>
@@ -4938,7 +4938,7 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20080128</value>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>15791137</value>
     </row>
     <row>
@@ -4951,7 +4951,7 @@
       <value><![CDATA[ZAIRCX  ]]></value>
       <value>20081209</value>
       <value>DI_RETOURNEE</value>
-      <value>RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>15791137</value>
     </row>
     <row>
@@ -4964,7 +4964,7 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20081208</value>
       <value>DI_ECHUE</value>
-      <value>ECHUE</value>
+      <value>ECHU</value>
       <value>15791137</value>
     </row>
     <row>
@@ -4977,7 +4977,7 @@
       <value><![CDATA[BATCH   ]]></value>
       <value>20090130</value>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>15791162</value>
     </row>
     <row>
@@ -4990,7 +4990,7 @@
       <value>cedi-interfaces-user</value>
       <value>20091022</value>
       <value>DI_RETOURNEE</value>
-      <value>RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>15791162</value>
     </row>
     <row>
@@ -5003,7 +5003,7 @@
       <value>cedi-interfaces-user</value>
       <value>20091022</value>
       <value>DI_SOMMEE</value>
-      <value>SOMMEE</value>
+      <value>SOMME</value>
       <value>15791162</value>
     </row>
   </table>

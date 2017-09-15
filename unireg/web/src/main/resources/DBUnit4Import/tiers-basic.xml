@@ -12079,7 +12079,7 @@
     <column>DOCUMENT_FISCAL_ID</column>
     <row>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>1</value>
       <null/>
       <null/>
@@ -12096,7 +12096,7 @@
     </row>
     <row>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>2</value>
       <null/>
       <null/>
@@ -12113,7 +12113,7 @@
     </row>
     <row>
       <value>DI_RETOURNEE</value>
-      <value>RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>3</value>
       <null/>
       <null/>
@@ -12130,7 +12130,7 @@
     </row>
     <row>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>4</value>
       <null/>
       <null/>
@@ -12147,7 +12147,7 @@
     </row>
     <row>
       <value>DI_SOMMEE</value>
-      <value>SOMMEE</value>
+      <value>SOMME</value>
       <value>5</value>
       <null/>
       <null/>
@@ -12164,7 +12164,7 @@
     </row>
     <row>
       <value>DI_ECHUE</value>
-      <value>ECHUE</value>
+      <value>ECHU</value>
       <value>6</value>
       <null/>
       <null/>
@@ -12181,7 +12181,7 @@
     </row>
     <row>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>7</value>
       <null/>
       <null/>
@@ -12198,7 +12198,7 @@
     </row>
     <row>
       <value>DI_SOMMEE</value>
-      <value>SOMMEE</value>
+      <value>SOMME</value>
       <value>8</value>
       <null/>
       <null/>
@@ -12215,7 +12215,7 @@
     </row>
     <row>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>9</value>
       <null/>
       <null/>
@@ -12232,7 +12232,7 @@
     </row>
     <row>
       <value>DI_RETOURNEE</value>
-      <value>RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>10</value>
       <null/>
       <null/>
@@ -12249,7 +12249,7 @@
     </row>
     <row>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>18</value>
       <null/>
       <null/>

@@ -1038,7 +1038,7 @@
       <value>1</value>
       <value>4</value>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>20080115</value>
     </row>
     <row>
@@ -1046,7 +1046,7 @@
       <value>2</value>
       <value>4</value>
       <value>DI_SOMMEE</value>
-      <value>SOMMEE</value>
+      <value>SOMME</value>
       <value>20080715</value>
     </row>
   </table>

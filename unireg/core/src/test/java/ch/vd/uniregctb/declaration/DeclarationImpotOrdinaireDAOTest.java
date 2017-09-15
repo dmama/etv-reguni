@@ -44,7 +44,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 	public void testFind() throws Exception {
 		loadDatabase(DB_UNIT_DATA_FILE);
 		DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
-		criterion.setEtat(TypeEtatDocumentFiscal.EMISE.toString());
+		criterion.setEtat(TypeEtatDocumentFiscal.EMIS.toString());
 		criterion.setAnnee(2007);
 		List<DeclarationImpotOrdinaire> dis = diDao.find(criterion);
 		assertNotNull(dis);
@@ -76,7 +76,7 @@ public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 		EtatDeclaration etat = diDao.findDerniereDiEnvoyee(new Long(12600001));
 		assertNotNull(etat);
 		assertEquals(Long.valueOf(41), etat.getId());
-		assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+		assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 		assertEquals(new Long(12600001), etat.getDeclaration().getTiers().getNumero());
 	}
 

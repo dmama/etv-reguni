@@ -226,8 +226,8 @@ public class DeclarationsHandler implements CategoryHandler {
 	}
 
 	private static void addEtat(StringBuilder b, TypeEtatDocumentFiscal type, RegDate dateObtention) {
-		final RegDate dateEnvoiCourrier = (type == TypeEtatDocumentFiscal.SOMMEE || type == TypeEtatDocumentFiscal.RAPPELEE ? dateObtention : null);
-		final String source = (type == TypeEtatDocumentFiscal.RETOURNEE ? "SDI" : null);
+		final RegDate dateEnvoiCourrier = (type == TypeEtatDocumentFiscal.SOMME || type == TypeEtatDocumentFiscal.RAPPELE ? dateObtention : null);
+		final String source = (type == TypeEtatDocumentFiscal.RETOURNE ? "SDI" : null);
 
 		b.append("-- Etat ").append(type).append(" au ").append(RegDateHelper.dateToDisplayString(dateObtention)).append(System.lineSeparator());
 		b.append("INSERT INTO ETAT_DOCUMENT_FISCAL (ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_OBTENTION, TYPE, DOCUMENT_FISCAL_ID, DATE_ENVOI_COURRIER, SOURCE)").append(System.lineSeparator());

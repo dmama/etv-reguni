@@ -12,6 +12,9 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
+/**
+ * Un rappel a été émis pour la déclaration.
+ */
 @Entity
 @DiscriminatorValue("DI_RAPPELEE")
 public class EtatDeclarationRappelee extends EtatDeclaration implements EtatDeclarationAvecDocumentArchive {
@@ -26,7 +29,7 @@ public class EtatDeclarationRappelee extends EtatDeclaration implements EtatDecl
 	@Transient
 	@Override
 	public TypeEtatDocumentFiscal getType() {
-		return TypeEtatDocumentFiscal.RAPPELEE;
+		return TypeEtatDocumentFiscal.RAPPELE;
 	}
 
 	public EtatDeclarationRappelee(RegDate dateObtention, RegDate dateEnvoiCourrier) {

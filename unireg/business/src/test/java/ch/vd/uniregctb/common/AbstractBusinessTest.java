@@ -1170,7 +1170,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
 	protected DeclarationImpotSource addLRPeriodiciteUnique(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode) {
-		return addLRPeriodiciteUnique(debiteur, debut, fin, periode, TypeEtatDocumentFiscal.EMISE);
+		return addLRPeriodiciteUnique(debiteur, debut, fin, periode, TypeEtatDocumentFiscal.EMIS);
 	}
 
 	protected DeclarationImpotSource addLRPeriodiciteUnique(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode, TypeEtatDocumentFiscal typeEtat) {
@@ -1181,8 +1181,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		lr.setModeCommunication(ModeCommunication.PAPIER);
 		lr.setPeriodicite(PeriodiciteDecompte.UNIQUE);
 
-		// l'état "EMISE" si l'état demandé est autre (il faut au moins l'état "EMISE")
-		if (typeEtat != TypeEtatDocumentFiscal.EMISE) {
+		// l'état "EMIS" si l'état demandé est autre (il faut au moins l'état "EMIS")
+		if (typeEtat != TypeEtatDocumentFiscal.EMIS) {
 			final EtatDeclaration etatEmission = new EtatDeclarationEmise();
 			etatEmission.setDateObtention(fin);
 			lr.addEtat(etatEmission);
@@ -1201,7 +1201,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
     protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, PeriodiciteDecompte periodicite, PeriodeFiscale periode) {
-        return addLR(debiteur, debut, periodicite, periode, TypeEtatDocumentFiscal.EMISE);
+        return addLR(debiteur, debut, periodicite, periode, TypeEtatDocumentFiscal.EMIS);
     }
 
     protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, PeriodiciteDecompte periodicite, PeriodeFiscale periode, TypeEtatDocumentFiscal typeEtat) {
@@ -1214,8 +1214,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         lr.setModeCommunication(ModeCommunication.PAPIER);
         lr.setPeriodicite(periodicite);
 
-        // l'état "EMISE" si l'état demandé est autre (il faut au moins l'état "EMISE")
-        if (typeEtat != TypeEtatDocumentFiscal.EMISE) {
+        // l'état "EMIS" si l'état demandé est autre (il faut au moins l'état "EMIS")
+        if (typeEtat != TypeEtatDocumentFiscal.EMIS) {
             final EtatDeclaration etatEmission = new EtatDeclarationEmise();
             etatEmission.setDateObtention(fin);
             lr.addEtat(etatEmission);

@@ -2913,17 +2913,17 @@ var Decl = {
 				/** @namespace e.etat */
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
 				html += '<td>' + RegDate.format(e.dateObtention);
-				if (!e.annule && (e.etat == 'SOMMEE' || e.etat == 'RAPPELEE')) {
+				if (!e.annule && (e.etat == 'SOMME' || e.etat == 'RAPPELE')) {
 					html += '&nbsp;(' + StringUtils.escapeHTML(e.dateEnvoiCourrierMessage) + ')';
 				}
 				html += '</td><td>' + StringUtils.escapeHTML(e.etatMessage);
-				if (!e.annule && (e.etat == 'SOMMEE' || e.etat == 'RAPPELEE' || e.etat == 'EMISE')) {
+				if (!e.annule && (e.etat == 'SOMME' || e.etat == 'RAPPELE' || e.etat == 'EMIS')) {
 					if (e.urlVisualisationExterneDocument != null) {
 						var title;
-						if (e.etat == 'RAPPELEE') {
+						if (e.etat == 'RAPPELE') {
 							title = 'Visualisation du rappel émis';
 						}
-						else if (e.etat == 'SOMMEE') {
+						else if (e.etat == 'SOMME') {
 							title = 'Visualisation de la sommation émise';
 						}
 						else {
@@ -2932,9 +2932,9 @@ var Decl = {
 
 						html += '&nbsp;<a href="#" class="pdf" title="' + title + '" onclick="VisuExterneDoc.openWindow(\x27' + e.urlVisualisationExterneDocument + '\x27);">&nbsp;</a>';
 					}
-					else if (e.etat != 'EMISE') {
+					else if (e.etat != 'EMIS') {
 						var url;
-						if (e.etat == 'RAPPELEE') {
+						if (e.etat == 'RAPPELE') {
 							url = App.curl('/declaration/copie-conforme-rappel.do?idEtat=') + e.id;
 						}
 						else {
@@ -2949,7 +2949,7 @@ var Decl = {
 				html += '</td>';
 				if (!lr) { // SIFISC-6593 - On n'affiche pas la colonne source pour les LR
 					html += '<td>';
-					if (e.etat == 'RETOURNEE') {
+					if (e.etat == 'RETOURNE') {
 						html += StringUtils.escapeHTML(e.sourceMessage);
 					}
 					html += '</td>';

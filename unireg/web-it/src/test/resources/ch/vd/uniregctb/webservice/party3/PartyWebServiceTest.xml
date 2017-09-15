@@ -4055,7 +4055,7 @@
     <column>DOCUMENT_FISCAL_ID</column>
     <row>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>1</value>
       <null/>
       <null/>
@@ -4070,7 +4070,7 @@
     </row>
     <row>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>2</value>
       <value><![CDATA[2009-03-04 00:00:00.0]]></value>
       <null/>

@@ -299,7 +299,7 @@
       <value>2008-01-01</value>
       <value>39</value>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>20060320</value>
       <value>20</value>
     </row>
@@ -307,7 +307,7 @@
       <value>2008-01-01</value>
       <value>40</value>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>20070320</value>
       <value>22</value>
     </row>
@@ -315,7 +315,7 @@
       <value>2008-01-01</value>
       <value>41</value>
       <value>DI_EMISE</value>
-      <value>EMISE</value>
+      <value>EMIS</value>
       <value>20080320</value>
       <value>21</value>
     </row>

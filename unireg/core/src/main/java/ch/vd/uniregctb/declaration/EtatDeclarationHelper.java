@@ -6,13 +6,13 @@ public class EtatDeclarationHelper {
 
 	public static EtatDeclaration getInstanceOfEtatDeclaration(TypeEtatDocumentFiscal typeEtat) {
 		switch (typeEtat) {
-		case ECHUE:
+		case ECHU:
 			return new EtatDeclarationEchue();
-		case SOMMEE:
+		case SOMME:
 			return new EtatDeclarationSommee();
-		case EMISE:
+		case EMIS:
 			return new EtatDeclarationEmise();
-		case RETOURNEE:
+		case RETOURNE:
 			return new EtatDeclarationRetournee();
 		default:
 			throw new IllegalArgumentException("Valeur de l'état non-supportée : " + typeEtat);
@@ -21,13 +21,13 @@ public class EtatDeclarationHelper {
 
 	public static Class<? extends EtatDeclaration> getClasseOfEtatDeclaration(TypeEtatDocumentFiscal typeEtat) {
 		switch (typeEtat) {
-		case ECHUE:
+		case ECHU:
 			return EtatDeclarationEchue.class;
-		case SOMMEE:
+		case SOMME:
 			return EtatDeclarationSommee.class;
-		case EMISE:
+		case EMIS:
 			return EtatDeclarationEmise.class;
-		case RETOURNEE:
+		case RETOURNE:
 			return EtatDeclarationRetournee.class;
 		default:
 			throw new IllegalArgumentException("Valeur de l'état non-supportée : " + typeEtat);

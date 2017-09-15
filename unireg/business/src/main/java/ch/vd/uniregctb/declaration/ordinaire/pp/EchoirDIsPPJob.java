@@ -14,7 +14,7 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
 
 /**
- * Job qui fait passer à l'état <i>ECHUE</i> les déclarations sommées et dont le délai de retour est dépassé.
+ * Job qui fait passer à l'état <i>ECHU</i> les déclarations sommées et dont le délai de retour est dépassé.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */

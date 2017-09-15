@@ -84,7 +84,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				Assert.assertNotNull(questionnaire);
 				Assert.assertFalse(questionnaire.isAnnule());
 				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, questionnaire.getDernierEtatDeclaration().getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
 		});
 	}
@@ -136,7 +136,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				Assert.assertNotNull(questionnaire);
 				Assert.assertFalse(questionnaire.isAnnule());
 				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, questionnaire.getDernierEtatDeclaration().getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
 		});
 	}
@@ -195,7 +195,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				Assert.assertNotNull(questionnaire);
 				Assert.assertFalse(questionnaire.isAnnule());
 				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, questionnaire.getDernierEtatDeclaration().getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
 		});
 	}
@@ -254,7 +254,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				Assert.assertNotNull(questionnaire);
 				Assert.assertFalse(questionnaire.isAnnule());
 				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELEE, questionnaire.getDernierEtatDeclaration().getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
 		});
 	}
@@ -332,7 +332,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
 					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELEE, questionnaire.getDernierEtatDeclaration().getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 				{
 					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
@@ -343,7 +343,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
 					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELEE, questionnaire.getDernierEtatDeclaration().getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 			}
 		});
@@ -422,7 +422,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
 					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELEE, questionnaire.getDernierEtatDeclaration().getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 				{
 					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
@@ -433,7 +433,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
 					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELEE, questionnaire.getDernierEtatDeclaration().getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 			}
 		});
@@ -506,7 +506,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
 					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELEE, questionnaire.getDernierEtatDeclaration().getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 				{
 					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
@@ -517,7 +517,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
 					Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, questionnaire.getDernierEtatDeclaration().getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 			}
 		});
@@ -590,7 +590,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
 					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELEE, questionnaire.getDernierEtatDeclaration().getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 				{
 					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
@@ -601,7 +601,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
 					Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
-					Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, questionnaire.getDernierEtatDeclaration().getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 			}
 		});
@@ -661,7 +661,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				Assert.assertNotNull(questionnaire);
 				Assert.assertFalse(questionnaire.isAnnule());
 				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
-				Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, questionnaire.getDernierEtatDeclaration().getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
 		});
 	}

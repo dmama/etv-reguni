@@ -111,9 +111,9 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 	private void traiterQuestionnaire(QuestionnaireSNC questionnaire, RegDate dateTraitement, EnvoiRappelsQuestionnairesSNCResults rapport) throws DeclarationException {
 		// il faut vérifier que le délai administratif est passé...
 
-		// si le questionnaire n'est plus dans l'état "EMISE", c'est qu'il vient de bouger et ne doit pas être rappelé
+		// si le questionnaire n'est plus dans l'état "EMIS", c'est qu'il vient de bouger et ne doit pas être rappelé
 		final EtatDeclaration dernierEtat = questionnaire.getDernierEtatDeclaration();
-		if (dernierEtat == null || dernierEtat.getEtat() != TypeEtatDocumentFiscal.EMISE) {
+		if (dernierEtat == null || dernierEtat.getEtat() != TypeEtatDocumentFiscal.EMIS) {
 			rapport.addQuestionnaireNonEmis(questionnaire, dernierEtat);
 		}
 		else {
@@ -152,8 +152,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessor {
 	}
 
 	/**
-	 * ATTENTION : ici, contrairement aux cas des DI/LR dans lesquels on ne teste pas l'existence d'un état "ECHUE" seul (sans état "SOMMEE"), parce
-	 * que ce n'est pas un cas métier, nous sommes obligés de le faire ici car la migration des données de SIMPA a parfois ajouté de tels états "ECHUE"
+	 * ATTENTION : ici, contrairement aux cas des DI/LR dans lesquels on ne teste pas l'existence d'un état "ECHU" seul (sans état "SOMME"), parce
+	 * que ce n'est pas un cas métier, nous sommes obligés de le faire ici car la migration des données de SIMPA a parfois ajouté de tels états "ECHU"
 	 * justement pour empêcher le rappel de vieux questionnaires...
 	 */
 	private List<IdentifiantDeclaration> getQuestionnairesARappeler(final RegDate dateTraitement, @Nullable final Integer periodeFiscale) {

@@ -1772,7 +1772,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 						"AND FF.FOR_TYPE != 'ForDebiteurPrestationImposable'                      " +
 						"AND ED.LOG_MDATE >= :debut                                               " +
 						"AND ED.LOG_MDATE <= :fin                                                 " +
-						"AND ED.TYPE IN ('EMISE', 'ECHUE')                                        " +
+						"AND ED.TYPE IN ('EMIS', 'ECHU')                                        " +
 						"AND DI.DOCUMENT_TYPE IN ('DI', 'DIPM', 'QSNC', 'LR')                     " +
 						"ORDER BY CTB_ID                                                          ";
 

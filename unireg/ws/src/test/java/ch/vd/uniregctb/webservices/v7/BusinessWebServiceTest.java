@@ -579,10 +579,10 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 					final EtatDeclaration etat = decl.getDernierEtatDeclaration();
 					if (entry.getValue() == AckStatus.OK) {
-						Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNEE, etat.getEtat());
+						Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat.getEtat());
 					}
 					else {
-						Assert.assertEquals(TypeEtatDocumentFiscal.EMISE, etat.getEtat());
+						Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, etat.getEtat());
 					}
 				}
 			}

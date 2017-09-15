@@ -105,7 +105,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 		final DeclarationImpotOrdinaire di2007 = addDeclarationImpot(sebastien, date(2007, 1, 1), date(2007, 12, 31), date(2008, 1, 13), 90);
 		{
-			addEtat(di2007, di2007.getDernierEtatDeclaration().getDateObtention().addMonths(2), TypeEtatDocumentFiscal.RETOURNEE);
+			addEtat(di2007, di2007.getDernierEtatDeclaration().getDateObtention().addMonths(2), TypeEtatDocumentFiscal.RETOURNE);
 		}
 
 		addDeclarationImpot(sebastien, date(2008, 1, 1), date(2008, 12, 31), date(2009, 1, 13), 90);
@@ -211,7 +211,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			int nombreTachesDevantEtreGenerees = 0;
 			for (DeclarationImpotOrdinaire di : dis) {
 				EtatDeclaration etat = di.getDernierEtatDeclaration();
-				if (TypeEtatDocumentFiscal.EMISE == etat.getEtat()) {
+				if (TypeEtatDocumentFiscal.EMIS == etat.getEtat()) {
 					assertTrue(di.isAnnule(), "La DI est pas annulée");
 				}
 				else {

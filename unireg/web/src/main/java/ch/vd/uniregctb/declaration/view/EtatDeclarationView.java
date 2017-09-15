@@ -29,13 +29,13 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 	private final String etatMessage;
 
 	/**
-	 * La source de quittancement dans le cas ou #etat == "RETOURNEE".
+	 * La source de quittancement dans le cas ou #etat == "RETOURNE".
 	 */
 	private String source;
 	private String sourceMessage;
 
 	/**
-	 * La date d'envoi de la sommation dans le cas ou #etat == 'SOMMEE' ou #etat == 'RAPPELEE'
+	 * La date d'envoi de la sommation dans le cas ou #etat == 'SOMME' ou #etat == 'RAPPELE'
 	 */
 	private RegDate dateEnvoiCourrier;
 	private String dateEnvoiCourrierMessage;
@@ -51,7 +51,7 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 		this.logCreationDate = etat.getLogCreationDate();
 		this.annule = etat.isAnnule();
 		this.etat = etat.getEtat();
-		this.etatMessage = messageSource.getMessage("option.etat.avancement." + this.etat.name(), null, WebContextUtils.getDefaultLocale());
+		this.etatMessage = messageSource.getMessage("option.etat.avancement.f." + this.etat.name(), null, WebContextUtils.getDefaultLocale());
 
 		if (etat instanceof EtatDeclarationRetournee) {
 			this.source = ((EtatDeclarationRetournee) etat).getSource();

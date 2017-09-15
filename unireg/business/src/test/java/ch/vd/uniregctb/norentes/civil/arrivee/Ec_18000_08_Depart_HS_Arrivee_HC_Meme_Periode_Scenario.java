@@ -100,7 +100,7 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 		assertNotNull(declarations, "Liste des DI nulle");
 		assertEquals(1, declarations.size(), "Mauvais nombre de déclarations");
 		final Declaration di = declarations.get(0);
-		assertEquals(TypeEtatDocumentFiscal.EMISE, di.getDernierEtatDeclaration().getEtat(), "Déclaration dans le mauvais état");
+		assertEquals(TypeEtatDocumentFiscal.EMIS, di.getDernierEtatDeclaration().getEtat(), "Déclaration dans le mauvais état");
 
 		// vérification qu'aucune tâche n'est actuellement en instance
 		final TacheCriteria tacheCriteria = new TacheCriteria();

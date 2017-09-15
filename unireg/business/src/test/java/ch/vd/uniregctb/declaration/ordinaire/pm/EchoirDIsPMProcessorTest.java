@@ -443,7 +443,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 				assertNotNull(di);
-				assertEquals(TypeEtatDocumentFiscal.ECHUE, di.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.ECHU, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});

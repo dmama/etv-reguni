@@ -417,13 +417,13 @@ public abstract class EnumHelper {
 		}
 
 		switch (type) {
-		case ECHUE:
+		case ECHU:
 			return ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType.EXPIRED;
-		case EMISE:
+		case EMIS:
 			return ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType.SENT;
-		case SOMMEE:
+		case SOMME:
 			return ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType.SUMMONS_SENT;
-		case RETOURNEE:
+		case RETOURNE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType.RETURNED;
 		default:
 			throw new IllegalArgumentException("Type d'état de déclaration inconnu = [" + type + ']');
@@ -436,13 +436,13 @@ public abstract class EnumHelper {
 		}
 
 		switch (type) {
-		case ECHUE:
+		case ECHU:
 			return ch.vd.unireg.xml.party.taxdeclaration.v2.TaxDeclarationStatusType.EXPIRED;
-		case EMISE:
+		case EMIS:
 			return ch.vd.unireg.xml.party.taxdeclaration.v2.TaxDeclarationStatusType.SENT;
-		case SOMMEE:
+		case SOMME:
 			return ch.vd.unireg.xml.party.taxdeclaration.v2.TaxDeclarationStatusType.SUMMONS_SENT;
-		case RETOURNEE:
+		case RETOURNE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v2.TaxDeclarationStatusType.RETURNED;
 		default:
 			throw new IllegalArgumentException("Type d'état de déclaration inconnu = [" + type + ']');
@@ -455,13 +455,13 @@ public abstract class EnumHelper {
 		}
 
 		switch (type) {
-		case ECHUE:
+		case ECHU:
 			return ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType.EXPIRED;
-		case EMISE:
+		case EMIS:
 			return ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType.SENT;
-		case SOMMEE:
+		case SOMME:
 			return ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType.SUMMONS_SENT;
-		case RETOURNEE:
+		case RETOURNE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType.RETURNED;
 		default:
 			throw new IllegalArgumentException("Type d'état de déclaration inconnu = [" + type + ']');
@@ -474,17 +474,17 @@ public abstract class EnumHelper {
 		}
 
 		switch (type) {
-		case ECHUE:
+		case ECHU:
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.EXPIRED;
-		case EMISE:
+		case EMIS:
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.SENT;
-		case SOMMEE:
+		case SOMME:
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.SUMMONS_SENT;
-		case RETOURNEE:
+		case RETOURNE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.RETURNED;
-		case SUSPENDUE:
+		case SUSPENDU:
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.SUSPENDED;
-		case RAPPELEE:
+		case RAPPELE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.REMINDER_SENT;
 		default:
 			throw new IllegalArgumentException("Type d'état de déclaration inconnu = [" + type + ']');
@@ -497,17 +497,17 @@ public abstract class EnumHelper {
 		}
 
 		switch (type) {
-		case ECHUE:
+		case ECHU:
 			return ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatusType.EXPIRED;
-		case EMISE:
+		case EMIS:
 			return ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatusType.SENT;
-		case SOMMEE:
+		case SOMME:
 			return ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatusType.SUMMONS_SENT;
-		case RETOURNEE:
+		case RETOURNE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatusType.RETURNED;
-		case SUSPENDUE:
+		case SUSPENDU:
 			return ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatusType.SUSPENDED;
-		case RAPPELEE:
+		case RAPPELE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationStatusType.REMINDER_SENT;
 		default:
 			throw new IllegalArgumentException("Type d'état de déclaration inconnu = [" + type + ']');

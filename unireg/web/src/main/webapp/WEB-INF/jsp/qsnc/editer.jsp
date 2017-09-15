@@ -17,7 +17,7 @@
 					<td width="25%"><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
 					<td width="25%">${questionnaire.periodeFiscale}</td>
 					<td width="25%"><fmt:message key="label.etat.courant" />&nbsp;:</td>
-					<td width="25%"><fmt:message key="option.etat.avancement.${questionnaire.etat}"/></td>
+					<td width="25%"><fmt:message key="option.etat.avancement.f.${questionnaire.etat}"/></td>
 				</tr>
 			</table>
 		</fieldset>
@@ -66,16 +66,16 @@
 				<display:table name="questionnaire.etats" id="etat" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 					<display:column titleKey="label.date.obtention" style="width: 30%;">
 						<unireg:regdate regdate="${etat.dateObtention}"/>
-						<c:if test="${!etat.annule && etat.etat == 'RAPPELEE'}">
+						<c:if test="${!etat.annule && etat.etat == 'RAPPELE'}">
 							&nbsp;
 							(<c:out value="${etat.dateEnvoiCourrierMessage}"/>)
 						</c:if>
 					</display:column>
 					<display:column titleKey="label.etat" style="width: 30%;">
-						<fmt:message key="option.etat.avancement.${etat.etat}"/>
+						<fmt:message key="option.etat.avancement.f.${etat.etat}"/>
 					</display:column>
 					<display:column titleKey="label.source" style="width: 30%;">
-						<c:if test="${etat.etat == 'RETOURNEE'}">
+						<c:if test="${etat.etat == 'RETOURNE'}">
 							<c:if test="${etat.source == null}">
 								<fmt:message key="option.source.quittancement.UNKNOWN"/>
 							</c:if>
@@ -87,7 +87,7 @@
 					<display:column style="action">
 						<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
 						<authz:authorize ifAnyGranted="ROLE_QSNC_QUITTANCEMENT">
-							<c:if test="${!etat.annule && etat.etat == 'RETOURNEE'}">
+							<c:if test="${!etat.annule && etat.etat == 'RETOURNE'}">
 								<unireg:linkTo name="" title="Annuler le quittancement" confirm="Voulez-vous vraiment annuler ce quittancement ?"
 								               action="/qsnc/annuler-quittance.do" method="post" params="{id:${etat.id}}" link_class="delete"/>
 							</c:if>

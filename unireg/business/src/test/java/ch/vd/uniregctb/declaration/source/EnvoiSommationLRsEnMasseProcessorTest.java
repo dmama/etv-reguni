@@ -287,8 +287,8 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 				final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), PeriodiciteDecompte.MENSUEL);
 				addEtatDeclarationRetournee(lr, date(2007, 1, 12), "TEST");
 
-				final RegDate dateEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE).getDateObtention();
-				final RegDate dateRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE).getDateObtention();
+				final RegDate dateEmission = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS).getDateObtention();
+				final RegDate dateRetour = lr.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE).getDateObtention();
 				assertTrue(dateEmission.isAfter(dateRetour));
 				return null;
 			}

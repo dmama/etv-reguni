@@ -763,7 +763,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 		}
 
 		final TypeEtatDocumentFiscal etat = declaration.getDernierEtatDeclaration().getEtat();
-		if (etat != TypeEtatDocumentFiscal.EMISE) {
+		if (etat != TypeEtatDocumentFiscal.EMIS) {
 			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'émise' (état=[" + etat + "]).");
 		}
 
@@ -893,7 +893,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		// La déclaration est correcte, on la quittance
 		context.diService.quittancementDI(ctb, declaration, dateRetour, demande.getSource(), true);
-		Assert.isEqual(TypeEtatDocumentFiscal.RETOURNEE, declaration.getDernierEtatDeclaration().getEtat());
+		Assert.isEqual(TypeEtatDocumentFiscal.RETOURNE, declaration.getDernierEtatDeclaration().getEtat());
 
 		return AcknowledgeTaxDeclarationBuilder.newAcknowledgeTaxDeclarationResponse(demande.getKey(), TaxDeclarationAcknowledgeCode.OK);
 	}

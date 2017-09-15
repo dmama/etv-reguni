@@ -4,48 +4,60 @@
 package ch.vd.uniregctb.type;
 
 /**
- * Typologie des états de déclaration
+ * Typologie des états de documents fiscaux. Tous les états ne s'appliquent pas à tous les documents.
  */
 public enum TypeEtatDocumentFiscal {
 
 	/**
-	 * Déclaration émise, en attente de retour depuis le tiers. C'est le premier état de toute déclaration.
+	 * Document émis, en attente de retour depuis le tiers. C'est le premier état de tout document fiscal.
 	 */
-	EMISE("émise"),
+	EMIS("émis", "émise"),
 
 	/**
-	 * Une sommation a été émise pour la déclaration.
+	 * Une sommation a été émise pour le document.
 	 */
-	SOMMEE("sommée"),
+	SOMME("sommé", "sommée"),
 
 	/**
-	 * Un rappel a été émis pour la déclaration.
+	 * Un rappel a été émis pour le document.
 	 */
-	RAPPELEE("rappelée"),
+	RAPPELE("rappelé", "rappelée"),
 
 	/**
-	 * Une notification d'échéance (= qui ouvre la porte à la taxation d'office) a été émise pour la déclaration
+	 * Une notification d'échéance a été émise pour le document. [= qui ouvre la porte pour une déclaration à la taxation d'office]
 	 */
-	ECHUE("échue"),
+	ECHU("échu", "échue"),
 
 	/**
-	 * Déclaration suspendue, aucun rappel, aucune sommation ni échéance ne doit pouvoir être généré
+	 * Document suspendu: aucun rappel, aucune sommation ni échéance ne doit pouvoir être généré
 	 * tant qu'un tel état non-annulé existe
 	 */
-	SUSPENDUE("suspendue"),
+	SUSPENDU("suspendu", "suspendue"),
 
 	/**
-	 * Déclaration retournée (= depuis le tiers)
+	 * Document retournée (= depuis le tiers)
 	 */
-	RETOURNEE("retournée");
+	RETOURNE("retourné", "retournée");
 
-	private final String description;
+	private final String descriptionM;
+	private final String descriptionF;
 
-	TypeEtatDocumentFiscal(String description) {
-		this.description = description;
+	TypeEtatDocumentFiscal(String descriptionM, String descriptionF) {
+		this.descriptionM = descriptionM;
+		this.descriptionF = descriptionF;
 	}
 
-	public String description() {
-		return description;
+	/**
+	 * @return le type en français accordé au féminin.
+	 */
+	public String descriptionF() {
+		return descriptionF;
+	}
+
+	/**
+	 * @return le type en français accordé au masculin.
+	 */
+	public String descriptionM() {
+		return descriptionM;
 	}
 }

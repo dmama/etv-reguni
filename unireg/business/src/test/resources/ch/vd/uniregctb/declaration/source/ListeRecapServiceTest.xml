@@ -302,7 +302,7 @@
       <value>2008-01-01</value>
       <value>41</value>
       <value>DI_EXPEDIEE</value>
-      <value>EXPEDIEE</value>
+      <value>EXPEDIE</value>
       <value>20080320</value>
       <value>21</value>
     </row>
@@ -310,7 +310,7 @@
       <value>2009-01-01</value>
       <value>42</value>
       <value>DI_RETOURNEE</value>
-      <value>RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>20100511</value>
       <value>23</value>
     </row>
@@ -318,7 +318,7 @@
       <value>2009-01-01</value>
       <value>43</value>
       <value>DI_RETOURNEE</value>
-      <value>RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>20100511</value>
       <value>24</value>
     </row>

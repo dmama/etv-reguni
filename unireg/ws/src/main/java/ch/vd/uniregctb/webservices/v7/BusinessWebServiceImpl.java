@@ -578,8 +578,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 							if (di.isAnnule()) {
 								response = new DeadlineResponse(DeadlineStatus.ERROR_CANCELLED_DECLARATION, null);
 							}
-							else if (di.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.EMISE) {
-								response = new DeadlineResponse(DeadlineStatus.ERROR_BAD_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'EMISE'.");
+							else if (di.getDernierEtatDeclaration().getEtat() != TypeEtatDocumentFiscal.EMIS) {
+								response = new DeadlineResponse(DeadlineStatus.ERROR_BAD_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'EMIS'.");
 							}
 							else if (RegDateHelper.isAfter(dateObtention, today, NullDateBehavior.LATEST)) {
 								response = new DeadlineResponse(DeadlineStatus.ERROR_INVALID_GRANTED_ON, "La date d'obtention du délai ne peut pas être dans le futur de la date du jour.");

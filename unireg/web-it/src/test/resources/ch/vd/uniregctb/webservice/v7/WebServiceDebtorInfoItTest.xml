@@ -1499,7 +1499,7 @@
 		<column>SOURCE</column>
 		<column>DOCUMENT_FISCAL_ID</column>
 		<row>
-			<value>EMISE</value>
+			<value>EMIS</value>
 			<value>1</value>
 			<null />
 			<null />

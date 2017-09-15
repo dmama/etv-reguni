@@ -28,7 +28,7 @@ public class QuestionnaireSNCEditView extends QuestionnaireSNCView {
 	private static boolean isRappelable(QuestionnaireSNC q) {
 		final TypeEtatDocumentFiscal dernierEtat = getDernierEtat(q);
 		boolean isRappelable = false;
-		if (dernierEtat == TypeEtatDocumentFiscal.EMISE) {
+		if (dernierEtat == TypeEtatDocumentFiscal.EMIS) {
 			if (q.getDelaiAccordeAu() == null || RegDate.get().isAfter(q.getDelaiAccordeAu())) {
 				isRappelable = true;
 			}

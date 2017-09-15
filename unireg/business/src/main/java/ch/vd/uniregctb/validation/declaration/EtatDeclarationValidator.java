@@ -29,7 +29,7 @@ public abstract class EtatDeclarationValidator<T extends EtatDeclaration> extend
 
 		// La date de début doit être renseignée
 		if (dateObtention == null) {
-			results.addError(String.format("L'etat %s de la déclaration possède une date d'obtention nulle", etat == null ? "<de type inconnu>" : etat.description()));
+			results.addError(String.format("L'etat %s de la déclaration possède une date d'obtention nulle", etat == null ? "<de type inconnu>" : etat.descriptionF()));
 		}
 
 		return results;

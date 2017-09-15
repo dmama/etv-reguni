@@ -694,7 +694,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, 2009, false);
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
-				assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDocumentFiscal.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, delaiAccorde, decls.get(0));
+				assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, delaiAccorde, decls.get(0));
 				return null;
 			}
 		});

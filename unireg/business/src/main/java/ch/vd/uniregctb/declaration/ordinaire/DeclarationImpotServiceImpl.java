@@ -359,7 +359,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
-			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE);
+			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE);
 			if (etatRetour != null) {
 				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
 			}
@@ -387,7 +387,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
-			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNEE);
+			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE);
 			if (etatRetour != null) {
 				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
 			}

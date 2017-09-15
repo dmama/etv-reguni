@@ -548,7 +548,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) diDao.get(diId);
 				Assert.assertNotNull(di);
-				Assert.assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMMEE));
+				Assert.assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMME));
 			}
 		});
 	}

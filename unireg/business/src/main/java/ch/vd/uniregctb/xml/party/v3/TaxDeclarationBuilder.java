@@ -25,10 +25,10 @@ import ch.vd.uniregctb.xml.EnumHelper;
 
 public class TaxDeclarationBuilder {
 
-	private static final Set<TypeEtatDocumentFiscal> ETATS_EXPOSES = EnumSet.of(TypeEtatDocumentFiscal.ECHUE,
-	                                                                            TypeEtatDocumentFiscal.EMISE,
-	                                                                            TypeEtatDocumentFiscal.RETOURNEE,
-	                                                                            TypeEtatDocumentFiscal.SOMMEE);
+	private static final Set<TypeEtatDocumentFiscal> ETATS_EXPOSES = EnumSet.of(TypeEtatDocumentFiscal.ECHU,
+	                                                                            TypeEtatDocumentFiscal.EMIS,
+	                                                                            TypeEtatDocumentFiscal.RETOURNE,
+	                                                                            TypeEtatDocumentFiscal.SOMME);
 
 	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP declaration, @Nullable Set<PartyPart> parts) {
 

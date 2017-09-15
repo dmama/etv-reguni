@@ -7,6 +7,10 @@ import javax.persistence.Transient;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
+/**
+ * Déclaration suspendue, aucun rappel, aucune sommation ni échéance ne doit pouvoir être généré
+ * tant qu'un tel état non-annulé existe
+ */
 @Entity
 @DiscriminatorValue("DI_SUSPENDUE")
 public class EtatDeclarationSuspendue extends EtatDeclaration {
@@ -22,6 +26,6 @@ public class EtatDeclarationSuspendue extends EtatDeclaration {
 	@Transient
 	@Override
 	public TypeEtatDocumentFiscal getType() {
-		return TypeEtatDocumentFiscal.SUSPENDUE;
+		return TypeEtatDocumentFiscal.SUSPENDU;
 	}
 }

@@ -456,7 +456,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 	}
 
 	/**
-	 * [UNIREG-2782] vérification que le quittancement d'une DI pour laquelle l'état "EMISE" n'a pas été créé fonctionne quand-même
+	 * [UNIREG-2782] vérification que le quittancement d'une DI pour laquelle l'état "EMIS" n'a pas été créé fonctionne quand-même
 	 */
 	@Test
 	public void testTaxDeclarationReturnWithoutSentStatus() throws Exception {
@@ -476,7 +476,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument modele = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMISE));
+				assertNull(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS));
 
 				final EtatDeclaration retour = new EtatDeclarationRetournee(RegDate.get(), "TEST");
 				di.addEtat(retour);
@@ -520,7 +520,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
 				assertNotNull(di);
 				assertNotNull(di.getDernierEtatDeclaration());
-				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, di.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});
@@ -612,7 +612,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
 				assertNotNull(di);
 				assertNotNull(di.getDernierEtatDeclaration());
-				assertEquals(TypeEtatDocumentFiscal.EMISE, di.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.EMIS, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});
@@ -724,12 +724,12 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final DeclarationImpotOrdinaire diValide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(0).idDi);
 				assertNotNull(diValide);
 				assertNotNull(diValide.getDernierEtatDeclaration());
-				assertEquals(TypeEtatDocumentFiscal.RETOURNEE, diValide.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, diValide.getDernierEtatDeclaration().getEtat());
 
 				final DeclarationImpotOrdinaire diInvalide = hibernateTemplate.get(DeclarationImpotOrdinaire.class, liste.get(1).idDi);
 				assertNotNull(diInvalide);
 				assertNotNull(diInvalide.getDernierEtatDeclaration());
-				assertEquals(TypeEtatDocumentFiscal.EMISE, diInvalide.getDernierEtatDeclaration().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.EMIS, diInvalide.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});
@@ -2282,7 +2282,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
 			assertEquals(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, results.getCode());
-			assertEquals("La déclaration n'est pas dans l'état 'émise' (état=[ECHUE]).", results.getExceptionInfo().getMessage());
+			assertEquals("La déclaration n'est pas dans l'état 'émise' (état=[ECHU]).", results.getExceptionInfo().getMessage());
 		}
 
 		// 2009 : retournée
@@ -2296,7 +2296,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
 			assertEquals(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, results.getCode());
-			assertEquals("La déclaration n'est pas dans l'état 'émise' (état=[RETOURNEE]).", results.getExceptionInfo().getMessage());
+			assertEquals("La déclaration n'est pas dans l'état 'émise' (état=[RETOURNE]).", results.getExceptionInfo().getMessage());
 		}
 
 		// 2010 : sommée
@@ -2310,7 +2310,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final ExtendDeadlineResponse results = service.extendDeadline(params);
 			assertNotNull(results);
 			assertEquals(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, results.getCode());
-			assertEquals("La déclaration n'est pas dans l'état 'émise' (état=[SOMMEE]).", results.getExceptionInfo().getMessage());
+			assertEquals("La déclaration n'est pas dans l'état 'émise' (état=[SOMME]).", results.getExceptionInfo().getMessage());
 		}
 
 		// 2011 : émise

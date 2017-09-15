@@ -208,10 +208,10 @@ public class EnvoiSommationsDIsPMProcessor {
 	}
 
 	private boolean checkEtat(DeclarationImpotOrdinaire di, EnvoiSommationsDIsPMResults r) {
-		if (TypeEtatDocumentFiscal.EMISE != di.getDernierEtatDeclaration().getEtat() && TypeEtatDocumentFiscal.SUSPENDUE != di.getDernierEtatDeclaration().getEtat()) {
+		if (TypeEtatDocumentFiscal.EMIS != di.getDernierEtatDeclaration().getEtat() && TypeEtatDocumentFiscal.SUSPENDU != di.getDernierEtatDeclaration().getEtat()) {
 			// Ce cas pourrait eventuellement se produire dans le cas où une DI aurait 2 états à la même date,
 			// il s'agirait alors de données corrompues ...
-			final String msg = String.format("La di [id: %s] n'est ni à l'état 'EMISE', et ne peut donc être sommée", di.getId().toString());
+			final String msg = String.format("La di [id: %s] n'est ni à l'état 'EMIS', et ne peut donc être sommée", di.getId().toString());
 			LOGGER.error(msg);
 			r.addError(di, msg);
 			return false;
@@ -231,7 +231,7 @@ public class EnvoiSommationsDIsPMProcessor {
 	 */
 	private boolean isSuspendue(DeclarationImpotOrdinaire di) {
 		final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
-		return dernierEtat != null && dernierEtat.getEtat() == TypeEtatDocumentFiscal.SUSPENDUE;
+		return dernierEtat != null && dernierEtat.getEtat() == TypeEtatDocumentFiscal.SUSPENDU;
 	}
 
 	@SuppressWarnings("unchecked")
