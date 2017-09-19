@@ -13,9 +13,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -118,15 +120,31 @@ public class ModeleCommunauteRF extends HibernateEntity {
 		this.regroupements = regroupements;
 	}
 
+	@Transient
+	public void addRegroupement(RegroupementCommunauteRF regroupement) {
+		if (regroupements == null) {
+			regroupements = new HashSet<>();
+		}
+		regroupements.add(regroupement);
+	}
+
 	public static int hashCode(@Nullable Collection<? extends AyantDroitRF> ayantsDroits) {
 		if (ayantsDroits == null) {
 			return 0;
 		}
 		// on retourne un hashcode des ids des ayants-droits
-		return Objects.hash(ayantsDroits.stream()
-				                    .map(AyantDroitRF::getId)
-				                    .sorted(Comparator.naturalOrder())  // pour avoir un hashcode indépendant de l'ordre d'itération des éléments
-				                    .toArray());
+
+		final List<? extends AyantDroitRF> sorted = new ArrayList<>(ayantsDroits);
+		sorted.sort(Comparator.comparing(AyantDroitRF::getId)); // pour avoir un hashcode indépendant de l'ordre d'itération des éléments
+
+		// le code ci-dessus est adapté de Arrays::hasCode() pour se prémunir de toutes modifications de l'algorithme
+		// (comme le hashCode est persisté, il est vraiment critique que l'algorithme soit constant dans le temps)
+		int result = 1;
+		for (AyantDroitRF a : sorted) {
+			result = 31 * result + (a == null ? 0 : a.getId().hashCode());
+		}
+
+		return result;
 	}
 
 	/**
