@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,6 +74,17 @@ public interface RegistreFoncierService {
 	 */
 	@Nullable
 	CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId);
+
+	/**
+	 * Recherche ou crée un modèle de communauté qui correspond aux membres de communauté spécifiés.
+	 * </p>
+	 * <b>Attention !</b> Dans le cas où un nouveau modèle est créé, sa création est effectuée dans une transaction séparée et immédiatement committée.
+	 *
+	 * @param membres les membres de la communauté
+	 * @return le modèle de communauté correspondant
+	 */
+	@NotNull
+	ModeleCommunauteRF findOrCreateModeleCommunaute(@NotNull Set<? extends AyantDroitRF> membres);
 
 	/**
 	 * Construit l'URL de visualisation de l'immeuble spécifié dans l'interface Web de Capitastra.

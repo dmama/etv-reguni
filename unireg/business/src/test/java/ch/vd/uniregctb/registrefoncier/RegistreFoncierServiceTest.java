@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
@@ -23,8 +28,10 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.ModeleCommunauteRFDAO;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
@@ -35,6 +42,7 @@ import static ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestC
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("Duplicates")
@@ -42,12 +50,14 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private RegistreFoncierService serviceRF;
+	private ModeleCommunauteRFDAO modeleCommunauteRFDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		ayantDroitRFDAO = getBean(AyantDroitRFDAO.class, "ayantDroitRFDAO");
 		serviceRF = getBean(RegistreFoncierService.class, "serviceRF");
+		modeleCommunauteRFDAO = getBean(ModeleCommunauteRFDAO.class, "modeleCommunauteRFDAO");
 
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
 			@Override
@@ -1515,7 +1525,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				// après la date de début
 				final Commune commune2001 = serviceRF.getCommune(immeuble, date(2001, 1, 1));
 				Assert.assertNotNull(commune2001);
-				Assert.assertSame(commune1990, commune2001);
+				assertSame(commune1990, commune2001);
 			}
 		});
 	}
@@ -1585,14 +1595,196 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				// avant la date de début de la situation
 				final SituationRF situ1990 = serviceRF.getSituation(immeuble, date(1990, 1, 1));
 				Assert.assertNotNull(situ1990);
-				Assert.assertSame(situation, situ1990);
+				assertSame(situation, situ1990);
 
 				// après la date de début
 				final SituationRF situ2001 = serviceRF.getSituation(immeuble, date(2001, 1, 1));
 				Assert.assertNotNull(situ2001);
-				Assert.assertSame(situation, situ2001);
+				assertSame(situation, situ2001);
 			}
 		});
+	}
+
+	@Test
+	public void testFindOrCreateModeleCommunauteModeleInexistant() throws Exception {
+
+		class Ids {
+			Long pp1;
+			Long pp2;
+		}
+		final Ids ids = new Ids();
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("1", "Rodolf", "Stuecki", RegDate.get(1960, 1, 1));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2", "Annette", "Bruecke", RegDate.get(1960, 1, 1));
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp1);
+			final PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp2);
+			final HashSet<PersonnePhysiqueRF> membres = new HashSet<>(Arrays.asList(pp1, pp2));
+
+			// on demande le modèle
+			final ModeleCommunauteRF modele = serviceRF.findOrCreateModeleCommunaute(membres);
+
+			// on s'assure que c'est le bon
+			assertNotNull(modele);
+			assertEquals(ModeleCommunauteRF.hashCode(membres), modele.getMembresHashCode());
+			final List<AyantDroitRF> membresModele = modele.getMembres().stream()
+					.sorted(Comparator.comparing(AyantDroitRF::getId))
+					.collect(Collectors.toList());
+			assertNotNull(membresModele);
+			assertEquals(2, membresModele.size());
+			assertSame(pp1, membresModele.get(0));
+			assertSame(pp2, membresModele.get(1));
+
+			// on s'assure qu'il n'y en a qu'un dans le base
+			assertEquals(1, modeleCommunauteRFDAO.getCount(ModeleCommunauteRF.class));
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp1);
+			final PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp2);
+			final HashSet<PersonnePhysiqueRF> membres = new HashSet<>(Arrays.asList(pp1, pp2));
+
+			// on demande une deuxième fois le modèle
+			final ModeleCommunauteRF modele = serviceRF.findOrCreateModeleCommunaute(membres);
+
+			// on s'assure que c'est le bon
+			assertNotNull(modele);
+			assertEquals(ModeleCommunauteRF.hashCode(membres), modele.getMembresHashCode());
+			final List<AyantDroitRF> membresModele = modele.getMembres().stream()
+					.sorted(Comparator.comparing(AyantDroitRF::getId))
+					.collect(Collectors.toList());
+			assertNotNull(membresModele);
+			assertEquals(2, membresModele.size());
+			assertSame(pp1, membresModele.get(0));
+			assertSame(pp2, membresModele.get(1));
+
+			// on s'assure qu'il y en a toujours qu'un dans le base
+			assertEquals(1, modeleCommunauteRFDAO.getCount(ModeleCommunauteRF.class));
+			return null;
+		});
+	}
+
+	@Test
+	public void testFindOrCreateModeleCommunauteModelePreexistant() throws Exception {
+
+		class Ids {
+			Long pp1;
+			Long pp2;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("1", "Rodolf", "Stuecki", RegDate.get(1960, 1, 1));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2", "Annette", "Bruecke", RegDate.get(1960, 1, 1));
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+
+			// on crée le modèle de communauté qui va bien
+			modeleCommunauteRFDAO.createWith(new HashSet<>(Arrays.asList(ids.pp1, ids.pp2)));
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp1);
+			final PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp2);
+			final HashSet<PersonnePhysiqueRF> membres = new HashSet<>(Arrays.asList(pp1, pp2));
+
+			// on demande le modèle
+			final ModeleCommunauteRF modele = serviceRF.findOrCreateModeleCommunaute(membres);
+
+			// on s'assure que c'est le bon
+			assertNotNull(modele);
+			assertEquals(ModeleCommunauteRF.hashCode(membres), modele.getMembresHashCode());
+			final List<AyantDroitRF> membresModele = modele.getMembres().stream()
+					.sorted(Comparator.comparing(AyantDroitRF::getId))
+					.collect(Collectors.toList());
+			assertNotNull(membresModele);
+			assertEquals(2, membresModele.size());
+			assertSame(pp1, membresModele.get(0));
+			assertSame(pp2, membresModele.get(1));
+
+			// on s'assure qu'il y en a toujours qu'un dans le base
+			assertEquals(1, modeleCommunauteRFDAO.getCount(ModeleCommunauteRF.class));
+			return null;
+		});
+	}
+
+	@Test
+	public void testFindOrCreateModeleCommunauteMultithreads() throws Exception {
+
+		class Ids {
+			Long pp1;
+			Long pp2;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("1", "Rodolf", "Stuecki", RegDate.get(1960, 1, 1));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2", "Annette", "Bruecke", RegDate.get(1960, 1, 1));
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+			return null;
+		});
+
+		// on créé 20 threads différents qui vont demander le même modèle tous en même
+		ForkJoinPool forkJoinPool = new ForkJoinPool(20);
+		final ForkJoinTask<?> task = forkJoinPool.submit(() -> IntStream.range(0, 20)
+				.parallel()
+				.mapToObj(i -> loadModelInTx(ids.pp1, ids.pp2))
+				.collect(Collectors.toList()));
+
+		// on vérifie qu'on a chargé 20 fois le même modèle
+		//noinspection unchecked
+		final List<ModeleCommunauteRF> modeles = (List<ModeleCommunauteRF>) task.join();
+		assertEquals(20, modeles.size());
+		final Long id = modeles.get(0).getId();
+		for (int i = 0; i < 20; ++i) {
+			assertEquals(id, modeles.get(i).getId());
+		}
+
+		doInNewTransaction(status -> {
+			// on s'assure qu'il y a toujours qu'un seul modèle dans le base
+			assertEquals(1, modeleCommunauteRFDAO.getCount(ModeleCommunauteRF.class));
+			return null;
+		});
+	}
+
+	private ModeleCommunauteRF loadModelInTx(Long idPP1, Long idPP2) {
+		AuthenticationHelper.pushPrincipal("test-user");
+		try {
+			return doInNewTransaction(status -> {
+				final PersonnePhysiqueRF pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(idPP1);
+				final PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(idPP2);
+				final HashSet<PersonnePhysiqueRF> membres = new HashSet<>(Arrays.asList(pp1, pp2));
+
+				// on demande le modèle
+				final ModeleCommunauteRF modele = serviceRF.findOrCreateModeleCommunaute(membres);
+
+				// on s'assure que c'est le bon
+				assertNotNull(modele);
+				assertEquals(ModeleCommunauteRF.hashCode(membres), modele.getMembresHashCode());
+				final List<AyantDroitRF> membresModele = modele.getMembres().stream()
+						.sorted(Comparator.comparing(AyantDroitRF::getId))
+						.collect(Collectors.toList());
+				assertNotNull(membresModele);
+				assertEquals(2, membresModele.size());
+				assertSame(pp1, membresModele.get(0));
+				assertSame(pp2, membresModele.get(1));
+				return modele;
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	private static void assertDroitPropChemin(Long id, int numerateur, int denominateur, DroitRF chemin) {

@@ -25,6 +25,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
+import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
@@ -37,8 +38,10 @@ import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
@@ -72,8 +75,9 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 		this.droitRFDAO = getBean(DroitRFDAO.class, "droitRFDAO");
 		final XmlHelperRF xmlHelperRF = getBean(XmlHelperRF.class, "xmlHelperRF");
 		final EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
+		final CommunauteRFProcessor communauteRFProcessor = getBean(CommunauteRFProcessor.class, "communauteRFProcessor");
 
-		this.processor = new DroitRFProcessor(ayantDroitRFDAO, immeubleRFDAO, droitRFDAO, xmlHelperRF, evenementFiscalService);
+		this.processor = new DroitRFProcessor(ayantDroitRFDAO, immeubleRFDAO, droitRFDAO, communauteRFProcessor, xmlHelperRF, evenementFiscalService);
 	}
 
 	/**
@@ -210,6 +214,161 @@ public class DroitRFProcessorTest extends MutationRFProcessorTestCase {
 			assertEquals(RegDate.get(2003, 1, 1), event1.getDateValeur());
 			assertEquals("_8af806fc4a35927c014ae2a6e76041b8", event1.getDroit().getImmeuble().getIdRF());
 			assertEquals(ppId1, event1.getDroit().getAyantDroit().getId());
+
+			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-24595] Ce test vérifie que le processing d'une mutation de création sur une communauté crée bien la communauté et l'associe bien avec un modèle de communauté.
+	 */
+	@Test
+	public void testProcessMutationCreationCommunaute() throws Exception {
+
+		final RegDate dateImport = RegDate.get(2016, 10, 1);
+
+		// précondition : la base est vide
+		doInNewTransaction(status -> {
+			assertEquals(0, droitRFDAO.getAll().size());
+			assertEquals(0, evenementFiscalDAO.getAll().size());
+			return null;
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_droit_communaute_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère quelques données satellites
+		final Long commId = insertCommunaute("72828ce8f830a");
+		final Long ppId1 = insertPP("029191d4fec44", "Totor", "Jeanne", RegDate.get(1980, 1, 1));
+		final Long ppId2 = insertPP("37838sc9d94de", "Totor", "Charlotte", RegDate.get(1980, 1, 1));
+		final Long idImmeuble = insertImmeuble("_1f109152381009be0138100bc9f139e0");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, dateImport, TypeEntiteRF.DROIT, TypeMutationRF.CREATION, "_1f109152381009be0138100bc9f139e0", null);
+
+		// on process la mutation
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, true, null);
+			return null;
+		});
+
+		// postcondition : la mutation est traitée et la communauté est bien regroupée avec un modèle
+		doInNewTransaction(status -> {
+
+			//
+			// on vérifie la communaué
+			//
+
+			final CommunauteRF communaute = (CommunauteRF) ayantDroitRFDAO.get(commId);
+			assertNotNull(communaute);
+
+			// la communauté doit posséder un regroupement valide depuis l'ouverte des droits (date métier)
+			final Set<RegroupementCommunauteRF> regroupements = communaute.getRegroupements();
+			assertNotNull(regroupements);
+			assertEquals(1, regroupements.size());
+
+			final RegroupementCommunauteRF regroupement0 = regroupements.iterator().next();
+			assertNotNull(regroupement0);
+			assertEquals(RegDate.get(2010, 4, 23), regroupement0.getDateDebut());
+			assertNull(regroupement0.getDateFin());
+
+			// le modèle de communauté doit correspondre aux deux membres de la communauté
+			final ModeleCommunauteRF modeleCommunaute = regroupement0.getModele();
+			assertNotNull(modeleCommunaute);
+			final List<AyantDroitRF> membres = new ArrayList<>(modeleCommunaute.getMembres());
+			assertEquals(2, membres.size());
+			membres.sort(Comparator.comparing(AyantDroitRF::getId));
+			assertEquals(ppId1, membres.get(0).getId());
+			assertEquals(ppId2, membres.get(1).getId());
+
+			//
+			// on vérifie aussi les droits par acquis de conscience
+			//
+
+			final ImmeubleRF immeuble = immeubleRFDAO.get(idImmeuble);
+			assertNotNull(immeuble);
+
+			final Set<DroitProprieteRF> droits = immeuble.getDroitsPropriete();
+			assertNotNull(droits);
+			assertEquals(3, droits.size());
+
+			final List<DroitRF> droitList = new ArrayList<>(droits);
+			droitList.sort(Comparator.comparing(DroitRF::getMasterIdRF));
+
+			final DroitProprieteCommunauteRF droit0 = (DroitProprieteCommunauteRF) droitList.get(0);
+			assertNotNull(droit0);
+			assertEquals("38458fa0ac3", droit0.getMasterIdRF());
+			assertEquals("38458fa0ac2", droit0.getVersionIdRF());
+			assertNull(droit0.getDateDebut());
+			assertNull(droit0.getDateFin());
+			assertEquals(RegDate.get(2010, 4, 23), droit0.getDateDebutMetier());
+			assertEquals("Succession", droit0.getMotifDebut());
+			assertEquals("72828ce8f830a", droit0.getAyantDroit().getIdRF());
+			assertEquals(new Fraction(1, 1), droit0.getPart());
+			assertEquals(GenrePropriete.INDIVIDUELLE, droit0.getRegime());
+
+			final List<RaisonAcquisitionRF> raisons0 = new ArrayList<>(droit0.getRaisonsAcquisition());
+			assertEquals(1, raisons0.size());
+			assertRaisonAcquisition(RegDate.get(2010, 4, 23), "Succession", new IdentifiantAffaireRF(6,  2013, 33, 1), raisons0.get(0));
+
+			final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droitList.get(1);
+			assertNotNull(droit1);
+			assertEquals("45729cd9e20", droit1.getMasterIdRF());
+			assertEquals("45729cd9e19", droit1.getVersionIdRF());
+			assertNull(droit1.getDateDebut());
+			assertNull(droit1.getDateFin());
+			assertEquals(RegDate.get(2010, 4, 23), droit1.getDateDebutMetier());
+			assertEquals("Succession", droit1.getMotifDebut());
+			assertEquals("37838sc9d94de", droit1.getAyantDroit().getIdRF());
+			assertEquals(new Fraction(1, 1), droit1.getPart());
+			assertEquals(GenrePropriete.COMMUNE, droit1.getRegime());
+
+			final List<RaisonAcquisitionRF> raisons1 = new ArrayList<>(droit1.getRaisonsAcquisition());
+			assertEquals(1, raisons1.size());
+			assertRaisonAcquisition(RegDate.get(2010, 4, 23), "Succession", new IdentifiantAffaireRF(6,  2013, 33, 1), raisons1.get(0));
+
+			final DroitProprietePersonnePhysiqueRF droit2 = (DroitProprietePersonnePhysiqueRF) droitList.get(2);
+			assertNotNull(droit2);
+			assertEquals("9a9c9e94923", droit2.getMasterIdRF());
+			assertEquals("9a9c9e94922", droit2.getVersionIdRF());
+			assertNull(droit2.getDateDebut());
+			assertNull(droit2.getDateFin());
+			assertEquals(RegDate.get(2010, 4, 23), droit2.getDateDebutMetier());
+			assertEquals("Succession", droit2.getMotifDebut());
+			assertEquals("029191d4fec44", droit2.getAyantDroit().getIdRF());
+			assertEquals(new Fraction(1, 1), droit2.getPart());
+			assertEquals(GenrePropriete.COMMUNE, droit2.getRegime());
+
+			final List<RaisonAcquisitionRF> raisons2 = new ArrayList<>(droit2.getRaisonsAcquisition());
+			assertEquals(1, raisons2.size());
+			assertRaisonAcquisition(RegDate.get(2010, 4, 23), "Succession", new IdentifiantAffaireRF(6,  2013, 33, 1), raisons2.get(0));
+			return null;
+		});
+
+		// postcondition : les événements fiscaux correspondants ont été envoyés
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(3, events.size());
+			events.sort(Comparator.comparing(e -> ((EvenementFiscalDroitPropriete) e).getDroit().getAyantDroit().getId()));
+
+			final EvenementFiscalDroitPropriete event0 = (EvenementFiscalDroitPropriete) events.get(0);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event0.getType());
+			assertEquals(RegDate.get(2010, 4, 23), event0.getDateValeur());
+			assertEquals("_1f109152381009be0138100bc9f139e0", event0.getDroit().getImmeuble().getIdRF());
+			assertEquals(commId, event0.getDroit().getAyantDroit().getId());
+
+			final EvenementFiscalDroitPropriete event1 = (EvenementFiscalDroitPropriete) events.get(1);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event1.getType());
+			assertEquals(RegDate.get(2010, 4, 23), event1.getDateValeur());
+			assertEquals("_1f109152381009be0138100bc9f139e0", event1.getDroit().getImmeuble().getIdRF());
+			assertEquals(ppId1, event1.getDroit().getAyantDroit().getId());
+
+			final EvenementFiscalDroitPropriete event2 = (EvenementFiscalDroitPropriete) events.get(2);
+			assertEquals(EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE, event2.getType());
+			assertEquals(RegDate.get(2010, 4, 23), event2.getDateValeur());
+			assertEquals("_1f109152381009be0138100bc9f139e0", event2.getDroit().getImmeuble().getIdRF());
+			assertEquals(ppId2, event2.getDroit().getAyantDroit().getId());
 
 			return null;
 		});

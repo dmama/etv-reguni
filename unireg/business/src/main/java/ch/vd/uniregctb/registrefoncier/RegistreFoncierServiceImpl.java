@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,6 +15,9 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -29,6 +33,7 @@ import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.ModeleCommunauteRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.SituationRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -42,8 +47,10 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	private BatimentRFDAO batimentRFDAO;
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private SituationRFDAO situationRFDAO;
+	private ModeleCommunauteRFDAO modeleCommunauteRFDAO;
 	private ServiceInfrastructureService infraService;
 	private EvenementFiscalService evenementFiscalService;
+	private PlatformTransactionManager transactionManager;
 
 	public void setDroitRFDAO(DroitRFDAO droitRFDAO) {
 		this.droitRFDAO = droitRFDAO;
@@ -69,12 +76,20 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		this.situationRFDAO = situationRFDAO;
 	}
 
+	public void setModeleCommunauteRFDAO(ModeleCommunauteRFDAO modeleCommunauteRFDAO) {
+		this.modeleCommunauteRFDAO = modeleCommunauteRFDAO;
+	}
+
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
 	}
 
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	@Override
@@ -292,6 +307,63 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 			info.sortMembers(new CommunauteRFMembreComparator(tiersService));
 		}
 		return info;
+	}
+
+	@NotNull
+	@Override
+	public ModeleCommunauteRF findOrCreateModeleCommunaute(@NotNull Set<? extends AyantDroitRF> membres) {
+
+		if (membres.isEmpty()) {
+			throw new IllegalArgumentException("La liste des membres est vide");
+		}
+
+		// on va chercher la communauté
+		ModeleCommunauteRF modele = modeleCommunauteRFDAO.findByMembers(membres);
+		if (modele != null) {
+			// le modèle existe déjà, tout va bien
+			return modele;
+		}
+
+		// le modèle n'existe pas encore : on le créé (dans une nouvelle transaction !)
+		createModeleCommunaute(membres);
+
+		// il doit exister maintenant
+		modele = modeleCommunauteRFDAO.findByMembers(membres);
+		if (modele == null) {
+			final Object[] ids = membres.stream()
+					.map(AyantDroitRF::getId)
+					.sorted(Comparator.naturalOrder())
+					.toArray();
+			throw new RuntimeException("Impossible de créer un modèle de communauté sur les membres = "  + Arrays.toString(ids));
+		}
+
+		return modele;
+	}
+
+	/**
+	 * Creé un nouveau modèle de communauté dans une transaction séparée.
+	 *
+	 * @param membres les membres de la communauté
+	 */
+	private void createModeleCommunaute(@NotNull Set<? extends AyantDroitRF> membres) {
+		synchronized (this) {
+			final ModeleCommunauteRF m = modeleCommunauteRFDAO.findByMembers(membres);
+			if (m != null) {
+				// la communauté a été créée entre-temps, rien à faire
+				return;
+			}
+
+			final Set<Long> membresIds = membres.stream()
+					.map(AyantDroitRF::getId)
+					.collect(Collectors.toSet());
+
+			// on créé la communauté dans une nouvelle transaction pour qu'elle soit
+			// immédiatement visible au sortir de la méthode (qui est synchronisée pour
+			// éviter de créer plusieurs fois le même modèle).
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+			template.execute(status -> modeleCommunauteRFDAO.createWith(membresIds));
+		}
 	}
 
 	@NotNull

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,6 +45,11 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 
 	@Override
 	public @Nullable CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public @NotNull ModeleCommunauteRF findOrCreateModeleCommunaute(@NotNull Set<? extends AyantDroitRF> membres) {
 		throw new NotImplementedException();
 	}
 
