@@ -130,4 +130,11 @@ public class AyantDroitRFDAOImpl extends BaseDAOImpl<AyantDroitRF, Long> impleme
 		final Number number = (Number) query.uniqueResult();
 		return number == null ? null : number.longValue();
 	}
+
+	@Override
+	public @NotNull List<Long> findCommunautesIds() {
+		final Query query = getCurrentSession().createQuery("select id from CommunauteRF");
+		//noinspection unchecked
+		return (List<Long>) query.list();
+	}
 }

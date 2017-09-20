@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.FlushMode;
@@ -39,4 +40,10 @@ public interface AyantDroitRFDAO extends GenericDAO<AyantDroitRF, Long> {
 	 */
 	@Nullable
 	Long getContribuableIdFor(@NotNull TiersRF tiersRF);
+
+	/**
+	 * @return les ids des communautés existantes.
+	 */
+	@NotNull
+	List<Long> findCommunautesIds();
 }

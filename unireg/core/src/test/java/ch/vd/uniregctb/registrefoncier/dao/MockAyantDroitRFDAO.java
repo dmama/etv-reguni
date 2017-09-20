@@ -120,4 +120,9 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 	public Long getContribuableIdFor(@NotNull TiersRF tiersRF) {
 		throw new NotImplementedException();
 	}
+
+	@Override
+	public @NotNull List<Long> findCommunautesIds() {
+		throw new NotImplementedException();
+	}
 }

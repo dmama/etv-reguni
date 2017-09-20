@@ -122,6 +122,13 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
+	<bean id="rattrapageModelesCommunautesRFJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.rattrapage.RattrapageModelesCommunautesRFJob">
+		<constructor-arg value="113"/>
+		<constructor-arg value="Recalculer les regroupements sur les communautés RF"/>
+		<property name="processor" ref="rattrapageModelesCommunautesRFProcessor"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
     <!-- Job qui détermine les mouvements de dossiers en masse des contribuables-->
      <bean id="determinerMouvementsDossiersEnMasseJob" parent="schedulerJob" class="ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseJob">
         <constructor-arg value="120"/>

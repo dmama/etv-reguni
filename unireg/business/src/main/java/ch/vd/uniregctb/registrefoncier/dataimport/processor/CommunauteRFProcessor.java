@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ProgrammingException;
@@ -42,8 +42,9 @@ public class CommunauteRFProcessor {
 	 * Recalcule les regroupements et met-à-jour la communauté si nécessaire.
 	 *
 	 * @param communaute une communauté
+	 * @return <i>true</i> si la communauté a été modifiée; <i>false</i> autrement.
 	 */
-	void process(@NotNull CommunauteRF communaute) {
+	public boolean process(@NotNull CommunauteRF communaute) {
 
 		// les regroupements persistés
 		final Set<RegroupementCommunauteRF> persistes = communaute.getRegroupements().stream()
@@ -61,6 +62,8 @@ public class CommunauteRFProcessor {
 
 		// ce qui reste dans la collection 'theoriques' manque, on l'ajoute
 		theoriques.forEach(communaute::addRegroupement);
+
+		return !persistes.isEmpty() || !theoriques.isEmpty();
 	}
 
 	private boolean regroupementEquals(@NotNull RegroupementCommunauteRF r1, @NotNull RegroupementCommunauteRF r2) {
@@ -92,10 +95,12 @@ public class CommunauteRFProcessor {
 		// sont créés en même temps lors de sa création : ils possèdent donc tous la même date de début métier.
 		// Cependant, il arrive que des oublis ou des erreurs de saisie provoquent des incohérences, dans ce cas,
 		// on prend la date métier la plus petite)
-		final RegDate dateDebutMetier = droits.stream()
-				.map(DroitRF::getDateDebutMetier)
-				.min(Comparator.naturalOrder())
-				.orElse(null);
+		RegDate dateDebutMetier = RegDateHelper.getLateDate();
+		for (DroitProprieteRF droit : droits) {
+			if (NullDateBehavior.EARLIEST.compare(droit.getDateDebutMetier(), dateDebutMetier) < 0) {
+				dateDebutMetier = droit.getDateDebutMetier();
+			}
+		}
 
 		// on recherche toutes les dates de fin des droits des membres de la communauté (à l'inverse de leurs
 		// création, les droits des membres d'une communauté peuvent s'arrêter à des dates différentes)
