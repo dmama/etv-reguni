@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.uniregctb.documentfiscal;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -9,21 +9,22 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
-import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
-
+/**
+ * @author Raphaël Marmier, 2017-09-21, <raphael.marmier@vd.ch>
+ */
 @Entity
-@DiscriminatorValue("DELAI_DECLARATION")
-public class DelaiDeclaration extends DelaiDocumentFiscal {
+@DiscriminatorValue("DELAI_AUTRE_DOCUMENT_FISCAL")
+public class DelaiAutreDocumentFiscal extends DelaiDocumentFiscal {
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
 	@ForeignKey(name = "FK_DEL_DOCFISC_DOCFISC_ID")
 	@Index(name = "IDX_DEL_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
-	public Declaration getDeclaration() {
-		return (Declaration) getDocumentFiscal();
+	public AutreDocumentFiscal getAutreDocumentFiscal() {
+		return (AutreDocumentFiscal) getDocumentFiscal();
 	}
 
-	public void setDeclaration(Declaration theDeclaration) {
-		setDocumentFiscal(theDeclaration);
+	public void setAutreDocumentFiscal(AutreDocumentFiscal autreDocumentFiscal) {
+		setDocumentFiscal(autreDocumentFiscal);
 	}
 }

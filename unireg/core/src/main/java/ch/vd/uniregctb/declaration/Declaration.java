@@ -21,6 +21,8 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**

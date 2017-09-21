@@ -1,82 +1,78 @@
 package ch.vd.uniregctb.documentfiscal;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Type;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 @Entity
 public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {
 
-	private RegDate delaiRetour;
-	private RegDate dateRetour;
-	private RegDate dateRappel;
-	private String cleArchivageRappel;
-	private String cleDocumentRappel;
-
-	@Column(name = "DELAI_RETOUR")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	@Transient
 	public RegDate getDelaiRetour() {
-		return delaiRetour;
+		throw new UnsupportedOperationException("TODO: Rechercher la date de délai dans le délai du document.");
 	}
 
 	public void setDelaiRetour(RegDate delaiRetour) {
-		this.delaiRetour = delaiRetour;
-	}
-
-	@Column(name = "DATE_RETOUR")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateRetour() {
-		return dateRetour;
-	}
-
-	public void setDateRetour(RegDate dateRetour) {
-		this.dateRetour = dateRetour;
-	}
-
-	@Column(name = "DATE_RAPPEL")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateRappel() {
-		return dateRappel;
-	}
-
-	public void setDateRappel(RegDate dateRappel) {
-		this.dateRappel = dateRappel;
-	}
-
-	@Column(name = "CLE_ARCHIVAGE_RAPPEL", length = LengthConstants.CLE_ARCHIVAGE_FOLDERS)
-	public String getCleArchivageRappel() {
-		return cleArchivageRappel;
-	}
-
-	public void setCleArchivageRappel(String cleArchivageRappel) {
-		this.cleArchivageRappel = cleArchivageRappel;
-	}
-
-	@Column(name = "CLE_DOCUMENT_RAPPEL", length = LengthConstants.CLE_DOCUMENT_DPERM)
-	public String getCleDocumentRappel() {
-		return cleDocumentRappel;
-	}
-
-	public void setCleDocumentRappel(String cleDocumentRappel) {
-		this.cleDocumentRappel = cleDocumentRappel;
+		throw new UnsupportedOperationException("TODO: Stocker la date de délai dans le délai du document.");
 	}
 
 	@Transient
-	public TypeEtatAutreDocumentFiscal getEtat() {
+	public RegDate getDateRetour() {
+		throw new UnsupportedOperationException("TODO: Rechercher la date de retour dans l'état retourné du document.");
+	}
+
+	public void setDateRetour(RegDate dateRetour) {
+		throw new UnsupportedOperationException("TODO: Stocker la date de retour dans l'état retourné du document.");
+	}
+
+	@Transient
+	public RegDate getDateRappel() {
+		throw new UnsupportedOperationException("TODO: Rechercher la date de rappel dans l'état rappelé du document.");
+	}
+
+	public void setDateRappel(RegDate dateRappel) {
+		throw new UnsupportedOperationException("TODO: Stocker la date de rappel dans l'état rappelé du document.");
+	}
+
+	@Transient
+	public String getCleArchivageRappel() {
+		throw new UnsupportedOperationException("TODO: Rechercher la clé d'archivage de rappel dans l'état rappelé du document.");
+	}
+
+	public void setCleArchivageRappel(String cleArchivageRappel) {
+		throw new UnsupportedOperationException("TODO: Stocker la clé d'archivage de rappel dans l'état rappelé du document.");
+	}
+
+	@Transient
+	public String getCleDocumentRappel() {
+		throw new UnsupportedOperationException("TODO: Rechercher la clé de document de rappel dans l'état rappelé du document.");
+	}
+
+	public void setCleDocumentRappel(String cleDocumentRappel) {
+		throw new UnsupportedOperationException("TODO: Stocker la clé de document de rappel dans l'état rappelé du document.");
+	}
+
+	@Transient
+	public TypeEtatDocumentFiscal getEtat() {
+		throw new UnsupportedOperationException("TODO: Rechercher le dernier état et retourner son type.");
+/*
 		if (dateRetour != null) {
-			return TypeEtatAutreDocumentFiscal.RETOURNE;
+			return TypeEtatDocumentFiscal.RETOURNE;
 		}
 		else if (dateRappel != null) {
-			return TypeEtatAutreDocumentFiscal.RAPPELE;
+			return TypeEtatDocumentFiscal.RAPPELE;
 		}
 		else {
 			return super.getEtat();
 		}
+*/
+	}
+
+	@Override
+	@Transient
+	public boolean isRappelable() {
+		return true;
 	}
 }

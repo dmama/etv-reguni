@@ -171,7 +171,6 @@ public abstract class LengthConstants {
 	public static final int MANDAT_PERSONNE_CONTACT = 100;
 	public static final int MANDAT_GENRE_IMPOT = 10;
 
-	public static final int AUTRE_DOCUMENT_FISCAL_TYPE = 25;
 	public static final int LETTRE_BIENVENUE_TYPE = 20;
 
 	public static final int ETIQUETTE_CODE = 50;

@@ -20,14 +20,8 @@
 		<value>ch.vd.uniregctb.adresse.AdresseSuisse</value>
 		<value>ch.vd.uniregctb.adresse.AdresseTiers</value>
 		<value>ch.vd.uniregctb.adresse.AdresseSupplementaire</value>
-		<value>ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal</value>
-		<value>ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi</value>
-		<value>ch.vd.uniregctb.documentfiscal.LettreBienvenue</value>
-		<value>ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC</value>
-		<value>ch.vd.uniregctb.documentfiscal.DemandeBilanFinal</value>
-		<value>ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation</value>
 		<value>ch.vd.uniregctb.audit.AuditLine</value>
-		<value>ch.vd.uniregctb.declaration.DocumentFiscal</value>
+		<value>ch.vd.uniregctb.documentfiscal.DocumentFiscal</value>
 		<value>ch.vd.uniregctb.declaration.Declaration</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire</value>
@@ -35,9 +29,16 @@
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotSource</value>
 		<value>ch.vd.uniregctb.declaration.QuestionnaireSNC</value>
-		<value>ch.vd.uniregctb.declaration.DelaiDocumentFiscal</value>
+		<value>ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal</value>
+		<value>ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi</value>
+		<value>ch.vd.uniregctb.documentfiscal.LettreBienvenue</value>
+		<value>ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC</value>
+		<value>ch.vd.uniregctb.documentfiscal.DemandeBilanFinal</value>
+		<value>ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation</value>
+		<value>ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal</value>
 		<value>ch.vd.uniregctb.declaration.DelaiDeclaration</value>
-		<value>ch.vd.uniregctb.declaration.EtatDocumentFiscal</value>
+		<value>ch.vd.uniregctb.documentfiscal.DelaiAutreDocumentFiscal</value>
+		<value>ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclaration</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationSommee</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationRappelee</value>
@@ -45,6 +46,10 @@
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationEmise</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationSuspendue</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationRetournee</value>
+		<value>ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscal</value>
+		<value>ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalEmis</value>
+		<value>ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalRappele</value>
+		<value>ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalRetourne</value>
 		<value>ch.vd.uniregctb.declaration.PeriodeFiscale</value>
 		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscale</value>
 		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleDI</value>

@@ -30,7 +30,7 @@ import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class RappelFormulairesDemandeDegrevementICIProcessor {
 
@@ -95,16 +95,16 @@ public class RappelFormulairesDemandeDegrevementICIProcessor {
 			final Commune commune = registreFoncierService.getCommune(immeuble, rapport.dateTraitement);
 
 			// 1. vérification de l'état du formulaire
-			if (demande.getEtat() == TypeEtatAutreDocumentFiscal.RAPPELE) {
+			if (demande.getEtat() == TypeEtatDocumentFiscal.RAPPELE) {
 				// cas normalement assez rare : le rappel a eu lieu (à la main, par exemple, si tant est que cela soit possible) entre le début du job et le traitement de ce formulaire
 				rapport.addFormulaireIgnore(entreprise.getNumero(), demande.getPeriodeFiscale(), situation, commune, demande.getId(), demande.getDateEnvoi(), RappelFormulairesDemandeDegrevementICIResults.RaisonIgnorement.FORMULAIRE_DEJA_RAPPELE);
 			}
-			else if (demande.getEtat() == TypeEtatAutreDocumentFiscal.RETOURNE) {
+			else if (demande.getEtat() == TypeEtatDocumentFiscal.RETOURNE) {
 				// cas normalement assez rare, mais tout-à-fait commun : le quittancement a eu lieu entre le début du job et le traitement de ce formulaire
 				// (réception de données en provenance de e-dégrèvement au fil de l'eau...)
 				rapport.addFormulaireIgnore(entreprise.getNumero(), demande.getPeriodeFiscale(), situation, commune, demande.getId(), demande.getDateEnvoi(), RappelFormulairesDemandeDegrevementICIResults.RaisonIgnorement.FORMULAIRE_DEJA_RETOURNE);
 			}
-			else if (demande.getEtat() != TypeEtatAutreDocumentFiscal.EMIS) {
+			else if (demande.getEtat() != TypeEtatDocumentFiscal.EMIS) {
 				// cas bizarre qui sent le bug...
 				rapport.addRappelErreur(entreprise.getNumero(), demande.getPeriodeFiscale(), situation, commune, demande.getId(), "Etat de lettre inconnu : " + demande.getEtat());
 			}

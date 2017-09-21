@@ -1,114 +1,88 @@
 package ch.vd.uniregctb.documentfiscal;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.LinkedEntity;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 @Entity
-@Table(name = "AUTRE_DOCUMENT_FISCAL")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "DOC_TYPE", discriminatorType = DiscriminatorType.STRING, length = LengthConstants.AUTRE_DOCUMENT_FISCAL_TYPE)
-public abstract class AutreDocumentFiscal extends HibernateEntity implements LinkedEntity {
-
-	private Long id;
-	private RegDate dateEnvoi;
-	private String cleArchivage;
-	private String cleDocument;
-	private Entreprise entreprise;
+public abstract class AutreDocumentFiscal extends DocumentFiscal {
 
 	@Transient
-	@Override
-	public Long getKey() {
-		return id;
-	}
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "ID", nullable = false)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	@Column(name = "DATE_ENVOI", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateEnvoi() {
-		return dateEnvoi;
+		throw new UnsupportedOperationException("TODO: Rechercher la date d'envoi dans l'état émis du document.");
 	}
 
 	public void setDateEnvoi(RegDate dateEnvoi) {
-		this.dateEnvoi = dateEnvoi;
+		throw new UnsupportedOperationException("TODO: Stocker la date d'envoi dans l'état émis du document.");
 	}
 
-	@Column(name = "CLE_ARCHIVAGE", length = LengthConstants.CLE_ARCHIVAGE_FOLDERS)
+	@Transient
 	public String getCleArchivage() {
-		return cleArchivage;
+		throw new UnsupportedOperationException("TODO: Rechercher la clé dans l'état émis du document.");
 	}
 
 	public void setCleArchivage(String cleArchivage) {
-		this.cleArchivage = cleArchivage;
+		throw new UnsupportedOperationException("TODO: Stocker la clé dans l'état émis du document.");
 	}
 
-	@Column(name = "CLE_DOCUMENT", length = LengthConstants.CLE_DOCUMENT_DPERM)
+	@Transient
 	public String getCleDocument() {
-		return cleDocument;
+		throw new UnsupportedOperationException("TODO: Rechercher la clé dans l'état émis du document.");
 	}
 
 	public void setCleDocument(String cleDocument) {
-		this.cleDocument = cleDocument;
+		throw new UnsupportedOperationException("TODO: Stocker la clé dans l'état émis du document.");
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "ENTREPRISE_ID", nullable = false)
+	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
+	@Index(name = "IDX_DOCFISC_TRS_ID", columnNames = "TIERS_ID")
 	public Entreprise getEntreprise() {
-		return entreprise;
+		return (Entreprise) getTiers();
 	}
 
 	public void setEntreprise(Entreprise entreprise) {
-		this.entreprise = entreprise;
+		setTiers(entreprise);
 	}
 
 	@Transient
 	@Override
 	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
-		return entreprise == null ? null : Collections.singletonList(entreprise);
+		return getEntreprise() == null ? null : Collections.singletonList(getEntreprise());
 	}
 
 	@Transient
-	public TypeEtatAutreDocumentFiscal getEtat() {
-		return TypeEtatAutreDocumentFiscal.EMIS;
+	public TypeEtatDocumentFiscal getEtat() {
+		return getDernierEtat().getType();
 	}
 
 	@Transient
 	public Integer getPeriodeFiscale() {
-		return Optional.ofNullable(dateEnvoi)
+		return Optional.ofNullable(getDateEnvoi())
 				.map(RegDate::year)
 				.orElse(null);
+	}
+
+	@Transient
+	@Override
+	public boolean isSommable() {
+		return false;
+	}
+
+	@Transient
+	@Override
+	public boolean isRappelable() {
+		return false;
 	}
 }

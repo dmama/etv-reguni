@@ -49,7 +49,7 @@ import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;

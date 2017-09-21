@@ -17,7 +17,7 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
 public class RappelLettresBienvenueProcessorTest extends BusinessTest {
@@ -86,7 +86,7 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				final LettreBienvenue lettre = lettres.get(0);
 				Assert.assertNotNull(lettre);
 				Assert.assertFalse(lettre.isAnnule());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lettre.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lettre.getEtat());
 				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
 				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
 				Assert.assertNull(lettre.getDateRappel());
@@ -142,7 +142,7 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				final LettreBienvenue lettre = lettres.get(0);
 				Assert.assertNotNull(lettre);
 				Assert.assertFalse(lettre.isAnnule());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lettre.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lettre.getEtat());
 				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
 				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
 				Assert.assertNull(lettre.getDateRappel());
@@ -197,7 +197,7 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				final LettreBienvenue lettre = lettres.get(0);
 				Assert.assertNotNull(lettre);
 				Assert.assertFalse(lettre.isAnnule());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.RAPPELE, lettre.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, lettre.getEtat());
 				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
 				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
 				Assert.assertEquals(date(1990, 8, 23), lettre.getDateRappel());             // 3 jours après la date de traitement
@@ -248,7 +248,7 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				final LettreBienvenue lettre = lettres.get(0);
 				Assert.assertNotNull(lettre);
 				Assert.assertFalse(lettre.isAnnule());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.RAPPELE, lettre.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, lettre.getEtat());
 				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
 				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
 				Assert.assertEquals(dateRappel, lettre.getDateRappel());
@@ -299,7 +299,7 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				final LettreBienvenue lettre = lettres.get(0);
 				Assert.assertNotNull(lettre);
 				Assert.assertFalse(lettre.isAnnule());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.RETOURNE, lettre.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, lettre.getEtat());
 				Assert.assertEquals(dateEnvoiLettre, lettre.getDateEnvoi());
 				Assert.assertEquals(dateEnvoiLettre.addMonths(2), lettre.getDelaiRetour());
 				Assert.assertNull(lettre.getDateRappel());

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.uniregctb.documentfiscal;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;

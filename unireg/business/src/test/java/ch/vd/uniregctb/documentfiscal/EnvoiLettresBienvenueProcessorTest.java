@@ -32,7 +32,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeGenerationEtatEntreprise;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
@@ -370,7 +370,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -443,7 +443,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -505,7 +505,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -578,7 +578,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -639,7 +639,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -699,7 +699,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -759,7 +759,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -820,7 +820,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -880,7 +880,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -940,7 +940,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -1001,7 +1001,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -1086,7 +1086,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}
@@ -1151,7 +1151,7 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				Assert.assertEquals(addJours(dateTraitement, 3).addDays(30), lb.getDelaiRetour());
 				Assert.assertNull(lb.getDateRappel());
 				Assert.assertNull(lb.getDateRetour());
-				Assert.assertEquals(TypeEtatAutreDocumentFiscal.EMIS, lb.getEtat());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, lb.getEtat());
 			}
 		});
 	}

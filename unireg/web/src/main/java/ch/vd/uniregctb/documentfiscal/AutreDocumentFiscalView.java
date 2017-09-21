@@ -8,14 +8,14 @@ import org.springframework.context.MessageSource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class AutreDocumentFiscalView implements Annulable {
 
 	private final long id;
 	private final long tiersId;
-	private final TypeEtatAutreDocumentFiscal etat;
+	private final TypeEtatDocumentFiscal etat;
 	private final RegDate dateEnvoi;
 	private final String libelleTypeDocument;
 	private final String libelleSousType;
@@ -53,7 +53,7 @@ public class AutreDocumentFiscalView implements Annulable {
 		return tiersId;
 	}
 
-	public TypeEtatAutreDocumentFiscal getEtat() {
+	public TypeEtatDocumentFiscal getEtat() {
 		return etat;
 	}
 

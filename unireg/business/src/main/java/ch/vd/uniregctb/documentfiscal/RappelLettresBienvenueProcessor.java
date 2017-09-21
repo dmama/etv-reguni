@@ -26,7 +26,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class RappelLettresBienvenueProcessor {
 
@@ -83,13 +83,13 @@ public class RappelLettresBienvenueProcessor {
 			final Entreprise entreprise = lettre.getEntreprise();
 
 			// 1. vérification de l'état de la lettre
-			if (lettre.getEtat() == TypeEtatAutreDocumentFiscal.RAPPELE) {
+			if (lettre.getEtat() == TypeEtatDocumentFiscal.RAPPELE) {
 				rapport.addLettreIgnoree(entreprise.getNumero(), lettre.getDateEnvoi(), RappelLettresBienvenueResults.RaisonIgnorement.LETTRE_DEJA_RAPPELEE);
 			}
-			else if (lettre.getEtat() == TypeEtatAutreDocumentFiscal.RETOURNE) {
+			else if (lettre.getEtat() == TypeEtatDocumentFiscal.RETOURNE) {
 				rapport.addLettreIgnoree(entreprise.getNumero(), lettre.getDateEnvoi(), RappelLettresBienvenueResults.RaisonIgnorement.LETTRE_DEJA_RETOURNEE);
 			}
-			else if (lettre.getEtat() != TypeEtatAutreDocumentFiscal.EMIS) {
+			else if (lettre.getEtat() != TypeEtatDocumentFiscal.EMIS) {
 				rapport.addRappelErreur(entreprise.getNumero(), lettre.getId(), "Etat de lettre inconnu : " + lettre.getEtat());
 			}
 			else {

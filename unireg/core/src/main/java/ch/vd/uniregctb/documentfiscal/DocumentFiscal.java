@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.uniregctb.documentfiscal;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorColumn;
@@ -149,7 +149,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 
 	/**
 	 * @return la liste des délais triés par ordre croissant (du plus ancien ou plus récent).
-	 * @see EtatDeclaration.Comparator
+	 * @see EtatDocumentFiscal.Comparator
 	 */
 	@Transient
 	public List<DelaiDocumentFiscal> getDelaisSorted() {
@@ -160,7 +160,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 
 		// tri par ordre croissant
 		final List<DelaiDocumentFiscal> list = new ArrayList<>(getDelais());
-		list.sort(new DelaiDeclaration.Comparator());
+		list.sort(new DelaiDocumentFiscal.Comparator());
 
 		return list;
 	}
@@ -313,7 +313,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 
 	/**
 	 * @return la liste des états triés par ordre croissant (du plus ancien ou plus récent).
-	 * @see EtatDeclaration.Comparator
+	 * @see EtatDocumentFiscal.Comparator
 	 */
 	@Transient
 	public List<EtatDocumentFiscal> getEtatsSorted() {

@@ -21,7 +21,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManager, MessageSourceAware {
@@ -65,7 +65,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		}
 
 		for (LettreBienvenue candidate : CollectionsUtils.revertedOrder(lettresBienvenue)) {
-			if (candidate.getEtat() != TypeEtatAutreDocumentFiscal.RETOURNE) {
+			if (candidate.getEtat() != TypeEtatDocumentFiscal.RETOURNE) {
 				candidate.setDateRetour(dateRetour);
 				return ResultatQuittancement.ok();
 			}
