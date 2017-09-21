@@ -2,11 +2,14 @@ package ch.vd.uniregctb.registrefoncier.dao;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,15 +25,16 @@ public class ModeleCommunauteRFDAOImpl extends BaseDAOImpl<ModeleCommunauteRF, L
 
 	@Override
 	public @Nullable ModeleCommunauteRF findByMembers(@NotNull Set<? extends AyantDroitRF> membres) {
+
 		final int hashCode = ModeleCommunauteRF.hashCode(membres);
+		final Map<String, Object> params = new HashMap<>();
+		params.put("hashCode", hashCode);
 
 		// on fait une sélection par hashCode (attention : il peut y avoir des collisions sur le hashCode et on doit vérifier les résultats)
-		final Query query = getCurrentSession().createQuery("from ModeleCommunauteRF where membresHashCode = :hashCode and annulationDate is null");
-		query.setParameter("hashCode", hashCode);
+		//noinspection unchecked
+		final List<ModeleCommunauteRF> list = find("from ModeleCommunauteRF where membresHashCode = :hashCode and annulationDate is null", params, FlushMode.MANUAL);
 
 		// on recherche le modèle qui correspond aux membres spécifiés
-		//noinspection unchecked
-		final List<ModeleCommunauteRF> list = query.list();
 		for (ModeleCommunauteRF modele : list) {
 			if (modele.matches(membres)) {
 				return modele;

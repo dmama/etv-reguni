@@ -1646,7 +1646,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	                                                                      ImmeubleRF immeuble, CommunauteRF communaute) {
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
 		droit.setAyantDroit(ayantDroit);
-		droit.setCommunaute(communaute);
 		droit.setImmeuble(immeuble);
 		droit.setDateDebut(dateDebut);
 		droit.setDateDebutMetier(dateDebutMetier);
@@ -1662,6 +1661,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 		final DroitProprietePersonnePhysiqueRF persisted = merge(droit);
 		if (communaute != null) {
+			persisted.setCommunaute(communaute);
 			communaute.addMembre(persisted);
 		}
 
@@ -1678,7 +1678,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	                                                                  ImmeubleRF immeuble, CommunauteRF communaute) {
 		final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
 		droit.setAyantDroit(ayantDroit);
-		droit.setCommunaute(communaute);
 		droit.setImmeuble(immeuble);
 		droit.setDateDebut(dateDebut);
 		droit.setDateDebutMetier(dateDebutMetier);
@@ -1694,6 +1693,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 		final DroitProprietePersonneMoraleRF persisted = merge(droit);
 		if (communaute != null) {
+			persisted.setCommunaute(communaute);
 			communaute.addMembre(persisted);
 		}
 

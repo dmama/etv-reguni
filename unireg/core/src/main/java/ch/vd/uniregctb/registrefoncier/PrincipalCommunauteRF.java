@@ -12,11 +12,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Collections;
+import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 
 @Entity
 @Table(name = "PRINCIPAL_COMMUNAUTE_RF")
@@ -24,14 +28,14 @@ import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
 })
-public class PrincipalCommunauteRF extends HibernateDateRangeEntity {
+public class PrincipalCommunauteRF extends HibernateDateRangeEntity implements LinkedEntity {
 
 	/**
 	 * Id technique propre à Unireg.
 	 */
 	private Long id;
 
-	private ModeleCommunauteRF regroupementCommunaute;
+	private ModeleCommunauteRF modeleCommunaute;
 
 	/**
 	 * Le principal valide pendant la période considérée
@@ -60,12 +64,12 @@ public class PrincipalCommunauteRF extends HibernateDateRangeEntity {
 	})
 	@JoinColumn(name = "MODEL_COMMUNAUTE_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_PRINC_MODCOMM_ID", columnNames = "MODEL_COMMUNAUTE_ID")
-	public ModeleCommunauteRF getRegroupementCommunaute() {
-		return regroupementCommunaute;
+	public ModeleCommunauteRF getModeleCommunaute() {
+		return modeleCommunaute;
 	}
 
-	public void setRegroupementCommunaute(ModeleCommunauteRF regroupementCommunaute) {
-		this.regroupementCommunaute = regroupementCommunaute;
+	public void setModeleCommunaute(ModeleCommunauteRF modeleCommunaute) {
+		this.modeleCommunaute = modeleCommunaute;
 	}
 
 	// configuration hibernate : l'ayant-droit ne possède pas les principaux de communauté
@@ -79,5 +83,11 @@ public class PrincipalCommunauteRF extends HibernateDateRangeEntity {
 
 	public void setPrincipal(AyantDroitRF principal) {
 		this.principal = principal;
+	}
+
+	@Override
+	public List<?> getLinkedEntities(@NotNull LinkedEntity.Context context, boolean includeAnnuled) {
+		// si le principal de communauté change (création, modification ou annulation), on veut notifier que le modèle correspondant a changé
+		return modeleCommunaute == null ? null : Collections.singletonList(modeleCommunaute);
 	}
 }

@@ -11,7 +11,7 @@ public interface LinkedEntity {
 
 	enum Context {
 		/**
-		 * On demande les entités liées dans le context de la validation des données avant sauvegarde dans la base. Les entités retournées seront elles-mêmes valides.
+		 * On demande les entités liées dans le context de la validation des données avant sauvegarde dans la base. Les entités retournées seront elles-mêmes validées.
 		 */
 		VALIDATION,
 		/**

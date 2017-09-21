@@ -220,6 +220,16 @@ public class AffaireRF {
 	@NotNull
 	private DroitProprieteRF processOuverture(@NotNull DroitProprieteRF droit, @NotNull DroitRFDAO droitRFDAO) {
 
+		final CommunauteRF communaute;
+		if (droit instanceof DroitProprietePersonneRF) {
+			final DroitProprietePersonneRF droitPerson = (DroitProprietePersonneRF) droit;
+			communaute = droitPerson.getCommunaute();
+			droitPerson.setCommunaute(null);    // on annule temporairement le lien vers la communauté pour ne pas déclencher la validation de la communauté lors du save()
+		}
+		else {
+			communaute = null;
+		}
+
 		// on insère le droit en DB
 		droit.setDateDebut(dateValeur);
 		Optional.ofNullable(droit.getRaisonsAcquisition()).ifPresent(l -> l.forEach(r -> r.setDateDebut(dateValeur)));
@@ -228,13 +238,12 @@ public class AffaireRF {
 		// [SIFISC-24553] on met-à-jour à la main la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
 		immeuble.addDroitPropriete(droit);
 		droit.getAyantDroit().addDroitPropriete(droit);
+
 		// [SIFISC-24595] on met-à-jour à la main la liste des membres sur les communautés pour pouvoir parcourir le graphe des objets dans le CommunauteRFProcessor
-		if (droit instanceof DroitProprietePersonneRF) {
+		if (communaute != null) {
 			final DroitProprietePersonneRF droitPerson = (DroitProprietePersonneRF) droit;
-			final CommunauteRF communaute = droitPerson.getCommunaute();
-			if (communaute != null) {
-				communaute.addMembre(droitPerson);
-			}
+			droitPerson.setCommunaute(communaute);  // on restaure le lien vers la communauté
+			communaute.addMembre(droitPerson);
 		}
 
 		return droit;

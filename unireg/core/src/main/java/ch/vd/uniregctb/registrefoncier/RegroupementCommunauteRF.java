@@ -12,11 +12,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Collections;
+import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 
 /**
  * Lien entre une communauté RF (issue de Capitastra) et une communauté de référence (données propres à Unireg)
@@ -27,7 +31,7 @@ import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
 })
-public class RegroupementCommunauteRF extends HibernateDateRangeEntity {
+public class RegroupementCommunauteRF extends HibernateDateRangeEntity implements LinkedEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -85,5 +89,14 @@ public class RegroupementCommunauteRF extends HibernateDateRangeEntity {
 
 	public void setModele(ModeleCommunauteRF modele) {
 		this.modele = modele;
+	}
+
+	@Override
+	public List<?> getLinkedEntities(@NotNull LinkedEntity.Context context, boolean includeAnnuled) {
+		if (!includeAnnuled && isAnnule()) {
+			return null;
+		}
+		// si le regroupement change (= est créé ou annulé), on veut notifier que la communauté concernée a changé.
+		return communaute == null ? null : Collections.singletonList(communaute);
 	}
 }

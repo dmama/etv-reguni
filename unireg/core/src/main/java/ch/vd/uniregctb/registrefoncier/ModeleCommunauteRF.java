@@ -23,16 +23,18 @@ import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 
 /**
  * Modèle de communauté qui permet de regrouper les communautés RF constituées des mêmes membres.
  */
 @Entity
 @Table(name = "MODELE_COMMUNAUTE_RF")
-public class ModeleCommunauteRF extends HibernateEntity {
+public class ModeleCommunauteRF extends HibernateEntity implements LinkedEntity {
 
 	/**
 	 * Id technique propre à Unireg.
@@ -98,6 +100,13 @@ public class ModeleCommunauteRF extends HibernateEntity {
 		this.membres = membres;
 	}
 
+	public void addMembre(AyantDroitRF ayantDroit) {
+		if (membres == null) {
+			membres = new HashSet<>();
+		}
+		membres.add(ayantDroit);
+	}
+
 	// configuration hibernate : le modèle de communauté possède les principaux
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "MODEL_COMMUNAUTE_ID", nullable = false)
@@ -108,6 +117,13 @@ public class ModeleCommunauteRF extends HibernateEntity {
 
 	public void setPrincipaux(Set<PrincipalCommunauteRF> principaux) {
 		this.principaux = principaux;
+	}
+
+	public void addPrincipal(PrincipalCommunauteRF principal) {
+		if (principaux == null) {
+			principaux = new HashSet<>();
+		}
+		principaux.add(principal);
 	}
 
 	// configuration hibernate : le modèle de communauté ne possède pas les regroupements
@@ -161,5 +177,11 @@ public class ModeleCommunauteRF extends HibernateEntity {
 				.collect(Collectors.toSet());
 
 		return thisIds.equals(othersIds);
+	}
+
+	@Override
+	public List<?> getLinkedEntities(@NotNull LinkedEntity.Context context, boolean includeAnnuled) {
+		// si le modèle de communauté change, on veut notifier que les regroupements concernés ont changé
+		return regroupements == null ? null : new ArrayList<Object>(regroupements);
 	}
 }
