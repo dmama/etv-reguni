@@ -27,9 +27,9 @@ public abstract class CommunityOfOwnersBuilder {
 
 	public static CommunityOfOwners newCommunity(@NotNull CommunauteRF communaute,
 	                                             @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider,
-	                                             @NotNull Function<Long, CommunauteRFMembreInfo> membreInfoProvider) {
+	                                             @NotNull Function<CommunauteRF, CommunauteRFMembreInfo> membreInfoProvider) {
 
-		final CommunauteRFMembreInfo membreInfo = membreInfoProvider.apply(communaute.getId());
+		final CommunauteRFMembreInfo membreInfo = membreInfoProvider.apply(communaute);
 		if (membreInfo == null) {
 			throw new ProgrammingException("Les informations de la communauté id=[" + communaute.getId() + "] sont nulles.");
 		}

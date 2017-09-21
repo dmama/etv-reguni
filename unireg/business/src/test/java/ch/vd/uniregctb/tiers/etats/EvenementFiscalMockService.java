@@ -12,6 +12,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -330,6 +331,11 @@ public class EvenementFiscalMockService implements EvenementFiscalService {
 
 	@Override
 	public void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void publierModificationPrincipalCommunaute(RegDate dateDebut, CommunauteRF communaute) {
 		throw new UnsupportedOperationException();
 	}
 

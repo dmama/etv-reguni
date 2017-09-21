@@ -69,11 +69,11 @@ public interface RegistreFoncierService {
 	/**
 	 * Construit et retourne les informations du point-de-vue Unireg sur les membres d'une communauté RF.
 	 *
-	 * @param communauteId l'id technique Unireg d'une communauté
+	 * @param communaute une communauté
 	 * @return les infos trouvée; ou <b>null</b> si la communauté est inconnue.
 	 */
-	@Nullable
-	CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId);
+	@NotNull
+	CommunauteRFMembreInfo getCommunauteMembreInfo(@NotNull CommunauteRF communaute);
 
 	/**
 	 * Recherche ou crée un modèle de communauté qui correspond aux membres de communauté spécifiés.

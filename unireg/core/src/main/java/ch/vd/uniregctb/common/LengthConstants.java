@@ -67,6 +67,7 @@ public abstract class LengthConstants {
 	public static final int EVTFISCAL_TYPE_EVT_FLAG = 15;
 	public static final int EVTFISCAL_TYPE_EVT_INFO_COMPLEMENTAIRE = 60;
 	public static final int EVTFISCAL_TYPE_EVT_BATIMENT = 24;
+	public static final int EVTFISCAL_TYPE_EVT_COMMUNAUTE = 20;
 	public static final int EVTFISCAL_TYPE_EVT_DROIT = 12;
 	public static final int EVTFISCAL_TYPE_EVT_SERVITUDE = 16;
 	public static final int EVTFISCAL_TYPE_EVT_IMMEUBLE = 39;

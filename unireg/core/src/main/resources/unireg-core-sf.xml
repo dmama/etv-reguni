@@ -71,6 +71,7 @@
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSituationFamille</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRapprochementTiersRF</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalBatiment</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroit</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble</value>

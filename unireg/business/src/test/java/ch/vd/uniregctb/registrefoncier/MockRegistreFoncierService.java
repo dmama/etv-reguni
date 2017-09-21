@@ -44,7 +44,7 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 	}
 
 	@Override
-	public @Nullable CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId) {
+	public @NotNull CommunauteRFMembreInfo getCommunauteMembreInfo(@NotNull CommunauteRF communaute) {
 		throw new NotImplementedException();
 	}
 

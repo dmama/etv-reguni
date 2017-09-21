@@ -139,6 +139,7 @@
 
 	<bean id="communauteRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.CommunauteRFProcessor">
 		<constructor-arg ref="serviceRF"/>
+		<constructor-arg ref="evenementFiscalService"/>
 	</bean>
 
 	<bean id="servitudeRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.ServitudeRFProcessor">

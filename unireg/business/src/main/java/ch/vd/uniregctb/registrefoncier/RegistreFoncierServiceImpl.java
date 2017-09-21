@@ -37,6 +37,7 @@ import ch.vd.uniregctb.registrefoncier.dao.ModeleCommunauteRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.SituationRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public class RegistreFoncierServiceImpl implements RegistreFoncierService {
@@ -298,14 +299,18 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		return (CommunauteRF) ayantDroitRFDAO.get(communauteId);
 	}
 
-	@Nullable
 	@Override
-	public CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId) {
-		final CommunauteRFMembreInfo info = ayantDroitRFDAO.getCommunauteMembreInfo(communauteId);
+	@NotNull
+	public CommunauteRFMembreInfo getCommunauteMembreInfo(@NotNull CommunauteRF communaute) {
+		final CommunauteRFMembreInfo info = communaute.buildMembreInfoNonTries();
+		final Long principalCtbId = Optional.ofNullable(communaute.getPrincipalCommunauteDesigne())
+				.filter(TiersRF.class::isInstance)
+				.map(TiersRF.class::cast)
+				.map(TiersRF::getCtbRapproche)
+				.map(Tiers::getId)
+				.orElse(null);
 		// [SIFISC-23747] on trie la collection de tiers de telle manière que le leader de la communauté soit en première position
-		if (info != null) {
-			info.sortMembers(new CommunauteRFMembreComparator(tiersService));
-		}
+		info.sortMembers(new CommunauteRFMembreComparator(tiersService, principalCtbId));
 		return info;
 	}
 

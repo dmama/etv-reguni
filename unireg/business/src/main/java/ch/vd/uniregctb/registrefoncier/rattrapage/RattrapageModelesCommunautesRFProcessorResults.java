@@ -13,8 +13,8 @@ import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
+import ch.vd.uniregctb.tiers.Contribuable;
 
 public class RattrapageModelesCommunautesRFProcessorResults extends JobResults<Long, RattrapageModelesCommunautesRFProcessorResults> {
 
@@ -81,15 +81,12 @@ public class RattrapageModelesCommunautesRFProcessorResults extends JobResults<L
 		}
 		else if (ayantDroit instanceof TiersRF) {
 			final TiersRF tiers = (TiersRF) ayantDroit;
-			final RapprochementRF rapprochement = tiers.getRapprochements().stream()
-					.filter(r -> r.isValidAt(null))
-					.findFirst()
-					.orElse(null);
-			if (rapprochement == null) {
+			final Contribuable ctb = tiers.getCtbRapproche();
+			if (ctb == null) {
 				return "Tiers non-rapproché n°" + tiers.getId();
 			}
 			else {
-				return "Contribuable n°" + rapprochement.getContribuable().getId();
+				return "Contribuable n°" + ctb.getId();
 			}
 		}
 		else {

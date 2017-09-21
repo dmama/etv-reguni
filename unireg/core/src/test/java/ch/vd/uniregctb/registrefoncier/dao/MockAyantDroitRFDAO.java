@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.TypeDroit;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
@@ -107,12 +106,6 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 	private static boolean hasDroitOfType(@NotNull AyantDroitRF ayantDroit, @NotNull TypeDroit typeDroit) {
 		return ayantDroit.getDroitList().stream()
 				.anyMatch(d -> !d.isAnnule() && d.getTypeDroit() == typeDroit);
-	}
-
-	@Nullable
-	@Override
-	public CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId) {
-		throw new NotImplementedException();
 	}
 
 	@Nullable

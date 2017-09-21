@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,12 +18,21 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalService;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.PrincipalCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.TiersRF;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 
 import static ch.vd.uniregctb.common.WithoutSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
@@ -34,10 +45,18 @@ public class CommunauteRFProcessorTest {
 	private CommunauteRFProcessor processor;
 
 	private Map<Set<Long>, ModeleCommunauteRF> modeles = new HashMap<>();
+	private List<Pair<RegDate, CommunauteRF>> evenementsModificationPrincipalCommunaute;
 
 	@Before
 	public void setUp() throws Exception {
-		processor = new CommunauteRFProcessor(this::getModeleCommunauteRF);
+		evenementsModificationPrincipalCommunaute = new ArrayList<>();
+		final EvenementFiscalService evenementFiscalService = new MockEvenementFiscalService() {
+			@Override
+			public void publierModificationPrincipalCommunaute(RegDate dateDebut, CommunauteRF communaute) {
+				evenementsModificationPrincipalCommunaute.add(new Pair<>(dateDebut, communaute));
+			}
+		};
+		processor = new CommunauteRFProcessor(this::getModeleCommunauteRF, this::getMembreInfo, evenementFiscalService);
 	}
 
 	/**
@@ -55,6 +74,9 @@ public class CommunauteRFProcessorTest {
 
 		// il ne devrait toujours pas y avoir de regroupement
 		assertEmpty(communaute.getRegroupements());
+
+		// aucun événement ne devrait être envoyé car le principal ne change pas
+		assertEmpty(evenementsModificationPrincipalCommunaute);
 	}
 
 	/**
@@ -91,6 +113,9 @@ public class CommunauteRFProcessorTest {
 		final Set<RegroupementCommunauteRF> regroupements = communaute.getRegroupements();
 		assertEquals(1, regroupements.size());
 		assertTrue(regroupements.iterator().next().isAnnule());
+
+		// aucun événement ne devrait être envoyé car le principal ne change pas
+		assertEmpty(evenementsModificationPrincipalCommunaute);
 	}
 
 	/**
@@ -135,6 +160,9 @@ public class CommunauteRFProcessorTest {
 		final RegroupementCommunauteRF regroupement0 = regroupements.iterator().next();
 		assertFalse(regroupement0.isAnnule());
 		assertRegroupement(RegDate.get(2000, 1, 1), null, communaute, regroupement0, pp1, pp2);
+
+		// aucun événement ne devrait être envoyé car le principal ne change pas
+		assertEmpty(evenementsModificationPrincipalCommunaute);
 	}
 
 	/**
@@ -206,6 +234,9 @@ public class CommunauteRFProcessorTest {
 		final RegroupementCommunauteRF regroupement1 = regroupements.get(1);
 		assertFalse(regroupement1.isAnnule());
 		assertRegroupement(dateRenoncement.getOneDayAfter(), null, communaute, regroupement1, pp1, pp3);
+
+		// aucun événement ne devrait être envoyé car le principal ne change pas
+		assertEmpty(evenementsModificationPrincipalCommunaute);
 	}
 
 	/**
@@ -257,6 +288,9 @@ public class CommunauteRFProcessorTest {
 		final RegroupementCommunauteRF regroupement0 = regroupements.iterator().next();
 		assertFalse(regroupement0.isAnnule());
 		assertRegroupement(RegDate.get(2000, 1, 1), null, communaute, regroupement0, pp1, pp2);
+
+		// aucun événement ne devrait être envoyé car le principal ne change pas
+		assertEmpty(evenementsModificationPrincipalCommunaute);
 	}
 
 	/**
@@ -318,6 +352,118 @@ public class CommunauteRFProcessorTest {
 		assertRegroupement(RegDate.get(2000, 1, 1), null, communaute, regroupements.get(0), pp1, pp3);
 		assertFalse(regroupements.get(1).isAnnule());
 		assertRegroupement(RegDate.get(2000, 1, 1), null, communaute, regroupements.get(1), pp1, pp2);
+
+		// aucun événement ne devrait être envoyé car le principal ne change pas
+		assertEmpty(evenementsModificationPrincipalCommunaute);
+	}
+
+	/**
+	 * Vérifie qu'un événement de changement de communauté est bien envoyé dans le cas où le principal change.
+	 * Cas métier : renoncement du principal sélectionné à ses droits dans la communauté -> création d'un nouveau modèle de communauté et sélection d'un nouveau principal
+	 */
+	@Test
+	public void testProcessCommunauteAvecChangementPrincipal() throws Exception {
+
+		final RegDate dateSuccession = RegDate.get(2000, 1, 1);
+		final RegDate dateRenoncement = RegDate.get(2000, 7, 12);
+
+		final PersonnePhysique ctb1 = new PersonnePhysique();
+		ctb1.setNumero(111L);
+
+		final PersonnePhysique ctb2 = new PersonnePhysique();
+		ctb2.setNumero(222L);
+
+		final PersonnePhysique ctb3 = new PersonnePhysique();
+		ctb3.setNumero(333L);
+
+		final RapprochementRF rp1 = new RapprochementRF();
+		rp1.setContribuable(ctb1);
+
+		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
+		pp1.setId(1L);
+		pp1.setPrenom("Ronald");
+		pp1.setNom("Lasalt");
+		pp1.addRapprochementRF(rp1);
+
+		final RapprochementRF rp2 = new RapprochementRF();
+		rp2.setContribuable(ctb2);
+
+		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
+		pp2.setId(2L);
+		pp2.setPrenom("Georgette");
+		pp2.setNom("Lasalt");
+		pp2.addRapprochementRF(rp2);
+
+		final RapprochementRF rp3 = new RapprochementRF();
+		rp3.setContribuable(ctb3);
+
+		final PersonnePhysiqueRF pp3 = new PersonnePhysiqueRF();
+		pp3.setId(3L);
+		pp3.setPrenom("Jean-Rodolphe");
+		pp3.setNom("Zwarisk");
+		pp3.addRapprochementRF(rp3);
+
+		final DroitProprietePersonnePhysiqueRF droit1 = new DroitProprietePersonnePhysiqueRF();
+		droit1.setId(11L);
+		droit1.setDateDebutMetier(dateSuccession);
+		droit1.setDateFinMetier(null);
+		droit1.setAyantDroit(pp1);
+
+		final DroitProprietePersonnePhysiqueRF droit2 = new DroitProprietePersonnePhysiqueRF();
+		droit2.setId(12L);
+		droit2.setDateDebutMetier(dateSuccession);
+		droit2.setDateFinMetier(dateRenoncement);   // <--- Georgette renonce à sa part
+		droit2.setAyantDroit(pp2);
+
+		final DroitProprietePersonnePhysiqueRF droit3 = new DroitProprietePersonnePhysiqueRF();
+		droit3.setId(13L);
+		droit3.setDateDebutMetier(dateSuccession);
+		droit3.setDateFinMetier(null);
+		droit3.setAyantDroit(pp3);
+
+		// un modèle de communauté avec Georgette comme principal sélectionné
+		final ModeleCommunauteRF modele = getModeleCommunauteRF(new HashSet<>(Arrays.asList(pp1, pp2, pp3)));
+		final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
+		principal.setPrincipal(pp2);
+		modele.addPrincipal(principal);
+
+		final RegroupementCommunauteRF regroupement = new RegroupementCommunauteRF();
+		regroupement.setId(100L);
+		regroupement.setDateDebut(dateSuccession);
+		regroupement.setDateFin(null);
+		regroupement.setModele(modele);
+
+		// une communauté avec trois membres
+		CommunauteRF communaute = new CommunauteRF();
+		communaute.addRegroupement(regroupement);
+		communaute.addMembre(droit1);
+		communaute.addMembre(droit2);
+		communaute.addMembre(droit3);
+
+		droit1.setCommunaute(communaute);
+		droit2.setCommunaute(communaute);
+		droit3.setCommunaute(communaute);
+
+		processor.process(communaute);
+
+		// un nouveau regroupement devrait être créé pour la période à deux membres (depuis le renoncement)
+		final List<RegroupementCommunauteRF> regroupements = new ArrayList<>(communaute.getRegroupements());
+		regroupements.sort(new DateRangeComparator<>());
+		assertEquals(2, regroupements.size());
+
+		final RegroupementCommunauteRF regroupement0 = regroupements.get(0);
+		assertFalse(regroupement0.isAnnule());
+		assertRegroupement(dateSuccession, dateRenoncement, communaute, regroupement0, pp1, pp2, pp3);
+
+		final RegroupementCommunauteRF regroupement1 = regroupements.get(1);
+		assertFalse(regroupement1.isAnnule());
+		assertRegroupement(dateRenoncement.getOneDayAfter(), null, communaute, regroupement1, pp1, pp3);
+
+		// un événement de modification de principal devrait être envoyé
+		assertEquals(1, evenementsModificationPrincipalCommunaute.size());
+		final Pair<RegDate, CommunauteRF> event0 = evenementsModificationPrincipalCommunaute.get(0);
+		assertEquals(null, event0.getFirst());
+		assertEquals(communaute, event0.getSecond());
 	}
 
 	private static void assertRegroupement(RegDate dateDebut, RegDate dateFin, CommunauteRF communaute, RegroupementCommunauteRF regroupement, AyantDroitRF... ayantDroits) {
@@ -351,4 +497,31 @@ public class CommunauteRFProcessorTest {
 			return modele;
 		});
 	}
+
+	private CommunauteRFMembreInfo getMembreInfo(CommunauteRF communaute) {
+
+		final CommunauteRFMembreInfo info = communaute.buildMembreInfoNonTries();
+		final Long principalCtbId = Optional.ofNullable(communaute.getPrincipalCommunauteDesigne())
+				.filter(TiersRF.class::isInstance)
+				.map(TiersRF.class::cast)
+				.map(TiersRF::getCtbRapproche)
+				.map(Tiers::getId)
+				.orElse(null);
+
+		// on trie par ordre croissant des numéros de CTB, à l'exception du l'id du principal qui est toujours en premier
+		info.sortMembers((o1, o2) -> {
+			if (Objects.equals(o1, o2)) {
+				return 0;
+			}
+			if (Objects.equals(o1, principalCtbId)) {
+				return -1;
+			}
+			else if (Objects.equals(o2, principalCtbId)) {
+				return 1;
+			}
+			return o1.compareTo(o2);
+		});
+		return info;
+	}
+
 }

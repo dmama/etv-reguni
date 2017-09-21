@@ -9,6 +9,7 @@ import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -468,6 +469,13 @@ public interface EvenementFiscalService {
 	 * @param implantation l'implantation en question.
 	 */
 	void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation);
+
+	/**
+	 * Publie un événement de modification du principal d'une communauté.
+	 *  @param dateDebut la date de début de validité du principal
+	 * @param communaute       la communauté en question
+	 */
+	void publierModificationPrincipalCommunaute(RegDate dateDebut, CommunauteRF communaute);
 
 	/**
 	 * Publie un événement de début de rapprochement entre un tiers Unireg et un tiers RF.

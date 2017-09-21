@@ -184,4 +184,17 @@ public class ModeleCommunauteRF extends HibernateEntity implements LinkedEntity 
 		// si le modèle de communauté change, on veut notifier que les regroupements concernés ont changé
 		return regroupements == null ? null : new ArrayList<Object>(regroupements);
 	}
+
+	/**
+	 * @return le principal de communauté courant s'il a été explicitement désigné; <i>null</i> si aucun principal n'a été désigné.
+	 */
+	@Transient
+	@Nullable
+	public AyantDroitRF getPrincipalCourant() {
+		return principaux == null ? null : principaux.stream()
+				.filter(p -> p.isValidAt(null))
+				.findFirst()
+				.map(PrincipalCommunauteRF::getPrincipal)
+				.orElse(null);
+	}
 }
