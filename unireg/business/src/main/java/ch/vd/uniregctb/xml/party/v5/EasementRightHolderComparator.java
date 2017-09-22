@@ -38,7 +38,7 @@ public class EasementRightHolderComparator implements Comparator<RightHolder> {
 
 	public EasementRightHolderComparator(@NotNull TiersService tiersService) {
 		this(tiersService::getTiers,
-		     tiersService::getForsFiscauxVirtuels,
+		     tiers -> tiersService.getForsFiscauxVirtuels(tiers, false),
 		     pp -> tiersService.getDecompositionNomPrenom(pp, false),
 		     tiersService::getNomRaisonSociale);
 	}

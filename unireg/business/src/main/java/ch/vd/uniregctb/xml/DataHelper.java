@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateConstants;
@@ -39,6 +40,7 @@ import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.xml.address.AddressBuilder;
@@ -1177,7 +1179,7 @@ public abstract class DataHelper {
 		return results;
 	}
 
-	public static List<ForFiscalPrincipal> getForsFiscauxVirtuels(ch.vd.uniregctb.tiers.Tiers tiers, HibernateTemplate hibernateTemplate) {
+	public static List<ForFiscalPrincipal> getForsFiscauxVirtuels(Tiers tiers, boolean doNotAutoflush, HibernateTemplate hibernateTemplate) {
 
 		// Récupère les appartenances ménages du tiers
 		final Set<RapportEntreTiers> rapports = tiers.getRapportsSujet();
@@ -1197,7 +1199,8 @@ public abstract class DataHelper {
 			final Map<String, Long> params = new HashMap<>(1);
 			params.put("menageId", a.getObjetId());
 
-			final List<ForFiscalPrincipal> forsMenage = hibernateTemplate.find("from ForFiscalPrincipalPP f where f.annulationDate is null and f.tiers.id = :menageId order by f.dateDebut asc", params, null);
+			final FlushMode flushMode = doNotAutoflush ? FlushMode.MANUAL : null;
+			final List<ForFiscalPrincipal> forsMenage = hibernateTemplate.find("from ForFiscalPrincipalPP f where f.annulationDate is null and f.tiers.id = :menageId order by f.dateDebut asc", params, flushMode);
 			final List<ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a.getDateFin(),
 					new DateRangeHelper.AdapterCallback<ForFiscalPrincipal>() {
 						@Override

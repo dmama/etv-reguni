@@ -1294,11 +1294,12 @@ public interface TiersService {
     ForGestion getDernierForGestionConnu(Tiers tiers, @Nullable RegDate date);
 
 	/**
-	 * @param tiers un tiers
+	 * @param tiers          un tiers
+	 * @param doNotAutoflush <code>true</code> s'il ne faut pas laisser la session subir un autoflush pendant la requête de récupération des données en base
 	 * @return la liste des fors fiscaux virtuels (et uniquement les virtuels) du tiers.
 	 */
 	@NotNull
-	List<ForFiscalPrincipal> getForsFiscauxVirtuels(@NotNull Tiers tiers);
+	List<ForFiscalPrincipal> getForsFiscauxVirtuels(@NotNull Tiers tiers, boolean doNotAutoflush);
 
 	/**
      * Ferme les adresses flagées temporaires dans le fiscale

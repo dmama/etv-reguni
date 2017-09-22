@@ -55,7 +55,7 @@ public class CommunauteRFMembreComparator implements Comparator<Long> {
 	 */
 	public CommunauteRFMembreComparator(@NotNull TiersService tiersService, @Nullable Long principalCtbId) {
 		this(tiersService::getTiers,
-		     tiersService::getForsFiscauxVirtuels,
+		     tiers -> tiersService.getForsFiscauxVirtuels(tiers, false),
 		     pp -> tiersService.getDecompositionNomPrenom(pp, false),
 		     tiersService::getNomRaisonSociale, principalCtbId);
 	}

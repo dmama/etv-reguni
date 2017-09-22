@@ -4195,8 +4195,8 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	@NotNull
-	public List<ForFiscalPrincipal> getForsFiscauxVirtuels(@NotNull Tiers tiers) {
-		return DataHelper.getForsFiscauxVirtuels(tiers, hibernateTemplate);
+	public List<ForFiscalPrincipal> getForsFiscauxVirtuels(@NotNull Tiers tiers, boolean doNotAutoflush) {
+		return DataHelper.getForsFiscauxVirtuels(tiers, doNotAutoflush, hibernateTemplate);
 	}
 
 	/**
