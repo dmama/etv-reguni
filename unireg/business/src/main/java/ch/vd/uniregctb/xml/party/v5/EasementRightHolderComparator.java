@@ -38,7 +38,8 @@ public class EasementRightHolderComparator implements Comparator<RightHolder> {
 
 	public EasementRightHolderComparator(@NotNull TiersService tiersService) {
 		this(tiersService::getTiers,
-		     tiers -> tiersService.getForsFiscauxVirtuels(tiers, false),
+		     // pas d'auto-flush : on considère que les fors fiscaux sont stables et on ne veut pas risquer une erreur de validation sur la communauté
+		     tiers -> tiersService.getForsFiscauxVirtuels(tiers, true),
 		     pp -> tiersService.getDecompositionNomPrenom(pp, false),
 		     tiersService::getNomRaisonSociale);
 	}

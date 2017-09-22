@@ -23,8 +23,10 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
+import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
@@ -50,6 +52,23 @@ public class CommunauteRFProcessor {
 		this.modeleCommunauteProvider = modeleCommunauteProvider;
 		this.communauteMembreInfoProvider = communauteMembreInfoProvider;
 		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	/**
+	 * Recalcule les regroupements sur toutes les communautés de l'immeuble spécifié.
+	 *
+	 * @param immeuble un immeuble
+	 */
+	public void processAll(@NotNull ImmeubleRF immeuble) {
+		final Set<CommunauteRF> communautes = immeuble.getDroitsPropriete().stream()
+				// on s'intéresse aussi aux droits annulés (car les communautés correspondantes ne le sont pas forcément) : .filter(AnnulableHelper::nonAnnule)
+				.filter(DroitProprietePersonneRF.class::isInstance)
+				.map(DroitProprietePersonneRF.class::cast)
+				.map(DroitProprietePersonneRF::getCommunaute)
+				.filter(Objects::nonNull)
+				.filter(AnnulableHelper::nonAnnule)
+				.collect(Collectors.toSet());
+		communautes.forEach(this::process);
 	}
 
 	/**

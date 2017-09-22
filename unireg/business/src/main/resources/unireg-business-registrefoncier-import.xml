@@ -118,6 +118,7 @@
 	<bean id="immeubleRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.ImmeubleRFProcessor">
 		<constructor-arg ref="communeRFDAO"/>
 		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="communauteRFProcessor"/>
 		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="evenementFiscalService"/>
 	</bean>

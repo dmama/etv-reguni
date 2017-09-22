@@ -5,8 +5,6 @@ import javax.xml.bind.Unmarshaller;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.camel.converter.jaxp.StringSource;
@@ -17,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.capitastra.grundstueck.EigentumAnteil;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
@@ -25,7 +22,6 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
@@ -204,8 +200,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, droits, Collections.emptyList(), Collections.emptyList());
 		affaire.apply(droitRFDAO, evenementFiscalSender);
 
-		// on recalcule ce qu'il faut sur les communautés
-		processCommunautes(immeuble);
+		// on recalcule ce qu'il faut sur les communautés de l'immeuble
+		communauteRFProcessor.processAll(immeuble);
 	}
 
 	/**
@@ -240,8 +236,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, toAddList, toUpdateList, toCloseList);
 		affaire.apply(droitRFDAO, evenementFiscalSender);
 
-		// on recalcule ce qu'il faut sur les communautés
-		processCommunautes(immeuble);
+		// on recalcule ce qu'il faut sur les communautés de l'immeuble
+		communauteRFProcessor.processAll(immeuble);
 	}
 
 	/**
@@ -256,19 +252,7 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, Collections.emptyList(), Collections.emptyList(), toCloseList);
 		affaire.apply(droitRFDAO, evenementFiscalSender);
 
-		// on recalcule ce qu'il faut sur les communautés
-		processCommunautes(immeuble);
-	}
-
-	private void processCommunautes(ImmeubleRF immeuble) {
-		final Set<CommunauteRF> communautes = immeuble.getDroitsPropriete().stream()
-				// on s'intéresse aussi aux droits annulés (car les communautés correspondantes ne le sont pas forcément) : .filter(AnnulableHelper::nonAnnule)
-				.filter(DroitProprietePersonneRF.class::isInstance)
-				.map(DroitProprietePersonneRF.class::cast)
-				.map(DroitProprietePersonneRF::getCommunaute)
-				.filter(Objects::nonNull)
-				.filter(AnnulableHelper::nonAnnule)
-				.collect(Collectors.toSet());
-		communautes.forEach(communauteRFProcessor::process);
+		// on recalcule ce qu'il faut sur les communautés de l'immeuble
+		communauteRFProcessor.processAll(immeuble);
 	}
 }
