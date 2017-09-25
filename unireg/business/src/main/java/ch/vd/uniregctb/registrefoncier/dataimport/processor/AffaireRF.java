@@ -199,7 +199,7 @@ public class AffaireRF {
 				.collect(Collectors.toList());
 
 		// on calcule la date de début métier sur tous les droits
-		filtered.forEach(m -> m.calculateDateEtMotifDebut(findDroitPrecedent(m.getDroit())));
+		filtered.forEach(m -> m.calculateDateEtMotifDebut(findRaisonPrecedente(m.getDroit())));
 
 		// on chercher la date de début métier la plus ancienne
 		final RaisonAcquisitionRF raisonAcquisition = filtered.stream()
@@ -295,13 +295,13 @@ public class AffaireRF {
 			return type;
 		}
 
-		public void calculateDateEtMotifDebut(@Nullable DroitProprieteRF precedent) {
+		public void calculateDateEtMotifDebut(RaisonAcquisitionRF raisonPrecedente) {
 			final Set<RaisonAcquisitionRF> raisonsAcquisition = droit.getRaisonsAcquisition();
 			if (raisonsAcquisition == null || raisonsAcquisition.isEmpty()) {
 				setDebutRaisonAcquisition(null);
 			}
 			else {
-				if (precedent == null || precedent.getRaisonsAcquisition() == null) {
+				if (raisonPrecedente == null) {
 					// il n'y a pas de droit précédent : on prend la raison d'acquisition la plus vieille comme référence
 					final RaisonAcquisitionRF first = raisonsAcquisition.stream()
 							.filter(AnnulableHelper::nonAnnule)
@@ -311,11 +311,7 @@ public class AffaireRF {
 				}
 				else {
 					// il y a bien un droit précédent : on prend la nouvelle raison d'acquisition comme référence
-					final RegDate derniereDate = precedent.getRaisonsAcquisition().stream()
-							.filter(AnnulableHelper::nonAnnule)
-							.map(RaisonAcquisitionRF::getDateAcquisition)
-							.max(Comparator.naturalOrder())
-							.orElse(null);
+					final RegDate derniereDate = raisonPrecedente.getDateAcquisition();
 					final RaisonAcquisitionRF nouvelle = raisonsAcquisition.stream()
 							.filter(AnnulableHelper::nonAnnule)
 							.filter(r -> RegDateHelper.isAfter(r.getDateAcquisition(), derniereDate, NullDateBehavior.EARLIEST))
@@ -384,24 +380,32 @@ public class AffaireRF {
 	}
 
 	@Nullable
-	private DroitProprieteRF findDroitPrecedent(@NotNull DroitProprieteRF courant) {
+	private RaisonAcquisitionRF findRaisonPrecedente(@NotNull DroitProprieteRF courant) {
 
-		// 1. on recherche le droit précédent par masterId (SIFISC-24987)
-		DroitProprieteRF droitPrecedent = fermes.stream()
+		// 1. on recherche la raison précédente par masterId (SIFISC-24987)
+		RaisonAcquisitionRF raisonPrecedente = fermes.stream()
 				.filter(d -> d.getMasterIdRF().equals(courant.getMasterIdRF()))
-				.max(new DateRangeComparator<>())
+				.map(DroitProprieteRF::getRaisonsAcquisition)
+				.filter(Objects::nonNull)
+				.flatMap(Collection::stream)
+				.filter(AnnulableHelper::nonAnnule)
+				.max(Comparator.comparing(RaisonAcquisitionRF::getDateAcquisition))
 				.orElse(null);
-		if (droitPrecedent != null) {
-			return droitPrecedent;
+		if (raisonPrecedente != null) {
+			return raisonPrecedente;
 		}
 
-		// 2. on recherche le droit précédent par propriétaire (SIFISC-25971)
-		droitPrecedent = fermes.stream()
+		// 2. on recherche la raison précédente par propriétaire (SIFISC-25971)
+		raisonPrecedente = fermes.stream()
 				.filter(d -> d.getAyantDroit().getId().equals(courant.getAyantDroit().getId()))
-				.max(new DateRangeComparator<>())
+				.map(DroitProprieteRF::getRaisonsAcquisition)
+				.filter(Objects::nonNull)
+				.flatMap(Collection::stream)
+				.filter(AnnulableHelper::nonAnnule)
+				.max(Comparator.comparing(RaisonAcquisitionRF::getDateAcquisition))
 				.orElse(null);
-		if (droitPrecedent != null) {
-			return droitPrecedent;
+		if (raisonPrecedente != null) {
+			return raisonPrecedente;
 		}
 
 		// pas trouvé

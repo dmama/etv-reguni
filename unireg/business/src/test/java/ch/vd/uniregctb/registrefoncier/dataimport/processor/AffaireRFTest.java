@@ -14,6 +14,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -21,6 +22,7 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.uniregctb.rf.GenrePropriete;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -556,6 +558,168 @@ public class AffaireRFTest {
 		assertEquals("Succession", nouveau3.getMotifDebut());
 		assertEquals("Succession", nouveau4.getMotifDebut());
 	}
+
+	/**
+	 * [SIFISC-26540] Ce test vérifie que la date de début métier du nouveau droit est calculée correctement lorsque :
+	 * <ul>
+	 *     <li>le nouveau propriétaire possède deux droits (maintenant fermés) sur l'immeuble</li>
+	 *     <li>que ces anciens droits n'avaient pas les mêmes raisons d'acquisition</li>
+	 *     <li>que le nouveau droit a repris l'ensemble des raisons d'acquisition (= fusion des raison d'acquisition des anciens droits)</li>
+	 * </ul>
+	 * A ce moment-là, l'algorithme doit scanner tous les anciens droits pour trouver la raison d'acquisition la plus récente (et non prendre
+	 * le droit le plus récent).
+	 */
+	@Test
+	public void testRefreshDatesMetierPlusieursAnciensDroitPourNouveauProprietaire() throws Exception {
+
+		final Listener listener = new Listener();
+
+		final RegDate dateAchat = RegDate.get(2011, 7, 11);
+		final RegDate dateSuccession = RegDate.get(2014, 4, 3);
+		final RegDate dateSession = RegDate.get(2016, 11, 25);
+
+		final RegDate dateImportInitial = RegDate.get(2016, 12, 31);
+		final RegDate dateImportSession = RegDate.get(2017, 3, 18);
+
+		final PersonnePhysiqueRF helene = new PersonnePhysiqueRF();
+		helene.setId(1L);
+		final PersonnePhysiqueRF brigitte = new PersonnePhysiqueRF();
+		brigitte.setId(2L);
+
+		// communauté Hélène - Brigitte
+		final CommunauteRF communaute = new CommunauteRF();
+		communaute.setId(3L);
+
+		//
+		// Situation au 31.12.2016
+		//
+
+		// droit de propriété en copropriété de Hélène
+		final DroitProprietePersonnePhysiqueRF droitHelene = new DroitProprietePersonnePhysiqueRF();
+		droitHelene.setMasterIdRF("28288228");
+		droitHelene.setVersionIdRF("1");
+		droitHelene.setPart(new Fraction(1, 2));
+		droitHelene.setDateDebut(dateImportInitial);
+		droitHelene.setDateFin(dateImportSession.getOneDayBefore());
+		droitHelene.setDateDebutMetier(dateAchat);
+		droitHelene.setDateFinMetier(null);
+		droitHelene.setMotifDebut("Achat");
+		droitHelene.setMotifFin(null);
+		droitHelene.setAyantDroit(helene);
+		droitHelene.setRegime(GenrePropriete.COPROPRIETE);
+		droitHelene.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateAchat, "Achat", null));
+
+		// droit de propriété en communauté de Hélène
+		final DroitProprietePersonnePhysiqueRF droitHeleneComm = new DroitProprietePersonnePhysiqueRF();
+		droitHeleneComm.setMasterIdRF("382818811");
+		droitHeleneComm.setVersionIdRF("1");
+		droitHeleneComm.setPart(new Fraction(1, 1));
+		droitHeleneComm.setDateDebut(dateImportInitial);
+		droitHeleneComm.setDateFin(dateImportSession.getOneDayBefore());
+		droitHeleneComm.setDateDebutMetier(dateSuccession);
+		droitHeleneComm.setDateFinMetier(null);
+		droitHeleneComm.setMotifDebut("Succession");
+		droitHeleneComm.setMotifFin(null);
+		droitHeleneComm.setAyantDroit(helene);
+		droitHeleneComm.setCommunaute(communaute);
+		droitHeleneComm.setRegime(GenrePropriete.COMMUNE);
+		droitHeleneComm.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
+
+		// droit de propriété en communauté de Brigitte
+		final DroitProprietePersonnePhysiqueRF droitBrigitteComm = new DroitProprietePersonnePhysiqueRF();
+		droitBrigitteComm.setMasterIdRF("0472617182");
+		droitBrigitteComm.setVersionIdRF("1");
+		droitBrigitteComm.setPart(new Fraction(1, 1));
+		droitBrigitteComm.setDateDebut(dateImportInitial);
+		droitBrigitteComm.setDateFin(dateImportSession.getOneDayBefore());
+		droitBrigitteComm.setDateDebutMetier(dateSuccession);
+		droitBrigitteComm.setDateFinMetier(null);
+		droitBrigitteComm.setMotifDebut("Succession");
+		droitBrigitteComm.setMotifFin(null);
+		droitBrigitteComm.setAyantDroit(brigitte);
+		droitBrigitteComm.setCommunaute(communaute);
+		droitBrigitteComm.setRegime(GenrePropriete.COMMUNE);
+		droitBrigitteComm.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
+
+		final DroitProprieteCommunauteRF droitCommunaute = new DroitProprieteCommunauteRF();
+		droitCommunaute.setMasterIdRF("2828828221");
+		droitCommunaute.setVersionIdRF("1");
+		droitCommunaute.setPart(new Fraction(1,2));
+		droitCommunaute.setDateDebut(dateImportInitial);
+		droitCommunaute.setDateFin(dateImportSession.getOneDayBefore());
+		droitCommunaute.setDateDebutMetier(dateSuccession);
+		droitCommunaute.setDateFinMetier(null);
+		droitCommunaute.setMotifDebut("Succession");
+		droitCommunaute.setMotifFin(null);
+		droitCommunaute.setAyantDroit(communaute);
+		droitCommunaute.setRegime(GenrePropriete.COPROPRIETE);
+		droitCommunaute.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
+
+		//
+		// Situation au 18.03.2017
+		//
+
+		// nouveau droit de propriété individuel de Hélène
+		final DroitProprietePersonnePhysiqueRF nouveauDroitHelene = new DroitProprietePersonnePhysiqueRF();
+		nouveauDroitHelene.setMasterIdRF("2625656116");
+		nouveauDroitHelene.setVersionIdRF("1");
+		nouveauDroitHelene.setPart(new Fraction(1, 1));
+		nouveauDroitHelene.setDateDebut(dateImportSession);
+		nouveauDroitHelene.setDateFin(null);
+		nouveauDroitHelene.setDateDebutMetier(null);
+		nouveauDroitHelene.setDateFinMetier(null);
+		nouveauDroitHelene.setAyantDroit(helene);
+		nouveauDroitHelene.setRegime(GenrePropriete.INDIVIDUELLE);
+		nouveauDroitHelene.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSession, dateAchat, "Achat", null));
+		nouveauDroitHelene.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession, "Succession", null));
+		nouveauDroitHelene.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportSession, dateSession, "Session", null));
+
+		final ImmeubleRF immeuble = new BienFondsRF();
+		final AffaireRF affaire = new AffaireRF(dateImportSession, immeuble,
+		                                        Collections.singletonList(nouveauDroitHelene),
+		                                        Collections.emptyList(),
+		                                        Arrays.asList(droitHelene, droitHeleneComm, droitBrigitteComm, droitCommunaute));
+		affaire.refreshDatesMetier(listener);
+
+		// l'ancien droit d'hélène doit être fermé à la date de session
+		assertEquals(dateAchat, droitHelene.getDateDebutMetier());
+		assertEquals(dateSession, droitHelene.getDateFinMetier());
+		assertEquals("Achat", droitHelene.getMotifDebut());
+		assertEquals("Session", droitHelene.getMotifFin());
+
+		// les anciens droits de la communauté doivent être fermés à la date de session
+		assertEquals(dateSuccession, droitHeleneComm.getDateDebutMetier());
+		assertEquals(dateSuccession, droitBrigitteComm.getDateDebutMetier());
+		assertEquals(dateSuccession, droitCommunaute.getDateDebutMetier());
+		assertEquals("Succession", droitHeleneComm.getMotifDebut());
+		assertEquals("Succession", droitBrigitteComm.getMotifDebut());
+		assertEquals("Succession", droitCommunaute.getMotifDebut());
+		assertEquals(dateSession, droitHeleneComm.getDateFinMetier());
+		assertEquals(dateSession, droitBrigitteComm.getDateFinMetier());
+		assertEquals(dateSession, droitCommunaute.getDateFinMetier());
+		assertEquals("Session", droitHeleneComm.getMotifFin());
+		assertEquals("Session", droitBrigitteComm.getMotifFin());
+		assertEquals("Session", droitCommunaute.getMotifFin());
+
+		assertEquals(dateSession, nouveauDroitHelene.getDateDebutMetier());
+		assertEquals("Session", nouveauDroitHelene.getMotifDebut());
+		assertNull(nouveauDroitHelene.getDateFinMetier());
+		assertNull(nouveauDroitHelene.getMotifFin());
+
+		// les 5 droits sont mis-à-jour
+		assertEquals(0, listener.getCreated().size());
+		final List<Listener.FinUpdate> finUpdates = listener.getFinUpdates();
+		assertEquals(4, finUpdates.size());
+		assertFinUpdate(droitHelene, null, null, finUpdates.get(0));
+		assertFinUpdate(droitHeleneComm, null, null, finUpdates.get(1));
+		assertFinUpdate(droitBrigitteComm, null, null, finUpdates.get(2));
+		assertFinUpdate(droitCommunaute, null, null, finUpdates.get(3));
+		final List<Listener.DebutUpdate> debutUpdates = listener.getDebutUpdates();
+		assertEquals(1, debutUpdates.size());
+		assertDebutUpdate(nouveauDroitHelene, null, null, debutUpdates.get(0));
+		assertEquals(0, listener.getClosed().size());
+	}
+
 
 	private static class Listener implements AffaireRFListener {
 
