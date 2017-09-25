@@ -1755,6 +1755,269 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 	}
 
+	@Test
+	public void testGetCommunauteMembreInfoCommunauteAvecPrincipalParDefaut() throws Exception {
+
+		final class Ids {
+			Long ppId1;
+			Long ppId2;
+			long communaute;
+		}
+
+		final RegDate dateDebutCommunaute = date(2005, 3, 2);
+
+		// on créé une communauté de 2 personnes qui ne change pas dans le temps (= un seul regroupement)
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			// pp
+			final PersonnePhysique nonhab1 = addNonHabitant("Philip", "Linconnu", date(1967, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique nonhab2 = addNonHabitant("Elodie", "Loongle", date(1980, 11, 22), Sexe.FEMININ);
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			addRapprochementRF(nonhab1, pp1, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(nonhab2, pp2, null, null, TypeRapprochementRF.AUTO);
+
+			// communauté
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(pp1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(pp2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+
+			final ModeleCommunauteRF modele = addModeleCommunauteRF(pp1, pp2);
+			addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
+
+			final Ids res = new Ids();
+			res.ppId1 = nonhab1.getId();
+			res.ppId2 = nonhab2.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		// on demande les infos de la communauté
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+				assertNotNull(communaute);
+
+				// la communauté avec Philip comme membre principal (parce que Linconnu arrive avant Loongle)
+				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+				assertNotNull(info);
+				assertEquals(2, info.getCount());
+				assertEquals(Arrays.asList(ids.ppId1, ids.ppId2), info.getCtbIds());
+
+				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+				assertEquals(1, principaux.size());
+
+				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+				assertEquals(ids.ppId1.longValue(), principal0.getCtbId());
+				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+				assertNull(principal0.getDateFin());
+			}
+		});
+	}
+
+	@Test
+	public void testGetCommunauteMembreInfoCommunauteAvecPrincipalChoisi() throws Exception {
+
+		final class Ids {
+			Long ppId1;
+			Long ppId2;
+			long communaute;
+		}
+
+		final RegDate dateDebutCommunaute = date(2005, 3, 2);
+
+		// on créé une communauté de 2 personnes qui ne change pas dans le temps (= un seul regroupement)
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			// pp
+			final PersonnePhysique nonhab1 = addNonHabitant("Philip", "Linconnu", date(1967, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique nonhab2 = addNonHabitant("Elodie", "Loongle", date(1980, 11, 22), Sexe.FEMININ);
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			addRapprochementRF(nonhab1, pp1, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(nonhab2, pp2, null, null, TypeRapprochementRF.AUTO);
+
+			// communauté
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(pp1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(pp2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+
+			final ModeleCommunauteRF modele = addModeleCommunauteRF(pp1, pp2);
+
+			// on choisit explicitement Elodie comme principal pour ce modèle de communauté
+			final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
+			modele.addPrincipal(principal);
+			principal.setPrincipal(pp2);
+
+			addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
+
+			final Ids res = new Ids();
+			res.ppId1 = nonhab1.getId();
+			res.ppId2 = nonhab2.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		// on demande les infos de la communauté
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+				assertNotNull(communaute);
+
+				// la communauté avec Elodie comme membre principal (parce qu'elle est explicitement choisie)
+				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+				assertNotNull(info);
+				assertEquals(2, info.getCount());
+				assertEquals(Arrays.asList(ids.ppId2, ids.ppId1), info.getCtbIds());
+
+				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+				assertEquals(1, principaux.size());
+
+				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+				assertEquals(ids.ppId2.longValue(), principal0.getCtbId());
+				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+				assertNull(principal0.getDateFin());
+			}
+		});
+	}
+
+	@Test
+	public void testGetCommunauteMembreInfoCommunauteAvecPlusieursRegroupement() throws Exception {
+
+		final class Ids {
+			Long ppId1;
+			Long ppId2;
+			Long ppId3;
+			long communaute;
+		}
+
+		final RegDate dateDebutCommunaute = date(2005, 3, 2);
+		final RegDate datePartage = date(2008, 7, 1);
+
+		// on créé une communauté de 3 personnes qui passe ensuite à 2 personnes (= deux regroupements)
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			// pp
+			final PersonnePhysique nonhab1 = addNonHabitant("Philip", "Linconnu", date(1967, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique nonhab2 = addNonHabitant("Elodie", "Loongle", date(1980, 11, 22), Sexe.FEMININ);
+			final PersonnePhysique nonhab3 = addNonHabitant("Edouard", "Loongle", date(1990,6, 8), Sexe.MASCULIN);
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("263564617", "Edouard", "Loongle", date(1990,6, 8));
+			addRapprochementRF(nonhab1, pp1, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(nonhab2, pp2, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(nonhab3, pp3, null, null, TypeRapprochementRF.AUTO);
+
+			// communauté
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(pp1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, datePartage,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(pp2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			final DroitProprietePersonnePhysiqueRF droit3 =
+					addDroitPropriete(pp3, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "3838322111", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+			communaute.addMembre(droit3);
+
+			final ModeleCommunauteRF modele1 = addModeleCommunauteRF(pp1, pp2, pp3);
+			final ModeleCommunauteRF modele2 = addModeleCommunauteRF(pp2, pp3);
+
+			// on choisit explicitement Elodie comme principal pour le second modèle de communauté
+			final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
+			modele2.addPrincipal(principal);
+			principal.setPrincipal(pp2);
+
+			addRegroupementRF(communaute, modele1, dateDebutCommunaute, datePartage.getOneDayBefore());
+			addRegroupementRF(communaute, modele2, datePartage, null);
+
+			final Ids res = new Ids();
+			res.ppId1 = nonhab1.getId();
+			res.ppId2 = nonhab2.getId();
+			res.ppId3 = nonhab3.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		// on demande les infos de la communauté
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+				assertNotNull(communaute);
+
+				// la communauté des 3 membres
+				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+				assertNotNull(info);
+				assertEquals(3, info.getCount());
+				assertEquals(Arrays.asList(ids.ppId2, ids.ppId1, ids.ppId3), info.getCtbIds());
+
+				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+				assertEquals(2, principaux.size());
+
+				// la période où Philip est le principal
+				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+				assertEquals(ids.ppId1.longValue(), principal0.getCtbId());
+				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+				assertEquals(datePartage.getOneDayBefore(), principal0.getDateFin());
+
+				// la période où Elodie est la principale
+				final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
+				assertEquals(ids.ppId2.longValue(), principal1.getCtbId());
+				assertEquals(datePartage, principal1.getDateDebut());
+				assertNull(principal1.getDateFin());
+			}
+		});
+	}
+
 	private ModeleCommunauteRF loadModelInTx(Long idPP1, Long idPP2) {
 		AuthenticationHelper.pushPrincipal("test-user");
 		try {

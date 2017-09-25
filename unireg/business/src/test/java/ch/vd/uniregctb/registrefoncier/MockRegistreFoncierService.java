@@ -49,6 +49,11 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 	}
 
 	@Override
+	public @Nullable Long getCommunauteCurrentPrincipalId(@NotNull CommunauteRF communaute) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public @NotNull ModeleCommunauteRF findOrCreateModeleCommunaute(@NotNull Set<? extends AyantDroitRF> membres) {
 		throw new NotImplementedException();
 	}

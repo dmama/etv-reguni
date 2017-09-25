@@ -22,7 +22,6 @@ import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
@@ -37,20 +36,20 @@ import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
 public class CommunauteRFProcessor {
 
 	private final Function<Set<? extends AyantDroitRF>, ModeleCommunauteRF> modeleCommunauteProvider;
-	private final Function<CommunauteRF, CommunauteRFMembreInfo> communauteMembreInfoProvider;
+	private final Function<CommunauteRF, Long> communautePrincipalIdProvider;
 	private final EvenementFiscalService evenementFiscalService;
 
 	public CommunauteRFProcessor(@NotNull RegistreFoncierService registreFoncierService, @NotNull EvenementFiscalService evenementFiscalService) {
 		this.modeleCommunauteProvider = registreFoncierService::findOrCreateModeleCommunaute;
-		this.communauteMembreInfoProvider = registreFoncierService::getCommunauteMembreInfo;
+		this.communautePrincipalIdProvider = registreFoncierService::getCommunauteCurrentPrincipalId;
 		this.evenementFiscalService = evenementFiscalService;
 	}
 
 	public CommunauteRFProcessor(@NotNull Function<Set<? extends AyantDroitRF>, ModeleCommunauteRF> modeleCommunauteProvider,
-	                             @NotNull Function<CommunauteRF, CommunauteRFMembreInfo> communauteMembreInfoProvider,
+	                             @NotNull Function<CommunauteRF, Long> communautePrincipalIdProvider,
 	                             @NotNull EvenementFiscalService evenementFiscalService) {
 		this.modeleCommunauteProvider = modeleCommunauteProvider;
-		this.communauteMembreInfoProvider = communauteMembreInfoProvider;
+		this.communautePrincipalIdProvider = communautePrincipalIdProvider;
 		this.evenementFiscalService = evenementFiscalService;
 	}
 
@@ -80,7 +79,7 @@ public class CommunauteRFProcessor {
 	public boolean process(@NotNull CommunauteRF communaute) {
 
 		// on détermine le principal actuel
-		final Long principalId = communauteMembreInfoProvider.apply(communaute).getCtbIds().stream().findFirst().orElse(null);
+		final Long principalId = communautePrincipalIdProvider.apply(communaute);
 
 		// les regroupements persistés
 		final Set<RegroupementCommunauteRF> persistes = communaute.getRegroupements().stream()
@@ -106,7 +105,7 @@ public class CommunauteRFProcessor {
 		theoriques.forEach(communaute::addRegroupement);
 
 		// on détermine le nouveau principal
-		final Long nouveauPrincipalId = communauteMembreInfoProvider.apply(communaute).getCtbIds().stream().findFirst().orElse(null);
+		final Long nouveauPrincipalId = communautePrincipalIdProvider.apply(communaute);
 
 		// si le principal de communauté a changé, on publie un événement correspondant
 		if (!Objects.equals(principalId, nouveauPrincipalId)) {

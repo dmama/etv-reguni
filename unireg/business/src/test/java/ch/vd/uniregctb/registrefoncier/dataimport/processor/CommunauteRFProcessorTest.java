@@ -56,7 +56,7 @@ public class CommunauteRFProcessorTest {
 				evenementsModificationPrincipalCommunaute.add(new Pair<>(dateDebut, communaute));
 			}
 		};
-		processor = new CommunauteRFProcessor(this::getModeleCommunauteRF, this::getMembreInfo, evenementFiscalService);
+		processor = new CommunauteRFProcessor(this::getModeleCommunauteRF, this::getPrincipalCommunauteId, evenementFiscalService);
 	}
 
 	/**
@@ -498,7 +498,7 @@ public class CommunauteRFProcessorTest {
 		});
 	}
 
-	private CommunauteRFMembreInfo getMembreInfo(CommunauteRF communaute) {
+	private Long getPrincipalCommunauteId(CommunauteRF communaute) {
 
 		final CommunauteRFMembreInfo info = communaute.buildMembreInfoNonTries();
 		final Long principalCtbId = Optional.ofNullable(communaute.getPrincipalCommunauteDesigne())
@@ -521,7 +521,10 @@ public class CommunauteRFProcessorTest {
 			}
 			return o1.compareTo(o2);
 		});
-		return info;
+
+		// on retourne l'id du principal
+		final List<Long> ctbIds = info.getCtbIds();
+		return ctbIds.isEmpty() ? null : ctbIds.get(0);
 	}
 
 }

@@ -19,6 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -302,6 +303,29 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	@Override
 	@NotNull
 	public CommunauteRFMembreInfo getCommunauteMembreInfo(@NotNull CommunauteRF communaute) {
+
+		// on va chercher les infos de la communauté
+		final CommunauteRFMembreInfo info = communaute.buildMembreInfoNonTries();
+
+		// [SIFISC-24595] on détermine l'historique des principaux
+		final List<CommunauteRFPrincipalInfo> principaux = buildPrincipalHisto(communaute);
+		info.setPrincipaux(principaux);
+
+		// [SIFISC-23747] on trie la collection de tiers de telle manière que le leader de la communauté soit en première position
+		final Long principalCtbId = principaux.stream()
+				.max(new DateRangeComparator<>())
+				.map(CommunauteRFPrincipalInfo::getCtbId)
+				.orElse(null);
+		info.sortMembers(new CommunauteRFMembreComparator(tiersService, principalCtbId));
+
+		return info;
+	}
+
+	@Override
+	@Nullable
+	public Long getCommunauteCurrentPrincipalId(@NotNull CommunauteRF communaute) {
+
+		// on va chercher les infos de la communauté
 		final CommunauteRFMembreInfo info = communaute.buildMembreInfoNonTries();
 		final Long principalCtbId = Optional.ofNullable(communaute.getPrincipalCommunauteDesigne())
 				.filter(TiersRF.class::isInstance)
@@ -309,10 +333,100 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.map(TiersRF::getCtbRapproche)
 				.map(Tiers::getId)
 				.orElse(null);
+
+		if (principalCtbId != null) {
+			// on a trouvé l'id
+			return principalCtbId;
+		}
+
 		// [SIFISC-23747] on trie la collection de tiers de telle manière que le leader de la communauté soit en première position
-		info.sortMembers(new CommunauteRFMembreComparator(tiersService, principalCtbId));
-		return info;
+		info.sortMembers(new CommunauteRFMembreComparator(tiersService, null));
+
+		// on retourne l'id du principal par défaut
+		final List<Long> ctbIds = info.getCtbIds();
+		return ctbIds.isEmpty() ? null : ctbIds.get(0);
 	}
+
+	/**
+	 * Construit la vue historique des principaux (par défaut + explicites) pour une communauté.
+	 *
+	 * @param communaute une modèle de communauté
+	 * @return l'historique des principaux
+	 */
+	@NotNull
+	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull CommunauteRF communaute) {
+
+		// on calcule l'historique regroupement par regroupement et on additionne bout-à-bout les périodes
+		final List<CommunauteRFPrincipalInfo> histo = communaute.getRegroupements().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.sorted(new DateRangeComparator<>())
+				.map(this::buildPrincipalHisto)
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList());
+
+		// on fusionne les périodes qui peuvent l'être
+		return DateRangeHelper.collate(histo);
+	}
+
+	/**
+	 * Construit la vue historique des principaux (par défaut + explicites) pour un regroupement de communauté.
+	 *
+	 * @param regroupement un regroupement de communauté
+	 * @return l'historique des principaux
+	 */
+	@NotNull
+	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull RegroupementCommunauteRF regroupement) {
+
+		// on calcule l'histo du modèle de communauté
+		final List<CommunauteRFPrincipalInfo> histo = buildPrincipalHisto(regroupement.getModele());
+
+		// on le réduit à la durée de validité du regroupement
+		return DateRangeHelper.extract(histo, regroupement.getDateDebut(), regroupement.getDateFin(), CommunauteRFPrincipalInfo::adapter);
+	}
+
+	/**
+	 * Construit la vue historique des principaux (par défaut + explicites) pour un modèle de communauté.
+	 *
+	 * @param modeleCommunaute un modèle de communauté
+	 * @return l'historique des principaux
+	 */
+	@NotNull
+	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute) {
+
+		// on détermine le principal par défaut
+		final Long defaultPrincipal = modeleCommunaute.getMembres().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(TiersRF.class::isInstance)
+				.map(TiersRF.class::cast)
+				.map(TiersRF::getCtbRapproche)
+				.filter(Objects::nonNull)
+				.map(Tiers::getNumero)
+				.sorted(new CommunauteRFMembreComparator(tiersService, null))
+				.findFirst()
+				.orElse(null);
+
+		// on crée l'historique (une seule valeur en fait) des principaux par défaut
+		final List<CommunauteRFPrincipalInfo> defaultHisto = new ArrayList<>();
+		if (defaultPrincipal != null) {
+			defaultHisto.add(new CommunauteRFPrincipalInfo(null, null, defaultPrincipal));
+		}
+
+		// on crée l'historique des principaux explicitement désignés
+		final Set<PrincipalCommunauteRF> principaux = modeleCommunaute.getPrincipaux();
+		final List<CommunauteRFPrincipalInfo> principauxInfo = (principaux == null ? Collections.emptyList() : principaux.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(CommunauteRFPrincipalInfo::get)
+				.filter(Objects::nonNull)
+				.sorted(new DateRangeComparator<>())
+				.collect(Collectors.toList()));
+
+		// on les combine ensemble
+		final List<CommunauteRFPrincipalInfo> histo = DateRangeHelper.override(defaultHisto, principauxInfo, CommunauteRFPrincipalInfo::adapter);
+
+		// on fusionne les périodes qui peuvent l'être
+		return DateRangeHelper.collate(histo);
+	}
+
 
 	@NotNull
 	@Override

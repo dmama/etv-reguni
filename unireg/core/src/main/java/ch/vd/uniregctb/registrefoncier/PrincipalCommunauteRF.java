@@ -40,7 +40,7 @@ public class PrincipalCommunauteRF extends HibernateDateRangeEntity implements L
 	/**
 	 * Le principal valide pendant la période considérée
 	 */
-	private AyantDroitRF principal;
+	private TiersRF principal;
 
 	@Transient
 	@Override
@@ -77,11 +77,11 @@ public class PrincipalCommunauteRF extends HibernateDateRangeEntity implements L
 	@JoinColumn(name = "PRINCIPAL_ID", nullable = false)
 	@ForeignKey(name = "FK_PRINCIPAL_ID")
 	@Index(name = "IDX_PRINC_PRINCIPAL_ID", columnNames = "PRINCIPAL_ID")
-	public AyantDroitRF getPrincipal() {
+	public TiersRF getPrincipal() {
 		return principal;
 	}
 
-	public void setPrincipal(AyantDroitRF principal) {
+	public void setPrincipal(TiersRF principal) {
 		this.principal = principal;
 	}
 

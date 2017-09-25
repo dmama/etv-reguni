@@ -26,6 +26,7 @@ public interface ModeleCommunauteRFDAO extends GenericDAO<ModeleCommunauteRF, Lo
 	 * <b>Attention !</b> Cette méthode ne vérifie pas l'existance d'un modèle préexistant.
 	 *
 	 * @param membresIds les ids des membres de la communauté.
+	 * @return l'id du modèle de communauté créé.
 	 */
 	long createWith(Set<Long> membresIds);
 }

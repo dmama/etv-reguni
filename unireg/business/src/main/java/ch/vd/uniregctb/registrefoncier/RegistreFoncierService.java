@@ -76,6 +76,13 @@ public interface RegistreFoncierService {
 	CommunauteRFMembreInfo getCommunauteMembreInfo(@NotNull CommunauteRF communaute);
 
 	/**
+	 * @param communaute une communauté
+	 * @return le numéro de ctb du principal courant de la communauté; ou <b>null</b> si la communauté est vide.
+	 */
+	@Nullable
+	Long getCommunauteCurrentPrincipalId(@NotNull CommunauteRF communaute);
+
+	/**
 	 * Recherche ou crée un modèle de communauté qui correspond aux membres de communauté spécifiés.
 	 * </p>
 	 * <b>Attention !</b> Dans le cas où un nouveau modèle est créé, sa création est effectuée dans une transaction séparée et immédiatement committée.
