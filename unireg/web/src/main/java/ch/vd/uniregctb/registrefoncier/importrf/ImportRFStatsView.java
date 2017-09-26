@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.uniregctb.registrefoncier.importrf;
 
 import java.util.Map;
 

@@ -24,7 +24,7 @@
 		<property name="syncOnCommit" value="false" />
 	</bean>
 
-	<bean id="importRFController" class="ch.vd.uniregctb.registrefoncier.ImportRFController">
+	<bean id="importRFController" class="ch.vd.uniregctb.registrefoncier.importrf.ImportRFController">
 		<property name="serviceImportRF" ref="serviceImportRF" />
 		<property name="evenementRFImportDAO" ref="evenementRFImportDAO" />
 		<property name="evenementRFMutationDAO" ref="evenementRFMutationDAO" />

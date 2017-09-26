@@ -31,7 +31,7 @@
 		<fieldset class="information">
 			<legend><span><fmt:message key="title.details.import.rf" /></span></legend>
 
-			<%--@elvariable id="importEvent" type="ch.vd.uniregctb.registrefoncier.EvenementRFImportView"--%>
+				<%--@elvariable id="importEvent" type="ch.vd.uniregctb.registrefoncier.importrf.EvenementRFImportView"--%>
 			<table border="0">
 				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.id.event.rf" />&nbsp;:</td>
@@ -87,7 +87,7 @@
 
 			<%--@elvariable id="pageSize" type="java.lang.Long"--%>
 			<%--@elvariable id="count" type="java.lang.Long"--%>
-			<%--@elvariable id="mutation" type="ch.vd.uniregctb.registrefoncier.EvenementRFMutationView"--%>
+			<%--@elvariable id="mutation" type="ch.vd.uniregctb.registrefoncier.importrf.EvenementRFMutationView"--%>
 
 			<display:table name="mutations" id="mutation" class="display_table" pagesize="${pageSize}" size="${count}" sort="external" partialList="true"
 			               requestURI="/registrefoncier/import/show.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
