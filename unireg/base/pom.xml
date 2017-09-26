@@ -726,12 +726,12 @@
 		<activemq.version>5.11.0.redhat-620133</activemq.version>
 		<atomikos.version>4.0.4</atomikos.version>
 		<jackson.version>1.9.13</jackson.version>
-		<wsparty3.version>3.9-SNAPSHOT</wsparty3.version>
-		<wsparty4.version>4.2-SNAPSHOT</wsparty4.version>
-		<ws.v5.version>5.5.2-SNAPSHOT</ws.v5.version>
-		<ws.v6.version>6.5.2-SNAPSHOT</ws.v6.version>
-		<ws.v7.version>7.8-SNAPSHOT</ws.v7.version>
-		<unireg.jaxb2.version>6.6-SNAPSHOT</unireg.jaxb2.version>
+		<wsparty3.version>3.9</wsparty3.version>
+		<wsparty4.version>4.2</wsparty4.version>
+		<ws.v5.version>5.5.2</ws.v5.version>
+		<ws.v6.version>6.5.2</ws.v6.version>
+		<ws.v7.version>7.8</ws.v7.version>
+		<unireg.jaxb2.version>6.6</unireg.jaxb2.version>
 
 		<!-- Testing dependency versions -->
 		<junit.version>4.12</junit.version>

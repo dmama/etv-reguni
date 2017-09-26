@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-securite</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
+			<version>1.0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
@@ -127,7 +127,7 @@
 		<dependency>
 			<artifactId>shared-cxf</artifactId>
 			<groupId>ch.vd.shared</groupId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>3.0.0</version>
 		</dependency>
 	</dependencies>
 	<pluginRepositories>
