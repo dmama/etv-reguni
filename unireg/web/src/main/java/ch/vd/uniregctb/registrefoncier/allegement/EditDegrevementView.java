@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.uniregctb.registrefoncier.allegement;
 
 import ch.vd.uniregctb.foncier.DegrevementICI;
 

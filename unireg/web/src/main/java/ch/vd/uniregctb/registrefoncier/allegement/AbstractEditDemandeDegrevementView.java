@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.registrefoncier;
+package ch.vd.uniregctb.registrefoncier.allegement;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
