@@ -7,7 +7,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-wsclient-securite</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.6-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier SecuriteService.wsdl ! -->
+	<version>1.0.6</version> <!-- Attention ! Aussi changer la version dans le fichier SecuriteService.wsdl ! -->
 
 	<name>Unireg - Client WS Securite</name>
 	<description>Unireg - Client Java pour le web-service securité de Unireg</description>
