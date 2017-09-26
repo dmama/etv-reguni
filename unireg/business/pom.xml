@@ -61,7 +61,7 @@
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>uniregctb-bvrplus</artifactId>
-			<version>1.1.10</version>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.shared</groupId>
@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-wsclient-efacture</artifactId>
-			<version>1.9-SNAPSHOT</version>
+			<version>1.9</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
