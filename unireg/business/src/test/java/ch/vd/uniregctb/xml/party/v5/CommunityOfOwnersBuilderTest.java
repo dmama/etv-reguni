@@ -80,7 +80,8 @@ public class CommunityOfOwnersBuilderTest {
 		communaute.addDroitPropriete(droit);
 
 		final CommunauteRFMembreInfo membreInfo = new CommunauteRFMembreInfo(4, Collections.singletonList(2727272L), Arrays.asList(ppRF, pmRF, collRF));
-		membreInfo.setPrincipaux(Collections.singletonList(new CommunauteRFPrincipalInfo(RegDate.get(2016, 9, 22), RegDate.get(2017, 4, 14), 2727272L)));
+		membreInfo.setPrincipaux(Collections.singletonList(new CommunauteRFPrincipalInfo(null,
+		                                                                                 null, RegDate.get(2016, 9, 22), RegDate.get(2017, 4, 14), 2727272L, false)));
 
 		final CommunityOfOwners community = CommunityOfOwnersBuilder.newCommunity(communaute, id -> null, id -> membreInfo);
 		assertNotNull(community);

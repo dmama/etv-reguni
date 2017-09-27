@@ -36,6 +36,24 @@
 		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
+	<bean id="communauteRFController" class="ch.vd.uniregctb.registrefoncier.communaute.CommunauteRFController">
+		<property name="ayantDroitDAO" ref="ayantDroitRFDAO"/>
+		<property name="modeleCommunauteDAO" ref="modeleCommunauteRFDAO"/>
+		<property name="principalCommunauteRFDAO" ref="principalCommunauteRFDAO"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="criteriaValidator">
+			<bean class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator">
+				<!-- allowsEmpty -->
+				<constructor-arg value="true"/>
+			</bean>
+		</property>
+		<property name="addPrincipalViewValidator">
+			<bean class="ch.vd.uniregctb.registrefoncier.communaute.AddPrincipalViewValidator"/>
+		</property>
+		<property name="registreFoncierService" ref="serviceRF"/>
+	</bean>
+
 	<bean id="situationSurchargeRFController" class="ch.vd.uniregctb.registrefoncier.situation.surcharge.SituationSurchargeRFController">
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
 		<property name="situationRFDAO" ref="situationRFDAO"/>

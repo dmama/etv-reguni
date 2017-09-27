@@ -27,6 +27,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -384,12 +385,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		return DateRangeHelper.extract(histo, regroupement.getDateDebut(), regroupement.getDateFin(), CommunauteRFPrincipalInfo::adapter);
 	}
 
-	/**
-	 * Construit la vue historique des principaux (par défaut + explicites) pour un modèle de communauté.
-	 *
-	 * @param modeleCommunaute un modèle de communauté
-	 * @return l'historique des principaux
-	 */
+	@Override
 	@NotNull
 	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute) {
 
@@ -408,7 +404,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		// on crée l'historique (une seule valeur en fait) des principaux par défaut
 		final List<CommunauteRFPrincipalInfo> defaultHisto = new ArrayList<>();
 		if (defaultPrincipal != null) {
-			defaultHisto.add(new CommunauteRFPrincipalInfo(null, null, defaultPrincipal));
+			defaultHisto.add(new CommunauteRFPrincipalInfo(null, null, null, null, defaultPrincipal, true));
 		}
 
 		// on crée l'historique des principaux explicitement désignés
@@ -598,5 +594,56 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 		// on publie un événement fiscal
 		evenementFiscalService.publierModificationSituationImmeuble(situation.getDateDebut(), situation.getImmeuble());
+	}
+
+	@Override
+	public void addPrincipalToModeleCommunaute(@NotNull TiersRF membre, @NotNull ModeleCommunauteRF modele, @NotNull RegDate dateDebut) {
+
+		if (modele.getMembres().stream()
+				.noneMatch(m -> m.getId().equals(membre.getId()))) {
+			throw new IllegalArgumentException("L'ayant-droit id=[" + membre.getId() + "] ne fait pas partie des membres du modèle de communauté id=[" + modele.getId() + "]");
+		}
+
+		if (modele.getPrincipaux().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.anyMatch(m -> m.getDateDebut() == dateDebut)) {
+			throw new IllegalArgumentException("La date [] est déjà utilisée comme date de début d'un principal du modèle de communauté id=[" + modele.getId() + "]");
+		}
+
+		// on ajoute le principal
+		final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
+		principal.setPrincipal(membre);
+		principal.setDateDebut(dateDebut);
+		principal.setModeleCommunaute(modele);
+		modele.addPrincipal(principal);
+
+		// on recalcule les dates de fin
+		recalculeDatesFins(modele);
+	}
+
+	@Override
+	public void cancelPrincipalCommunaute(@NotNull PrincipalCommunauteRF principal) {
+
+		// on annule le principal
+		principal.setAnnule(true);
+
+		// on recalcule les dates de fin
+		final ModeleCommunauteRF modele = principal.getModeleCommunaute();
+		recalculeDatesFins(modele);
+	}
+
+	private static void recalculeDatesFins(@NotNull ModeleCommunauteRF modele) {
+		final List<PrincipalCommunauteRF> principaux = modele.getPrincipaux().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.sorted(Comparator.comparing(HibernateDateRangeEntity::getDateDebut, NullDateBehavior.EARLIEST::compare))
+				.collect(Collectors.toList());
+		PrincipalCommunauteRF previous = null;
+		for (PrincipalCommunauteRF current : principaux) {
+			current.setDateFin(null);
+			if (previous != null) {
+				previous.setDateFin(current.getDateDebut().getOneDayBefore());
+			}
+			previous = current;
+		}
 	}
 }

@@ -83,6 +83,14 @@ public interface RegistreFoncierService {
 	Long getCommunauteCurrentPrincipalId(@NotNull CommunauteRF communaute);
 
 	/**
+	 * Construit la vue historique des principaux (par défaut + explicites) pour un modèle de communauté.
+	 *
+	 * @param modeleCommunaute un modèle de communauté
+	 * @return l'historique des principaux
+	 */
+	@NotNull List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute);
+
+	/**
 	 * Recherche ou crée un modèle de communauté qui correspond aux membres de communauté spécifiés.
 	 * </p>
 	 * <b>Attention !</b> Dans le cas où un nouveau modèle est créé, sa création est effectuée dans une transaction séparée et immédiatement committée.
@@ -149,4 +157,20 @@ public interface RegistreFoncierService {
 	 * @param noOfsCommune le numéro Ofs de la commune de surcharge
 	 */
 	void surchargerCommuneFiscaleSituation(long situationId, @Nullable Integer noOfsCommune);
+
+	/**
+	 * Ajoute le membre spécifiée comme principal du modèle de communauté à partir d'une certaine date. L'historique des principaux est ordonné selon les dates de début et les dates de fin sont automatiquement recalculées.
+	 *
+	 * @param membre    un membre de la communauté
+	 * @param modele    le modèle de communauté à mettre-à-jour
+	 * @param dateDebut la date de début de valditié du membre comme principal
+	 */
+	void addPrincipalToModeleCommunaute(@NotNull TiersRF membre, @NotNull ModeleCommunauteRF modele, @NotNull RegDate dateDebut);
+
+	/**
+	 * Annule le principal de communauté spécifié.
+	 *
+	 * @param principal le principal à annuler
+	 */
+	void cancelPrincipalCommunaute(@NotNull PrincipalCommunauteRF principal);
 }

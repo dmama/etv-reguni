@@ -54,6 +54,11 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 	}
 
 	@Override
+	public @NotNull List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public @NotNull ModeleCommunauteRF findOrCreateModeleCommunaute(@NotNull Set<? extends AyantDroitRF> membres) {
 		throw new NotImplementedException();
 	}
@@ -90,6 +95,16 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 
 	@Override
 	public void surchargerCommuneFiscaleSituation(long situationId, @Nullable Integer noOfsCommune) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void addPrincipalToModeleCommunaute(@NotNull TiersRF membre, @NotNull ModeleCommunauteRF modele, @NotNull RegDate dateDebut) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void cancelPrincipalCommunaute(@NotNull PrincipalCommunauteRF principal) {
 		throw new NotImplementedException();
 	}
 }

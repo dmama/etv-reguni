@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -2015,6 +2016,156 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				assertEquals(datePartage, principal1.getDateDebut());
 				assertNull(principal1.getDateFin());
 			}
+		});
+	}
+
+	/**
+	 * [SIFISC-24595] Vérifie que l'ajout d'un principal sur une communauté sans principal défini fonctionne bien.
+	 */
+	@Test
+	public void testAddPrincipalToModeleCommunauteSansPrincipal() throws Exception {
+
+		final RegDate dateDebut = RegDate.get(2005, 4, 12);
+
+		final class Ids {
+			Long pp1;
+			Long pp2;
+			Long pp3;
+			Long modele;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("Brigitte", "Widmer", date(1970, 7, 2), "434545", 411451L, null);
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("Noémie", "Widmer", date(1970, 7, 2), "010289290", 777L, null);
+
+			ModeleCommunauteRF modele = new ModeleCommunauteRF();
+			modele.addMembre(pp1);
+			modele.addMembre(pp2);
+			modele.addMembre(pp3);
+			modele.setMembresHashCode(ModeleCommunauteRF.hashCode(modele.getMembres()));
+			modele = modeleCommunauteRFDAO.save(modele);
+
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+			ids.pp3 = pp3.getId();
+			ids.modele = modele.getId();
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp2);
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			serviceRF.addPrincipalToModeleCommunaute(pp2, modele, dateDebut);
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			final Set<PrincipalCommunauteRF> principaux = modele.getPrincipaux();
+			assertNotNull(principaux);
+			assertEquals(1, principaux.size());
+
+			final PrincipalCommunauteRF principal0 = principaux.iterator().next();
+			assertNotNull(principal0);
+			assertEquals(ids.pp2, principal0.getPrincipal().getId());
+			assertEquals(dateDebut, principal0.getDateDebut());
+			assertNull(principal0.getDateFin());
+			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-24595] Vérifie que l'ajout d'un principal sur une communauté avec des principaux préxistants fonctionne bien.
+	 */
+	@Test
+	public void testAddPrincipalToModeleCommunauteAvecPrincipauxExistants() throws Exception {
+
+		final RegDate dateDebut1 = RegDate.get(2003, 7, 28);
+		final RegDate dateDebut2 = RegDate.get(2005, 4, 12);
+		final RegDate dateDebut3 = RegDate.get(2012, 11, 19);
+
+		final class Ids {
+			Long pp1;
+			Long pp2;
+			Long pp3;
+			Long modele;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("Brigitte", "Widmer", date(1970, 7, 2), "434545", 411451L, null);
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("Noémie", "Widmer", date(1970, 7, 2), "010289290", 777L, null);
+
+			ModeleCommunauteRF modele = new ModeleCommunauteRF();
+			modele.addMembre(pp1);
+			modele.addMembre(pp2);
+			modele.addMembre(pp3);
+			modele.setMembresHashCode(ModeleCommunauteRF.hashCode(modele.getMembres()));
+			modele = modeleCommunauteRFDAO.save(modele);
+
+			final PrincipalCommunauteRF p1 = new PrincipalCommunauteRF();
+			p1.setModeleCommunaute(modele);
+			p1.setPrincipal(pp1);
+			p1.setDateDebut(dateDebut1);
+			p1.setDateFin(dateDebut3.getOneDayBefore());
+			modele.addPrincipal(p1);
+
+			final PrincipalCommunauteRF p3 = new PrincipalCommunauteRF();
+			p3.setModeleCommunaute(modele);
+			p3.setPrincipal(pp3);
+			p3.setDateDebut(dateDebut3);
+			modele.addPrincipal(p3);
+
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+			ids.pp3 = pp3.getId();
+			ids.modele = modele.getId();
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			// on ajoute le principal pp2 intercalé entre le pp1 et le pp3
+			PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp2);
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			serviceRF.addPrincipalToModeleCommunaute(pp2, modele, dateDebut2);
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			// on vérifie qu'on a bien trois principaux et que les dates de début/fin sont bien correctes
+			final List<PrincipalCommunauteRF> principaux = new ArrayList<>(modele.getPrincipaux());
+			assertNotNull(principaux);
+			assertEquals(3, principaux.size());
+			principaux.sort(new DateRangeComparator<>());
+
+			final PrincipalCommunauteRF principal1 = principaux.get(0);
+			assertNotNull(principal1);
+			assertEquals(ids.pp1, principal1.getPrincipal().getId());
+			assertEquals(dateDebut1, principal1.getDateDebut());
+			assertEquals(dateDebut2.getOneDayBefore(), principal1.getDateFin());
+
+			final PrincipalCommunauteRF principal2 = principaux.get(1);
+			assertNotNull(principal2);
+			assertEquals(ids.pp2, principal2.getPrincipal().getId());
+			assertEquals(dateDebut2, principal2.getDateDebut());
+			assertEquals(dateDebut3.getOneDayBefore(), principal2.getDateFin());
+
+			final PrincipalCommunauteRF principal3 = principaux.get(2);
+			assertNotNull(principal3);
+			assertEquals(ids.pp3, principal3.getPrincipal().getId());
+			assertEquals(dateDebut3, principal3.getDateDebut());
+			assertNull(principal3.getDateFin());
+			return null;
 		});
 	}
 
