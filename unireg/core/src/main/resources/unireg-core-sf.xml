@@ -71,6 +71,7 @@
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSituationFamille</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRapprochementTiersRF</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalBatiment</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroit</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete</value>
 		<value>ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble</value>
@@ -237,6 +238,7 @@
 		<value>ch.vd.uniregctb.document.EnvoiFormulairesDemandeDegrevementICIRapport</value>
 		<value>ch.vd.uniregctb.document.RappelFormulairesDemandeDegrevementICIRapport</value>
 		<value>ch.vd.uniregctb.document.RattraperDatesMetierDroitProcessorRapport</value>
+		<value>ch.vd.uniregctb.document.RattrapageModelesCommunautesRFProcessorRapport</value>
 		<value>ch.vd.uniregctb.document.FinsDeDroitRFRapport</value>
 		<value>ch.vd.uniregctb.document.InitialisationIFoncRapport</value>
 		<value>ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport</value>
@@ -266,12 +268,15 @@
 		<value>ch.vd.uniregctb.registrefoncier.ImmeubleAvecQuotePartRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ImplantationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.MineRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.PartCoproprieteRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.PersonneMoraleRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.PrincipalCommunauteRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.QuotePartRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF</value>
+		<value>ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.ServitudeRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SituationRF</value>
 		<value>ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF</value>

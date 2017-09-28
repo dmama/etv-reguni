@@ -11,6 +11,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalBatiment;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroit;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
@@ -18,6 +19,7 @@ import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImplantat
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
 import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -369,6 +371,11 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	@Override
 	public void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation) {
 		saveAndPublish(new EvenementFiscalImplantationBatiment(dateFin, implantation, EvenementFiscalImplantationBatiment.TypeEvenementFiscalImplantation.RADIATION));
+	}
+
+	@Override
+	public void publierModificationPrincipalCommunaute(RegDate dateDebut, CommunauteRF communaute) {
+		saveAndPublish(new EvenementFiscalCommunaute(dateDebut, communaute, EvenementFiscalCommunaute.TypeEvenementFiscalCommunaute.CHANGEMENT_PRINCIPAL));
 	}
 
 	@Override

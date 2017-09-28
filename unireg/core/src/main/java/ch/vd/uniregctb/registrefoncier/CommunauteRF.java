@@ -1,16 +1,28 @@
 package ch.vd.uniregctb.registrefoncier;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.hibernate.annotations.ForeignKey;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.tiers.Contribuable;
 
 /**
  * Une communauté représente un groupement de tiers qui possèdent ensemble un droit sur un immeuble.
@@ -25,6 +37,11 @@ public class CommunauteRF extends AyantDroitRF {
 	 * Les droits de propriété des membres de la communauté.
 	 */
 	private Set<DroitProprietePersonneRF> membres;
+
+	/**
+	 * Historique des regroupements de cette communauté vers des modèles de communautés.
+	 */
+	private Set<RegroupementCommunauteRF> regroupements;
 
 	@Column(name = "TYPE_COMMUNAUTE", length = LengthConstants.RF_TYPE_COMMUNAUTE)
 	@Enumerated(EnumType.STRING)
@@ -59,5 +76,68 @@ public class CommunauteRF extends AyantDroitRF {
 
 	public void setMembres(Set<DroitProprietePersonneRF> membres) {
 		this.membres = membres;
+	}
+
+	// configuration hibernate : la communauté possède les regroupements
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "COMMUNAUTE_ID", nullable = false)
+	@ForeignKey(name = "FK_REGRCOMM_RF_COMMUNAUTE_ID")
+	public Set<RegroupementCommunauteRF> getRegroupements() {
+		return regroupements;
+	}
+
+	public void setRegroupements(Set<RegroupementCommunauteRF> regroupements) {
+		this.regroupements = regroupements;
+	}
+
+	public void addRegroupement(@NotNull RegroupementCommunauteRF regroupement) {
+		if (regroupements == null) {
+			regroupements = new HashSet<>();
+		}
+		regroupement.setCommunaute(this);
+		regroupements.add(regroupement);
+	}
+
+	/**
+	 * @return les infos des membres de la communauté <i>non-triés</i>.
+	 */
+	@NotNull
+	public CommunauteRFMembreInfo buildMembreInfoNonTries() {
+
+		// on extrait la liste des tiers RF
+		final List<TiersRF> tiersRF = membres.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(DroitProprieteRF::getAyantDroit)
+				.filter(TiersRF.class::isInstance)
+				.map(TiersRF.class::cast)
+				.collect(Collectors.toList());
+
+		// on extrait la liste des numéros de contribuables rapprochés
+		final List<Long> ctbIds = new ArrayList<>();
+		for (int i = tiersRF.size() - 1; i >= 0; --i) {
+			final TiersRF tiers = tiersRF.get(i);
+			final Contribuable ctb = tiers.getCtbRapproche();
+			if (ctb != null) {
+				ctbIds.add(ctb.getId());
+				tiersRF.remove(i);  // on supprime le tiers de la liste des tiers non-rapprochés
+			}
+		}
+
+		return new CommunauteRFMembreInfo(membres.size(), ctbIds, tiersRF);
+	}
+
+	/**
+	 * @return le principal de communauté courant s'il a été explicitement désigné; <i>null</i> si aucun principal n'a été désigné.
+	 */
+	@Transient
+	@Nullable
+	public AyantDroitRF getPrincipalCommunauteDesigne() {
+		return regroupements.stream()
+				.filter(r -> r.isValidAt(null))
+				.findFirst()
+				.map(RegroupementCommunauteRF::getModele)
+				.map(ModeleCommunauteRF::getPrincipalCourant)
+				.orElse(null);
+
 	}
 }

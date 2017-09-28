@@ -24,6 +24,7 @@ import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -31,10 +32,13 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
+import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.PrincipalCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
+import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
@@ -1055,6 +1059,266 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 				final PersonnePhysique newTiers = hibernateTemplate.get(PersonnePhysique.class, ids.nextTiers);
 				assertNotNull(newTiers);
 				rapprochementRF.setContribuable(newTiers);
+			}
+		});
+
+		// on vérifie l'envoi de notification de changement de communauté sur la communauté existante
+		assertEquals(1, eventService.changedCommunautes.size());
+		assertTrue(eventService.changedCommunautes.contains(ids.communaute));
+	}
+
+	/**
+	 * [SIFISC-24595] détection de la propagation de la modification d'un regroupement de communauté sur une communauté
+	 */
+	@Test
+	public void testDetectChangementCommunauteDansRegroupement() throws Exception {
+
+		assertEmpty(eventService.changedCommunautes);
+
+		final class Ids {
+			long modele1;
+			long modele2;
+			long communaute;
+		}
+
+		// on créé une communauté de 3 personnes en DB
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			final RegDate dateDebutCommunaute = date(2005, 3, 2);
+
+			// pp
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("3493939", "Giu", "Rastata", date(1990, 7, 3));
+
+			// communauté
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(pp1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(pp2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			final DroitProprietePersonnePhysiqueRF droit3 =
+					addDroitPropriete(pp3, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "178461561561", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+			communaute.addMembre(droit3);
+
+			final ModeleCommunauteRF modele1 = addModeleCommunauteRF(pp1, pp2, pp3);
+			final ModeleCommunauteRF modele2 = addModeleCommunauteRF(pp1, pp3);
+			addRegroupementRF(communaute, modele1, dateDebutCommunaute, null);
+
+			final Ids res = new Ids();
+			res.modele1 = modele1.getId();
+			res.modele2 = modele2.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedCommunautes);
+
+		// on annule un des droits existants et on met-à-jour le regroupement sans toucher à la communauté
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+				assertNotNull(communaute);
+
+				final RegroupementCommunauteRF regroupement = communaute.getRegroupements().iterator().next();
+				assertNotNull(regroupement);
+				final ModeleCommunauteRF modele2 = hibernateTemplate.get(ModeleCommunauteRF.class, ids.modele2);
+				assertNotNull(modele2);
+
+				regroupement.setModele(modele2);
+			}
+		});
+
+		// on vérifie l'envoi de notification de changement de communauté sur la communauté existante
+		assertEquals(1, eventService.changedCommunautes.size());
+		assertTrue(eventService.changedCommunautes.contains(ids.communaute));
+	}
+
+	/**
+	 * [SIFISC-24595] détection de la propagation de la modification d'un modèle de communauté sur une communauté
+	 */
+	@Test
+	public void testDetectChangementCommunauteDansModeleCommunaute() throws Exception {
+
+		assertEmpty(eventService.changedCommunautes);
+
+		final class Ids {
+			long pp1;
+			long pp2;
+			long pp3;
+			long modele;
+			long communaute;
+		}
+
+		// on créé une communauté de 3 personnes en DB
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			final RegDate dateDebutCommunaute = date(2005, 3, 2);
+
+			// pp
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("3493939", "Giu", "Rastata", date(1990, 7, 3));
+
+			// communauté
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(pp1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(pp2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			final DroitProprietePersonnePhysiqueRF droit3 =
+					addDroitPropriete(pp3, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "178461561561", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+			communaute.addMembre(droit3);
+
+			final ModeleCommunauteRF modele = addModeleCommunauteRF(pp1, pp2);
+			addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
+
+			final Ids res = new Ids();
+			res.pp1 = pp1.getId();
+			res.pp2 = pp2.getId();
+			res.pp3 = pp3.getId();
+			res.modele = modele.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedCommunautes);
+
+		// on modifie le modèle de communauté
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final ModeleCommunauteRF modele = hibernateTemplate.get(ModeleCommunauteRF.class, ids.modele);
+				assertNotNull(modele);
+
+				final PersonnePhysiqueRF pp3 = hibernateTemplate.get(PersonnePhysiqueRF.class, ids.pp3);
+				assertNotNull(pp3);
+				modele.addMembre(pp3);
+				modele.setMembresHashCode(ModeleCommunauteRF.hashCode(modele.getMembres()));
+			}
+		});
+
+		// on vérifie l'envoi de notification de changement de communauté sur la communauté existante
+		assertEquals(1, eventService.changedCommunautes.size());
+		assertTrue(eventService.changedCommunautes.contains(ids.communaute));
+	}
+
+	/**
+	 * [SIFISC-24595] détection de la propagation de la modification d'un principal de communauté sur une communauté
+	 */
+	@Test
+	public void testDetectChangementCommunauteDansPrincipalCommunaute() throws Exception {
+
+		assertEmpty(eventService.changedCommunautes);
+
+		final class Ids {
+			long modele;
+			long communaute;
+		}
+
+		// on créé une communauté de 3 personnes en DB
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			final RegDate dateDebutCommunaute = date(2005, 3, 2);
+
+			// pp
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("3493939", "Giu", "Rastata", date(1990, 7, 3));
+
+			// communauté
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(pp1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(pp2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			final DroitProprietePersonnePhysiqueRF droit3 =
+					addDroitPropriete(pp3, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "178461561561", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+			communaute.addMembre(droit3);
+
+			final ModeleCommunauteRF modele = addModeleCommunauteRF(pp1, pp2, pp3);
+			addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
+
+			final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
+			principal.setPrincipal(pp3);
+			principal.setDateDebut(dateDebutCommunaute);
+			modele.addPrincipal(principal);
+
+			final Ids res = new Ids();
+			res.modele = modele.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedCommunautes);
+
+		// on annule le principal sur le modèle de communauté
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final ModeleCommunauteRF modele = hibernateTemplate.get(ModeleCommunauteRF.class, ids.modele);
+				assertNotNull(modele);
+
+				final PrincipalCommunauteRF principal = modele.getPrincipaux().iterator().next();
+				principal.setAnnule(true);
 			}
 		});
 

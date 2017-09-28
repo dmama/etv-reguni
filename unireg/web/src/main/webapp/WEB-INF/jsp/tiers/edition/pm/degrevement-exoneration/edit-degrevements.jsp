@@ -2,9 +2,9 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <%--@elvariable id="idContribuable" type="java.lang.Long"--%>
-<%--@elvariable id="degrevements" type="java.util.List<ch.vd.uniregctb.registrefoncier.DegrevementICIView>"--%>
-<%--@elvariable id="immeuble" type="ch.vd.uniregctb.registrefoncier.ResumeImmeubleView"--%>
-<%--@elvariable id="droits" type="java.util.List<ch.vd.uniregctb.registrefoncier.DroitView>"--%>
+<%--@elvariable id="degrevements" type="java.util.List<ch.vd.uniregctb.registrefoncier.allegement.DegrevementICIView>"--%>
+<%--@elvariable id="immeuble" type="ch.vd.uniregctb.registrefoncier.allegement.ResumeImmeubleView"--%>
+<%--@elvariable id="droits" type="java.util.List<ch.vd.uniregctb.registrefoncier.allegement.DroitView>"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">

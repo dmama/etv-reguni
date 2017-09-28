@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
@@ -16,8 +17,10 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
+import ch.vd.uniregctb.registrefoncier.CommunauteRFPrincipalInfo;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
 public abstract class CommunityOfOwnersBuilder {
@@ -27,9 +30,9 @@ public abstract class CommunityOfOwnersBuilder {
 
 	public static CommunityOfOwners newCommunity(@NotNull CommunauteRF communaute,
 	                                             @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider,
-	                                             @NotNull Function<Long, CommunauteRFMembreInfo> membreInfoProvider) {
+	                                             @NotNull Function<CommunauteRF, CommunauteRFMembreInfo> membreInfoProvider) {
 
-		final CommunauteRFMembreInfo membreInfo = membreInfoProvider.apply(communaute.getId());
+		final CommunauteRFMembreInfo membreInfo = membreInfoProvider.apply(communaute);
 		if (membreInfo == null) {
 			throw new ProgrammingException("Les informations de la communauté id=[" + communaute.getId() + "] sont nulles.");
 		}
@@ -41,6 +44,7 @@ public abstract class CommunityOfOwnersBuilder {
 		community.getMembers().addAll(buildMembers(membreInfo));
 		// [SIFISC-24457] on expose le droit de propriété de la communauté
 		community.setLandRight(buildLandRight(droitCommunaute, ctbIdProvider));
+		community.getLeaders().addAll(buildLeaders(membreInfo.getPrincipaux()));
 		return community;
 	}
 
@@ -79,5 +83,16 @@ public abstract class CommunityOfOwnersBuilder {
 		membreInfo.getCtbIds().forEach(i -> membres.add(new RightHolder(i.intValue(), null, null, null, 0, null)));
 		membreInfo.getTiersRF().forEach(t -> membres.add(new RightHolder(null, null, null, RightHolderBuilder.buildRightHolderIdentity(t), 0, null)));
 		return membres;
+	}
+
+	@NotNull
+	private static List<CommunityLeader> buildLeaders(@NotNull List<CommunauteRFPrincipalInfo> principaux) {
+		return principaux.stream()
+				.map(p -> new CommunityLeader(DataHelper.coreToXMLv2(p.getDateDebut()),
+				                              DataHelper.coreToXMLv2(p.getDateFin()),
+				                              (int) p.getCtbId(),
+				                              0,
+				                              null))
+				.collect(Collectors.toList());
 	}
 }

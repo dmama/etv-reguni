@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
-import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.TypeDroit;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
@@ -111,13 +110,12 @@ public class MockAyantDroitRFDAO implements AyantDroitRFDAO {
 
 	@Nullable
 	@Override
-	public CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId) {
+	public Long getContribuableIdFor(@NotNull TiersRF tiersRF) {
 		throw new NotImplementedException();
 	}
 
-	@Nullable
 	@Override
-	public Long getContribuableIdFor(@NotNull TiersRF tiersRF) {
+	public @NotNull List<Long> findCommunautesIds() {
 		throw new NotImplementedException();
 	}
 }

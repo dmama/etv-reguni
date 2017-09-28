@@ -18,6 +18,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
+import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
@@ -407,6 +408,9 @@ public class InitialisationIFoncProcessorTest extends BusinessTest {
 			addDroitPersonnePhysiqueRF(null, date(2017, 3, 1), null, null, "Un motif, quoi...", null, "5378tgzufbs", "5378tgzufbr", new IdentifiantAffaireRF(213, "5823g"), new Fraction(3, 8), GenrePropriete.COMMUNE, communisteRF2, immeuble, communaute);
 
 			addDroitCommunauteRF(null, date(2016, 1, 1), null, null, "Succession", null, "478tgsbFB", "478tgsbFA", new IdentifiantAffaireRF(213, "5823g"), new Fraction(12, 50), GenrePropriete.INDIVIDUELLE, communaute, immeuble);
+
+			final ModeleCommunauteRF modele = addModeleCommunauteRF(communisteRF1, communisteRF2);
+			addRegroupementRF(communaute, modele, date(2016, 5, 2), null);
 
 			final Ids res = new Ids();
 			res.id1 = communiste1.getNumero();

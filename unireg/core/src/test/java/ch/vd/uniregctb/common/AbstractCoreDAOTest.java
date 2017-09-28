@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -76,6 +77,7 @@ import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDE;
 import ch.vd.uniregctb.evenement.ide.ReferenceAnnonceIDEDAO;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
@@ -89,10 +91,12 @@ import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
+import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
@@ -1610,6 +1614,25 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return merge(immeuble);
 	}
 
+	protected ModeleCommunauteRF addModeleCommunauteRF(AyantDroitRF... membres) {
+		final ModeleCommunauteRF modele = new ModeleCommunauteRF();
+		final List<AyantDroitRF> list = Arrays.asList(membres);
+		modele.setMembres(new HashSet<>(list));
+		modele.setMembresHashCode(ModeleCommunauteRF.hashCode(list));
+		return merge(modele);
+	}
+
+	protected void addRegroupementRF(CommunauteRF communaute, ModeleCommunauteRF modele, RegDate dateDebut, RegDate dateFin) {
+		RegroupementCommunauteRF regroupement = new RegroupementCommunauteRF();
+		regroupement.setCommunaute(communaute);
+		regroupement.setModele(modele);
+		regroupement.setDateDebut(dateDebut);
+		regroupement.setDateFin(dateFin);
+
+		communaute.addRegroupement(regroupement);
+		modele.addRegroupement(regroupement);
+	}
+
 	protected CommunauteRF addCommunauteRF(String idRF, TypeCommunaute type) {
 		final CommunauteRF communauteRF = new CommunauteRF();
 		communauteRF.setIdRF(idRF);
@@ -1623,7 +1646,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	                                                                      ImmeubleRF immeuble, CommunauteRF communaute) {
 		final DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
 		droit.setAyantDroit(ayantDroit);
-		droit.setCommunaute(communaute);
 		droit.setImmeuble(immeuble);
 		droit.setDateDebut(dateDebut);
 		droit.setDateDebutMetier(dateDebutMetier);
@@ -1639,6 +1661,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 		final DroitProprietePersonnePhysiqueRF persisted = merge(droit);
 		if (communaute != null) {
+			persisted.setCommunaute(communaute);
 			communaute.addMembre(persisted);
 		}
 
@@ -1655,7 +1678,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	                                                                  ImmeubleRF immeuble, CommunauteRF communaute) {
 		final DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
 		droit.setAyantDroit(ayantDroit);
-		droit.setCommunaute(communaute);
 		droit.setImmeuble(immeuble);
 		droit.setDateDebut(dateDebut);
 		droit.setDateDebutMetier(dateDebutMetier);
@@ -1671,6 +1693,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 		final DroitProprietePersonneMoraleRF persisted = merge(droit);
 		if (communaute != null) {
+			persisted.setCommunaute(communaute);
 			communaute.addMembre(persisted);
 		}
 

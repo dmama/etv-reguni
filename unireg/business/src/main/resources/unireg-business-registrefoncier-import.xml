@@ -118,6 +118,7 @@
 	<bean id="immeubleRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.ImmeubleRFProcessor">
 		<constructor-arg ref="communeRFDAO"/>
 		<constructor-arg ref="immeubleRFDAO"/>
+		<constructor-arg ref="communauteRFProcessor"/>
 		<constructor-arg ref="xmlHelperRF"/>
 		<constructor-arg ref="evenementFiscalService"/>
 	</bean>
@@ -132,7 +133,13 @@
 		<constructor-arg ref="ayantDroitRFDAO"/>
 		<constructor-arg ref="immeubleRFDAO"/>
 		<constructor-arg ref="droitRFDAO"/>
+		<constructor-arg ref="communauteRFProcessor"/>
 		<constructor-arg ref="xmlHelperRF"/>
+		<constructor-arg ref="evenementFiscalService"/>
+	</bean>
+
+	<bean id="communauteRFProcessor" class="ch.vd.uniregctb.registrefoncier.dataimport.processor.CommunauteRFProcessor">
+		<constructor-arg ref="serviceRF"/>
 		<constructor-arg ref="evenementFiscalService"/>
 	</bean>
 
@@ -182,6 +189,12 @@
 		<constructor-arg ref="transactionManager" />
 		<constructor-arg ref="serviceRF" />
 		<constructor-arg ref="evenementFiscalService"/>
+	</bean>
+
+	<bean id="rattrapageModelesCommunautesRFProcessor" class="ch.vd.uniregctb.registrefoncier.rattrapage.RattrapageModelesCommunautesRFProcessor">
+		<constructor-arg ref="ayantDroitRFDAO"/>
+		<constructor-arg ref="communauteRFProcessor"/>
+		<constructor-arg ref="transactionManager"/>
 	</bean>
 
 </beans>

@@ -23,11 +23,15 @@ import static org.junit.Assert.assertTrue;
 
 public class CommunauteRFMembreComparatorTest {
 
-	private CommunauteRFMembreComparator comparator;
 	private Map<Long, Tiers> tiersMap;
 	private Map<Long, List<ForFiscalPrincipal>> forsVirtuels;
 	private Map<Long, NomPrenom> nomPrenomMap;
 	private Map<Long, String> raisonSocialeMap;
+
+	private Function<Long, Tiers> tiersGetter;
+	private Function<Tiers, List<ForFiscalPrincipal>> forsVirtuelsGetter;
+	private Function<PersonnePhysique, NomPrenom> nomPrenomGetter;
+	private Function<Tiers, String> raisonSocialeGetter;
 
 	@Before
 	public void setUp() throws Exception {
@@ -37,16 +41,16 @@ public class CommunauteRFMembreComparatorTest {
 		this.nomPrenomMap = new HashMap<>();
 		this.raisonSocialeMap = new HashMap<>();
 
-		final Function<Long, Tiers> tiersGetter = tiersMap::get;
-		final Function<Tiers, List<ForFiscalPrincipal>> forsVirtuelsGetter = tiers -> forsVirtuels.get(tiers.getNumero());
-		final Function<PersonnePhysique, NomPrenom> nomPrenomGetter = pp -> nomPrenomMap.get(pp.getNumero());
-		final Function<Tiers, String> raisonSocialeGetter = tiers -> raisonSocialeMap.get(tiers.getNumero());
-
-		this.comparator = new CommunauteRFMembreComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter);
+		this.tiersGetter = tiersMap::get;
+		this.forsVirtuelsGetter = tiers -> forsVirtuels.get(tiers.getNumero());
+		this.nomPrenomGetter = pp -> nomPrenomMap.get(pp.getNumero());
+		this.raisonSocialeGetter = tiers -> raisonSocialeMap.get(tiers.getNumero());
 	}
 
 	@Test
 	public void testCompareByForFiscalTypes() throws Exception {
+
+		final CommunauteRFMembreComparator comparator = new CommunauteRFMembreComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter, null);
 
 		// on ajoute quelques tiers de types différents
 		PersonnePhysique pp1 = new PersonnePhysique(false);
@@ -87,6 +91,8 @@ public class CommunauteRFMembreComparatorTest {
 	 */
 	@Test
 	public void testCompareByForFiscalTypesAvecMenageCommun() throws Exception {
+
+		final CommunauteRFMembreComparator comparator = new CommunauteRFMembreComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter, null);
 
 		// on ajoute quelques tiers VD/HC/HS en ménage commun (et donc avec des fors fiscaux virtuels)
 		PersonnePhysique pp1 = new PersonnePhysique(false);
@@ -134,6 +140,8 @@ public class CommunauteRFMembreComparatorTest {
 	@Test
 	public void testCompareByTiersTypes() throws Exception {
 
+		final CommunauteRFMembreComparator comparator = new CommunauteRFMembreComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter, null);
+
 		// on ajoute quelques tiers de types différents
 		PersonnePhysique pp1 = new PersonnePhysique(false);
 		pp1.setNumero(1L);
@@ -170,6 +178,8 @@ public class CommunauteRFMembreComparatorTest {
 
 	@Test
 	public void testCompareByNoms() throws Exception {
+
+		final CommunauteRFMembreComparator comparator = new CommunauteRFMembreComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter, null);
 
 		// on ajoute quelques tiers de types différents
 		PersonnePhysique pp1 = new PersonnePhysique(false);
@@ -227,6 +237,8 @@ public class CommunauteRFMembreComparatorTest {
 
 	@Test
 	public void testCompareByPrenoms() throws Exception {
+
+		final CommunauteRFMembreComparator comparator = new CommunauteRFMembreComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter, null);
 
 		// on ajoute quelques tiers de types différents
 		PersonnePhysique pp1 = new PersonnePhysique(false);

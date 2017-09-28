@@ -94,6 +94,7 @@ import ch.vd.uniregctb.document.RappelFormulairesDemandeDegrevementICIRapport;
 import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
+import ch.vd.uniregctb.document.RattrapageModelesCommunautesRFProcessorRapport;
 import ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport;
 import ch.vd.uniregctb.document.RattraperDatesMetierDroitProcessorRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
@@ -145,6 +146,7 @@ import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFDetectorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
+import ch.vd.uniregctb.registrefoncier.rattrapage.RattrapageModelesCommunautesRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults;
 import ch.vd.uniregctb.rf.ImportImmeublesResults;
 import ch.vd.uniregctb.rf.RapprocherCtbResults;
@@ -1878,6 +1880,25 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 		try {
 			return docService.newDoc(RattraperDatesMetierDroitProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
 				final PdfRattrapageDatesMetierDroitRFRapport document = new PdfRattrapageDatesMetierDroitRFRapport();
+				document.write(results, nom, description, dateGeneration, os, status);
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public RattrapageModelesCommunautesRFProcessorRapport generateRapport(RattrapageModelesCommunautesRFProcessorResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportRattrapageModelesCommunautesRF";
+		final String description = "Rapport d'exécution du job de rattrapage des regroupement des communautés sur les modèles de communauté RF.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(RattrapageModelesCommunautesRFProcessorRapport.class, nom, description, "pdf", (doc, os) -> {
+				final PdfRattrapageModelesCommunautesRFRapport document = new PdfRattrapageModelesCommunautesRFRapport();
 				document.write(results, nom, description, dateGeneration, os, status);
 			});
 		}

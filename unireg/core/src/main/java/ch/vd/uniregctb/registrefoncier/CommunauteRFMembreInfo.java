@@ -25,6 +25,11 @@ public class CommunauteRFMembreInfo {
 	private final List<Long> ctbIds;
 
 	/**
+	 * L'historique des principaux de la communauté
+	 */
+	private final List<CommunauteRFPrincipalInfo> principaux;
+
+	/**
 	 * Les tiers RF des membres de la communauté qui n'ont pas été rapprochés avec des tiers Unireg.
 	 */
 	@NotNull
@@ -34,6 +39,7 @@ public class CommunauteRFMembreInfo {
 		this.count = count;
 		this.ctbIds = new ArrayList<>(ctbIds);
 		this.tiersRF = new ArrayList<>(tiersRF);
+		this.principaux = new ArrayList<>();
 	}
 
 	/**
@@ -57,5 +63,14 @@ public class CommunauteRFMembreInfo {
 	@NotNull
 	public List<TiersRF> getTiersRF() {
 		return tiersRF;
+	}
+
+	public void setPrincipaux(List<CommunauteRFPrincipalInfo> principaux) {
+		this.principaux.addAll(principaux);
+	}
+
+	@NotNull
+	public List<CommunauteRFPrincipalInfo> getPrincipaux() {
+		return principaux;
 	}
 }

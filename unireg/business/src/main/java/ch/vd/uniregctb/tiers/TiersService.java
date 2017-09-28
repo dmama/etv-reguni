@@ -1096,6 +1096,7 @@ public interface TiersService {
      * @param tousPrenoms <code>true</code> si tous les prénoms du tiers doivent être utilisés, <code>false</code> si seul le prénom usuel doit être pris
      * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom.VIDE} si la donnée est inconnue)
      */
+    @NotNull
     NomPrenom getDecompositionNomPrenom(PersonnePhysique pp, boolean tousPrenoms);
 
     /**
@@ -1294,11 +1295,12 @@ public interface TiersService {
     ForGestion getDernierForGestionConnu(Tiers tiers, @Nullable RegDate date);
 
 	/**
-	 * @param tiers un tiers
+	 * @param tiers          un tiers
+	 * @param doNotAutoflush <code>true</code> s'il ne faut pas laisser la session subir un autoflush pendant la requête de récupération des données en base
 	 * @return la liste des fors fiscaux virtuels (et uniquement les virtuels) du tiers.
 	 */
 	@NotNull
-	List<ForFiscalPrincipal> getForsFiscauxVirtuels(@NotNull Tiers tiers);
+	List<ForFiscalPrincipal> getForsFiscauxVirtuels(@NotNull Tiers tiers, boolean doNotAutoflush);
 
 	/**
      * Ferme les adresses flagées temporaires dans le fiscale

@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.landregistry.v1.AdministrativeAuthorityIdentity;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.CorporationIdentity;
@@ -19,6 +20,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.uniregctb.registrefoncier.CollectivitePubliqueRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFMembreInfo;
+import ch.vd.uniregctb.registrefoncier.CommunauteRFPrincipalInfo;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -78,6 +80,8 @@ public class CommunityOfOwnersBuilderTest {
 		communaute.addDroitPropriete(droit);
 
 		final CommunauteRFMembreInfo membreInfo = new CommunauteRFMembreInfo(4, Collections.singletonList(2727272L), Arrays.asList(ppRF, pmRF, collRF));
+		membreInfo.setPrincipaux(Collections.singletonList(new CommunauteRFPrincipalInfo(null,
+		                                                                                 null, RegDate.get(2016, 9, 22), RegDate.get(2017, 4, 14), 2727272L, false)));
 
 		final CommunityOfOwners community = CommunityOfOwnersBuilder.newCommunity(communaute, id -> null, id -> membreInfo);
 		assertNotNull(community);
@@ -104,6 +108,15 @@ public class CommunityOfOwnersBuilderTest {
 		assertEquals(Long.valueOf(234342L), landRight.getRightHolder().getCommunityId());
 		assertEquals(123456L, landRight.getImmovablePropertyId());
 		assertNull(landRight.getCommunityId());
+
+		final List<CommunityLeader> leaders = community.getLeaders();
+		assertNotNull(leaders);
+		assertEquals(1, leaders.size());
+		final CommunityLeader leader0 = leaders.get(0);
+		assertNotNull(leader0);
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(leader0.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(leader0.getDateTo()));
+		assertEquals(2727272, leader0.getTaxPayerNumber());
 	}
 
 	private static void assertRightHolderNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder rightHolder) {

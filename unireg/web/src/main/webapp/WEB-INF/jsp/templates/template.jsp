@@ -287,10 +287,15 @@
 						</li>
 					</authz:authorize>
 
-					<authz:authorize ifAnyGranted="ROLE_GEST_FRACTIONS_COMMUNE_RF">
+					<authz:authorize ifAnyGranted="ROLE_GEST_FRACTIONS_COMMUNE_RF, ROLE_ELECTION_PRINCIPAL_COMMUNAUTE_RF">
 						<li><fmt:message key="label.registre.foncier"/>
 							<ul>
+								<authz:authorize ifAnyGranted="ROLE_GEST_FRACTIONS_COMMUNE_RF">
 								<li><a href="<c:url value='/registrefoncier/situation/surcharge/list.do'/>"><fmt:message key="label.fraction.communes"/></a></li>
+								</authz:authorize>
+								<authz:authorize ifAnyGranted="ROLE_ELECTION_PRINCIPAL_COMMUNAUTE_RF">
+								<li><a href="<c:url value='/registrefoncier/communaute/searchTiers.do'/>"><fmt:message key="label.election.principal.communes"/></a></li>
+								</authz:authorize>
 							</ul>
 						</li>
 					</authz:authorize>

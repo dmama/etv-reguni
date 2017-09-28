@@ -379,7 +379,7 @@ public abstract class PartyStrategy<T extends Party> {
 
 		// [UNIREG-1291] ajout des fors fiscaux virtuels
 		if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES)) {
-			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(right, context.hibernateTemplate);
+			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(right, false, context.hibernateTemplate);
 			for (ch.vd.uniregctb.tiers.ForFiscalPrincipal forFiscal : forsVirtuels) {
 				party.getMainTaxResidences().add(TaxResidenceBuilder.newMainTaxResidence(forFiscal, true));
 			}

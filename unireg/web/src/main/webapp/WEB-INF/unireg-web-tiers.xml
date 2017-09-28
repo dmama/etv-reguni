@@ -308,7 +308,7 @@
 		<property name="etiquetteService" ref="etiquetteService"/>
 	</bean>
 
-	<bean id="degrevementExonerationController" class="ch.vd.uniregctb.registrefoncier.DegrevementExonerationController">
+	<bean id="degrevementExonerationController" class="ch.vd.uniregctb.registrefoncier.allegement.DegrevementExonerationController">
 		<property name="registreFoncierService" ref="serviceRF"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>

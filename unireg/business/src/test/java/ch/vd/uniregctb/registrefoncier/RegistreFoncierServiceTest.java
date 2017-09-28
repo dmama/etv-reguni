@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
@@ -14,6 +19,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -23,8 +29,13 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
+import ch.vd.uniregctb.registrefoncier.dao.ModeleCommunauteRFDAO;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
@@ -33,8 +44,10 @@ import ch.vd.uniregctb.type.TypeRapprochementRF;
 
 import static ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestCase.assertRaisonAcquisition;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("Duplicates")
@@ -42,12 +55,16 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 	private AyantDroitRFDAO ayantDroitRFDAO;
 	private RegistreFoncierService serviceRF;
+	private ModeleCommunauteRFDAO modeleCommunauteRFDAO;
+	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		ayantDroitRFDAO = getBean(AyantDroitRFDAO.class, "ayantDroitRFDAO");
 		serviceRF = getBean(RegistreFoncierService.class, "serviceRF");
+		modeleCommunauteRFDAO = getBean(ModeleCommunauteRFDAO.class, "modeleCommunauteRFDAO");
+		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService() {
 			@Override
@@ -1515,7 +1532,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				// après la date de début
 				final Commune commune2001 = serviceRF.getCommune(immeuble, date(2001, 1, 1));
 				Assert.assertNotNull(commune2001);
-				Assert.assertSame(commune1990, commune2001);
+				assertSame(commune1990, commune2001);
 			}
 		});
 	}
@@ -1585,14 +1602,798 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				// avant la date de début de la situation
 				final SituationRF situ1990 = serviceRF.getSituation(immeuble, date(1990, 1, 1));
 				Assert.assertNotNull(situ1990);
-				Assert.assertSame(situation, situ1990);
+				assertSame(situation, situ1990);
 
 				// après la date de début
 				final SituationRF situ2001 = serviceRF.getSituation(immeuble, date(2001, 1, 1));
 				Assert.assertNotNull(situ2001);
-				Assert.assertSame(situation, situ2001);
+				assertSame(situation, situ2001);
 			}
 		});
+	}
+
+	@Test
+	public void testFindOrCreateModeleCommunauteModeleInexistant() throws Exception {
+
+		class Ids {
+			Long pp1;
+			Long pp2;
+		}
+		final Ids ids = new Ids();
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("1", "Rodolf", "Stuecki", RegDate.get(1960, 1, 1));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2", "Annette", "Bruecke", RegDate.get(1960, 1, 1));
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp1);
+			final PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp2);
+			final HashSet<PersonnePhysiqueRF> membres = new HashSet<>(Arrays.asList(pp1, pp2));
+
+			// on demande le modèle
+			final ModeleCommunauteRF modele = serviceRF.findOrCreateModeleCommunaute(membres);
+
+			// on s'assure que c'est le bon
+			assertNotNull(modele);
+			assertEquals(ModeleCommunauteRF.hashCode(membres), modele.getMembresHashCode());
+			final List<AyantDroitRF> membresModele = modele.getMembres().stream()
+					.sorted(Comparator.comparing(AyantDroitRF::getId))
+					.collect(Collectors.toList());
+			assertNotNull(membresModele);
+			assertEquals(2, membresModele.size());
+			assertSame(pp1, membresModele.get(0));
+			assertSame(pp2, membresModele.get(1));
+
+			// on s'assure qu'il n'y en a qu'un dans le base
+			assertEquals(1, modeleCommunauteRFDAO.getCount(ModeleCommunauteRF.class));
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp1);
+			final PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp2);
+			final HashSet<PersonnePhysiqueRF> membres = new HashSet<>(Arrays.asList(pp1, pp2));
+
+			// on demande une deuxième fois le modèle
+			final ModeleCommunauteRF modele = serviceRF.findOrCreateModeleCommunaute(membres);
+
+			// on s'assure que c'est le bon
+			assertNotNull(modele);
+			assertEquals(ModeleCommunauteRF.hashCode(membres), modele.getMembresHashCode());
+			final List<AyantDroitRF> membresModele = modele.getMembres().stream()
+					.sorted(Comparator.comparing(AyantDroitRF::getId))
+					.collect(Collectors.toList());
+			assertNotNull(membresModele);
+			assertEquals(2, membresModele.size());
+			assertSame(pp1, membresModele.get(0));
+			assertSame(pp2, membresModele.get(1));
+
+			// on s'assure qu'il y en a toujours qu'un dans le base
+			assertEquals(1, modeleCommunauteRFDAO.getCount(ModeleCommunauteRF.class));
+			return null;
+		});
+	}
+
+	@Test
+	public void testFindOrCreateModeleCommunauteModelePreexistant() throws Exception {
+
+		class Ids {
+			Long pp1;
+			Long pp2;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("1", "Rodolf", "Stuecki", RegDate.get(1960, 1, 1));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2", "Annette", "Bruecke", RegDate.get(1960, 1, 1));
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+
+			// on crée le modèle de communauté qui va bien
+			modeleCommunauteRFDAO.createWith(new HashSet<>(Arrays.asList(ids.pp1, ids.pp2)));
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp1);
+			final PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp2);
+			final HashSet<PersonnePhysiqueRF> membres = new HashSet<>(Arrays.asList(pp1, pp2));
+
+			// on demande le modèle
+			final ModeleCommunauteRF modele = serviceRF.findOrCreateModeleCommunaute(membres);
+
+			// on s'assure que c'est le bon
+			assertNotNull(modele);
+			assertEquals(ModeleCommunauteRF.hashCode(membres), modele.getMembresHashCode());
+			final List<AyantDroitRF> membresModele = modele.getMembres().stream()
+					.sorted(Comparator.comparing(AyantDroitRF::getId))
+					.collect(Collectors.toList());
+			assertNotNull(membresModele);
+			assertEquals(2, membresModele.size());
+			assertSame(pp1, membresModele.get(0));
+			assertSame(pp2, membresModele.get(1));
+
+			// on s'assure qu'il y en a toujours qu'un dans le base
+			assertEquals(1, modeleCommunauteRFDAO.getCount(ModeleCommunauteRF.class));
+			return null;
+		});
+	}
+
+	@Test
+	public void testFindOrCreateModeleCommunauteMultithreads() throws Exception {
+
+		class Ids {
+			Long pp1;
+			Long pp2;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("1", "Rodolf", "Stuecki", RegDate.get(1960, 1, 1));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2", "Annette", "Bruecke", RegDate.get(1960, 1, 1));
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+			return null;
+		});
+
+		// on créé 20 threads différents qui vont demander le même modèle tous en même
+		ForkJoinPool forkJoinPool = new ForkJoinPool(20);
+		final ForkJoinTask<?> task = forkJoinPool.submit(() -> IntStream.range(0, 20)
+				.parallel()
+				.mapToObj(i -> loadModelInTx(ids.pp1, ids.pp2))
+				.collect(Collectors.toList()));
+
+		// on vérifie qu'on a chargé 20 fois le même modèle
+		//noinspection unchecked
+		final List<ModeleCommunauteRF> modeles = (List<ModeleCommunauteRF>) task.join();
+		assertEquals(20, modeles.size());
+		final Long id = modeles.get(0).getId();
+		for (int i = 0; i < 20; ++i) {
+			assertEquals(id, modeles.get(i).getId());
+		}
+
+		doInNewTransaction(status -> {
+			// on s'assure qu'il y a toujours qu'un seul modèle dans le base
+			assertEquals(1, modeleCommunauteRFDAO.getCount(ModeleCommunauteRF.class));
+			return null;
+		});
+	}
+
+	@Test
+	public void testGetCommunauteMembreInfoCommunauteAvecPrincipalParDefaut() throws Exception {
+
+		final class Ids {
+			Long ppId1;
+			Long ppId2;
+			long communaute;
+		}
+
+		final RegDate dateDebutCommunaute = date(2005, 3, 2);
+
+		// on créé une communauté de 2 personnes qui ne change pas dans le temps (= un seul regroupement)
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			// pp
+			final PersonnePhysique nonhab1 = addNonHabitant("Philip", "Linconnu", date(1967, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique nonhab2 = addNonHabitant("Elodie", "Loongle", date(1980, 11, 22), Sexe.FEMININ);
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			addRapprochementRF(nonhab1, pp1, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(nonhab2, pp2, null, null, TypeRapprochementRF.AUTO);
+
+			// communauté
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(pp1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(pp2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+
+			final ModeleCommunauteRF modele = addModeleCommunauteRF(pp1, pp2);
+			addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
+
+			final Ids res = new Ids();
+			res.ppId1 = nonhab1.getId();
+			res.ppId2 = nonhab2.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		// on demande les infos de la communauté
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+				assertNotNull(communaute);
+
+				// la communauté avec Philip comme membre principal (parce que Linconnu arrive avant Loongle)
+				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+				assertNotNull(info);
+				assertEquals(2, info.getCount());
+				assertEquals(Arrays.asList(ids.ppId1, ids.ppId2), info.getCtbIds());
+
+				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+				assertEquals(1, principaux.size());
+
+				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+				assertEquals(ids.ppId1.longValue(), principal0.getCtbId());
+				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+				assertNull(principal0.getDateFin());
+			}
+		});
+	}
+
+	@Test
+	public void testGetCommunauteMembreInfoCommunauteAvecPrincipalChoisi() throws Exception {
+
+		final class Ids {
+			Long ppId1;
+			Long ppId2;
+			long communaute;
+		}
+
+		final RegDate dateDebutCommunaute = date(2005, 3, 2);
+
+		// on créé une communauté de 2 personnes qui ne change pas dans le temps (= un seul regroupement)
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			// pp
+			final PersonnePhysique nonhab1 = addNonHabitant("Philip", "Linconnu", date(1967, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique nonhab2 = addNonHabitant("Elodie", "Loongle", date(1980, 11, 22), Sexe.FEMININ);
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			addRapprochementRF(nonhab1, pp1, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(nonhab2, pp2, null, null, TypeRapprochementRF.AUTO);
+
+			// communauté
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(pp1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(pp2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+
+			final ModeleCommunauteRF modele = addModeleCommunauteRF(pp1, pp2);
+
+			// on choisit explicitement Elodie comme principal pour ce modèle de communauté
+			final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
+			modele.addPrincipal(principal);
+			principal.setPrincipal(pp2);
+			principal.setDateDebut(dateDebutCommunaute);
+
+			addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
+
+			final Ids res = new Ids();
+			res.ppId1 = nonhab1.getId();
+			res.ppId2 = nonhab2.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		// on demande les infos de la communauté
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+				assertNotNull(communaute);
+
+				// la communauté avec Elodie comme membre principal (parce qu'elle est explicitement choisie)
+				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+				assertNotNull(info);
+				assertEquals(2, info.getCount());
+				assertEquals(Arrays.asList(ids.ppId2, ids.ppId1), info.getCtbIds());
+
+				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+				assertEquals(1, principaux.size());
+
+				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+				assertEquals(ids.ppId2.longValue(), principal0.getCtbId());
+				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+				assertNull(principal0.getDateFin());
+			}
+		});
+	}
+
+	@Test
+	public void testGetCommunauteMembreInfoCommunauteAvecPlusieursRegroupement() throws Exception {
+
+		final class Ids {
+			Long ppId1;
+			Long ppId2;
+			Long ppId3;
+			long communaute;
+		}
+
+		final RegDate dateDebutCommunaute = date(2005, 3, 2);
+		final RegDate datePartage = date(2008, 7, 1);
+
+		// on créé une communauté de 3 personnes qui passe ensuite à 2 personnes (= deux regroupements)
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			// pp
+			final PersonnePhysique nonhab1 = addNonHabitant("Philip", "Linconnu", date(1967, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique nonhab2 = addNonHabitant("Elodie", "Loongle", date(1980, 11, 22), Sexe.FEMININ);
+			final PersonnePhysique nonhab3 = addNonHabitant("Edouard", "Loongle", date(1990,6, 8), Sexe.MASCULIN);
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("263564617", "Edouard", "Loongle", date(1990,6, 8));
+			addRapprochementRF(nonhab1, pp1, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(nonhab2, pp2, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(nonhab3, pp3, null, null, TypeRapprochementRF.AUTO);
+
+			// communauté
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(pp1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, datePartage,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(pp2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			final DroitProprietePersonnePhysiqueRF droit3 =
+					addDroitPropriete(pp3, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "3838322111", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+			communaute.addMembre(droit3);
+
+			final ModeleCommunauteRF modele1 = addModeleCommunauteRF(pp1, pp2, pp3);
+			final ModeleCommunauteRF modele2 = addModeleCommunauteRF(pp2, pp3);
+
+			// on choisit explicitement Elodie comme principal pour le second modèle de communauté
+			final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
+			modele2.addPrincipal(principal);
+			principal.setPrincipal(pp2);
+			principal.setDateDebut(dateDebutCommunaute);
+
+			addRegroupementRF(communaute, modele1, dateDebutCommunaute, datePartage.getOneDayBefore());
+			addRegroupementRF(communaute, modele2, datePartage, null);
+
+			final Ids res = new Ids();
+			res.ppId1 = nonhab1.getId();
+			res.ppId2 = nonhab2.getId();
+			res.ppId3 = nonhab3.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		// on demande les infos de la communauté
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+				assertNotNull(communaute);
+
+				// la communauté des 3 membres
+				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+				assertNotNull(info);
+				assertEquals(3, info.getCount());
+				assertEquals(Arrays.asList(ids.ppId2, ids.ppId1, ids.ppId3), info.getCtbIds());
+
+				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+				assertEquals(2, principaux.size());
+
+				// la période où Philip est le principal
+				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+				assertEquals(ids.ppId1.longValue(), principal0.getCtbId());
+				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+				assertEquals(datePartage.getOneDayBefore(), principal0.getDateFin());
+
+				// la période où Elodie est la principale
+				final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
+				assertEquals(ids.ppId2.longValue(), principal1.getCtbId());
+				assertEquals(datePartage, principal1.getDateDebut());
+				assertNull(principal1.getDateFin());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-24595] Vérifie que l'ajout d'un principal sur une communauté sans principal défini fonctionne bien.
+	 */
+	@Test
+	public void testAddPrincipalToModeleCommunauteSansPrincipal() throws Exception {
+
+		final RegDate dateDebut = RegDate.get(2005, 4, 12);
+
+		final class Ids {
+			Long pp1;
+			Long pp2;
+			Long pp3;
+			Long modele;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("Brigitte", "Widmer", date(1970, 7, 2), "434545", 411451L, null);
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("Noémie", "Widmer", date(1970, 7, 2), "010289290", 777L, null);
+
+			ModeleCommunauteRF modele = new ModeleCommunauteRF();
+			modele.addMembre(pp1);
+			modele.addMembre(pp2);
+			modele.addMembre(pp3);
+			modele.setMembresHashCode(ModeleCommunauteRF.hashCode(modele.getMembres()));
+			modele = modeleCommunauteRFDAO.save(modele);
+
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+			ids.pp3 = pp3.getId();
+			ids.modele = modele.getId();
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp2);
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			serviceRF.addPrincipalToModeleCommunaute(pp2, modele, dateDebut);
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			final Set<PrincipalCommunauteRF> principaux = modele.getPrincipaux();
+			assertNotNull(principaux);
+			assertEquals(1, principaux.size());
+
+			final PrincipalCommunauteRF principal0 = principaux.iterator().next();
+			assertNotNull(principal0);
+			assertEquals(ids.pp2, principal0.getPrincipal().getId());
+			assertEquals(dateDebut, principal0.getDateDebut());
+			assertNull(principal0.getDateFin());
+			return null;
+		});
+
+		// on vérifie qu'aucun événement fiscal correspondants n'a été émis car le modèle n'est regroupé avec aucune communauté
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(0, events.size());
+			return null;
+		});
+
+	}
+
+	/**
+	 * [SIFISC-24595] Vérifie que l'ajout d'un principal sur une communauté avec des principaux préxistants fonctionne bien.
+	 */
+	@Test
+	public void testAddPrincipalToModeleCommunauteAvecPrincipauxExistants() throws Exception {
+
+		final RegDate dateDebut1 = RegDate.get(2003, 7, 28);
+		final RegDate dateDebut2 = RegDate.get(2005, 4, 12);
+		final RegDate dateDebut3 = RegDate.get(2012, 11, 19);
+
+		final class Ids {
+			Long pp1;
+			Long pp2;
+			Long pp3;
+			Long modele;
+			Long communaute1;
+			Long communaute2;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+
+			final BienFondsRF immeuble = addImmeubleRF("3893983");
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("Brigitte", "Widmer", date(1970, 7, 2), "434545", 411451L, null);
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("Noémie", "Widmer", date(1970, 7, 2), "010289290", 777L, null);
+
+			// le modèle de communauté
+			ModeleCommunauteRF modele = new ModeleCommunauteRF();
+			modele.addMembre(pp1);
+			modele.addMembre(pp2);
+			modele.addMembre(pp3);
+			modele.setMembresHashCode(ModeleCommunauteRF.hashCode(modele.getMembres()));
+			modele = modeleCommunauteRFDAO.save(modele);
+
+			final PrincipalCommunauteRF p1 = new PrincipalCommunauteRF();
+			p1.setModeleCommunaute(modele);
+			p1.setPrincipal(pp1);
+			p1.setDateDebut(dateDebut1);
+			p1.setDateFin(dateDebut3.getOneDayBefore());
+			modele.addPrincipal(p1);
+
+			final PrincipalCommunauteRF p3 = new PrincipalCommunauteRF();
+			p3.setModeleCommunaute(modele);
+			p3.setPrincipal(pp3);
+			p3.setDateDebut(dateDebut3);
+			modele.addPrincipal(p3);
+
+			// deux communautés qui utilisent le modèle
+			final CommunauteRF communaute1 = addCommunauteRF("2892929", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final DroitProprietePersonnePhysiqueRF droit1 = addDroitPropriete(pp1, immeuble, communaute1, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                                                                  date(2005, 3, 2), null,
+			                                                                  null, null,
+			                                                                  "Succession", null,
+			                                                                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+			                                                                  "573853733gdbtq", "1");
+			communaute1.addMembre(droit1);
+			addRegroupementRF(communaute1, modele, null, null);
+
+			final CommunauteRF communaute2 = addCommunauteRF("478382", TypeCommunaute.INDIVISION);
+			final DroitProprietePersonnePhysiqueRF droit2 = addDroitPropriete(pp1, immeuble, communaute2, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                                                                  date(2005, 3, 2), null,
+			                                                                  RegDate.get(2000, 1, 1), null,
+			                                                                  "Succession", null,
+			                                                                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+			                                                                  "348348238238", "1");
+			communaute2.addMembre(droit2);
+			addRegroupementRF(communaute2, modele, RegDate.get(2000, 1, 1), null);
+
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+			ids.pp3 = pp3.getId();
+			ids.modele = modele.getId();
+			ids.communaute1 = communaute1.getId();
+			ids.communaute2 = communaute2.getId();
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			// on ajoute le principal pp2 intercalé entre le pp1 et le pp3
+			PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ids.pp2);
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			serviceRF.addPrincipalToModeleCommunaute(pp2, modele, dateDebut2);
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			// on vérifie qu'on a bien trois principaux et que les dates de début/fin sont bien correctes
+			final List<PrincipalCommunauteRF> principaux = new ArrayList<>(modele.getPrincipaux());
+			assertNotNull(principaux);
+			assertEquals(3, principaux.size());
+			principaux.sort(new DateRangeComparator<>());
+
+			final PrincipalCommunauteRF principal1 = principaux.get(0);
+			assertNotNull(principal1);
+			assertEquals(ids.pp1, principal1.getPrincipal().getId());
+			assertEquals(dateDebut1, principal1.getDateDebut());
+			assertEquals(dateDebut2.getOneDayBefore(), principal1.getDateFin());
+
+			final PrincipalCommunauteRF principal2 = principaux.get(1);
+			assertNotNull(principal2);
+			assertEquals(ids.pp2, principal2.getPrincipal().getId());
+			assertEquals(dateDebut2, principal2.getDateDebut());
+			assertEquals(dateDebut3.getOneDayBefore(), principal2.getDateFin());
+
+			final PrincipalCommunauteRF principal3 = principaux.get(2);
+			assertNotNull(principal3);
+			assertEquals(ids.pp3, principal3.getPrincipal().getId());
+			assertEquals(dateDebut3, principal3.getDateDebut());
+			assertNull(principal3.getDateFin());
+			return null;
+		});
+
+		// on vérifie que les événements fiscaux correspondants sont partis (le modèle est regroupés avec deux communautés -> 2 événements)
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(2, events.size());
+			events.sort(Comparator.comparing(e -> ((EvenementFiscalCommunaute)e).getCommunaute().getId()));
+
+			final EvenementFiscalCommunaute event0 = (EvenementFiscalCommunaute) events.get(0);
+			assertEquals(EvenementFiscalCommunaute.TypeEvenementFiscalCommunaute.CHANGEMENT_PRINCIPAL, event0.getType());
+			assertEquals(dateDebut2, event0.getDateValeur());
+			assertEquals(ids.communaute1, event0.getCommunaute().getId());
+
+			final EvenementFiscalCommunaute event1 = (EvenementFiscalCommunaute) events.get(1);
+			assertEquals(EvenementFiscalCommunaute.TypeEvenementFiscalCommunaute.CHANGEMENT_PRINCIPAL, event1.getType());
+			assertEquals(dateDebut2, event1.getDateValeur());
+			assertEquals(ids.communaute2, event1.getCommunaute().getId());
+			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-24595] Vérifie que l'annulation d'un principal sur une communauté fonctionne bien.
+	 */
+	@Test
+	public void testCancelPrincipalCommunaute() throws Exception {
+
+		final RegDate dateDebut1 = RegDate.get(2003, 7, 28);
+		final RegDate dateDebut2 = RegDate.get(2005, 4, 12);
+		final RegDate dateDebut3 = RegDate.get(2012, 11, 19);
+
+		final class Ids {
+			Long pp1;
+			Long pp2;
+			Long pp3;
+			Long modele;
+			Long communaute1;
+			Long communaute2;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+
+			final BienFondsRF immeuble = addImmeubleRF("3893983");
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("Brigitte", "Widmer", date(1970, 7, 2), "434545", 411451L, null);
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("Noémie", "Widmer", date(1970, 7, 2), "010289290", 777L, null);
+
+			// le modèle de communauté avec deux principaux existants
+			ModeleCommunauteRF modele = new ModeleCommunauteRF();
+			modele.addMembre(pp1);
+			modele.addMembre(pp2);
+			modele.addMembre(pp3);
+			modele.setMembresHashCode(ModeleCommunauteRF.hashCode(modele.getMembres()));
+			modele = modeleCommunauteRFDAO.save(modele);
+
+			final PrincipalCommunauteRF p1 = new PrincipalCommunauteRF();
+			p1.setModeleCommunaute(modele);
+			p1.setPrincipal(pp1);
+			p1.setDateDebut(dateDebut1);
+			p1.setDateFin(dateDebut3.getOneDayBefore());
+			modele.addPrincipal(p1);
+
+			final PrincipalCommunauteRF p3 = new PrincipalCommunauteRF();
+			p3.setModeleCommunaute(modele);
+			p3.setPrincipal(pp3);
+			p3.setDateDebut(dateDebut3);
+			modele.addPrincipal(p3);
+
+			// deux communautés qui utilisent le modèle
+			final CommunauteRF communaute1 = addCommunauteRF("2892929", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final DroitProprietePersonnePhysiqueRF droit1 = addDroitPropriete(pp1, immeuble, communaute1, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                                                                  date(2005, 3, 2), null,
+			                                                                  null, null,
+			                                                                  "Succession", null,
+			                                                                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+			                                                                  "573853733gdbtq", "1");
+			communaute1.addMembre(droit1);
+			addRegroupementRF(communaute1, modele, null, null);
+
+			final CommunauteRF communaute2 = addCommunauteRF("478382", TypeCommunaute.INDIVISION);
+			final DroitProprietePersonnePhysiqueRF droit2 = addDroitPropriete(pp1, immeuble, communaute2, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                                                                  date(2005, 3, 2), null,
+			                                                                  RegDate.get(2000, 1, 1), null,
+			                                                                  "Succession", null,
+			                                                                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+			                                                                  "348348238238", "1");
+			communaute2.addMembre(droit2);
+			addRegroupementRF(communaute2, modele, RegDate.get(2000, 1, 1), null);
+
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+			ids.pp3 = pp3.getId();
+			ids.modele = modele.getId();
+			ids.communaute1 = communaute1.getId();
+			ids.communaute2 = communaute2.getId();
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			// on annule le principal pp3
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+			final PrincipalCommunauteRF pp3 = modele.getPrincipaux().stream()
+					.filter(p -> p.getPrincipal().getId().equals(ids.pp3))
+					.findFirst()
+					.orElseThrow(IllegalArgumentException::new);
+
+			serviceRF.cancelPrincipalCommunaute(pp3);
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			// on vérifie que le principal pp3 est annulé et que la date de fin du principal pp1 est resettée
+			final List<PrincipalCommunauteRF> principaux = new ArrayList<>(modele.getPrincipaux());
+			assertNotNull(principaux);
+			assertEquals(2, principaux.size());
+			principaux.sort(new DateRangeComparator<>());
+
+			final PrincipalCommunauteRF principal1 = principaux.get(0);
+			assertNotNull(principal1);
+			assertFalse(principal1.isAnnule());
+			assertEquals(ids.pp1, principal1.getPrincipal().getId());
+			assertEquals(dateDebut1, principal1.getDateDebut());
+			assertNull(principal1.getDateFin());    // <-- date de fin resettée
+
+			final PrincipalCommunauteRF principal2 = principaux.get(1);
+			assertNotNull(principal2);
+			assertTrue(principal2.isAnnule());      // <-- principal annulé
+			assertEquals(ids.pp3, principal2.getPrincipal().getId());
+			assertEquals(dateDebut3, principal2.getDateDebut());
+			assertNull(principal2.getDateFin());
+			return null;
+		});
+
+		// on vérifie que les événements fiscaux correspondants sont partis (le modèle est regroupés avec deux communautés -> 2 événements)
+		doInNewTransaction(status -> {
+			final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+			assertEquals(2, events.size());
+			events.sort(Comparator.comparing(e -> ((EvenementFiscalCommunaute)e).getCommunaute().getId()));
+
+			final EvenementFiscalCommunaute event0 = (EvenementFiscalCommunaute) events.get(0);
+			assertEquals(EvenementFiscalCommunaute.TypeEvenementFiscalCommunaute.CHANGEMENT_PRINCIPAL, event0.getType());
+			assertNull(event0.getDateValeur());
+			assertEquals(ids.communaute1, event0.getCommunaute().getId());
+
+			final EvenementFiscalCommunaute event1 = (EvenementFiscalCommunaute) events.get(1);
+			assertEquals(EvenementFiscalCommunaute.TypeEvenementFiscalCommunaute.CHANGEMENT_PRINCIPAL, event1.getType());
+			assertNull(event1.getDateValeur());
+			assertEquals(ids.communaute2, event1.getCommunaute().getId());
+			return null;
+		});
+	}
+
+	private ModeleCommunauteRF loadModelInTx(Long idPP1, Long idPP2) {
+		AuthenticationHelper.pushPrincipal("test-user");
+		try {
+			return doInNewTransaction(status -> {
+				final PersonnePhysiqueRF pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(idPP1);
+				final PersonnePhysiqueRF pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.get(idPP2);
+				final HashSet<PersonnePhysiqueRF> membres = new HashSet<>(Arrays.asList(pp1, pp2));
+
+				// on demande le modèle
+				final ModeleCommunauteRF modele = serviceRF.findOrCreateModeleCommunaute(membres);
+
+				// on s'assure que c'est le bon
+				assertNotNull(modele);
+				assertEquals(ModeleCommunauteRF.hashCode(membres), modele.getMembresHashCode());
+				final List<AyantDroitRF> membresModele = modele.getMembres().stream()
+						.sorted(Comparator.comparing(AyantDroitRF::getId))
+						.collect(Collectors.toList());
+				assertNotNull(membresModele);
+				assertEquals(2, membresModele.size());
+				assertSame(pp1, membresModele.get(0));
+				assertSame(pp2, membresModele.get(1));
+				return modele;
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	private static void assertDroitPropChemin(Long id, int numerateur, int denominateur, DroitRF chemin) {

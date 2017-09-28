@@ -13,11 +13,13 @@ import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroit;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalServitude;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.MockRegistreFoncierService;
@@ -379,6 +381,35 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 					"<land-1:padding>0</land-1:padding>" +
 					"</fisc-evt-5:rightHolder>" +
 					"<fisc-evt-5:immovablePropertyId>94949</fisc-evt-5:immovablePropertyId>" +
+					"<fisc-evt-5:padding>0</fisc-evt-5:padding>" +
+					"</fisc-evt-5:fiscalEvent>";
+			assertTextMessage(OUTPUT_QUEUE, texte);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
+	}
+
+	@Test(timeout = 10000L)
+	public void testSendEvenementModificationPrincipalCommunaute() throws Exception {
+		AuthenticationHelper.pushPrincipal("EvenementFiscalSenderTest");
+		try {
+			// Création du message
+			final CommunauteRF communaute = new CommunauteRF();
+			communaute.setId(3737L);
+
+			final EvenementFiscalCommunaute event = new EvenementFiscalCommunaute(RegDate.get(2017, 1, 1), communaute, EvenementFiscalCommunaute.TypeEvenementFiscalCommunaute.CHANGEMENT_PRINCIPAL);
+			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
+
+			// Envoi du message
+			sender.sendEvent(event);
+
+			// On vérifie que l'on a bien envoyé le message
+			final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fisc-evt-5:fiscalEvent xmlns:fisc-evt-5=\"http://www.vd.ch/fiscalite/unireg/event/fiscal/5\" xmlns:common-2=\"http://www.vd.ch/fiscalite/unireg/common/2\" xmlns:corp-5=\"http://www.vd.ch/fiscalite/unireg/party/corporation/5\" xmlns:land-1=\"http://www.vd.ch/fiscalite/unireg/party/landregistry/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"fisc-evt-5:futureEventType\">" +
+					"<fisc-evt-5:type>COMMUNITY_LEADER_UPDATE</fisc-evt-5:type>" +
+					"<fisc-evt-5:data1>2017-01-01</fisc-evt-5:data1>" +
+					"<fisc-evt-5:data2>3737</fisc-evt-5:data2>" +
 					"<fisc-evt-5:padding>0</fisc-evt-5:padding>" +
 					"</fisc-evt-5:fiscalEvent>";
 			assertTextMessage(OUTPUT_QUEUE, texte);

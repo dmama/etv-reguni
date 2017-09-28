@@ -80,6 +80,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalBatiment;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalDroitPropriete;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImmeuble;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalImplantationBatiment;
@@ -157,6 +158,7 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 		factories.put(EvenementFiscalServitude.class, new EasementRightEventFactory());
 		factories.put(EvenementFiscalImmeuble.class, new ImmovablePropertyEventFactory());
 		factories.put(EvenementFiscalImplantationBatiment.class, new BuildingSettingEventFactory());
+		factories.put(EvenementFiscalCommunaute.class, new CommunityEventFactory());
 		factories.put(EvenementFiscalRapprochementTiersRF.class, new LandRegistryReconciliationEventFactory());
 	}
 
@@ -703,6 +705,26 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 			event.setBuildingId(evenementFiscal.getImplantation().getBatiment().getId());
 			event.setImmovablePropertyId(evenementFiscal.getImplantation().getImmeuble().getId());
 			event.setDate(DataHelper.coreToXMLv2(evenementFiscal.getDateValeur()));
+			return event;
+		}
+	}
+
+	private static class CommunityEventFactory extends OutputDataFactory<EvenementFiscalCommunaute, FiscalEvent> {
+		@NotNull
+		@Override
+		protected FiscalEvent internalBuild(@NotNull EvenementFiscalCommunaute evenementFiscal) throws NotSupportedInHereException {
+			final FutureEvent event;
+			switch (evenementFiscal.getType()) {
+			case CHANGEMENT_PRINCIPAL:
+				event = new FutureEvent();
+				// [SIFISC-24595] le type d'événement de modification de communauté n'existe pas en v5, on utilise le type de réserve 'futur' pour cela.
+				event.setType("COMMUNITY_LEADER_UPDATE");
+				event.setData1(RegDateHelper.dateToXmlDateString(evenementFiscal.getDateValeur()));
+				event.setData2(String.valueOf(evenementFiscal.getCommunaute().getId()));
+				break;
+			default:
+				throw new IllegalArgumentException("Type d'événement inconnu = [" + evenementFiscal.getType() + "]");
+			}
 			return event;
 		}
 	}

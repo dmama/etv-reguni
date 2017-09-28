@@ -56,15 +56,22 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 	private final ImmeubleRFDAO immeubleRFDAO;
 
 	@NotNull
+	private final CommunauteRFProcessor communauteRFProcessor;
+
+	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
 	@NotNull
 	private final EvenementFiscalService evenementFiscalService;
 
-	public ImmeubleRFProcessor(@NotNull CommuneRFDAO communeRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull XmlHelperRF xmlHelperRF,
+	public ImmeubleRFProcessor(@NotNull CommuneRFDAO communeRFDAO,
+	                           @NotNull ImmeubleRFDAO immeubleRFDAO,
+	                           @NotNull CommunauteRFProcessor communauteRFProcessor,
+	                           @NotNull XmlHelperRF xmlHelperRF,
 	                           @NotNull EvenementFiscalService evenementFiscalService) {
 		this.communeRFDAO = communeRFDAO;
 		this.immeubleRFDAO = immeubleRFDAO;
+		this.communauteRFProcessor = communauteRFProcessor;
 		this.unmarshaller = ThreadLocal.withInitial(() -> {
 			try {
 				return xmlHelperRF.getImmeubleContext().createUnmarshaller();
@@ -357,6 +364,9 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 					d.setDateFinMetier(dateRadiation);
 					d.setMotifFin("Radiation");
 				});
+
+		// [SIFISC-24595] on recalcule les éventuelles communautés
+		communauteRFProcessor.processAll(persisted);
 
 		if (persisted instanceof ImmeubleAvecQuotePartRF) {
 			final ImmeubleAvecQuotePartRF persistedAvecQuote = (ImmeubleAvecQuotePartRF) persisted;

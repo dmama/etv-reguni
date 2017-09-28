@@ -13,7 +13,7 @@
 	</c:choose>
 </c:set>
 <c:choose>
-	<c:when test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'acces' || typeRecherche == 'mandataire'}">
+	<c:when test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'acces' || typeRecherche == 'mandataire' || typeRecherche == 'communaute'}">
 		<c:set var="typeContribuableRecherche" value="ppoupm"/>       <%-- pm ou pp --%>
 	</c:when>
 	<c:when test="${typeRecherche == 'activation-PM' || typeRecherche == 'faillite' || typeRecherche == 'demenagementSiege' || typeRecherche == 'finActivite' || typeRecherche == 'fusionEntreprises' || typeRecherche == 'scissionEntreprise' || typeRecherche == 'transfertPatrimoine' || typeRecherche == 'reinscriptionRC' || typeRecherche == 'reqRadiationRC' || typeRecherche == 'identification-pm'}">
@@ -73,7 +73,7 @@
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
-	<c:if test="${	(typeRecherche == 'principale') || (typeRecherche == 'rt-sourcier') || (typeRecherche == 'rt-debiteur') 
+	<c:if test="${	(typeRecherche == 'principale') || (typeRecherche == 'rt-sourcier') || (typeRecherche == 'rt-debiteur') || (typeRecherche == 'communaute')
 				|| 	(typeRecherche == 'rapport') || (typeRecherche == 'activation') || (typeRecherche == 'identification') || (typeRecherche == 'identification-pp') || (typeRecherche == 'identification-pm')}">
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.for"/></td>

@@ -40,7 +40,7 @@
 		        <form:checkbox path="force" id="force" label="Forcé" onchange="submitForm()" onclick="submitForm()" />
 		    </span>
 
-			<%--@elvariable id="importEvent" type="ch.vd.uniregctb.registrefoncier.EvenementRFImportView"--%>
+			<%--@elvariable id="importEvent" type="ch.vd.uniregctb.registrefoncier.importrf.EvenementRFImportView"--%>
 			<%--@elvariable id="pageSize" type="java.lang.Long"--%>
 			<%--@elvariable id="count" type="java.lang.Long"--%>
 			<display:table name="list" id="importEvent" class="display_table" pagesize="${pageSize}" size="${count}" sort="external" partialList="true"

@@ -176,7 +176,7 @@
 				};
 
 				<%-- Initialisation de la page si la session contient des informations sur le contribuable --%>
-				<%--@elvariable id="degExoVisuCriteria" type="ch.vd.uniregctb.registrefoncier.DegrevementExonerationVisuSessionData"--%>
+				<%--@elvariable id="degExoVisuCriteria" type="ch.vd.uniregctb.registrefoncier.allegement.DegrevementExonerationVisuSessionData"--%>
 				<c:set var="degExoVisuCriteria" value="${sessionScope.degExoVisuCriteria}"/>
 				<c:if test="${degExoVisuCriteria != null && degExoVisuCriteria.idContribuable == command.entreprise.id}">
 				$(function() {

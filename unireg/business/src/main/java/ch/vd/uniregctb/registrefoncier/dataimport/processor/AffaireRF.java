@@ -22,6 +22,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
@@ -218,14 +220,31 @@ public class AffaireRF {
 	@NotNull
 	private DroitProprieteRF processOuverture(@NotNull DroitProprieteRF droit, @NotNull DroitRFDAO droitRFDAO) {
 
+		final CommunauteRF communaute;
+		if (droit instanceof DroitProprietePersonneRF) {
+			final DroitProprietePersonneRF droitPerson = (DroitProprietePersonneRF) droit;
+			communaute = droitPerson.getCommunaute();
+			droitPerson.setCommunaute(null);    // on annule temporairement le lien vers la communauté pour ne pas déclencher la validation de la communauté lors du save()
+		}
+		else {
+			communaute = null;
+		}
+
 		// on insère le droit en DB
 		droit.setDateDebut(dateValeur);
 		Optional.ofNullable(droit.getRaisonsAcquisition()).ifPresent(l -> l.forEach(r -> r.setDateDebut(dateValeur)));
 		droit = (DroitProprieteRF) droitRFDAO.save(droit);
 
-		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		// [SIFISC-24553] on met-à-jour à la main la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
 		immeuble.addDroitPropriete(droit);
 		droit.getAyantDroit().addDroitPropriete(droit);
+
+		// [SIFISC-24595] on met-à-jour à la main la liste des membres sur les communautés pour pouvoir parcourir le graphe des objets dans le CommunauteRFProcessor
+		if (communaute != null) {
+			final DroitProprietePersonneRF droitPerson = (DroitProprietePersonneRF) droit;
+			droitPerson.setCommunaute(communaute);  // on restaure le lien vers la communauté
+			communaute.addMembre(droitPerson);
+		}
 
 		return droit;
 	}

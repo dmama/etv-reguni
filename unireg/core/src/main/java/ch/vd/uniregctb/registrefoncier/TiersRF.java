@@ -3,9 +3,13 @@ package ch.vd.uniregctb.registrefoncier;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
+
+import ch.vd.uniregctb.tiers.Contribuable;
 
 /**
  * Tiers au registre foncier. Un tiers est soit une personne physique, soit une personne morale.
@@ -45,6 +49,19 @@ public abstract class TiersRF extends AyantDroitRF {
 		this.noContribuable = noContribuable;
 	}
 
+	/**
+	 * @return le contribuable rapproché courant; ou <b>null</b> s'il n'y a pas de ctb rapproché.
+	 */
+	@Transient
+	@Nullable
+	public Contribuable getCtbRapproche() {
+		return rapprochements == null ? null : rapprochements.stream()
+				.filter(r -> r.isValidAt(null))
+				.findFirst()
+				.map(RapprochementRF::getContribuable)
+				.orElse(null);
+	}
+
 	// configuration hibernate : le tiers RF ne possède pas les rapprochement
 	@OneToMany(mappedBy = "tiersRF")
 	public Set<RapprochementRF> getRapprochements() {
@@ -53,6 +70,14 @@ public abstract class TiersRF extends AyantDroitRF {
 
 	public void setRapprochements(Set<RapprochementRF> rapprochements) {
 		this.rapprochements = rapprochements;
+	}
+
+	public void addRapprochementRF(RapprochementRF rapprochement) {
+		if (rapprochements == null) {
+			rapprochements = new HashSet<>();
+		}
+		rapprochement.setTiersRF(this);
+		rapprochements.add(rapprochement);
 	}
 
 	@Override

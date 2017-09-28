@@ -9,6 +9,7 @@ import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.fourreNeutre.FourreNeutre;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -276,6 +277,11 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 
 	@Override
 	public void publierFinImplantationBatiment(RegDate dateFin, ImplantationRF implantation) {
+
+	}
+
+	@Override
+	public void publierModificationPrincipalCommunaute(RegDate dateDebut, CommunauteRF communaute) {
 
 	}
 

@@ -49,15 +49,23 @@ public class DroitRFProcessor implements MutationRFProcessor {
 	private final DroitRFDAO droitRFDAO;
 
 	@NotNull
+	private final CommunauteRFProcessor communauteRFProcessor;
+
+	@NotNull
 	private final ThreadLocal<Unmarshaller> unmarshaller;
 
 	private final AffaireRFListener evenementFiscalSender;
 
-	public DroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO, @NotNull ImmeubleRFDAO immeubleRFDAO, @NotNull DroitRFDAO droitRFDAO, @NotNull XmlHelperRF xmlHelperRF,
+	public DroitRFProcessor(@NotNull AyantDroitRFDAO ayantDroitRFDAO,
+	                        @NotNull ImmeubleRFDAO immeubleRFDAO,
+	                        @NotNull DroitRFDAO droitRFDAO,
+	                        @NotNull CommunauteRFProcessor communauteRFProcessor,
+	                        @NotNull XmlHelperRF xmlHelperRF,
 	                        @NotNull EvenementFiscalService evenementFiscalService) {
 		this.ayantDroitRFDAO = ayantDroitRFDAO;
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.droitRFDAO = droitRFDAO;
+		this.communauteRFProcessor = communauteRFProcessor;
 
 		this.unmarshaller = ThreadLocal.withInitial(() -> {
 			try {
@@ -191,6 +199,9 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// on sauve les nouveaux droits
 		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, droits, Collections.emptyList(), Collections.emptyList());
 		affaire.apply(droitRFDAO, evenementFiscalSender);
+
+		// on recalcule ce qu'il faut sur les communautés de l'immeuble
+		communauteRFProcessor.processAll(immeuble);
 	}
 
 	/**
@@ -224,6 +235,9 @@ public class DroitRFProcessor implements MutationRFProcessor {
 		// on applique les changements détectés
 		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, toAddList, toUpdateList, toCloseList);
 		affaire.apply(droitRFDAO, evenementFiscalSender);
+
+		// on recalcule ce qu'il faut sur les communautés de l'immeuble
+		communauteRFProcessor.processAll(immeuble);
 	}
 
 	/**
@@ -237,5 +251,8 @@ public class DroitRFProcessor implements MutationRFProcessor {
 
 		final AffaireRF affaire = new AffaireRF(dateValeur, immeuble, Collections.emptyList(), Collections.emptyList(), toCloseList);
 		affaire.apply(droitRFDAO, evenementFiscalSender);
+
+		// on recalcule ce qu'il faut sur les communautés de l'immeuble
+		communauteRFProcessor.processAll(immeuble);
 	}
 }

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier;
 
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,11 +69,37 @@ public interface RegistreFoncierService {
 	/**
 	 * Construit et retourne les informations du point-de-vue Unireg sur les membres d'une communauté RF.
 	 *
-	 * @param communauteId l'id technique Unireg d'une communauté
+	 * @param communaute une communauté
 	 * @return les infos trouvée; ou <b>null</b> si la communauté est inconnue.
 	 */
+	@NotNull
+	CommunauteRFMembreInfo getCommunauteMembreInfo(@NotNull CommunauteRF communaute);
+
+	/**
+	 * @param communaute une communauté
+	 * @return le numéro de ctb du principal courant de la communauté; ou <b>null</b> si la communauté est vide.
+	 */
 	@Nullable
-	CommunauteRFMembreInfo getCommunauteMembreInfo(long communauteId);
+	Long getCommunauteCurrentPrincipalId(@NotNull CommunauteRF communaute);
+
+	/**
+	 * Construit la vue historique des principaux (par défaut + explicites) pour un modèle de communauté.
+	 *
+	 * @param modeleCommunaute un modèle de communauté
+	 * @return l'historique des principaux
+	 */
+	@NotNull List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute);
+
+	/**
+	 * Recherche ou crée un modèle de communauté qui correspond aux membres de communauté spécifiés.
+	 * </p>
+	 * <b>Attention !</b> Dans le cas où un nouveau modèle est créé, sa création est effectuée dans une transaction séparée et immédiatement committée.
+	 *
+	 * @param membres les membres de la communauté
+	 * @return le modèle de communauté correspondant
+	 */
+	@NotNull
+	ModeleCommunauteRF findOrCreateModeleCommunaute(@NotNull Set<? extends AyantDroitRF> membres);
 
 	/**
 	 * Construit l'URL de visualisation de l'immeuble spécifié dans l'interface Web de Capitastra.
@@ -130,4 +157,20 @@ public interface RegistreFoncierService {
 	 * @param noOfsCommune le numéro Ofs de la commune de surcharge
 	 */
 	void surchargerCommuneFiscaleSituation(long situationId, @Nullable Integer noOfsCommune);
+
+	/**
+	 * Ajoute le membre spécifiée comme principal du modèle de communauté à partir d'une certaine date. L'historique des principaux est ordonné selon les dates de début et les dates de fin sont automatiquement recalculées.
+	 *
+	 * @param membre    un membre de la communauté
+	 * @param modele    le modèle de communauté à mettre-à-jour
+	 * @param dateDebut la date de début de valditié du membre comme principal
+	 */
+	void addPrincipalToModeleCommunaute(@NotNull TiersRF membre, @NotNull ModeleCommunauteRF modele, @NotNull RegDate dateDebut);
+
+	/**
+	 * Annule le principal de communauté spécifié.
+	 *
+	 * @param principal le principal à annuler
+	 */
+	void cancelPrincipalCommunaute(@NotNull PrincipalCommunauteRF principal);
 }

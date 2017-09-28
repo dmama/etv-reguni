@@ -15,6 +15,7 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -25,6 +26,7 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutationDAO;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
@@ -33,13 +35,16 @@ import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
+import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
@@ -47,9 +52,13 @@ import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestCase;
 import ch.vd.uniregctb.rf.GenrePropriete;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeRapprochementRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -77,8 +86,9 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		this.immeubleRFDAO = getBean(ImmeubleRFDAO.class, "immeubleRFDAO");
 		final XmlHelperRF xmlHelperRF = getBean(XmlHelperRF.class, "xmlHelperRF");
 		final EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
+		final CommunauteRFProcessor communauteRFProcessor = getBean(CommunauteRFProcessor.class, "communauteRFProcessor");
 
-		this.processor = new ImmeubleRFProcessor(communeRFDAO, immeubleRFDAO, xmlHelperRF, evenementFiscalService);
+		this.processor = new ImmeubleRFProcessor(communeRFDAO, immeubleRFDAO, communauteRFProcessor, xmlHelperRF, evenementFiscalService);
 	}
 
 	/**
@@ -1627,7 +1637,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				DroitProprietePersonnePhysiqueRF droitPP = new DroitProprietePersonnePhysiqueRF();
 				droitPP.setMasterIdRF("1f109152381009be0138100c87276e68");
 				droitPP.setVersionIdRF("1f109152381009be0138100e4c7c00e5");
-				droitPP.setDateDebut(RegDate.get(2005,2,12));
+				droitPP.setDateDebut(RegDate.get(2005, 2, 12));
 				droitPP.setDateDebutMetier(RegDate.get(2005, 1, 1));
 				droitPP.setMotifDebut("Achat");
 				droitPP.setAyantDroit(pp);
@@ -1699,7 +1709,95 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				final DroitProprieteRF droit1 = iterator.next();
 				assertEquals(veilleImport, droit1.getDateFinMetier());
 				assertEquals("Radiation", droit1.getMotifFin());
-}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-24595] Ce test vérifie que le processing de suppression d'un immeuble recalcule bien les communautés associées.
+	 */
+	@Test
+	public void testProcessMutationSuppressionImmeubleAvecCommunaute() throws Exception {
+
+		final RegDate dateImport = RegDate.get(2016, 10, 1);
+		final RegDate veilleImport = dateImport.getOneDayBefore();
+		final String idRFImmeuble = "_8af80e62567f816f01571d91f3e56a38";
+		final RegDate dateDebutCommunaute = date(2016, 5, 2);
+
+		final class Ids {
+			long idCommunaute;
+			long idImmeuble;
+		}
+		final Ids ids = new Ids();
+
+		// précondition : il y a un immeuble avec une communauté de deux personnes
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final CommuneRF commune = addCommuneRF(42, MockCommune.Echallens.getNomOfficiel(), MockCommune.Echallens.getNoOFS());
+				final BienFondsRF immeuble = addBienFondsRF(idRFImmeuble, "EGRID", commune, 4514, 4, 2, 1);
+
+				// la personne 1
+				final PersonnePhysique ctb1 = addNonHabitant("Francis", "Rouge", date(1975, 4, 2), Sexe.MASCULIN);
+				final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("6784t6gfsbnc", "Francis", "Rouge", date(1975, 4, 2));
+				pp1.setNoRF(223L);
+				addRapprochementRF(ctb1, pp1, null, null, TypeRapprochementRF.AUTO);
+
+				// la personne 2
+				final PersonnePhysique ctb2 = addNonHabitant("Albertine", "Zorro", date(1979, 6, 1), Sexe.FEMININ);
+				final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("5w47tgtflbsfg", "Albertine", "Zorro", date(1979, 6, 1));
+				pp2.setNoRF(554L);
+				addRapprochementRF(ctb2, pp2, null, null, TypeRapprochementRF.AUTO);
+
+				// la communauté
+				final CommunauteRF communaute = addCommunauteRF("285t378og43t", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+				final IdentifiantAffaireRF affaire = new IdentifiantAffaireRF(213, "5823g");
+				addDroitPersonnePhysiqueRF(null, dateDebutCommunaute, null, null, "Achat", null, "3458wgfs", "3458wgfr", affaire, new Fraction(1, 1), GenrePropriete.COMMUNE, pp1, immeuble, communaute);
+				addDroitPersonnePhysiqueRF(null, dateDebutCommunaute, null, null, "Un motif, quoi...", null, "5378tgzufbs", "5378tgzufbr", affaire, new Fraction(1, 1), GenrePropriete.COMMUNE, pp2, immeuble, communaute);
+				addDroitCommunauteRF(null, dateDebutCommunaute, null, null, "Succession", null, "478tgsbFB", "478tgsbFA", affaire, new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, communaute, immeuble);
+
+				final ModeleCommunauteRF modele = addModeleCommunauteRF(pp1, pp2);
+				addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
+
+				ids.idCommunaute = communaute.getId();
+				ids.idImmeuble = immeuble.getId();
+			}
+		});
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(null, dateImport, TypeEntiteRF.IMMEUBLE, TypeMutationRF.SUPPRESSION, idRFImmeuble, null);
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation, false, null);
+			}
+		});
+
+		// postcondition : la mutation est traitée, l'immeuble est radié et les regroupements de la communauté sont aussi fermés
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				// l'immeuble est radié
+				final BienFondsRF bienFonds = (BienFondsRF) immeubleRFDAO.get(ids.idImmeuble);
+				assertNotNull(bienFonds);
+				assertEquals(idRFImmeuble, bienFonds.getIdRF());
+				assertEquals("EGRID", bienFonds.getEgrid());
+				assertEquals(veilleImport, bienFonds.getDateRadiation());
+
+				// la communauté est fermée
+				final CommunauteRF communaute = (CommunauteRF) ayantDroitRFDAO.get(ids.idCommunaute);
+				assertNotNull(communaute);
+				final Set<RegroupementCommunauteRF> regroupements = communaute.getRegroupements();
+				assertEquals(1, regroupements.size());
+				final RegroupementCommunauteRF regroupement0 = regroupements.iterator().next();
+				assertEquals(dateDebutCommunaute, regroupement0.getDateDebut());
+				assertEquals(veilleImport, regroupement0.getDateFin());
+			}
 		});
 	}
 }

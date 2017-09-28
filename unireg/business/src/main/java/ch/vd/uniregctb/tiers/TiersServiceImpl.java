@@ -1714,6 +1714,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @param tousPrenoms <code>true</code> si tous les prénoms du tiers doivent être utilisés, <code>false</code> si seul le prénom usuel doit être pris
 	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom#VIDE} si la donnée est inconnue)
 	 */
+	@NotNull
 	@Override
 	public NomPrenom getDecompositionNomPrenom(PersonnePhysique pp, boolean tousPrenoms) {
 		if (pp.isHabitantVD()) {
@@ -4195,8 +4196,8 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	@NotNull
-	public List<ForFiscalPrincipal> getForsFiscauxVirtuels(@NotNull Tiers tiers) {
-		return DataHelper.getForsFiscauxVirtuels(tiers, hibernateTemplate);
+	public List<ForFiscalPrincipal> getForsFiscauxVirtuels(@NotNull Tiers tiers, boolean doNotAutoflush) {
+		return DataHelper.getForsFiscauxVirtuels(tiers, doNotAutoflush, hibernateTemplate);
 	}
 
 	/**

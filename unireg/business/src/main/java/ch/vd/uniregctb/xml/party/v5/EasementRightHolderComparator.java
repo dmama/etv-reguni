@@ -31,14 +31,15 @@ public class EasementRightHolderComparator implements Comparator<RightHolder> {
 	                                     @NotNull Function<PersonnePhysique, NomPrenom> nomPrenomGetter,
 	                                     @NotNull Function<Tiers, String> raisonSocialeGetter) {
 		this.typeComparator = Comparator.comparing(this::getHolderType);
-		this.ctbComparator = new CommunauteRFMembreComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter);
+		this.ctbComparator = new CommunauteRFMembreComparator(tiersGetter, forsVirtuelsGetter, nomPrenomGetter, raisonSocialeGetter, null);
 		this.immeubleIdComparator = Comparator.comparing(RightHolder::getImmovablePropertyId);
 		this.identityComparator = Comparator.comparing((RightHolder r) -> r.getIdentity().getId());
 	}
 
 	public EasementRightHolderComparator(@NotNull TiersService tiersService) {
 		this(tiersService::getTiers,
-		     tiersService::getForsFiscauxVirtuels,
+		     // pas d'auto-flush : on considère que les fors fiscaux sont stables et on ne veut pas risquer une erreur de validation sur la communauté
+		     tiers -> tiersService.getForsFiscauxVirtuels(tiers, true),
 		     pp -> tiersService.getDecompositionNomPrenom(pp, false),
 		     tiersService::getNomRaisonSociale);
 	}
