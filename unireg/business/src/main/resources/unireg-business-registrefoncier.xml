@@ -26,6 +26,7 @@
 	<bean id="immeubleRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ImmeubleRFValidator" parent="entityValidator" />
 	<bean id="implantationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ImplantationRFValidator" parent="dateRangeEntityValidator" />
 	<bean id="modeleCommunauteRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.ModeleCommunauteRFValidator" parent="entityValidator" />
+	<bean id="principalCommunauteRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.PrincipalCommunauteRFValidator" parent="dateRangeEntityValidator" />
 	<bean id="situationRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SituationRFValidator" parent="dateRangeEntityValidator" />
 	<bean id="surfaceAuSolRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.SurfaceAuSolRFValidator" parent="dateRangeEntityValidator" />
 	<bean id="descriptionBatimentRFValidator" class="ch.vd.uniregctb.validation.registrefoncier.DescriptionBatimentRFValidator" parent="dateRangeEntityValidator" />

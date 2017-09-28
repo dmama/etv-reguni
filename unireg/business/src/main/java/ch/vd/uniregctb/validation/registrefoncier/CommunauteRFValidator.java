@@ -13,12 +13,15 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
 import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.uniregctb.validation.ValidationService;
+import ch.vd.uniregctb.validation.tiers.TiersValidator;
 
 public class CommunauteRFValidator extends EntityValidatorImpl<CommunauteRF> {
 
@@ -31,6 +34,12 @@ public class CommunauteRFValidator extends EntityValidatorImpl<CommunauteRF> {
 	public ValidationResults validate(CommunauteRF entity) {
 
 		final ValidationResults results = new ValidationResults();
+		if (entity.isAnnule()){
+			return results;
+		}
+
+		// on valide les regroupements pour eux-mêmes
+		results.merge(validateRegroupements(entity));
 
 		// on vérifie que pour la durée de validité de la communauté, il existe toujours des regroupements
 		final Set<DroitProprietePersonneRF> membres = entity.getMembres();
@@ -51,6 +60,31 @@ public class CommunauteRFValidator extends EntityValidatorImpl<CommunauteRF> {
 
 		return results;
 	}
+
+	private ValidationResults validateRegroupements(CommunauteRF modele) {
+
+		final ValidationResults vr = new ValidationResults();
+
+		final Set<RegroupementCommunauteRF> regroupements = modele.getRegroupements();
+		if (regroupements != null && !regroupements.isEmpty()) {
+			// chaque regroupement pour lui-même
+			final ValidationService validationService = getValidationService();
+			regroupements.stream()
+					.map(validationService::validate)
+					.forEach(vr::merge);
+
+			// puis les chevauchements
+			if (!vr.hasErrors()) {
+				TiersValidator.checkNonOverlap(regroupements,
+				                               AnnulableHelper::nonAnnule,
+				                               vr,
+				                               "regroupements non-annulés");
+			}
+		}
+
+		return vr;
+	}
+
 
 	@Nullable
 	private static <T extends DateRange> DateRange determineRangeValidite(@Nullable Set<T> ranges, @NotNull Function<T, Boolean> annuleGetter, @NotNull Function<T, DateRange> rangeMetierGetter) {

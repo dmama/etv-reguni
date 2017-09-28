@@ -1886,6 +1886,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
 			modele.addPrincipal(principal);
 			principal.setPrincipal(pp2);
+			principal.setDateDebut(dateDebutCommunaute);
 
 			addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
 
@@ -1982,6 +1983,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
 			modele2.addPrincipal(principal);
 			principal.setPrincipal(pp2);
+			principal.setDateDebut(dateDebutCommunaute);
 
 			addRegroupementRF(communaute, modele1, dateDebutCommunaute, datePartage.getOneDayBefore());
 			addRegroupementRF(communaute, modele2, datePartage, null);

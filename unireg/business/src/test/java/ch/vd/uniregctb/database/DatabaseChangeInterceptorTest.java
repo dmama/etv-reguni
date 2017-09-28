@@ -1298,6 +1298,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 
 			final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
 			principal.setPrincipal(pp3);
+			principal.setDateDebut(dateDebutCommunaute);
 			modele.addPrincipal(principal);
 
 			final Ids res = new Ids();

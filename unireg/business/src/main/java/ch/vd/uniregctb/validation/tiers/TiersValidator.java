@@ -121,7 +121,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		return results;
 	}
 
-	protected static <T extends DateRange & Annulable> void checkNonOverlap(Collection<T> data,
+	public static <T extends DateRange & Annulable> void checkNonOverlap(Collection<T> data,
 	                                                                        Predicate<? super T> filter,
 	                                                                        ValidationResults results,
 	                                                                        String description) {
