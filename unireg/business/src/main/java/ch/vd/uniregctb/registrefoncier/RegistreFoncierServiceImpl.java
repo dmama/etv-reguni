@@ -619,6 +619,12 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 		// on recalcule les dates de fin
 		recalculeDatesFins(modele);
+
+		// on publie un événement fiscal sur toutes les communautés impactées
+		modele.getRegroupements().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(RegroupementCommunauteRF::getCommunaute)
+				.forEach(communaute -> evenementFiscalService.publierModificationPrincipalCommunaute(dateDebut, communaute));
 	}
 
 	@Override
@@ -630,6 +636,12 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 		// on recalcule les dates de fin
 		final ModeleCommunauteRF modele = principal.getModeleCommunaute();
 		recalculeDatesFins(modele);
+
+		// on publie un événement fiscal sur toutes les communautés impactées
+		modele.getRegroupements().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.map(RegroupementCommunauteRF::getCommunaute)
+				.forEach(communaute -> evenementFiscalService.publierModificationPrincipalCommunaute(null, communaute));
 	}
 
 	private static void recalculeDatesFins(@NotNull ModeleCommunauteRF modele) {
