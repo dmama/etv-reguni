@@ -158,6 +158,7 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 		public final String nomForPrincipal;
 		public final TypeAutoriteFiscale autoriteFiscalePrincipale;
 		public final TypeEtatEntreprise etatEntreprise;
+		public final TypeAutoriteFiscale typeForPrincipal;
 
 		public InfoPeriodeImposition(Entreprise entreprise, PeriodeImpositionPersonnesMorales periode, TiersService tiersService, ServiceInfrastructureService infraService) {
 			super(entreprise.getNumero());
@@ -219,9 +220,11 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 			final ForFiscalPrincipalPM forFiscal = entreprise.getDernierForFiscalPrincipalAvant(periode.getDateFin());
 			if (forFiscal != null) {
 				this.noOfsForPrincipal = forFiscal.getNumeroOfsAutoriteFiscale();
+				this.typeForPrincipal = forFiscal.getTypeAutoriteFiscale();
 			}
 			else {
 				this.noOfsForPrincipal = null;
+				this.typeForPrincipal = null;
 			}
 			this.nomForPrincipal = getNomAutorite(forFiscal, infraService);
 			this.autoriteFiscalePrincipale = periode.getTypeAutoriteFiscalePrincipale();
@@ -271,7 +274,8 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 				"REG_NoOFSForPri",
 				"REG_NomForPri",
 				"REG_AutoriteFiscalePrincipale",
-				"REG_EtatFiscal"
+				"REG_EtatFiscal",
+				"REG_typeForPri"
 		};
 
 		@Override
@@ -312,7 +316,8 @@ public class ExtractionDonneesRptPMResults extends ListesResults<ExtractionDonne
 					noOfsForPrincipal,
 					nomForPrincipal,
 					asString(autoriteFiscalePrincipale),
-					versionWS.of(etatEntreprise)
+					versionWS.of(etatEntreprise),
+					asString(typeForPrincipal),
 			};
 		}
 
