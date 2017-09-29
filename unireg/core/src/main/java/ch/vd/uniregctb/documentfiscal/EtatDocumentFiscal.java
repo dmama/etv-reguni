@@ -131,7 +131,7 @@ public abstract class EtatDocumentFiscal<E extends EtatDocumentFiscal> extends H
 	 * @return the dateObtention
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Waz4wOqfEdySTq6PFlf9jQ?GETTER"
 	 */
-	@Column(name = "DATE_OBTENTION")
+	@Column(name = "DATE_OBTENTION", nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateObtention() {
 		// begin-user-code

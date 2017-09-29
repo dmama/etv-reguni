@@ -30,8 +30,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.declaration.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -222,7 +222,7 @@ public class EnvoiSommationsDIsPMProcessor {
 	private void sommerDI(final DeclarationImpotOrdinairePM di, final RegDate dateTraitement) throws DeclarationException {
 		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement);
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition, null);
-		AddAndSaveHelper.addAndSave(di, etat, declarationImpotOrdinaireDAO::save, new EtatDeclarationAddAndSaveAccessor<>());
+		AddAndSaveHelper.addAndSave(di, etat, declarationImpotOrdinaireDAO::save, new EtatDocumentFiscalAddAndSaveAccessor<>());
 		diService.envoiSommationDIPMForBatch(di, dateTraitement, dateExpedition);
 	}
 

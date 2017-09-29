@@ -28,6 +28,7 @@ import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
@@ -116,6 +117,10 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                 null,
 			                                                                 2010,
 			                                                                 immeuble);
+			addDelaiAutreDocumentFiscal(retournee, date(2009, 4, 1), date(2009, 4, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(retournee, date(2009, 4, 1));
+			addEtatAutreDocumentFiscalRetourne(retournee, date(2009, 4, 24));
+
 			final DemandeDegrevementICI echueSaufDelaiAdministratif = addDemandeDegrevementICI(entreprise,
 			                                                                                   dateTraitement.addDays(-33),
 			                                                                                   dateTraitement.addDays(-3),      // 3 jours < 15 jours du délai
@@ -123,6 +128,9 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                                   null,
 			                                                                                   2011,
 			                                                                                   immeuble);
+			addDelaiAutreDocumentFiscal(echueSaufDelaiAdministratif, dateTraitement.addDays(-33), dateTraitement.addDays(-3), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(echueSaufDelaiAdministratif, dateTraitement.addDays(-33));
+
 			final DemandeDegrevementICI echueAvecDelaiAdministratif = addDemandeDegrevementICI(entreprise,
 			                                                                                   dateTraitement.addDays(-50),
 			                                                                                   dateTraitement.addDays(-20),     // 20 jours > 15 jours du délai
@@ -130,6 +138,8 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                                   null,
 			                                                                                   2012,
 			                                                                                   immeuble);
+			addDelaiAutreDocumentFiscal(echueAvecDelaiAdministratif, dateTraitement.addDays(-50), dateTraitement.addDays(-20), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(echueAvecDelaiAdministratif, dateTraitement.addDays(-50));
 			final DemandeDegrevementICI dejaRappelee = addDemandeDegrevementICI(entreprise,
 			                                                                    dateTraitement.addDays(-60),
 			                                                                    dateTraitement.addDays(-30),
@@ -137,6 +147,10 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                    dateTraitement.addDays(-10),
 			                                                                    2013,
 			                                                                    immeuble);
+			addDelaiAutreDocumentFiscal(dejaRappelee, dateTraitement.addDays(-60), dateTraitement.addDays(-30), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(dejaRappelee, dateTraitement.addDays(-60));
+			addEtatAutreDocumentFiscalRappele(dejaRappelee, dateTraitement.addDays(-10));
+
 			final DemandeDegrevementICI emiseNonEchue = addDemandeDegrevementICI(entreprise,
 			                                                                     dateTraitement.addDays(-15),
 			                                                                     dateTraitement.addDays(+15),
@@ -144,6 +158,8 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                     null,
 			                                                                     2014,
 			                                                                     immeuble);
+			addDelaiAutreDocumentFiscal(emiseNonEchue, dateTraitement.addDays(-15), dateTraitement.addDays(+15), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(emiseNonEchue, dateTraitement.addDays(-15));
 
 			final Ids res = new Ids();
 			res.idDemandeDejaRappelee = dejaRappelee.getId();
@@ -206,6 +222,10 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                 null,
 			                                                                 2010,
 			                                                                 immeuble);
+			addDelaiAutreDocumentFiscal(retournee, date(2009, 4, 1), date(2009, 4, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(retournee, date(2009, 4, 1));
+			addEtatAutreDocumentFiscalRetourne(retournee, date(2009, 4, 24));
+
 			final DemandeDegrevementICI echueSaufDelaiAdministratif = addDemandeDegrevementICI(entreprise,
 			                                                                                   dateTraitement.addDays(-33),
 			                                                                                   dateTraitement.addDays(-3),      // 3 jours < 15 jours du délai
@@ -213,6 +233,9 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                                   null,
 			                                                                                   2011,
 			                                                                                   immeuble);
+			addDelaiAutreDocumentFiscal(echueSaufDelaiAdministratif, dateTraitement.addDays(-33), dateTraitement.addDays(-3), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(echueSaufDelaiAdministratif, dateTraitement.addDays(-33));
+
 			final DemandeDegrevementICI echueAvecDelaiAdministratif = addDemandeDegrevementICI(entreprise,
 			                                                                                   dateTraitement.addDays(-50),
 			                                                                                   dateTraitement.addDays(-20),     // 20 jours > 15 jours du délai
@@ -220,6 +243,9 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                                   null,
 			                                                                                   2012,
 			                                                                                   immeuble);
+			addDelaiAutreDocumentFiscal(echueAvecDelaiAdministratif, dateTraitement.addDays(-50), dateTraitement.addDays(-20), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(echueAvecDelaiAdministratif, dateTraitement.addDays(-50));
+
 			final DemandeDegrevementICI dejaRappelee = addDemandeDegrevementICI(entreprise,
 			                                                                    dateTraitement.addDays(-60),
 			                                                                    dateTraitement.addDays(-30),
@@ -227,6 +253,10 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                    dateTraitement.addDays(-10),
 			                                                                    2013,
 			                                                                    immeuble);
+			addDelaiAutreDocumentFiscal(dejaRappelee, dateTraitement.addDays(-60), dateTraitement.addDays(-30), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(dejaRappelee, dateTraitement.addDays(-60));
+			addEtatAutreDocumentFiscalRappele(dejaRappelee, dateTraitement.addDays(-10));
+
 			final DemandeDegrevementICI emiseNonEchue = addDemandeDegrevementICI(entreprise,
 			                                                                     dateTraitement.addDays(-15),
 			                                                                     dateTraitement.addDays(+15),
@@ -234,6 +264,8 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                     null,
 			                                                                     2014,
 			                                                                     immeuble);
+			addDelaiAutreDocumentFiscal(emiseNonEchue, dateTraitement.addDays(-15), dateTraitement.addDays(+15), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(emiseNonEchue, dateTraitement.addDays(-15));
 
 			final Ids res = new Ids();
 			res.idEntreprise = entreprise.getNumero();
@@ -403,6 +435,8 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                 null,
 			                                                                 2017,
 			                                                                 immeuble);
+			addDelaiAutreDocumentFiscal(formulaire, date(2009, 4, 1), date(2009, 4, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(formulaire, date(2009, 4, 1));
 
 			// mais en fait, le droit était déjà clôturé...
 			droit.setDateFin(date(2017, 5, 21));
@@ -514,6 +548,8 @@ public class RappelFormulairesDemandeDegrevementICIProcessorTest extends Busines
 			                                                                 null,
 			                                                                 2017,
 			                                                                 immeuble);
+			addDelaiAutreDocumentFiscal(formulaire, date(2009, 4, 1), date(2009, 4, 30), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(formulaire, date(2009, 4, 1));
 
 			// mais en fait, le droit était déjà clôturé... (mais reste valable au tout début de la période du formulaire)
 			droit.setDateFin(date(2017, 5, 21));

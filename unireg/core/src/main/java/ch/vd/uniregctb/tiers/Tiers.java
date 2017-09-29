@@ -680,14 +680,19 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		adressesTiers.add(adresse);
 	}
 
-	public synchronized void addDeclaration(Declaration declaration) {
-		Assert.notNull(declaration);
+	public synchronized void addDocumentFiscal(DocumentFiscal documentFiscal) {
+		Assert.notNull(documentFiscal);
 		if (documentsFiscaux == null) {
 			documentsFiscaux = new HashSet<>();
 		}
-		documentsFiscaux.add(declaration);
-		declaration.setTiers(this);
+		documentsFiscaux.add(documentFiscal);
+		documentFiscal.setTiers(this);
 	}
+
+	public void addDeclaration(Declaration declaration) {
+		addDocumentFiscal(declaration);
+	}
+
 
 	void addAllDeclarations(Set<Declaration> declarations) {
 		if (documentsFiscaux == null) {

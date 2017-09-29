@@ -41,6 +41,7 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
@@ -454,6 +455,8 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
 			final DemandeDegrevementICI demandeExistante = addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, dateDebutDroit.year() + 1, immeuble);
+			addDelaiAutreDocumentFiscal(demandeExistante, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(demandeExistante, dateDebutDroit.addDays(10));
 			demandeExistante.setAnnule(true);
 			demandeExistante.setNumeroSequence(2);
 
@@ -812,7 +815,9 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
 			// même PF que le début du droit... ça n'empêche pas l'envoi
-			addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, dateDebutDroit.year(), immeuble);
+			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, dateDebutDroit.year(), immeuble);
+			addDelaiAutreDocumentFiscal(demande, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(demande, dateDebutDroit.addDays(10));
 
 			final Ids identifiants = new Ids();
 			identifiants.idContribuable = entreprise.getNumero();
@@ -922,7 +927,10 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
 			// PF suivante par rapport au début du droit... ça empêche l'envoi
-			addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, dateDebutDroit.year() + 1, immeuble);
+			final DemandeDegrevementICI demande =
+					addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, dateDebutDroit.year() + 1, immeuble);
+			addDelaiAutreDocumentFiscal(demande, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(demande, dateDebutDroit.addDays(10));
 
 			final Ids identifiants = new Ids();
 			identifiants.idContribuable = entreprise.getNumero();
@@ -1011,7 +1019,9 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
 			// même PF que l'estimation fiscale... ça n'empêche pas l'envoi
-			addDemandeDegrevementICI(entreprise, dateDebutDroit.addYears(1), dateDebutDroit.addMonths(14), null, null, 2015, immeuble);
+			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateDebutDroit.addYears(1), dateDebutDroit.addMonths(14), null, null, 2015, immeuble);
+			addDelaiAutreDocumentFiscal(demande, dateDebutDroit.addYears(1), dateDebutDroit.addMonths(14), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(demande, dateDebutDroit.addYears(1));
 
 			final Ids identifiants = new Ids();
 			identifiants.idContribuable = entreprise.getNumero();
@@ -1122,7 +1132,9 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
 			// PF suivante par rapport à la dernière estimation fiscale... ça empêche l'envoi
-			addDemandeDegrevementICI(entreprise, date(2015, 1, 25), date(2015, 2, 28), null, null, 2016, immeuble);
+			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, date(2015, 1, 25), date(2015, 2, 28), null, null, 2016, immeuble);
+			addDelaiAutreDocumentFiscal(demande, date(2015, 1, 25), date(2015, 2, 28), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(demande, date(2015, 1, 25));
 
 			final Ids identifiants = new Ids();
 			identifiants.idContribuable = entreprise.getNumero();
@@ -2234,7 +2246,9 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
 
-			addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, 2011, immeuble);
+			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, 2011, immeuble);
+			addDelaiAutreDocumentFiscal(demande, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(demande, dateDebutDroit.addDays(10));
 
 			final Ids identifiants = new Ids();
 			identifiants.idContribuable = entreprise.getNumero();

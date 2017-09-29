@@ -600,7 +600,6 @@ public abstract class Contribuable extends Tiers {
 		return hasDecisionEnCours() || existDecisionAciOuverteApres(date);
 	}
 
-	@Override
 	public synchronized void addDeclaration(Declaration declaration) {
 		if (declaration instanceof DeclarationAvecNumeroSequence) {
 			final DeclarationAvecNumeroSequence avecNumero = (DeclarationAvecNumeroSequence) declaration;

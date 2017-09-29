@@ -29,8 +29,8 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.declaration.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleEmolument;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -285,7 +285,7 @@ public class EnvoiSommationsDIsPPProcessor {
 		final ParametrePeriodeFiscaleEmolument paramEmolument = di.getPeriode().getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP);
 		final Integer emolument = paramEmolument != null ? paramEmolument.getMontant() : null;
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition, emolument);
-		AddAndSaveHelper.addAndSave(di, etat, declarationImpotOrdinaireDAO::save, new EtatDeclarationAddAndSaveAccessor<>());
+		AddAndSaveHelper.addAndSave(di, etat, declarationImpotOrdinaireDAO::save, new EtatDocumentFiscalAddAndSaveAccessor<>());
 		diService.envoiSommationDIPPForBatch(di, miseSousPliImpossible, dateTraitement, emolument);
 	}
 

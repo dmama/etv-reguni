@@ -5,9 +5,9 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.uniregctb.validation.documentfiscal.EtatDocumentFiscalValidator;
 
-public abstract class EtatDeclarationValidator<T extends EtatDeclaration> extends EntityValidatorImpl<T> {
+public abstract class EtatDeclarationValidator<T extends EtatDeclaration> extends EtatDocumentFiscalValidator<T> {
 
 
 	@Override

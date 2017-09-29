@@ -27,9 +27,9 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -680,7 +680,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public <T extends EtatDeclaration> T addAndSave(DeclarationImpotOrdinaire declaration, T etat) {
-		return AddAndSaveHelper.addAndSave(declaration, etat, hibernateTemplate::merge, new EtatDeclarationAddAndSaveAccessor<>());
+		return AddAndSaveHelper.addAndSave(declaration, etat, hibernateTemplate::merge, new EtatDocumentFiscalAddAndSaveAccessor<>());
 	}
 
 	@Override

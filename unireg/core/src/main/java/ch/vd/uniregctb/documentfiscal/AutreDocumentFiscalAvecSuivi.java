@@ -2,6 +2,7 @@ package ch.vd.uniregctb.documentfiscal;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Optional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
@@ -9,65 +10,76 @@ import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 @Entity
 public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {
 
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
 	@Transient
 	public RegDate getDelaiRetour() {
-		throw new UnsupportedOperationException("TODO: Rechercher la date de délai dans le délai du document.");
+		return Optional.ofNullable(getDernierDelaiAccorde())
+				.map(DelaiDocumentFiscal::getDelaiAccordeAu)
+				.orElse(null);
 	}
 
 	public void setDelaiRetour(RegDate delaiRetour) {
 		throw new UnsupportedOperationException("TODO: Stocker la date de délai dans le délai du document.");
 	}
 
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
 	@Transient
 	public RegDate getDateRetour() {
-		throw new UnsupportedOperationException("TODO: Rechercher la date de retour dans l'état retourné du document.");
+		return Optional.ofNullable(getEtatRetourne())
+				.map(EtatAutreDocumentFiscalRetourne::getDateObtention)
+				.orElse(null);
 	}
 
 	public void setDateRetour(RegDate dateRetour) {
-		throw new UnsupportedOperationException("TODO: Stocker la date de retour dans l'état retourné du document.");
+		final EtatDocumentFiscal etat = getDernierEtatOfType(TypeEtatDocumentFiscal.RETOURNE);
+		if (etat == null) {
+			addEtat(new EtatAutreDocumentFiscalRetourne(dateRetour));
+		}
+		else {
+			etat.setDateObtention(dateRetour);
+		}
 	}
 
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
 	@Transient
 	public RegDate getDateRappel() {
-		throw new UnsupportedOperationException("TODO: Rechercher la date de rappel dans l'état rappelé du document.");
+		return Optional.ofNullable(getEtatRappele())
+				.map(EtatAutreDocumentFiscalRappele::getDateObtention)
+				.orElse(null);
 	}
 
 	public void setDateRappel(RegDate dateRappel) {
-		throw new UnsupportedOperationException("TODO: Stocker la date de rappel dans l'état rappelé du document.");
+		final EtatDocumentFiscal etat = getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
+		if (etat == null) {
+			addEtat(new EtatAutreDocumentFiscalRappele(dateRappel));
+		}
+		else {
+			etat.setDateObtention(dateRappel);
+		}
 	}
 
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
 	@Transient
 	public String getCleArchivageRappel() {
-		throw new UnsupportedOperationException("TODO: Rechercher la clé d'archivage de rappel dans l'état rappelé du document.");
+		return Optional.ofNullable(getEtatRappele())
+				.map(EtatAutreDocumentFiscalRappele::getCleArchivage)
+				.orElse(null);
 	}
 
 	public void setCleArchivageRappel(String cleArchivageRappel) {
-		throw new UnsupportedOperationException("TODO: Stocker la clé d'archivage de rappel dans l'état rappelé du document.");
+		sauverCleArchivage(TypeEtatDocumentFiscal.RAPPELE, cleArchivageRappel);
 	}
 
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
 	@Transient
 	public String getCleDocumentRappel() {
-		throw new UnsupportedOperationException("TODO: Rechercher la clé de document de rappel dans l'état rappelé du document.");
+		return Optional.ofNullable(getEtatRappele())
+				.map(EtatAutreDocumentFiscalRappele::getCleDocument)
+				.orElse(null);
 	}
 
 	public void setCleDocumentRappel(String cleDocumentRappel) {
-		throw new UnsupportedOperationException("TODO: Stocker la clé de document de rappel dans l'état rappelé du document.");
-	}
-
-	@Transient
-	public TypeEtatDocumentFiscal getEtat() {
-		throw new UnsupportedOperationException("TODO: Rechercher le dernier état et retourner son type.");
-/*
-		if (dateRetour != null) {
-			return TypeEtatDocumentFiscal.RETOURNE;
-		}
-		else if (dateRappel != null) {
-			return TypeEtatDocumentFiscal.RAPPELE;
-		}
-		else {
-			return super.getEtat();
-		}
-*/
+		sauverCleDocument(TypeEtatDocumentFiscal.RAPPELE, cleDocumentRappel);
 	}
 
 	@Override

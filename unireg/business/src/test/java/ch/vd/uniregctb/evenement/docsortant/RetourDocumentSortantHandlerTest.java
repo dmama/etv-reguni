@@ -121,7 +121,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);     // chaque année, au 31.12
 
-			final LettreBienvenue lb = addLettreBienvenue(entreprise, dateEnvoiDocument, delaiRetour, null, null, TypeLettreBienvenue.VD_RC);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiDocument);
 			final Ids res = new Ids();
 			res.idContribuable = entreprise.getNumero();
 			res.idDocument = lb.getId();
@@ -197,7 +199,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);     // chaque année, au 31.12
 
-			final LettreBienvenue lb = addLettreBienvenue(entreprise, dateEnvoiDocument, delaiRetour, null, null, TypeLettreBienvenue.VD_RC);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiDocument);
 			final Ids res = new Ids();
 			res.idContribuable = entreprise.getNumero();
 			res.idDocument = lb.getId();
@@ -268,7 +272,10 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);     // chaque année, au 31.12
 
-			final LettreBienvenue lb = addLettreBienvenue(entreprise, dateEnvoiDocument, delaiRetour, null, dateRappel, TypeLettreBienvenue.VD_RC);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiDocument);
+			addEtatAutreDocumentFiscalRappele(lb, dateRappel);
 			final Ids res = new Ids();
 			res.idContribuable = entreprise.getNumero();
 			res.idDocument = lb.getId();

@@ -19,6 +19,7 @@ import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.taxpayer.v5.LegalFormCategory;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.documentfiscal.DelaiAutreDocumentFiscal;
 import ch.vd.uniregctb.foncier.DegrevementICI;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
@@ -141,11 +143,18 @@ public class CorporationStrategyTest extends BusinessTest {
 	private static DemandeDegrevementICI newDemandeDegrevement(RegDate dateEnvoi, RegDate delaiRetour, RegDate dateRetour, int periodeFiscale, int numeroSequence, ImmeubleRF immeuble) {
 		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
 		demande.setDateEnvoi(dateEnvoi);
-		demande.setDelaiRetour(delaiRetour);
 		demande.setDateRetour(dateRetour);
 		demande.setPeriodeFiscale(periodeFiscale);
 		demande.setNumeroSequence(numeroSequence);
 		demande.setImmeuble(immeuble);
+
+		final DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		delai.setDateTraitement(dateEnvoi);
+		delai.setDateDemande(dateEnvoi);
+		delai.setDelaiAccordeAu(delaiRetour);
+		demande.addDelai(delai);
+
 		return demande;
 	}
 

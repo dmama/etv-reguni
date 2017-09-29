@@ -27,6 +27,7 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -266,7 +267,9 @@ public class EnvoiLettresBienvenueProcessorTest extends BusinessTest {
 				addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);
 
 				final RegDate dateEnvoi = dateDebut.addDays(5);
-				addLettreBienvenue(entreprise, dateEnvoi, dateEnvoi.addDays(30), null, null, TypeLettreBienvenue.HS_HC_ETABLISSEMENT);      // peu importe le type de la lettre déjà envoyée
+				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.HS_HC_ETABLISSEMENT);// peu importe le type de la lettre déjà envoyée
+				addDelaiAutreDocumentFiscal(lb, dateEnvoi, dateEnvoi.addDays(30), EtatDelaiDocumentFiscal.ACCORDE);
+				addEtatAutreDocumentFiscalEmis(lb, dateEnvoi);
 
 				return entreprise.getNumero();
 			}

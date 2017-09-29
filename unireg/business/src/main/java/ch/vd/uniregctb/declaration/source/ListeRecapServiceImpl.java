@@ -19,9 +19,9 @@ import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.declaration.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -195,7 +195,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionListesRecapitulatives(dateTraitement);
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition, null);
-		AddAndSaveHelper.addAndSave(lr, etat, listeRecapDAO::save, new EtatDeclarationAddAndSaveAccessor<>());
+		AddAndSaveHelper.addAndSave(lr, etat, listeRecapDAO::save, new EtatDocumentFiscalAddAndSaveAccessor<>());
 		editiqueCompositionService.imprimeSommationLRForBatch(lr, RegDate.get());
 		evenementFiscalService.publierEvenementFiscalSommationListeRecapitulative(lr, etat.getDateObtention());
 	}

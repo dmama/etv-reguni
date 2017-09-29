@@ -425,6 +425,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperTest ext
 
 				final DelaiDeclaration delai = new DelaiDeclaration();
 				delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+				delai.setDateTraitement(dateEmission);
 				delai.setDateDemande(dateEmission);
 				delai.setDelaiAccordeAu(dateDelaiInitial);
 				declaration.addDelai(delai);

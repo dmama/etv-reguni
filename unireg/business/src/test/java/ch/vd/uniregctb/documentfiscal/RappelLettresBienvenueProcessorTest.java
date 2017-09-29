@@ -16,6 +16,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
@@ -60,7 +61,9 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addLettreBienvenue(entreprise, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), null, null, TypeLettreBienvenue.VD_RC);
+				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+				addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+				addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
 				return entreprise.getNumero();
 			}
 		});
@@ -110,7 +113,9 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addLettreBienvenue(entreprise, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), null, null, TypeLettreBienvenue.VD_RC);
+				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+				addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+				addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
 				return entreprise.getNumero();
 			}
 		});
@@ -166,7 +171,9 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addLettreBienvenue(entreprise, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), null, null, TypeLettreBienvenue.VD_RC);
+				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+				addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+				addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
 				return entreprise.getNumero();
 			}
 		});
@@ -222,7 +229,10 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addLettreBienvenue(entreprise, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), null, dateRappel, TypeLettreBienvenue.VD_RC);
+				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+				addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+				addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
+				addEtatAutreDocumentFiscalRappele(lb, dateRappel);
 				return entreprise.getNumero();
 			}
 		});
@@ -273,7 +283,10 @@ public class RappelLettresBienvenueProcessorTest extends BusinessTest {
 				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
-				addLettreBienvenue(entreprise, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), dateRetour, null, TypeLettreBienvenue.VD_RC);
+				final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+				addDelaiAutreDocumentFiscal(lb, dateEnvoiLettre, dateEnvoiLettre.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
+				addEtatAutreDocumentFiscalEmis(lb, dateEnvoiLettre);
+				addEtatAutreDocumentFiscalRetourne(lb, dateRetour);
 				return entreprise.getNumero();
 			}
 		});

@@ -2,22 +2,20 @@ package ch.vd.uniregctb.documentfiscal;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Type;
-
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
  * @author Raphaël Marmier, 2017-09-20, <raphael.marmier@vd.ch>
  */
+@Entity
 @DiscriminatorValue(value = "AUTRE_RAPPELE")
 public class EtatAutreDocumentFiscalRappele extends EtatAutreDocumentFiscal implements EtatAutreDocumentFiscalAvecDocumentArchive {
 
-	private RegDate dateEnvoiCourrier;
 	private String cleArchivage;
 	private String cleDocument;
 
@@ -31,19 +29,8 @@ public class EtatAutreDocumentFiscalRappele extends EtatAutreDocumentFiscal impl
 		return TypeEtatDocumentFiscal.RAPPELE;
 	}
 
-	public EtatAutreDocumentFiscalRappele(RegDate dateObtention, RegDate dateEnvoiCourrier) {
+	public EtatAutreDocumentFiscalRappele(RegDate dateObtention) {
 		super(dateObtention);
-		this.dateEnvoiCourrier = dateEnvoiCourrier;
-	}
-
-	@Column(name = "DATE_ENVOI_COURRIER")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateEnvoiCourrier() {
-		return dateEnvoiCourrier;
-	}
-
-	public void setDateEnvoiCourrier(RegDate dateEnvoiCourrier) {
-		this.dateEnvoiCourrier = dateEnvoiCourrier;
 	}
 
 	@Override
@@ -71,7 +58,6 @@ public class EtatAutreDocumentFiscalRappele extends EtatAutreDocumentFiscal impl
 	@Override
 	public String toString() {
 		final String desc = super.toString();
-		final String dateEnvoiStr = dateEnvoiCourrier != null ? RegDateHelper.dateToDisplayString(dateEnvoiCourrier) : "?";
-		return String.format("%s, (courrier envoyé le %s)", desc, dateEnvoiStr);
+		return String.format("%s, (courrier envoyé à cette date)", desc);
 	}
 }
