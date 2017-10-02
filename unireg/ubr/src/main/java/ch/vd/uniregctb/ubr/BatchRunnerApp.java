@@ -114,7 +114,7 @@ public class BatchRunnerApp {
 			System.exit(1);
 		}
 
-		if (!command.equals("list") && name == null) {
+		if (!command.equals("list") && !command.equals("list-details") && name == null) {
 			System.err.println("Batch name should be specified.");
 			System.exit(1);
 		}
@@ -134,6 +134,18 @@ public class BatchRunnerApp {
 				break;
 			case "list":
 				client.getBatchNames().forEach(System.out::println);
+				break;
+			case "list-details":
+				client.getBatchNames().forEach(n -> {
+					System.out.println("-----------------------------------------------------------------");
+					try {
+						showBatch(n, client);
+					}
+					catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+					System.out.println();
+				});
 				break;
 			case "show":
 				showBatch(name, client);
@@ -401,7 +413,7 @@ public class BatchRunnerApp {
 			Option config = OptionBuilder.withArgName("file").hasArg().withDescription(
 					"fichier de propriétés permettant de spécifier les valeurs suivantes : username, password et url").create("config");
 			Option command = OptionBuilder.withArgName("command").hasArg().withDescription(
-					"la commande à effectuer (start|run|stop|list|show|status|lastreport)").create("command");
+					"la commande à effectuer (start|run|stop|list|list-details|show|status|lastreport)").create("command");
 			Option batch = OptionBuilder.withArgName("batch").hasArg().withDescription("le nom du batch à piloter").create("batch");
 			Option outputDir = OptionBuilder.withArgName("path").hasArg().withDescription(
 					"le répertoire de téléchargement des rapports (uniquement avec command=lastreport)").create("outputDir");
