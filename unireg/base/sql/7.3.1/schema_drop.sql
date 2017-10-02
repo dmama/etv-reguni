@@ -123,6 +123,10 @@ drop table RF_DESCRIPTION_BATIMENT cascade constraints;
 drop table RF_BATIMENT cascade constraints;
 drop table RF_AYANT_DROIT cascade constraints;
 drop table RF_COMMUNE cascade constraints;
+drop table RF_MEMBRE_COMMUNAUTE cascade constraints;
+drop table RF_PRINCIPAL_COMMUNAUTE cascade constraints;
+drop table RF_REGROUPEMENT_COMMUNAUTE cascade constraints;
+drop table RF_MODELE_COMMUNAUTE cascade constraints;
 
 drop table ETIQUETTE_TIERS cascade constraints;
 drop table ETIQUETTE cascade constraints;

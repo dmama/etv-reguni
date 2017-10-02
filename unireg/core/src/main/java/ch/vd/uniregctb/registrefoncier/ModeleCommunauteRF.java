@@ -33,7 +33,7 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
  * Modèle de communauté qui permet de regrouper les communautés RF constituées des mêmes membres.
  */
 @Entity
-@Table(name = "MODELE_COMMUNAUTE_RF")
+@Table(name = "RF_MODELE_COMMUNAUTE")
 public class ModeleCommunauteRF extends HibernateEntity implements LinkedEntity {
 
 	/**
@@ -89,7 +89,7 @@ public class ModeleCommunauteRF extends HibernateEntity implements LinkedEntity 
 
 	// configuration hibernate : le modèle de communauté gère les membres
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinTable(name = "MEMBRE_COMMUNAUTE_RF",
+	@JoinTable(name = "RF_MEMBRE_COMMUNAUTE",
 			joinColumns = @JoinColumn(name = "MODEL_COMMUNAUTE_ID"),
 			inverseJoinColumns = @JoinColumn(name = "AYANT_DROIT_ID"))
 	public Set<AyantDroitRF> getMembres() {

@@ -26,7 +26,7 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
  * Lien entre une communauté RF (issue de Capitastra) et une communauté de référence (données propres à Unireg)
  */
 @Entity
-@Table(name = "REGROUPEMENT_COMMUNAUTE_RF")
+@Table(name = "RF_REGROUPEMENT_COMMUNAUTE")
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))

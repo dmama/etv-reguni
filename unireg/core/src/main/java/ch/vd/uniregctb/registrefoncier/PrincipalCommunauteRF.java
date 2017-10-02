@@ -23,7 +23,7 @@ import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 
 @Entity
-@Table(name = "PRINCIPAL_COMMUNAUTE_RF")
+@Table(name = "RF_PRINCIPAL_COMMUNAUTE")
 @AttributeOverrides({
 		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
 		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
