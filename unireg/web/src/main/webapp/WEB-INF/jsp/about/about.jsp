@@ -50,7 +50,7 @@
 				<fieldset>
 					<table>
 						<tr><td>Version :</td><td><strong><fmt:message key="version" /></strong></td></tr>
-						<tr><td>Build :</td><td><strong><fmt:message key="buildtime" /></strong></td></tr>
+						<tr><td>Build :</td><td><strong><fmt:message key="buildNumber" /></strong></td></tr>
 						<tr><td>Bug tracker :</td><td><strong><a href="http://issuetracker.etat-de-vaud.ch/jira/browse/SIFISC/component/11239">http://issuetracker.etat-de-vaud.ch/jira/browse/SIFISC/component/11239</a></strong></td></tr>
 						<tr><td>Wiki :</td><td><strong><a href="https://portail.etat-de-vaud.ch/outils/dsiwiki/display/FiscaliteUNIREG/Unireg">https://portail.etat-de-vaud.ch/outils/dsiwiki/display/FiscaliteUNIREG/Unireg</a></strong></td></tr>
 						<tr><td>Mega :</td><td><strong><a href="http://intranet.etat-de-vaud.ch/carto_mega/acv/pages/57cb69d947b50b2f.htm">http://intranet.etat-de-vaud.ch/carto_mega/acv/pages/57cb69d947b50b2f.htm</a></strong></td></tr>

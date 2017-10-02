@@ -358,10 +358,9 @@
 				<artifactId>buildnumber-maven-plugin</artifactId>
 				<version>1.4</version>
 				<configuration>
-					<format>{0,date,yyyy-MM-dd HH:mm:ss}</format>
-					<items>
-						<item>timestamp</item>
-					</items>
+					<doCheck>false</doCheck>
+					<doUpdate>false</doUpdate>
+					<shortRevisionLength>8</shortRevisionLength>
 				</configuration>
 				<executions>
 					<execution>
@@ -372,7 +371,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>com.samaxes.maven</groupId>
 				<artifactId>minify-maven-plugin</artifactId>

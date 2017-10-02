@@ -133,7 +133,7 @@
 			</div>
 
 			<div id="footer">
-				<strong>Version <fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
+				<strong>Version <fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildNumber"/>)
 				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>
 				<br/>
 				<strong>Navigateur&nbsp;:</strong> <div id="appVersion" style="display:inline-block">?</div>
