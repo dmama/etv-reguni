@@ -34,6 +34,7 @@ import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.processor.AffaireRFListener;
+import ch.vd.uniregctb.registrefoncier.dataimport.processor.CommunauteRFProcessor;
 
 public class RattraperDatesMetierDroitRFProcessor {
 
@@ -43,15 +44,18 @@ public class RattraperDatesMetierDroitRFProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final RegistreFoncierService registreFoncierService;
 	private final EvenementFiscalService evenementFiscalService;
+	private final CommunauteRFProcessor communauteRFProcessor;
 
 	public RattraperDatesMetierDroitRFProcessor(@NotNull ImmeubleRFDAO immeubleRFDAO,
 	                                            @NotNull PlatformTransactionManager transactionManager,
 	                                            @NotNull RegistreFoncierService registreFoncierService,
-	                                            @NotNull EvenementFiscalService evenementFiscalService) {
+	                                            @NotNull EvenementFiscalService evenementFiscalService,
+	                                            @NotNull CommunauteRFProcessor communauteRFProcessor) {
 		this.immeubleRFDAO = immeubleRFDAO;
 		this.transactionManager = transactionManager;
 		this.registreFoncierService = registreFoncierService;
 		this.evenementFiscalService = evenementFiscalService;
+		this.communauteRFProcessor = communauteRFProcessor;
 	}
 
 	/**
@@ -182,6 +186,9 @@ public class RattraperDatesMetierDroitRFProcessor {
 				throw new ProgrammingException();   // on ne devrait jamais avoir de droits nouvellement fermés
 			}
 		}));
+
+		// on recalcule ce qu'il faut sur les communautés de l'immeuble
+		communauteRFProcessor.processAll(immeuble);
 
 		untouched.forEach(rapport::addUntouched);
 	}

@@ -189,6 +189,7 @@
 		<constructor-arg ref="transactionManager" />
 		<constructor-arg ref="serviceRF" />
 		<constructor-arg ref="evenementFiscalService"/>
+		<constructor-arg ref="communauteRFProcessor"/>
 	</bean>
 
 	<bean id="rattrapageModelesCommunautesRFProcessor" class="ch.vd.uniregctb.registrefoncier.rattrapage.RattrapageModelesCommunautesRFProcessor">
