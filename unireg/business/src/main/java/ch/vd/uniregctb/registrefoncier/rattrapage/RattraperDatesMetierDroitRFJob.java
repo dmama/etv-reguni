@@ -35,7 +35,7 @@ public class RattraperDatesMetierDroitRFJob extends JobDefinition {
 		param1.setName(DATA_SELECTION);
 		param1.setMandatory(true);
 		param1.setType(new JobParamEnum(RattrapageDataSelection.class));
-		addParameterDefinition(param1, RattrapageDataSelection.MISSING_END_DATE);
+		addParameterDefinition(param1, RattrapageDataSelection.ALL);
 
 		final JobParam param2 = new JobParam();
 		param2.setDescription("Ids des immeubles (sélection explicite)");
