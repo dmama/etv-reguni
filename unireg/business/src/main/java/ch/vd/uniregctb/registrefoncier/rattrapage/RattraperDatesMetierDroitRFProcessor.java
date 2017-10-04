@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -152,6 +153,7 @@ public class RattraperDatesMetierDroitRFProcessor {
 		affaires.sort(Comparator.comparing(AffaireRF::getDateValeur));
 
 		// on recalcule et rattrape si nécessaire les dates de début sur les droits ouverts
+		final MutableBoolean somethingChanged = new MutableBoolean(false);
 		affaires.forEach(c -> c.refreshDatesMetier(new AffaireRFListener() {
 
 			@Override
@@ -161,6 +163,7 @@ public class RattraperDatesMetierDroitRFProcessor {
 
 			@Override
 			public void onUpdateDateDebut(@NotNull DroitProprieteRF droit, @Nullable RegDate dateDebutMetierInitiale, @Nullable String motifDebutInitial) {
+				somethingChanged.setTrue();
 				untouched.remove(droit);
 				rapport.addDebutUpdated(droit, dateDebutMetierInitiale, motifDebutInitial);
 				// on publie l'événement fiscal correspondant
@@ -170,6 +173,7 @@ public class RattraperDatesMetierDroitRFProcessor {
 
 			@Override
 			public void onUpdateDateFin(@NotNull DroitProprieteRF droit, @Nullable RegDate dateFinMetierInitiale, @Nullable String motifFinInitial) {
+				somethingChanged.setTrue();
 				untouched.remove(droit);
 				rapport.addFinUpdated(droit, dateFinMetierInitiale, motifFinInitial);
 				// on publie l'événement fiscal correspondant
@@ -187,8 +191,10 @@ public class RattraperDatesMetierDroitRFProcessor {
 			}
 		}));
 
-		// on recalcule ce qu'il faut sur les communautés de l'immeuble
-		communauteRFProcessor.processAll(immeuble);
+		// on recalcule si nécessaire ce qu'il faut sur les communautés de l'immeuble
+		if (somethingChanged.isTrue()) {
+			communauteRFProcessor.processAll(immeuble);
+		}
 
 		untouched.forEach(rapport::addUntouched);
 	}
