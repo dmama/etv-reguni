@@ -32,6 +32,7 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
+import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
@@ -600,8 +601,10 @@ public abstract class Contribuable extends Tiers {
 		return hasDecisionEnCours() || existDecisionAciOuverteApres(date);
 	}
 
-	public synchronized void addDeclaration(Declaration declaration) {
-		if (declaration instanceof DeclarationAvecNumeroSequence) {
+	@Override
+	public synchronized void addDocumentFiscal(DocumentFiscal documentFiscal) {
+		if (documentFiscal instanceof DeclarationAvecNumeroSequence) {
+			DeclarationAvecNumeroSequence declaration = (DeclarationAvecNumeroSequence) documentFiscal;
 			final DeclarationAvecNumeroSequence avecNumero = (DeclarationAvecNumeroSequence) declaration;
 			if (avecNumero.getNumero() == null) {
 				// assignation d'un nouveau numéro de séquence par période fiscale
@@ -627,7 +630,12 @@ public abstract class Contribuable extends Tiers {
 						                     : Math.max(numero, maxFound) + 1);
 			}
 		}
-		super.addDeclaration(declaration);
+		super.addDocumentFiscal(documentFiscal);
+	}
+
+	@Override
+	public synchronized void addDeclaration(Declaration declaration) {
+		addDocumentFiscal(declaration);
 	}
 
 	@OneToMany(mappedBy = "contribuable", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
