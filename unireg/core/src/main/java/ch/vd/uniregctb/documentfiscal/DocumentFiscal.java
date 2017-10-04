@@ -127,7 +127,7 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_e6QxUeqfEdySTq6PFlf9jQ?GETTER"
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "DOCUMENT_FISCAL_ID", nullable= false)
+	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable=false, updatable=false, nullable= false)
 	@ForeignKey(name = "FK_DEL_DOCFISC_DOCFISC_ID")
 	public Set<DelaiDocumentFiscal> getDelais() {
 		// begin-user-code
