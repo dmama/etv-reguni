@@ -26,7 +26,7 @@ public class DelaiDeclarationValidatorTest extends AbstractValidatorTest<DelaiDe
 		Assert.assertNotNull(invalide);
 		Assert.assertFalse(invalide.hasWarnings());
 		Assert.assertEquals(1, invalide.errorsCount());
-		//Assert.assertEquals("La date de traitement n'est pas renseignée sur le délai de la déclaration null (fin de période au ?).", invalide.getErrors().get(0));
+		Assert.assertEquals("La date de traitement n'est pas renseignée sur le délai de la déclaration null (fin de période au ?).", invalide.getErrors().get(0));
 
 		// mais dès qu'on rajoute la date de demande, ça va mieux
 		delai.setDateTraitement(RegDate.get());
@@ -46,7 +46,7 @@ public class DelaiDeclarationValidatorTest extends AbstractValidatorTest<DelaiDe
 		Assert.assertNotNull(invalide);
 		Assert.assertFalse(invalide.hasWarnings());
 		Assert.assertEquals(1, invalide.errorsCount());
-		//Assert.assertEquals("L'état du délai n'est pas renseigné sur le délai de la déclaration null (fin de période au ?).", invalide.getErrors().get(0));
+		Assert.assertEquals("L'état du délai n'est pas renseigné sur le délai de la déclaration null (fin de période au ?).", invalide.getErrors().get(0));
 
 		// mais dès qu'on rajoute l'état, ça va mieux
 		delai.setEtat(EtatDelaiDocumentFiscal.DEMANDE);
@@ -76,13 +76,13 @@ public class DelaiDeclarationValidatorTest extends AbstractValidatorTest<DelaiDe
 					Assert.assertFalse(vr.hasWarnings());
 					Assert.assertTrue(vr.hasErrors());
 					Assert.assertEquals(1, vr.errorsCount());
-//					Assert.assertEquals("La date de délai accordé est obligatoire sur un délai dans l'état 'accordé' de la déclaration null (fin de période au ?).", vr.getErrors().get(0));
+					Assert.assertEquals("La date de délai accordé est obligatoire sur un délai dans l'état 'accordé' de la déclaration null (fin de période au ?).", vr.getErrors().get(0));
 				}
 				else {
 					Assert.assertFalse(String.format("%s/%s", etat, date), vr.hasWarnings());
 					Assert.assertTrue(String.format("%s/%s", etat, date), vr.hasErrors());
 					Assert.assertEquals(String.format("%s/%s", etat, date), 1, vr.errorsCount());
-//					Assert.assertEquals(String.format("%s/%s", etat, date), "La date de délai accordé est interdite sur un délai dans un état différent de 'accordé' (déclaration null, fin de période au ?).", vr.getErrors().get(0));
+					Assert.assertEquals(String.format("%s/%s", etat, date), "La date de délai accordé est interdite sur un délai dans un état différent de 'accordé' (déclaration null, fin de période au ?).", vr.getErrors().get(0));
 				}
 			}
 		}
@@ -113,7 +113,7 @@ public class DelaiDeclarationValidatorTest extends AbstractValidatorTest<DelaiDe
 			else {
 				Assert.assertTrue(etat.name(), vr.hasErrors());
 				Assert.assertEquals(etat.name(), 1, vr.errorsCount());
-//				Assert.assertEquals(etat.name(), "Seuls les délais accordés peuvent être dotés du flag 'sursis' (déclaration null, fin de période au ?).", vr.getErrors().get(0));
+				Assert.assertEquals(etat.name(), "Seuls les délais accordés peuvent être dotés du flag 'sursis' (déclaration null, fin de période au ?).", vr.getErrors().get(0));
 			}
 		}
 	}
