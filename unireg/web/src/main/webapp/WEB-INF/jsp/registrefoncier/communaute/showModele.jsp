@@ -41,17 +41,23 @@
 				    </c:set>
 				    <unireg:linkTo link_class="${classNom}" name="${noctb}" action="/registrefoncier/communaute/showTiers.do" params="{id:${membre.ctbId}}"/>
 			    </display:column>
+			    <display:column titleKey="label.role">
+				    <span class="${classNom}"><c:out value="${membre.role}"/></span>
+			    </display:column>
 			    <display:column titleKey="label.nom.raison">
 				    <span class="${classNom}"><c:out value="${membre.nom}"/></span>
 			    </display:column>
 			    <display:column titleKey="label.prenoms">
 				    <span class="${classNom}"><c:out value="${membre.prenom}"/></span>
 			    </display:column>
-			    <display:column  titleKey="label.date.naissance">
+			    <display:column  titleKey="label.date.naissance.ou.rc">
 		            <span class="${classNom}"><unireg:regdate regdate="${membre.dateNaissance}" /></span>
 			    </display:column>
 			    <display:column  titleKey="label.date.deces">
 				    <span class="${classNom}"><unireg:regdate regdate="${membre.dateDeces}" /></span>
+			    </display:column>
+			    <display:column  titleKey="label.for.principal">
+				    <span class="${classNom}"><c:out value="${membre.forPrincipal}"/></span>
 			    </display:column>
 			    <display:column  titleKey="label.action">
 				    <c:if test="${membre.id != null && membre.ctbId != modele.principalCourant.principal.ctbId}">

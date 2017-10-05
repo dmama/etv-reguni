@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesFiscales;
 import ch.vd.uniregctb.avatar.AvatarService;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.indexer.Indexable;
 import ch.vd.uniregctb.indexer.IndexableData;
@@ -20,7 +21,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 
@@ -149,36 +149,12 @@ public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 	}
 
 	protected String getLocalisationAsString(LocalizedDateRange localisation, Tiers tiers) throws IndexerException {
-
-		String str = StringUtils.EMPTY;
 		try {
-			final TypeAutoriteFiscale taf = localisation.getTypeAutoriteFiscale();
-
-			// Commune, vaudoise ou pas
-			if (taf == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || taf == TypeAutoriteFiscale.COMMUNE_HC) {
-				final Commune com = serviceInfra.getCommuneByNumeroOfs(localisation.getNumeroOfsAutoriteFiscale(), localisation.getDateFin());
-				if (com == null) {
-					throw new IndexerException("Commune pas trouvée: noOfs=" + localisation.getNumeroOfsAutoriteFiscale());
-				}
-				str = com.getNomOfficiel();
-			}
-			// Pays
-			else if (taf == TypeAutoriteFiscale.PAYS_HS) {
-					Pays p = serviceInfra.getPays(localisation.getNumeroOfsAutoriteFiscale(), localisation.getDateDebut());
-					if (p == null) {
-						throw new IndexerException("Pays pas trouvé: noOfs=" + localisation.getNumeroOfsAutoriteFiscale() + " à la date " + localisation.getDateDebut());
-					}
-					str = p.getNomCourt();
-			}
-			else {
-				ch.vd.registre.base.utils.Assert.fail("Le type d'autorité fiscale doit toujours etre présent");
-			}
+			return tiersService.getLocalisationAsString(localisation);
 		}
-		catch (ServiceInfrastructureException e) {
+		catch (ServiceInfrastructureException | ObjectNotFoundException e) {
 			throw new IndexerException(tiers, e);
 		}
-
-		return str;
 	}
 
 	protected static StringBuilder addValue(StringBuilder s, String value) {

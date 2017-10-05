@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.registrefoncier.communaute;
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,22 +23,27 @@ public class MembreCommunauteView {
 	@Nullable
 	private final Long id;
 	private final Long ctbId;
+	private final String role;
 	private final String nom;
 	private final String prenom;
 	private final RegDate dateNaissance;
 	private final RegDate dateDeces;
+	private final String forPrincipal;
 
 	public MembreCommunauteView(@Nullable Long id, @Nullable Contribuable ctb, @NotNull TiersService tiersService) {
 		this.id = id;
 		if (ctb == null) {
 			this.ctbId = null;
+			this.role = null;
 			this.nom = null;
 			this.prenom = null;
 			this.dateNaissance = null;
 			this.dateDeces = null;
+			this.forPrincipal = null;
 		}
 		else {
 			this.ctbId = ctb.getNumero();
+			this.role = ctb.getRoleLigne1();
 			if (ctb instanceof PersonnePhysique) {
 				final NomPrenom decompo = tiersService.getDecompositionNomPrenom((PersonnePhysique) ctb, false);
 				this.nom = decompo.getNom();
@@ -50,6 +57,12 @@ public class MembreCommunauteView {
 				this.dateNaissance = null;
 				this.dateDeces = null;
 			}
+			this.forPrincipal = Stream.concat(Stream.of(ctb.getForFiscalPrincipalAt(null)), tiersService.getForsFiscauxVirtuels(ctb, true).stream())
+					.filter(Objects::nonNull)
+					.filter(f -> f.isValidAt(null))
+					.findFirst()
+					.map(tiersService::getLocalisationAsString)
+					.orElse(null);
 		}
 	}
 
@@ -72,6 +85,10 @@ public class MembreCommunauteView {
 		return ctbId;
 	}
 
+	public String getRole() {
+		return role;
+	}
+
 	public String getNom() {
 		return nom;
 	}
@@ -86,5 +103,9 @@ public class MembreCommunauteView {
 
 	public RegDate getDateDeces() {
 		return dateDeces;
+	}
+
+	public String getForPrincipal() {
+		return forPrincipal;
 	}
 }

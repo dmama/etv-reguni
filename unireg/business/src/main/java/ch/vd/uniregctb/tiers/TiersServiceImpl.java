@@ -58,6 +58,7 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
@@ -95,6 +96,7 @@ import ch.vd.uniregctb.common.LiteralStringHelper;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.Rerangeable;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -7069,5 +7071,36 @@ public class TiersServiceImpl implements TiersService {
 		} else {
 			return DegreAssociationRegistreCivil.CIVIL_ESCLAVE;
 		}
+	}
+
+	@Override
+	public String getLocalisationAsString(LocalizedDateRange localisation) throws ServiceInfrastructureException, ObjectNotFoundException {
+
+		final String str;
+
+		// Commune, vaudoise ou pas
+		final TypeAutoriteFiscale taf = localisation.getTypeAutoriteFiscale();
+		switch (taf) {
+		case COMMUNE_OU_FRACTION_VD:
+		case COMMUNE_HC:
+			final Commune com = serviceInfra.getCommuneByNumeroOfs(localisation.getNumeroOfsAutoriteFiscale(), localisation.getDateFin());
+			if (com == null) {
+				throw new ObjectNotFoundException("Commune pas trouvée: noOfs=" + localisation.getNumeroOfsAutoriteFiscale());
+			}
+			str = com.getNomOfficiel();
+			break;
+		// Pays
+		case PAYS_HS:
+			Pays p = serviceInfra.getPays(localisation.getNumeroOfsAutoriteFiscale(), localisation.getDateDebut());
+			if (p == null) {
+				throw new ObjectNotFoundException("Pays pas trouvé: noOfs=" + localisation.getNumeroOfsAutoriteFiscale() + " à la date " + localisation.getDateDebut());
+			}
+			str = p.getNomCourt();
+			break;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnu = [" + taf + "]");
+		}
+
+		return str;
 	}
 }

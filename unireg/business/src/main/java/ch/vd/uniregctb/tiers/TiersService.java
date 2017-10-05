@@ -15,6 +15,7 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -23,6 +24,7 @@ import ch.vd.uniregctb.adresse.AdresseMandataire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -364,6 +366,16 @@ public interface TiersService {
 	 * @return le degré d'association de l'établissement avec le registre civil
 	 */
 	DegreAssociationRegistreCivil determineDegreAssociationCivil(Etablissement etablissement, RegDate date);
+
+	/**
+	 * Construit la représentation String de la localisation spécifiée.
+	 *
+	 * @param localisation une localisation
+	 * @return la représentation String de la localisation spécifiée.
+	 * @throws ServiceInfrastructureException en cas d'erreur à l'appel du service infrastructure
+	 * @throws ObjectNotFoundException        si le numéro Ofs de la localisation est inconnu.
+	 */
+	String getLocalisationAsString(LocalizedDateRange localisation) throws ServiceInfrastructureException, ObjectNotFoundException;
 
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,
