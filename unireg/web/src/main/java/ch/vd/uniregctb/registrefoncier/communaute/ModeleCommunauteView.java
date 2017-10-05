@@ -32,11 +32,11 @@ public class ModeleCommunauteView {
 	                            @NotNull RegistreFoncierService registreFoncierService) {
 		this.id = modele.getId();
 		this.membres = modele.getMembres().stream()
-				.map(m -> new MembreCommunauteView(m, tiersService))
+				.map(m -> new MembreCommunauteView(m, tiersService, registreFoncierService))
 				.collect(Collectors.toList());
 		this.principaux = registreFoncierService.buildPrincipalHisto(modele).stream()
 				.sorted(new DateRangeComparator<>().reversed()) // du plus récent au plus vieux
-				.map(p -> new PrincipalCommunauteRFView(p, tiersService))
+				.map(p -> new PrincipalCommunauteRFView(p, tiersService, registreFoncierService))
 				.collect(Collectors.toList());
 		this.principalCourant = this.principaux.isEmpty() ? null : this.principaux.get(0);
 		this.regroupements = modele.getRegroupements().stream()

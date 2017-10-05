@@ -182,7 +182,7 @@ public class CommunauteRFController {
 		}
 
 		model.addAttribute("modele", new ModeleCommunauteView(modele, tiersService, registreFoncierService));
-		model.addAttribute("membre", new MembreCommunauteView(membre, tiersService));
+		model.addAttribute("membre", new MembreCommunauteView(membre, tiersService, registreFoncierService));
 		model.addAttribute("addPrincipalView", new AddPrincipalView(modeleId, membreId, null));
 
 		return "registrefoncier/communaute/addPrincipal";
@@ -208,7 +208,7 @@ public class CommunauteRFController {
 
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("modele", new ModeleCommunauteView(modele, tiersService, registreFoncierService));
-			model.addAttribute("membre", new MembreCommunauteView(membre, tiersService));
+			model.addAttribute("membre", new MembreCommunauteView(membre, tiersService, registreFoncierService));
 			return "registrefoncier/communaute/addPrincipal";
 		}
 

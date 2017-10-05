@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.common.NomPrenomDates;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -105,6 +106,16 @@ public class MockRegistreFoncierService implements RegistreFoncierService {
 
 	@Override
 	public void cancelPrincipalCommunaute(@NotNull PrincipalCommunauteRF principal) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public @Nullable AyantDroitRF getAyantDroit(long ayantDroitId) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public @NotNull NomPrenomDates getDecompositionNomPrenomDateNaissanceRF(@NotNull TiersRF tiers) {
 		throw new NotImplementedException();
 	}
 }

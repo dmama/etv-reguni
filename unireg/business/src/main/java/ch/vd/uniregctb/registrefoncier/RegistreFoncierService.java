@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.common.NomPrenomDates;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -173,4 +174,16 @@ public interface RegistreFoncierService {
 	 * @param principal le principal à annuler
 	 */
 	void cancelPrincipalCommunaute(@NotNull PrincipalCommunauteRF principal);
+
+	@Nullable
+	AyantDroitRF getAyantDroit(long ayantDroitId);
+
+	/**
+	 * Retourne la décomposition nom/prénom/raison sociale du tiers RF spécifié. <b>Attention !</b> les valeurs retournées sont celles du Registre Foncier (et non celles des registres civiles des contribuables rapprochés).
+	 *
+	 * @param tiers un tiers RF
+	 * @return la décomposition nom/prénom/raison sociale du tiers RF spécifié (données du RF !)
+	 */
+	@NotNull
+	NomPrenomDates getDecompositionNomPrenomDateNaissanceRF(@NotNull TiersRF tiers);
 }

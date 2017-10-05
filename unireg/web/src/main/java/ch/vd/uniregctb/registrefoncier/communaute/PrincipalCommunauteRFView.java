@@ -1,10 +1,14 @@
 package ch.vd.uniregctb.registrefoncier.communaute;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
+import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRFPrincipalInfo;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -19,13 +23,16 @@ public class PrincipalCommunauteRFView implements Annulable {
 	private final RegDate dateFin;
 	private final MembreCommunauteView principal;
 
-	public PrincipalCommunauteRFView(@NotNull CommunauteRFPrincipalInfo principal, @NotNull TiersService tiersService) {
+	public PrincipalCommunauteRFView(@NotNull CommunauteRFPrincipalInfo principal, @NotNull TiersService tiersService, @NotNull RegistreFoncierService registreFoncierService) {
 		this.id = principal.getId();
 		this.parDefaut = principal.isParDefaut();
 		this.dateDebut = principal.getDateDebut();
 		this.dateFin = principal.getDateFin();
 		final Contribuable ctb = (Contribuable) tiersService.getTiers(principal.getCtbId());
-		this.principal = new MembreCommunauteView(principal.getAyantDroitId(), ctb, tiersService);
+		final AyantDroitRF ayantDroit = Optional.ofNullable(principal.getAyantDroitId())
+				.map(registreFoncierService::getAyantDroit)
+				.orElse(null);
+		this.principal = new MembreCommunauteView(ayantDroit, ctb, tiersService, registreFoncierService);
 	}
 
 	public Long getId() {

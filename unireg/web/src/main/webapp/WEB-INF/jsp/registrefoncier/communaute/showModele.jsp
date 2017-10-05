@@ -10,6 +10,9 @@
 		    .communityLeader {
 			    font-weight: bold;
 		    }
+		    .nonRapproche {
+			    font-style: italic;
+		    }
 	    </style>
   	</tiles:put>
   	<tiles:put name="body">
@@ -29,7 +32,7 @@
 	    <fieldset>
 	    <legend><span><fmt:message key="label.membres.communaute" /></span></legend>
 		    <display:table name="modele.membres" id="membre" pagesize="25" class="display">
-			    <c:set var="classNom"><c:if test="${membre.ctbId == modele.principalCourant.principal.ctbId}">communityLeader</c:if></c:set>
+			    <c:set var="classNom"><c:if test="${membre.ctbId == modele.principalCourant.principal.ctbId}">communityLeader</c:if><c:if test="${membre.ctbId == null}">nonRapproche</c:if></c:set>
 			    <display:column style="width:10px">
 				    <c:if test="${membre.ctbId == modele.principalCourant.principal.ctbId}">
 					    <img src="<c:url value="/css/x/checkmark.png"/>" title="Ce membre est le principal courant" />
@@ -60,8 +63,11 @@
 				    <span class="${classNom}"><c:out value="${membre.forPrincipal}"/></span>
 			    </display:column>
 			    <display:column  titleKey="label.action">
-				    <c:if test="${membre.id != null && membre.ctbId != modele.principalCourant.principal.ctbId}">
+				    <c:if test="${membre.id != null && membre.ctbId != null && membre.ctbId != modele.principalCourant.principal.ctbId}">
 				        <unireg:buttonTo name="Choisir comme principal" action="/registrefoncier/communaute/addPrincipal.do" method="get" params="{modeleId:${modele.id},membreId:${membre.id}}"/>
+				    </c:if>
+				    <c:if test="${membre.ctbId == null}">
+					    <span class="${classNom}"><fmt:message key="label.tiers.non-rapproche"/></span>
 				    </c:if>
 			    </display:column>
 		    </display:table>

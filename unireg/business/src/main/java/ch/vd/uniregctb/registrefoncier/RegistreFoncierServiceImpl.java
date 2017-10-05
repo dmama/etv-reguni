@@ -24,6 +24,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.NomPrenomDates;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AnnulableHelper;
@@ -642,6 +643,30 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.filter(AnnulableHelper::nonAnnule)
 				.map(RegroupementCommunauteRF::getCommunaute)
 				.forEach(communaute -> evenementFiscalService.publierModificationPrincipalCommunaute(null, communaute));
+	}
+
+	@Override
+	public @Nullable AyantDroitRF getAyantDroit(long ayantDroitId) {
+		return ayantDroitRFDAO.get(ayantDroitId);
+	}
+
+	@Override
+	public @NotNull NomPrenomDates getDecompositionNomPrenomDateNaissanceRF(@NotNull TiersRF tiers) {
+		if (tiers instanceof PersonnePhysiqueRF) {
+			final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) tiers;
+			return new NomPrenomDates(pp.getNom(), pp.getPrenom(), pp.getDateNaissance(), null);
+		}
+		else if (tiers instanceof PersonneMoraleRF) {
+			final PersonneMoraleRF pm = (PersonneMoraleRF) tiers;
+			return new NomPrenomDates(pm.getRaisonSociale(), null, null, null);
+		}
+		else if (tiers instanceof CollectivitePubliqueRF) {
+			final CollectivitePubliqueRF coll = (CollectivitePubliqueRF) tiers;
+			return new NomPrenomDates(coll.getRaisonSociale(), null, null, null);
+		}
+		else {
+			throw new IllegalArgumentException("Type de tiers RF inconnu = [" + tiers.getClass() + "]");
+		}
 	}
 
 	private static void recalculeDatesFins(@NotNull ModeleCommunauteRF modele) {

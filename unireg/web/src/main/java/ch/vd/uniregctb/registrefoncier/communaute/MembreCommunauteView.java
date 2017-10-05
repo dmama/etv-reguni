@@ -9,7 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.common.NomPrenomDates;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -22,6 +24,7 @@ public class MembreCommunauteView {
 	 */
 	@Nullable
 	private final Long id;
+	@Nullable
 	private final Long ctbId;
 	private final String role;
 	private final String nom;
@@ -30,15 +33,24 @@ public class MembreCommunauteView {
 	private final RegDate dateDeces;
 	private final String forPrincipal;
 
-	public MembreCommunauteView(@Nullable Long id, @Nullable Contribuable ctb, @NotNull TiersService tiersService) {
-		this.id = id;
+	public MembreCommunauteView(@Nullable AyantDroitRF ayantDroit, @Nullable Contribuable ctb, @NotNull TiersService tiersService, @NotNull RegistreFoncierService registreFoncierService) {
+		this.id = ayantDroit == null ? null : ayantDroit.getId();
 		if (ctb == null) {
 			this.ctbId = null;
 			this.role = null;
-			this.nom = null;
-			this.prenom = null;
-			this.dateNaissance = null;
-			this.dateDeces = null;
+			if (ayantDroit instanceof TiersRF) {
+				final NomPrenomDates decompo = registreFoncierService.getDecompositionNomPrenomDateNaissanceRF((TiersRF) ayantDroit);
+				this.nom = decompo.getNom();
+				this.prenom = decompo.getPrenom();
+				this.dateNaissance = decompo.getDateNaissance();
+				this.dateDeces = decompo.getDateDeces();
+			}
+			else {
+				this.nom = null;
+				this.prenom = null;
+				this.dateNaissance = null;
+				this.dateDeces = null;
+			}
 			this.forPrincipal = null;
 		}
 		else {
@@ -66,13 +78,13 @@ public class MembreCommunauteView {
 		}
 	}
 
-	public MembreCommunauteView(@NotNull AyantDroitRF ayantDroit, @NotNull TiersService tiersService) {
+	public MembreCommunauteView(@NotNull AyantDroitRF ayantDroit, @NotNull TiersService tiersService, RegistreFoncierService registreFoncierService) {
 		// on va chercher le contribuable rapproché au tiers RF
-		this(ayantDroit.getId(), Optional.of(ayantDroit)
-				     .filter(TiersRF.class::isInstance)
-				     .map(TiersRF.class::cast)
-				     .map(TiersRF::getCtbRapproche)
-				     .orElse(null), tiersService);
+		this(ayantDroit, Optional.of(ayantDroit)
+				.filter(TiersRF.class::isInstance)
+				.map(TiersRF.class::cast)
+				.map(TiersRF::getCtbRapproche)
+				.orElse(null), tiersService, registreFoncierService);
 
 	}
 
@@ -81,6 +93,7 @@ public class MembreCommunauteView {
 		return id;
 	}
 
+	@Nullable
 	public Long getCtbId() {
 		return ctbId;
 	}
@@ -89,6 +102,9 @@ public class MembreCommunauteView {
 		return role;
 	}
 
+	/**
+	 * @return le nom du membre (source = Registre Civil si ctbId != null, Registre RF si ctbId == null).
+	 */
 	public String getNom() {
 		return nom;
 	}
