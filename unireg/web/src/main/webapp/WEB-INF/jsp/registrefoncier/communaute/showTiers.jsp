@@ -10,6 +10,15 @@
 		    .principal {
 			    font-weight: bold;
 		    }
+		    table.rf {
+			    width: 100%;
+			    border: none;
+			    margin: 0;
+			    padding: 0 0 10px;
+		    }
+		    .immeubles, .membres {
+			    vertical-align:top
+		    }
 	    </style>
   	</tiles:put>
   	<tiles:put name="body">
@@ -23,44 +32,64 @@
 	    <fieldset>
 	    <legend><span><fmt:message key="label.communautes.associees" /></span></legend>
 		    <display:table name="tiers.modeles" id="modele" pagesize="25" class="display">
-			    <display:column titleKey="label.numero.modele.communaute" href="showModele.do" paramId="id" paramProperty="id" >
+			    <display:column titleKey="label.numero.modele.communaute" style="width:100px" href="showModele.do" paramId="id" paramProperty="id" >
 				    <c:out value="${modele.id}"/>
 			    </display:column>
-			    <display:column  titleKey="label.membres.communaute">
-				    <ol>
-					    <c:forEach items="${modele.membres}" var="membre">
+			    <display:column  titleKey="label.membres.communaute" class="membres">
+				    <table class="rf">
+					    <tr>
+						    <th></th>
+						    <th><fmt:message key="label.numero.tiers"/></th>
+						    <th><fmt:message key="label.nom.raison"/></th>
+						    <th style="width:130px"><fmt:message key="label.date.naissance.ou.rc"/></th>
+						    <th><fmt:message key="label.date.deces"/></th>
+					    </tr>
+					    <c:forEach items="${modele.membres}" var="membre" varStatus="loop">
 						    <c:set var="noctb">
 							    <unireg:numCTB numero="${membre.ctbId}"/>
 						    </c:set>
 						    <c:set var="nomClass">
-						        <c:if test="${membre.ctbId == modele.principalCourant.principal.ctbId}">principal</c:if>
+							    <c:if test="${membre.ctbId == modele.principalCourant.principal.ctbId}">principal</c:if>
 						    </c:set>
-						    <li>
-							    <span class="${nomClass}"><c:out value="${membre.prenom}"/> <c:out value="${membre.nom}"/></span>
-							    <c:if test="${membre.dateNaissance != null}">
-								    (<unireg:regdate regdate="${membre.dateNaissance}" /><c:if test="${membre.dateDeces != null}">- <unireg:regdate regdate="${membre.dateDeces}" /></c:if>)
-							    </c:if>
-							    - <unireg:linkTo name="${noctb}" action="/registrefoncier/communaute/showTiers.do" params="{id:${membre.ctbId}}"/>
-						    </li>
+						    <tr class="${nomClass}">
+							    <td style="text-align:right">${loop.index + 1}</td>
+							    <td><unireg:linkTo name="${noctb}" action="/registrefoncier/communaute/showTiers.do" params="{id:${membre.ctbId}}"/></td>
+							    <td><c:out value="${membre.prenom}"/> <c:out value="${membre.nom}"/></td>
+							    <td><unireg:regdate regdate="${membre.dateNaissance}" /></td>
+							    <td><unireg:regdate regdate="${membre.dateDeces}" /></td>
+						    </tr>
 					    </c:forEach>
-				    </ol>
+				    </table>
 			    </display:column>
-			    <display:column titleKey="label.immeubles.concernes" >
-				    <ol>
-					    <c:forEach items="${modele.regroupements}" var="regroupement">
-						    <li>
-							    <c:out value="${regroupement.immeuble.nomCommune}"/> / <c:out value="${regroupement.immeuble.noParcelle}"/>
-							    <c:if test="${regroupement.dateDebut != null}">
-								    (<unireg:regdate regdate="${regroupement.dateDebut}" /><c:if test="${regroupement.dateFin != null}">- <unireg:regdate regdate="${regroupement.dateFin}" /></c:if>)
-							    </c:if>
-							    - <c:out value="${regroupement.immeuble.egrid}"/>
-						    </li>
+			    <display:column titleKey="label.immeubles.concernes" class="immeubles">
+				    <table class="rf">
+					    <tr>
+						    <th></th>
+						    <th><fmt:message key="label.immeuble"/></th>
+						    <th><fmt:message key="label.egrid"/></th>
+						    <th><fmt:message key="label.date.debut"/><span class="jTip formInfo" title="<c:url value="/htm/debutRegroupementCommunaute.htm?width=375"/>" id="forPrincipalActif2">?</span></th>
+						    <th><fmt:message key="label.date.fin"/><span class="jTip formInfo" title="<c:url value="/htm/finRegroupementCommunaute.htm?width=375"/>" id="forPrincipalActif2">?</span></th>
+					    </tr>
+					    <c:forEach items="${modele.regroupements}" var="regroupement" varStatus="loop">
+						    <tr>
+							    <td style="text-align:right">${loop.index + 1}</td>
+							    <td><c:out value="${regroupement.immeuble.nomCommune}"/> / <c:out value="${regroupement.immeuble.noParcelle}"/></td>
+							    <td><c:out value="${regroupement.immeuble.egrid}"/></td>
+							    <td><unireg:regdate regdate="${regroupement.dateDebut}" /></td>
+							    <td><unireg:regdate regdate="${regroupement.dateFin}" /></td>
+						    </tr>
 					    </c:forEach>
-				    </ol>
+				    </table>
 			    </display:column>
 		    </display:table>
 
 	    </fieldset>
 
-	</tiles:put>
+	    <script>
+		    $(function() {
+			    Tooltips.activate_ajax_tooltips();
+		    });
+	    </script>
+
+    </tiles:put>
 </tiles:insert>
