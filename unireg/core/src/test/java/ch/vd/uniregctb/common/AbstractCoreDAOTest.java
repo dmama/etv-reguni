@@ -1487,7 +1487,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return tiersDAO.addAndSave(e, lettre);
 	}
 
-	protected DemandeDegrevementICI addDemandeDegrevementICI(Entreprise e, RegDate dateEnvoi, RegDate delaiRetour, @Nullable RegDate dateRetour, @Nullable RegDate dateRappel, int periodeFiscale, ImmeubleRF immeuble) {
+	protected DemandeDegrevementICI addDemandeDegrevementICI(Entreprise e, int periodeFiscale, ImmeubleRF immeuble) {
 		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
 		demande.setPeriodeFiscale(periodeFiscale);
 		demande.setImmeuble(immeuble);

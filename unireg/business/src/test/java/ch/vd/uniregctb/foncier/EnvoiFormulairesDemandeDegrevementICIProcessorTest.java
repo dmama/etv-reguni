@@ -454,7 +454,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
-			final DemandeDegrevementICI demandeExistante = addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, dateDebutDroit.year() + 1, immeuble);
+			final DemandeDegrevementICI demandeExistante = addDemandeDegrevementICI(entreprise, dateDebutDroit.year() + 1, immeuble);
 			addDelaiAutreDocumentFiscal(demandeExistante, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
 			addEtatAutreDocumentFiscalEmis(demandeExistante, dateDebutDroit.addDays(10));
 			demandeExistante.setAnnule(true);
@@ -815,7 +815,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
 			// même PF que le début du droit... ça n'empêche pas l'envoi
-			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, dateDebutDroit.year(), immeuble);
+			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateDebutDroit.year(), immeuble);
 			addDelaiAutreDocumentFiscal(demande, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
 			addEtatAutreDocumentFiscalEmis(demande, dateDebutDroit.addDays(10));
 
@@ -928,7 +928,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 
 			// PF suivante par rapport au début du droit... ça empêche l'envoi
 			final DemandeDegrevementICI demande =
-					addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, dateDebutDroit.year() + 1, immeuble);
+					addDemandeDegrevementICI(entreprise, dateDebutDroit.year() + 1, immeuble);
 			addDelaiAutreDocumentFiscal(demande, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
 			addEtatAutreDocumentFiscalEmis(demande, dateDebutDroit.addDays(10));
 
@@ -1019,7 +1019,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
 			// même PF que l'estimation fiscale... ça n'empêche pas l'envoi
-			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateDebutDroit.addYears(1), dateDebutDroit.addMonths(14), null, null, 2015, immeuble);
+			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, 2015, immeuble);
 			addDelaiAutreDocumentFiscal(demande, dateDebutDroit.addYears(1), dateDebutDroit.addMonths(14), EtatDelaiDocumentFiscal.ACCORDE);
 			addEtatAutreDocumentFiscalEmis(demande, dateDebutDroit.addYears(1));
 
@@ -1132,7 +1132,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
 			// PF suivante par rapport à la dernière estimation fiscale... ça empêche l'envoi
-			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, date(2015, 1, 25), date(2015, 2, 28), null, null, 2016, immeuble);
+			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, 2016, immeuble);
 			addDelaiAutreDocumentFiscal(demande, date(2015, 1, 25), date(2015, 2, 28), EtatDelaiDocumentFiscal.ACCORDE);
 			addEtatAutreDocumentFiscalEmis(demande, date(2015, 1, 25));
 
@@ -2246,7 +2246,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
 
-			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), null, null, 2011, immeuble);
+			final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, 2011, immeuble);
 			addDelaiAutreDocumentFiscal(demande, dateDebutDroit.addDays(10), dateDebutDroit.addMonths(2), EtatDelaiDocumentFiscal.ACCORDE);
 			addEtatAutreDocumentFiscalEmis(demande, dateDebutDroit.addDays(10));
 

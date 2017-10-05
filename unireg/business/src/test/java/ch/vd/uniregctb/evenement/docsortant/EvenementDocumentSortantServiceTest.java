@@ -291,7 +291,7 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 				addDroitPersonneMoraleRF(null, dateDebut, null, null, "Achat", null, "578567fdbdfbsd", "578567fdbdfbsc", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
 				addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
 
-				final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateEnvoiDocument, dateEnvoiDocument.addDays(30), null, null, dateEnvoiDocument.year() + 1, immeuble);
+				final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateEnvoiDocument.year() + 1, immeuble);
 				addDelaiAutreDocumentFiscal(demande, dateEnvoiDocument, dateEnvoiDocument.addDays(30), EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatAutreDocumentFiscalEmis(demande, dateEnvoiDocument);
 				demande.setCodeControle("U74157");
