@@ -206,6 +206,13 @@ public class CommunauteRFController {
 			throw new ObjectNotFoundException("L'ayant-droit avec l'id=[" + membreId + "] n'existe pas");
 		}
 
+		// validation supplémentaire pour éviter les doublons sur les périodes
+		modele.getPrincipaux().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(p -> Objects.equals(p.getDateDebut().year(), view.getPeriodeDebut()))
+				.findAny()
+				.ifPresent(p -> bindingResult.rejectValue("periodeDebut", "error.principal.existe.deja.periode"));
+
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("modele", new ModeleCommunauteView(modele, tiersService, registreFoncierService));
 			model.addAttribute("membre", new MembreCommunauteView(membre, tiersService, registreFoncierService));
