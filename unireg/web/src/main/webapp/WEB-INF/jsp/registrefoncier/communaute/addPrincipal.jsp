@@ -81,13 +81,8 @@
 					    <td style="width: 35%;"><unireg:regdate regdate="${membre.dateDeces}" /></td>
 				    </tr>
 				    <tr class="even">
-					    <td style="width: 15%;"><fmt:message key="label.date.debut"/>&nbsp;:</td>
-					    <td style="width: 35%;">
-						    <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-							    <jsp:param name="path" value="dateDebut"/>
-							    <jsp:param name="id" value="dateDebut"/>
-						    </jsp:include>
-					    </td>
+					    <td style="width: 15%;"><fmt:message key="label.debut.periode"/>&nbsp;:</td>
+					    <td style="width: 35%;"><form:input path="periodeDebut" maxlength="4" /><form:errors path="periodeDebut" cssClass="error" /></td>
 				    </tr>
 			    </table>
 		    </fieldset>

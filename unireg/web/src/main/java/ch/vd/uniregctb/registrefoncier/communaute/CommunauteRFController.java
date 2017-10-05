@@ -213,10 +213,10 @@ public class CommunauteRFController {
 		}
 
 		// on ajoute le principal
-		registreFoncierService.addPrincipalToModeleCommunaute(membre, modele, view.getDateDebut());
+		registreFoncierService.addPrincipalToModeleCommunaute(membre, modele, RegDate.get(view.getPeriodeDebut(), 1, 1));
 
 		final Contribuable ctb = membre.getCtbRapproche();
-		Flash.message("Le membre n°" + (ctb == null ? 0 : ctb.getId()) + " a été ajouté comme principal depuis le " + RegDateHelper.dateToDisplayString(view.getDateDebut()));
+		Flash.message("Le membre n°" + (ctb == null ? 0 : ctb.getId()) + " a été ajouté comme principal depuis la période " + view.getPeriodeDebut());
 		return "redirect:/registrefoncier/communaute/showModele.do?id=" + modeleId;
 	}
 

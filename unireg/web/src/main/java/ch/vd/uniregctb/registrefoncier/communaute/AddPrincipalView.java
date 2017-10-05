@@ -1,20 +1,18 @@
 package ch.vd.uniregctb.registrefoncier.communaute;
 
-import ch.vd.registre.base.date.RegDate;
-
 public class AddPrincipalView {
 
 	private long modeleId;
 	private long membreId;
-	private RegDate dateDebut;
+	private Integer periodeDebut;
 
 	public AddPrincipalView() {
 	}
 
-	public AddPrincipalView(long modeleId, long membreId, RegDate dateDebut) {
+	public AddPrincipalView(long modeleId, long membreId, Integer periodeDebut) {
 		this.modeleId = modeleId;
 		this.membreId = membreId;
-		this.dateDebut = dateDebut;
+		this.periodeDebut = periodeDebut;
 	}
 
 	public long getModeleId() {
@@ -33,11 +31,11 @@ public class AddPrincipalView {
 		this.membreId = membreId;
 	}
 
-	public RegDate getDateDebut() {
-		return dateDebut;
+	public Integer getPeriodeDebut() {
+		return periodeDebut;
 	}
 
-	public void setDateDebut(RegDate dateDebut) {
-		this.dateDebut = dateDebut;
+	public void setPeriodeDebut(Integer periodeDebut) {
+		this.periodeDebut = periodeDebut;
 	}
 }

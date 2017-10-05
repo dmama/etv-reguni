@@ -12,8 +12,14 @@ public class AddPrincipalViewValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		final AddPrincipalView view = (AddPrincipalView) target;
-		if (view.getDateDebut() == null) {
-			errors.rejectValue("dateDebut", "error.date.vide");
+		if (view.getPeriodeDebut() == null) {
+			errors.rejectValue("periodeDebut", "error.periode.fiscale.vide");
+		}
+		else {
+			final int periode = view.getPeriodeDebut();
+			if (periode < 1900 || periode > 9999) {
+				errors.rejectValue("periodeDebut", "error.param.annee");
+			}
 		}
 	}
 }
