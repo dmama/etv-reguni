@@ -43,6 +43,14 @@ public class AbstractEditDegrevementViewValidator implements Validator {
 			errors.rejectValue("propreUsage.surface", "error.degexo.surface.negative");
 		}
 
+		// Les valeurs de revenu et surface sont sur 12 chiffres
+		if(view.getLocation().getRevenu() != null && view.getLocation().getRevenu().toString().length() > 12) {
+			errors.rejectValue("location.revenu", "error.degexo.revenu.taille");
+		}
+		if(view.getLocation().getSurface() != null && view.getLocation().getSurface().toString().length() > 12) {
+			errors.rejectValue("location.surface", "error.degexo.surface.taille");
+		}
+
 		// les pourcentages doivent être compris entre 0 et 100, avec deux décimales
 		if (view.getLocation().getPourcentage() != null) {
 			final BigDecimal value = view.getLocation().getPourcentage();

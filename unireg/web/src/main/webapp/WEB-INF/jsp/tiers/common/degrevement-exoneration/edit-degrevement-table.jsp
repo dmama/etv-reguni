@@ -69,7 +69,7 @@
 					<tr class="<unireg:nextRowClass/>">
 						<td class="titre"><fmt:message key="label.revenu.encaisse"/> (<fmt:message key="label.chf"/>)</td>
 						<td class="valeur">
-							<form:input path="location.revenu" cssClass="nombre" id="locationRevenu" onchange="EditDegrevementDynamic.calculatePourcentageRevenu();"/>
+							<form:input path="location.revenu" maxlength="12" cssClass="nombre" id="locationRevenu" onchange="EditDegrevementDynamic.calculatePourcentageRevenu();"/>
 							<form:errors path="location.revenu" cssClass="error"/>
 						</td>
 						<td class="valeur">&nbsp;</td>
@@ -85,7 +85,7 @@
 					<tr class="<unireg:nextRowClass/>">
 						<td class="titre"><fmt:message key="label.surface"/> (m&sup2;)</td>
 						<td class="valeur">
-							<form:input path="location.surface" cssClass="nombre" id="locationSurface" onchange="EditDegrevementDynamic.calculatePourcentageSurface();"/>
+							<form:input path="location.surface" maxlength="12" cssClass="nombre" id="locationSurface" onchange="EditDegrevementDynamic.calculatePourcentageSurface();"/>
 							<form:errors path="location.surface" cssClass="error"/>
 						</td>
 						<td class="valeur">&nbsp;</td>
