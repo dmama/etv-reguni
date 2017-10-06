@@ -34,6 +34,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ModeleCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
@@ -42,9 +43,11 @@ import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.RegroupementCommunauteRF;
+import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
+import ch.vd.uniregctb.registrefoncier.UsufruitRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
@@ -1578,6 +1581,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 
 	/**
 	 * [SIFISC-24968] Ce test vérifie que le processing de suppression d'un immeuble ferme bien les droits rattachés à cet immeuble.
+	 * [SIFISC-26635] Ce test vérifie que le processing de suppression d'un immeuble ferme bien les servitudes rattachés à cet immeuble.
 	 */
 	@Test
 	public void testProcessMutationSuppressionImmeuble() throws Exception {
@@ -1585,7 +1589,7 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 		final RegDate dateImport = RegDate.get(2016, 10, 1);
 		final RegDate veilleImport = dateImport.getOneDayBefore();
 
-		// précondition : il y a déjà un immeuble dans la base avec des droits qui pointent vers lui
+		// précondition : il y a déjà un immeuble dans la base avec des droits et des servitudes qui pointent vers lui
 		doInNewTransaction(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
@@ -1634,6 +1638,13 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				pm.setRaisonSociale("Raison sociale");
 				pm = (PersonneMoraleRF) ayantDroitRFDAO.save(pm);
 
+				PersonnePhysiqueRF beneficiaire = new PersonnePhysiqueRF();
+				beneficiaire.setIdRF("9292871781");
+				beneficiaire.setNom("Schulz");
+				beneficiaire.setPrenom("Jean-Marc");
+				beneficiaire.setDateNaissance(RegDate.get(1900, 1, 1));
+				beneficiaire = (PersonnePhysiqueRF) ayantDroitRFDAO.save(beneficiaire);
+
 				DroitProprietePersonnePhysiqueRF droitPP = new DroitProprietePersonnePhysiqueRF();
 				droitPP.setMasterIdRF("1f109152381009be0138100c87276e68");
 				droitPP.setVersionIdRF("1f109152381009be0138100e4c7c00e5");
@@ -1662,6 +1673,20 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				droitPM.setRegime(GenrePropriete.COPROPRIETE);
 				droitPM.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 4, 23), "Achat", new IdentifiantAffaireRF(6, 2010, 120, 3)));
 				droitRFDAO.save(droitPM);
+
+				UsufruitRF usufruit = new UsufruitRF();
+				usufruit.setMasterIdRF("38388232");
+				usufruit.setVersionIdRF("1");
+				usufruit.addAyantDroit(beneficiaire);
+				usufruit.addImmeuble(ppe);
+				usufruit.setDateDebut(RegDate.get(2010, 6, 1));
+				usufruit.setDateFin(null);
+				usufruit.setDateDebutMetier(RegDate.get(2010, 4, 23));
+				usufruit.setMotifDebut("Convention");
+				usufruit.setMotifFin(null);
+				usufruit.setIdentifiantDroit(new IdentifiantDroitRF(6, 2010, 22));
+				usufruit.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 232, 0));
+				droitRFDAO.save(usufruit);
 			}
 		});
 
@@ -1709,6 +1734,149 @@ public class ImmeubleRFProcessorTest extends MutationRFProcessorTestCase {
 				final DroitProprieteRF droit1 = iterator.next();
 				assertEquals(veilleImport, droit1.getDateFinMetier());
 				assertEquals("Radiation", droit1.getMotifFin());
+
+				// l'usufruit est fermé
+				final Set<ServitudeRF> servitudes = ppe.getServitudes();
+				assertEquals(1, servitudes.size());
+
+				final ServitudeRF servitude0 = servitudes.iterator().next();
+				assertEquals(veilleImport, servitude0.getDateFinMetier());
+				assertEquals("Radiation", servitude0.getMotifFin());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-26635] Ce test vérifie que le processing de suppression d'un immeuble ne ferme pas la servitude rattaché à cet immeuble si la servitude possède d'autres immeubles non-radiés.
+	 */
+	@Test
+	public void testProcessMutationSuppressionImmeubleSurServitudeAvecPlusieursImmeubles() throws Exception {
+
+		final RegDate dateImport = RegDate.get(2016, 10, 1);
+		final RegDate veilleImport = dateImport.getOneDayBefore();
+
+		// précondition : il y a déjà deux immeubles dans la base avec un servitude qui pointe vers eux
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				CommuneRF commune = new CommuneRF();
+				commune.setNoRf(13);
+				commune.setNomRf("Pétahouchnok");
+				commune.setNoOfs(66666);
+				commune = communeRFDAO.save(commune);
+
+				ProprieteParEtageRF ppe1 = new ProprieteParEtageRF();
+				ppe1.setIdRF("_8af80e62567f816f01571d91f3e56a38");
+				ppe1.setEgrid("CH776584246539");
+				ppe1.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
+
+				final SituationRF situation1 = new SituationRF();
+				situation1.setDateDebut(RegDate.get(1988, 1, 1));
+				situation1.setCommune(commune);
+				situation1.setNoParcelle(917);
+				situation1.setIndex1(106);
+				ppe1.addSituation(situation1);
+
+				final EstimationRF estimation1 = new EstimationRF();
+				estimation1.setDateDebut(RegDate.get(1988, 1, 1));
+				estimation1.setMontant(240000L);
+				estimation1.setReference("RG88");
+				estimation1.setAnneeReference(1988);
+				estimation1.setDateDebutMetier(RegDate.get(1988, 1, 1));
+				estimation1.setEnRevision(false);
+				ppe1.addEstimation(estimation1);
+				ppe1 = (ProprieteParEtageRF) immeubleRFDAO.save(ppe1);
+
+				ProprieteParEtageRF ppe2 = new ProprieteParEtageRF();
+				ppe2.setIdRF("_9498438932489");
+				ppe2.setEgrid("CH776584246540");
+				ppe2.addQuotePart(new QuotePartRF(RegDate.get(1988, 1, 1), null, new Fraction(8, 1000)));
+
+				final SituationRF situation2 = new SituationRF();
+				situation2.setDateDebut(RegDate.get(1988, 1, 1));
+				situation2.setCommune(commune);
+				situation2.setNoParcelle(917);
+				situation2.setIndex1(107);
+				ppe2.addSituation(situation2);
+
+				final EstimationRF estimation2 = new EstimationRF();
+				estimation2.setDateDebut(RegDate.get(1988, 1, 1));
+				estimation2.setMontant(240000L);
+				estimation2.setReference("RG88");
+				estimation2.setAnneeReference(1988);
+				estimation2.setDateDebutMetier(RegDate.get(1988, 1, 1));
+				estimation2.setEnRevision(false);
+				ppe2.addEstimation(estimation2);
+				ppe2 = (ProprieteParEtageRF) immeubleRFDAO.save(ppe2);
+
+				assertEquals(2, immeubleRFDAO.getAll().size());
+
+				PersonnePhysiqueRF beneficiaire = new PersonnePhysiqueRF();
+				beneficiaire.setIdRF("9292871781");
+				beneficiaire.setNom("Schulz");
+				beneficiaire.setPrenom("Jean-Marc");
+				beneficiaire.setDateNaissance(RegDate.get(1900, 1, 1));
+				beneficiaire = (PersonnePhysiqueRF) ayantDroitRFDAO.save(beneficiaire);
+
+				UsufruitRF usufruit = new UsufruitRF();
+				usufruit.setMasterIdRF("38388232");
+				usufruit.setVersionIdRF("1");
+				usufruit.addAyantDroit(beneficiaire);
+				usufruit.addImmeuble(ppe1);
+				usufruit.addImmeuble(ppe2);
+				usufruit.setDateDebut(RegDate.get(2010, 6, 1));
+				usufruit.setDateFin(null);
+				usufruit.setDateDebutMetier(RegDate.get(2010, 4, 23));
+				usufruit.setMotifDebut("Convention");
+				usufruit.setMotifFin(null);
+				usufruit.setIdentifiantDroit(new IdentifiantDroitRF(6, 2010, 22));
+				usufruit.setNumeroAffaire(new IdentifiantAffaireRF(6, 2010, 232, 0));
+				droitRFDAO.save(usufruit);
+			}
+		});
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(null, dateImport, TypeEntiteRF.IMMEUBLE, TypeMutationRF.SUPPRESSION, "_8af80e62567f816f01571d91f3e56a38", null);
+
+		// on process la mutation
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+				processor.process(mutation, false, null);
+			}
+		});
+
+		// postcondition : la mutation est traitée, l'immeuble est radié mais la servitude n'est pas radiée car l'autre immeuble n'est pas radié
+		doInNewTransaction(new TxCallbackWithoutResult() {
+
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final List<ImmeubleRF> immeubles = immeubleRFDAO.getAll();
+				assertEquals(2, immeubles.size());
+				immeubles.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+
+				// le premier immeuble est radié
+				final ProprieteParEtageRF ppe1 = (ProprieteParEtageRF) immeubles.get(0);
+				assertEquals("_8af80e62567f816f01571d91f3e56a38", ppe1.getIdRF());
+				assertEquals("CH776584246539", ppe1.getEgrid());
+				assertEquals(veilleImport, ppe1.getDateRadiation());
+
+				// le second immeuble n'est pas radié
+				final ProprieteParEtageRF ppe2 = (ProprieteParEtageRF) immeubles.get(1);
+				assertEquals("_9498438932489", ppe2.getIdRF());
+				assertEquals("CH776584246540", ppe2.getEgrid());
+				assertNull(ppe2.getDateRadiation());
+
+				// l'usufruit n'est pas fermé
+				final Set<ServitudeRF> servitudes = ppe1.getServitudes();
+				assertEquals(1, servitudes.size());
+
+				final ServitudeRF servitude0 = servitudes.iterator().next();
+				assertNull(servitude0.getDateFinMetier());
+				assertNull(servitude0.getMotifFin());
 			}
 		});
 	}

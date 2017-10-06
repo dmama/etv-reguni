@@ -24,10 +24,12 @@ import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleAvecQuotePartRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.QuotePartRF;
+import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
@@ -352,18 +354,22 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 				.filter(s -> s.getDateFin() == null)
 				.forEach(s -> s.setDateFin(dateRadiation));
 
+		// on radie l'immeuble
+		persisted.setDateRadiation(dateRadiation);
+
 		// [SIFISC-24968] on assigne aussi la date de fin métier sur les droits pointés sur cet immeuble, car le batch de calcul
 		// des dates de fin métier des droits ne fonctionne qu'en cas de vente/achat de droits.
 		persisted.getDroitsPropriete().stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(d -> d.getDateFinMetier() == null)
-				.forEach(d -> {
-					if (d.getDateFin() == null) {   // normalement, la date de fin technique est déjà renseignée par le processeur de mutation des droits, mais on ne prend pas de risque
-						d.setDateFin(dateRadiation);
-					}
-					d.setDateFinMetier(dateRadiation);
-					d.setMotifFin("Radiation");
-				});
+				.forEach(d -> fermerDroit(d, dateRadiation, "Radiation"));
+
+		// [SIFISC-26635] on assigne la date de fin métier sur les servitudes si tous les immeubles sont radiés (une servitude peut pointer vers plusieurs immeubles)
+		persisted.getServitudes().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(s -> s.getDateFinMetier() == null)
+				.filter(ImmeubleRFProcessor::isAllImmeublesRadies)
+				.forEach(d -> fermerDroit(d, dateRadiation, "Radiation"));
 
 		// [SIFISC-24595] on recalcule les éventuelles communautés
 		communauteRFProcessor.processAll(persisted);
@@ -375,10 +381,24 @@ public class ImmeubleRFProcessor implements MutationRFProcessor {
 					.forEach(s -> s.setDateFin(dateRadiation));
 		}
 
-		// on radie l'immeuble
-		persisted.setDateRadiation(dateRadiation);
-
 		// on publie l'événement fiscal correspondant
 		evenementFiscalService.publierRadiationImmeuble(dateValeur, persisted);
+	}
+
+	/**
+	 * @return <i>vrai</i> si tous les immeubles de la servitude sont radiés; <i>faux</i> autrement.
+	 */
+	private static boolean isAllImmeublesRadies(ServitudeRF s) {
+		return s.getImmeubles().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.allMatch(i -> i.getDateRadiation() != null);
+	}
+
+	private void fermerDroit(DroitRF d, RegDate dateFinMetier, String motifFin) {
+		if (d.getDateFin() == null) {   // normalement, la date de fin technique est déjà renseignée par le processeur de mutation des droits, mais on ne prend pas de risque
+			d.setDateFin(dateFinMetier);
+		}
+		d.setDateFinMetier(dateFinMetier);
+		d.setMotifFin(motifFin);
 	}
 }
