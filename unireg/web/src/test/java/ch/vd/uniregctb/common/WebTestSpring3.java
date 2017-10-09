@@ -129,11 +129,13 @@ public abstract class WebTestSpring3 extends AbstractBusinessTest {
 	        // if you want to override any injected attributes do it here
 
 	        final HandlerInterceptor[] interceptors = handlerMapping.getHandler(request).getInterceptors();
-	        for (HandlerInterceptor interceptor : interceptors) {
-	            final boolean carryOn = interceptor.preHandle(request, response, controller);
-	            if (!carryOn) {
-	                return null;
-	            }
+	        if (interceptors != null) {
+		        for (HandlerInterceptor interceptor : interceptors) {
+			        final boolean carryOn = interceptor.preHandle(request, response, controller);
+			        if (!carryOn) {
+				        return null;
+			        }
+		        }
 	        }
 
 			return handlerAdapter.handle(request, response, controller);

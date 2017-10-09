@@ -14,7 +14,7 @@
 	<!--<mvc:annotation-driven />-->
 
 	<!-- HandlerAdapter qui enregistre les contrôleurs spring 3.x (@Controller) dans le DispatcherServlet -->
-	<bean class="ch.vd.uniregctb.servlet.UniregAnnotationMethodHandlerAdapter">
+	<bean class="ch.vd.uniregctb.servlet.UniregRequestMappingHandlerAdapter">
 		<!-- [SIFISC-2337] ajouté le JSON message converter (+ explicité les autres) -->
 		<property name="messageConverters">
 			<array>
@@ -34,7 +34,7 @@
 	</bean>
 
 	<!-- HandlerMapping qui utiliser les annotations @RequestMapping pour enregistrer le mapping url-contrôleur -->
-	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
 	</bean>
 
 	<!-- ======== Config MVC Spring 2.x ======== -->

@@ -5,11 +5,14 @@ import java.beans.PropertyEditor;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.mvc.method.annotation.ExtendedServletRequestDataBinder;
 
-public class BooleanAwareDataBinder extends ServletRequestDataBinder {
+/**
+ * Data binder spécialisé pour gérer correctement les checkboxes génériques dans SuperGra.
+ */
+public class UniregExtendedServletRequestDataBinder extends ExtendedServletRequestDataBinder {
 
-	public BooleanAwareDataBinder(Object target, String objectName) {
+	public UniregExtendedServletRequestDataBinder(Object target, String objectName) {
 		super(target, objectName);
 	}
 
@@ -32,7 +35,7 @@ public class BooleanAwareDataBinder extends ServletRequestDataBinder {
 								fieldType = Boolean.class;
 							}
 						}
-						mpvs.addPropertyValue(field, getEmptyValue(field, fieldType));
+						mpvs.add(field, getEmptyValue(field, fieldType));
 					}
 					mpvs.removePropertyValue(pv);
 				}

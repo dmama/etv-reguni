@@ -4,11 +4,11 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<!-- HandlerAdapter qui enregistre les contrôleurs spring 3.x (@Controller) dans le DispatcherServlet -->
-	<bean id="annotationHandlerAdapter" class="ch.vd.uniregctb.servlet.UniregAnnotationMethodHandlerAdapter">
+	<bean id="annotationHandlerAdapter" class="ch.vd.uniregctb.servlet.UniregRequestMappingHandlerAdapter">
 	</bean>
 
 	<!-- HandlerMapping qui utiliser les annotations @RequestMapping pour enregistrer le mapping url-contrôleur -->
-	<bean id="annotationHandlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	<bean id="annotationHandlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
 	</bean>
 
 </beans>

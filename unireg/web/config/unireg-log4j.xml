@@ -54,7 +54,7 @@
 		<level value="DEBUG" />
 	</logger>
 
-	<logger name="ch.vd.uniregctb.servlet.UniregAnnotationMethodHandlerAdapter">
+	<logger name="ch.vd.uniregctb.servlet.UniregRequestMappingHandlerAdapter">
 		<level value="INFO" />
 	</logger>
 
