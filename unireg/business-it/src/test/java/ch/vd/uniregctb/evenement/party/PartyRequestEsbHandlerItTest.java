@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -22,11 +21,6 @@ import static org.junit.Assert.assertNotNull;
  * Factorise le code commun pour les autres classes concrètes du package
  */
 @SuppressWarnings({"JavaDoc"})
-@ContextConfiguration(locations = {
-		"classpath:ut/unireg-businessit-jms.xml",
-		"classpath:ut/unireg-businessit-jms-evt-party.xml",
-		"classpath:ut/unireg-businessit-security.xml"
-})
 public abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;

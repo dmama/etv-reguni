@@ -13,7 +13,6 @@ import java.io.ByteArrayOutputStream;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -32,10 +31,6 @@ import static org.junit.Assert.assertNotNull;
  * Factorise le code commun pour les autres classes concrètes du package
  */
 @SuppressWarnings({"JavaDoc"})
-@ContextConfiguration(locations = {
-		"classpath:ut/unireg-businessit-jms.xml",
-		"classpath:ut/unireg-businessit-jms-evt-rt.xml"
-})
 abstract class RapportTravailRequestListenerItTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;

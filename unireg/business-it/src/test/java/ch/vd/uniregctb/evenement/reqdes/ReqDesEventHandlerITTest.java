@@ -19,7 +19,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
@@ -72,10 +71,6 @@ import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.Sexe;
 
 @SuppressWarnings({"JavaDoc"})
-@ContextConfiguration(locations = {
-		"classpath:ut/unireg-businessit-jms.xml",
-		"classpath:ut/unireg-businessit-jms-evt-reqdes.xml"
-})
 public class ReqDesEventHandlerITTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;

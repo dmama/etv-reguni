@@ -6,7 +6,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -37,9 +36,6 @@ import static org.junit.Assert.assertTrue;
  * Ce teste vérifie que l'impression online fonctionne bien avec l'éditique service.
  */
 @SuppressWarnings({"JavaDoc"})
-@ContextConfiguration(locations = {
-		"classpath:ut/unireg-businessit-jms.xml"
-})
 public class EditiqueServiceTest extends BusinessItTest {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(EditiqueServiceTest.class);

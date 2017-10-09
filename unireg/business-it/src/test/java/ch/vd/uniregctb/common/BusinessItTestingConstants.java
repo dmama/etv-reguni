@@ -10,4 +10,10 @@ public class BusinessItTestingConstants {
 	public static final String UNIREG_BUSINESSIT_CACHE = "classpath:ut/unireg-businessit-cache.xml";
 	public static final String UNIREG_BUSINESSIT_DATABASE = "classpath:ut/unireg-businessit-database.xml";
 	public static final String UNIREG_BUSINESSIT_CLIENT_WEBSERVICE = "classpath:ut/unireg-businessit-client-ws.xml";
+	public static final String UNIREG_BUSINESSIT_JMS = "classpath:ut/unireg-businessit-jms.xml";
+	public static final String UNIREG_BUSINESSIT_JMS_EVT_RT = "classpath:ut/unireg-businessit-jms-evt-rt.xml";
+	public static final String UNIREG_BUSINESSIT_JMS_EVT_IDENT = "classpath:ut/unireg-businessit-jms-evt-ident.xml";
+	public static final String UNIREG_BUSINESSIT_JMS_EVT_PARTY = "classpath:ut/unireg-businessit-jms-evt-party.xml";
+	public static final String UNIREG_BUSINESSIT_JMS_EVT_REQDES = "classpath:ut/unireg-businessit-jms-evt-reqdes.xml";
+	public static final String UNIREG_BUSINESSIT_SECURITY = "classpath:ut/unireg-businessit-security.xml";
 }

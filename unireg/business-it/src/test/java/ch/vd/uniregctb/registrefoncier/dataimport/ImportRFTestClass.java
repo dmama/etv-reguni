@@ -13,6 +13,7 @@ import org.springframework.transaction.TransactionStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.common.BusinessItTestingConstants;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFImport;
@@ -55,7 +56,7 @@ import static org.junit.Assert.fail;
 @ContextConfiguration(locations = {
 		BusinessTestingConstants.UNIREG_BUSINESS_JOBS,
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_REGISTREFONCIER_IMPORT,
-		"classpath:ut/unireg-businessit-jms.xml"
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_JMS
 })
 public abstract class ImportRFTestClass extends BusinessItTest {
 

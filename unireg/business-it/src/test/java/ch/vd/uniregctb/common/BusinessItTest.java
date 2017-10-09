@@ -23,7 +23,13 @@ import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES,
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_CACHE,
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_DATABASE,
-		BusinessItTestingConstants.UNIREG_BUSINESSIT_CLIENT_WEBSERVICE
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_CLIENT_WEBSERVICE,
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_JMS,
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_JMS_EVT_RT,
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_JMS_EVT_IDENT,
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_JMS_EVT_PARTY,
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_JMS_EVT_REQDES,
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_SECURITY
 })
 public abstract class BusinessItTest extends AbstractBusinessTest {
 

@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -28,9 +27,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @SuppressWarnings({"JavaDoc"})
-@ContextConfiguration(locations = {
-		"classpath:ut/unireg-businessit-jms.xml"
-})
 public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(EvenementFiscalSenderSpringItTest.class);
