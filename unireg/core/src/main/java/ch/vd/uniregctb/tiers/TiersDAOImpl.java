@@ -1718,14 +1718,14 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return AddAndSaveHelper.addAndSave(entreprise, document, this::saveTiers, new AutreDocumentFiscalAccessor<>());
 	}
 
-	private static final class AllegementFoncierAccessor<T extends AllegementFoncier> implements AddAndSaveHelper.EntityAccessor<Contribuable, T> {
+	private static final class AllegementFoncierAccessor<T extends AllegementFoncier> implements AddAndSaveHelper.EntityAccessor<ContribuableImpositionPersonnesMorales, T> {
 		@Override
-		public Collection<? extends HibernateEntity> getEntities(Contribuable tiers) {
+		public Collection<? extends HibernateEntity> getEntities(ContribuableImpositionPersonnesMorales tiers) {
 			return tiers.getAllegementsFonciers();
 		}
 
 		@Override
-		public void addEntity(Contribuable tiers, T entity) {
+		public void addEntity(ContribuableImpositionPersonnesMorales tiers, T entity) {
 			tiers.addAllegementFoncier(entity);
 		}
 
@@ -1739,7 +1739,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	@Override
-	public <T extends AllegementFoncier> T addAndSave(Contribuable contribuable, T allegementFoncier) {
+	public <T extends AllegementFoncier> T addAndSave(ContribuableImpositionPersonnesMorales contribuable, T allegementFoncier) {
 		return AddAndSaveHelper.addAndSave(contribuable, allegementFoncier, this::saveTiers, new AllegementFoncierAccessor<>());
 	}
 

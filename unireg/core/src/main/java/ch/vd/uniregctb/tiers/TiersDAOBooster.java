@@ -386,8 +386,8 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public <T extends AllegementFoncier> T addAndSave(Contribuable contribuable, T allegementFoncier) {
-		return target.addAndSave(contribuable, allegementFoncier);
+	public <T extends AllegementFoncier> T addAndSave(ContribuableImpositionPersonnesMorales pm, T allegementFoncier) {
+		return target.addAndSave(pm, allegementFoncier);
 	}
 
 	@Override

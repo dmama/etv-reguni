@@ -433,12 +433,12 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
 	/**
 	 * Ajoute un nouvel "allègement foncier" au contribuable fourni
-	 * @param contribuable le contribuable en question
-	 * @param allegementFoncier l'allègement à ajouter
 	 * @param <T> le type exact de l'allègement
+	 * @param pm le contribuable en question
+	 * @param allegementFoncier l'allègement à ajouter
 	 * @return une nouvelle instance de l'allègement avec son ID renseigné
 	 */
-	<T extends AllegementFoncier> T addAndSave(Contribuable contribuable, T allegementFoncier);
+	<T extends AllegementFoncier> T addAndSave(ContribuableImpositionPersonnesMorales pm, T allegementFoncier);
 
 	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.

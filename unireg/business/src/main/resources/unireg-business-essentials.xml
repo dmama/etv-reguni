@@ -322,7 +322,6 @@
 	<bean id="contribuableValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableValidator" abstract="true" parent="tiersValidator">
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="infraService" ref="serviceInfrastructureService"/>
-		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 
 	<bean id="debiteurPrestationImposableValidator" class="ch.vd.uniregctb.validation.tiers.DebiteurPrestationImposableValidator" parent="tiersValidator" />
@@ -330,6 +329,7 @@
 	<bean id="etablissementValidator" class="ch.vd.uniregctb.validation.tiers.EtablissementValidator" parent="contribuableValidator" />
 	<bean id="contribuableImpositionPersonnesMoralesValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableImpositionPersonnesMoralesValidator" abstract="true" parent="contribuableValidator">
 		<property name="parametreAppService" ref="parametreAppService"/>
+		<property name="registreFoncierService" ref="serviceRF"/>
 	</bean>
 	<bean id="entrepriseValidator" class="ch.vd.uniregctb.validation.tiers.EntrepriseValidator" parent="contribuableImpositionPersonnesMoralesValidator" />
 	<bean id="autreCommunauteValidator" class="ch.vd.uniregctb.validation.tiers.AutreCommunauteValidator" parent="contribuableImpositionPersonnesMoralesValidator" />

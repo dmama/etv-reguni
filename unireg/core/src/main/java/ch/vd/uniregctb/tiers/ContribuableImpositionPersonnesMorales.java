@@ -1,21 +1,33 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.hibernate.annotations.ForeignKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.foncier.AllegementFoncier;
 
 @Entity
 public abstract class ContribuableImpositionPersonnesMorales extends Contribuable {
+
+	private Set<AllegementFoncier> allegementsFonciers;
 
 	public ContribuableImpositionPersonnesMorales() {
 	}
@@ -28,6 +40,39 @@ public abstract class ContribuableImpositionPersonnesMorales extends Contribuabl
 	@Override
 	public String getRoleLigne1() {
 		return "Contribuable PM";
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "CTB_ID", nullable = false)
+	@ForeignKey(name = "FK_AFONC_CTB_ID")
+	public Set<AllegementFoncier> getAllegementsFonciers() {
+		return allegementsFonciers;
+	}
+
+	public void setAllegementsFonciers(Set<AllegementFoncier> allegementsFonciers) {
+		this.allegementsFonciers = allegementsFonciers;
+	}
+
+	public void addAllegementFoncier(AllegementFoncier af) {
+		if (allegementsFonciers == null) {
+			allegementsFonciers = new HashSet<>();
+		}
+		af.setContribuable(this);
+		allegementsFonciers.add(af);
+	}
+
+	@NotNull
+	@Transient
+	public <T extends AllegementFoncier> List<T> getAllegementsFonciersNonAnnulesTries(Class<T> clazz) {
+		if (allegementsFonciers == null || allegementsFonciers.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return allegementsFonciers.stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(clazz::isInstance)
+				.map(clazz::cast)
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
 	}
 
 	@Override

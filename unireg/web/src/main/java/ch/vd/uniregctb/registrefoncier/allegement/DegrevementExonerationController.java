@@ -77,6 +77,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.ChoixImmeubleView;
@@ -397,7 +398,7 @@ public class DegrevementExonerationController {
 	 * @param <T> le type d'allègement foncier considéré
 	 * @return la liste des allègements fonciers non-annulés de même classe qui lient l'entreprise à l'immeuble
 	 */
-	private <T extends AllegementFoncier> List<T> getAllegementsFonciers(Contribuable contribuable, ImmeubleRF immeuble, Class<T> clazz, @Nullable T excluded, boolean avecAnnules) {
+	private <T extends AllegementFoncier> List<T> getAllegementsFonciers(ContribuableImpositionPersonnesMorales contribuable, ImmeubleRF immeuble, Class<T> clazz, @Nullable T excluded, boolean avecAnnules) {
 		return getAllegementsFonciers(contribuable, immeuble.getId(), clazz, excluded, avecAnnules);
 	}
 
@@ -410,7 +411,7 @@ public class DegrevementExonerationController {
 	 * @param <T> le type d'allègement foncier considéré
 	 * @return la liste des allègements fonciers non-annulés de même classe qui lient l'entreprise à l'immeuble
 	 */
-	private <T extends AllegementFoncier> List<T> getAllegementsFonciers(Contribuable contribuable, long idImmeuble, Class<T> clazz, @Nullable T excluded, boolean avecAnnules) {
+	private <T extends AllegementFoncier> List<T> getAllegementsFonciers(ContribuableImpositionPersonnesMorales contribuable, long idImmeuble, Class<T> clazz, @Nullable T excluded, boolean avecAnnules) {
 		return contribuable.getAllegementsFonciers().stream()
 				.filter(af -> avecAnnules || !af.isAnnule())
 				.filter(af -> excluded == null || af != excluded)
@@ -454,7 +455,7 @@ public class DegrevementExonerationController {
 	 * @param newRange nouvelle période de validité de l'entité en cours d'édition
 	 * @param <T> le type d'allègement foncier
 	 */
-	private static <T extends AllegementFoncier & Duplicable<T>> void computeEditionInfluenceOnOthers(Contribuable ctb,
+	private static <T extends AllegementFoncier & Duplicable<T>> void computeEditionInfluenceOnOthers(ContribuableImpositionPersonnesMorales ctb,
 	                                                                                                  List<T> autres,
 	                                                                                                  T editedEntity,
 	                                                                                                  AbstractYearRangeView newRange) {
@@ -521,7 +522,7 @@ public class DegrevementExonerationController {
 	 * @param newRange période de validité de la nouvelle entité
 	 * @param <T> le type d'allègement foncier
 	 */
-	private static <T extends AllegementFoncier & Duplicable<T>> void computeAdditionInfluenceOnOthers(Contribuable ctb,
+	private static <T extends AllegementFoncier & Duplicable<T>> void computeAdditionInfluenceOnOthers(ContribuableImpositionPersonnesMorales ctb,
 	                                                                                                   List<T> preexisting,
 	                                                                                                   AbstractYearRangeView newRange) {
 
@@ -598,7 +599,7 @@ public class DegrevementExonerationController {
 		}
 
 		final DegrevementICI degrevement = getDegrevement(idDegrevement);
-		final Contribuable contribuable = degrevement.getContribuable();
+		final ContribuableImpositionPersonnesMorales contribuable = degrevement.getContribuable();
 		controllerUtils.checkAccesDossierEnEcriture(contribuable.getNumero());
 
 		degrevement.setAnnule(true);
@@ -744,7 +745,7 @@ public class DegrevementExonerationController {
 		}
 
 		final DegrevementICI degrevement = getDegrevement(view.getIdDegrevement());
-		final Contribuable ctb = degrevement.getContribuable();
+		final ContribuableImpositionPersonnesMorales ctb = degrevement.getContribuable();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getNumero());
 
 		// on ne doit pas pouvoir réutiliser la période de début de validité d'une donnée existante
@@ -879,7 +880,7 @@ public class DegrevementExonerationController {
 		}
 
 		final ExonerationIFONC exoneration = getExoneration(idExoneration);
-		final Contribuable contribuable = exoneration.getContribuable();
+		final ContribuableImpositionPersonnesMorales contribuable = exoneration.getContribuable();
 		controllerUtils.checkAccesDossierEnEcriture(exoneration.getContribuable().getNumero());
 
 		exoneration.setAnnule(true);
@@ -1006,7 +1007,7 @@ public class DegrevementExonerationController {
 		}
 
 		final ExonerationIFONC exoneration = getExoneration(view.getIdExoneration());
-		final Contribuable ctb = exoneration.getContribuable();
+		final ContribuableImpositionPersonnesMorales ctb = exoneration.getContribuable();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getNumero());
 
 		// on ne doit pas pouvoir réutiliser la période de début de validité d'une donnée existante

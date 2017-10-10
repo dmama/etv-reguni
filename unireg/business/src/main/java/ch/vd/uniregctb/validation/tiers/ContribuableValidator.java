@@ -1,35 +1,24 @@
 package ch.vd.uniregctb.validation.tiers;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.GenreImpotMandataire;
 import ch.vd.uniregctb.adresse.AdresseMandataire;
-import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -50,7 +39,6 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 
 	private PeriodeImpositionService periodeImpositionService;
 	private ServiceInfrastructureService infraService;
-	private RegistreFoncierService registreFoncierService;
 
 	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
 		this.periodeImpositionService = periodeImpositionService;
@@ -60,10 +48,6 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		this.infraService = infraService;
 	}
 
-	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
-		this.registreFoncierService = registreFoncierService;
-	}
-
 	@Override
 	public ValidationResults validate(T ctb) {
 		final ValidationResults vr = super.validate(ctb);
@@ -71,7 +55,6 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 			vr.merge(validateDecisions(ctb));
 			vr.merge(validateAdressesMandataires(ctb));
 			vr.merge(validateChevauchementsMandats(ctb));
-			vr.merge(validateAllegementsFonciers(ctb));
 		}
 		return vr;
 	}
@@ -342,73 +325,5 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 	private static <K, V> void consolidateInMap(Map<K, List<V>> map, K key, V value) {
 		final List<V> list = map.computeIfAbsent(key, k -> new LinkedList<>());
 		list.add(value);
-	}
-
-	private static final class AllegementFoncierGroupKey {
-
-		private final AllegementFoncier.TypeImpot typeImpot;
-		private final ImmeubleRF immeuble;
-		private final Long idImmeuble;
-
-		public AllegementFoncierGroupKey(AllegementFoncier af) {
-			this.typeImpot = af.getTypeImpot();
-			this.immeuble = af.getImmeuble();
-			this.idImmeuble = this.immeuble != null ? this.immeuble.getId() : null;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final AllegementFoncierGroupKey that = (AllegementFoncierGroupKey) o;
-			return typeImpot == that.typeImpot && (idImmeuble != null ? idImmeuble.equals(that.idImmeuble) : that.idImmeuble == null);
-		}
-
-		@Override
-		public int hashCode() {
-			int result = typeImpot != null ? typeImpot.hashCode() : 0;
-			result = 31 * result + (idImmeuble != null ? idImmeuble.hashCode() : 0);
-			return result;
-		}
-	}
-
-	private ValidationResults validateAllegementsFonciers(T contribuable) {
-
-		final ValidationResults vr = new ValidationResults();
-
-		// validons d'abord la cohérence d'ensemble avant de valider les allègements un par un
-		final Map<AllegementFoncierGroupKey, List<AllegementFoncier>> groups = contribuable.getAllegementsFonciersNonAnnulesTries(AllegementFoncier.class).stream()
-				.collect(Collectors.toMap(AllegementFoncierGroupKey::new,
-				                          Collections::singletonList,
-				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
-
-		// dans chaque groupe, il ne doit pas y avoir de chevauchement
-		for (Map.Entry<AllegementFoncierGroupKey, List<AllegementFoncier>> entry : groups.entrySet()) {
-			final List<AllegementFoncier> group = entry.getValue();
-			if (group.size() > 1) {
-				final List<DateRange> overlaps = DateRangeHelper.overlaps(group);
-				if (overlaps != null && !overlaps.isEmpty()) {
-					final AllegementFoncierGroupKey key = entry.getKey();
-					for (DateRange overlap : overlaps) {
-						vr.addError(String.format("La période %s est couverte par plusieurs allègements fonciers de type %s sur l'immeuble %s de la commune %s",
-						                          DateRangeHelper.toDisplayString(overlap),
-						                          key.typeImpot,
-						                          StringUtils.defaultIfBlank(registreFoncierService.getNumeroParcelleComplet(key.immeuble, overlap.getDateFin()), "?"),
-						                          Optional.ofNullable(registreFoncierService.getCommune(key.immeuble, overlap.getDateFin())).map(Commune::getNomOfficiel).orElse("?")));
-					}
-				}
-			}
-		}
-
-		// et puis il faut aussi valider chacun des allègements pour lui-même
-		final ValidationService validationService = getValidationService();
-		groups.values().stream()
-				.flatMap(List::stream)
-				.filter(AnnulableHelper::nonAnnule)
-				.map(validationService::validate)
-				.forEach(vr::merge);
-
-		return vr;
 	}
 }

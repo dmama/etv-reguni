@@ -347,7 +347,7 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
-	public <T extends AllegementFoncier> T addAndSave(Contribuable contribuable, T allegementFoncier) {
+	public <T extends AllegementFoncier> T addAndSave(ContribuableImpositionPersonnesMorales pm, T allegementFoncier) {
 		throw new NotImplementedException();
 	}
 

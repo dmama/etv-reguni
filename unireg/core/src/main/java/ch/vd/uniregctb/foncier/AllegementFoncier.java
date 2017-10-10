@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 
 @Entity
@@ -34,7 +34,7 @@ public abstract class AllegementFoncier extends HibernateDateRangeEntity impleme
 
 	private Long id;
 	private ImmeubleRF immeuble;
-	private Contribuable contribuable;
+	private ContribuableImpositionPersonnesMorales contribuable;
 
 	/**
 	 * Type d'impôt disponible pour un allègement foncier
@@ -96,11 +96,11 @@ public abstract class AllegementFoncier extends HibernateDateRangeEntity impleme
 	@ManyToOne
 	@JoinColumn(name = "CTB_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_AFONC_CTB_ID", columnNames = "CTB_ID")
-	public Contribuable getContribuable() {
+	public ContribuableImpositionPersonnesMorales getContribuable() {
 		return contribuable;
 	}
 
-	public void setContribuable(Contribuable contribuable) {
+	public void setContribuable(ContribuableImpositionPersonnesMorales contribuable) {
 		this.contribuable = contribuable;
 	}
 

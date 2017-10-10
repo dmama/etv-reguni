@@ -22,6 +22,7 @@ import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
@@ -341,7 +342,7 @@ class TransitionEtatMockTiersDao extends TiersDAOImpl implements TiersDAO {
 	}
 
 	@Override
-	public <T extends AllegementFoncier> T addAndSave(Contribuable contribuable, T allegementFoncier) {
+	public <T extends AllegementFoncier> T addAndSave(ContribuableImpositionPersonnesMorales pm, T allegementFoncier) {
 		throw new UnsupportedOperationException();
 	}
 
