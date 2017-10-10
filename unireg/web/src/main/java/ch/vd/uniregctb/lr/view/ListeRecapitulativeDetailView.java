@@ -87,9 +87,9 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 		this.imprimable = true;
 	}
 
-	private static List<DelaiDeclarationView> buildDelais(DeclarationImpotSource lr, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	static List<DelaiDeclarationView> buildDelais(DeclarationImpotSource lr, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final List<DelaiDeclarationView> delais = lr.getDelais().stream()
-				.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(DelaiDeclaration::getDateDemande).reversed()))
+				.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(DelaiDeclaration::getDateDemande, Comparator.nullsLast(Comparator.reverseOrder()))))
 				.map(delai -> new DelaiDeclarationView(delai, infraService, messageSource))
 				.collect(Collectors.toList());
 
