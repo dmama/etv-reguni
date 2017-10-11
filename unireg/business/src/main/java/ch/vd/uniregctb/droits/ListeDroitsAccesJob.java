@@ -126,7 +126,14 @@ public class ListeDroitsAccesJob extends JobDefinition {
 					final Contribuable porteurAssujettissement = findPorteurAssujettissement(da.getTiers(), dateValeur);
 					final Contribuable ctb = porteurAssujettissement != null ? porteurAssujettissement : da.getTiers();
 					final Integer oid = tiersService.getOfficeImpotIdAt(ctb, dateValeur);
-					final Operateur operateur = securiteService.getOperateur(da.getNoIndividuOperateur());
+					Operateur operateur = securiteService.getOperateur(da.getNoIndividuOperateur());
+					if (operateur == null) {
+						//SIFISC-26187 Pas d'opérateur trouvé, on créé un opérateur fantome pour l'affichage du message d'erreur dans le rapport
+						final String msgErreur = String.format("Individu %d  non retourné par host-interfaces",da.getNoIndividuOperateur());
+						operateur = new Operateur();
+						operateur.setPrenom(msgErreur);
+
+					}
 					rapport.addDroitAcces(da.getTiers().getNumero(), oid, adresseEnvoi, da.getType(), da.getNiveau(), operateur);
 				}
 				return true;

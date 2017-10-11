@@ -107,6 +107,11 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 					droitAccesView.setOfficeImpot(officeImpot);
 				}
 			}
+			else{
+				//SIFISC-26187 Pas d'opérateur trouvé, on affiche un texte dans le nom prenom
+				final String msgErreur = String.format("Individu %d  non retourné par host-interfaces",droitAcces.getNoIndividuOperateur());
+				droitAccesView.setPrenomNom(msgErreur);
+			}
 
 			droitAccesView.setNiveau(droitAcces.getNiveau());
 			droitAccesView.setDateDebut(droitAcces.getDateDebut());
