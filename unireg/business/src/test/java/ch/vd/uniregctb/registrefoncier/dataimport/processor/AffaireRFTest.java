@@ -24,6 +24,7 @@ import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.rf.GenrePropriete;
 
+import static ch.vd.uniregctb.common.WithoutSpringTest.assertEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -644,7 +645,7 @@ public class AffaireRFTest {
 		final DroitProprieteCommunauteRF droitCommunaute = new DroitProprieteCommunauteRF();
 		droitCommunaute.setMasterIdRF("2828828221");
 		droitCommunaute.setVersionIdRF("1");
-		droitCommunaute.setPart(new Fraction(1,2));
+		droitCommunaute.setPart(new Fraction(1, 2));
 		droitCommunaute.setDateDebut(dateImportInitial);
 		droitCommunaute.setDateFin(dateImportSession.getOneDayBefore());
 		droitCommunaute.setDateDebutMetier(dateSuccession);
@@ -718,6 +719,267 @@ public class AffaireRFTest {
 		assertEquals(1, debutUpdates.size());
 		assertDebutUpdate(nouveauDroitHelene, null, null, debutUpdates.get(0));
 		assertEquals(0, listener.getClosed().size());
+	}
+
+	/**
+	 * [SIFISC-26690] Ce test vérifie que la date de fin métier du droit <i>de communauté</i> est calculée correctement lorsque :
+	 * <ul>
+	 *     <li>une communauté avec deux membres est fermée</li>
+	 *     <li>que le raisons d'acquisition des droits des membres de la communauté sont reprises dans les nouveaux droits</li>
+	 *     <li>qu'une nouvelle raison d'acquisition est ajoutée sur les nouveaux droits</li>
+	 * </ul>
+	 * A ce moment-là, la date de fin métier du droit de communauté doit être égale à la date des nouvelles raisons sur les nouveaux droits
+	 * (et non pas égale à la plus ancienne date des raisons des nouveaux droits, comme c'était le cas avant la correction).
+	 */
+	@Test
+	public void testRefreshDatesMetierDateFinDroitCommunaute() throws Exception {
+
+		// exemple immeuble CH344583717738
+		final RegDate dateSuccession = RegDate.get(1962, 11, 7);
+		final RegDate dateEchange = RegDate.get(1986, 12, 30);
+		final RegDate dateSuccession2 = RegDate.get(1996, 12, 18);
+		final RegDate dateDonation = RegDate.get(2004, 5, 6);
+		final RegDate dateChangementRegime = RegDate.get(2016, 11, 11);
+		final RegDate dateDonation2 = RegDate.get(2017, 1, 10);
+
+		final RegDate dateImportInitial = RegDate.get(2016, 12, 31);    // FIXME (msi) utiliser la valeur null pour l'import principal
+		final RegDate dateImportChangementRegime = RegDate.get(2017, 1, 28);
+		final RegDate dateImportDonation2 = RegDate.get(2017, 2, 25);
+
+		final PersonnePhysiqueRF charles = new PersonnePhysiqueRF();
+		charles.setId(1L);
+		final PersonnePhysiqueRF wilfred = new PersonnePhysiqueRF();
+		wilfred.setId(2L);
+		final PersonnePhysiqueRF christian = new PersonnePhysiqueRF();
+		christian.setId(3L);
+
+		// communauté Charles - Wilfred
+		final CommunauteRF communaute = new CommunauteRF();
+		communaute.setId(4L);
+
+		//
+		// Situation au 31.12.2016
+		//
+
+		// droit de propriété en communauté de Charles
+		final DroitProprietePersonnePhysiqueRF droitCharles1 = new DroitProprietePersonnePhysiqueRF();
+		droitCharles1.setMasterIdRF("droitCharles1");
+		droitCharles1.setVersionIdRF("1");
+		droitCharles1.setPart(new Fraction(1, 1));
+		droitCharles1.setDateDebut(dateImportInitial);
+		droitCharles1.setDateFin(dateImportChangementRegime.getOneDayBefore());
+		droitCharles1.setAyantDroit(charles);
+		droitCharles1.setCommunaute(communaute);
+		droitCharles1.setRegime(GenrePropriete.COMMUNE);
+		droitCharles1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateEchange, "Echange", null));
+		droitCharles1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession2, "Succession", null));
+		droitCharles1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateDonation, "Donation", null));
+		communaute.addMembre(droitCharles1);
+
+		// droit de propriété en communauté de Wilfred
+		final DroitProprietePersonnePhysiqueRF droitWilfred1 = new DroitProprietePersonnePhysiqueRF();
+		droitWilfred1.setMasterIdRF("droitWilfred1");
+		droitWilfred1.setVersionIdRF("1");
+		droitWilfred1.setPart(new Fraction(1, 1));
+		droitWilfred1.setDateDebut(dateImportInitial);
+		droitWilfred1.setDateFin(dateImportChangementRegime.getOneDayBefore());
+		droitWilfred1.setAyantDroit(wilfred);
+		droitWilfred1.setCommunaute(communaute);
+		droitWilfred1.setRegime(GenrePropriete.COMMUNE);
+		droitWilfred1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateEchange, "Echange", null));
+		droitWilfred1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateSuccession2, "Succession", null));
+		droitWilfred1.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportInitial, dateDonation, "Donation", null));
+		communaute.addMembre(droitWilfred1);
+
+		final DroitProprieteCommunauteRF droitCommunaute = new DroitProprieteCommunauteRF();
+		droitCommunaute.setMasterIdRF("droitCommunaute");
+		droitCommunaute.setVersionIdRF("1");
+		droitCommunaute.setPart(new Fraction(1, 1));
+		droitCommunaute.setDateDebut(dateImportInitial);
+		droitCommunaute.setDateFin(dateImportChangementRegime.getOneDayBefore());
+		droitCommunaute.setAyantDroit(communaute);
+		droitCommunaute.setRegime(GenrePropriete.COMMUNE);
+
+		//
+		// Situation au 28.01.2017 (changement de régime : commnauté transformée en copropriété)
+		//
+
+		// droit de propriété en copropriété de Charles
+		final DroitProprietePersonnePhysiqueRF droitCharles2 = new DroitProprietePersonnePhysiqueRF();
+		droitCharles2.setMasterIdRF("droitCharles2");
+		droitCharles2.setVersionIdRF("1");
+		droitCharles2.setPart(new Fraction(1, 2));
+		droitCharles2.setDateDebut(dateImportChangementRegime);
+		droitCharles2.setDateFin(dateImportDonation2.getOneDayBefore());
+		droitCharles2.setAyantDroit(charles);
+		droitCharles2.setRegime(GenrePropriete.COPROPRIETE);
+		droitCharles2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateSuccession, "Succession", null));
+		droitCharles2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateSuccession2, "Succession", null));
+		droitCharles2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateDonation, "Donation", null));
+		droitCharles2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateChangementRegime, "Changement de régime", null));
+
+		// droit de propriété en copropriété de Wilfred
+		final DroitProprietePersonnePhysiqueRF droitWilfred2 = new DroitProprietePersonnePhysiqueRF();
+		droitWilfred2.setMasterIdRF("droitWilfred2");
+		droitWilfred2.setVersionIdRF("1");
+		droitWilfred2.setPart(new Fraction(1, 2));
+		droitWilfred2.setDateDebut(dateImportChangementRegime);
+		droitWilfred2.setDateFin(null);
+		droitWilfred2.setAyantDroit(wilfred);
+		droitWilfred2.setRegime(GenrePropriete.COPROPRIETE);
+		droitWilfred2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateSuccession, "Succession", null));
+		droitWilfred2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateSuccession2, "Succession", null));
+		droitWilfred2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateDonation, "Donation", null));
+		droitWilfred2.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportChangementRegime, dateChangementRegime, "Changement de régime", null));
+
+		//
+		// Situation au 25.02.2017 (donation de la part de Charles à Christian)
+		//
+
+		// droit de propriété en copropriété de Charles
+		final DroitProprietePersonnePhysiqueRF droitChristian = new DroitProprietePersonnePhysiqueRF();
+		droitChristian.setMasterIdRF("droitChristian");
+		droitChristian.setVersionIdRF("1");
+		droitChristian.setPart(new Fraction(1, 2));
+		droitChristian.setDateDebut(dateImportDonation2);
+		droitChristian.setDateFin(null);
+		droitChristian.setAyantDroit(christian);
+		droitChristian.setRegime(GenrePropriete.COPROPRIETE);
+		droitChristian.addRaisonAcquisition(newRaisonAcquisitionRF(dateImportDonation2, dateDonation2, "Donation", null));
+
+
+		final ImmeubleRF immeuble = new BienFondsRF();
+
+		//
+		// Calcul des dates métier de l'import initial
+		//
+
+		final AffaireRF importInitial = new AffaireRF(dateImportInitial, immeuble,
+		                                              Arrays.asList(droitCharles1, droitWilfred1, droitCommunaute),
+		                                              Collections.emptyList(),
+		                                              Collections.emptyList());
+		final Listener listenerImportInitial = new Listener();
+		importInitial.refreshDatesMetier(listenerImportInitial);
+
+		// tous les droits de la communauté doivent avoir une date de début calculée correctement
+		assertEquals(dateEchange, droitCharles1.getDateDebutMetier());
+		assertNull(droitCharles1.getDateFinMetier());
+		assertEquals("Echange", droitCharles1.getMotifDebut());
+		assertNull(droitCharles1.getMotifFin());
+		assertEquals(dateEchange, droitWilfred1.getDateDebutMetier());
+		assertNull(droitWilfred1.getDateFinMetier());
+		assertEquals("Echange", droitWilfred1.getMotifDebut());
+		assertNull(droitWilfred1.getMotifFin());
+		assertEquals(dateEchange, droitCommunaute.getDateDebutMetier());
+		assertNull(droitCommunaute.getDateFinMetier());
+		assertEquals("Echange", droitCommunaute.getMotifDebut());
+		assertNull(droitCommunaute.getMotifFin());
+
+		// les dates de début des 3 droits de communautés sont mises-à-jour
+		assertEmpty(listenerImportInitial.getCreated());
+		assertEmpty(listenerImportInitial.getFinUpdates());
+		final List<Listener.DebutUpdate> debutUpdatesII = listenerImportInitial.getDebutUpdates();
+		assertEquals(3, debutUpdatesII.size());
+		assertDebutUpdate(droitCharles1, null, null, debutUpdatesII.get(0));
+		assertDebutUpdate(droitWilfred1, null, null, debutUpdatesII.get(1));
+		assertDebutUpdate(droitCommunaute, null, null, debutUpdatesII.get(2));
+		assertEmpty(listenerImportInitial.getClosed());
+
+		//
+		// Calcul des dates métier du changement de régime
+		//
+
+		final AffaireRF changementRegime = new AffaireRF(dateImportChangementRegime, immeuble,
+		                                                 Arrays.asList(droitCharles2, droitWilfred2),
+		                                                 Collections.emptyList(),
+		                                                 Arrays.asList(droitCharles1, droitWilfred1, droitCommunaute));
+		final Listener listenerChangementRegime = new Listener();
+		changementRegime.refreshDatesMetier(listenerChangementRegime);
+
+		// tous les droits de la communauté doivent être fermés à la date du changement de régime
+		assertEquals(dateEchange, droitCharles1.getDateDebutMetier());
+		assertEquals(dateChangementRegime, droitCharles1.getDateFinMetier());
+		assertEquals("Echange", droitCharles1.getMotifDebut());
+		assertEquals("Changement de régime", droitCharles1.getMotifFin());
+		assertEquals(dateEchange, droitWilfred1.getDateDebutMetier());
+		assertEquals(dateChangementRegime, droitWilfred1.getDateFinMetier());
+		assertEquals("Echange", droitWilfred1.getMotifDebut());
+		assertEquals("Changement de régime", droitWilfred1.getMotifFin());
+		assertEquals(dateEchange, droitCommunaute.getDateDebutMetier());
+		assertEquals(dateChangementRegime, droitCommunaute.getDateFinMetier()); // <--- cette date était mal calculée avant
+		assertEquals("Echange", droitCommunaute.getMotifDebut());
+		assertEquals("Changement de régime", droitCommunaute.getMotifFin());
+
+		// les droits de copro de Charles et Wilfred doivent être ouverts
+		assertEquals(dateChangementRegime, droitCharles2.getDateDebutMetier());
+		assertNull(droitCharles2.getDateFinMetier());
+		assertEquals("Changement de régime", droitCharles2.getMotifDebut());
+		assertNull(droitCharles2.getMotifFin());
+		assertEquals(dateChangementRegime, droitWilfred2.getDateDebutMetier());
+		assertNull(droitWilfred2.getDateFinMetier());
+		assertEquals("Changement de régime", droitWilfred2.getMotifDebut());
+		assertNull(droitWilfred2.getMotifFin());
+
+		// les dates de fin des 3 droits de communautés sont mises-à-jour
+		// les dates de début des 2 droits de copropriété sont mises-à-jour
+		assertEmpty(listenerImportInitial.getCreated());
+		final List<Listener.FinUpdate> finUpdatesCR = listenerChangementRegime.getFinUpdates();
+		assertEquals(3, finUpdatesCR.size());
+		assertFinUpdate(droitCharles1, null, null, finUpdatesCR.get(0));
+		assertFinUpdate(droitWilfred1, null, null, finUpdatesCR.get(1));
+		assertFinUpdate(droitCommunaute, null, null, finUpdatesCR.get(2));
+		final List<Listener.DebutUpdate> debutUpdatesCR = listenerChangementRegime.getDebutUpdates();
+		assertEquals(2, debutUpdatesCR.size());
+		assertDebutUpdate(droitCharles2, null, null, debutUpdatesCR.get(0));
+		assertDebutUpdate(droitWilfred2, null, null, debutUpdatesCR.get(1));
+		assertEmpty(listenerImportInitial.getClosed());
+
+		//
+		// Calcul des dates métier de la donation à Christian
+		//
+
+		final AffaireRF donationChristian = new AffaireRF(dateImportDonation2, immeuble,
+		                                                  Collections.singletonList(droitChristian),
+		                                                  Collections.emptyList(),
+		                                                  Collections.singletonList(droitCharles2));
+		final Listener listenerDonationChristian = new Listener();
+		donationChristian.refreshDatesMetier(listenerDonationChristian);
+
+		// les droits de la communauté doivent rester inchangés
+		assertEquals(dateEchange, droitCharles1.getDateDebutMetier());
+		assertEquals(dateChangementRegime, droitCharles1.getDateFinMetier());
+		assertEquals("Echange", droitCharles1.getMotifDebut());
+		assertEquals("Changement de régime", droitCharles1.getMotifFin());
+		assertEquals(dateEchange, droitWilfred1.getDateDebutMetier());
+		assertEquals(dateChangementRegime, droitWilfred1.getDateFinMetier());
+		assertEquals("Echange", droitWilfred1.getMotifDebut());
+		assertEquals("Changement de régime", droitWilfred1.getMotifFin());
+		assertEquals(dateEchange, droitCommunaute.getDateDebutMetier());
+		assertEquals(dateChangementRegime, droitCommunaute.getDateFinMetier());
+		assertEquals("Echange", droitCommunaute.getMotifDebut());
+		assertEquals("Changement de régime", droitCommunaute.getMotifFin());
+
+		// le droit de Charles devrait être fermé et celui de Christian ouvert
+		assertEquals(dateChangementRegime, droitCharles2.getDateDebutMetier());
+		assertEquals(dateDonation2, droitCharles2.getDateFinMetier());
+		assertEquals("Changement de régime", droitCharles2.getMotifDebut());
+		assertEquals("Donation", droitCharles2.getMotifFin());
+
+		assertEquals(dateDonation2, droitChristian.getDateDebutMetier());
+		assertNull(droitChristian.getDateFinMetier());
+		assertEquals("Donation", droitChristian.getMotifDebut());
+		assertNull(droitChristian.getMotifFin());
+
+		// la date de fin du droit de copropriété de Charles est mise-à-jour
+		// la date de début du droit de copropriété de Christian est mise-à-jour
+		assertEmpty(listenerImportInitial.getCreated());
+		final List<Listener.FinUpdate> finUpdatesDC = listenerDonationChristian.getFinUpdates();
+		assertEquals(1, finUpdatesDC.size());
+		assertFinUpdate(droitCharles2, null, null, finUpdatesDC.get(0));
+		final List<Listener.DebutUpdate> debutUpdatesDC = listenerDonationChristian.getDebutUpdates();
+		assertEquals(1, debutUpdatesDC.size());
+		assertDebutUpdate(droitChristian, null, null, debutUpdatesDC.get(0));
+		assertEmpty(listenerImportInitial.getClosed());
 	}
 
 

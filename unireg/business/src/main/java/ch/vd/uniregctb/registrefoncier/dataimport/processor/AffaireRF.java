@@ -2,6 +2,7 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -195,7 +197,7 @@ public class AffaireRF {
 	 */
 	private void calculateDatesDebutMetier(@NotNull List<Mutation> mutations) {
 
-		// on ne recalcule pas les dates de début sur les droits fermés (car ils dépendent d'une autre affaire)
+		// on ne recalcule pas les dates de début sur les droits associés à des mutations de fermeture (car ils dépendent d'une autre affaire)
 		final List<Mutation> filtered = mutations.stream()
 				.filter(m -> m.getType() == MutationType.CREATION || m.getType() == MutationType.UPDATE)
 				.collect(Collectors.toList());
@@ -211,7 +213,7 @@ public class AffaireRF {
 				.orElse(null);
 
 		// [SIFISC-25583] on applique la date de début la plus ancienne sur tous les droits pour lesquels
-		// la date de début métiet n'a pas pu être calculée de manière traditionnelle.
+		// la date de début métier n'a pas pu être calculée de manière traditionnelle.
 		filtered.stream()
 				.filter(m -> m.getDroit().getDateDebutMetier() == null && m.getDroit().getMotifDebut() == null)
 				.forEach(m -> m.setDebutRaisonAcquisition(raisonAcquisition));
@@ -574,6 +576,36 @@ public class AffaireRF {
 	}
 
 	/**
+	 * @param droit un droit de propriété (communauté ou indiviuel)
+	 * @return les raisons d'acquisition virtuelles, c'est-à-dire :
+	 * <ul>
+	 *     <li>les raisons des droits des autres membres de la communauté si le droit est un droit de communauté</li>
+	 *     <li>les raisons du droit dans les autes cas</li>
+	 * </ul>
+	 */
+	@NotNull
+	private static Set<RaisonAcquisitionRF> getRaisonsAcquisitionVirtuelles(@NotNull DroitProprieteRF droit) {
+		if (droit instanceof DroitProprieteCommunauteRF) {
+			// [SIFISC-26521] un droit de communauté ne possède jamais de raisons d'acquisition lui-même -> on va les chercher sur les droits des membres de la communauté.
+			final DroitProprieteCommunauteRF droitCommunaute = (DroitProprieteCommunauteRF) droit;
+			final CommunauteRF communaute = (CommunauteRF) droitCommunaute.getAyantDroit();
+			final Set<DroitProprietePersonneRF> membres = communaute.getMembres();
+			if (membres == null || membres.isEmpty()) {
+				return Collections.emptySet();
+			}
+			return membres.stream()
+					.map(DroitProprieteRF::getRaisonsAcquisition)
+					.filter(Objects::nonNull)
+					.flatMap(Collection::stream)
+					.collect(Collectors.toSet());
+		}
+		else {
+			final Set<RaisonAcquisitionRF> set = droit.getRaisonsAcquisition();
+			return set == null ? Collections.emptySet() : set;
+		}
+	}
+
+	/**
 	 * Représentation d'une transaction constituté de ventes et d'achats simultanés (ou considérés comme tels) concernant un immeuble particulier.
 	 */
 	private static class Transaction {
@@ -591,17 +623,17 @@ public class AffaireRF {
 		}
 
 		/**
-		 * Processe la transaction, c'est-à-dire recherche la date début <i>métier</i> de nouveaux droits ou des droits modifiés (selon les règles fournies par Raphaël Carbo) et ferme les anciens droits à la même date.
+		 * Processe la transaction, c'est-à-dire recherche la date début <i>métier</i> de nouveaux droits ou des droits modifiés
+		 * (selon les règles fournies par Raphaël Carbo) et <b>ferme</b> les anciens droits à la même date.
 		 *
-		 * @return <i>true</i> si les dates de fin métier ont été mises-à-jour sur les drois; <i>false</i> si les droits sont inchangés.
+		 * @return <i>true</i> si les dates de fin métier ont été mises-à-jour sur les droits; <i>false</i> si les droits sont inchangés.
 		 */
 		public boolean processTransaction() {
 
 			// on cherche la date métier la plus récente sur les des droits fermés pour filtrer les nouvelles raisons d'acquisition
 			final RegDate derniereDate = droitsFermes.stream()
 					.map(Mutation::getDroit)
-					.map(DroitProprieteRF::getRaisonsAcquisition)
-					.filter(Objects::nonNull)
+					.map(AffaireRF::getRaisonsAcquisitionVirtuelles)    // on va chercher les raisons d'acquisition sur les droits des autres membres de la communauté si nécessaire (SIFISC-26690)
 					.flatMap(Collection::stream)
 					.filter(AnnulableHelper::nonAnnule)
 					.map(RaisonAcquisitionRF::getDateAcquisition)
@@ -656,4 +688,5 @@ public class AffaireRF {
 		public List<Mutation> getDroitsFermes() {
 			return droitsFermes;
 		}
-	}}
+	}
+}
