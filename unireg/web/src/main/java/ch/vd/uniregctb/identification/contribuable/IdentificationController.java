@@ -816,6 +816,9 @@ public class IdentificationController {
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
 		model.put("periodesFiscales",identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES));
 		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageEnCours());
+		model.put("messageEnCours", true);
+		model.put("messageTraite", false);
+		model.put("messageSuspendu", false);
 	}
 
 	private void setUpModelForListMessageEnCoursAvecException(ModelMap model) {
