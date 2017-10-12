@@ -77,11 +77,9 @@
 							<a href="<c:url value='/'/>" title="Recherche" accesskey="d"><fmt:message key="label.recherche" /></a>
 						</li>
 						<tiles:getAsString name='fichierAide' ignore='true'/>
-						<unireg:ifPortail portail="IAM">
-							<li>
-								<a href="/fiscalite/kbaci/advancedSearch.htm" title="Base ACI" accesskey="b"><fmt:message key="label.kbaci" /></a>
-							</li>
-						</unireg:ifPortail>
+						<li>
+							<a href="/fiscalite/kbaci/advancedSearch.htm" title="Base ACI" accesskey="b"><fmt:message key="label.kbaci" /></a>
+						</li>
 						<li>
 							<a href="/iam/accueil/" target="_blank" title="Portail IAM" accesskey="x"><fmt:message key="label.portail.iam" /></a>
 						</li>

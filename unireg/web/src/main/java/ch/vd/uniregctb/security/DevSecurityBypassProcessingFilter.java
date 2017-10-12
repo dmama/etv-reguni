@@ -59,13 +59,11 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 				final String firstName = SecurityDebugConfig.getIamBypassFirstName();
 				final String lastName = SecurityDebugConfig.getIamBypassLastName();
 				final String[] roles = IAMUtil.createRoles(SecurityDebugConfig.getIamBypassApplication(), SecurityDebugConfig.getIamBypassRoles());
-				final Portail portail = SecurityDebugConfig.getIamBypassAccessPortail();
 
 				final UniregSecurityDetails details = new UniregSecurityDetails();
 				details.setIamFirstName(firstName);
 				details.setIamLastName(lastName);
 				details.setIamRoles(roles);
-				details.setAccessPortail(portail);
 
 				LOGGER.info(String.format("[BYPASS IAM] Ouverture de la session pour l'utilisateur %s %s", firstName, lastName));
 

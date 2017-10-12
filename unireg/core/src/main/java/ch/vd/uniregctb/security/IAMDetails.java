@@ -10,7 +10,4 @@ public interface IAMDetails {
 
 	String[] getIamRoles();
 	void setIamRoles(String[] roles);
-
-	Portail getAccessPortail();
-	void setAccessPortail(Portail portail);
 }

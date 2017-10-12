@@ -2,7 +2,6 @@ package ch.vd.uniregctb.security;
 
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.EncodingFixHelper;
@@ -23,7 +22,6 @@ public class SecurityDebugConfig implements InitializingBean {
 	private static String iamBypassFirstName;
 	private static String iamBypassLastName;
 	private static String iamBypassRoles;
-	private static Portail iamBypassAccessPortail;
 	private static boolean ifoSecDebug;
 	private static String ifoSecBypassOID;
 	private static String ifoSecBypassOIDSigle;
@@ -73,10 +71,6 @@ public class SecurityDebugConfig implements InitializingBean {
 	}
 
 	// IFO-SEC
-	public static Portail getIamBypassAccessPortail() {
-		return iamBypassAccessPortail;
-	}
-
 	public static boolean isIfoSecDebug() {
 		return ifoSecDebug;
 	}
@@ -125,7 +119,6 @@ public class SecurityDebugConfig implements InitializingBean {
 		this.ifoSecService = ifoSecService;
 	}
 
-	@NotNull
 	private String getStringProp(String key) {
 		String value = properties.getProperty(key);
 		if (value == null) {
@@ -141,18 +134,6 @@ public class SecurityDebugConfig implements InitializingBean {
 		return value != null && Boolean.parseBoolean(value);
 	}
 
-	@NotNull
-	private Portail getPortailProp(String key) {
-		final String s = getStringProp(key);
-		if (Portail.CYBER.name().equalsIgnoreCase(s)) {
-			return Portail.CYBER;
-		}
-		else {
-			// valeur par défaut
-			return Portail.IAM;
-		}
-	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (properties != null) {
@@ -162,7 +143,6 @@ public class SecurityDebugConfig implements InitializingBean {
 			iamBypassUser = getStringProp("extprop.iam.bypass.user");
 			iamBypassFirstName = getStringProp("extprop.iam.bypass.firstname");
 			iamBypassLastName = getStringProp("extprop.iam.bypass.lastname");
-			iamBypassAccessPortail = getPortailProp("extprop.iam.bypass.portail");
 			iamBypassRoles = getStringProp("extprop.iam.bypass.roles");
 			ifoSecDebug = getBooleanProp("extprop.ifosec.debug");
 

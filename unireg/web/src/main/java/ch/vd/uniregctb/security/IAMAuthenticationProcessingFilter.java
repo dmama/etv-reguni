@@ -8,12 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -62,7 +60,6 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 			final String firstName = getHeaderString(request, firstnameHeaderKey);
 			final String lastName = getHeaderString(request, lastnameHeaderKey);
 			final String[] roles = getRoles(request);
-			final Portail portail = getAccessPortail(request);
 
 			// Vérification des rôles
 
@@ -80,7 +77,6 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 			details.setIamFirstName(firstName);
 			details.setIamLastName(lastName);
 			details.setIamRoles(roles);
-			details.setAccessPortail(portail);
 
 			LOGGER.info(String.format("Ouverture de la session pour l'utilisateur %s %s (%s)", firstName, lastName, visa));
 
@@ -117,31 +113,6 @@ public class IAMAuthenticationProcessingFilter extends GenericFilterBean {
 		final String allRoles = getHeaderString(request, rolesHeaderKey);
 		return IAMUtil.createRoles(application, allRoles);
 	}
-
-	/**
-	 * [SIFISC-26634] Détermine depuis quel portail l'utilisateur accède à Unireg.
-	 * <p/>
-	 * Selon information de Sylvain Petit, on peut se baser sur le nom du token de session IAM :
-	 * <ul>
-	 *     <li>qui commence par <i>ssoToken</i> pour le portail IAM standard</li>
-	 *     <li>qui commence par <i>ssoCyber</i> pour le portail Cyber</li>
-	 * </ul>
-	 *
-	 * @param request la requête Http
-	 * @return le portail d'accès
-	 */
-	@NotNull
-	private Portail getAccessPortail(HttpServletRequest request) {
-		final Enumeration<String> enumeration = request.getHeaderNames();
-		while (enumeration.hasMoreElements()) {
-			if (enumeration.nextElement().startsWith("ssoCyber")) {
-				return Portail.CYBER;
-			}
-		}
-		// par défaut, on considère qu'on est dans le portail IAM standard
-		return Portail.IAM;
-	}
-
 
 	private static String getVisa(HttpServletRequest request) {
 		String username = getHeaderString(request, visaHeaderKey);
