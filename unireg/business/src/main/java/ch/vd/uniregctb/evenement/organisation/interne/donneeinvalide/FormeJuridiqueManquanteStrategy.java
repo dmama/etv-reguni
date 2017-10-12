@@ -3,13 +3,13 @@ package ch.vd.uniregctb.evenement.organisation.interne.donneeinvalide;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -73,49 +73,65 @@ public class FormeJuridiqueManquanteStrategy extends AbstractOrganisationStrateg
 		final boolean inscriteAuRC = organisation.isInscriteAuRC(dateApres);
 		final boolean inscriteIDE = organisation.isInscriteIDE(dateApres);
 
-		/*
-			Toute absence de forme juridique dans ce cas est une erreur menant à un traitement manuel.
-		 */
-		if (inscriteAuRC || inscriteIDE) {
-			if (formeLegaleAvant == null && existing || formeLegale == null) {
-				return new TraitementManuel(event, organisation, entreprise, context, options, messageFormeJuridiqueManquante(organisation, entreprise));
+		if (formeLegale == null) {
+			// On avait une forme légale, mais on ne l'a plus...
+			if (formeLegaleAvant != null) {
+				return traiteDisparitionFormeLegale(event, organisation, entreprise, formeLegaleAvant, inscriteAuRC, inscriteIDE);
+			}
+			// On n'a pas de forme légale du tout
+			else {
+				return traiteAbsenceFormeLegale(event, organisation, entreprise, inscriteAuRC, inscriteIDE);
 			}
 		}
 		else {
-			/*
-				Toute absence de forme juridique dans ce cas n'est pas une erreur, mais est signalée ou mise à vérifier selon le cas.
-			 */
-			if (existing) {
-				if (formeLegaleAvant == null) {
-					if (formeLegale == null) {
-						return new MessageSuiviPreExecution(event, organisation, entreprise, context, options, "Il n'y a pas de forme juridique (legalForm) au civil pour l'organisation non inscrite au RC ni à l'IDE.");
-					}
-					else {
-						return new MessageWarningPreExectution(event, organisation, entreprise, context, options,
-						                                       String.format("Nouvelle forme juridique (legalForm) pour l'organisation non inscrite au RC, qui n'en avait pas: %s", formeLegale));
-					}
-				} else {
-					if (formeLegale == null) {
-						return new MessageWarningPreExectution(event, organisation, entreprise, context, options,
-						                                       String.format("La forme juridique (legalForm) pour l'organisation non inscrite au RC a disparu du registre civil! Ancienne forme juridique: %s.", formeLegaleAvant));
-					}
-				}
+			// On n'avait pas de forme légale mais maintenant une est apparu
+			if (formeLegaleAvant == null && existing)  {
+				return traiteApparitionFormeLegale(event, organisation, entreprise, formeLegale, inscriteAuRC, inscriteIDE);
 			}
 		}
 
-		LOGGER.info(String.format("La forme juridique (legalForm) est présente: (%s).", formeLegale));
+
+		LOGGER.info("La forme juridique (legalForm) est correctement fournie par le registre civil.");
 		return null;
 	}
 
-	private String messageFormeJuridiqueManquante(Organisation organisation, Entreprise entreprise) {
-		if (entreprise != null) {
-			return String.format("La forme juridique (legalForm) est introuvable dans les données civiles de l'entreprise n°%s (organisation n°%d).",
-			                     FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()),
-			                     organisation.getNumeroOrganisation());
+	@NotNull
+	private EvenementOrganisationInterne traiteApparitionFormeLegale(EvenementOrganisation event, Organisation organisation, Entreprise entreprise, FormeLegale formeLegale, boolean inscriteAuRC,
+	                                                                 boolean inscriteIDE) throws EvenementOrganisationException {
+		if (inscriteAuRC || inscriteIDE) {
+			return new TraitementManuel(event, organisation, entreprise, context, options,
+			                            String.format("Apparition de la forme juridique (legalForm) de l'organisation au registre civil: %s. La forme juridique précédente manque. Traitement manuel.", formeLegale));
 		}
 		else {
-			return String.format("La forme juridique (legalForm) est introuvable dans les données civiles de l'organisation n°%d.",
-			                     organisation.getNumeroOrganisation());
+			return new MessageWarningPreExectution(event, organisation, entreprise, context, options,
+			                                       String.format("Le registre civil indique maintenant la forme juridique (legalForm) de l'organisation: %s. Elle n'était pas fournie auparavant. Vérification requise.", formeLegale));
 		}
 	}
+
+	@NotNull
+	private EvenementOrganisationInterne traiteDisparitionFormeLegale(EvenementOrganisation event, Organisation organisation, Entreprise entreprise, FormeLegale formeLegaleAvant, boolean inscriteAuRC,
+	                                                                  boolean inscriteIDE) throws EvenementOrganisationException {
+		if (inscriteAuRC || inscriteIDE) {
+			return new TraitementManuel(event, organisation, entreprise, context, options,
+			                            String.format("La forme juridique (legalForm) de l'organisation a disparu du registre civil! Dernière forme juridique: %s. Traitement manuel.", formeLegaleAvant));
+		}
+		else {
+			return new MessageWarningPreExectution(event, organisation, entreprise, context, options,
+			                                       String.format("Le registre civil n'indique plus de forme juridique (legalForm) pour l'organisation. Dernière forme juridique: %s. Vérification requise.", formeLegaleAvant));
+		}
+	}
+
+	@NotNull
+	private EvenementOrganisationInterne traiteAbsenceFormeLegale(EvenementOrganisation event, Organisation organisation, Entreprise entreprise, boolean inscriteAuRC, boolean inscriteIDE) throws
+			EvenementOrganisationException {
+		if (inscriteAuRC || inscriteIDE) {
+			return new TraitementManuel(event, organisation, entreprise, context, options,
+			                            "La forme juridique (legalForm) de l'organisation est introuvable au registre civil. Traitement manuel.");
+		}
+		else {
+			return new MessageSuiviPreExecution(event, organisation, entreprise, context, options,
+			                                    "Le registre civil n'indique pas de forme juridique (legalForm) pour l'organisation.");
+		}
+	}
+
 }

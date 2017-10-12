@@ -194,7 +194,7 @@ public class REEIgnoreTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
 				                             Assert.assertEquals(String.format("L'organisation Société de Jeunesse de Ballens (civil: n°%d), domiciliée à Lausanne (VD), n'existe pas à l'IDE ni au RC. Pas de création automatique.", noOrganisation),
-				                                                 evt.getErreurs().get(1).getMessage());
+				                                                 evt.getErreurs().get(2).getMessage());
 				                             return null;
 			                             }
 		                             }

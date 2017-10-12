@@ -114,7 +114,7 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementOrganisationPr
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
-				                             Assert.assertEquals(String.format("La forme juridique (legalForm) est introuvable dans les données civiles de l'entreprise n°%s (organisation n°%s).",
+				                             Assert.assertEquals(String.format("La forme juridique (legalForm) de l'organisation est introuvable au registre civil. Traitement manuel.",
 				                                                               FormatNumeroHelper.numeroCTBToDisplay(entrepriseId), noOrganisation),
 				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
@@ -231,7 +231,7 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementOrganisationPr
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
 
-				                             Assert.assertEquals(String.format("La forme juridique (legalForm) est introuvable dans les données civiles de l'organisation n°%s.", noOrganisation),
+				                             Assert.assertEquals(String.format("La forme juridique (legalForm) de l'organisation est introuvable au registre civil. Traitement manuel.", noOrganisation),
 				                                                 evt.getErreurs().get(1).getMessage());
 				                             return null;
 			                             }
@@ -362,7 +362,7 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementOrganisationPr
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
-				                             Assert.assertEquals("Il n'y a pas de forme juridique (legalForm) au civil pour l'organisation non inscrite au RC ni à l'IDE.",
+				                             Assert.assertEquals("Le registre civil n'indique pas de forme juridique (legalForm) pour l'organisation.",
 				                                                 evt.getErreurs().get(1).getMessage());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
@@ -498,7 +498,7 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementOrganisationPr
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
-				                             Assert.assertEquals("La forme juridique (legalForm) pour l'organisation non inscrite au RC a disparu du registre civil! Ancienne forme juridique: (0109) Association.",
+				                             Assert.assertEquals("Le registre civil n'indique plus de forme juridique (legalForm) pour l'organisation. Dernière forme juridique: (0109) Association. Vérification requise.",
 				                                                 evt.getErreurs().get(1).getMessage());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
@@ -634,7 +634,7 @@ public class FormeJuridiqueManquanteTest extends AbstractEvenementOrganisationPr
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
 
-				                             Assert.assertEquals("Nouvelle forme juridique (legalForm) pour l'organisation non inscrite au RC, qui n'en avait pas: (0109) Association",
+				                             Assert.assertEquals("Le registre civil indique maintenant la forme juridique (legalForm) de l'organisation: (0109) Association. Elle n'était pas fournie auparavant. Vérification requise.",
 				                                                 evt.getErreurs().get(1).getMessage());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());

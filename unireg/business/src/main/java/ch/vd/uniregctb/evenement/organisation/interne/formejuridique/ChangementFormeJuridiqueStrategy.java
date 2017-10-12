@@ -65,7 +65,11 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 			final FormeLegale formeLegaleAvant = organisation.getFormeLegale(dateAvant);
 			final FormeLegale formeLegaleApres = organisation.getFormeLegale(dateApres);
 
-			if (formeLegaleAvant != null && formeLegaleApres != null && formeLegaleAvant != formeLegaleApres) { // Ce que l'on fait si la forme juridique est nulle est défini dans la stratégie idoine.
+			if (formeLegaleAvant == null || formeLegaleApres == null) {
+				LOGGER.info("Il manque une des deux ou les deux formes juridiques (avant: {}, après: {}). Impossible de déterminer un éventuellement changement.", formeLegaleAvant, formeLegaleApres);
+				return null;
+			}
+			if (formeLegaleAvant != formeLegaleApres) { // Ce que l'on fait si la forme juridique est nulle est défini dans la stratégie idoine.
 
 				/*
 					On prend comme point de départ le type de régime fiscal du régime de portée VD de l'entreprise à la veille, s'il existe.
