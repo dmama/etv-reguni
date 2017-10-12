@@ -195,16 +195,23 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 			};
 		}
 		else {
-			try {
-				final Map<String, PropertyDescriptor> descriptors = ReflexionUtils.getPropertyDescriptors(RapportEntreTiers.class);
-				final PropertyDescriptor descriptor = descriptors.get(sortingField == null ? "id" : sortingField);
-				comparateurAsc = new Comparator<RapportEntreTiers>() {
-					@Override
-					public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-						try {
-							final Method readMethod = descriptor.getReadMethod();
-							final Object value1 = readMethod.invoke(o1);
-							final Object value2 = readMethod.invoke(o2);
+			comparateurAsc = new Comparator<RapportEntreTiers>() {
+				@Override
+				public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
+					try {
+						final Map<String, PropertyDescriptor> descriptorsO1 = ReflexionUtils.getPropertyDescriptors(o1.getClass());
+						final Map<String, PropertyDescriptor> descriptorsO2 = ReflexionUtils.getPropertyDescriptors(o2.getClass());
+						final PropertyDescriptor descriptorO1 = descriptorsO1.get(sortingField == null ? "id" : sortingField);
+						final PropertyDescriptor descriptorO2 = descriptorsO2.get(sortingField == null ? "id" : sortingField);
+						if (descriptorO1 == null) {
+							return -1;
+						}
+						else if (descriptorO2 == null) {
+							return 1;
+						}
+						else {
+							final Object value1 = descriptorO1.getReadMethod().invoke(o1);
+							final Object value2 = descriptorO2.getReadMethod().invoke(o2);
 							if (value1 == null || value2 == null) {
 								if (value1 == null && value2 == null) {
 									return 0;
@@ -215,24 +222,21 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 								//noinspection unchecked
 								return ((Comparable) value1).compareTo(value2);
 							}
-							else if (Class.class.equals(descriptor.getPropertyType())) {
+							else if (Class.class.equals(descriptorO1.getPropertyType())) {
 								// [SIFISC-25994] on veut comparer par classe (= type de rapport)...
 								//noinspection ConstantConditions
 								return ((Class<?>) value1).getSimpleName().compareTo(((Class<?>) value2).getSimpleName());
 							}
 							else {
-								throw new IllegalArgumentException("Propriété " + descriptor.getDisplayName() + " de type " + descriptor.getPropertyType().getName() + " non comparable...");
+								throw new IllegalArgumentException("Propriété " + descriptorO1.getDisplayName() + " de type " + descriptorO1.getPropertyType().getName() + " non comparable...");
 							}
 						}
-						catch (IllegalAccessException | InvocationTargetException e) {
-							throw new IllegalArgumentException("Impossible d'accéder à la propriété " + descriptor.getDisplayName() + " de la classe " + RapportEntreTiers.class.getSimpleName());
-						}
 					}
-				};
-			}
-			catch (IntrospectionException e) {
-				throw new IllegalArgumentException("Impossible d'accéder aux propriétés de la classe " + RapportEntreTiers.class.getSimpleName());
-			}
+					catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+						throw new IllegalArgumentException("Impossible d'accéder à la propriété " + sortingField + " de la classe " + RapportEntreTiers.class.getSimpleName());
+					}
+				}
+			};
 		}
 		tous.sort(comparateurAsc);
 		if (!pagination.getSorting().isAscending()) {
