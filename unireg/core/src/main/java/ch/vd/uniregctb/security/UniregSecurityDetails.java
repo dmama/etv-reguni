@@ -14,6 +14,7 @@ public class UniregSecurityDetails extends Hashtable<String, Object> implements 
 	private IfoSecProfil ifoSecProfil = null;
 	private Integer ifoSecOID = null;
 	private String ifoSecOIDSigle = null;
+	private Portail accessPortail;
 
 	public UniregSecurityDetails() {
 		int z = 0;
@@ -77,5 +78,15 @@ public class UniregSecurityDetails extends Hashtable<String, Object> implements 
 	@Override
 	public void setIfoSecOIDSigle(@Nullable String ifoSecOIDSigle) {
 		this.ifoSecOIDSigle = ifoSecOIDSigle;
+	}
+
+	@Override
+	public Portail getAccessPortail() {
+		return accessPortail;
+	}
+
+	@Override
+	public void setAccessPortail(Portail accessPortail) {
+		this.accessPortail = accessPortail;
 	}
 }

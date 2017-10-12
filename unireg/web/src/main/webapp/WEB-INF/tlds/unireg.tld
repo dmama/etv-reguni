@@ -562,6 +562,19 @@
 	</tag>
 
 	<tag>
+		<description>Permet d'afficher du contenu en fonction du portail d'accès (IAM ou CYBER) utilisé par l'utilisateur courant pour accéder à Unireg.</description>
+		<name>ifPortail</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagIfPortail</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>Le type de portail (IAM ou CYBER)</description>
+			<name>portail</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<description>Permet d'afficher du contenu uniquement si le mode E-Facture est actif</description>
 		<name>ifEfacture</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagIfEfacture</tag-class>

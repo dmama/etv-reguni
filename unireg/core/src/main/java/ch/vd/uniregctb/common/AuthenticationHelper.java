@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import ch.vd.uniregctb.security.Portail;
 import ch.vd.uniregctb.security.UniregSecurityDetails;
 
 public abstract class AuthenticationHelper {
@@ -138,5 +139,13 @@ public abstract class AuthenticationHelper {
 	public static String getCurrentOIDSigle() {
 		final UniregSecurityDetails details = getDetails();
 		return details.getIfoSecOIDSigle();
+	}
+
+	/**
+	 * @return le portail d'accès utilisé par l'utilisateur courant.
+	 */
+	public static Portail getAccessPortail() {
+		final UniregSecurityDetails details = getDetails();
+		return details.getAccessPortail();
 	}
 }
