@@ -321,6 +321,13 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			assertEquals(1, list.size());
 			assertEquals((Long) ids.idlui, list.get(0).getNumero());
 		}
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNumeroAVS("987654321");
+			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			//dumpResults(list);
+			assertEquals(0, list.size());
+		}
 
 		// Nouveau numero
 		{
@@ -330,6 +337,13 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			//dumpResults(list);
 			assertEquals(1, list.size());
 			assertEquals((Long) ids.idelle, list.get(0).getNumero());
+		}
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNumeroAVS("12345678910");
+			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			//dumpResults(list);
+			assertEquals(0, list.size());
 		}
 		{
 			final TiersCriteria criteria = new TiersCriteria();

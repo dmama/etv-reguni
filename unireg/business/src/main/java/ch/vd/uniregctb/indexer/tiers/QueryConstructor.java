@@ -251,7 +251,7 @@ public class QueryConstructor {
 		// Numero AVS (11 ou 13, indifféremment)
 		if (StringUtils.isNotBlank(criteria.getNumeroAVS())) {
 			final BooleanQuery boolQuery = new BooleanQuery();
-			boolQuery.add(LuceneHelper.getTermsCommence(TiersIndexableData.NAVS11, IndexerFormatHelper.noAvsToString(criteria.getNumeroAVS()), 0), should);
+			boolQuery.add(LuceneHelper.getTermsExact(TiersIndexableData.NAVS11, IndexerFormatHelper.noAvsToString(criteria.getNumeroAVS())), should);
 			boolQuery.add(LuceneHelper.getTermsExact(TiersIndexableData.NAVS13, IndexerFormatHelper.noAvsToString(criteria.getNumeroAVS())), should);
 			fullQuery.add(boolQuery, must);
 		}
