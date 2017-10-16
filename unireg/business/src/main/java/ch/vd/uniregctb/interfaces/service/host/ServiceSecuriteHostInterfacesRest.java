@@ -23,7 +23,8 @@ import ch.vd.uniregctb.security.IfoSecProfil;
 public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService {
 
 	private ServiceSecuriteClient client;
-	private final static  String MESSAGE_VISA_OPERATEUR_TERMINE = "Ce visa op.+rateur est termin.+\\.";
+
+	private static final Pattern MESSAGE_VISA_OPERATEUR_TERMINE_PATTERN = Pattern.compile("Ce visa op.+rateur est termin.+\\.");
 
 
 	/**
@@ -93,19 +94,15 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 
 	/**
 	 * Dans le cas où on demande les collectivités d'un opérateur maintenant invalide (= terminé), Host-Interface nous renvoie une exception...
+	 *
 	 * @return vrai si l'exception spécifiée est levée par host-interface parce que l'opérateur est terminé (= avec une date de fin de validité)
 	 */
 	private static boolean isOperateurTermineException(ServiceSecuriteClientException e) {
-		final Exception root = getRootException(e);
-		if (root instanceof WebApplicationException) {
-			final Pattern pattern = Pattern.compile(MESSAGE_VISA_OPERATEUR_TERMINE);
-			final Matcher matcher = pattern.matcher(root.getMessage());
-			if (matcher.find()) {
-				return true;
-			}
-		}
-		return false;
+		// [SIFISC-26756] Depuis le passage à CXF 3.1.9, le message retourné par Host-Interface est directement contenu dans le message de l'exception.
+		final Matcher matcher = MESSAGE_VISA_OPERATEUR_TERMINE_PATTERN.matcher(e.getMessage());
+		return matcher.find();
 	}
+
 	/**
 	 * @return l'exception première à la racine de l'exception spécifiée.
 	 */
