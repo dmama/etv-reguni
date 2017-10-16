@@ -101,8 +101,7 @@ public class RappelLettresBienvenueProcessor {
 				else {
 					// tout est bon, on peut envoyer la sauce
 					final RegDate dateEnvoiRappel = delaisService.getDateFinDelaiCadevImpressionLettreBienvenue(rapport.dateTraitement);
-					lettre.setDateRappel(dateEnvoiRappel);
-					autreDocumentFiscalService.envoyerRappelLettreBienvenueBatch(lettre, rapport.dateTraitement);
+					autreDocumentFiscalService.envoyerRappelLettreBienvenueBatch(lettre, rapport.dateTraitement, dateEnvoiRappel);
 					rapport.addRappelEnvoye(entreprise.getNumero(), lettre.getDateEnvoi());
 				}
 			}

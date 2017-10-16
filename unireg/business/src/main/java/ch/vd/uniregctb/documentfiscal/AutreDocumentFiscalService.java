@@ -97,18 +97,20 @@ public interface AutreDocumentFiscalService {
 	EditiqueResultat getCopieConformeDocumentRappel(AutreDocumentFiscalAvecSuivi document) throws EditiqueException;
 
 	/**
-	 * @param lettre la lettre de bienvenue à rappeler (la date de rappel effective doit déjà être assignée)
+	 * @param lettre la lettre de bienvenue à rappeler
 	 * @param dateTraitement date de traitement
+	 * @param dateEnvoiRappel date de rappel effective
 	 * @throws AutreDocumentFiscalException en cas de souci
 	 */
-	void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement) throws AutreDocumentFiscalException;
+	void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement, RegDate dateEnvoiRappel) throws AutreDocumentFiscalException;
 
 	/**
-	 * @param formulaire le formulaire de demande de dégrèvement ICI à rappeler (la date de rappel effective doit déjà être assignée)
+	 * @param formulaire le formulaire de demande de dégrèvement ICI à rappeler
 	 * @param dateTraitement date de traitement
+	 * @param dateEnvoiRappel date de rappel effective
 	 * @throws AutreDocumentFiscalException en cas de souci
 	 */
-	void envoyerRappelFormulaireDemandeDegrevementICIBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement) throws AutreDocumentFiscalException;
+	void envoyerRappelFormulaireDemandeDegrevementICIBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement, RegDate dateEnvoiRappel) throws AutreDocumentFiscalException;
 
 	/**
 	 * Génération d'une nouvelle lettre d'autorisation de radiation du RC en impression locale

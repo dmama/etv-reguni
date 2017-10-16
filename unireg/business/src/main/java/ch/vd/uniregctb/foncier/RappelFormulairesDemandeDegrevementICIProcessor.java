@@ -129,8 +129,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessor {
 					else {
 						// tout est bon, on peut envoyer la sauce
 						final RegDate dateEnvoiRappel = delaisService.getDateFinDelaiCadevImpressionDemandeDegrevementICI(rapport.dateTraitement);
-						demande.setDateRappel(dateEnvoiRappel);
-						autreDocumentFiscalService.envoyerRappelFormulaireDemandeDegrevementICIBatch(demande, rapport.dateTraitement);
+						autreDocumentFiscalService.envoyerRappelFormulaireDemandeDegrevementICIBatch(demande, rapport.dateTraitement, dateEnvoiRappel);
 						rapport.addRappelEnvoye(entreprise.getNumero(), demande.getPeriodeFiscale(), situation, commune, demande.getId(), demande.getDateEnvoi());
 					}
 				}

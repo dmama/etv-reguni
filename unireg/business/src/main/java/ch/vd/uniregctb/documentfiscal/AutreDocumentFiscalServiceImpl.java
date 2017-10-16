@@ -371,8 +371,9 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	}
 
 	@Override
-	public void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement) throws AutreDocumentFiscalException {
+	public void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement, RegDate dateEnvoiRappel) throws AutreDocumentFiscalException {
 		try {
+			lettre.setDateRappel(dateEnvoiRappel);
 			editiqueCompositionService.imprimeRappelLettreBienvenueForBatch(lettre, dateTraitement);
 		}
 		catch (EditiqueException e) {
@@ -381,8 +382,9 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	}
 
 	@Override
-	public void envoyerRappelFormulaireDemandeDegrevementICIBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement) throws AutreDocumentFiscalException {
+	public void envoyerRappelFormulaireDemandeDegrevementICIBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement, RegDate dateEnvoiRappel) throws AutreDocumentFiscalException {
 		try {
+			formulaire.setDateRappel(dateEnvoiRappel);
 			editiqueCompositionService.imprimeRappelFormulaireDemandeDegrevementICIForBatch(formulaire, dateTraitement);
 		}
 		catch (EditiqueException e) {
