@@ -19,6 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.support.DataAccessUtils;
 
 import ch.vd.uniregctb.common.BaseDAOImpl;
@@ -179,6 +180,26 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 
 		final Comparator<RapportEntreTiers> comparateurAsc;
 		final String sortingField = pagination.getSorting().getField();
+
+		comparateurAsc = getRapportEntreTiersComparator(tiersId, sortingField);
+
+		tous.sort(comparateurAsc);
+		if (!pagination.getSorting().isAscending()) {
+			Collections.reverse(tous);
+		}
+
+		if (fullList) {
+			return tous;
+		}
+		else {
+			return tous.subList(Math.min(pagination.getSqlFirstResult(), tous.size()),
+			                    Math.min(pagination.getSqlFirstResult() + pagination.getSqlMaxResults(), tous.size()));
+		}
+	}
+
+	@NotNull
+	static Comparator<RapportEntreTiers> getRapportEntreTiersComparator(long tiersId, String sortingField) {
+		final Comparator<RapportEntreTiers> comparateurAsc;
 		if (sortingField != null && "tiersId".equals(sortingField)) {
 			comparateurAsc = new Comparator<RapportEntreTiers>() {
 				@Override
@@ -204,10 +225,10 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 						final PropertyDescriptor descriptorO1 = descriptorsO1.get(sortingField == null ? "id" : sortingField);
 						final PropertyDescriptor descriptorO2 = descriptorsO2.get(sortingField == null ? "id" : sortingField);
 						if (descriptorO1 == null) {
-							return -1;
+							return 1;
 						}
 						else if (descriptorO2 == null) {
-							return 1;
+							return -1;
 						}
 						else {
 							final Object value1 = descriptorO1.getReadMethod().invoke(o1);
@@ -238,18 +259,7 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 				}
 			};
 		}
-		tous.sort(comparateurAsc);
-		if (!pagination.getSorting().isAscending()) {
-			Collections.reverse(tous);
-		}
-
-		if (fullList) {
-			return tous;
-		}
-		else {
-			return tous.subList(Math.min(pagination.getSqlFirstResult(), tous.size()),
-			                    Math.min(pagination.getSqlFirstResult() + pagination.getSqlMaxResults(), tous.size()));
-		}
+		return comparateurAsc;
 	}
 
 	@Override
