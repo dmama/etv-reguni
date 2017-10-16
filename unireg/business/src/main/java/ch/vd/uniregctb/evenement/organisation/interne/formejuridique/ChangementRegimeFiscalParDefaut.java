@@ -66,8 +66,7 @@ public class ChangementRegimeFiscalParDefaut extends EvenementOrganisationIntern
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		closeRegimesFiscauxOrdinairesCHVD(regimeFiscalCHAvant, regimeFiscalVDAvant, dateAvant, suivis);
-		openRegimesFiscauxParDefautCHVD(getEntreprise(), getOrganisation(), dateApres, suivis);
+		changeRegimesFiscauxVDCH(getEntreprise(), getOrganisation(), regimeFiscalCHAvant, regimeFiscalVDAvant, dateApres, false, suivis);
 	}
 
 	@Override
