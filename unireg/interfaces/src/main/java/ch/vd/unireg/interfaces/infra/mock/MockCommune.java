@@ -28,6 +28,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	public static final MockCommune Bex = new MockCommune(5402, "Bex", VAUD, MockDistrict.Aigle);
 	public static final MockCommune Lausanne = new MockCommune(5586, "Lausanne", VAUD, MockDistrict.Lausanne);
 	public static final MockCommune Cossonay = new MockCommune(5477, "Cossonay", VAUD, MockDistrict.Morges);
+	public static final MockCommune Chavornay = new MockCommune(5749, "Chavornay", VAUD, MockDistrict.Orbe);
 	public static final MockCommune RomainmotierEnvy = new MockCommune(5761, "Romainmôtier-Envy", VAUD, MockDistrict.Orbe);
 	public static final MockCommune Croy = new MockCommune(5752, "Croy", VAUD, MockDistrict.Orbe);
 	public static final MockCommune Vaulion = new MockCommune(5765, "Vaulion", VAUD, MockDistrict.Orbe);
