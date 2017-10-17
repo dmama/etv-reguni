@@ -27,7 +27,7 @@ public abstract class AddForAvecMotifsValidator extends AddForValidator {
 		}
 
 		// validation du motif de début
-		if (view.getDateDebut() != null && view.getMotifDebut() == null && !isEmptyMotifDebutAllowed(view)) {
+		if (view.getMotifDebut() == null && !isEmptyMotifDebutAllowed(view)) {
 			errors.rejectValue("motifDebut", "error.motif.ouverture.vide");
 		}
 
