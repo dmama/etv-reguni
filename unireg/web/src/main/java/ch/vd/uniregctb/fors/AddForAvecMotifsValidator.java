@@ -26,7 +26,7 @@ public abstract class AddForAvecMotifsValidator extends AddForValidator {
 			}
 		}
 
-		// validation du motif de début
+		// validation du motif de début SIFISC-25746
 		if (view.getMotifDebut() == null && !isEmptyMotifDebutAllowed(view)) {
 			errors.rejectValue("motifDebut", "error.motif.ouverture.vide");
 		}

@@ -74,14 +74,13 @@ public class AddForDebiteurValidator extends AddForAvecMotifsValidator {
 		}
 
 		// validation du motif de début
+		//La nullité est déja detectée en Amont SIFISC-25746
 		if (view.getMotifDebut() != null) {
 			final NatureTiers natureTiers = dpi.getNatureTiers();
 			final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE, null);
 			ForValidatorHelper.validateMotifDebut(typeFor, view.getMotifDebut(), errors);
 		}
-		else {
-			errors.rejectValue("motifDebut", "error.motif.ouverture.vide");
-		}
+
 
 		// validation du motif de fin
 		if (view.getMotifFin() != null) {
