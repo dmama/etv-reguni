@@ -39,8 +39,8 @@ import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.rapport.manager.RapportEditManager;
@@ -206,6 +206,8 @@ public class RapportController {
 		if (!autorisationManager.isEditAllowed(tiers)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit d'édition des rapports-entre-tiers sur ce tiers");
 		}
+
+		model.addAttribute("typesRechercheNom", tiersMapHelper.getMapTypeRechercheNom());
 
 		if (binding.hasErrors() || view.isEmpty()) {
 			return "tiers/edition/rapport/add-search";
