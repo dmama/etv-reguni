@@ -77,7 +77,7 @@
 					<tr class="<unireg:nextRowClass/>">
 						<td class="titre"><fmt:message key="label.volume"/> (m&sup3;)</td>
 						<td class="valeur">
-							<form:input path="location.volume" cssClass="nombre" id="locationVolume" onchange="EditDegrevementDynamic.calculatePourcentageVolume();"/>
+							<form:input path="location.volume" maxlength="12" cssClass="nombre" id="locationVolume" onchange="EditDegrevementDynamic.calculatePourcentageVolume();"/>
 							<form:errors path="location.volume" cssClass="error"/>
 						</td>
 						<td class="valeur">&nbsp;</td>
@@ -120,7 +120,7 @@
 					<tr class="<unireg:nextRowClass/>">
 						<td class="titre"><fmt:message key="label.revenu.estime"/> (<fmt:message key="label.chf"/>)</td>
 						<td class="valeur">
-							<form:input path="propreUsage.revenu" cssClass="nombre" id="propreUsageRevenu" onchange="EditDegrevementDynamic.calculatePourcentageRevenu();"/>
+							<form:input path="propreUsage.revenu" maxlength="12" cssClass="nombre" id="propreUsageRevenu" onchange="EditDegrevementDynamic.calculatePourcentageRevenu();"/>
 							<form:errors path="propreUsage.revenu" cssClass="error"/>
 						</td>
 						<td class="valeur">
@@ -130,7 +130,7 @@
 					<tr class="<unireg:nextRowClass/>">
 						<td class="titre"><fmt:message key="label.volume"/> (m&sup3;)</td>
 						<td class="valeur">
-							<form:input path="propreUsage.volume" cssClass="nombre" id="propreUsageVolume" onchange="EditDegrevementDynamic.calculatePourcentageVolume();"/>
+							<form:input path="propreUsage.volume" maxlength="12" cssClass="nombre" id="propreUsageVolume" onchange="EditDegrevementDynamic.calculatePourcentageVolume();"/>
 							<form:errors path="propreUsage.volume" cssClass="error"/>
 						</td>
 						<td class="valeur">
@@ -140,7 +140,7 @@
 					<tr class="<unireg:nextRowClass/>">
 						<td class="titre"><fmt:message key="label.surface"/> (m&sup2;)</td>
 						<td class="valeur">
-							<form:input path="propreUsage.surface" cssClass="nombre" id="propreUsageSurface" onchange="EditDegrevementDynamic.calculatePourcentageSurface();"/>
+							<form:input path="propreUsage.surface" maxlength="12" cssClass="nombre" id="propreUsageSurface" onchange="EditDegrevementDynamic.calculatePourcentageSurface();"/>
 							<form:errors path="propreUsage.surface" cssClass="error"/>
 						</td>
 						<td class="valeur">

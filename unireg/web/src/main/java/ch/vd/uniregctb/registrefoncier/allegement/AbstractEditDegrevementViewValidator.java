@@ -43,12 +43,26 @@ public class AbstractEditDegrevementViewValidator implements Validator {
 			errors.rejectValue("propreUsage.surface", "error.degexo.surface.negative");
 		}
 
-		// Les valeurs de revenu et surface sont sur 12 chiffres
+		// Les valeurs de revenu, surface et volume pour location sont sur 12 chiffres
 		if(view.getLocation().getRevenu() != null && view.getLocation().getRevenu().toString().length() > 12) {
 			errors.rejectValue("location.revenu", "error.degexo.revenu.taille");
 		}
 		if(view.getLocation().getSurface() != null && view.getLocation().getSurface().toString().length() > 12) {
 			errors.rejectValue("location.surface", "error.degexo.surface.taille");
+		}
+		if(view.getLocation().getVolume() != null && view.getLocation().getVolume().toString().length() > 12) {
+			errors.rejectValue("location.volume", "error.degexo.volume.taille");
+		}
+
+		// Les valeurs de revenu, surface et volume pour usage propre sont sur 12 chiffres
+		if(view.getPropreUsage().getRevenu() != null && view.getPropreUsage().getRevenu().toString().length() > 12) {
+			errors.rejectValue("propreUsage.revenu", "error.degexo.revenu.taille");
+		}
+		if(view.getPropreUsage().getSurface() != null && view.getPropreUsage().getSurface().toString().length() > 12) {
+			errors.rejectValue("propreUsage.surface", "error.degexo.surface.taille");
+		}
+		if(view.getPropreUsage().getVolume() != null && view.getPropreUsage().getVolume().toString().length() > 12) {
+			errors.rejectValue("propreUsage.volume", "error.degexo.volume.taille");
 		}
 
 		// les pourcentages doivent être compris entre 0 et 100, avec deux décimales
