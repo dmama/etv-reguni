@@ -171,8 +171,8 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		lettre.setEntreprise(entreprise);
 
 		final DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
-		delai.setDateDemande(dateEnvoi);
-		delai.setDateTraitement(dateEnvoi);
+		delai.setDateDemande(dateTraitement);
+		delai.setDateTraitement(dateTraitement);
 		delai.setDelaiAccordeAu(delaiRetour);
 		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		lettre.addDelai(delai);
@@ -277,8 +277,8 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		demande.setEntreprise(entreprise);
 
 		final DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
-		delai.setDateDemande(dateEnvoi);
-		delai.setDateTraitement(dateEnvoi);
+		delai.setDateDemande(dateTraitement);
+		delai.setDateTraitement(dateTraitement);
 		delai.setDelaiAccordeAu(delaiRetour);
 		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		demande.addDelai(delai);

@@ -140,9 +140,9 @@ public class CorporationStrategyTest extends BusinessTest {
 		assertEquals(immovablePropId, abatement.getImmovablePropertyId());
 	}
 
-	private static DemandeDegrevementICI newDemandeDegrevement(RegDate dateEnvoi, RegDate delaiRetour, RegDate dateRetour, int periodeFiscale, int numeroSequence, ImmeubleRF immeuble) {
+	private static DemandeDegrevementICI newDemandeDegrevement(RegDate dateTraitement, RegDate delaiRetour, RegDate dateRetour, int periodeFiscale, int numeroSequence, ImmeubleRF immeuble) {
 		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
-		demande.setDateEnvoi(dateEnvoi);
+		demande.setDateEnvoi(dateTraitement);
 		demande.setDateRetour(dateRetour);
 		demande.setPeriodeFiscale(periodeFiscale);
 		demande.setNumeroSequence(numeroSequence);
@@ -150,8 +150,8 @@ public class CorporationStrategyTest extends BusinessTest {
 
 		final DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
 		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
-		delai.setDateTraitement(dateEnvoi);
-		delai.setDateDemande(dateEnvoi);
+		delai.setDateTraitement(dateTraitement);
+		delai.setDateDemande(dateTraitement);
 		delai.setDelaiAccordeAu(delaiRetour);
 		demande.addDelai(delai);
 
