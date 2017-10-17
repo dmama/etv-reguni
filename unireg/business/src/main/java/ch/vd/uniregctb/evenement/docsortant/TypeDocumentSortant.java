@@ -32,7 +32,7 @@ public enum TypeDocumentSortant {
 	DUPLICATA_DI_PP_DEPENSE(false, CodeTypeDocumentSortant.DECLARATION, "Déclaration d'impôt dépense (duplicata)", false),
 	DI_PP_HC_IMMEUBLE(false, CodeTypeDocumentSortant.DECLARATION, "Déclaration d'impôt Hors-canton immeuble", true),
 	DUPLICATA_DI_PP_HC_IMMEUBLE(false, CodeTypeDocumentSortant.DECLARATION, "Déclaration d'impôt Hors-canton immeuble (duplicata)", false),
-	DI_PP_ANNEXE_IMMEUBLE(false, CodeTypeDocumentSortant.DECLARATION, "Lettre annexe immeuble", false),
+	DI_PP_ANNEXE_IMMEUBLE(false, CodeTypeDocumentSortant.DECLARATION, "Annexe immeuble", false),
 	SOMMATION_DI_PP(true, CodeTypeDocumentSortant.DECLARATION, "Sommation de DI", true),
 	CONFIRMATION_DELAI(false, CodeTypeDocumentSortant.DECLARATION, "Confirmation de délai", true),
 

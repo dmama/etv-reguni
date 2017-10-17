@@ -334,7 +334,7 @@
 
 	<bean id="envoiAnnexeImmeubleJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleJob">
         <constructor-arg value="408"/>
-        <constructor-arg value="Envoyer à l'impression les formulaires immeubles à envoyer avant les DI en masse"/>
+        <constructor-arg value="Envoyer à l'impression les formulaires immeubles"/>
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
