@@ -480,7 +480,8 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 		return execute(params, READ_ACCESS_LOG, () -> {
 			try (ImageData data = target.getAvatar(partyNo); ByteArrayOutputStream bos = new ByteArrayOutputStream(16 * 1024)) {
 				IOUtils.copy(data.getDataStream(), bos);
-				return ExecutionResult.with(Response.ok(bos.toByteArray(), data.getMimeType()).build());
+				final MediaType imageType = MediaType.valueOf(data.getMimeType());
+				return ExecutionResult.with(Response.ok(bos.toByteArray(), imageType).build());
 			}
 		});
 	}

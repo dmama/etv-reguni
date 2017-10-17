@@ -128,7 +128,7 @@ public class WebServiceEndPoint implements WebService {
 					names.add(job.getName());
 				}
 			}
-			return Response.ok(new JobNames(names), APPLICATION_JSON_WITH_UTF8_CHARSET).build();
+			return Response.ok(new JobNames(names), MediaType.valueOf(APPLICATION_JSON_WITH_UTF8_CHARSET)).build();
 		});
 	}
 
@@ -141,7 +141,7 @@ public class WebServiceEndPoint implements WebService {
 			}
 
 			final JobDescription description = buildDescription(job);
-			return Response.ok(description, APPLICATION_JSON_WITH_UTF8_CHARSET).build();
+			return Response.ok(description, MediaType.valueOf(APPLICATION_JSON_WITH_UTF8_CHARSET)).build();
 		});
 	}
 
@@ -348,7 +348,7 @@ public class WebServiceEndPoint implements WebService {
 			if (job == null || job.getStatut() == null) {
 				return buildUnknownBatchNameResponse(jobName);
 			}
-			return Response.ok(mapStatus(job.getStatut()).name(), TEXT_PLAIN_WITH_UTF8_CHARSET).build();
+			return Response.ok(mapStatus(job.getStatut()).name(), MediaType.valueOf(TEXT_PLAIN_WITH_UTF8_CHARSET)).build();
 		});
 	}
 
@@ -379,10 +379,10 @@ public class WebServiceEndPoint implements WebService {
 					.collect(Collectors.toCollection(() -> EnumSet.noneOf(JobDefinition.JobStatut.class)));
 			try {
 				final JobDefinition.JobStatut etatAtteint = job.waitForStatusIn(internalHaving, Duration.ofMillis(timeout));
-				return Response.ok(new JobWaitInformation(JobWaitInformation.JobWaitStatus.EXPECTED_STATUS_REACHED, mapStatus(etatAtteint), job.getRunningMessage()), APPLICATION_JSON_WITH_UTF8_CHARSET).build();
+				return Response.ok(new JobWaitInformation(JobWaitInformation.JobWaitStatus.EXPECTED_STATUS_REACHED, mapStatus(etatAtteint), job.getRunningMessage()), MediaType.valueOf(APPLICATION_JSON_WITH_UTF8_CHARSET)).build();
 			}
 			catch (JobDefinition.TimeoutExpiredException e) {
-				return Response.ok(new JobWaitInformation(JobWaitInformation.JobWaitStatus.TIMEOUT_OCCURRED, mapStatus(e.statut), job.getRunningMessage()), APPLICATION_JSON_WITH_UTF8_CHARSET).build();
+				return Response.ok(new JobWaitInformation(JobWaitInformation.JobWaitStatus.TIMEOUT_OCCURRED, mapStatus(e.statut), job.getRunningMessage()), MediaType.valueOf(APPLICATION_JSON_WITH_UTF8_CHARSET)).build();
 			}
 			catch (RuntimeException | Error e) {
 				throw e;
