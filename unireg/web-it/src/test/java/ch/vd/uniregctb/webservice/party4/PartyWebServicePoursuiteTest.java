@@ -115,11 +115,11 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 			final List<Address> residenceAddresses = tiers.getResidenceAddresses();
 			final Address domicile = residenceAddresses.get(residenceAddresses.size() - 1);
 			final FormattedAddress formattee = domicile.getFormattedAddress();
-			assertFormattedAddress(formattee, "Monsieur", "Thierry Ralet", "Chemin de la Cornèle 46", "1093 La Conversion");
+			assertFormattedAddress(formattee, "Monsieur", "Thierry Ralet", "Parkstrasse 8", "6312 Steinhausen");
 			assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 			final List<Address> mailAddresses = tiers.getMailAddresses();
-			assertFormattedAddress(mailAddresses.get(mailAddresses.size() - 1).getFormattedAddress(), "Monsieur", "Thierry Ralet", "Chemin de la Cornèle 46", "1093 La Conversion");
+			assertFormattedAddress(mailAddresses.get(mailAddresses.size() - 1).getFormattedAddress(), "Monsieur", "Thierry Ralet", "Parkstrasse 8", "6312 Steinhausen");
 
 			final List<Address> debtProsecutionAddresses = tiers.getDebtProsecutionAddresses();
 			assertAdresseEquals(formattee, debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress());
