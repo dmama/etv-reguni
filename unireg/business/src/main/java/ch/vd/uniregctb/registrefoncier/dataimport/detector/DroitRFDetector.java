@@ -296,20 +296,21 @@ public class DroitRFDetector {
 	}
 
 	private <T> void detectMutationsDeSuppression(PersistentCache<ArrayList<T>> cacheDroits, TypeDroit typeDroit, long importId) {
+
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+
+		final Set<String> immeublesInDB = template.execute(s -> immeubleRFDAO.findAvecDroitsActifs(typeDroit));
+		final Set<String> immeublesInImport = cacheDroits.keySet().stream()
+				.map(IdRfCacheKey.class::cast)
+				.map(IdRfCacheKey::getIdRF)
+				.collect(Collectors.toSet());
+
+		// on enlève tous les immeubles qui existent à la fois dans la DB et dans l'import
+		immeublesInDB.removeAll(immeublesInImport);
+
 		template.execute(s -> {
-			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
-
-			final Set<String> immeublesInDB = immeubleRFDAO.findAvecDroitsActifs(typeDroit);
-			final Set<String> immeublesInImport = cacheDroits.keySet().stream()
-					.map(IdRfCacheKey.class::cast)
-					.map(IdRfCacheKey::getIdRF)
-					.collect(Collectors.toSet());
-
-			// on enlève tous les immeubles qui existent à la fois dans la DB et dans l'import
-			immeublesInDB.removeAll(immeublesInImport);
-
 			// on crée des mutations de suppression de droits pour tous les immeubles qui existent dans la DB et pas dans l'import
+			final EvenementRFImport parentImport = evenementRFImportDAO.get(importId);
 			immeublesInDB.forEach(idRF -> {
 				final EvenementRFMutation mutation = new EvenementRFMutation();
 				mutation.setParentImport(parentImport);
