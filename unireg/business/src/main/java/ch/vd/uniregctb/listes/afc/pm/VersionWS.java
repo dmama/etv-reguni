@@ -8,6 +8,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.uniregctb.xml.party.v4.CorporationFlagBuilder;
 
 /**
  * Type énuméré des versions du WS (utilisée pour la traduction des valeurs énumérées exposées dans l'extraction RPT PM)
@@ -23,7 +24,7 @@ public enum VersionWS {
 
 		@Override
 		public String of(@Nullable TypeFlagEntreprise flag) {
-			return toString(EnumHelper.coreToXMLv4(flag));
+			return toString(CorporationFlagBuilder.getFlagType(flag));
 		}
 
 		@Override
