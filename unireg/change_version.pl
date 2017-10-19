@@ -19,9 +19,9 @@ if (!defined($current_lversion) || !defined($new_lversion)) {
 }
 
 my $current_sversion = $current_lversion;
-$current_sversion =~ s/(\d+)\.(\d+).*/$1.$2/;
+$current_sversion =~ s/(\d+R\d)\..*/$1/;
 my $new_sversion = $new_lversion;
-$new_sversion =~ s/(\d+)\.(\d+).*/$1.$2/;
+$new_sversion =~ s/(\d+R\d)\..*/$1/;
 
 
 print "Long: $current_lversion => $new_lversion\n";
@@ -93,7 +93,7 @@ sub treat_file
 			$in_short = 0;
 		}
 
-		if ($in_short && $current_sversion != $new_sversion) {
+		if ($in_short && $current_sversion ne $new_sversion) {
 			$modified =~ s/$current_sversion/$new_sversion/;
 		}
 
