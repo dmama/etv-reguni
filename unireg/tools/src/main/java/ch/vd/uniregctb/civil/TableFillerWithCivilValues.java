@@ -94,7 +94,6 @@ public class TableFillerWithCivilValues {
 		rcpersClient.setUsername(RCPERS_USER);
 		rcpersClient.setPassword(RCPERS_PWD);
 		rcpersClient.setPeoplePath("persons/ct.vd.rcpers");
-		rcpersClient.afterPropertiesSet();
 
 		final FidorClientImpl fidorClient = new FidorClientImpl();
 		fidorClient.setServiceUrl(FIDOR_URL);

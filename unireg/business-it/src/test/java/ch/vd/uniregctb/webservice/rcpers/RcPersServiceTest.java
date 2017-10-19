@@ -177,7 +177,6 @@ public class RcPersServiceTest {
 		client.setEventPath("event");
 		client.setUsername("gvd0unireg");
 		client.setPassword("Welc0me_");
-		client.afterPropertiesSet();
 		return client;
 	}
 }

@@ -57,6 +57,7 @@
 		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
 		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
 		<property name="pingPath" value="/infrastructure/ping"/>
+		<property name="bus" ref="cxf"/>
 		<property name="validationEnabled" value="${testprop.webservice.rcent.validate}"/>
 		<property name="schemasLocations">
 			<util:list>

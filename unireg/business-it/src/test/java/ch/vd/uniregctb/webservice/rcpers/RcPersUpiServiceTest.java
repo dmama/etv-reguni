@@ -47,7 +47,6 @@ public class RcPersUpiServiceTest {
 		client.setUpiGetInfoPersonPath("upi/query/getInfoPerson");
 		client.setUsername("gvd0unireg");
 		client.setPassword("Welc0me_");
-		client.afterPropertiesSet();
 		return client;
 	}
 }

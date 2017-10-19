@@ -62,7 +62,6 @@ public class EvenementCivilDataExtractor {
 		rcpersClient.setPassword(RCPERS_PWD);
 		rcpersClient.setEventPath("event");
 		rcpersClient.setPeopleByEventIdPath("persons/byevent");
-		rcpersClient.afterPropertiesSet();
 
 		final FidorClientImpl fidorClient = new FidorClientImpl();
 		fidorClient.setServiceUrl(FIDOR_URL);
