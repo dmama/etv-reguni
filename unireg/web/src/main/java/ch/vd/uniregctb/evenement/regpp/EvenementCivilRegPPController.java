@@ -125,8 +125,9 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 
 	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
-		populateModel(model, initEvenementCriteria(), INITIAL_PAGINATION, null, 0);
+	public ModelAndView effacerFormulaireDeRecherche(ModelMap model) throws AdresseException {
+		EvenementCivilRegPPCriteriaView criteria = initEvenementCriteria();
+		populateModel(model, criteria, INITIAL_PAGINATION, manager.find(criteria, INITIAL_PAGINATION), manager.count(criteria));
 		return new ModelAndView("evenement/regpp/list", model);
 	}
 
