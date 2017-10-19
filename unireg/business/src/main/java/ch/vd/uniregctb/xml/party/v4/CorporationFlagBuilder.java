@@ -6,6 +6,7 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.xml.party.corporation.v4.CorporationFlag;
+import ch.vd.unireg.xml.party.corporation.v4.CorporationFlagType;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.xml.DataHelper;
@@ -29,6 +30,20 @@ public class CorporationFlagBuilder {
 			cf.setDateTo(DataHelper.coreToXMLv2(flag.getDateFin()));
 			cf.setType(EnumHelper.coreToXMLv4(flag.getType()));
 			return cf;
+		}
+		else {
+			return null;
+		}
+	}
+
+	//SIFISC-26880 Afin d'assurer la compatibilité déscendante de ce type on ne renvoie que les types connues dans le cadre de la V6
+	//pour ce qui est inconnu on renvoie null
+
+	@Nullable
+	public static CorporationFlagType getFlagType(TypeFlagEntreprise type) {
+		if (TYPES_EXPOSES.contains(type)) {
+
+			return EnumHelper.coreToXMLv4(type);
 		}
 		else {
 			return null;
