@@ -24,4 +24,9 @@ public class RolePMOfficeJob extends RoleJob {
 
 		Audit.success("Le rôle PM " + annee + " de l'OIPM est terminé.", rapport);
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

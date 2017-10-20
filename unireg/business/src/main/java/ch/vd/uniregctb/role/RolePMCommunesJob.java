@@ -42,4 +42,9 @@ public class RolePMCommunesJob extends RoleJob {
 			Audit.success("Le rôle PM " + annee + " des communes vaudoises est terminé.", rapport);
 		}
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

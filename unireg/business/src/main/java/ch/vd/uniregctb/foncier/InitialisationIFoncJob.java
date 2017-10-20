@@ -103,4 +103,9 @@ public class InitialisationIFoncJob extends JobDefinition {
 		Audit.success("La génération des données d'initialisation de la taxation IFONC est terminée.", rapport);
 	}
 
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
+
 }

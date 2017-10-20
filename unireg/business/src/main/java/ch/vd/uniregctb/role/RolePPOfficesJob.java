@@ -42,4 +42,9 @@ public class RolePPOfficesJob extends RoleJob {
 			Audit.success("Le rôle PP " + annee + " des OID vaudois est terminé.", rapport);
 		}
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }

@@ -95,4 +95,9 @@ public class ExtractionRegimesFiscauxJob extends JobDefinition {
 		setLastRunReport(rapport);
 		Audit.success("Le job d'extraction des régimes fiscaux est maintenant terminé", rapport);
 	}
+
+	@Override
+	protected boolean isWebStartableInProductionMode() {
+		return true;
+	}
 }
