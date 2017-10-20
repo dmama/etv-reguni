@@ -9,6 +9,8 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
+import ch.vd.uniregctb.tiers.manager.AutorisationManagerImpl;
+import ch.vd.uniregctb.tiers.manager.RetourModeImpositionAllowed;
 
 public class EditModeImpositionValidator implements Validator {
 
@@ -56,8 +58,19 @@ public class EditModeImpositionValidator implements Validator {
 		}
 		else {
 			final StringBuilder messageErreurModeImposition = new StringBuilder();
-			if (!autorisationManager.isModeImpositionAllowed(ffp.getTiers(), view.getModeImposition(), view.getTypeAutoriteFiscale(), view.getMotifRattachement(), view.getDateDebut(),
-			                                                 AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID(), messageErreurModeImposition)) {
+			RetourModeImpositionAllowed allowed = autorisationManager.isModeImpositionAllowed(ffp.getTiers(), view.getModeImposition(), view.getTypeAutoriteFiscale(), view.getMotifRattachement(), view.getDateDebut(),
+			                                                                                 AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
+
+			switch(allowed) {
+				case INTERDIT: messageErreurModeImposition.append("error.mode.imposition.interdit");
+					break;
+				case DROITS_INCOHERENTS: messageErreurModeImposition.append("error.mode.imposition.droits.incoherents");
+					break;
+				case REGLES_INCOHERENTES: messageErreurModeImposition.append("error.mode.imposition.regles.incoherentes");
+					break;
+			}
+
+			if (!RetourModeImpositionAllowed.OK.equals(allowed)) {
 				errors.rejectValue("modeImposition",messageErreurModeImposition.toString());
 			}
 		}

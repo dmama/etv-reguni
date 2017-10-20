@@ -265,8 +265,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	}
 
 	@Override
-	public boolean isModeImpositionAllowed(@NotNull Tiers tiers, @NotNull ModeImposition modeImposition, @NotNull TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement,
-	                                       RegDate date, String visa, int oid, StringBuilder messageErreur) {
+	public RetourModeImpositionAllowed isModeImpositionAllowed(@NotNull Tiers tiers, @NotNull ModeImposition modeImposition, @NotNull TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement,
+	                                                           RegDate date, String visa, int oid) {
 
 		final NatureTiers natureTiers = getNatureTiersRestreinte(tiers);
 		final boolean isOrdinaire = modeImposition == ModeImposition.ORDINAIRE || modeImposition == ModeImposition.DEPENSE || modeImposition == ModeImposition.INDIGENT;
@@ -275,8 +275,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		if (natureTiers == NatureTiers.Habitant) {
 			if ((isOrdinaire && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HAB, visa, oid)) ||
 					(!isOrdinaire && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HAB, visa, oid))) {
-				messageErreur.append("error.mode.imposition.interdit");
-				return false;
+
+				return RetourModeImpositionAllowed.INTERDIT;
 			}
 		}
 		else if (natureTiers == NatureTiers.NonHabitant) {
@@ -288,8 +288,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 					(!isOrdinaire && !isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HCHS, visa, oid)) ||
 					(isOrdinaire && isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_GRIS, visa, oid)) ||
 					(!isOrdinaire && isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_GRIS, visa, oid))) {
-				messageErreur.append("error.mode.imposition.droits.incoherents");
-				return false;
+
+				return RetourModeImpositionAllowed.DROITS_INCOHERENTS;
 			}
 		}
 
@@ -348,13 +348,12 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				}
 
 				if (!autorises.contains(modeImposition)) {
-					messageErreur.append("error.mode.imposition.regles.incoherentes");
-					return false;
+					return RetourModeImpositionAllowed.REGLES_INCOHERENTES;
 				}
 			}
 		}
 
-		return true;
+		return RetourModeImpositionAllowed.OK;
 	}
 
 	private NatureTiers getNatureTiersRestreinte(Tiers tiers) {

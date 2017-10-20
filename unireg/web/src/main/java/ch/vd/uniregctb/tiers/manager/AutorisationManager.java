@@ -66,9 +66,8 @@ public interface AutorisationManager {
 	 * @param date                la date de validité du mode d'imposition
 	 * @param visa                le visa de l'utilisateur
 	 * @param oid                 l'oid de l'utilisateur
-	 * @param messageErreur
-	 * @return <b>vrai</b> si le mode d'imposition est autorisé; <b>faux</b> autrement.
+	 * @return Une valeur de l'enum RetourModeImpositionAllowed: OK, ou le type d'erreur rencontrée
 	 */
-	boolean isModeImpositionAllowed(@NotNull Tiers tiers, @NotNull ModeImposition modeImposition, @NotNull TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement, RegDate date,
-	                                String visa, int oid, StringBuilder messageErreur);
+	RetourModeImpositionAllowed isModeImpositionAllowed(@NotNull Tiers tiers, @NotNull ModeImposition modeImposition, @NotNull TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement, RegDate date,
+	                                                    String visa, int oid);
 }

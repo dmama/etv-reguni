@@ -15,6 +15,8 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
+import ch.vd.uniregctb.tiers.manager.AutorisationManagerImpl;
+import ch.vd.uniregctb.tiers.manager.RetourModeImpositionAllowed;
 
 public class AddForPrincipalValidator extends AddForRevenuFortuneValidator {
 
@@ -50,8 +52,18 @@ public class AddForPrincipalValidator extends AddForRevenuFortuneValidator {
 			}
 			else {
 				final StringBuilder messageErreurModeImposition = new StringBuilder();
-				if (!autorisationManager.isModeImpositionAllowed(ctb, view.getModeImposition(), view.getTypeAutoriteFiscale(), view.getMotifRattachement(), view.getDateDebut(),
-				                                                 AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID(), messageErreurModeImposition)) {
+				RetourModeImpositionAllowed allowed = autorisationManager.isModeImpositionAllowed(ctb, view.getModeImposition(), view.getTypeAutoriteFiscale(), view.getMotifRattachement(), view.getDateDebut(),
+				                                                                                              AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
+				switch (allowed) {
+				case INTERDIT: messageErreurModeImposition.append("error.mode.imposition.interdit");
+					break;
+				case DROITS_INCOHERENTS: messageErreurModeImposition.append("error.for.principal.droits.incoherents");
+					break;
+				case REGLES_INCOHERENTES: messageErreurModeImposition.append("error.mode.imposition.regles.incoherentes");
+					break;
+				}
+
+				if (!RetourModeImpositionAllowed.OK.equals(allowed)) {
 					errors.rejectValue("modeImposition", messageErreurModeImposition.toString());
 				}
 			}
