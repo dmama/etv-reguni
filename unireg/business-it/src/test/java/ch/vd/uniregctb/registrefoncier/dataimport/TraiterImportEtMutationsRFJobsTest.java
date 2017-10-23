@@ -32,6 +32,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
@@ -44,7 +45,6 @@ import ch.vd.uniregctb.registrefoncier.dao.BatimentRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.CommuneRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
-import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 

@@ -161,7 +161,7 @@ public class DataHelper {
 				results.add(Parts.PERIODICITES);
 				break;
 			case IMMOVABLE_PROPERTIES:
-				results.add(Parts.IMMEUBLES);
+				// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
 				break;
 			case BANK_ACCOUNTS:
 			case CAPITALS:

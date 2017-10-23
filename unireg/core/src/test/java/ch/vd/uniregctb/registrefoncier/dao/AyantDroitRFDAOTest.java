@@ -8,11 +8,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.TypeDroit;
-import ch.vd.uniregctb.rf.GenrePropriete;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

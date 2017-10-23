@@ -24,12 +24,12 @@ import ch.vd.uniregctb.registrefoncier.CommunauteRFPrincipalInfo;
 import ch.vd.uniregctb.registrefoncier.DroitDistinctEtPermanentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
-import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.xml.DataHelper;
 
 import static ch.vd.uniregctb.xml.party.v5.LandRightBuilderTest.assertCaseIdentifier;

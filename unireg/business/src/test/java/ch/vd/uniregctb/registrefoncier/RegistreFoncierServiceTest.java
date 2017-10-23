@@ -36,7 +36,6 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ModeleCommunauteRFDAO;
-import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;

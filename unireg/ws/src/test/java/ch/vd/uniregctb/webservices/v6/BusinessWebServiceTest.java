@@ -70,7 +70,6 @@ import ch.vd.unireg.xml.party.corporation.v4.Corporation;
 import ch.vd.unireg.xml.party.debtor.v4.Debtor;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatus;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType;
-import ch.vd.unireg.xml.party.immovableproperty.v2.ImmovableProperty;
 import ch.vd.unireg.xml.party.othercomm.v2.LegalForm;
 import ch.vd.unireg.xml.party.othercomm.v2.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v4.CommonHousehold;
@@ -131,9 +130,6 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
-import ch.vd.uniregctb.rf.GenrePropriete;
-import ch.vd.uniregctb.rf.TypeImmeuble;
-import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -2649,74 +2645,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals(WithholdingTaxDeclarationPeriodicity.HALF_YEARLY, dp.getPeriodicity());
 			Assert.assertNull(dp.getSpecificPeriod());
 		}
-	}
-
-	@Test
-	public void testGetPartyWithImmovableProperties() throws Exception {
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				// .. personne ..
-			}
-		});
-
-		final String numeroImmeuble = "3424-13234";
-		final RegDate dateAchat = date(2011, 5, 1);
-		final RegDate dateVente = date(2012, 8, 31);
-		final MockCommune commune = MockCommune.Aubonne;
-		final String natureImmeuble = "villa individuelle";
-		final TypeImmeuble typeImmeuble = TypeImmeuble.BIEN_FOND;
-		final GenrePropriete genrePropriete = GenrePropriete.INDIVIDUELLE;
-		final int estimationFiscale = 740000;
-		final String refEstimationFiscale = "mon estimation";
-		final String partPropriete = "5/12";
-		final RegDate dateDerniereMutation = date(2012, 3, 1);
-		final TypeMutation derniereMutation = TypeMutation.AUGMENTATION;
-
-		final int ppId = doInNewTransactionAndSession(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addNonHabitant("Arthur", "de Saint André", null, Sexe.MASCULIN);
-				addImmeuble(pp, numeroImmeuble, dateAchat, dateVente, commune.getNomCourt(), natureImmeuble, typeImmeuble, genrePropriete, estimationFiscale, refEstimationFiscale,
-				            partPropriete, dateDerniereMutation, derniereMutation);
-				return pp.getNumero().intValue();
-			}
-		});
-
-		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 22);
-
-		final Party partySans = service.getParty(userLogin, ppId, null);
-		Assert.assertNotNull(partySans);
-		Assert.assertEquals(NaturalPerson.class, partySans.getClass());
-
-		final Taxpayer tpSans = (Taxpayer) partySans;
-		Assert.assertNotNull(tpSans.getImmovableProperties());
-		Assert.assertEquals(0, tpSans.getImmovableProperties().size());
-
-		final Party partyAvec = service.getParty(userLogin, ppId, EnumSet.of(PartyPart.IMMOVABLE_PROPERTIES));
-		Assert.assertNotNull(partyAvec);
-		Assert.assertEquals(NaturalPerson.class, partyAvec.getClass());
-
-		final Taxpayer tpAvec = (Taxpayer) partyAvec;
-		Assert.assertNotNull(tpAvec.getImmovableProperties());
-		Assert.assertEquals(1, tpAvec.getImmovableProperties().size());
-
-		final ImmovableProperty ip = tpAvec.getImmovableProperties().get(0);
-		Assert.assertNotNull(ip);
-		Assert.assertEquals(numeroImmeuble, ip.getNumber());
-		Assert.assertEquals(dateAchat, ch.vd.uniregctb.xml.DataHelper.xmlToCore(ip.getDateFrom()));
-		Assert.assertEquals(dateVente, ch.vd.uniregctb.xml.DataHelper.xmlToCore(ip.getDateTo()));
-		Assert.assertEquals(commune.getNomCourt(), ip.getMunicipalityName());
-		Assert.assertEquals(natureImmeuble, ip.getNature());
-		Assert.assertEquals(genrePropriete, ch.vd.uniregctb.xml.EnumHelper.xmlToCore(ip.getOwnershipType()));
-		Assert.assertEquals((Integer) estimationFiscale, ip.getEstimatedTaxValue());
-		Assert.assertEquals(refEstimationFiscale, ip.getEstimatedTaxValueReference());
-		Assert.assertNotNull(ip.getShare());
-		Assert.assertEquals(5, ip.getShare().getNumerator());
-		Assert.assertEquals(12, ip.getShare().getDenominator());
-		Assert.assertEquals(dateDerniereMutation, ch.vd.uniregctb.xml.DataHelper.xmlToCore(ip.getLastMutationDate()));
-		Assert.assertEquals(derniereMutation, ch.vd.uniregctb.xml.EnumHelper.xmlToCore(ip.getLastMutationType()));
 	}
 
 	@Test

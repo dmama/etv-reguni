@@ -63,7 +63,6 @@ import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableFromListeRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
-import ch.vd.uniregctb.document.ImportImmeublesRapport;
 import ch.vd.uniregctb.document.InitialisationIFoncRapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
@@ -80,7 +79,6 @@ import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RappelFormulairesDemandeDegrevementICIRapport;
 import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
-import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RattrapageModelesCommunautesRFProcessorRapport;
 import ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport;
 import ch.vd.uniregctb.document.RattraperDatesMetierDroitProcessorRapport;
@@ -134,8 +132,6 @@ import ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.registrefoncier.rattrapage.RattrapageModelesCommunautesRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults;
-import ch.vd.uniregctb.rf.ImportImmeublesResults;
-import ch.vd.uniregctb.rf.RapprocherCtbResults;
 import ch.vd.uniregctb.role.RolePMCommunesResults;
 import ch.vd.uniregctb.role.RolePMOfficeResults;
 import ch.vd.uniregctb.role.RolePPCommunesResults;
@@ -452,15 +448,6 @@ public interface RapportService {
 	DemandeDelaiCollectiveRapport generateRapport(DemandeDelaiCollectiveResults results, StatusManager status);
 
 	/**
-	 * Génère le rapport pdf et le csv resultat du rapprochment entre les ctb et les propriétaires fonciers
-	 * @param results
-	 * 				   le résultat de l'exécution du job
-	 *
-	 * @return le rapport
-	 */
-	RapprocherCtbRapport generateRapport(RapprocherCtbResults results, StatusManager status);
-
-	/**
 	 * Génère le rapport (PDF) de la liste des contribuables Suisses ou titulaires d'un permis C, résidents sur sol vaudois
 	 * d'après leur adresse de domicile, mais sans for vaudois
 	 *
@@ -566,15 +553,6 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	ImportCodesSegmentRapport generateRapport(ImportCodesSegmentResults results, int nbLignesLuesFichierEntree, StatusManager status);
-
-	/**
-	 * Génère le rapport d'exécution du batch d'import des immeubles du registre foncier.
-	 *
-	 * @param results le résultat du batch
-	 * @param status  le status manager
-	 * @return le rapport
-	 */
-	ImportImmeublesRapport generateRapport(ImportImmeublesResults results, StatusManager status);
 
 	/**
 	 * Génère le rapport d'exécution du batch de listing des dossiers protégés

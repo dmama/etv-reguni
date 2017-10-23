@@ -76,7 +76,6 @@ import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableFromListeRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
-import ch.vd.uniregctb.document.ImportImmeublesRapport;
 import ch.vd.uniregctb.document.InitialisationIFoncRapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
@@ -93,7 +92,6 @@ import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RappelFormulairesDemandeDegrevementICIRapport;
 import ch.vd.uniregctb.document.RappelLettresBienvenueRapport;
 import ch.vd.uniregctb.document.RapprochementTiersRFRapport;
-import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RattrapageModelesCommunautesRFProcessorRapport;
 import ch.vd.uniregctb.document.RattrapageRegimesFiscauxRapport;
 import ch.vd.uniregctb.document.RattraperDatesMetierDroitProcessorRapport;
@@ -148,8 +146,6 @@ import ch.vd.uniregctb.registrefoncier.importcleanup.CleanupRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.processor.RapprochementTiersRFResults;
 import ch.vd.uniregctb.registrefoncier.rattrapage.RattrapageModelesCommunautesRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.rattrapage.RattraperDatesMetierDroitRFProcessorResults;
-import ch.vd.uniregctb.rf.ImportImmeublesResults;
-import ch.vd.uniregctb.rf.RapprocherCtbResults;
 import ch.vd.uniregctb.role.RolePMCommunesResults;
 import ch.vd.uniregctb.role.RolePMOfficeResults;
 import ch.vd.uniregctb.role.RolePPCommunesResults;
@@ -956,28 +952,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 	}
 
 	@Override
-	public RapprocherCtbRapport generateRapport(final RapprocherCtbResults results, StatusManager s) {
-		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-
-		final String nom = "RapportRapprochementCtbs";
-		final String description = String.format("Rapport d'exécution du job qui fait le rappochement entre les contribuables et les propriétaires fonciers. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
-		final Date dateGeneration = DateHelper.getCurrentDate();
-
-		try {
-			return docService.newDoc(RapprocherCtbRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RapprocherCtbRapport>() {
-				@Override
-				public void writeDoc(RapprocherCtbRapport doc, OutputStream os) throws Exception {
-					PdfRapprochementCtbRapport document = new PdfRapprochementCtbRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
 	public ListeContribuablesResidentsSansForVaudoisRapport generateRapport(final ListeContribuablesResidentsSansForVaudoisResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -1300,28 +1274,6 @@ public class RapportServiceImpl implements RapportService, ApplicationContextAwa
 				public void writeDoc(ImportCodesSegmentRapport doc, OutputStream os) throws Exception {
 					final PdfImportCodesSegmentRapport document = new PdfImportCodesSegmentRapport();
 					document.write(results, nbLignesLuesFichierEntree, nom, description, dateGeneration, os, status);
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public ImportImmeublesRapport generateRapport(final ImportImmeublesResults results, StatusManager s) {
-		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-
-		final String nom = "RapportImportImmeubles";
-		final String description = "Rapport d'exécution du job d'importation des immeubles du registre foncier.";
-		final Date dateGeneration = DateHelper.getCurrentDate();
-
-		try {
-			return docService.newDoc(ImportImmeublesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ImportImmeublesRapport>() {
-				@Override
-				public void writeDoc(ImportImmeublesRapport doc, OutputStream os) throws Exception {
-					final PdfImportImmeublesRapport document = new PdfImportImmeublesRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});
 		}

@@ -34,7 +34,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
-import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -43,7 +42,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public abstract class Contribuable extends Tiers {
 
 	private Set<MouvementDossier> mouvementsDossier;
-	private Set<Immeuble> immeubles;
 	private Set<IdentificationEntreprise> identificationsEntreprise;
 	private Set<AdresseMandataire> adressesMandataires;
 
@@ -67,16 +65,6 @@ public abstract class Contribuable extends Tiers {
 
 	public void setMouvementsDossier(Set<MouvementDossier> theMouvementDossier) {
 		mouvementsDossier = theMouvementDossier;
-	}
-
-	@OneToMany(mappedBy = "contribuable", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@ForeignKey(name = "FK_IMM_CTB_ID")
-	public Set<Immeuble> getImmeubles() {
-		return immeubles;
-	}
-
-	public void setImmeubles(Set<Immeuble> immeubles) {
-		this.immeubles = immeubles;
 	}
 
 	/**
@@ -116,19 +104,6 @@ public abstract class Contribuable extends Tiers {
 		}
 		nouveauMouvementDossier.setContribuable(this);
 		this.mouvementsDossier.add(nouveauMouvementDossier);
-	}
-
-	/**
-	 * Ajoute un immeuble au contribuable.
-	 *
-	 * @param immeuble l'immeuble à ajouter
-	 */
-	public void addImmeuble(Immeuble immeuble) {
-		if (immeubles == null) {
-			this.immeubles = new HashSet<>();
-		}
-		immeuble.setContribuable(this);
-		this.immeubles.add(immeuble);
 	}
 
 	/**

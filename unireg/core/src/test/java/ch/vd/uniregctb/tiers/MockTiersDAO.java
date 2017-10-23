@@ -21,7 +21,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
-import ch.vd.uniregctb.rf.Immeuble;
 
 public class MockTiersDAO implements TiersDAO {
 	
@@ -263,11 +262,6 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public Immeuble addAndSave(Contribuable tiers, Immeuble immeuble) {
 		throw new NotImplementedException();
 	}
 

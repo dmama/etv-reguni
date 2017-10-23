@@ -28,13 +28,13 @@ import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
-import ch.vd.uniregctb.rf.GenrePropriete;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

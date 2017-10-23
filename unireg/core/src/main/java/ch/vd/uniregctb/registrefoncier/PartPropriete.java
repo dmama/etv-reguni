@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.rf;
+package ch.vd.uniregctb.registrefoncier;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

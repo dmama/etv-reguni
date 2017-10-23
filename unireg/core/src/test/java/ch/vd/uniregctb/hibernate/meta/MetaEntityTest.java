@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.rf.Immeuble;
+import ch.vd.uniregctb.foncier.DegrevementICI;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,34 +16,22 @@ public class MetaEntityTest extends WithoutSpringTest {
 	@Test
 	public void testDetermineEmbeddedElements() throws Exception {
 
-		final MetaEntity entity = MetaEntity.determine(Immeuble.class);
+		final MetaEntity entity = MetaEntity.determine(DegrevementICI.class);
 		assertNotNull(entity);
 
 		final List<Property> properties = entity.getProperties();
 		assertNotNull(properties);
 
-		final Property partProprieteNumerator = entity.getProperty("partPropriete.numerateur");
-		assertNotNull(partProprieteNumerator);
-		assertEquals("partPropriete.numerateur", partProprieteNumerator.getName());
-		assertTrue(partProprieteNumerator.getType() instanceof IntegerPropertyType);
-		assertEquals("PART_PROPRIETE_NUMERATEUR", partProprieteNumerator.getColumnName());
+		final Property locationRevenu = entity.getProperty("location.revenu");
+		assertNotNull(locationRevenu);
+		assertEquals("location.revenu", locationRevenu.getName());
+		assertTrue(locationRevenu.getType() instanceof LongPropertyType);
+		assertEquals("DEG_LOC_REVENU", locationRevenu.getColumnName());
 
-		final Property partProprieteDenominateur = entity.getProperty("partPropriete.denominateur");
-		assertNotNull(partProprieteDenominateur);
-		assertEquals("partPropriete.denominateur", partProprieteDenominateur.getName());
-		assertTrue(partProprieteDenominateur.getType() instanceof IntegerPropertyType);
-		assertEquals("PART_PROPRIETE_DENOMINATEUR", partProprieteDenominateur.getColumnName());
-
-		final Property proprietaireId = entity.getProperty("proprietaire.id");
-		assertNotNull(proprietaireId);
-		assertEquals("proprietaire.id", proprietaireId.getName());
-		assertTrue(proprietaireId.getType() instanceof StringPropertyType);
-		assertEquals("ID_PROPRIETAIRE_RF", proprietaireId.getColumnName());
-
-		final Property proprietaireNumeroIndividu = entity.getProperty("proprietaire.numeroIndividu");
-		assertNotNull(proprietaireNumeroIndividu);
-		assertEquals("proprietaire.numeroIndividu", proprietaireNumeroIndividu.getName());
-		assertTrue(proprietaireNumeroIndividu.getType() instanceof LongPropertyType);
-		assertEquals("NUMERO_INDIVIDU_RF", proprietaireNumeroIndividu.getColumnName());
+		final Property locationPourcentage = entity.getProperty("location.pourcentage");
+		assertNotNull(locationPourcentage);
+		assertEquals("location.pourcentage", locationPourcentage.getName());
+		assertTrue(locationPourcentage.getType() instanceof BigDecimalPropertyType);
+		assertEquals("DEG_LOC_POURCENT", locationPourcentage.getColumnName());
 	}
 }

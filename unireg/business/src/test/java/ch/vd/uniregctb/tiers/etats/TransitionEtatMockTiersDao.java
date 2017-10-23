@@ -17,7 +17,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
-import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -248,11 +247,6 @@ class TransitionEtatMockTiersDao extends TiersDAOImpl implements TiersDAO {
 
 	@Override
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Immeuble addAndSave(Contribuable tiers, Immeuble immeuble) {
 		throw new UnsupportedOperationException();
 	}
 

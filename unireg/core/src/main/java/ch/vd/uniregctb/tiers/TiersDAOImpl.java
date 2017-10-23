@@ -44,13 +44,11 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
-import ch.vd.uniregctb.rf.Immeuble;
 
 public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TiersDAOImpl.class);
 	private static final int MAX_IN_SIZE = 500;
-	private static final ImmeubleAccessor IMMEUBLE_ACCESSOR = new ImmeubleAccessor();
 	private static final DecisionAciAccessor DECISION_ACI_ACCESSOR = new DecisionAciAccessor();
 
 	private Dialect dialect;
@@ -397,21 +395,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 			// on associe les périodicités avec les tiers à la main
 			associate(session, periodicites, tiers, getter, setter);
-		}
-
-		if (parts != null && parts.contains(Parts.IMMEUBLES)) {
-			// on charge tous les immeubles en vrac
-			final List<Immeuble> immeubles = queryObjectsByIds("from Immeuble as i where i.contribuable.id in (:ids)", ids, session);
-
-			final TiersIdGetter<Immeuble> getter = entity -> entity.getContribuable().getId();
-			final EntitySetSetter<Immeuble> setter = (t, set) -> {
-				if (t instanceof Contribuable) {
-					((Contribuable) t).setImmeubles(set);
-				}
-			};
-
-			// on associe les immeubles avec les tiers à la main
-			associate(session, immeubles, tiers, getter, setter);
 		}
 
 		if (parts != null && parts.contains(Parts.ALLEGEMENTS_FISCAUX)) {
@@ -1335,11 +1318,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	}
 
 	@Override
-	public Immeuble addAndSave(Contribuable ctb, Immeuble immeuble) {
-		return AddAndSaveHelper.addAndSave(ctb, immeuble, this::saveTiers, IMMEUBLE_ACCESSOR);
-	}
-
-	@Override
 	public DecisionAci addAndSave(Contribuable tiers, DecisionAci decisionAci) {
 		return AddAndSaveHelper.addAndSave(tiers, decisionAci, this::saveTiers, DECISION_ACI_ACCESSOR);
 	}
@@ -1848,24 +1826,6 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 		}
 	}
-
-	private static class ImmeubleAccessor implements AddAndSaveHelper.EntityAccessor<Contribuable, Immeuble> {
-		@Override
-		public Collection<Immeuble> getEntities(Contribuable ctb) {
-			return ctb.getImmeubles();
-		}
-
-		@Override
-		public void addEntity(Contribuable ctb, Immeuble immeuble) {
-			ctb.addImmeuble(immeuble);
-		}
-
-		@Override
-		public void assertEquals(Immeuble entity1, Immeuble entity2) {
-			Assert.isEqual(entity1.getNumero(), entity2.getNumero());
-		}
-	}
-
 
 	private static class DecisionAciAccessor implements AddAndSaveHelper.EntityAccessor<Contribuable, DecisionAci> {
 		@Override

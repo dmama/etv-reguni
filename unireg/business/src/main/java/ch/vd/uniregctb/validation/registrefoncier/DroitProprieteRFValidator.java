@@ -13,10 +13,10 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.RaisonAcquisitionRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.rf.GenrePropriete;
 
 @SuppressWarnings("Duplicates")
 public class DroitProprieteRFValidator extends DroitRFValidator<DroitProprieteRF> {

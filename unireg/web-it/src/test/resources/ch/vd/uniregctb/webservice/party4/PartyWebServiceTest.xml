@@ -3145,62 +3145,6 @@
     <column>NOM_INDIVIDU</column>
     <column>TYPE_ERREUR</column>
   </table>
-  <table name="IMMEUBLE">
-    <column>ID</column>
-    <column>ANNULATION_DATE</column>
-    <column>ANNULATION_USER</column>
-    <column>LOG_CDATE</column>
-    <column>LOG_CUSER</column>
-    <column>LOG_MDATE</column>
-    <column>LOG_MUSER</column>
-    <column>DATE_DEBUT</column>
-    <column>DATE_DERNIERE_MUTATION</column>
-    <column>DATE_FIN</column>
-    <column>DATE_VALID_RF</column>
-    <column>DERNIERE_MUTATION</column>
-    <column>ESTIMATION_FISCALE</column>
-    <column>GENRE_PROPRIETE</column>
-    <column>ID_RF</column>
-    <column>LIEN_RF</column>
-    <column>NATURE_IMMEUBLE</column>
-    <column>NOM_COMMUNE</column>
-    <column>NUMERO_IMMEUBLE</column>
-    <column>PART_PROPRIETE_DENOMINATEUR</column>
-    <column>PART_PROPRIETE_NUMERATEUR</column>
-    <column>ID_PROPRIETAIRE_RF</column>
-    <column>NUMERO_INDIVIDU_RF</column>
-    <column>REF_ESTIM_FISC</column>
-    <column>TYPE_IMMEUBLE</column>
-    <column>CTB_ID</column>
-    <row>
-      <value>1</value>
-      <null/>
-      <null/>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <value>tiers-basic</value>
-      <value><![CDATA[2008-01-01 00:00:00.0]]></value>
-      <value>tiers-basic</value>
-      <value>19760427</value>
-      <value>19760427</value>
-      <null/>
-      <null/>
-      <value>ACHAT</value>
-      <value>860000</value>
-      <value>COMMUNE</value>
-      <value>34637</value>
-      <null/>
-      <value>Place-jardin</value>
-      <value>Lausanne</value>
-      <value>132-158-1-1</value>
-      <value>2</value>
-      <value>1</value>
-      <value>1232</value>
-      <value>47637</value>
-      <value>2002</value>
-      <value>BIEN_FOND</value>
-      <value>12900001</value>
-    </row>
-  </table>
   <table name="IDENTIFICATION_PERSONNE">
     <column>ID</column>
     <column>ANNULATION_DATE</column>

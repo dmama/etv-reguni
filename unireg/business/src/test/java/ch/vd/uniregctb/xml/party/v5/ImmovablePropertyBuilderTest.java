@@ -37,6 +37,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.ImplantationRF;
@@ -50,7 +51,6 @@ import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;

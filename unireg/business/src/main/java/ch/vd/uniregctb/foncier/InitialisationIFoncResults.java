@@ -28,6 +28,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
@@ -36,7 +37,6 @@ import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.registrefoncier.ServitudeRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.TiersRF;
-import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 public class InitialisationIFoncResults extends AbstractJobResults<Long, InitialisationIFoncResults> {

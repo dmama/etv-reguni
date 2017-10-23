@@ -21,7 +21,6 @@ public enum EntityType {
 	SituationFamille(ch.vd.uniregctb.tiers.SituationFamille.class, "situation de famille", "la situation de famille", "de la situation de famille"),
 	ModeleDocument(ch.vd.uniregctb.declaration.ModeleDocument.class, "modèle de document", "le modèle de document", "du modèle de document"),
 	PeriodeFiscale(ch.vd.uniregctb.declaration.PeriodeFiscale.class, "période fiscale", "la période fiscale", "de la période fiscale"),
-	Immeuble(ch.vd.uniregctb.rf.Immeuble.class, "immeuble", "l'immeuble", "de l'immeuble"),
 	EtiquetteTiers(ch.vd.uniregctb.etiquette.EtiquetteTiers.class, "étiquette", "l'étiquette", "de l'étiquette"),
 	Etiquette(ch.vd.uniregctb.etiquette.Etiquette.class, "étiquette", "l'étiquette", "de l'étiquette"),
 	Remarque(ch.vd.uniregctb.tiers.Remarque.class, "remarque", "la remarque", "de la remarque"),

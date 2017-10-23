@@ -32,6 +32,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -47,7 +48,6 @@ import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
 import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.registrefoncier.UsufruitRF;
-import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
 import static org.junit.Assert.assertEquals;

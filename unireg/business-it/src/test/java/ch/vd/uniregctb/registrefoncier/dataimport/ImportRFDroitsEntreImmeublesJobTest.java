@@ -26,13 +26,13 @@ import ch.vd.uniregctb.registrefoncier.BienFondsRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.ImmeubleRFKey;
-import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 

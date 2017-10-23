@@ -30,7 +30,6 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
-import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
@@ -76,7 +75,6 @@ public class ConsultLogController {
 		FlagEntreprise(FlagEntreprise.class),
 		ForFiscal(ForFiscal.class),
 		Identification(IdentificationContribuable.class),
-		Immeuble(Immeuble.class),
 		LR(DeclarationImpotSource.class),
 		MouvementDossier(MouvementDossier.class),
 		Periodicite(Periodicite.class),

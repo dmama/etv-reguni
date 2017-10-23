@@ -6,7 +6,6 @@ package ch.vd.uniregctb.common;
 public class BusinessTestingConstants {
 	public static final String UNIREG_BUSINESS_ESSENTIALS = "classpath:unireg-business-essentials.xml";
 	public static final String UNIREG_BUSINESS_SERVICES = "classpath:unireg-business-services.xml";
-	public static final String UNIREG_BUSINESS_RF = "classpath:unireg-business-rf.xml";
 	public static final String UNIREG_BUSINESS_CXF = "classpath:unireg-business-cxf.xml";
 	public static final String UNIREG_BUSINESS_REGISTREFONCIER = "classpath:unireg-business-registrefoncier.xml";
 	public static final String UNIREG_BUSINESS_REGISTREFONCIER_IMPORT = "classpath:unireg-business-registrefoncier-import.xml";

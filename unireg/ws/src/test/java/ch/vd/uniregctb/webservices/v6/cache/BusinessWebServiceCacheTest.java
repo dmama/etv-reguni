@@ -72,9 +72,6 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
-import ch.vd.uniregctb.rf.GenrePropriete;
-import ch.vd.uniregctb.rf.TypeImmeuble;
-import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
@@ -190,7 +187,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				addEtatDeclarationEmise(di, date(2003, 1, 10));
 				addDelaiDeclaration(di, date(2003, 1, 10), date(2003, 6, 30), EtatDelaiDeclaration.ACCORDE);
 
-				addImmeuble(eric, "132/543", date(1988, 3, 14), null, "Lausanne", "Place jardin", TypeImmeuble.BIEN_FOND, GenrePropriete.COMMUNE, 923000, "1994", "1", date(1988, 3, 14), TypeMutation.ACHAT);
 				ids.eric = eric.getNumero();
 
 				// le père et l'enfant
@@ -1504,8 +1500,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(di, date(2004, 1, 10));
 
-				addImmeuble(eric, "132/543", date(1988, 3, 14), null, "Lausanne", "Place jardin", TypeImmeuble.BIEN_FOND, GenrePropriete.COMMUNE, 923000, "1994", "1", date(1988, 3, 14), TypeMutation.ACHAT);
-
 				return eric.getNumero();
 			}
 		});
@@ -1612,8 +1606,6 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(di, date(2004, 1, 10));
-
-				addImmeuble(eric, "132/543", date(1988, 3, 14), null, "Lausanne", "Place jardin", TypeImmeuble.BIEN_FOND, GenrePropriete.COMMUNE, 923000, "1994", "1", date(1988, 3, 14), TypeMutation.ACHAT);
 
 				return eric.getNumero();
 			}
@@ -1731,7 +1723,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkTaxSystems = PartyPart.TAX_SYSTEMS == p;
 		boolean checkLegalSeats = PartyPart.LEGAL_SEATS == p;
 		boolean checkDebtorPeriodicities = PartyPart.DEBTOR_PERIODICITIES == p;
-		boolean checkImmovableProperties = PartyPart.IMMOVABLE_PROPERTIES == p;
+		boolean checkImmovableProperties = PartyPart.IMMOVABLE_PROPERTIES == p;		// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
 		boolean checkChildren = PartyPart.CHILDREN == p;
 		boolean checkParents = PartyPart.PARENTS == p;
 		boolean checkWithholdingTaxDeclarationPeriods = PartyPart.WITHHOLDING_TAXATION_PERIODS == p;
@@ -1762,7 +1754,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines, ctb.getTaxDeclarations(), "taxDeclarations");
 			assertNullOrNotNull(checkTaxationPeriods, ctb.getTaxationPeriods(), "taxationPeriods");
 			assertNullOrNotNull(checkFamilyStatuses, ctb.getFamilyStatuses(), "familyStatuses");
-			assertNullOrNotNull(checkImmovableProperties, ctb.getImmovableProperties(), "immovableProperties");
+			assertEmpty(ctb.getImmovableProperties());
 			assertNullOrNotNull(checkEbillingStatuses, ctb.getEbillingStatuses(), "ebillingStatuses");
 		}
 

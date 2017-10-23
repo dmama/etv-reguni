@@ -37,10 +37,7 @@ import ch.vd.uniregctb.registrefoncier.QuotePartRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceTotaleRF;
-import ch.vd.uniregctb.rf.Immeuble;
-import ch.vd.uniregctb.rf.PartPropriete;
 import ch.vd.uniregctb.xml.DataHelper;
-import ch.vd.uniregctb.xml.EnumHelper;
 
 public abstract class ImmovablePropertyBuilder {
 
@@ -244,28 +241,4 @@ public abstract class ImmovablePropertyBuilder {
 		return share;
 	}
 
-	public static ch.vd.unireg.xml.party.immovableproperty.v2.ImmovableProperty newImmovableProperty(Immeuble immeuble) {
-		final ch.vd.unireg.xml.party.immovableproperty.v2.ImmovableProperty immo = new ch.vd.unireg.xml.party.immovableproperty.v2.ImmovableProperty();
-		immo.setNumber(immeuble.getNumero());
-		immo.setDateFrom(DataHelper.coreToXMLv2(immeuble.getDateDebut()));
-		immo.setDateTo(DataHelper.coreToXMLv2(immeuble.getDateFin()));
-		immo.setEntryDate(DataHelper.coreToXMLv2(immeuble.getDateValidRF()));
-		immo.setMunicipalityName(immeuble.getNomCommune());
-		immo.setEstimatedTaxValue(immeuble.getEstimationFiscale());
-		immo.setEstimatedTaxValueReference(immeuble.getReferenceEstimationFiscale());
-		immo.setNature(immeuble.getNature());
-		immo.setOwnershipType(EnumHelper.coreToXMLv2(immeuble.getGenrePropriete()));
-		immo.setShare(coreToXML(immeuble.getPartPropriete()));
-		immo.setType(EnumHelper.coreToXMLv2(immeuble.getTypeImmeuble()));
-		immo.setLastMutationDate(DataHelper.coreToXMLv2(immeuble.getDateDerniereMutation()));
-		immo.setLastMutationType(EnumHelper.coreToXMLv2(immeuble.getDerniereMutation()));
-		return immo;
-	}
-
-	private static ch.vd.unireg.xml.party.immovableproperty.v2.PropertyShare coreToXML(PartPropriete part) {
-		if (part == null) {
-			return null;
-		}
-		return new ch.vd.unireg.xml.party.immovableproperty.v2.PropertyShare(part.getNumerateur(), part.getDenominateur());
-	}
 }

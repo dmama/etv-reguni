@@ -25,7 +25,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
-import ch.vd.uniregctb.rf.Immeuble;
 
 /**
  * Wrapper sur le Tiers DAO normal qui permet de "booster" (de ralentir, en fait) le temps de récupération de certains tiers. Cette classe est utilisée pour les tests Dynatrace. Elle ne devrait pas
@@ -298,11 +297,6 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	@Override
 	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
 		return target.addAndSave(tiers, forFiscal);
-	}
-
-	@Override
-	public Immeuble addAndSave(Contribuable tiers, Immeuble immeuble) {
-		return target.addAndSave(tiers, immeuble);
 	}
 
 	@Override

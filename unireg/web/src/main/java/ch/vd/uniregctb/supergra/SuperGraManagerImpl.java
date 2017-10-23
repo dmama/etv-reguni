@@ -85,7 +85,6 @@ import ch.vd.uniregctb.reqdes.ErreurTraitement;
 import ch.vd.uniregctb.reqdes.PartiePrenante;
 import ch.vd.uniregctb.reqdes.RolePartiePrenante;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
-import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 import ch.vd.uniregctb.supergra.delta.Delta;
 import ch.vd.uniregctb.supergra.delta.DisableEntity;
@@ -213,7 +212,6 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		childToParentRelationships.put(Remarque.class, Tiers.class);
 		childToParentRelationships.put(EtiquetteTiers.class, Tiers.class);
 		childToParentRelationships.put(MouvementDossier.class, Contribuable.class);
-		childToParentRelationships.put(Immeuble.class, Contribuable.class);
 		childToParentRelationships.put(IdentificationEntreprise.class, Contribuable.class);
 		childToParentRelationships.put(AdresseMandataire.class, Contribuable.class);
 		childToParentRelationships.put(DecisionAci.class, Contribuable.class);

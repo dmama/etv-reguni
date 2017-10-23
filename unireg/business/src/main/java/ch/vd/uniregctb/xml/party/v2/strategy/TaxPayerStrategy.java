@@ -16,7 +16,6 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxationPeriod;
 import ch.vd.unireg.xml.party.v2.PartyPart;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
@@ -26,7 +25,6 @@ import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ExceptionHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.v2.FamilyStatusBuilder;
-import ch.vd.uniregctb.xml.party.v2.ImmovablePropertyBuilder;
 import ch.vd.uniregctb.xml.party.v2.SimplifiedTaxLiabilityBuilder;
 import ch.vd.uniregctb.xml.party.v2.TaxLiabilityBuilder;
 import ch.vd.uniregctb.xml.party.v2.TaxationPeriodBuilder;
@@ -53,9 +51,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			initTaxationPeriods(to, ctb, context);
 		}
 
-		if (parts != null && parts.contains(PartyPart.IMMOVABLE_PROPERTIES)) {
-			initImmovableProperties(to, ctb);
-		}
+		// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée
 	}
 
 	@Override
@@ -79,9 +75,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			copyColl(to.getTaxationPeriods(), from.getTaxationPeriods());
 		}
 
-		if (parts != null && parts.contains(PartyPart.IMMOVABLE_PROPERTIES)) {
-			copyColl(to.getImmovableProperties(), from.getImmovableProperties());
-		}
+		// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
 	}
 
 	private static void initFamilyStatuses(Taxpayer left, Contribuable contribuable, Context context) {
@@ -157,15 +151,6 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 					derniere.setDateTo(null);
 				}
 			}
-		}
-	}
-
-	// [SIFISC-2588] ajout de la part immeuble
-	private static void initImmovableProperties(Taxpayer left, Contribuable contribuable) throws ServiceException {
-
-		final Set<Immeuble> immeubles = contribuable.getImmeubles();
-		for (Immeuble immeuble : immeubles) {
-			left.getImmovableProperties().add(ImmovablePropertyBuilder.newImmovableProperty(immeuble));
 		}
 	}
 }

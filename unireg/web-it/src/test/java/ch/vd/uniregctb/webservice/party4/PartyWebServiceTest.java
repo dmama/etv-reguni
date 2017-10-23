@@ -41,11 +41,6 @@ import ch.vd.unireg.xml.party.debtor.v1.Debtor;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorPeriodicity;
 import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
-import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovableProperty;
-import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType;
-import ch.vd.unireg.xml.party.immovableproperty.v1.MutationType;
-import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
-import ch.vd.unireg.xml.party.immovableproperty.v1.PropertyShare;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
@@ -1456,42 +1451,6 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		final OtherCanton o1 = (OtherCanton) t1;
 		assertEquals(newDate(2002, 1, 1), o1.getDateFrom());
 		assertNull(o1.getDateTo());
-	}
-
-	// [SIFISC-2588]
-	@Test
-	public void testGetImmovableProperties() throws Exception {
-
-		final GetPartyRequest params = new GetPartyRequest();
-		params.setLogin(login);
-		params.setPartyNumber(12900001); // Michel Lederet
-		params.getParts().add(PartyPart.IMMOVABLE_PROPERTIES);
-
-		final NaturalPerson np = (NaturalPerson) service.getParty(params);
-		assertNotNull(np);
-
-		final List<ImmovableProperty> immovableProperties = np.getImmovableProperties();
-		assertNotNull(immovableProperties);
-		assertEquals(1, immovableProperties.size());
-
-		final ImmovableProperty immo0 = immovableProperties.get(0);
-		assertNotNull(immo0);
-		assertEquals("132-158-1-1", immo0.getNumber());
-		assertEquals(newDate(1976, 4, 27), immo0.getDateFrom());
-		assertNull(immo0.getDateTo());
-		assertEquals("Lausanne", immo0.getMunicipalityName());
-		assertEquals(Integer.valueOf(860000), immo0.getEstimatedTaxValue());
-		assertEquals("2002", immo0.getEstimatedTaxValueReference());
-		assertEquals("Place-jardin", immo0.getNature());
-		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, immo0.getOwnershipType());
-		assertEquals(ImmovablePropertyType.IMMOVABLE_PROPERTY, immo0.getType());
-		assertEquals(newDate(1976, 4, 27), immo0.getLastMutationDate());
-		assertEquals(MutationType.PURCHASE, immo0.getLastMutationType());
-
-		final PropertyShare share = immo0.getShare();
-		assertNotNull(share);
-		assertEquals(1, share.getNumerator());
-		assertEquals(2, share.getDenominator());
 	}
 
 	/**

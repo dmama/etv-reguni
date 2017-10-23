@@ -76,8 +76,6 @@
 
 	<bean id="etatDeclarationDAO" class="ch.vd.uniregctb.declaration.EtatDeclarationDAOImpl" parent="hibernateDao"/>
 
-	<bean id="immeubleDAO" class="ch.vd.uniregctb.rf.ImmeubleDAOImpl" parent="hibernateDao"/>
-
 	<bean id="reqdesEvenementDAO" class="ch.vd.uniregctb.reqdes.EvenementReqDesDAOImpl" parent="hibernateDao"/>
 	<bean id="reqdesUniteTraitementDAO" class="ch.vd.uniregctb.reqdes.UniteTraitementDAOImpl" parent="hibernateDao"/>
 

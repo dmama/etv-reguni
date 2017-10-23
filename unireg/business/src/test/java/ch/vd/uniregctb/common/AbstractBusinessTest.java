@@ -72,6 +72,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -85,7 +86,6 @@ import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.registrefoncier.SituationRF;
 import ch.vd.uniregctb.registrefoncier.SurfaceAuSolRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.EstimationRFHelper;
-import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscalCanton;
@@ -155,7 +155,6 @@ import static org.junit.Assert.assertNull;
         BusinessTestingConstants.UNIREG_BUSINESS_ESSENTIALS,
         BusinessTestingConstants.UNIREG_BUSINESS_CXF,
         BusinessTestingConstants.UNIREG_BUSINESS_SERVICES,
-        BusinessTestingConstants.UNIREG_BUSINESS_RF,
         BusinessTestingConstants.UNIREG_BUSINESS_REGISTREFONCIER,
         BusinessTestingConstants.UNIREG_BUSINESS_REGISTREFONCIER_IMPORT,
         BusinessTestingConstants.UNIREG_BUSINESS_EVT_CIVIL,

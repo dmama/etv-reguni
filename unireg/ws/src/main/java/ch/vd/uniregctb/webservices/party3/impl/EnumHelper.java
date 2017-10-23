@@ -9,8 +9,6 @@ import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriod;
 import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
-import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType;
-import ch.vd.unireg.xml.party.immovableproperty.v1.MutationType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v1.Sex;
@@ -28,9 +26,7 @@ import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
-import ch.vd.uniregctb.rf.GenrePropriete;
-import ch.vd.uniregctb.rf.TypeImmeuble;
-import ch.vd.uniregctb.rf.TypeMutation;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypePermis;
@@ -157,14 +153,6 @@ public abstract class EnumHelper {
 
 	public static OwnershipType coreToWeb(GenrePropriete genre) {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(genre);
-	}
-
-	public static ImmovablePropertyType coreToWeb(TypeImmeuble type) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(type);
-	}
-
-	public static MutationType coreToWeb(TypeMutation type) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(type);
 	}
 
 	public static CategorieImpotSource webToCore(DebtorCategory category) {

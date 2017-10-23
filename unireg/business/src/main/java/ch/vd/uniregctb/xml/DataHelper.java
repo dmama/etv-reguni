@@ -845,7 +845,7 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.PERIODICITES);
 				break;
 			case IMMOVABLE_PROPERTIES:
-				results.add(TiersDAO.Parts.IMMEUBLES);
+				// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
 				break;
 			case CORPORATION_STATUSES:
 				results.add(TiersDAO.Parts.ETATS_FISCAUX);
@@ -911,7 +911,7 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.PERIODICITES);
 				break;
 			case IMMOVABLE_PROPERTIES:
-				results.add(TiersDAO.Parts.IMMEUBLES);
+				// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
 				break;
 			case CORPORATION_STATUSES:
 				results.add(TiersDAO.Parts.ETATS_FISCAUX);
@@ -981,7 +981,7 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.PERIODICITES);
 				break;
 			case IMMOVABLE_PROPERTIES:
-				results.add(TiersDAO.Parts.IMMEUBLES);
+				// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
 				break;
 			case CORPORATION_STATUSES:
 				results.add(TiersDAO.Parts.ETATS_FISCAUX);
@@ -1052,7 +1052,7 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.PERIODICITES);
 				break;
 			case IMMOVABLE_PROPERTIES:
-				results.add(TiersDAO.Parts.IMMEUBLES);
+				// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
 				break;
 			case TAX_LIGHTENINGS:
 				results.add(TiersDAO.Parts.ALLEGEMENTS_FISCAUX);
@@ -1132,7 +1132,7 @@ public abstract class DataHelper {
 				results.add(TiersDAO.Parts.PERIODICITES);
 				break;
 			case IMMOVABLE_PROPERTIES:
-				results.add(TiersDAO.Parts.IMMEUBLES);
+				// [SIFISC-26536] la part IMMOVABLE_PROPERTIES est dépréciée et n'a aucun effet
 				break;
 			case TAX_LIGHTENINGS:
 				results.add(TiersDAO.Parts.ALLEGEMENTS_FISCAUX);

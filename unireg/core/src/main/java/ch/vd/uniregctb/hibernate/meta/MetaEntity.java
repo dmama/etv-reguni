@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -107,7 +108,7 @@ public class MetaEntity {
 
 	public Property getProperty(String s) {
 		for (Property property : properties) {
-			if (property.getName().equals(s)) {
+			if (Objects.equals(property.getName(), s)) {
 				return property;
 			}
 		}

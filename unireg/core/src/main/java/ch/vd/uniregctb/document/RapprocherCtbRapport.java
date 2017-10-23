@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("RapprocherCtbRapport")
+@Deprecated
 public class RapprocherCtbRapport extends Document {
 
 	public RapprocherCtbRapport() {

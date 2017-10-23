@@ -16,7 +16,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
-import ch.vd.uniregctb.rf.Immeuble;
 
 public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
@@ -61,7 +60,6 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 		SITUATIONS_FAMILLE,
 		DECLARATIONS,
 		PERIODICITES,
-		IMMEUBLES,
 		ALLEGEMENTS_FISCAUX,
 		ETATS_FISCAUX,
 		DONNEES_CIVILES,
@@ -293,15 +291,6 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return une nouvelle instance du for fiscal avec son id renseigné.
 	 */
 	<T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal);
-
-	/**
-	 * Ajoute un nouvel immeuble à un tiers.
-	 *
-	 * @param tiers    le tiers sur lequel on veut ajouter un for fiscal
-	 * @param immeuble le nouvel immeuble
-	 * @return une nouvelle instance de l'immeuble avec son id renseigné.
-	 */
-	Immeuble addAndSave(Contribuable tiers, Immeuble immeuble);
 
 	/**
 	 * Ajoute une nouvelle decision Aci sur un tiers

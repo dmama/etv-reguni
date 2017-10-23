@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;

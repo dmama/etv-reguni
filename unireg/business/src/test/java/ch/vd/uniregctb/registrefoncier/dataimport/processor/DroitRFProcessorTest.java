@@ -35,6 +35,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
 import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleBeneficiaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -48,7 +49,6 @@ import ch.vd.uniregctb.registrefoncier.dao.DroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.processor.MutationRFProcessorTestCase;
-import ch.vd.uniregctb.rf.GenrePropriete;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

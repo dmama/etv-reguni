@@ -27,7 +27,6 @@ import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 @Entity

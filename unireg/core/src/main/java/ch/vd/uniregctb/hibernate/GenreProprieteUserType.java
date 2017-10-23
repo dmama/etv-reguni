@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.hibernate;
 
-import ch.vd.uniregctb.rf.GenrePropriete;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 
 /**
  * Classe de transtypage pour Hibernate : GenrePropriete <--> varchar
