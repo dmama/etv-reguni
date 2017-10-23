@@ -57,7 +57,7 @@ public class TableFillerWithCivilValues {
 	private static final String dbUser = "UNIREG";
 	private static final String dbPassword = "nfha6_bwixik";
 
-	private static final String RCPERS_URL = "http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v5";
+	private static final String RCPERS_URL = "http://int-registres-rcpers-west-ws.etat-de-vaud.ch/registres/int-rcpers/west/ws/v5";
 	private static final String RCPERS_USER = "gvd0unireg";
 	private static final String RCPERS_PWD = "Welc0me_";
 
