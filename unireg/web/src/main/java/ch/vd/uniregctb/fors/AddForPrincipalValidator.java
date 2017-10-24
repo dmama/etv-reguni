@@ -64,6 +64,9 @@ public class AddForPrincipalValidator extends AddForRevenuFortuneValidator {
 				case REGLES_INCOHERENTES:
 					messageErreurModeImposition = "error.mode.imposition.regles.incoherentes";
 					break;
+				case OK:
+					messageErreurModeImposition = "";
+					break;
 				default:
 					throw new IllegalArgumentException("Type de retour sur le mode d'imposition inconnu = [ "+ allowed +" ]");
 				}
