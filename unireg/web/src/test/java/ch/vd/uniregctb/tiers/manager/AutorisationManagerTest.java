@@ -15,7 +15,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 
-@DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_CLASS)
 public class AutorisationManagerTest extends WebTest {
 
 	private AutorisationManager autorisationManager;
@@ -34,7 +33,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.TRUE);
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.INTERDIT, returned);
@@ -46,7 +46,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.TRUE);
 		final Role[] roles = {Role.FOR_PRINC_ORDDEP_HAB};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.OK, returned);
@@ -58,7 +59,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.TRUE);
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.SOURCE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.INTERDIT, returned);
@@ -70,7 +72,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.TRUE);
 		final Role[] roles = {Role.FOR_PRINC_SOURC_HAB};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.SOURCE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.OK, returned);
@@ -84,7 +87,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.FALSE);
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.DROITS_INCOHERENTS, returned);
@@ -96,7 +100,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.FALSE);
 		final Role[] roles = {Role.FOR_PRINC_ORDDEP_GRIS};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.OK, returned);
@@ -109,7 +114,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.FALSE);
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.SOURCE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.DROITS_INCOHERENTS, returned);
@@ -122,7 +128,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.FALSE);
 		final Role[] roles = {Role.FOR_PRINC_SOURC_GRIS};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.SOURCE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.OK, returned);
@@ -135,7 +142,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.FALSE);
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_HC, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.DROITS_INCOHERENTS, returned);
@@ -147,7 +155,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.FALSE);
 		final Role[] roles = {Role.FOR_PRINC_ORDDEP_HCHS};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_HC, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.OK, returned);
@@ -159,7 +168,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.FALSE);
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.SOURCE, TypeAutoriteFiscale.COMMUNE_HC, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.DROITS_INCOHERENTS, returned);
@@ -171,7 +181,8 @@ public class AutorisationManagerTest extends WebTest {
 		albert.setHabitant(Boolean.FALSE);
 		final Role[] roles = {Role.FOR_PRINC_SOURC_HCHS};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setSecurityProvider(provider);
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.SOURCE, TypeAutoriteFiscale.COMMUNE_HC, null, null, null, 123);
 
 		assertEquals(RetourModeImpositionAllowed.OK, returned);
@@ -186,11 +197,13 @@ public class AutorisationManagerTest extends WebTest {
 		// Tiers service
 		MockTiersService mockTiersService = new MockTiersService(albert);
 		mockTiersService.setIsSuisse(true);
-		((AutorisationManagerImpl)autorisationManager).setTiersService(mockTiersService);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setTiersService(mockTiersService);
+
 		// Security provider
 		final Role[] roles = {Role.FOR_PRINC_ORDDEP_HAB};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		autorisationManager.setSecurityProvider(provider);
 
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, null, null, 123);
 
@@ -204,11 +217,12 @@ public class AutorisationManagerTest extends WebTest {
 		// Tiers service
 		MockTiersService mockTiersService = new MockTiersService(albert);
 		mockTiersService.setIsSuisse(true);
-		((AutorisationManagerImpl)autorisationManager).setTiersService(mockTiersService);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setTiersService(mockTiersService);
 		// Security provider
 		final Role[] roles = {Role.FOR_PRINC_SOURC_HAB};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		autorisationManager.setSecurityProvider(provider);
 
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.SOURCE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, null, null, 123);
 
@@ -223,11 +237,12 @@ public class AutorisationManagerTest extends WebTest {
 		MockTiersService mockTiersService = new MockTiersService(albert);
 		mockTiersService.setIsSuisse(false);
 		mockTiersService.setEtrangerSansPermisC(false);
-		((AutorisationManagerImpl)autorisationManager).setTiersService(mockTiersService);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setTiersService(mockTiersService);
 		// Security provider
 		final Role[] roles = {Role.FOR_PRINC_SOURC_HAB};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		autorisationManager.setSecurityProvider(provider);
 
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.SOURCE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, null, null, 123);
 
@@ -242,11 +257,12 @@ public class AutorisationManagerTest extends WebTest {
 		MockTiersService mockTiersService = new MockTiersService(albert);
 		mockTiersService.setIsSuisse(false);
 		mockTiersService.setEtrangerSansPermisC(false);
-		((AutorisationManagerImpl)autorisationManager).setTiersService(mockTiersService);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setTiersService(mockTiersService);
 		// Security provider
 		final Role[] roles = {Role.FOR_PRINC_ORDDEP_HAB};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		autorisationManager.setSecurityProvider(provider);
 
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, null, null, 123);
 
@@ -261,11 +277,12 @@ public class AutorisationManagerTest extends WebTest {
 		MockTiersService mockTiersService = new MockTiersService(albert);
 		mockTiersService.setIsSuisse(false);
 		mockTiersService.setEtrangerSansPermisC(false);
-		((AutorisationManagerImpl)autorisationManager).setTiersService(mockTiersService);
+		AutorisationManagerImpl autorisationManager = new AutorisationManagerImpl();
+		autorisationManager.setTiersService(mockTiersService);
 		// Security provider
 		final Role[] roles = {Role.FOR_PRINC_ORDDEP_HAB};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		((AutorisationManagerImpl)autorisationManager).setSecurityProvider(provider);
+		autorisationManager.setSecurityProvider(provider);
 
 		RetourModeImpositionAllowed returned = autorisationManager.isModeImpositionAllowed(albert, ModeImposition.ORDINAIRE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, null, null, 123);
 

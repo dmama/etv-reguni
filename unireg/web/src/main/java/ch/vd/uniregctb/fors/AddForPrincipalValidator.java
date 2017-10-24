@@ -51,20 +51,25 @@ public class AddForPrincipalValidator extends AddForRevenuFortuneValidator {
 				errors.rejectValue("modeImposition", "error.mode.imposition.incorrect");
 			}
 			else {
-				final StringBuilder messageErreurModeImposition = new StringBuilder();
+				final String messageErreurModeImposition;
 				RetourModeImpositionAllowed allowed = autorisationManager.isModeImpositionAllowed(ctb, view.getModeImposition(), view.getTypeAutoriteFiscale(), view.getMotifRattachement(), view.getDateDebut(),
-				                                                                                              AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
+				                                                                                  AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 				switch (allowed) {
-				case INTERDIT: messageErreurModeImposition.append("error.mode.imposition.interdit");
+				case INTERDIT:
+					messageErreurModeImposition = "error.mode.imposition.interdit";
 					break;
-				case DROITS_INCOHERENTS: messageErreurModeImposition.append("error.for.principal.droits.incoherents");
+				case DROITS_INCOHERENTS:
+					messageErreurModeImposition = "error.for.principal.droits.incoherents";
 					break;
-				case REGLES_INCOHERENTES: messageErreurModeImposition.append("error.mode.imposition.regles.incoherentes");
+				case REGLES_INCOHERENTES:
+					messageErreurModeImposition = "error.mode.imposition.regles.incoherentes";
 					break;
+				default:
+					throw new IllegalArgumentException("Type de retour sur le mode d'imposition inconnu = [ "+ allowed +" ]");
 				}
 
-				if (!RetourModeImpositionAllowed.OK.equals(allowed)) {
-					errors.rejectValue("modeImposition", messageErreurModeImposition.toString());
+				if (allowed != RetourModeImpositionAllowed.OK) {
+					errors.rejectValue("modeImposition", messageErreurModeImposition);
 				}
 			}
 		}
