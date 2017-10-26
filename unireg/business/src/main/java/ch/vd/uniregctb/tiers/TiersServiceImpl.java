@@ -2988,6 +2988,26 @@ public class TiersServiceImpl implements TiersService {
             forFiscalSecondaire.setDateFin(dateFermeture);
             forFiscalSecondaire.setMotifFermeture(motifFermeture);
             afterForFiscalSecondaireClosed(contribuable, forFiscalSecondaire);
+
+            // [SIFISC-19923] Fermeture des rapports entre tiers (ActiviteEconomique) pour les établissements du For fiscal secondaire clos de type "ETABLISSEMENT_STABLE"
+			if (forFiscalSecondaire.getMotifRattachement() == MotifRattachement.ETABLISSEMENT_STABLE) {
+				List<RapportEntreTiers> rapports =
+						contribuable.getRapportsSujet().stream()
+								.filter(ActiviteEconomique.class::isInstance)
+								.map(ActiviteEconomique.class::cast)
+								.filter(rapport -> !rapport.isPrincipal())
+								.collect(Collectors.toList());
+
+				for (RapportEntreTiers rapport : rapports) {
+					Etablissement etablissement = (Etablissement) getTiers(rapport.getObjetId());
+					boolean hasSameNumeroOfs = etablissement.getDomiciles().stream()
+							.filter(domicile -> domicile.getDateFin() == null)
+							.anyMatch(domicile -> forFiscalSecondaire.getNumeroOfsAutoriteFiscale().equals(domicile.getNumeroOfsAutoriteFiscale()));
+					if (hasSameNumeroOfs) {
+						rapport.setDateFin(dateFermeture);
+					}
+				}
+			}
         }
 
         return forFiscalSecondaire;
@@ -3142,6 +3162,26 @@ public class TiersServiceImpl implements TiersService {
 
 	    final Tiers tiers = forFiscal.getTiers();
         Assert.notNull(tiers);
+
+	    // [SIFISC-19923] pour for secondaire réouvert, réouverture des établissements (rapports entre tiers) correspondants
+	    if (forFiscal.getDateFin() != null && dateFermeture == null && motifFermeture == null && forFiscal.getMotifRattachement() == MotifRattachement.ETABLISSEMENT_STABLE) {
+		    List<RapportEntreTiers> rapports =
+				    tiers.getRapportsSujet().stream()
+						    .filter(ActiviteEconomique.class::isInstance)
+						    .map(ActiviteEconomique.class::cast)
+						    .filter(rapport -> !rapport.isPrincipal())
+						    .filter(rapport -> rapport.getDateFin() == forFiscal.getDateFin())
+						    .collect(Collectors.toList());
+
+		    for (RapportEntreTiers rapport : rapports) {
+			    Etablissement etablissement = (Etablissement) getTiers(rapport.getObjetId());
+			    boolean hasSameNumeroOfs = etablissement.getDomiciles().stream()
+					    .anyMatch(domicile -> forFiscal.getNumeroOfsAutoriteFiscale().equals(domicile.getNumeroOfsAutoriteFiscale()));
+			    if (hasSameNumeroOfs) {
+				    rapport.setDateFin(null);
+			    }
+		    }
+	    }
 
         // [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
 	    ForFiscalRevenuFortune forCorrige = (ForFiscalRevenuFortune) forFiscal.duplicate();

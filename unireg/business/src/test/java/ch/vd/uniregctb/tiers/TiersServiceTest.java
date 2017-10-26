@@ -104,7 +104,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings({"JavaDoc"})
+@SuppressWarnings({"JavaDoc", "Duplicates"})
 public class TiersServiceTest extends BusinessTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TiersServiceTest.class);
@@ -10106,6 +10106,228 @@ debut PF                                                                        
 				Assert.assertNotNull(entreprise);
 
 				Assert.assertEquals(attendu, tiersService.getDerniereRaisonSociale(entreprise));
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-19923] Fermeture des rapports entre tiers pour les établissements du For fiscal secondaire (ETABLISSEMENT_STABLE) clos
+	 */
+	@Test
+	public void testCloseForFiscalSecondaireEtablissementStable() throws Exception {
+
+		class ValueStore {
+			Long activiteEconomiqueId;
+			Long forFiscalSecondaireEtabStableId;
+			final int numeroOFS = MockCommune.Bex.getNoOFS();
+			final RegDate dateFermeture = date(2017, 10, 23);
+		}
+		final ValueStore values = new ValueStore();
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
+				ForFiscalSecondaire forFiscalSecondaireEtabStable = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.numeroOFS, MotifRattachement.ETABLISSEMENT_STABLE);
+
+				Etablissement etablissement = addEtablissement();
+				addDomicileEtablissement(etablissement, date(2000, 5, 5), null, MockCommune.Bex);
+				ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), null, false);
+
+				values.activiteEconomiqueId = activiteEconomique.getId();
+				values.forFiscalSecondaireEtabStableId = forFiscalSecondaireEtabStable.getId();
+				return entreprise.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				final ForFiscalSecondaire forFiscalSecondaireEtabStable = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireEtabStableId);
+				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
+
+				// Fermeture du For fiscal secondaire Etablissement Stable
+				// Contrôles sur l'activité économique (Rapport entre tiers) avant sa clôture
+				assertTrue(activiteEconomique.getDateFin() == null);
+
+				// Fermeture du For fiscal secondaire (ETABLISSEMENT_STABLE)
+				tiersService.closeForFiscalSecondaire(entreprise, forFiscalSecondaireEtabStable, values.dateFermeture, MotifFor.FIN_EXPLOITATION);
+
+				// Contrôles sur l'activité économique (Rapport entre tiers) après sa clôture
+				assertTrue(activiteEconomique.getDateFin() == values.dateFermeture);
+
+
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-19923] Pas de Fermeture des rapports entre tiers pour les établissements du For fiscal secondaire (IMMEUBLE_PRIVE) clos
+	 */
+	@Test
+	public void testCloseForFiscalSecondaireImmeublePrive() throws Exception {
+
+		class ValueStore {
+			Long activiteEconomiqueId;
+			Long forFiscalSecondaireImmPrvId;
+			final int numeroOFS = MockCommune.Echallens.getNoOFS();
+			final RegDate dateFermeture = date(2017, 10, 23);
+		}
+		final ValueStore values = new ValueStore();
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
+				ForFiscalSecondaire forFiscalSecondaireImmPrv = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.numeroOFS, MotifRattachement.IMMEUBLE_PRIVE);
+
+				Etablissement etablissement = addEtablissement();
+				addDomicileEtablissement(etablissement, date(2000, 5, 5), null, MockCommune.Echallens);
+				ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), null, false);
+
+				values.activiteEconomiqueId = activiteEconomique.getId();
+				values.forFiscalSecondaireImmPrvId = forFiscalSecondaireImmPrv.getId();
+				return entreprise.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				final ForFiscalSecondaire forFiscalSecondaireImmPrv = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireImmPrvId);
+				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
+
+				// Contrôles sur l'activité économique (Rapport entre tiers) avant sa clôture
+				assertTrue(activiteEconomique.getDateFin() == null);
+
+				// Fermeture du For fiscal secondaire (IMMEUBLE_PRIVE)
+				tiersService.closeForFiscalSecondaire(entreprise, forFiscalSecondaireImmPrv, values.dateFermeture, MotifFor.FIN_EXPLOITATION);
+
+				// Contrôles sur l'activité économique (Rapport entre tiers) après sa clôture
+				assertTrue(activiteEconomique.getDateFin() == null);
+
+
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-19923] pour for fiscal secondaire "ETABLISSEMENT_STABLE" réouvert, réouverture des établissements (rapports entre tiers) correspondants
+	 */
+	@Test
+	public void testCorrigerForFiscalSecondaireEtablissementStable() throws Exception {
+		class ValuesStore {
+			Long activiteEconomiqueId;
+			Long forFiscalSecondaireId;
+			final int numeroOFS = MockCommune.Lausanne.getNoOFS();
+			final RegDate dateFermeture = date(2017, 10, 23);
+		}
+		final ValuesStore values = new ValuesStore();
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
+				// For fiscal secondaire clos
+				ForFiscalSecondaire forFiscalSecondaire = addForSecondaire(entreprise, date(2000, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.dateFermeture, MotifFor.FIN_EXPLOITATION, values.numeroOFS, MotifRattachement.ETABLISSEMENT_STABLE);
+
+				Etablissement etablissement = addEtablissement();
+				addDomicileEtablissement(etablissement, date(2000, 5, 5), values.dateFermeture, MockCommune.Lausanne);
+				ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), values.dateFermeture, false);
+
+				values.activiteEconomiqueId = activiteEconomique.getId();
+				values.forFiscalSecondaireId = forFiscalSecondaire.getId();
+				return entreprise.getNumero();
+			}
+		});
+
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireId);
+				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
+
+				// contrôle sur l'activité économique (Rapport entre tiers) avant la réouverture du for fiscal secondaire
+				assertTrue(activiteEconomique.getDateFin() == values.dateFermeture);
+
+				// Réouverture du For fiscal secondaire (ETABLISSEMENT_STABLE)
+				tiersService.updateForSecondaire(forFiscalSecondaire, forFiscalSecondaire.getDateDebut(), forFiscalSecondaire.getMotifOuverture(), null, null, values.numeroOFS);
+
+				// contrôle sur l'activité économique (Rapport entre tiers) après la réouverture du for fiscal secondaire
+				assertTrue(activiteEconomique.getDateFin() == null);
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-19923] Lors de la réouverture du for fiscal secondaire,<BR />
+	 * pas de réouverture des rapports entre tiers autre que "ETABLISSEMENT_STABLE"
+	 */
+	@Test
+	public void testCorrigerForFiscalSecondaireImmeuble() throws Exception {
+		class ValuesStore {
+			Long activiteEconomiqueId;
+			Long forFiscalSecondaireId;
+			final int numeroOFS = MockCommune.Renens.getNoOFS();
+			final RegDate dateFermeture = date(2017, 10, 23);
+		}
+		final ValuesStore values = new ValuesStore();
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addRegimeFiscalVD(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, date(2000, 5, 3), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
+				// For fiscal secondaire clos
+				ForFiscalSecondaire forFiscalSecondaire = addForSecondaire(entreprise, date(2001, 5, 3), MotifFor.DEBUT_EXPLOITATION, values.dateFermeture, MotifFor.FIN_EXPLOITATION, values.numeroOFS, MotifRattachement.IMMEUBLE_PRIVE);
+
+				Etablissement etablissement = addEtablissement();
+				addDomicileEtablissement(etablissement, date(2000, 5, 5), values.dateFermeture, MockCommune.Renens);
+				ActiviteEconomique activiteEconomique = addActiviteEconomique(entreprise, etablissement, date(2000, 5, 5), values.dateFermeture, false);
+
+				values.activiteEconomiqueId = activiteEconomique.getId();
+				values.forFiscalSecondaireId = forFiscalSecondaire.getId();
+				return entreprise.getNumero();
+			}
+		});
+
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				final ActiviteEconomique activiteEconomique = (ActiviteEconomique) rapportEntreTiersDAO.get(values.activiteEconomiqueId);
+				final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscalDAO.get(values.forFiscalSecondaireId);
+
+				// Contrôle de l'activité économique (Rapport entre tiers) avant réouverture du for fiscal secondaire (IMMEUBLE_PRIVE)
+				assertTrue(activiteEconomique.getDateFin() == values.dateFermeture);
+
+				// Réouverture du For fiscal secondaire
+				tiersService.updateForSecondaire(forFiscalSecondaire, forFiscalSecondaire.getDateDebut(), forFiscalSecondaire.getMotifOuverture(), null, null, values.numeroOFS);
+
+				// Contrôle de l'activité économique après réouverture du for fiscal secondaire => pas de réouverture
+				assertTrue(activiteEconomique.getDateFin() == values.dateFermeture);
 			}
 		});
 	}
