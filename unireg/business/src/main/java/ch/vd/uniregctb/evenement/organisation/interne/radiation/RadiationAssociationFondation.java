@@ -45,7 +45,7 @@ public class RadiationAssociationFondation extends EvenementOrganisationInterneD
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
-		boolean assujettie = determineAssujettie(getEntreprise(), dateRadiation);
+		boolean assujettie = isAssujettie(getEntreprise(), dateRadiation);
 
 		if (assujettie) {
 			if (getEntreprise().getEtatActuel().getType() == TypeEtatEntreprise.INSCRITE_RC) {

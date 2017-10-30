@@ -336,7 +336,7 @@ public abstract class EvenementOrganisationInterne {
 		return range != null && range.getDateFin() == null;
 	}
 
-	protected boolean determineAssujettie(Entreprise entreprise, RegDate date) throws EvenementOrganisationException {
+	protected boolean isAssujettie(Entreprise entreprise, RegDate date) throws EvenementOrganisationException {
 		final boolean assujettie;
 		try {
 			assujettie = isAssujetti(entreprise, date);
