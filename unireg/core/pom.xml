@@ -48,20 +48,12 @@
 			<!-- nécessaire à la classe UniregXAMCF -->
 		</dependency>
 		<dependency>
-			<groupId>com.atomikos</groupId>
-			<artifactId>transactions-jdbc</artifactId>
-			<version>${atomikos.version}</version>
+			<groupId>org.jencks</groupId>
+			<artifactId>jencks</artifactId>
+			<version>${jencks.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.atomikos</groupId>
-			<artifactId>transactions-jms</artifactId>
-			<version>${atomikos.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.vd.registre</groupId>
-			<artifactId>shared-ascii-art</artifactId>
-			<version>1.0.0</version>
-		</dependency>
+		<!-- spécifié explicitement la version 2.2.2 de geronimo-connector, parce que la verson 2.1.2
+		     tirée par jencks est buggée (le pool de connections ne respecte pas sa taille maximale) -->
 		<dependency>
 			<groupId>org.apache.geronimo.components</groupId>
 			<artifactId>geronimo-connector</artifactId>
@@ -76,6 +68,11 @@
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-spring</artifactId>
 			<version>${activemq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.registre</groupId>
+			<artifactId>shared-ascii-art</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.dbunit</groupId>

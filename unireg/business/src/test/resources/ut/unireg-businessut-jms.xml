@@ -8,16 +8,16 @@
 		<property name="start" value="true" />
 	</bean>
 
-	<bean id="jmsConnectionFactory" class="com.atomikos.jms.AtomikosConnectionFactoryBean">
-		<property name="uniqueResourceName" value="jms-web"/>
-		<property name="maxPoolSize" value="20"/>
-		<property name="xaConnectionFactory">
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.XaPooledConnectionFactory" init-method="start" destroy-method="stop">
+		<property name="connectionFactory">
 			<bean class="org.apache.activemq.ActiveMQXAConnectionFactory">
 				<property name="brokerURL" value="vm://localhost" />
 				<property name="userName" value="smx" />
 				<property name="password" value="smx" />
 			</bean>
 		</property>
+		<property name="maxConnections" value="20"/>
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="identCtbMessageV1Handler" class="ch.vd.uniregctb.evenement.identification.contribuable.MockIdentificationContribuableMessageHandler"/>

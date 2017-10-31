@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.transaction;
 
+import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -28,6 +30,10 @@ public class UniregJtaTransactionManager extends JtaTransactionManager implement
 	 * Verrou d'accès à la collection des fournisseurs de synchronisations
 	 */
 	private final LockHelper lockHelper = new LockHelper();
+
+	public UniregJtaTransactionManager(UserTransaction userTransaction, TransactionManager transactionManager) {
+		super(userTransaction, transactionManager);
+	}
 
 	@Override
 	protected void prepareSynchronization(DefaultTransactionStatus status, TransactionDefinition definition) {
