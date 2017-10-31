@@ -724,7 +724,7 @@
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<cxf.version>3.1.9</cxf.version>
 		<activemq.version>5.11.0.redhat-620133</activemq.version>
-		<atomikos.version>4.0.4</atomikos.version>
+		<jencks.version>2.2-dsi.0</jencks.version>
 		<jackson.version>1.9.13</jackson.version>
 		<wsparty3.version>3.9</wsparty3.version>
 		<wsparty4.version>4.2</wsparty4.version>

@@ -12,68 +12,26 @@
 		<!-- END_LVERSION -->
 	</bean>
 
-	<!-- Transaction manager configuration -->
-
-	<bean id="atomikosSystemProps" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject">
-			<!-- System.getProperties() -->
-			<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-				<property name="targetClass" value="java.lang.System" />
-				<property name="targetMethod" value="getProperties" />
-			</bean>
-		</property>
-		<property name="targetMethod" value="putAll" />
-		<property name="arguments">
-			<!-- The new Properties -->
-			<util:properties>
-				<prop key="com.atomikos.icatch.hide_init_file_path">true</prop>
-				<prop key="com.atomikos.icatch.registered">so what?</prop>          <!-- pour enlever le message de pub au démarrage -->
-			</util:properties>
-		</property>
-	</bean>
-
-	<bean id="userTransactionService" class="com.atomikos.icatch.config.UserTransactionServiceImp" init-method="init" destroy-method="shutdownForce" depends-on="atomikosSystemProps">
-		<constructor-arg>
-			<props>
-				<prop key="com.atomikos.icatch.max_timeout">0</prop>                <!-- en millisecondes, la durée maximale admissible pour le timeout d'une transaction : aucune -->
-				<prop key="com.atomikos.icatch.default_jta_timeout">3600000</prop>  <!-- en millisecondes, le timeout par défaut d'une transaction JTA : 1h -->
-				<prop key="com.atomikos.icatch.log_base_dir">${extprop.tx.logDir}</prop>
-				<prop key="com.atomikos.icatch.service">com.atomikos.icatch.standalone.UserTransactionServiceFactory</prop>
-				<prop key="com.atomikos.icatch.max_actives">-1</prop>               <!-- valeur négative -> pas de nombre maximum de transactions ouvertes simultanément -->
-				<prop key="com.atomikos.icatch.tm_unique_name">unireg-web</prop>    <!-- nom unique du transaction manager -->
-			</props>
-		</constructor-arg>
-	</bean>
-
 	<!-- Transaction manager -->
 
-	<bean id="userTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close" depends-on="userTransactionService">
-		<!-- disable startup because the userTransactionService bean does it -->
-		<property name="startupTransactionService" value="false"/>
-		<!-- when close is called, should we force transactions to terminate or not? -->
-		<property name="forceShutdown" value="false"/>
+	<bean id="transactionManager" class="ch.vd.uniregctb.transaction.TransactionManagerFactoryBean">
+		<!-- [UNIREG-2060] désactivé le log des transactions, parce que de toutes façons les bases ne sont pas configurées pour la reprise automatique des transactions.
+		<property name="transactionLogDir" value="${extprop.tx.logDir}"/>
+		-->
+		<property name="defaultTransactionTimeoutSeconds" value="${extprop.tx.timeout}"/>
+		<property name="jtaTransactionManagerClass" value="ch.vd.uniregctb.transaction.UniregJtaTransactionManager"/>
 	</bean>
 
-	<bean id="userTransaction" class="com.atomikos.icatch.jta.UserTransactionImp" depends-on="userTransactionService">
-		<property name="transactionTimeout" value="${extprop.tx.timeout}"/>
-	</bean>
+	<bean id="jtaTransactionManager" class="ch.vd.uniregctb.transaction.UniregJtaTransactionManager" factory-method="getJtaTransactionManager" factory-bean="transactionManager" />
+
+	<alias alias="transactionSynchronizationRegistrar" name="jtaTransactionManager"/>
 
 	<bean id="txSyncManager" class="ch.vd.uniregctb.transaction.TxSyncManagerImpl"/>
 
-	<bean id="tracingTransactionManager" class="ch.vd.uniregctb.transaction.TracingTransactionManager">
-		<property name="target" ref="userTransactionManager"/>
-	</bean>
-
-	<bean id="transactionManager" class="ch.vd.uniregctb.transaction.UniregJtaTransactionManager" depends-on="userTransactionService, jmsConnectionFactory, dataSource">
-		<property name="transactionManager" ref="tracingTransactionManager"/>
-		<property name="userTransaction" ref="userTransaction"/>
-	</bean>
-
-	<alias alias="transactionSynchronizationRegistrar" name="transactionManager"/>
 
 	<!-- JDBC datasource -->
 
-	<bean id="xaDataSource" class="ch.vd.uniregctb.datasource.OracleXADataSourceFactory">
+	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.datasource.UniregXAMCF">
 		<property name="driverType" value="thin" />
 		<property name="serverName" value="${extprop.jdbc.server}" />
 		<property name="portNumber" value="${extprop.jdbc.port}" />
@@ -83,10 +41,15 @@
 		<property name="password" value="${extprop.jdbc.password}" />
 	</bean>
 
-	<bean id="realDataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">
-		<property name="uniqueResourceName" value="jdbc-web"/>
-		<property name="xaDataSource" ref="xaDataSource"/>
-		<property name="maxPoolSize" value="${extprop.jdbc.poolMaxSize}"/>
+	<bean id="jdbcConnectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+		<property name="transaction" value="xa"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="poolMaxSize" value="${extprop.jdbc.poolMaxSize}"/>
+	</bean>
+
+	<bean id="realDataSource" class="org.jencks.factory.ConnectionFactoryFactoryBean">
+		<property name="managedConnectionFactory" ref="jdbcManagedConnectionFactory"/>
+		<property name="connectionManager" ref="jdbcConnectionManager"/>
 	</bean>
 
 	<bean id="debugDataSource" class="ch.vd.registre.base.dbutils.DebugDataSource">

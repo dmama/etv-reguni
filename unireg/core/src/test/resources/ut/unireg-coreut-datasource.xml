@@ -9,91 +9,47 @@
 		<property name="appName" value="Unit Tests" />
 	</bean>
 
-	<!-- Transaction manager configuration -->
-
-	<bean id="atomikosSystemProps" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject">
-			<!-- System.getProperties() -->
-			<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-				<property name="targetClass" value="java.lang.System" />
-				<property name="targetMethod" value="getProperties" />
-			</bean>
-		</property>
-		<property name="targetMethod" value="putAll" />
-		<property name="arguments">
-			<!-- The new Properties -->
-			<util:properties>
-				<prop key="com.atomikos.icatch.hide_init_file_path">true</prop>
-				<prop key="com.atomikos.icatch.registered">so what?</prop>          <!-- pour enlever le message de pub au démarrage -->
-			</util:properties>
-		</property>
-	</bean>
-
-	<bean id="userTransactionService" class="com.atomikos.icatch.config.UserTransactionServiceImp" init-method="init" destroy-method="shutdownForce" depends-on="atomikosSystemProps">
-		<constructor-arg>
-			<props>
-				<prop key="com.atomikos.icatch.max_timeout">0</prop>                <!-- en millisecondes, la durée maximale admissible pour le timeout d'une transaction : aucune -->
-				<prop key="com.atomikos.icatch.default_jta_timeout">300000</prop>   <!-- en millisecondes, le timeout par défaut d'une transaction JTA : 5min -->
-				<prop key="com.atomikos.icatch.log_base_dir">${java.io.tmpdir}</prop>
-				<prop key="com.atomikos.icatch.service">com.atomikos.icatch.standalone.UserTransactionServiceFactory</prop>
-				<prop key="com.atomikos.icatch.enable_logging">false</prop>         <!-- désactivation des logs de transaction pendant les tests unitaires -->
-				<prop key="com.atomikos.icatch.max_actives">-1</prop>               <!-- valeur négative -> pas de nombre maximum de transactions ouvertes simultanément -->
-			</props>
-		</constructor-arg>
-	</bean>
-
 	<!-- Transaction manager -->
 
-	<bean id="userTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close" depends-on="userTransactionService">
-		<!-- disable startup because the userTransactionService bean does it -->
-		<property name="startupTransactionService" value="false"/>
-		<!-- when close is called, should we force transactions to terminate or not? -->
-		<property name="forceShutdown" value="false"/>
+	<bean id="transactionManager" class="ch.vd.uniregctb.transaction.TransactionManagerFactoryBean">
+		<!-- [UNIREG-2060] désactivé le log des transactions, parce que de toutes façons les bases ne sont pas configurées pour la reprise automatique des transactions.
+		<property name="transactionLogDir" value="target/txlog"/>
+		-->
+		<property name="defaultTransactionTimeoutSeconds" value="86400"/>
+		<property name="jtaTransactionManagerClass" value="ch.vd.uniregctb.transaction.UniregJtaTransactionManager"/>
 	</bean>
 
-	<bean id="userTransaction" class="com.atomikos.icatch.jta.UserTransactionImp" depends-on="userTransactionService">
-		<property name="transactionTimeout" value="300"/>
-	</bean>
+	<bean id="jtaTransactionManager" class="ch.vd.uniregctb.transaction.UniregJtaTransactionManager" factory-method="getJtaTransactionManager" factory-bean="transactionManager" />
 
-	<bean id="transactionManager" class="ch.vd.uniregctb.transaction.UniregJtaTransactionManager" depends-on="userTransactionService">
-		<property name="transactionManager" ref="userTransactionManager"/>
-		<property name="userTransaction" ref="userTransaction"/>
-	</bean>
-
-	<alias alias="transactionSynchronizationRegistrar" name="transactionManager"/>
+	<alias alias="transactionSynchronizationRegistrar" name="jtaTransactionManager"/>
 
 	<!-- JDBC datasource -->
 
-	<bean id="xaDataSource" class="ch.vd.uniregctb.datasource.DynamicDataSource">
+	<bean id="jdbcConnectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+		<property name="transaction" value="xa"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="poolMaxSize" value="50"/>
+	</bean>
+
+	<bean id="dataSource" class="org.jencks.factory.ConnectionFactoryFactoryBean">
+		<property name="managedConnectionFactory" ref="jdbcManagedConnectionFactory"/>
+		<property name="connectionManager" ref="jdbcConnectionManager"/>
+	</bean>
+
+	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.datasource.DynamicXAMCF">
 		<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
-		<property name="oracleDataSourceClassName" value="${oracle.jdbc.dataSourceClassName}"/>
-		<property name="oracleUrl" value="${testprop.oracle.jdbc.url}" />
-		<property name="oracleUsername" value="${testprop.oracle.jdbc.username}" />
+		<property name="oracleServerName" value="${testprop.oracle.jdbc.server}" />
+		<property name="oraclePortNumber" value="${testprop.oracle.jdbc.port}" />
+		<property name="oracleDatabaseName" value="${testprop.oracle.jdbc.instance}" />
+		<property name="oracleServiceName" value="${testprop.oracle.jdbc.service}" />
+		<property name="oracleUserName" value="${testprop.oracle.jdbc.username}" />
 		<property name="oraclePassword" value="${testprop.oracle.jdbc.password}" />
-		<property name="postgresqlDataSourceClassName" value="${postgresql.jdbc.dataSourceClassName}"/>
-		<property name="postgresqlUrl" value="${testprop.postgresql.jdbc.url}" />
-		<property name="postgresqlUsername" value="${testprop.postgresql.jdbc.username}" />
+		<property name="postgresqlServerName" value="${testprop.postgresql.jdbc.server}" />
+		<property name="postgresqlPortNumber" value="${testprop.postgresql.jdbc.port}" />
+		<property name="postgresqlDatabaseName" value="${testprop.postgresql.jdbc.instance}" />
+		<property name="postgresqlUserName" value="${testprop.postgresql.jdbc.username}" />
 		<property name="postgresqlPassword" value="${testprop.postgresql.jdbc.password}" />
-		<property name="h2DataSourceClassName" value="${h2.jdbc.dataSourceClassName}"/>
-		<property name="h2Url" value="${testprop.h2.jdbc.url}" />
-		<property name="h2Username" value="${testprop.h2.jdbc.username}" />
-		<property name="h2Password" value="${testprop.h2.jdbc.password}" />
 	</bean>
-
-	<bean id="realDataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">
-		<property name="uniqueResourceName">
-			<!-- utilisé pour re-générer un nom différent à chaque datasource au moment de l'instantiation de chaque context Spring pendant les tests UT -->
-			<bean class="ch.vd.uniregctb.common.ResourceNameFactory">
-				<constructor-arg value="jdbc-"/>
-			</bean>
-		</property>
-		<property name="xaDataSource" ref="xaDataSource"/>
-		<property name="maxPoolSize" value="50"/>
-		<property name="minPoolSize" value="10"/>
-	</bean>
-
-	<alias alias="dataSource" name="realDataSource"/>
-	<alias alias="rawDataSource" name="realDataSource"/>
 
 	<bean id="hibernateDialect" class="ch.vd.uniregctb.datasource.DynamicHibernateDialect">
 		<property name="jdbcProfile" value="${testprop.jdbc.profile}" />

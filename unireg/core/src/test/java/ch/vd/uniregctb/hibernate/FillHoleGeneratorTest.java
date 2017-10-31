@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.hibernate;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Properties;
@@ -17,7 +16,7 @@ import ch.vd.uniregctb.migreg.MigrationError;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class FillHoleGeneratorTest extends CoreDAOTest {
 
@@ -25,13 +24,10 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	private SessionFactory sessionFactory;
 	private FillHoleGenerator generator;
 
-	private DataSource rawDataSource;
-
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		sessionFactory = getBean(SessionFactory.class, "sessionFactory");
-		rawDataSource = getBean(DataSource.class, "rawDataSource");
 
 		generator = new FillHoleGenerator("TIERS", "S_CTB", ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
 		generator.configure(StandardBasicTypes.LONG, new Properties(), dialect);
@@ -44,7 +40,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 		final String[] drops = generator.sqlDropStrings(dialect);
 		final String[] creates = generator.sqlCreateStrings(dialect);
 
-		try (Connection con = rawDataSource.getConnection()) {
+		try (Connection con = dataSource.getConnection()) {
 			for (String d : drops) {
 				try (PreparedStatement st = con.prepareStatement(d)) {
 					st.execute();
