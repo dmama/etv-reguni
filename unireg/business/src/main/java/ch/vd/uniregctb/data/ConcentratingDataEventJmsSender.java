@@ -10,11 +10,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 
 import ch.vd.unireg.xml.event.data.v1.BatimentChangeEvent;
@@ -36,6 +36,7 @@ import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSender;
+import ch.vd.uniregctb.transaction.TransactionSynchronizationManagerInterface;
 import ch.vd.uniregctb.transaction.TransactionSynchronizationRegistrar;
 import ch.vd.uniregctb.transaction.TransactionSynchronizationSupplier;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -284,10 +285,10 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 		private final List<DataEvent> evenementsNotification = new LinkedList<>();
 		private final AlreadySentData alreadySentNotifications = new AlreadySentData();
 
-		private TransactionCollectedData(Consumer<TransactionSynchronization> collector) {
+		private TransactionCollectedData(@NotNull TransactionSynchronizationManagerInterface mgr) {
 
 			// enregistrement de la synchronisation dans le système
-			collector.accept(new TransactionSynchronizationAdapter() {
+			mgr.registerSynchronization(new TransactionSynchronizationAdapter() {
 
 				@Override
 				public void suspend() {
@@ -470,10 +471,10 @@ public class ConcentratingDataEventJmsSender implements InitializingBean, Dispos
 	}
 
 	@Override
-	public void registerSynchronizations(Consumer<TransactionSynchronization> collector) {
+	public void registerSynchronizations(@NotNull TransactionSynchronizationManagerInterface mgr) {
 		// on n'enregistre une synchronisation que si elle n'est pas déjà enregistrée
 		if (transactionCollectedData.get() == null) {
-			transactionCollectedData.set(new TransactionCollectedData(collector));
+			transactionCollectedData.set(new TransactionCollectedData(mgr));
 		}
 	}
 
