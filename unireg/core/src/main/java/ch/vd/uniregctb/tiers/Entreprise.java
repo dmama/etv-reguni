@@ -534,7 +534,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@Override
 	public boolean shouldAssignCodeControle(DeclarationImpotOrdinairePM di) {
 		if (super.shouldAssignCodeControle(di)) {
-			// [SIFISC-17952] seulement pour les PM non-HC à la fin de la période d'imposition
+			// [SIFISC-26581] Le code de contrôle est systématiquement généré (même pour les PM HC)
 			if (di.getModeleDocument() != null && GroupeTypesDocumentBatchLocal.DI_PM.hasType(di.getModeleDocument().getTypeDocument())) {
 				return true;
 			}
