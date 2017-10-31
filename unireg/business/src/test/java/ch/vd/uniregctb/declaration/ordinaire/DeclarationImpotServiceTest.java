@@ -14,6 +14,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.dperm.xml.common.v1.RegimeFiscal;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -21,6 +22,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -57,6 +59,9 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
@@ -2304,6 +2309,132 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
 
+	/**
+	 * Code segment PM <BR />
+	 * 1: PM Vaudoise
+	 *
+	 * @throws DeclarationException
+	 */
+	@Test
+	public void testComputeCodeSegmentPMVD() throws DeclarationException {
+		Entreprise entreprise = new Entreprise();
+		RegDate dateReference = date(2017, 9, 23);
+
+		// For fiscal principal
+		Set<ForFiscal> forFiscalSet = new HashSet<ForFiscal>();
+		entreprise.setForsFiscaux(forFiscalSet);
+		ForFiscalPrincipalPM forFiscalPrincipalPM = new ForFiscalPrincipalPM(date(2017, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE);
+		forFiscalSet.add(forFiscalPrincipalPM);
+
+		// Régime fiscal
+		ch.vd.uniregctb.tiers.RegimeFiscal regimeFiscal = new ch.vd.uniregctb.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.uniregctb.tiers.RegimeFiscal.Portee.VD, "1234");
+		regimeFiscal.setEntreprise(entreprise);
+		entreprise.addRegimeFiscal(regimeFiscal);
+
+		assertEquals(1, service.computeCodeSegment(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_LOCAL));
+	}
+
+	/**
+	 * Code segment PM <BR/>
+	 * 2: APM
+	 *
+	 * @throws DeclarationException
+	 */
+	@Test
+	public void testComputeCodeSegmentAPM() throws DeclarationException {
+		Entreprise entreprise = new Entreprise();
+		RegDate dateReference = date(2017, 9, 23);
+
+		// for fiscal principal
+		Set<ForFiscal> forFiscalSet = new HashSet<ForFiscal>();
+		entreprise.setForsFiscaux(forFiscalSet);
+		ForFiscalPrincipalPM forFiscalPrincipalPM = new ForFiscalPrincipalPM(date(2017, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE);
+		forFiscalSet.add(forFiscalPrincipalPM);
+
+		// Régime fiscal
+		ch.vd.uniregctb.tiers.RegimeFiscal regimeFiscal = new ch.vd.uniregctb.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.uniregctb.tiers.RegimeFiscal.Portee.VD, "1234");
+		regimeFiscal.setEntreprise(entreprise);
+		entreprise.addRegimeFiscal(regimeFiscal);
+
+		assertEquals(2, service.computeCodeSegment(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_APM_LOCAL));
+	}
+
+	/**
+	 * Code segment PM <BR/>
+	 * 3: PM HS (Hors Suisse)
+	 *
+	 * @throws DeclarationException
+	 */
+	@Test
+	public void testComputeCodeSegmentPMHS() throws DeclarationException {
+		Entreprise entreprise = new Entreprise();
+		RegDate dateReference = date(2017, 9, 23);
+
+		// For fiscal principal
+		Set<ForFiscal> forFiscalSet = new HashSet<ForFiscal>();
+		entreprise.setForsFiscaux(forFiscalSet);
+		ForFiscalPrincipalPM forFiscalPrincipalPM = new ForFiscalPrincipalPM(date(2017, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, null, TypeAutoriteFiscale.PAYS_HS, MotifRattachement.ETABLISSEMENT_STABLE);
+		forFiscalSet.add(forFiscalPrincipalPM);
+
+		// Régime fiscal
+		ch.vd.uniregctb.tiers.RegimeFiscal regimeFiscal = new ch.vd.uniregctb.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.uniregctb.tiers.RegimeFiscal.Portee.VD, "1234");
+		regimeFiscal.setEntreprise(entreprise);
+		entreprise.addRegimeFiscal(regimeFiscal);
+
+		assertEquals(3, service.computeCodeSegment(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_BATCH));
+	}
+
+	/**
+	 * Code segment PM <BR/>
+	 * 4: PM Holding
+	 *
+	 * @throws DeclarationException
+	 */
+	@Test
+	public void testComputeCodeSegmentPMHolding() throws DeclarationException {
+		Entreprise entreprise = new Entreprise();
+		RegDate dateReference = date(2017, 9, 23);
+
+		// For fiscal principal
+		Set<ForFiscal> forFiscalSet = new HashSet<ForFiscal>();
+		entreprise.setForsFiscaux(forFiscalSet);
+		ForFiscalPrincipalPM forFiscalPrincipalPM = new ForFiscalPrincipalPM(date(2017, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ETABLISSEMENT_STABLE);
+		forFiscalSet.add(forFiscalPrincipalPM);
+
+		// Régime fiscal
+		ch.vd.uniregctb.tiers.RegimeFiscal regimeFiscal = new ch.vd.uniregctb.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.uniregctb.tiers.RegimeFiscal.Portee.VD, "41C");
+		regimeFiscal.setEntreprise(entreprise);
+		entreprise.addRegimeFiscal(regimeFiscal);
+
+		assertEquals(4, service.computeCodeSegment(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_LOCAL));
+
+
+	}
+
+	/**
+	 * Code segment PM <BR />
+	 * 5: PM HC (Hors Canton)
+	 *
+	 * @throws DeclarationException
+	 */
+	@Test
+	public void testComputeCodeSegmentPMHC() throws DeclarationException {
+		Entreprise entreprise = new Entreprise();
+		RegDate dateReference = date(2017, 9, 23);
+
+		// For fiscal principal
+		Set<ForFiscal> forFiscalSet = new HashSet<ForFiscal>();
+		entreprise.setForsFiscaux(forFiscalSet);
+		ForFiscalPrincipalPM forFiscalPrincipalPM = new ForFiscalPrincipalPM(date(2017, 1, 1), MotifFor.DEBUT_EXPLOITATION, null, null, MockCommune.Zurich.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.ETABLISSEMENT_STABLE);
+		forFiscalSet.add(forFiscalPrincipalPM);
+
+		// Régime fiscal
+		ch.vd.uniregctb.tiers.RegimeFiscal regimeFiscal = new ch.vd.uniregctb.tiers.RegimeFiscal(date(2017, 1, 1), null, ch.vd.uniregctb.tiers.RegimeFiscal.Portee.VD, "23");
+		regimeFiscal.setEntreprise(entreprise);
+		entreprise.addRegimeFiscal(regimeFiscal);
+
+		assertEquals(5, service.computeCodeSegment(entreprise, dateReference, TypeDocument.DECLARATION_IMPOT_PM_LOCAL));
 	}
 }

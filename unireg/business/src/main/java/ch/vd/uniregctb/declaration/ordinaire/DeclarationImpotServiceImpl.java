@@ -743,6 +743,22 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		return processor.run(dateTraitement, nombreMax, statusManager);
 	}
 
+	/**
+	 * Code de routage pour la personne morale :<BR />
+	 * <ul>
+	 *     <li>1 : PM Vaudoise</li>
+	 *     <li>2 : APM</li>
+	 *     <li>3 : PM HS (Hors Suisse)</li>
+	 *     <li>4 : PM Holding</li>
+	 *     <li>5 : PM HC (Hors Canton)</li>
+	 * </ul>
+	 *
+	 * @param entreprise entreprise considérée
+	 * @param dateReference date de fin de la période d'imposition
+	 * @param typeDocument type de document considéré
+	 * @return
+	 * @throws DeclarationException
+	 */
 	@Override
 	public int computeCodeSegment(Entreprise entreprise, RegDate dateReference, TypeDocument typeDocument) throws DeclarationException {
 
@@ -778,7 +794,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			return 1;
 		}
 
-		// PM HC ou HS -> "3"
+		// PM HC (Hors Canton) -> "5"
+		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+			return 5;
+		}
+
+		// PM HS (Hors Suisse) -> "3"
 		return 3;
 	}
 }

@@ -536,12 +536,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		if (super.shouldAssignCodeControle(di)) {
 			// [SIFISC-17952] seulement pour les PM non-HC à la fin de la période d'imposition
 			if (di.getModeleDocument() != null && GroupeTypesDocumentBatchLocal.DI_PM.hasType(di.getModeleDocument().getTypeDocument())) {
-				// ok, nous avons une PM (par opposition à APM), voyons maintenant le for principal
-				final ForFiscalPrincipal ffp = getDernierForFiscalPrincipalAvant(di.getDateFinExerciceCommercial());
-				if (ffp != null && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_HC) {
-					// si le for fiscal est VD ou HS, on génère un code de contrôle
-					return true;
-				}
+				return true;
 			}
 		}
 		return false;

@@ -396,7 +396,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 					Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 					final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
-					Assert.assertNull(di.getCodeControle());            // pas de code de contrôle pour les entreprises avec for principal HC à la fin de l'exercice
+					Assert.assertNotNull(di.getCodeControle());            // pas de code de contrôle pour les entreprises avec for principal HC à la fin de l'exercice
 					Assert.assertEquals(pf, di.getPeriode().getAnnee().intValue());
 					Assert.assertEquals((Integer) 1, di.getNumero());
 
