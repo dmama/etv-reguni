@@ -3,12 +3,10 @@ package ch.vd.uniregctb.transaction;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.transaction.support.DefaultTransactionStatus;
-import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -69,9 +67,8 @@ public class UniregJtaTransactionManager extends JtaTransactionManager implement
 	}
 
 	private void registerSuppliedSynchronizations() {
-		final Consumer<TransactionSynchronization> collector = TransactionSynchronizationManager::registerSynchronization;
 		lockHelper.doInReadLock(() -> synchronizationSuppliers.stream()
 				.map(IdentityKey::getElt)
-				.forEach(supplier -> supplier.registerSynchronizations(collector)));
+				.forEach(supplier -> supplier.registerSynchronizations(TransactionSynchronizationManager::registerSynchronization)));
 	}
 }

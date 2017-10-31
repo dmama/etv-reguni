@@ -11,6 +11,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.hibernate.CallbackException;
 import org.hibernate.collection.internal.AbstractPersistentCollection;
 import org.hibernate.type.Type;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -20,6 +21,7 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LockHelper;
 import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.common.ThreadSwitch;
+import ch.vd.uniregctb.transaction.TransactionSynchronizationManagerInterface;
 import ch.vd.uniregctb.transaction.TransactionSynchronizationRegistrar;
 import ch.vd.uniregctb.transaction.TransactionSynchronizationSupplier;
 
@@ -264,10 +266,10 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor implement
 	}
 
 	@Override
-	public void registerSynchronizations(Consumer<TransactionSynchronization> collector) {
+	public void registerSynchronizations(@NotNull TransactionSynchronizationManagerInterface mgr) {
 		// on n'enregistre une synchronisation que si elle n'est pas déjà enregistrée
 		if (isEnabledForThread() && !synchronisationRegistrationFlag.get()) {
-			collector.accept(new TransactionSync());
+			mgr.registerSynchronization(new TransactionSync());
 			synchronisationRegistrationFlag.set(Boolean.TRUE);
 		}
 	}
