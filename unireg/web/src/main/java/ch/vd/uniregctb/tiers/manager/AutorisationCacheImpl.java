@@ -196,8 +196,8 @@ public class AutorisationCacheImpl implements AutorisationCache, FiscalDataEvent
 	 * @param id l'id du tiers dont les données cachées doivent être supprimées.
 	 */
 	private void evictTiers(long id) {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Eviction des autorisations cachées pour le tiers n° " + id);
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Eviction des autorisations cachées pour le tiers n° " + id);
 		}
 		final List<?> keys = cache.getKeys();
 		for (Object k : keys) {
