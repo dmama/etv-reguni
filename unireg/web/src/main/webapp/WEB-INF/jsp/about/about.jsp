@@ -89,7 +89,7 @@
 				<h4>Développement :</h4>
 				<ul>
 					<li>Baba Issa Ngom</li>
-					<li>Jacob Deker</li>
+					<li>Euan Mateo</li>
 					<li>Manuel Siggen</li>
 					<li>Raphaël Marmier</li>
 				</ul>
@@ -114,6 +114,7 @@
 					<li>Frédéric Noguier</li>
 					<li>Gilles Dubey</li>
 					<li>Hakan Kaynar</li>
+					<li>Jacob Deker</li>
 					<li>Jean-Eric Cuendet</li>
 					<li>Jérôme Jacques</li>
 					<li>Kamel Chabane</li>
