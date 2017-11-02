@@ -67,7 +67,7 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 			super.commit();
 		}
 		finally {
-			end(start, "commit", Level.INFO, WARNING_THRESHOLD, Level.WARN);
+			end(start, "commit", Level.DEBUG, WARNING_THRESHOLD, Level.WARN);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 			super.rollback();
 		}
 		finally {
-			end(start, "rollback", Level.INFO, WARNING_THRESHOLD, Level.WARN);
+			end(start, "rollback", Level.DEBUG, WARNING_THRESHOLD, Level.WARN);
 		}
 	}
 
@@ -100,7 +100,7 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 			return super.suspend();
 		}
 		finally {
-			end(start, "suspend", Level.DEBUG, WARNING_THRESHOLD, Level.WARN);
+			end(start, "suspend", Level.TRACE, WARNING_THRESHOLD, Level.WARN);
 		}
 	}
 
@@ -111,7 +111,7 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 			super.resume(tx);
 		}
 		finally {
-			end(start, "resume", Level.DEBUG, WARNING_THRESHOLD, Level.WARN);
+			end(start, "resume", Level.TRACE, WARNING_THRESHOLD, Level.WARN);
 		}
 	}
 }
