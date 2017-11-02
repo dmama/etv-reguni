@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.activemq.ra.ActiveMQResourceAdapter;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
 import org.junit.Before;
@@ -42,14 +41,12 @@ public abstract class EvenementTest {
 
 	protected UniregProperties uniregProperties;
 	protected ConnectionFactory jmsConnectionFactory;
-	protected ActiveMQResourceAdapter resourceAdapter;
 	protected GentilEsbMessageListenerContainer listener;
 
 	protected EvenementTest() {
 		EvenementHelper.initLog4j();
 		uniregProperties = EvenementHelper.initProps();
 		jmsConnectionFactory = EvenementHelper.initConnectionFactory(uniregProperties);
-		resourceAdapter = EvenementHelper.initResourceAdapter(uniregProperties);
 	}
 
 	@Before

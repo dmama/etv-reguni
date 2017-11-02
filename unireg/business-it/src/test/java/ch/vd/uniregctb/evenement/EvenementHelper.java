@@ -1,17 +1,11 @@
 package ch.vd.uniregctb.evenement;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.MessageListener;
-import javax.resource.spi.ResourceAdapter;
 import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.ra.ActiveMQActivationSpec;
-import org.apache.activemq.ra.ActiveMQResourceAdapter;
-import org.springframework.jca.support.SimpleBootstrapContext;
-import org.springframework.jca.work.SimpleTaskWorkManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -22,7 +16,6 @@ import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
 import ch.vd.uniregctb.utils.UniregProperties;
 import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 
@@ -62,48 +55,6 @@ public abstract class EvenementHelper {
 		factory.setUserName(username);
 		factory.setPassword(password);
 		return factory;
-	}
-
-	public static ActiveMQResourceAdapter initResourceAdapter(UniregProperties uniregProperties) {
-		final String url = uniregProperties.getProperty("testprop.esb.jms.url");
-		final String username = uniregProperties.getProperty("testprop.esb.jms.username");
-		final String password = uniregProperties.getProperty("testprop.esb.jms.password");
-
-		ActiveMQResourceAdapter resourceAdapter = new ActiveMQResourceAdapter();
-		resourceAdapter.setServerUrl(url);
-		resourceAdapter.setUserName(username);
-		resourceAdapter.setPassword(password);
-
-		try {
-			resourceAdapter.start(new SimpleBootstrapContext(new SimpleTaskWorkManager(), null));
-			return resourceAdapter;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static EsbMessageEndpointManager initEndpointManager(ResourceAdapter resourceAdapter, String queueName, MessageListener listener) {
-
-		final ActiveMQActivationSpec activationSpec = new ActiveMQActivationSpec();
-		activationSpec.setDestination(queueName);
-		activationSpec.setDestinationType("javax.jms.Queue");
-		activationSpec.setMaxSessions("1");
-		activationSpec.setMaxMessagesPerSessions("1");
-
-		EsbMessageEndpointManager manager = new EsbMessageEndpointManager();
-		manager.setResourceAdapter(resourceAdapter);
-		manager.setActivationSpec(activationSpec);
-		manager.setMessageListener(listener);
-
-		try {
-			manager.afterPropertiesSet();
-			manager.start();
-			return manager;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public static void clearQueue(EsbJmsTemplate esbTemplate, String queueName) throws Exception {
