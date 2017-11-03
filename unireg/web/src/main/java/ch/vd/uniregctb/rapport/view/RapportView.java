@@ -18,6 +18,7 @@ import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
@@ -86,6 +87,10 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	private Boolean extensionExecutionForcee;
 	private boolean extensionExecutionForceeAllowed;
 
+	// -- uniquement pour Héritage --
+
+	private Boolean principalCommunaute;
+
 	private String toolTipMessage;
 
 	// -- uniquement pour la Representation légale
@@ -126,6 +131,10 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 			this.extensionExecutionForcee = rc.getExtensionExecutionForcee();
 			final Tiers tiersSujet = getTiers(rapport.getSujetId(), tiersService);
 			this.extensionExecutionForceeAllowed = isHorsSuisse(tiersSujet, rapport); // [UNIREG-2655]
+		}
+
+		if (rapport instanceof Heritage) {
+			this.principalCommunaute = ((Heritage) rapport).getPrincipalCommunaute();
 		}
 
 		if (rapport instanceof RepresentationLegale) {
@@ -307,6 +316,14 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	public void setExtensionExecutionForceeAllowed(boolean extensionExecutionForceeAllowed) {
 		this.extensionExecutionForceeAllowed = extensionExecutionForceeAllowed;
+	}
+
+	public Boolean getPrincipalCommunaute() {
+		return principalCommunaute;
+	}
+
+	public void setPrincipalCommunaute(Boolean principalCommunaute) {
+		this.principalCommunaute = principalCommunaute;
 	}
 
 	public static BaseComparator<RapportView> getComparator() {

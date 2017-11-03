@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -16,6 +17,7 @@ import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
@@ -254,6 +256,61 @@ public class RapportEditManagerTest extends WebTest {
 		});
 
 		assertUnAssujetissementParSubstitution(noTiersSubstitue);
+	}
+
+	/**
+	 * [SIFISC-24999] Vérifie que le flag 'principal' est bien sauvé sur un rapport d'héritage.
+	 */
+	@Test
+	public void testSaveRapportHeritage() throws Exception {
+
+		class Ids {
+			Long decede;
+			Long heritier;
+		}
+		final Ids ids = new Ids();
+
+		// on créé deux personnes
+		doInNewTransaction(status -> {
+			final PersonnePhysique decede = addNonHabitant("Jean", "Peuplu", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier = addNonHabitant("Jaime", "Rejoui", RegDate.get(1980, 1, 1), Sexe.MASCULIN);
+			ids.decede = decede.getId();
+			ids.heritier = heritier.getId();
+			return null;
+		});
+
+		// on ajoute un lien d'héritage
+		doInNewTransaction(status -> {
+			final RapportView rapport = new RapportView();
+			rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.HERITAGE);
+			rapport.setTiers(new TiersGeneralView(ids.decede));
+			rapport.setTiersLie(new TiersGeneralView(ids.heritier));
+			rapport.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET);  // le tiers lié est l'objet
+			rapport.setDateDebut(date(2014, 11, 11));
+			rapport.setPrincipalCommunaute(true);
+			manager.save(rapport);
+			return null;
+		});
+
+		// on vérifie que le rapport a bien été créé correctement
+		doInNewTransaction(status -> {
+			final PersonnePhysique decede = hibernateTemplate.get(PersonnePhysique.class, ids.decede);
+			assertNotNull(decede);
+
+			final Set<RapportEntreTiers> rapportsSujet = decede.getRapportsSujet();
+			assertNotNull(rapportsSujet);
+			assertEquals(1, rapportsSujet.size());
+
+			final RapportEntreTiers rapport0 = rapportsSujet.iterator().next();
+			assertNotNull(rapport0);
+			assertTrue(rapport0 instanceof Heritage);
+
+			final Heritage heritage0 = (Heritage) rapport0;
+			assertEquals(ids.decede, heritage0.getSujetId());
+			assertEquals(ids.heritier, heritage0.getObjetId());
+			assertTrue(heritage0.getPrincipalCommunaute());
+			return null;
+		});
 	}
 
 	private void assertUneRepresentationConventionnelle(final boolean executionForcee, final long noTiersRepresente) throws Exception {

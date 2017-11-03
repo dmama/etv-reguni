@@ -127,10 +127,12 @@
 
             var hasExtensionExecutionForcee = false;
             var hasAutoriteTutelaire = false;
+            var hasPrincipalCommunaute = false;
             for (var i in rapports) {
                 var rapport = rapports[i];
                 hasExtensionExecutionForcee = hasExtensionExecutionForcee || rapport.extensionExecutionForcee;
                 hasAutoriteTutelaire = hasAutoriteTutelaire || rapport.autoriteTutelaireId;
+	            hasPrincipalCommunaute = hasPrincipalCommunaute || rapport.principalCommunaute;
             }
 
             var html = '<table id="rapport" class="display"><thead><tr>\n';
@@ -146,6 +148,9 @@
 	            if (hasExtensionExecutionForcee) {
 	                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'extensionExecutionForcee\');">Extension à l\'exécution forcée</a></th>';
 	            }
+	            if (hasPrincipalCommunaute) {
+		            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'principalCommunaute\');">Principal de communauté</a></th>';
+	            }
 	        }
 		    else {
                 html += '<th>Rapport avec le tiers</th>';
@@ -158,6 +163,9 @@
 			    }
 			    if (hasExtensionExecutionForcee) {
 				    html += '<th>Extension à l\'exécution forcée</th>';
+			    }
+			    if (hasPrincipalCommunaute) {
+				    html += '<th>Principal de communauté</th>';
 			    }
 		    }
             html += '<th></th>';
@@ -181,7 +189,7 @@
                 html += '<td>' + Tiers.linkTo(rapport.numeroAutreTiers) + '</td>';
 
                 html += '<td>';
-                if (rapport.nomCourrier != null) {
+                if (rapport.nomCourrier) {
                     var first = true;
                     for (var line in rapport.nomCourrier) {
                         if (!first) {
@@ -202,8 +210,15 @@
                 }
                 if (hasExtensionExecutionForcee) {
                     html += '<td>';
-                    if (rapport.extensionExecutionForcee != null) {
+                    if (rapport.extensionExecutionForcee) {
                         html += '<input type="checkbox"' + (rapport.extensionExecutionForcee ? ' checked="true"' : '') + ' disabled="true"/>';
+                    }
+                    html += '</td>';
+                }
+                if (hasPrincipalCommunaute) {
+                    html += '<td>';
+                    if (rapport.principalCommunaute) {
+                        html += '<input type="checkbox"' + (rapport.principalCommunaute ? ' checked="true"' : '') + ' disabled="true"/>';
                     }
                     html += '</td>';
                 }

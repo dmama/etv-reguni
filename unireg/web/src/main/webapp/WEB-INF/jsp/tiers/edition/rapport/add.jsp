@@ -27,11 +27,11 @@
 				<%-- Flèche du sens du rapport  --%>
 				<table id="flecheSensRapport" cellpadding="0" cellspacing="0">
 					<tr>
-						<td style="width:1em;"/>
-						<td id="flecheGauche" class="fleche_droite_bord_gauche iepngfix"/>
-						<td id="flecheMilieu" class="fleche_milieu"/>
-						<td id="flecheDroite" class="fleche_droite_bord_droit iepngfix"/>
-						<td style="width:1em;"/>
+						<td style="width:1em;"></td>
+						<td id="flecheGauche" class="fleche_droite_bord_gauche iepngfix"></td>
+						<td id="flecheMilieu" class="fleche_milieu"></td>
+						<td id="flecheDroite" class="fleche_droite_bord_droit iepngfix"></td>
+						<td style="width:1em;"></td>
 					</tr>
 				</table>
 			</td>
@@ -106,6 +106,12 @@
 						<form:checkbox id="executionForcee" path="extensionExecutionForcee" />
 					</p>
 
+					<p>
+						<%-- Election du principal de communauté d'héritier (seulement pour HERITAGE) --%>
+						<label id="principalCommunauteLabel" for="principalCommunaute">Principal de la communauté d'héritiers :</label>
+						<form:checkbox id="principalCommunaute" path="principalCommunaute" />
+					</p>
+
 				</fieldset>
 
 				<script type="text/javascript">
@@ -175,7 +181,7 @@
 
 						refreshExecutionForcee: function() {
 							var type = $('#typeRapport');
-							if (type.val() == 'REPRESENTATION') {
+							if (type.val() === 'REPRESENTATION') {
 								$('#executionForcee').show();
 								$('#executionForceeLabel').show();
 
@@ -195,7 +201,7 @@
 
 								var typeFFP = this._getTypeForPrincipalActif(tiersRepresente);
 
-								if (typeFFP == 'PAYS_HS') {
+								if (typeFFP === 'PAYS_HS') {
 									$('#executionForcee').attr('disabled', null);
 									$('#executionForceeLabel').css('color', '');
 									$('#executionForceeLabel').attr('title', "");
@@ -213,9 +219,21 @@
 							}
 						},
 
+						refreshPrincipalCommunaute: function() {
+							var type = $('#typeRapport');
+							if (type.val() === 'HERITAGE') {
+								$('#principalCommunaute').show();
+								$('#principalCommunauteLabel').show();
+							}
+							else {
+								$('#principalCommunaute').hide();
+								$('#principalCommunauteLabel').hide();
+							}
+						},
+
 						refreshAutoriteTutelaire: function() {
 							var type = $('#typeRapport');
-							if (type.val() == 'TUTELLE' || type.val() == 'CURATELLE' || type.val() == 'CONSEIL_LEGAL') {
+							if (type.val() === 'TUTELLE' || type.val() === 'CURATELLE' || type.val() === 'CONSEIL_LEGAL') {
 								$('#autoriteTutelaireLabel').show();
 								$('#nomAutoriteTutelaire').show();
 
@@ -232,6 +250,7 @@
 
 						refreshAll: function() {
 							this.refreshExecutionForcee();
+							this.refreshPrincipalCommunaute();
 							this.refreshLegend();
 							this.refreshAutoriteTutelaire();
 						},
@@ -242,7 +261,7 @@
 
 						inverseSens: function() {
 							var sens = $('#sensRapport');
-							if (sens.val() == 'SUJET') {
+							if (sens.val() === 'SUJET') {
 								sens.val('OBJET');
 							}
 							else {

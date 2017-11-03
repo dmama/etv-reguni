@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
@@ -39,6 +40,9 @@ public class RapportsPage {
 		private Long autoriteTutelaireId;
 		private String nomAutoriteTutelaire;
 
+		// -- uniquement pour les héritiers
+		private Boolean principalCommunaute;
+
 		public RapportView(RapportEntreTiers rapport, SensRapportEntreTiers sens, TiersService tiersService, AdresseService adresseService, MessageSource messageSource) {
 			this.id = rapport.getId();
 			this.dateDebut = RegDateHelper.dateToDisplayString(rapport.getDateDebut());
@@ -57,6 +61,11 @@ public class RapportsPage {
 				final RepresentationLegale rl = (RepresentationLegale) rapport;
 				this.autoriteTutelaireId = rl.getAutoriteTutelaireId();
 				this.nomAutoriteTutelaire = initNomAutoriteTutelaire(this.autoriteTutelaireId, tiersService);
+			}
+
+			if (rapport instanceof Heritage) {
+				final Heritage heritage = (Heritage) rapport;
+				this.principalCommunaute = heritage.getPrincipalCommunaute();
 			}
 
 			this.toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapport, adresseService, tiersService);
@@ -175,6 +184,10 @@ public class RapportsPage {
 
 		public void setNomAutoriteTutelaire(String nomAutoriteTutelaire) {
 			this.nomAutoriteTutelaire = nomAutoriteTutelaire;
+		}
+
+		public Boolean getPrincipalCommunaute() {
+			return principalCommunaute;
 		}
 	}
 

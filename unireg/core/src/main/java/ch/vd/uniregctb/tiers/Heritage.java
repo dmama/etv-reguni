@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
@@ -25,6 +26,11 @@ public class Heritage extends RapportEntreTiers {
 	private static final String HERITIER = "héritier";
 	private static final String DEFUNT = "défunt(e)";
 
+	/**
+	 * Vrai si l'héritier est le principal de la communauté d'héritiers (voir SIFISC-24999).
+	 */
+	private Boolean principalCommunaute = false;
+
 	public Heritage() {
 	}
 
@@ -39,6 +45,15 @@ public class Heritage extends RapportEntreTiers {
 	@Override
 	public Heritage duplicate() {
 		return new Heritage(this);
+	}
+
+	@Column(name = "PRINCIPAL_COMM_HERITIERS")
+	public Boolean getPrincipalCommunaute() {
+		return principalCommunaute;
+	}
+
+	public void setPrincipalCommunaute(Boolean principalCommunaute) {
+		this.principalCommunaute = principalCommunaute;
 	}
 
 	@Transient

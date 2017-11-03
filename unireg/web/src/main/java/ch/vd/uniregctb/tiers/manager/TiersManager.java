@@ -351,34 +351,7 @@ public class TiersManager implements MessageSourceAware {
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsObjet()) {
 			final RapportEntreTiersKey key = new RapportEntreTiersKey(rapportEntreTiers.getType(), RapportEntreTiersKey.Source.OBJET);
 			if (RapportHelper.ALLOWED_VISU_COMPLETE.contains(key)) {
-				final RapportView rapportView = new RapportView();
-				rapportView.setId(rapportEntreTiers.getId());
-				rapportView.setAnnule(rapportEntreTiers.isAnnule());
-				rapportView.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET);
-				rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.fromCore(rapportEntreTiers.getType()));
-				rapportView.setDateDebut(rapportEntreTiers.getDateDebut());
-				rapportView.setDateFin(rapportEntreTiers.getDateFin());
-
-				final Tiers tiersSujet = tiersDAO.get(rapportEntreTiers.getSujetId());
-				rapportView.setNumero(tiersSujet.getNumero());
-
-				List<String> nomSujet;
-				try {
-					nomSujet = adresseService.getNomCourrier(tiersSujet, null, false);
-				}
-				catch (Exception e) {
-					nomSujet = new ArrayList<>();
-					nomSujet.add(e.getMessage());
-				}
-				rapportView.setNomCourrier(nomSujet);
-
-				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
-				rapportView.setToolTipMessage(toolTipMessage);
-				if (rapportEntreTiers instanceof RepresentationLegale) {
-					setNomAutoriteTutelaire(rapportEntreTiers, rapportView);
-
-				}
-				rapportsView.add(rapportView);
+				rapportsView.add(new RapportView(rapportEntreTiers, SensRapportEntreTiers.OBJET, tiersService, adresseService));
 			}
 		}
 

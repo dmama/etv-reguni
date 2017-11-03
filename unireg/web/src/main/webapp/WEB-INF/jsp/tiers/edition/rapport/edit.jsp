@@ -69,6 +69,14 @@
 					</td>
 				</tr>
 			</c:if>
+			<c:if test="${rapportEditView.natureRapportEntreTiers == 'Heritage'}">
+				<tr class="<unireg:nextRowClass/>" >
+					<td width="25%" ></td>
+					<td width="75%" colspan="3">
+						<form:checkbox path="principalCommunaute" label="Principal de la communauté d'héritiers" disabled="true"/>
+					</td>
+				</tr>
+			</c:if>
 		</table>
 		</c:if>
 		<c:if test="${!rapportEditView.allowed}">

@@ -31,12 +31,16 @@
 
 		<%-- détermine si un rapport est de type représentation conventionnelle --%>
 		<c:set var="hasExtensionExecutionForcee" value="${false}" />
+		<c:set var="hasPrincipalCommunaute" value="${false}" />
 		<c:forEach items="${command.dossiersApparentes}" var="rapport">
 			<c:if test="${rapport.extensionExecutionForcee != null}">
 				<c:set var="hasExtensionExecutionForcee" value="${true}" />
 			</c:if>
 			<c:if test="${rapport.nomAutoriteTutelaire != null}">
 				<c:set var="hasAutoriteTutelaire" value="${true}" />
+			</c:if>
+			<c:if test="${rapport.natureRapportEntreTiers == 'Heritage'}">
+				<c:set var="hasPrincipalCommunaute" value="${true}" />
 			</c:if>
 		</c:forEach>
 
@@ -82,6 +86,13 @@
 				<display:column sortable ="true" titleKey="label.extension.execution.forcee">
 					<c:if test="${dossierApparente.extensionExecutionForcee != null}">
 						<input type="checkbox" <c:if test="${dossierApparente.extensionExecutionForcee}">checked="true"</c:if> disabled="true"/>
+					</c:if>
+				</display:column>
+			</c:if>
+			<c:if test="${hasPrincipalCommunaute}">
+				<display:column sortable ="true" titleKey="label.principal.communaute.heritiers">
+					<c:if test="${dossierApparente.natureRapportEntreTiers == 'Heritage'}">
+						<input type="checkbox" <c:if test="${dossierApparente.principalCommunaute}">checked="true"</c:if> disabled="true"/>
 					</c:if>
 				</display:column>
 			</c:if>

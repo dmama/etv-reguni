@@ -23,6 +23,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
@@ -134,6 +135,9 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			final boolean isHorsSuisse = isHorsSuisse(rapportEntreTiers.getSujetId(), rapportEntreTiers);
 			rapportView.setExtensionExecutionForceeAllowed(isHorsSuisse); // [UNIREG-2655]
 		}
+		else if (rapportEntreTiers instanceof Heritage) {
+			rapportView.setPrincipalCommunaute(((Heritage) rapportEntreTiers).getPrincipalCommunaute());
+		}
 
 		//vérification droit édition du rapport pour fermeture
 		rapportView.setAllowed(isEditionAllowed(idRapport, editingFrom));
@@ -235,10 +239,16 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 			}
 
+			if (rapport instanceof Heritage) {
+				final Heritage heritage =(Heritage) rapport;
+				heritage.setPrincipalCommunaute(rapportView.getPrincipalCommunaute());
+			}
+
 			// établit le rapport entre les deux tiers
 			tiersService.addRapport(rapport, sujet, objet);
 		}
 		else {
+			// mise-à-jour du rapport
 			RapportEntreTiers rapportEntreTiers = rapportEntreTiersDAO.get(rapportView.getId());
 			rapportEntreTiers.setDateFin(rapportView.getDateFin());
 			if (rapportEntreTiers instanceof RapportPrestationImposable) {
