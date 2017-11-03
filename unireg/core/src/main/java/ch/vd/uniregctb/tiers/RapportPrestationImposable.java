@@ -11,7 +11,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
- * <!-- begin-user-doc -->
  * <pre>
  * +--------------+                        +-----------------------------+
  * | Contribuable |                        | DebiteurPrestationImposable |
@@ -21,12 +20,6 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  *        +---------| RapportPrestationImposable |---------+
  *                  +----------------------------+
  * </pre>
- * <!-- end-user-doc -->
- * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uAPHcNjDEdyFDMrjDUGsjQ"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uAPHcNjDEdyFDMrjDUGsjQ"
  */
 @Entity
 @DiscriminatorValue("RapportPrestationImposable")
@@ -34,6 +27,8 @@ public class RapportPrestationImposable extends RapportEntreTiers {
 
 	private static final String EMPLOYEUR = "employeur";
 	private static final String SOURCIER = "sourcier";
+
+	private RegDate finDernierElementImposable;
 
 	public RapportPrestationImposable() {
 		// empty
@@ -60,38 +55,14 @@ public class RapportPrestationImposable extends RapportEntreTiers {
 		return SOURCIER;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_u27e4NjDEdyFDMrjDUGsjQ"
-	 */
-	private RegDate finDernierElementImposable;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the finDernierElementImposable
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_u27e4NjDEdyFDMrjDUGsjQ?GETTER"
-	 */
 	@Column(name = "DATE_FIN_DER_ELE_IMP")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getFinDernierElementImposable() {
-		// begin-user-code
 		return finDernierElementImposable;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theFinDernierElementImposable the finDernierElementImposable to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_u27e4NjDEdyFDMrjDUGsjQ?SETTER"
-	 */
 	public void setFinDernierElementImposable(RegDate theFinDernierElementImposable) {
-		// begin-user-code
 		finDernierElementImposable = theFinDernierElementImposable;
-		// end-user-code
 	}
 
 	/*

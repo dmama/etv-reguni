@@ -21,7 +21,7 @@ import ch.vd.uniregctb.tiers.TransfertPatrimoine;
 import ch.vd.uniregctb.tiers.Tutelle;
 
 /**
- * <!-- begin-user-doc --> Longueur de colonne : 20 <!-- end-user-doc -->
+ * Longueur de colonne : 20
  */
 public enum TypeRapportEntreTiers {
 

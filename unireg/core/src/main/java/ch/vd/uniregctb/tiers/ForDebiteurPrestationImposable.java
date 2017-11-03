@@ -6,15 +6,6 @@ import javax.persistence.Transient;
 
 import ch.vd.uniregctb.type.GenreImpot;
 
-/**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
- * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_QGWdIEE7Ed2XrapGHNAWZw"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_QGWdIEE7Ed2XrapGHNAWZw"
- */
 @Entity
 @DiscriminatorValue("ForDebiteurPrestationImposable")
 public class ForDebiteurPrestationImposable extends ForFiscalAvecMotifs {

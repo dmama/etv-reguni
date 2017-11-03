@@ -76,13 +76,9 @@ public abstract class ForFiscal extends LocalisationDatee implements Comparable<
 	private Long id;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc --> Indique l'impôt auquel un contribuable est soumis : - ICC/IFD (dit aussi impôt
-	 * ordinaire ou IRF/IBC) - GI - DM - ...
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8ZVx9Edygsbnw9h5bVw"
+	 * Indique l'impôt auquel un contribuable est soumis : - ICC/IFD (dit aussi impôt ordinaire ou IRF/IBC) - GI - DM - ...
 	 */
 	private GenreImpot genreImpot;
-
 	private Tiers tiers;
 
 	public ForFiscal() {
@@ -121,28 +117,14 @@ public abstract class ForFiscal extends LocalisationDatee implements Comparable<
 		this.id = theId;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the genreImpot
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8ZVx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "GENRE_IMPOT", nullable = false, length = LengthConstants.FOR_GENRE)
 	@Type(type = "ch.vd.uniregctb.hibernate.GenreImpotUserType")
 	public GenreImpot getGenreImpot() {
-		// begin-user-code
 		return genreImpot;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theGenreImpot the genreImpot to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8ZVx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setGenreImpot(GenreImpot theGenreImpot) {
-		// begin-user-code
 		genreImpot = theGenreImpot;
-		// end-user-code
 	}
 
 	/**

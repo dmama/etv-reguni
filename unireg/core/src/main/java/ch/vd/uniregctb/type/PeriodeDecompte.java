@@ -1,25 +1,10 @@
-/**
- *
- */
 package ch.vd.uniregctb.type;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 
-/**
- * <!-- begin-user-doc --> <!-- end-user-doc -->
- *
- * @author xsifnr
- * @uml.annotations derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uw0AAM28Ed2O8ZP7tr6cjA"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uw0AAM28Ed2O8ZP7tr6cjA"
- */
 public enum PeriodeDecompte {
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_1L6bMM28Ed2O8ZP7tr6cjA"
-	 */
 	M01 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -37,11 +22,6 @@ public enum PeriodeDecompte {
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_3u5VUM28Ed2O8ZP7tr6cjA"
-	 */
 	M02 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -71,11 +51,6 @@ public enum PeriodeDecompte {
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}
 	},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_47-McM28Ed2O8ZP7tr6cjA"
-	 */
 	M03 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -104,11 +79,6 @@ public enum PeriodeDecompte {
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}
 	},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_5_fe8M28Ed2O8ZP7tr6cjA"
-	 */
 	M04 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -138,11 +108,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 4, 30);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_7lE8sM28Ed2O8ZP7tr6cjA"
-	 */
 	M05 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -171,11 +136,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 5, 31);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_8qr54M28Ed2O8ZP7tr6cjA"
-	 */
 	M06 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -204,11 +164,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 6, 30);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_98_2UM28Ed2O8ZP7tr6cjA"
-	 */
 	M07 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -238,11 +193,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 7, 31);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#__Je3kM28Ed2O8ZP7tr6cjA"
-	 */
 	M08 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -272,11 +222,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 8, 31);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_AiOMIM29Ed2O8ZP7tr6cjA"
-	 */
 	M09 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -307,11 +252,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 9, 30);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_CIZfwM29Ed2O8ZP7tr6cjA"
-	 */
 	M10 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -342,11 +282,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 10, 31);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_D2fZQM29Ed2O8ZP7tr6cjA"
-	 */
 	M11 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -377,11 +312,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 11, 30);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_E66DoM29Ed2O8ZP7tr6cjA"
-	 */
 	M12 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -411,11 +341,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 12, 31);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_GBROwM29Ed2O8ZP7tr6cjA"
-	 */
 	T1 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -439,11 +364,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 3, 31);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_G-qrIM29Ed2O8ZP7tr6cjA"
-	 */
 	T2 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -472,11 +392,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 6, 30);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_H4xi8M29Ed2O8ZP7tr6cjA"
-	 */
 	T3 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -507,11 +422,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 9, 30);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_JA0JEM29Ed2O8ZP7tr6cjA"
-	 */
 	T4 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -542,11 +452,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 12, 31);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_KQHNwM29Ed2O8ZP7tr6cjA"
-	 */
 	S1 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -570,11 +475,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 6, 30);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_LNbxoM29Ed2O8ZP7tr6cjA"
-	 */
 	S2 {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {
@@ -604,11 +504,6 @@ public enum PeriodeDecompte {
 			RegDate dateFin = RegDate.get(anneeCourante, 12, 31);
 			return new DateRangeHelper.Range(dateDebut, dateFin);
 		}},
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_MOOgQM29Ed2O8ZP7tr6cjA"
-	 */
 	A {
 		@Override
 		public DateRange getPeriodeSuivante(RegDate current) {

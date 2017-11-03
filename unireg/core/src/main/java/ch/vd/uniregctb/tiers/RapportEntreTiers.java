@@ -28,14 +28,6 @@ import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-/**
- * <!-- begin-user-doc --> <!-- end-user-doc -->
- * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_1qOJkJNUEdygKK6Oe0tVlw"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_1qOJkJNUEdygKK6Oe0tVlw"
- */
 @Entity
 @Table(name = "RAPPORT_ENTRE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -50,19 +42,7 @@ public abstract class RapportEntreTiers extends HibernateDateRangeEntity impleme
 	 * The ID
 	 */
 	private Long id;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcZNZEdygKK6Oe0tVlw"
-	 */
 	private Long sujetId;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcpNZEdygKK6Oe0tVlw"
-	 */
 	private Long objetId;
 
 
@@ -111,62 +91,34 @@ public abstract class RapportEntreTiers extends HibernateDateRangeEntity impleme
 		this.id = theId;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the sujet
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcZNZEdygKK6Oe0tVlw?GETTER"
-	 */
 	@Column(name = "TIERS_SUJET_ID", nullable = false)
 	@Index(name = "IDX_RET_TRS_SUJ_ID", columnNames = "TIERS_SUJET_ID")
 	@ForeignKey(name = "FK_RET_TRS_SUJ_ID")
 	public Long getSujetId() {
-		// begin-user-code
 		return sujetId;
-		// end-user-code
 	}
 
 	public void setSujetId(Long sujetId) {
 		this.sujetId = sujetId;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param sujet the sujet to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcZNZEdygKK6Oe0tVlw?SETTER"
-	 */
 	public void setSujet(Tiers sujet) {
-		// begin-user-code
 		this.sujetId = (sujet == null ? null : sujet.getId());
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the objet
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcpNZEdygKK6Oe0tVlw?GETTER"
-	 */
 	@Column(name = "TIERS_OBJET_ID", nullable = false)
 	@Index(name = "IDX_RET_TRS_OBJ_ID", columnNames = "TIERS_OBJET_ID")
 	@ForeignKey(name = "FK_RET_TRS_OBJ_ID")
 	public Long getObjetId() {
-		// begin-user-code
 		return objetId;
-		// end-user-code
 	}
 
 	public void setObjetId(Long objetId) {
 		this.objetId = objetId;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param objet the objet to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcpNZEdygKK6Oe0tVlw?SETTER"
-	 */
 	public void setObjet(Tiers objet) {
-		// begin-user-code
 		this.objetId = (objet == null ? null : objet.getId());
-		// end-user-code
 	}
 
 	/**

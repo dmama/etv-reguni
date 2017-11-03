@@ -7,33 +7,12 @@ import javax.persistence.Transient;
 
 import ch.vd.uniregctb.common.ComparisonHelper;
 
-/**
- *
- */
-
-/**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
- * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_7BuAMPC-Edy2ztXteGM8AA"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_7BuAMPC-Edy2ztXteGM8AA"
- */
 @Entity
 @DiscriminatorValue("CollectiviteAdministrative")
 public class CollectiviteAdministrative extends Contribuable {
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_JySRgPC_Edy2ztXteGM8AA"
-	 */
 	private Integer numeroCollectiviteAdministrative;
-
 	private Integer identifiantDistrictFiscal;
-
 	private Integer identifiantRegionFiscale;
 
 	public CollectiviteAdministrative() {
@@ -46,30 +25,14 @@ public class CollectiviteAdministrative extends Contribuable {
 		this.identifiantRegionFiscale = identifiantRegionFiscale;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the numeroCollectiviteAdministrative
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_JySRgPC_Edy2ztXteGM8AA?GETTER"
-	 */
 	@Column(name = "NUMERO_CA", unique = true)
 	//@Index(name = "IDX_NUMERO_CA") -> impliqué par le 'unique = true'
 	public Integer getNumeroCollectiviteAdministrative() {
-		// begin-user-code
 		return numeroCollectiviteAdministrative;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theNumeroCollectiviteAdministrative the numeroCollectiviteAdministrative to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_JySRgPC_Edy2ztXteGM8AA?SETTER"
-	 */
 	public void setNumeroCollectiviteAdministrative(Integer theNumeroCollectiviteAdministrative) {
-		// begin-user-code
 		numeroCollectiviteAdministrative = theNumeroCollectiviteAdministrative;
-		// end-user-code
 	}
 
 	@Transient

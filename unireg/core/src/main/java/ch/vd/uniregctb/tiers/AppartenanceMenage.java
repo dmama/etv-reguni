@@ -8,7 +8,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
- * <!-- begin-user-doc -->
  * <pre>
  * +------------------+                     +--------------+
  * | PersonnePhysique |                     | MenageCommun |
@@ -18,12 +17,6 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  *         +---------| AppartenanceMenage |---------+
  *                   +--------------------+
  * </pre>
- * <!-- end-user-doc -->
- * @author msi
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ZV_O4BFLEd2nzO4G1YQacw"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ZV_O4BFLEd2nzO4G1YQacw"
  */
 @Entity
 @DiscriminatorValue("AppartenanceMenage")

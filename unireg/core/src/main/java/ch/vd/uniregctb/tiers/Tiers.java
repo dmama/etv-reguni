@@ -742,9 +742,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 *            the officeImpotId to set
 	 */
 	public void setOfficeImpotId(Integer officeImpotID) {
-		// begin-user-code
 		this.officeImpotId = officeImpotID;
-		// end-user-code
 	}
 
 	/**

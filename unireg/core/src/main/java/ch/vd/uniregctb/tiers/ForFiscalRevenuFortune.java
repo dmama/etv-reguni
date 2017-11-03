@@ -13,22 +13,9 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-/**
- * <!-- begin-user-doc --> <!-- end-user-doc -->
- *
- * @author msi
- *
- * @uml.annotations derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_IJGfIF-hEdyCxumqfWBxMQ"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_IJGfIF-hEdyCxumqfWBxMQ"
- */
 @Entity
 public abstract class ForFiscalRevenuFortune extends ForFiscalAvecMotifs {
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8ilx9Edygsbnw9h5bVw"
-	 */
 	private MotifRattachement motifRattachement;
 
 	public ForFiscalRevenuFortune() {
@@ -46,31 +33,14 @@ public abstract class ForFiscalRevenuFortune extends ForFiscalAvecMotifs {
 		setMotifRattachement(ffrf.getMotifRattachement()); // virtual
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the motifRattachement
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8ilx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "MOTIF_RATTACHEMENT", length = LengthConstants.FOR_RATTACHEMENT)
 	@Type(type = "ch.vd.uniregctb.hibernate.MotifRattachementUserType")
 	public MotifRattachement getMotifRattachement() {
-		// begin-user-code
 		return motifRattachement;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theMotifRattachement
-	 *            the motifRattachement to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8ilx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setMotifRattachement(MotifRattachement theMotifRattachement) {
-		// begin-user-code
 		motifRattachement = theMotifRattachement;
-		// end-user-code
 	}
 
 

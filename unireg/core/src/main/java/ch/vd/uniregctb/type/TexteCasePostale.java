@@ -1,11 +1,7 @@
 package ch.vd.uniregctb.type;
 
 /**
- * <!-- begin-user-doc --> Longueur de colonne : 15 <!-- end-user-doc -->
- *
- * @author jec
- * @uml.annotations derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_y_mBoJOcEdy7DqR-SPIh9g"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_y_mBoJOcEdy7DqR-SPIh9g"
+ * Longueur de colonne : 15
  */
 public enum TexteCasePostale {
 	CASE_POSTALE("Case Postale %d", "Case Postale"),

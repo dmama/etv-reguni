@@ -26,15 +26,6 @@ import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.EtatCivil;
 
-/**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
- * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_DU1DQOxIEdycMumkNMs2uQ"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_DU1DQOxIEdycMumkNMs2uQ"
- */
 @Entity
 @Table(name = "SITUATION_FAMILLE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -50,15 +41,7 @@ public abstract class SituationFamille extends HibernateDateRangeEntity implemen
 	 * Le contribuable associé
 	 */
 	private ContribuableImpositionPersonnesPhysiques contribuable;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0TCpoOxIEdycMumkNMs2uQ"
-	 */
 	private int nombreEnfants;
-
 	private EtatCivil etatCivil;
 
 	public SituationFamille() {
@@ -100,29 +83,13 @@ public abstract class SituationFamille extends HibernateDateRangeEntity implemen
 		this.contribuable = contribuable;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the nombreEnfants
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0TCpoOxIEdycMumkNMs2uQ?GETTER"
-	 */
 	@Column(name = "NOMBRE_ENFANTS", nullable = false)
 	public int getNombreEnfants() {
-		// begin-user-code
 		return nombreEnfants;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theNombreEnfants the nombreEnfants to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0TCpoOxIEdycMumkNMs2uQ?SETTER"
-	 */
 	public void setNombreEnfants(int theNombreEnfants) {
-		// begin-user-code
 		nombreEnfants = theNombreEnfants;
-		// end-user-code
 	}
 
 	@Column(name = "ETAT_CIVIL", length = LengthConstants.SITUATIONFAMILLE_ETATCIVIL)

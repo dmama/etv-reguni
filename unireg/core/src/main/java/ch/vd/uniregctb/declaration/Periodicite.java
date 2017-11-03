@@ -53,11 +53,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange<
 	 * Date de fin de la périodicité
 	 */
 	private RegDate dateFin;
-
-
 	private PeriodiciteDecompte periodiciteDecompte;
-
-
 	private PeriodeDecompte periodeDecompte;
 
 	/**
@@ -70,18 +66,14 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange<
 	@Column(name = "DATE_DEBUT", nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
-		// begin-user-code
 		return dateDebut;
-		// end-user-code
 	}
 
 	/**
 	 * @param theDateDebut the dateDebut to set
 	 */
 	public void setDateDebut(RegDate theDateDebut) {
-		// begin-user-code
 		dateDebut = theDateDebut;
-		// end-user-code
 	}
 
 	/**
@@ -91,18 +83,14 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange<
 	@Column(name = "DATE_FIN")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
-		// begin-user-code
 		return dateFin;
-		// end-user-code
 	}
 
 	/**
 	 * @param theDateFin the dateFin to set
 	 */
 	public void setDateFin(RegDate theDateFin) {
-		// begin-user-code
 		dateFin = theDateFin;
-		// end-user-code
 	}
 
 	public Periodicite(PeriodiciteDecompte periodiciteDecompte) {

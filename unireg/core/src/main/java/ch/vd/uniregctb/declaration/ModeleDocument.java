@@ -22,41 +22,13 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeDocument;
 
-/**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_zS71IC3_Ed2H4bonmeBdag"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_zS71IC3_Ed2H4bonmeBdag"
- */
 @Entity
 @Table(name = "MODELE_DOCUMENT")
 public class ModeleDocument extends HibernateEntity {
 
 	private Long id;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_3RQkgS4CEd2H4bonmeBdag"
-	 */
 	private Set<ModeleFeuilleDocument> modelesFeuilleDocument;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_70VOcC3_Ed2H4bonmeBdag"
-	 */
 	private TypeDocument typeDocument;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_1RrkUi4AEd2H4bonmeBdag"
-	 */
 	private PeriodeFiscale periodeFiscale;
 
 	@Transient
@@ -75,30 +47,14 @@ public class ModeleDocument extends HibernateEntity {
 		this.id = id;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the typeDocument
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_70VOcC3_Ed2H4bonmeBdag?GETTER"
-	 */
 	@Column(name = "TYPE_DOCUMENT", length = LengthConstants.MODELEDOC_TYPE)
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeDocumentUserType")
 	public TypeDocument getTypeDocument() {
-		// begin-user-code
 		return typeDocument;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theTypeDocument the typeDocument to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_70VOcC3_Ed2H4bonmeBdag?SETTER"
-	 */
 	public void setTypeDocument(TypeDocument theTypeDocument) {
-		// begin-user-code
 		typeDocument = theTypeDocument;
-		// end-user-code
 	}
 
 	/**
@@ -111,57 +67,25 @@ public class ModeleDocument extends HibernateEntity {
 		return modelesFeuilleDocument.add(feuille);
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the modelesFeuilleDocument
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_3RQkgS4CEd2H4bonmeBdag?GETTER"
-	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "MODELE_ID")
 	@ForeignKey(name = "FK_FLLE_MODOC_ID")
 	public Set<ModeleFeuilleDocument> getModelesFeuilleDocument() {
-		// begin-user-code
 		return modelesFeuilleDocument;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theModelesFeuilleDocument the modelesFeuilleDocument to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_3RQkgS4CEd2H4bonmeBdag?SETTER"
-	 */
 	public void setModelesFeuilleDocument(Set<ModeleFeuilleDocument> theModelesFeuilleDocument) {
-		// begin-user-code
 		modelesFeuilleDocument = theModelesFeuilleDocument;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the periodeFiscale
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_1RrkUi4AEd2H4bonmeBdag?GETTER"
-	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
 	@JoinColumn(name = "PERIODE_ID", insertable = false, updatable = false)
 	public PeriodeFiscale getPeriodeFiscale() {
-		// begin-user-code
 		return periodeFiscale;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param thePeriodeFiscale the periodeFiscale to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_1RrkUi4AEd2H4bonmeBdag?SETTER"
-	 */
 	public void setPeriodeFiscale(PeriodeFiscale thePeriodeFiscale) {
-		// begin-user-code
 		periodeFiscale = thePeriodeFiscale;
-		// end-user-code
 	}
 
 	@Transient

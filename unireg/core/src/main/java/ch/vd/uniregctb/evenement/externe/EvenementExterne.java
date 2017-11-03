@@ -93,52 +93,24 @@ public abstract class EvenementExterne extends HibernateEntity {
 		this.message = message;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the dateEvenement
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8tFx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "DATE_EVENEMENT")
 	@Temporal(TemporalType.DATE)
 	public Date getDateEvenement() {
 		return dateEvenement;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theDateEvenement
-	 *            the dateEvenement to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8tFx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setDateEvenement(Date theDateEvenement) {
 		dateEvenement = theDateEvenement;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the dateTraitement
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8tVx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "DATE_TRAITEMENT",nullable=true)
 	@Temporal(TemporalType.DATE)
 	public Date getDateTraitement() {
 		return dateTraitement;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theDateTraitement
-	 *            the dateTraitement to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8tVx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setDateTraitement(Date theDateTraitement) {
-		// begin-user-code
 		dateTraitement = theDateTraitement;
-		// end-user-code
 	}
 
 	/**

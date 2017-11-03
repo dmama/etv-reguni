@@ -3,60 +3,14 @@
  */
 package ch.vd.uniregctb.type;
 
-/**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
- * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_OkeKcGHuEdydo47IZ53QMw"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_OkeKcGHuEdydo47IZ53QMw"
- */
 public enum FormulePolitesse {
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_zl3n4EmNEd2R_dBVHKOj6Q"
-	 */
 	MADAME_MONSIEUR("Madame, Monsieur"),
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_DaNxIGHxEdydo47IZ53QMw"
-	 */
-	MONSIEUR("Monsieur"), /**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_CO7CsGHxEdydo47IZ53QMw"
-	 */
-	MADAME("Madame"), /**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_DIkAcGHxEdydo47IZ53QMw"
-	 */
-	MESSIEURS("Messieurs"), /**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_C8J8IGHxEdydo47IZ53QMw"
-	 */
-	MESDAMES("Mesdames"), /**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Cvk4sGHxEdydo47IZ53QMw"
-	 */
-	MONSIEUR_ET_MADAME("Monsieur et Madame"), /**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_8LuDsHilEdyR8p78LDUQ5w"
-	 */
+	MONSIEUR("Monsieur"),
+	MADAME("Madame"),
+	MESSIEURS("Messieurs"),
+	MESDAMES("Mesdames"),
+	MONSIEUR_ET_MADAME("Monsieur et Madame"),
 	HERITIERS("Aux héritiers de") {
 		/**
 		 * [UNIREG-1398] la formule d'appel dans ce cas est "Madame, Monsieur".

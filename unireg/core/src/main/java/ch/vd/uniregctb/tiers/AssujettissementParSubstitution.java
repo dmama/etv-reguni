@@ -7,7 +7,6 @@ import javax.persistence.Transient;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
- * <!-- begin-user-doc -->
  * <pre>
  * +------------------+                                                    +------------------+
  * | PersonnePhysique | (Substitué)                          (Substituant) | PersonnePhysique |
@@ -17,9 +16,6 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  *         +-----------------|AssujettissementParSubstitution  |-------------------+
  *                           +---------------------------------+
  * </pre>
- * <!-- end-user-doc -->
- * @author xsibnm
- *
  */
 @Entity
 @DiscriminatorValue("AssujettissementParSubstitution")

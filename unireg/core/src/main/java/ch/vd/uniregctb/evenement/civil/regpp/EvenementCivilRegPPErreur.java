@@ -30,6 +30,11 @@ public class EvenementCivilRegPPErreur extends HibernateEntity implements Evenem
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilRegPPErreur.class);
 
+	private Long id;
+	private String message;
+	private String callstack;
+	private TypeEvenementErreur type;
+
 	public EvenementCivilRegPPErreur() {
 	}
 
@@ -59,14 +64,6 @@ public class EvenementCivilRegPPErreur extends HibernateEntity implements Evenem
 		validateMessage();
 	}
 
-	private Long id;
-
-	private String message;
-
-	private String callstack;
-
-	private TypeEvenementErreur type;
-
 	@Transient
 	@Override
 	public Object getKey() {
@@ -76,30 +73,22 @@ public class EvenementCivilRegPPErreur extends HibernateEntity implements Evenem
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
-		// begin-user-code
 		return id;
-		// end-user-code
 	}
 
 	public void setId(Long theId) {
-		// begin-user-code
 		id = theId;
-		// end-user-code
 	}
 
 	@Override
 	@Column(name = "MESSAGE", length = LengthConstants.EVTCIVILERREUR_MESSAGE)
 	public String getMessage() {
-		// begin-user-code
 		return message;
-		// end-user-code
 	}
 
 	public void setMessage(String theMessage) {
-		// begin-user-code
 		message = theMessage;
 		validateMessage();
-		// end-user-code
 	}
 
 	@Override

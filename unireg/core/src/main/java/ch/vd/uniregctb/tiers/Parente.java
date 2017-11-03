@@ -8,7 +8,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
- * <!-- begin-user-doc -->
  * <pre>
  * +------------------+                       +------------------+
  * | PersonnePhysique | (enfant)     (parent) | PersonnePhysique |
@@ -18,7 +17,6 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  *         +----------------|  Parenté  |--------------+
  *                          +-----------+
  * </pre>
- * <!-- end-user-doc -->
  */
 @Entity
 @DiscriminatorValue("Parente")
