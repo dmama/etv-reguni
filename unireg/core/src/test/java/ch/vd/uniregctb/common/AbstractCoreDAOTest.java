@@ -1045,8 +1045,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return parente;
 	}
 
-	protected Heritage addHeritage(PersonnePhysique heritier, PersonnePhysique defunt, RegDate dateDebut, @Nullable RegDate dateFin) {
-		final Heritage heritage = merge(new Heritage(dateDebut, dateFin, heritier, defunt));
+	protected Heritage addHeritage(PersonnePhysique heritier, PersonnePhysique defunt, RegDate dateDebut, @Nullable RegDate dateFin, Boolean principal) {
+		final Heritage heritage = merge(new Heritage(dateDebut, dateFin, heritier, defunt, principal));
 		heritier.addRapportSujet(heritage);
 		defunt.addRapportObjet(heritage);
 		return heritage;

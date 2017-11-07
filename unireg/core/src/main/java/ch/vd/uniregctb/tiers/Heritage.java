@@ -34,8 +34,9 @@ public class Heritage extends RapportEntreTiers {
 	public Heritage() {
 	}
 
-	public Heritage(RegDate dateDebut, RegDate dateFin, PersonnePhysique heritier, PersonnePhysique defunt) {
+	public Heritage(RegDate dateDebut, RegDate dateFin, PersonnePhysique heritier, PersonnePhysique defunt, Boolean principal) {
 		super(dateDebut, dateFin, heritier, defunt);
+		this.principalCommunaute  = principal;
 	}
 
 	protected Heritage(Heritage heritage) {

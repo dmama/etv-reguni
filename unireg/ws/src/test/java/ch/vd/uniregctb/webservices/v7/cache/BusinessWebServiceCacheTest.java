@@ -185,6 +185,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		wsCacheManager.setCache(cache);
 
 		final int noIndividu = 123456;
+		final int noIndividuDefunt = 383828;
 		final int noIndividuPapa = 111111;
 		final int noIndividuJunior = 222222;
 		final RegDate dateNaissance = date(1965, 4, 13);
@@ -193,8 +194,9 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				final MockIndividu papa = addIndividu(noIndividuPapa, date(1925, 11, 29), "Papa", "Bolomey", true);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Eric", "Bolomey", true);
+				addIndividu(noIndividuDefunt, date(1910, 1, 1), "Old", "Timer", true);
+				final MockIndividu papa = addIndividu(noIndividuPapa, date(1925, 11, 29), "Papa", "Bolomey", true);
 				final MockIndividu junior = addIndividu(noIndividuJunior, dateNaissanceJunior, "Junior", "Bolomey", true);
 				addLiensFiliation(junior, ind, null, dateNaissanceJunior, null);
 				addLiensFiliation(ind, papa, null, dateNaissance, null);
@@ -210,6 +212,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique defunt = addHabitant(noIndividuDefunt);
 
 				// Un tiers avec avec toutes les parties renseignées
 				final PersonnePhysique eric = addHabitant(noIndividu);
@@ -231,6 +235,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(di, date(2003, 1, 10));
 				addDelaiDeclaration(di, date(2003, 1, 10), date(2003, 6, 30), EtatDelaiDeclaration.ACCORDE);
+
+				addHeritage(eric, defunt, date(1980, 1, 1), null, true);
 
 				ids.eric = eric.getNumero();
 
@@ -1946,12 +1952,13 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkVirtualLandRights = PartyPart.VIRTUAL_LAND_RIGHTS == p;
 		boolean checkResidencyPeriods = PartyPart.RESIDENCY_PERIODS == p;
 		boolean checkLandTaxLightenings = PartyPart.LAND_TAX_LIGHTENINGS == p;
+		boolean checkInheritanceRelationships = PartyPart.INHERITANCE_RELATIONSHIPS == p;
 
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkSimplifiedTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
 				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
 				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels
-				              || checkLandRights || checkVirtualLandRights || checkResidencyPeriods || checkLandTaxLightenings, "La partie [" + p + "] est inconnue");
+				              || checkLandRights || checkVirtualLandRights || checkResidencyPeriods || checkLandTaxLightenings || checkInheritanceRelationships, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
@@ -1961,7 +1968,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getMainTaxResidences(), "mainTaxResidences");
 		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getOtherTaxResidences(), "otherTaxResidences");
 		assertNullOrNotNull(checkManagingTaxResidences, tiers.getManagingTaxResidences(), "managingTaxResidences");
-		assertNullOrNotNull(checkRelationsBetweenParties || checkChildren || checkParents, tiers.getRelationsBetweenParties(), "relationsBetweenParties (" + p + ')');
+		assertNullOrNotNull(checkRelationsBetweenParties || checkChildren || checkParents || checkInheritanceRelationships, tiers.getRelationsBetweenParties(), "relationsBetweenParties (" + p + ')');
 
 		if (tiers instanceof Taxpayer) {
 			final Taxpayer ctb = (Taxpayer) tiers;

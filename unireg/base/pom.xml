@@ -730,8 +730,8 @@
 		<wsparty4.version>4.2</wsparty4.version>
 		<ws.v5.version>5.5.2</ws.v5.version>
 		<ws.v6.version>6.5.2</ws.v6.version>
-		<ws.v7.version>7.9</ws.v7.version>
-		<unireg.jaxb2.version>6.7</unireg.jaxb2.version>
+		<ws.v7.version>7.10-SNAPSHOT</ws.v7.version>
+		<unireg.jaxb2.version>6.8-SNAPSHOT</unireg.jaxb2.version>
 
 		<!-- Testing dependency versions -->
 		<junit.version>4.12</junit.version>

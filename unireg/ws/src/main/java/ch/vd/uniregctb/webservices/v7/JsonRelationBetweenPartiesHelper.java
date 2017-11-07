@@ -14,6 +14,8 @@ import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.EconomicActivity;
 import ch.vd.unireg.xml.party.relation.v4.Guardian;
 import ch.vd.unireg.xml.party.relation.v4.HouseholdMember;
+import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
+import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.LegalAdviser;
 import ch.vd.unireg.xml.party.relation.v4.ManagementCompany;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
@@ -536,6 +538,50 @@ public abstract class JsonRelationBetweenPartiesHelper {
 		}
 	}
 
+	/**
+	 * Relation d'héritage décédé -> héritier
+	 */
+	public static class JsonInheritanceTo extends InheritanceTo implements JsonRelationBetweenParties {
+
+		private JsonInheritanceTo(InheritanceTo src) {
+			super(src.getDateFrom(), src.getDateTo(), src.getCancellationDate(), src.getOtherPartyNumber(), src.isPrincipal(), src.getAny());
+		}
+
+		@Override
+		public RelationBetweenPartiesType getType() {
+			return RelationBetweenPartiesType.INHERITANCE_TO;
+		}
+
+		public static final class Builder implements JsonRelationBetweenPartiesBuilder<InheritanceTo> {
+			@Override
+			public RelationBetweenParties buildJsonEquivalent(InheritanceTo src) {
+				return new JsonInheritanceTo(src);
+			}
+		}
+	}
+
+	/**
+	 * Relation d'héritage héritier -> décédé
+	 */
+	public static class JsonInheritanceFrom extends InheritanceFrom implements JsonRelationBetweenParties {
+
+		private JsonInheritanceFrom(InheritanceFrom src) {
+			super(src.getDateFrom(), src.getDateTo(), src.getCancellationDate(), src.getOtherPartyNumber(), src.isPrincipal(), src.getAny());
+		}
+
+		@Override
+		public RelationBetweenPartiesType getType() {
+			return RelationBetweenPartiesType.INHERITANCE_TO;
+		}
+
+		public static final class Builder implements JsonRelationBetweenPartiesBuilder<InheritanceFrom> {
+			@Override
+			public RelationBetweenParties buildJsonEquivalent(InheritanceFrom src) {
+				return new JsonInheritanceFrom(src);
+			}
+		}
+	}
+
 	private static final Map<Class<? extends RelationBetweenParties>, JsonRelationBetweenPartiesBuilder<? extends RelationBetweenParties>> BUILDERS = buildBuilders();
 
 	private static <T extends RelationBetweenParties> void registerBuilder(Map<Class<? extends RelationBetweenParties>, JsonRelationBetweenPartiesBuilder<? extends RelationBetweenParties>> map,
@@ -567,6 +613,8 @@ public abstract class JsonRelationBetweenPartiesHelper {
 		registerBuilder(map, ManagementCompany.class, new JsonManagementCompany.Builder());
 		registerBuilder(map, TaxLiabilitySubstitute.class, new JsonTaxLiabilitySubstitute.Builder());
 		registerBuilder(map, TaxLiabilitySubstituteFor.class, new JsonTaxLiabilitySubstituteFor.Builder());
+		registerBuilder(map, InheritanceTo.class, new JsonInheritanceTo.Builder());
+		registerBuilder(map, InheritanceFrom.class, new JsonInheritanceFrom.Builder());
 		return map;
 	}
 

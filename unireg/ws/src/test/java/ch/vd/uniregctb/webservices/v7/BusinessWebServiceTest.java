@@ -119,6 +119,7 @@ import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.HouseholdMember;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
 import ch.vd.unireg.xml.party.relation.v4.RelationBetweenParties;
+import ch.vd.unireg.xml.party.relation.v4.Representative;
 import ch.vd.unireg.xml.party.relation.v4.TaxableRevenue;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v5.TaxDeclarationDeadline;
@@ -221,6 +222,10 @@ import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
 import ch.vd.uniregctb.type.TypeTiersEtiquette;
 import ch.vd.uniregctb.webservices.common.UserLogin;
+
+import static ch.vd.uniregctb.xml.party.v5.strategy.NaturalPersonStrategyTest.assertInheritanceTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("Duplicates")
 public class BusinessWebServiceTest extends WebserviceTest {
@@ -4673,6 +4678,92 @@ public class BusinessWebServiceTest extends WebserviceTest {
 	}
 
 	/**
+	 * [SIFISC-24999] Vérifie que les rapports-entre-tiers sont bien exposées dans le WS lorsqu'on les demande, mais que par défaut, cela <b>n'inclut pas</b> les parentés ni les relations d'héritage.
+	 */
+	@Test
+	public void testPartyPartRelationsBetweenParties() throws Exception {
+
+		final RegDate dateDeces = RegDate.get(2005, 1, 1);
+
+		class Ids {
+			Long decede;
+			Long representant;
+		}
+		final Ids ids = new Ids();
+
+		// on ajoute un tiers avec des rapports-entre-tiers
+		doInNewTransaction(status -> {
+			final PersonnePhysique decede = addNonHabitant("Rodolf", "Laplancha", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier1 = addNonHabitant("Gudule", "Laplancha", RegDate.get(1980, 1, 1), Sexe.FEMININ);
+			final PersonnePhysique heritier2 = addNonHabitant("Morissonnette", "Laplancha", RegDate.get(1990, 1, 1), Sexe.FEMININ);
+			final PersonnePhysique representant = addNonHabitant("Rodolf", "Prou", RegDate.get(1990, 1, 1), Sexe.MASCULIN);
+			addParente(heritier1, decede, RegDate.get(1980, 1, 1), null);
+			addParente(heritier2, decede, RegDate.get(1990, 1, 1), null);
+			addHeritage(heritier1, decede, dateDeces, null, true);
+			addHeritage(heritier2, decede, dateDeces, null, false);
+			addRepresentationConventionnelle(decede, representant, RegDate.get(2000, 1, 1), false);
+			ids.decede = decede.getId();
+			ids.representant = representant.getId();
+			return null;
+		});
+
+		// on demande les rapports-entre-tiers
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Party party = service.getParty(user, ids.decede.intValue(), Collections.singleton(PartyPart.RELATIONS_BETWEEN_PARTIES));
+		Assert.assertNotNull(party);
+
+		// on doit bien recevoir tous les rapports-entre-tiers *sauf* les parentés et les relations d'héritages
+		// qui - pour des raisons de comptabilité ascendante - ne sont exposés que sur demande explicite.
+		final List<RelationBetweenParties> relations = party.getRelationsBetweenParties();
+		Assert.assertNotNull(relations);
+		Assert.assertEquals(1, relations.size());
+		assertRepresentative(ids.representant.intValue(), RegDate.get(2000, 1, 1), null, false, relations.get(0));
+	}
+
+	/**
+	 * [SIFISC-24999] Vérifie que les relations d'héritage sont bien exposées dans le WS lorsqu'on les demande.
+	 */
+	@Test
+	public void testPartyPartInheritanceRelationships() throws Exception {
+
+		final RegDate dateDeces = RegDate.get(2005, 1, 1);
+
+		class Ids {
+			Long decede;
+			Long heritier1;
+			Long heritier2;
+		}
+		final Ids ids = new Ids();
+
+		// on ajoute un tiers avec des relations d'héritage
+		doInNewTransaction(status -> {
+			final PersonnePhysique decede = addNonHabitant("Rodolf", "Laplancha", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier1 = addNonHabitant("Gudule", "Laplancha", RegDate.get(1980, 1, 1), Sexe.FEMININ);
+			final PersonnePhysique heritier2 = addNonHabitant("Morissonnette", "Laplancha", RegDate.get(1990, 1, 1), Sexe.FEMININ);
+			addParente(heritier1, decede, RegDate.get(1980, 1, 1), null);
+			addParente(heritier2, decede, RegDate.get(1990, 1, 1), null);
+			addHeritage(heritier1, decede, dateDeces, null, true);
+			addHeritage(heritier2, decede, dateDeces, null, false);
+			ids.decede = decede.getId();
+			ids.heritier1 = heritier1.getId();
+			ids.heritier2 = heritier2.getId();
+			return null;
+		});
+
+		// on demande les relations d'héritage : on ne reçoit qu'elles
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		final Party party = service.getParty(user, ids.decede.intValue(), Collections.singleton(PartyPart.INHERITANCE_RELATIONSHIPS));
+		Assert.assertNotNull(party);
+
+		final List<RelationBetweenParties> relations = party.getRelationsBetweenParties();
+		Assert.assertNotNull(relations);
+		Assert.assertEquals(2, relations.size());
+		relations.sort(Comparator.comparing(RelationBetweenParties::getOtherPartyNumber));
+		assertInheritanceTo(ids.heritier1.intValue(), dateDeces, null, true, relations.get(0));
+		assertInheritanceTo(ids.heritier2.intValue(), dateDeces, null, false, relations.get(1));
+	}
+
+	/**
 	 * [SIFISC-20373] Ce test vérifie que le WS de récupération d'un immeuble fonctionne bien dans le cas passant.
 	 */
 	@Test
@@ -4998,5 +5089,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		Assert.assertNull(entry.getCommunityOfOwners());
 		Assert.assertEquals(ErrorType.BUSINESS, entry.getError().getType());
 		Assert.assertEquals("La communauté n°[" + communityId + "] n'existe pas.", entry.getError().getErrorMessage());
+	}
+
+	private static void assertRepresentative(int id, RegDate dateFrom, RegDate dateTo, boolean forced, RelationBetweenParties relation) {
+		assertTrue(relation instanceof Representative);
+		final Representative representative = (Representative) relation;
+		assertEquals(id, representative.getOtherPartyNumber());
+		assertEquals(dateFrom, ch.vd.uniregctb.xml.DataHelper.xmlToCore(representative.getDateFrom()));
+		assertEquals(dateTo, ch.vd.uniregctb.xml.DataHelper.xmlToCore(representative.getDateTo()));
+		assertEquals(forced, representative.isExtensionToForcedExecution());
 	}
 }

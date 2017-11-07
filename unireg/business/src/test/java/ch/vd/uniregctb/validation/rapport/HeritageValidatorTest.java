@@ -30,7 +30,7 @@ public class HeritageValidatorTest extends AbstractValidatorTest<Heritage> {
 		final PersonnePhysique defunt = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
 		defunt.setDateDeces(dateDeces);
 		final PersonnePhysique heritier = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-		final Heritage heritage = addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null);
+		final Heritage heritage = addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null, null);
 		final ValidationResults vr = validate(heritage);
 		Assert.assertNotNull(vr);
 		Assert.assertEquals(0, vr.getErrors().size());
@@ -52,7 +52,7 @@ public class HeritageValidatorTest extends AbstractValidatorTest<Heritage> {
 			final EnsembleTiersCouple couple = addEnsembleTiersCouple(defunt, null, date(2000, 1, 1), null);
 			final MenageCommun menageCommun = couple.getMenage();
 			final PersonnePhysique heritier = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-			final Heritage heritage = addHeritage(heritier, defunt, date(2016, 5, 3), null);
+			final Heritage heritage = addHeritage(heritier, defunt, date(2016, 5, 3), null, null);
 
 			// bricolage pour que le défunt du rapport entre tiers soit un ménage
 			heritage.setObjet(menageCommun);
@@ -103,7 +103,7 @@ public class HeritageValidatorTest extends AbstractValidatorTest<Heritage> {
 			final PersonnePhysique heritier = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
 			final EnsembleTiersCouple couple = addEnsembleTiersCouple(heritier, null, date(2000, 1, 1), null);
 			final MenageCommun menageCommun = couple.getMenage();
-			final Heritage heritage = addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null);
+			final Heritage heritage = addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null, null);
 
 			// bricolage pour que l'héritier du rapport entre tiers soit un ménage
 			heritage.setSujet(menageCommun);
@@ -142,7 +142,7 @@ public class HeritageValidatorTest extends AbstractValidatorTest<Heritage> {
 	public void testHeritagePourDefuntNonDecede() throws Exception {
 		final PersonnePhysique defunt = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
 		final PersonnePhysique heritier = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-		final Heritage heritage = addHeritage(heritier, defunt, date(2017, 3, 2), null);
+		final Heritage heritage = addHeritage(heritier, defunt, date(2017, 3, 2), null, null);
 		final ValidationResults vr = validate(heritage);
 		Assert.assertNotNull(vr);
 		Assert.assertEquals(0, vr.getErrors().size());
@@ -163,7 +163,7 @@ public class HeritageValidatorTest extends AbstractValidatorTest<Heritage> {
 		final PersonnePhysique defunt = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
 		defunt.setDateDeces(dateDeces);
 		final PersonnePhysique heritier = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-		final Heritage heritage = addHeritage(heritier, defunt, dateDeces, null);
+		final Heritage heritage = addHeritage(heritier, defunt, dateDeces, null, null);
 		final ValidationResults vr = validate(heritage);
 		Assert.assertNotNull(vr);
 		Assert.assertEquals(0, vr.getErrors().size());

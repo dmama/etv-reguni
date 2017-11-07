@@ -1123,6 +1123,7 @@ public abstract class DataHelper {
 			case RELATIONS_BETWEEN_PARTIES:
 			case HOUSEHOLD_MEMBERS:
 			case BANK_ACCOUNTS:
+			case INHERITANCE_RELATIONSHIPS:
 				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 				break;
 			case FAMILY_STATUSES:

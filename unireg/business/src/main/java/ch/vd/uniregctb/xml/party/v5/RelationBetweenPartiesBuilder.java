@@ -9,6 +9,8 @@ import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.EconomicActivity;
 import ch.vd.unireg.xml.party.relation.v4.Guardian;
 import ch.vd.unireg.xml.party.relation.v4.HouseholdMember;
+import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
+import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.LegalAdviser;
 import ch.vd.unireg.xml.party.relation.v4.ManagementCompany;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
@@ -32,6 +34,7 @@ import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.FusionEntreprises;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
@@ -122,6 +125,22 @@ public class RelationBetweenPartiesBuilder {
 		final Parent parent = new Parent();
 		fillBaseData(parent, parente, numeroAutreTiers);
 		return parent;
+	}
+
+	public static InheritanceTo newInheritanceTo(Heritage heritage, int numeroAutreTiers) {
+		final InheritanceTo inheritance = new InheritanceTo();
+		fillBaseData(inheritance, heritage, numeroAutreTiers);
+		final Boolean principal = heritage.getPrincipalCommunaute();
+		inheritance.setPrincipal(principal != null && principal);
+		return inheritance;
+	}
+
+	public static InheritanceFrom newInheritanceFrom(Heritage heritage, int numeroAutreTiers) {
+		final InheritanceFrom inheritance = new InheritanceFrom();
+		fillBaseData(inheritance, heritage, numeroAutreTiers);
+		final Boolean principal = heritage.getPrincipalCommunaute();
+		inheritance.setPrincipal(principal != null && principal);
+		return inheritance;
 	}
 
 	public static Representative newRepresentative(RepresentationConventionnelle rc, int numeroAutreTiers) {

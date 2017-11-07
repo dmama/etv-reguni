@@ -15,6 +15,8 @@ import ch.vd.unireg.xml.party.relation.v4.Child;
 import ch.vd.unireg.xml.party.relation.v4.EconomicActivity;
 import ch.vd.unireg.xml.party.relation.v4.Guardian;
 import ch.vd.unireg.xml.party.relation.v4.HouseholdMember;
+import ch.vd.unireg.xml.party.relation.v4.InheritanceFrom;
+import ch.vd.unireg.xml.party.relation.v4.InheritanceTo;
 import ch.vd.unireg.xml.party.relation.v4.LegalAdviser;
 import ch.vd.unireg.xml.party.relation.v4.ManagementCompany;
 import ch.vd.unireg.xml.party.relation.v4.Parent;
@@ -130,6 +132,14 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 
 	private static TaxLiabilitySubstituteFor buildTaxLiabilitySubstituteFor(Date dateFrom, Date dateTo, Date cancellationDate, int otherPartyId) {
 		return new TaxLiabilitySubstituteFor(dateFrom, dateTo, cancellationDate, otherPartyId, null);
+	}
+
+	private static InheritanceTo buildInheritanceTo(Date dateFrom, Date dateTo, Date cancellationDate, int otherPartyId, boolean principal) {
+		return new InheritanceTo(dateFrom, dateTo, cancellationDate, otherPartyId, principal, null);
+	}
+
+	private static InheritanceFrom buildInheritanceFrom(Date dateFrom, Date dateTo, Date cancellationDate, int otherPartyId, boolean principal) {
+		return new InheritanceFrom(dateFrom, dateTo, cancellationDate, otherPartyId, principal, null);
 	}
 
 	private static RelationBetweenParties doTest(RelationBetweenParties src, RelationBetweenPartiesType expectedType) {
@@ -308,6 +318,8 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		doTest(buildManagementCompany(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.MANAGEMENT_COMPANY);
 		doTest(buildTaxLiabilitySubstitute(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE);
 		doTest(buildTaxLiabilitySubstituteFor(null, null, null, generateRandomOtherPartyId()), RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE_FOR);
+		doTest(buildInheritanceTo(null, null, null, generateRandomOtherPartyId(), generateRandomBoolean()), RelationBetweenPartiesType.INHERITANCE_TO);
+		doTest(buildInheritanceFrom(null, null, null, generateRandomOtherPartyId(), generateRandomBoolean()), RelationBetweenPartiesType.INHERITANCE_TO);
 	}
 
 	@Test
@@ -334,6 +346,8 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		doTest(buildManagementCompany(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.MANAGEMENT_COMPANY);
 		doTest(buildTaxLiabilitySubstitute(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE);
 		doTest(buildTaxLiabilitySubstituteFor(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()), RelationBetweenPartiesType.TAX_LIABILITY_SUBSTITUTE_FOR);
+		doTest(buildInheritanceTo(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId(), generateRandomBoolean()), RelationBetweenPartiesType.INHERITANCE_TO);
+		doTest(buildInheritanceFrom(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId(), generateRandomBoolean()), RelationBetweenPartiesType.INHERITANCE_TO);
 	}
 
 	@Test
@@ -360,6 +374,8 @@ public class JsonRelationBetweenPartiesHelperTest extends WithoutSpringTest {
 		doTestAlreadyJson(buildManagementCompany(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
 		doTestAlreadyJson(buildTaxLiabilitySubstitute(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
 		doTestAlreadyJson(buildTaxLiabilitySubstituteFor(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId()));
+		doTestAlreadyJson(buildInheritanceTo(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId(), generateRandomBoolean()));
+		doTestAlreadyJson(buildInheritanceFrom(generateRandomDate(), generateRandomDate(), generateRandomDate(), generateRandomOtherPartyId(), generateRandomBoolean()));
 	}
 
 	private static void doTestAlreadyJson(RelationBetweenParties nonJson) {

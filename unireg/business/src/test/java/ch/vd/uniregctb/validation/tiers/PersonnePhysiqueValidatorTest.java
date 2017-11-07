@@ -1181,8 +1181,8 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		defunt.setDateDeces(dateDeces);
 		final PersonnePhysique heritier = addNonHabitant("Croquant", "Lapomme", date(1996, 7, 31), Sexe.MASCULIN);
 
-		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null);
-		addHeritage(heritier, defunt, date(2000, 1, 1), date(2000, 12, 31));        // donnée bidon..
+		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null, null);
+		addHeritage(heritier, defunt, date(2000, 1, 1), date(2000, 12, 31), null);        // donnée bidon..
 
 		// validation côté défunt
 		{
@@ -1242,8 +1242,8 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		defunt.setDateDeces(dateDeces);
 		final PersonnePhysique heritier = addNonHabitant("Croquant", "Lapomme", date(1996, 7, 31), Sexe.MASCULIN);
 
-		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null);
-		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), dateDeces.addMonths(1));        // donnée bidon..
+		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null, null);
+		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), dateDeces.addMonths(1), null);        // donnée bidon..
 
 		// validation côté défunt
 		{
