@@ -33,10 +33,10 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 
 	private static SortBuilder buildSortBuilder(final SortField.Type type, boolean addIdSorting) {
 		if (addIdSorting) {
-			return (fieldName, reverse) -> new Sort(new SortField(fieldName, type, reverse));
+			return (fieldName, reverse) -> new Sort(new SortField(fieldName, type, reverse), new SortField(MessageIdentificationIndexableData.TRI_ID, SortField.Type.LONG, reverse));
 		}
 		else {
-			return (fieldName, reverse) -> new Sort(new SortField(fieldName, type, reverse), new SortField(MessageIdentificationIndexableData.TRI_ID, SortField.Type.LONG, reverse));
+			return (fieldName, reverse) -> new Sort(new SortField(fieldName, type, reverse));
 		}
 	}
 
@@ -46,12 +46,11 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 		final SortBuilder intSortBuilder = buildSortBuilder(SortField.Type.INT, true);
 		final SortBuilder longSortBuilder = buildSortBuilder(SortField.Type.LONG, true);
 		final SortBuilder stringSortBuilder = buildSortBuilder(SortField.Type.STRING, true);
-		final SortBuilder stringSortBuilderById = buildSortBuilder(SortField.Type.STRING, false);
 
 		map.put("id", Pair.of(MessageIdentificationIndexableData.TRI_ID, buildSortBuilder(SortField.Type.LONG, false)));
 		map.put("demande.typeMessage", Pair.of(MessageIdentificationIndexableData.TYPE_MESSAGE, stringSortBuilder));
 		map.put("demande.periodeFiscale", Pair.of(MessageIdentificationIndexableData.PERIODE_FISCALE, intSortBuilder));
-		map.put("demande.emetteurId", Pair.of(MessageIdentificationIndexableData.EMETTEUR, stringSortBuilderById));
+		map.put("demande.emetteurId", Pair.of(MessageIdentificationIndexableData.EMETTEUR, stringSortBuilder));
 		map.put("demande.date", Pair.of(MessageIdentificationIndexableData.DATE_MESSAGE, intSortBuilder));
 		map.put("etat", Pair.of(MessageIdentificationIndexableData.ETAT, stringSortBuilder));
 		map.put("demande.montant", Pair.of(MessageIdentificationIndexableData.TRI_MONTANT, longSortBuilder));
