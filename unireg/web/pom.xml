@@ -358,15 +358,39 @@
 				<artifactId>buildnumber-maven-plugin</artifactId>
 				<version>1.4</version>
 				<configuration>
-					<doCheck>false</doCheck>
-					<doUpdate>false</doUpdate>
-					<shortRevisionLength>8</shortRevisionLength>
+					<format>{0,date,yyyy-MM-dd HH:mm:ss}</format>
+					<items>
+						<item>timestamp</item>
+					</items>
 				</configuration>
 				<executions>
 					<execution>
 						<phase>validate</phase>
 						<goals>
 							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<version>2.2.3</version>
+				<configuration>
+					<dotGitDirectory>${project.basedir}/../../.git</dotGitDirectory>
+					<generateGitPropertiesFile>false</generateGitPropertiesFile>
+					<includeOnlyProperties>
+						<includeOnlyProperty>git.commit.id.abbrev</includeOnlyProperty>
+					</includeOnlyProperties>
+					<commitIdGenerationMode>full</commitIdGenerationMode>
+					<abbrevLength>10</abbrevLength>
+				</configuration>
+				<executions>
+					<execution>
+						<id>get-the-git-infos</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>revision</goal>
 						</goals>
 					</execution>
 				</executions>

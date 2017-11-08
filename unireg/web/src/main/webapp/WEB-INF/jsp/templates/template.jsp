@@ -464,7 +464,7 @@
 			</div>
 
 			<div id="footer">
-				<strong>Version <fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildNumber"/>)
+				<strong>Version <fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/> / <fmt:message key="gitCommitId"/>)
 				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>
 				&nbsp;&nbsp;&nbsp;<small><a href="<c:url value="/about.do"/>">A propos</a></small>
 				<br/>
