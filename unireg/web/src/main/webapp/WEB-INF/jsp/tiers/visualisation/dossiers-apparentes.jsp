@@ -143,7 +143,7 @@
 	            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'tiersId\');">N° de tiers</a></th>';
 	            html += '<th>Nom / Raison sociale</th>';
 	            if (hasAutoriteTutelaire) {
-	                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'autoriteTutelaireId\');">Autorité tutelaire</a></th>';
+	                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'autoriteTutelaire\');">Autorité tutelaire</a></th>';
 	            }
 	            if (hasExtensionExecutionForcee) {
 	                html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'extensionExecutionForcee\');">Extension à l\'exécution forcée</a></th>';

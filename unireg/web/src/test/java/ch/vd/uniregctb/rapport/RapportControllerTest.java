@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.rapport;
 
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,13 +17,20 @@ import org.springframework.web.util.NestedServletException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MockTiersService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -193,4 +203,58 @@ public class RapportControllerTest extends WebTest {
 			}
 		});
 	}
+
+	@Test
+	public void testSortRapportsByAutoriteTutelaire() {
+		final ParamPagination pagination = new ParamPagination(0, 20, "autoriteTutelaire", true);
+		List<RapportEntreTiers> rapports = new ArrayList<RapportEntreTiers>();
+		// Curatelle
+		CollectiviteAdministrative autoriteTutelaireCuratelle = new CollectiviteAdministrative(1L, 1, 1, 1);
+		Curatelle curatelle= new Curatelle();
+		curatelle.setId(111L);
+		curatelle.setAutoriteTutelaireId(autoriteTutelaireCuratelle.getId());
+		rapports.add(curatelle);
+		// Appartenance ménage
+		AppartenanceMenage appartenanceMenage = new AppartenanceMenage();
+		appartenanceMenage.setId(222L);
+		rapports.add(appartenanceMenage);
+		// Tutelle
+		CollectiviteAdministrative autoriteTutelaireTutelle = new CollectiviteAdministrative(2L, 2, 2, 2);
+		Tutelle tutelle = new Tutelle();
+		tutelle.setId(333L);
+		tutelle.setAutoriteTutelaire(autoriteTutelaireTutelle);
+		rapports.add(tutelle);
+
+
+		TiersService mockTiersService = new MockTiersService() {
+
+			@Override
+			public Tiers getTiers(long idTiers){
+				String value = Long.toString(idTiers);
+				switch (value) {
+					case "1": return autoriteTutelaireCuratelle;
+					case "2": return autoriteTutelaireTutelle;
+				}
+				return null;
+			}
+
+			@Override
+			public String getNomCollectiviteAdministrative(int numeroCollectivite) {
+				String value = Integer.toString(numeroCollectivite);
+				switch(value) {
+					case "1" : return "abz";
+					case "2" : return "abc";
+				}
+				return "inconnu";
+			}
+		};
+
+		RapportController.sortRapportsByAutoriteTutelaire(pagination, rapports, mockTiersService);
+
+		assertEquals(3, rapports.size());
+		assertEquals(appartenanceMenage, rapports.get(0));
+		assertEquals(tutelle, rapports.get(1));
+		assertEquals(curatelle, rapports.get(2));
+	}
+
 }

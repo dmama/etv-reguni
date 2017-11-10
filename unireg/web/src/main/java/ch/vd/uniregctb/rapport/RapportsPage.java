@@ -60,7 +60,7 @@ public class RapportsPage {
 			if (rapport instanceof RepresentationLegale) {
 				final RepresentationLegale rl = (RepresentationLegale) rapport;
 				this.autoriteTutelaireId = rl.getAutoriteTutelaireId();
-				this.nomAutoriteTutelaire = initNomAutoriteTutelaire(this.autoriteTutelaireId, tiersService);
+				this.nomAutoriteTutelaire = getNomAutoriteTutelaire(this.autoriteTutelaireId, tiersService);
 			}
 
 			if (rapport instanceof Heritage) {
@@ -71,7 +71,7 @@ public class RapportsPage {
 			this.toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapport, adresseService, tiersService);
 		}
 
-		private static String initNomAutoriteTutelaire(Long autoriteTutelaireId, TiersService tiersService) {
+		static String getNomAutoriteTutelaire(Long autoriteTutelaireId, TiersService tiersService) {
 			String nom = null;
 			if (autoriteTutelaireId != null) {
 				final Tiers autoriteTutelaire = tiersService.getTiers(autoriteTutelaireId);

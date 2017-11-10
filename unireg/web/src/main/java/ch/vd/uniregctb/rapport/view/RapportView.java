@@ -36,7 +36,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(RapportView.class);
 
-	private static BaseComparator<RapportView> comparator = new BaseComparator<>(new String[]{"annule", "dateDebut"}, new Boolean[]{true, true});
+	private static BaseComparator<RapportView> comparator = new BaseComparator<>(new String[]{"annule", "dateDebut"}, new Boolean[]{true, false});
 
 	private RegDate dateDebut;
 

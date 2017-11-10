@@ -123,7 +123,7 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 	}
 
 	@Override
-	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean showHisto, Set<RapportEntreTiersKey> types, final ParamPagination pagination, boolean fullList) {
+	public List<RapportEntreTiers> findBySujetAndObjet(final long tiersId, final boolean showHisto, Set<RapportEntreTiersKey> types, final ParamPagination pagination) {
 
 		// aucun type demandé -> aucun rapport trouvé!
 		if (types == null || types.isEmpty()) {
@@ -184,17 +184,12 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 		comparateurAsc = getRapportEntreTiersComparator(tiersId, sortingField);
 
 		tous.sort(comparateurAsc);
+
 		if (!pagination.getSorting().isAscending()) {
 			Collections.reverse(tous);
 		}
 
-		if (fullList) {
-			return tous;
-		}
-		else {
-			return tous.subList(Math.min(pagination.getSqlFirstResult(), tous.size()),
-			                    Math.min(pagination.getSqlFirstResult() + pagination.getSqlMaxResults(), tous.size()));
-		}
+		return tous;
 	}
 
 	@NotNull
@@ -212,6 +207,14 @@ public class RapportEntreTiersDAOImpl extends BaseDAOImpl<RapportEntreTiers, Lon
 						comparison = Long.compare(o1.getId(), o2.getId());
 					}
 					return comparison;
+				}
+			};
+		} else if(sortingField != null && "autoriteTutelaire".equals(sortingField)) {
+			// [SIFISC-26747] pour le tri sur la colonne "autoriteTutelaire" le tri est fait au niveau service
+			comparateurAsc = new Comparator<RapportEntreTiers>() {
+				@Override
+				public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
+					return 1;
 				}
 			};
 		}

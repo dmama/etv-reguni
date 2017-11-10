@@ -320,7 +320,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final ParamPagination paginationAsc = new ParamPagination(1, 25, "tiersId", true);
-				final List<RapportEntreTiers> asc = retDAO.findBySujetAndObjet(ids.m, true, allKeys, paginationAsc, true);
+				final List<RapportEntreTiers> asc = retDAO.findBySujetAndObjet(ids.m, true, allKeys, paginationAsc);
 				Assert.assertEquals(3, asc.size());
 				{
 					final RapportEntreTiers ret = asc.get(0);
@@ -345,7 +345,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 				}
 
 				final ParamPagination paginationDesc = new ParamPagination(1, 25, "tiersId", false);
-				final List<RapportEntreTiers> desc = retDAO.findBySujetAndObjet(ids.m, true, allKeys, paginationDesc, false);
+				final List<RapportEntreTiers> desc = retDAO.findBySujetAndObjet(ids.m, true, allKeys, paginationDesc);
 				Assert.assertEquals(3, desc.size());
 				{
 					final RapportEntreTiers ret = desc.get(2);

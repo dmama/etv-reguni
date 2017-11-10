@@ -57,6 +57,8 @@ public class MockTiersService implements TiersService {
 
 	private boolean isEtrangerSansPermisC;
 
+	public MockTiersService() {	}
+
 	public MockTiersService(Tiers tiers) {
 		this.tiers = tiers;
 	}

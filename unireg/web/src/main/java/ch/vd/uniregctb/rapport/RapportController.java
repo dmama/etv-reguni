@@ -2,6 +2,7 @@ package ch.vd.uniregctb.rapport;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -56,6 +57,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportEntreTiersKey;
+import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersIndexedDataView;
@@ -604,7 +606,14 @@ public class RapportController {
 
 	private List<RapportsPage.RapportView> getRapportViews(long tiersId, boolean showHisto, Set<RapportEntreTiersKey> types, final ParamPagination pagination, boolean annulesEnDernier) {
 		// Récupération de tous les rapports (triés)
-		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, showHisto, types, pagination, true);
+		final List<RapportEntreTiers> rapports = rapportEntreTiersDAO.findBySujetAndObjet(tiersId, showHisto, types, pagination);
+
+		// Tri
+		final String sortingField = pagination.getSorting().getField();
+
+		if (sortingField != null && "autoriteTutelaire".equals(sortingField)) {
+			sortRapportsByAutoriteTutelaire(pagination, rapports, this.tiersService);
+		}
 
 		if (annulesEnDernier) {
 			rapports.sort(new Comparator<RapportEntreTiers>() {
@@ -643,6 +652,47 @@ public class RapportController {
 			}
 		}
 		return views;
+	}
+
+	/**
+	 * [SIFISC-26747] Tri sur la colonne autorité tutélaire
+	 *
+	 * @param pagination
+	 * @param rapports
+	 */
+	static void sortRapportsByAutoriteTutelaire(ParamPagination pagination, List<RapportEntreTiers> rapports, TiersService tiersService) {
+		final Comparator<RapportEntreTiers> comparateurAsc;
+		comparateurAsc = new Comparator<RapportEntreTiers>() {
+			@Override
+			public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
+				String nomAutoriteTutelaire1 = "";
+				String nomAutoriteTutelaire2 = "";
+				// [SIFISC-26747] Tri par nom de l'autorité Tutélaire
+				if (o1 instanceof RepresentationLegale) {
+					final RepresentationLegale rl = (RepresentationLegale) o1;
+					nomAutoriteTutelaire1 = RapportsPage.RapportView.getNomAutoriteTutelaire(rl.getAutoriteTutelaireId(), tiersService);
+				}
+				if (o2 instanceof RepresentationLegale) {
+					final RepresentationLegale rl = (RepresentationLegale) o2;
+					nomAutoriteTutelaire2 = RapportsPage.RapportView.getNomAutoriteTutelaire(rl.getAutoriteTutelaireId(), tiersService);
+				}
+
+				if (nomAutoriteTutelaire1.isEmpty() || nomAutoriteTutelaire2.isEmpty()) {
+					if (nomAutoriteTutelaire1.isEmpty() && nomAutoriteTutelaire2.isEmpty()) {
+						return 0;
+					}
+
+					return nomAutoriteTutelaire1.isEmpty() ? -1 : 1;
+				}
+
+				return nomAutoriteTutelaire1.compareTo(nomAutoriteTutelaire2);
+			}
+		};
+
+		rapports.sort(comparateurAsc);
+		if (!pagination.getSorting().isAscending()) {
+			Collections.reverse(rapports);
+		}
 	}
 
 	private static TypeRapportEntreTiers parseType(String type) {
