@@ -31,9 +31,9 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class DeclarationImpotControllerValidator implements Validator {
@@ -217,8 +217,8 @@ public class DeclarationImpotControllerValidator implements Validator {
 	}
 
 	private static EtatDeclaration getDernierEtatEmisOuSommee(DeclarationImpotOrdinaire di) {
-		EtatDeclaration emis = di.getDernierEtatOfType(TypeEtatDeclaration.EMISE);
-		EtatDeclaration sommee = di.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE);
+		EtatDeclaration emis = di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS);
+		EtatDeclaration sommee = di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMME);
 		//On aura toujours un état émis sur une déclaration sinon bug
 		if (sommee == null) {
 			return emis;
@@ -286,7 +286,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 			return;
 		}
 
-		if (view.getDecision() == EtatDelaiDeclaration.ACCORDE) {
+		if (view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE) {
 			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
 			if (!errors.hasFieldErrors("delaiAccordeAu")) {
 				if (view.getDelaiAccordeAu() == null) {
@@ -304,7 +304,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 			errors.rejectValue("decision", "error.decision.obligatoire");
 		}
 
-		if (view.getDecision() != EtatDelaiDeclaration.DEMANDE) {
+		if (view.getDecision() != EtatDelaiDocumentFiscal.DEMANDE) {
 			if (view.getTypeImpression() == null) {
 				errors.rejectValue("decision", "error.type.impression.obligatoire");
 			}
@@ -336,7 +336,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 			return;
 		}
 
-		if (view.getDecision() == EtatDelaiDeclaration.ACCORDE) {
+		if (view.getDecision() == EtatDelaiDocumentFiscal.ACCORDE) {
 			// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
 			if (!errors.hasFieldErrors("delaiAccordeAu")) {
 				if (view.getDelaiAccordeAu() == null) {
@@ -354,7 +354,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 			errors.rejectValue("decision", "error.decision.obligatoire");
 		}
 
-		if (view.getDecision() != EtatDelaiDeclaration.DEMANDE) {
+		if (view.getDecision() != EtatDelaiDocumentFiscal.DEMANDE) {
 			if (view.getTypeImpression() == null) {
 				errors.rejectValue("decision", "error.type.impression.obligatoire");
 			}

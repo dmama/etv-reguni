@@ -99,8 +99,8 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.webservices.party3.data.AcknowledgeTaxDeclarationBuilder;
 import ch.vd.uniregctb.webservices.party3.data.BatchPartyBuilder;
 import ch.vd.uniregctb.webservices.party3.data.DebtorInfoBuilder;
@@ -762,13 +762,13 @@ public class PartyWebServiceImpl implements PartyWebService {
 			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_CANCELLED_TAX_DECLARATION, "La déclaration a été annulée entre-temps.");
 		}
 
-		final TypeEtatDeclaration etat = declaration.getDernierEtat().getEtat();
-		if (etat != TypeEtatDeclaration.EMISE) {
+		final TypeEtatDocumentFiscal etat = declaration.getDernierEtatDeclaration().getEtat();
+		if (etat != TypeEtatDocumentFiscal.EMIS) {
 			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'émise' (état=[" + etat + "]).");
 		}
 
 		final RegDate newDeadline = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());
-		final RegDate oldDeadline = declaration.getDernierDelaiAccorde().getDelaiAccordeAu();
+		final RegDate oldDeadline = declaration.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu();
 		final RegDate today = RegDate.get();
 
 		if (newDeadline.isBefore(today)) {
@@ -788,7 +788,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		// Le délai est correcte, on l'ajoute
 		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		delai.setDateTraitement(RegDate.get());
 		delai.setCleArchivageCourrier(null);
 		delai.setDateDemande(applicationDate);
@@ -893,7 +893,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 
 		// La déclaration est correcte, on la quittance
 		context.diService.quittancementDI(ctb, declaration, dateRetour, demande.getSource(), true);
-		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
+		Assert.isEqual(TypeEtatDocumentFiscal.RETOURNE, declaration.getDernierEtatDeclaration().getEtat());
 
 		return AcknowledgeTaxDeclarationBuilder.newAcknowledgeTaxDeclarationResponse(demande.getKey(), TaxDeclarationAcknowledgeCode.OK);
 	}

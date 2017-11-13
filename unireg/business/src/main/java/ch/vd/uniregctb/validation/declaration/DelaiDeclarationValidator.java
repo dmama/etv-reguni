@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.validation.EntityValidatorImpl;
 
 public class DelaiDeclarationValidator extends EntityValidatorImpl<DelaiDeclaration> {
@@ -46,7 +46,7 @@ public class DelaiDeclarationValidator extends EntityValidatorImpl<DelaiDeclarat
 			                          StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(dateFin), "?")));
 		}
 		else {
-			if (delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {
+			if (delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE) {
 				if (delai.getDelaiAccordeAu() == null) {
 					vr.addError(String.format("La date de délai accordé est obligatoire sur un délai dans l'état 'accordé' de la déclaration %d (fin de période au %s).",
 					                          pf,

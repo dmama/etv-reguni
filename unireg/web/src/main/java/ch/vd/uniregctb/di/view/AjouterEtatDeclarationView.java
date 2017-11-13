@@ -15,7 +15,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.view.EtatDeclarationView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class AjouterEtatDeclarationView {
 
@@ -55,12 +55,12 @@ public class AjouterEtatDeclarationView {
 		this.periodeFiscale = di.getDateFin().year();
 		this.dateDebutPeriodeImposition = di.getDateDebut();
 		this.dateFinPeriodeImposition = di.getDateFin();
-		this.etats = initEtats(di.getEtats(), infraService, messageSource);
+		this.etats = initEtats(di.getEtatsDeclaration(), infraService, messageSource);
 		this.typeDocumentEditable = typeDocumentEditable;
 	}
 
-	public static TypeEtatDeclaration getDernierEtat(DeclarationImpotOrdinaire di) {
-		final EtatDeclaration etatDI = di.getDernierEtat();
+	public static TypeEtatDocumentFiscal getDernierEtat(DeclarationImpotOrdinaire di) {
+		final EtatDeclaration etatDI = di.getDernierEtatDeclaration();
 		return etatDI == null ? null : etatDI.getEtat();
 	}
 

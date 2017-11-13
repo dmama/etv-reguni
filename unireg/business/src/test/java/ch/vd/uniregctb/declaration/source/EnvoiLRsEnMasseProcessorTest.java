@@ -263,7 +263,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 				Assert.assertEquals(date(anneeReference, 4, 1), lr.getDateDebut());
 				Assert.assertEquals(date(anneeReference, 4, 30), lr.getDateFin());
 
-				final DelaiDeclaration delai = lr.getDernierDelaiAccorde();
+				final DelaiDeclaration delai = lr.getDernierDelaiDeclarationAccorde();
 				Assert.assertNotNull(delai);
 				Assert.assertEquals(RegDate.get(), delai.getDateTraitement());
 				Assert.assertEquals(RegDate.get(), delai.getDateDemande());

@@ -32,7 +32,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -105,17 +105,17 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 		final DeclarationImpotOrdinaire di2007 = addDeclarationImpot(sebastien, date(2007, 1, 1), date(2007, 12, 31), date(2008, 1, 13), 90);
 		{
-			addEtat(di2007, di2007.getDernierEtat().getDateObtention().addMonths(2), TypeEtatDeclaration.RETOURNEE);
+			addEtat(di2007, di2007.getDernierEtatDeclaration().getDateObtention().addMonths(2), TypeEtatDocumentFiscal.RETOURNE);
 		}
 
 		addDeclarationImpot(sebastien, date(2008, 1, 1), date(2008, 12, 31), date(2009, 1, 13), 90);
 	}
 
-	private void addEtat(DeclarationImpotOrdinaire di, RegDate dateObtention, TypeEtatDeclaration typeEtat) {
+	private void addEtat(DeclarationImpotOrdinaire di, RegDate dateObtention, TypeEtatDocumentFiscal typeEtat) {
 		final EtatDeclaration etat = EtatDeclarationHelper.getInstanceOfEtatDeclaration(typeEtat);
 		etat.setDateObtention(dateObtention);
 		etat.setDeclaration(di);
-		final Set<EtatDeclaration> etats = di.getEtats();
+		final Set<EtatDeclaration> etats = di.getEtatsDeclaration();
 		etats.add(etat);
 	}
 
@@ -210,8 +210,8 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 			int nombreTachesDevantEtreGenerees = 0;
 			for (DeclarationImpotOrdinaire di : dis) {
-				EtatDeclaration etat = di.getDernierEtat();
-				if (TypeEtatDeclaration.EMISE == etat.getEtat()) {
+				EtatDeclaration etat = di.getDernierEtatDeclaration();
+				if (TypeEtatDocumentFiscal.EMIS == etat.getEtat()) {
 					assertTrue(di.isAnnule(), "La DI est pas annulée");
 				}
 				else {

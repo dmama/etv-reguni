@@ -2,7 +2,7 @@ package ch.vd.uniregctb.di.view;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 
 public abstract class AbstractEditionDelaiDeclarationPMView extends AbstractEditionDelaiDeclarationView {
 
@@ -13,14 +13,14 @@ public abstract class AbstractEditionDelaiDeclarationPMView extends AbstractEdit
 
 	// champs du formulaire
 	private RegDate dateDemande;
-	private EtatDelaiDeclaration decision;
+	private EtatDelaiDocumentFiscal decision;
 	private RegDate delaiAccordeAu;
 	private TypeImpression typeImpression;
 
 	public AbstractEditionDelaiDeclarationPMView() {
 	}
 
-	public AbstractEditionDelaiDeclarationPMView(DeclarationImpotOrdinaire di, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDeclaration decision) {
+	public AbstractEditionDelaiDeclarationPMView(DeclarationImpotOrdinaire di, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal decision) {
 		super(di);
 		this.dateDemande = dateDemande;
 		this.delaiAccordeAu = delaiAccordeAu;
@@ -36,11 +36,11 @@ public abstract class AbstractEditionDelaiDeclarationPMView extends AbstractEdit
 		this.dateDemande = dateDemande;
 	}
 
-	public EtatDelaiDeclaration getDecision() {
+	public EtatDelaiDocumentFiscal getDecision() {
 		return decision;
 	}
 
-	public void setDecision(EtatDelaiDeclaration decision) {
+	public void setDecision(EtatDelaiDocumentFiscal decision) {
 		this.decision = decision;
 	}
 

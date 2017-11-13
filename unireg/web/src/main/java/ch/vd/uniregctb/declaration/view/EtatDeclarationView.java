@@ -16,7 +16,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Annulable {
@@ -25,17 +25,17 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 	private final RegDate dateObtention;
 	private final Date logCreationDate;
 	private final boolean annule;
-	private final TypeEtatDeclaration etat;
+	private final TypeEtatDocumentFiscal etat;
 	private final String etatMessage;
 
 	/**
-	 * La source de quittancement dans le cas ou #etat == "RETOURNEE".
+	 * La source de quittancement dans le cas ou #etat == "RETOURNE".
 	 */
 	private String source;
 	private String sourceMessage;
 
 	/**
-	 * La date d'envoi de la sommation dans le cas ou #etat == 'SOMMEE' ou #etat == 'RAPPELEE'
+	 * La date d'envoi de la sommation dans le cas ou #etat == 'SOMME' ou #etat == 'RAPPELE'
 	 */
 	private RegDate dateEnvoiCourrier;
 	private String dateEnvoiCourrierMessage;
@@ -51,7 +51,7 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 		this.logCreationDate = etat.getLogCreationDate();
 		this.annule = etat.isAnnule();
 		this.etat = etat.getEtat();
-		this.etatMessage = messageSource.getMessage("option.etat.avancement." + this.etat.name(), null, WebContextUtils.getDefaultLocale());
+		this.etatMessage = messageSource.getMessage("option.etat.avancement.f." + this.etat.name(), null, WebContextUtils.getDefaultLocale());
 
 		if (etat instanceof EtatDeclarationRetournee) {
 			this.source = ((EtatDeclarationRetournee) etat).getSource();
@@ -106,7 +106,7 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 		return annule;
 	}
 
-	public TypeEtatDeclaration getEtat() {
+	public TypeEtatDocumentFiscal getEtat() {
 		return etat;
 	}
 

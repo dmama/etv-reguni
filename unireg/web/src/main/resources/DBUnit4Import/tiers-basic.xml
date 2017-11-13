@@ -11541,7 +11541,7 @@
       <null/>
     </row>
   </table>
-  <table name="DECLARATION">
+  <table name="DOCUMENT_FISCAL">
     <column>DOCUMENT_TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
@@ -11915,7 +11915,8 @@
       <null/>
     </row>
   </table>
-  <table name="ETAT_DECLARATION">
+  <table name="ETAT_DOCUMENT_FISCAL">
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
@@ -11927,9 +11928,10 @@
     <column>DATE_OBTENTION</column>
     <column>DATE_ENVOI_COURRIER</column>
     <column>SOURCE</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <row>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>1</value>
       <null/>
       <null/>
@@ -11945,7 +11947,8 @@
       <null/>
     </row>
     <row>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>2</value>
       <null/>
       <null/>
@@ -11961,7 +11964,8 @@
       <null/>
     </row>
     <row>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>3</value>
       <null/>
       <null/>
@@ -11977,7 +11981,8 @@
       <null/>
     </row>
     <row>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>4</value>
       <null/>
       <null/>
@@ -11993,7 +11998,8 @@
       <null/>
     </row>
     <row>
-      <value>SOMMEE</value>
+      <value>DI_SOMMEE</value>
+      <value>SOMME</value>
       <value>5</value>
       <null/>
       <null/>
@@ -12009,7 +12015,8 @@
       <null/>
     </row>
     <row>
-      <value>ECHUE</value>
+      <value>DI_ECHUE</value>
+      <value>ECHU</value>
       <value>6</value>
       <null/>
       <null/>
@@ -12025,7 +12032,8 @@
       <null/>
     </row>
     <row>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>7</value>
       <null/>
       <null/>
@@ -12041,7 +12049,8 @@
       <null/>
     </row>
     <row>
-      <value>SOMMEE</value>
+      <value>DI_SOMMEE</value>
+      <value>SOMME</value>
       <value>8</value>
       <null/>
       <null/>
@@ -12057,7 +12066,8 @@
       <null/>
     </row>
     <row>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>9</value>
       <null/>
       <null/>
@@ -12073,7 +12083,8 @@
       <null/>
     </row>
     <row>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>10</value>
       <null/>
       <null/>
@@ -12089,7 +12100,8 @@
       <null/>
     </row>
     <row>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>18</value>
       <null/>
       <null/>
@@ -12105,7 +12117,7 @@
       <null/>
     </row>
   </table>
-  <table name="DELAI_DECLARATION">
+  <table name="DELAI_DOCUMENT_FISCAL">
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
@@ -12118,7 +12130,8 @@
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>1</value>
       <null/>
@@ -12133,8 +12146,7 @@
       <null/>
       <value>20080430</value>
       <value>1</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2</value>
@@ -12150,8 +12162,7 @@
       <null/>
       <value>20060315</value>
       <value>2</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3</value>
@@ -12167,8 +12178,7 @@
       <value>20060220</value>
       <value>20060731</value>
       <value>2</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>4</value>
@@ -12184,8 +12194,7 @@
       <null/>
       <value>20070315</value>
       <value>3</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>5</value>
@@ -12201,8 +12210,7 @@
       <null/>
       <value>20080315</value>
       <value>4</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>6</value>
@@ -12218,8 +12226,7 @@
       <value>20080412</value>
       <value>20080915</value>
       <value>4</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>7</value>
@@ -12235,8 +12242,7 @@
       <null/>
       <value>20080731</value>
       <value>5</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8</value>
@@ -12252,8 +12258,7 @@
       <value>20080625</value>
       <value>20080930</value>
       <value>5</value>
-      <null/>
-      <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
   <table name="BORDEREAU_MVT_DOSSIER">

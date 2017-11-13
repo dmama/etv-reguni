@@ -19,9 +19,9 @@ import ch.vd.uniregctb.common.AddAndSaveHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
@@ -251,7 +251,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	@Override
 	public EditiqueResultat envoiRappelQuestionnaireSNCOnline(QuestionnaireSNC questionnaire, RegDate dateTraitement) throws DeclarationException {
 		final EtatDeclarationRappelee etat = new EtatDeclarationRappelee(dateTraitement, dateTraitement);
-		AddAndSaveHelper.addAndSave(questionnaire, etat, questionnaireSNCDAO::save, new EtatDeclarationAddAndSaveAccessor<>());
+		AddAndSaveHelper.addAndSave(questionnaire, etat, questionnaireSNCDAO::save, new EtatDocumentFiscalAddAndSaveAccessor<>());
 
 		try {
 			final EditiqueResultat resultat = editiqueCompositionService.imprimeRappelQuestionnaireSNCOnline(questionnaire, dateTraitement);
@@ -266,7 +266,7 @@ public class QuestionnaireSNCServiceImpl implements QuestionnaireSNCService {
 	@Override
 	public void envoiRappelQuestionnaireSNCForBatch(QuestionnaireSNC questionnaire, RegDate dateTraitement, RegDate dateExpedition) throws DeclarationException {
 		final EtatDeclarationRappelee etat = new EtatDeclarationRappelee(dateTraitement, dateExpedition);
-		AddAndSaveHelper.addAndSave(questionnaire, etat, questionnaireSNCDAO::save, new EtatDeclarationAddAndSaveAccessor<>());
+		AddAndSaveHelper.addAndSave(questionnaire, etat, questionnaireSNCDAO::save, new EtatDocumentFiscalAddAndSaveAccessor<>());
 
 		try {
 			editiqueCompositionService.imprimeRappelQuestionnaireSNCForBatch(questionnaire, dateTraitement, dateExpedition);

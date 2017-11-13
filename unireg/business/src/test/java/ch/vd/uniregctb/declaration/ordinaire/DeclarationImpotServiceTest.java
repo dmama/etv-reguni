@@ -80,7 +80,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -449,8 +449,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final DeclarationImpotOrdinaire di = dis.get(0);
 				assertNotNull(di);
 
-				final EtatDeclaration dernierEtat = di.getDernierEtat();
-				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
+				final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
 				assertEquals(date(2007, 5, 12), di.getDateRetour());
 
 				final EtatDeclarationRetournee etatRetourne = (EtatDeclarationRetournee) dernierEtat;
@@ -485,8 +485,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final DeclarationImpotOrdinaire di = dis.get(0);
 				assertNotNull(di);
 
-				final EtatDeclaration dernierEtat = di.getDernierEtat();
-				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
+				final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, dernierEtat.getEtat());
 				assertEquals(date(2007, 8, 8), di.getDateRetour());
 
 				final EtatDeclarationRetournee etatRetourne = (EtatDeclarationRetournee) dernierEtat;
@@ -726,9 +726,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			final Contribuable olrik = hibernateTemplate.get(Contribuable.class, ids.olrikId); // ordinaire
 			final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.ramonId); // diplomate étranger
 
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 			           eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 			           olrik.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 			assertEmpty(ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 		}
@@ -745,7 +745,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		{
 			final Contribuable guillaume = hibernateTemplate.get(Contribuable.class, ids.guillaumeId); // vaudtax
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31),
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31),
 			           guillaume.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 		}
 
@@ -761,7 +761,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		{
 			final Contribuable paul = hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_DEPENSE, TypeDocument.DECLARATION_IMPOT_DEPENSE, idOidLausanne, date(2008, 3, 31),
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_DEPENSE, TypeDocument.DECLARATION_IMPOT_DEPENSE, idOidLausanne, date(2008, 3, 31),
 			           paul.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 		}
 
@@ -777,7 +777,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		{
 			final Contribuable georges = hibernateTemplate.get(Contribuable.class, ids.georgesId); // hors canton
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, idOidLausanne, date(2008, 3, 31),
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, idOidLausanne, date(2008, 3, 31),
 			           georges.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 		}
 
@@ -793,7 +793,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		{
 			final Contribuable jean = hibernateTemplate.get(Contribuable.class, ids.jeanId); // ordinaire
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 			           jean.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 		}
 
@@ -809,7 +809,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 		{
 			final Contribuable jacques = hibernateTemplate.get(Contribuable.class, ids.jacquesId); // ordinaire
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31),
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31),
 			           jacques.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 		}
 
@@ -830,15 +830,15 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			assertEmpty(lionel.getDeclarationsDansPeriode(Declaration.class, 2007, false)); // [UNIREG-1742] hors suisse avec immeuble première : déclaration optionnelle
 
 			final Contribuable bruno = hibernateTemplate.get(Contribuable.class, ids.brunoId); // hors suisse
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 			           bruno.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 
 			final Contribuable mitt = hibernateTemplate.get(Contribuable.class, ids.mittId); // ordinaire
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 			           mitt.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 
 			final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.mittId); // hors-suisse
-			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31),
 			           ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 		}
 
@@ -970,7 +970,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
 				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
 
-				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
+				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE,
 				           TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 				assertEmpty(john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
 				return null;
@@ -1413,11 +1413,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final PersonnePhysique ours = hibernateTemplate.get(PersonnePhysique.class, ids.oursId);
 				final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId);
 				final PersonnePhysique totor = hibernateTemplate.get(PersonnePhysique.class, ids.totorId);
-				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
+				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE,
 				           TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE,
+				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE,
 				           TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), john.getDeclarationsDansPeriode(Declaration.class, 2007, false));
-				assertDIPP(date(2007, 1, 1), date(2007, 5, 23), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
+				assertDIPP(date(2007, 1, 1), date(2007, 5, 23), TypeEtatDocumentFiscal.EMIS, TypeContribuable.VAUDOIS_ORDINAIRE,
 				           TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idAci, date(2008, 3, 25), ours.getDeclarationsDansPeriode(Declaration.class, 2007, false)); // [UNIREG-1852], [UNIREG-1861]
 				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
 				           TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, ramon.getDeclarationsDansPeriode(Declaration.class, 2007, false));
@@ -2085,21 +2085,21 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertNotNull(di);
 				assertEquals(date(2007, 5, 12), di.getDateRetour());
 
-				final Set<EtatDeclaration> etats = di.getEtats();
+				final Set<EtatDeclaration> etats = di.getEtatsDeclaration();
 				assertNotNull(etats);
 				assertEquals(1, etats.size());
 
 				final Iterator<EtatDeclaration> iterator = etats.iterator();
 
 				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) iterator.next();
-				assertEquals(TypeEtatDeclaration.RETOURNEE, etat0.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
 				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
 				assertEquals("TEST0", etat0.getSource());
 				assertFalse(etat0.isAnnule());
 
 				// l'état retourné est le dernier, comme il se doit
-				assertSame(etat0, di.getDernierEtat());
-				assertSame(etat0, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				assertSame(etat0, di.getDernierEtatDeclaration());
+				assertSame(etat0, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
 				return null;
 			}
 		});
@@ -2130,25 +2130,25 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertNotNull(di);
 				assertEquals(date(2007, 10, 28), di.getDateRetour());
 
-				final List<EtatDeclaration> etats = di.getEtatsSorted();
+				final List<EtatDeclaration> etats = di.getEtatsDeclarationSorted();
 				assertNotNull(etats);
 				assertEquals(2, etats.size());
 
 				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) etats.get(0);
-				assertEquals(TypeEtatDeclaration.RETOURNEE, etat0.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
 				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
 				assertEquals("TEST0", etat0.getSource());
 				assertFalse(etat0.isAnnule());
 
 				final EtatDeclarationRetournee etat1 = (EtatDeclarationRetournee) etats.get(1);
-				assertEquals(TypeEtatDeclaration.RETOURNEE, etat1.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat1.getEtat());
 				assertEquals(date(2007, 10, 28), etat1.getDateObtention());
 				assertEquals("TEST1", etat1.getSource());
 				assertFalse(etat1.isAnnule());
 
 				// le nouvel état retourné doit être le dernier
-				assertSame(etat1, di.getDernierEtat());
-				assertSame(etat1, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				assertSame(etat1, di.getDernierEtatDeclaration());
+				assertSame(etat1, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
 				return null;
 			}
 		});
@@ -2222,21 +2222,21 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertNotNull(di);
 				assertEquals(date(2007, 5, 12), di.getDateRetour());
 
-				final Set<EtatDeclaration> etats = di.getEtats();
+				final Set<EtatDeclaration> etats = di.getEtatsDeclaration();
 				assertNotNull(etats);
 				assertEquals(1, etats.size());
 
 				final Iterator<EtatDeclaration> iterator = etats.iterator();
 
 				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) iterator.next();
-				assertEquals(TypeEtatDeclaration.RETOURNEE, etat0.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
 				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
 				assertEquals(SOURCE, etat0.getSource());
 				assertFalse(etat0.isAnnule());
 
 				// l'état retourné est le dernier, comme il se doit
-				assertSame(etat0, di.getDernierEtat());
-				assertSame(etat0, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				assertSame(etat0, di.getDernierEtatDeclaration());
+				assertSame(etat0, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
 				return null;
 			}
 		});
@@ -2281,31 +2281,31 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertNotNull(di);
 				assertEquals(date(2007, 10, 28), di.getDateRetour());
 
-				final List<EtatDeclaration> etats = di.getEtatsSorted();
+				final List<EtatDeclaration> etats = di.getEtatsDeclarationSorted();
 				assertNotNull(etats);
 				assertEquals(3, etats.size());
 
 				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) etats.get(0);
-				assertEquals(TypeEtatDeclaration.RETOURNEE, etat0.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat0.getEtat());
 				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
 				assertEquals(SOURCE, etat0.getSource());
 				assertTrue(etat0.isAnnule());
 
 				final EtatDeclarationRetournee etat1 = (EtatDeclarationRetournee) etats.get(1);
-				assertEquals(TypeEtatDeclaration.RETOURNEE, etat1.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat1.getEtat());
 				assertEquals(date(2007, 10, 25), etat1.getDateObtention());
 				assertEquals("TEST", etat1.getSource());
 				assertFalse(etat1.isAnnule());
 
 				final EtatDeclarationRetournee etat2 = (EtatDeclarationRetournee) etats.get(2);
-				assertEquals(TypeEtatDeclaration.RETOURNEE, etat2.getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, etat2.getEtat());
 				assertEquals(date(2007, 10, 28), etat2.getDateObtention());
 				assertEquals(SOURCE, etat2.getSource());
 				assertFalse(etat2.isAnnule());
 
 				// le nouvel état retourné doit être le dernier
-				assertSame(etat2, di.getDernierEtat());
-				assertSame(etat2, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				assertSame(etat2, di.getDernierEtatDeclaration());
+				assertSame(etat2, di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE));
 				return null;
 			}
 		});

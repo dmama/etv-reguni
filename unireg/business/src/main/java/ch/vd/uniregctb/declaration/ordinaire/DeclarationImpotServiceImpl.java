@@ -27,9 +27,9 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -92,10 +92,10 @@ import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -359,7 +359,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
-			final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE);
 			if (etatRetour != null) {
 				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
 			}
@@ -387,7 +387,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			}
 
 			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
-			final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatRetour = declaration.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE);
 			if (etatRetour != null) {
 				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
 			}
@@ -491,7 +491,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		// [SIFISC-5208] Dorénavant, on stocke scrupuleusement tous les états de quittancement de type 'retournés', *sans* annuler les états précédents.
 		// [SIFISC-8436] certaines sources ne supportent pas le multi-quittancement
 		if (sourcesMonoQuittancement.contains(source)) {
-			for (EtatDeclaration etat : di.getEtats()) {
+			for (EtatDeclaration etat : di.getEtatsDeclaration()) {
 				if (!etat.isAnnule() && etat instanceof EtatDeclarationRetournee && source.equals(((EtatDeclarationRetournee) etat).getSource())) {
 					etat.setAnnule(true);
 				}
@@ -680,7 +680,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public <T extends EtatDeclaration> T addAndSave(DeclarationImpotOrdinaire declaration, T etat) {
-		return AddAndSaveHelper.addAndSave(declaration, etat, hibernateTemplate::merge, new EtatDeclarationAddAndSaveAccessor<>());
+		return AddAndSaveHelper.addAndSave(declaration, etat, hibernateTemplate::merge, new EtatDocumentFiscalAddAndSaveAccessor<>());
 	}
 
 	@Override
@@ -699,7 +699,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throw new IllegalArgumentException("Délai " + delai.getId() + " sur une déclaration non-supportée : " + declaration.getClass().getName());
 		}
 
-		if (delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {
+		if (delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE) {
 			if (delai.isSursis()) {
 				return TypeDocumentEditique.SURSIS;
 			}
@@ -707,7 +707,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				return TypeDocumentEditique.ACCORD_DELAI_PM;
 			}
 		}
-		else if (delai.getEtat() == EtatDelaiDeclaration.REFUSE) {
+		else if (delai.getEtat() == EtatDelaiDocumentFiscal.REFUSE) {
 			return TypeDocumentEditique.REFUS_DELAI_PM;
 		}
 		else {

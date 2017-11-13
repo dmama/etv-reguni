@@ -29,6 +29,7 @@ import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypePermis;
 
 public abstract class EnumHelper {
@@ -49,7 +50,7 @@ public abstract class EnumHelper {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(categorieImpotSource);
 	}
 
-	public static TaxDeclarationStatusType coreToWeb(ch.vd.uniregctb.type.TypeEtatDeclaration type) {
+	public static TaxDeclarationStatusType coreToWeb(TypeEtatDocumentFiscal type) {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv1(type);
 	}
 

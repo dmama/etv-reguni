@@ -19,9 +19,9 @@ import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.declaration.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -41,7 +41,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -168,7 +168,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		lr.addEtat(etat);
 
 		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		delai.setDateDemande(today);
 		delai.setDateTraitement(today);
 
@@ -195,7 +195,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionListesRecapitulatives(dateTraitement);
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition, null);
-		AddAndSaveHelper.addAndSave(lr, etat, listeRecapDAO::save, new EtatDeclarationAddAndSaveAccessor<>());
+		AddAndSaveHelper.addAndSave(lr, etat, listeRecapDAO::save, new EtatDocumentFiscalAddAndSaveAccessor<>());
 		editiqueCompositionService.imprimeSommationLRForBatch(lr, RegDate.get());
 		evenementFiscalService.publierEvenementFiscalSommationListeRecapitulative(lr, etat.getDateObtention());
 	}

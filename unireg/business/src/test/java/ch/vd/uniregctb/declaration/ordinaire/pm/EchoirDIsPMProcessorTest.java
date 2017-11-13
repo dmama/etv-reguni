@@ -25,12 +25,12 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -334,7 +334,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
-				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
 				return declaration.getId();
 			}
@@ -372,12 +372,12 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
-				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
 
 				// on met un sursis à la veille de la date de traitement, pour bien montrer que le délai
 				// administratif de 15 jours est bien pris en compte (= le sursis est toujours actif même au lendemain de sa date officielle)
-				final DelaiDeclaration sursis = addDelaiDeclaration(declaration, dateSommation.addDays(10), dateTraitement.getOneDayBefore(), EtatDelaiDeclaration.ACCORDE);
+				final DelaiDeclaration sursis = addDelaiDeclaration(declaration, dateSommation.addDays(10), dateTraitement.getOneDayBefore(), EtatDelaiDocumentFiscal.ACCORDE);
 				sursis.setSursis(true);
 
 				return declaration.getId();
@@ -421,7 +421,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
-				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
 				return declaration.getId();
 			}
@@ -443,7 +443,7 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 				assertNotNull(di);
-				assertEquals(TypeEtatDeclaration.ECHUE, di.getDernierEtat().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.ECHU, di.getDernierEtatDeclaration().getEtat());
 				return null;
 			}
 		});
@@ -473,11 +473,11 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
-				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, date(2015, 1, 15), date(2015, 3, 15), EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationSommee(declaration, dateSommation, dateSommation.addDays(3), null);
 
 				// on est obligé de revenir en arrière un gros bout pour coutourner le délai administratif de 15 jours
-				final DelaiDeclaration sursis = addDelaiDeclaration(declaration, dateSommation.addDays(10), dateTraitement.addDays(-20), EtatDelaiDeclaration.ACCORDE);
+				final DelaiDeclaration sursis = addDelaiDeclaration(declaration, dateSommation.addDays(10), dateTraitement.addDays(-20), EtatDelaiDocumentFiscal.ACCORDE);
 				sursis.setSursis(true);
 
 				return declaration.getId();

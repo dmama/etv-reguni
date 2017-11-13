@@ -10,14 +10,14 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
 public interface CopieConformeManager {
 
 	/**
-	 * Renvoie un document PDF de la copie conforme de la sommation de déclaration dont l'état (de type "SOMMEE") est indiqué en paramètre
+	 * Renvoie un document PDF de la copie conforme de la sommation de déclaration dont l'état (de type "SOMME") est indiqué en paramètre
 	 * @param idEtatSomme identifiant de l'état "sommé" de la sommation (DI ou LR)
 	 * @return document PDF
 	 */
 	EditiqueResultat getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException;
 
 	/**
-	 * Renvoie un document PDF de la copie conforme de la sommation de document dont l'état (de type "RAPPELEE") est indiqué en paramètre
+	 * Renvoie un document PDF de la copie conforme de la sommation de document dont l'état (de type "RAPPELE") est indiqué en paramètre
 	 * @param idEtatRappele identifiant de l'état "rappelé" de la sommation (questionnaire SNC)
 	 * @return document PDF
 	 */

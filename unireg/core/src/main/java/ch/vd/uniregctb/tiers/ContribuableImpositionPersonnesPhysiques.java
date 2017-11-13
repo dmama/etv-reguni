@@ -139,13 +139,15 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 
 				if (di.getCodeControle() == null) {
 					// pour les PP, on reprend le même code de contrôle pour toutes les DI de l'année
-					final Set<Declaration> declarationsExistantes = getOrCreateDeclarationSet();
+					final Set<Declaration> declarationsExistantes = getDeclarations();
 					String codeControleUtilise = null;
-					for (Declaration existante : declarationsExistantes) {
-						if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationImpotOrdinairePP) {
-							codeControleUtilise = ((DeclarationImpotOrdinairePP) existante).getCodeControle();
-							if (codeControleUtilise != null) {
-								break;
+					if (declarationsExistantes != null) {
+						for (Declaration existante : declarationsExistantes) {
+							if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationImpotOrdinairePP) {
+								codeControleUtilise = ((DeclarationImpotOrdinairePP) existante).getCodeControle();
+								if (codeControleUtilise != null) {
+									break;
+								}
 							}
 						}
 					}
@@ -153,10 +155,12 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 					// aucun code déjà utilisé sur cette PF pour le moment, il faut en générer un nouveau
 					if (codeControleUtilise == null) {
 						codeControleUtilise = DeclarationImpotOrdinairePP.generateCodeControle();
-						for (Declaration existante : declarationsExistantes) {
-							// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
-							if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationImpotOrdinairePP) {
-								((DeclarationImpotOrdinairePP) existante).setCodeControle(codeControleUtilise);
+						if (declarationsExistantes != null) {
+							for (Declaration existante : declarationsExistantes) {
+								// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
+								if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationImpotOrdinairePP) {
+									((DeclarationImpotOrdinairePP) existante).setCodeControle(codeControleUtilise);
+								}
 							}
 						}
 					}

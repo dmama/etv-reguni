@@ -16,7 +16,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 
@@ -27,7 +27,7 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 	private final RegDate dateRetour;
 	private final RegDate delaiAccorde;
 	private final List<DelaiDeclarationView> delais;
-	private final TypeEtatDeclaration etat;
+	private final TypeEtatDocumentFiscal etat;
 	private final RegDate dateObtentionEtat;
 	private final boolean annule;
 	private final boolean isAllowedDelai;
@@ -54,16 +54,16 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 				.orElse(null);
 		this.annule = lr.isAnnule();
 
-		final EtatDeclaration dernierEtat = lr.getDernierEtat();
+		final EtatDeclaration dernierEtat = lr.getDernierEtatDeclaration();
 		this.etat = dernierEtat.getEtat();
 		this.dateObtentionEtat = dernierEtat.getDateObtention();
 		this.imprimable = !lr.isAnnule();
 
 		// [SIFISC-17743] ajout de délai seulement autorisée si lr seulement émise
-		this.isAllowedDelai = this.etat == TypeEtatDeclaration.EMISE;
+		this.isAllowedDelai = this.etat == TypeEtatDocumentFiscal.EMIS;
 
-		// [SIFISC-10283] LR annulable si EMISE, SOMMEE ou ECHUE
-		this.annulable = !lr.isAnnule() && this.etat != TypeEtatDeclaration.RETOURNEE;
+		// [SIFISC-10283] LR annulable si EMIS, SOMME ou ECHU
+		this.annulable = !lr.isAnnule() && this.etat != TypeEtatDocumentFiscal.RETOURNE;
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 	}
 
 	static List<DelaiDeclarationView> buildDelais(DeclarationImpotSource lr, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		final List<DelaiDeclarationView> delais = lr.getDelais().stream()
+		final List<DelaiDeclarationView> delais = lr.getDelaisDeclaration().stream()
 				.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(DelaiDeclaration::getDateDemande, Comparator.nullsLast(Comparator.reverseOrder()))))
 				.map(delai -> new DelaiDeclarationView(delai, infraService, messageSource))
 				.collect(Collectors.toList());
@@ -132,7 +132,7 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 		return delais;
 	}
 
-	public TypeEtatDeclaration getEtat() {
+	public TypeEtatDocumentFiscal getEtat() {
 		return etat;
 	}
 

@@ -312,12 +312,12 @@ public class SuppressionOIDJob extends JobDefinition {
 	public class UpdateDeclarations extends UpdateOperationImpl {
 
 		public UpdateDeclarations(Connection con) throws SQLException {
-			super(con.prepareStatement("UPDATE DECLARATION T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, RETOUR_COLL_ADMIN_ID=? WHERE TIERS_ID=? AND RETOUR_COLL_ADMIN_ID=?"));
+			super(con.prepareStatement("UPDATE DOCUMENT_FISCAL T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, RETOUR_COLL_ADMIN_ID=? WHERE TIERS_ID=? AND RETOUR_COLL_ADMIN_ID=?"));
 		}
 
 		@Override
 		public String getTable() {
-			return "DECLARATION";
+			return "DOCUMENT_FISCAL";
 		}
 
 		@Override

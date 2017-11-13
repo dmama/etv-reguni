@@ -1,82 +1,90 @@
 package ch.vd.uniregctb.documentfiscal;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.Type;
+import java.util.Optional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 @Entity
 public abstract class AutreDocumentFiscalAvecSuivi extends AutreDocumentFiscal {
 
-	private RegDate delaiRetour;
-	private RegDate dateRetour;
-	private RegDate dateRappel;
-	private String cleArchivageRappel;
-	private String cleDocumentRappel;
-
-	@Column(name = "DELAI_RETOUR")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
+	@Transient
 	public RegDate getDelaiRetour() {
-		return delaiRetour;
+		return Optional.ofNullable(getDernierDelaiAccorde())
+				.map(DelaiDocumentFiscal::getDelaiAccordeAu)
+				.orElse(null);
 	}
 
 	public void setDelaiRetour(RegDate delaiRetour) {
-		this.delaiRetour = delaiRetour;
+		throw new UnsupportedOperationException("TODO: Stocker la date de délai dans le délai du document.");
 	}
 
-	@Column(name = "DATE_RETOUR")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
+	@Transient
 	public RegDate getDateRetour() {
-		return dateRetour;
+		return Optional.ofNullable(getEtatRetourne())
+				.map(EtatAutreDocumentFiscalRetourne::getDateObtention)
+				.orElse(null);
 	}
 
 	public void setDateRetour(RegDate dateRetour) {
-		this.dateRetour = dateRetour;
+		final EtatDocumentFiscal etat = getDernierEtatOfType(TypeEtatDocumentFiscal.RETOURNE);
+		if (etat == null) {
+			addEtat(new EtatAutreDocumentFiscalRetourne(dateRetour));
+		}
+		else {
+			etat.setDateObtention(dateRetour);
+		}
 	}
 
-	@Column(name = "DATE_RAPPEL")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
+	@Transient
 	public RegDate getDateRappel() {
-		return dateRappel;
+		return Optional.ofNullable(getEtatRappele())
+				.map(EtatAutreDocumentFiscalRappele::getDateObtention)
+				.orElse(null);
 	}
 
 	public void setDateRappel(RegDate dateRappel) {
-		this.dateRappel = dateRappel;
+		final EtatDocumentFiscal etat = getDernierEtatOfType(TypeEtatDocumentFiscal.RAPPELE);
+		if (etat == null) {
+			addEtat(new EtatAutreDocumentFiscalRappele(dateRappel));
+		}
+		else {
+			etat.setDateObtention(dateRappel);
+		}
 	}
 
-	@Column(name = "CLE_ARCHIVAGE_RAPPEL", length = LengthConstants.CLE_ARCHIVAGE_FOLDERS)
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
+	@Transient
 	public String getCleArchivageRappel() {
-		return cleArchivageRappel;
+		return Optional.ofNullable(getEtatRappele())
+				.map(EtatAutreDocumentFiscalRappele::getCleArchivage)
+				.orElse(null);
 	}
 
 	public void setCleArchivageRappel(String cleArchivageRappel) {
-		this.cleArchivageRappel = cleArchivageRappel;
+		sauverCleArchivage(TypeEtatDocumentFiscal.RAPPELE, cleArchivageRappel);
 	}
 
-	@Column(name = "CLE_DOCUMENT_RAPPEL", length = LengthConstants.CLE_DOCUMENT_DPERM)
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
+	@Transient
 	public String getCleDocumentRappel() {
-		return cleDocumentRappel;
+		return Optional.ofNullable(getEtatRappele())
+				.map(EtatAutreDocumentFiscalRappele::getCleDocument)
+				.orElse(null);
 	}
 
 	public void setCleDocumentRappel(String cleDocumentRappel) {
-		this.cleDocumentRappel = cleDocumentRappel;
+		sauverCleDocument(TypeEtatDocumentFiscal.RAPPELE, cleDocumentRappel);
 	}
 
+	@Override
 	@Transient
-	public TypeEtatAutreDocumentFiscal getEtat() {
-		if (dateRetour != null) {
-			return TypeEtatAutreDocumentFiscal.RETOURNE;
-		}
-		else if (dateRappel != null) {
-			return TypeEtatAutreDocumentFiscal.RAPPELE;
-		}
-		else {
-			return super.getEtat();
-		}
+	public boolean isRappelable() {
+		return true;
 	}
 }

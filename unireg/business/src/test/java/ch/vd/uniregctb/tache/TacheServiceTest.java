@@ -101,7 +101,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -3681,9 +3681,9 @@ public class TacheServiceTest extends BusinessTest {
 				final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
 				assertEquals(2, dis.size());
 				Collections.sort(dis, new DateRangeComparator<>());
-				assertDIPP(date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				assertDIPP(date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				           cedi.getNumero(), null, dis.get(0));
-				assertDIPP(date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				assertDIPP(date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				           cedi.getNumero(), null, dis.get(1));
 				return null;
 			}
@@ -3821,11 +3821,11 @@ public class TacheServiceTest extends BusinessTest {
 				final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
 				assertEquals(anneeCourante - 2004, dis.size());
 				Collections.sort(dis, new DateRangeComparator<>());
-				assertDIPP(date(2004, 3, 1), date(2004, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
+				assertDIPP(date(2004, 3, 1), date(2004, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
 				           dis.get(0));
 
 				for (int annee = 2005; annee < anneeCourante - 1; ++annee) {
-					assertDIPP(date(annee, 1, 1), date(annee, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
+					assertDIPP(date(annee, 1, 1), date(annee, 12, 31), TypeEtatDocumentFiscal.RETOURNE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
 					           dis.get(annee - 2004));
 				}
 				return null;
@@ -4721,7 +4721,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertFalse(di.isLibre());      // la DI a été adaptée au for
 				assertEquals(date(anneeCourante, 1, 1), di.getDateDebut());
 				assertEquals(aujourdhui.addDays(-2), di.getDateFin());
-				assertEquals(TypeEtatDeclaration.RETOURNEE, di.getDernierEtat().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, di.getDernierEtatDeclaration().getEtat());
 
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
@@ -4789,7 +4789,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertFalse(diAAnnuler.isLibre());      // la DI a été adaptée au for
 				assertEquals(date(anneeCourante, 1, 1), diAAnnuler.getDateDebut());
 				assertEquals(aujourdhui.addDays(-2), diAAnnuler.getDateFin());
-				assertEquals(TypeEtatDeclaration.RETOURNEE, diAAnnuler.getDernierEtat().getEtat());
+				assertEquals(TypeEtatDocumentFiscal.RETOURNE, diAAnnuler.getDernierEtatDeclaration().getEtat());
 
 				return null;
 			}

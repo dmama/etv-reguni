@@ -12,17 +12,15 @@ import org.springframework.context.MessageSource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
-import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.uniregctb.common.MockMessageSource;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ListeRecapitulativeDetailViewTest {
 
@@ -34,7 +32,7 @@ public class ListeRecapitulativeDetailViewTest {
 		DelaiDeclaration delaiDeclaration01 = new DelaiDeclaration();
 		delaiDeclaration01.setId(111L);
 		delaiDeclaration01.setDateDemande(null);
-		delaiDeclaration01.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delaiDeclaration01.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		Declaration declaration = new DeclarationImpotSource();
 		declaration.setId(11L);
 		delaiDeclaration01.setDeclaration(declaration);
@@ -42,7 +40,7 @@ public class ListeRecapitulativeDetailViewTest {
 		DelaiDeclaration delaiDeclaration02 = new DelaiDeclaration();
 		delaiDeclaration02.setId(222L);
 		delaiDeclaration02.setDateDemande(RegDate.get(2016, 06, 15));
-		delaiDeclaration02.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delaiDeclaration02.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		declaration = new DeclarationImpotSource();
 		declaration.setId(22L);
 		delaiDeclaration02.setDeclaration(declaration);
@@ -50,7 +48,7 @@ public class ListeRecapitulativeDetailViewTest {
 		DelaiDeclaration delaiDeclaration03 = new DelaiDeclaration();
 		delaiDeclaration03.setId(333L);
 		delaiDeclaration03.setDateDemande(RegDate.get(2015, 03, 12));
-		delaiDeclaration03.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delaiDeclaration03.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		declaration = new DeclarationImpotSource();
 		declaration.setId(33L);
 		delaiDeclaration03.setDeclaration(declaration);
@@ -58,7 +56,7 @@ public class ListeRecapitulativeDetailViewTest {
 		DelaiDeclaration delaiDeclaration04 = new DelaiDeclaration();
 		delaiDeclaration04.setId(444L);
 		delaiDeclaration04.setDateDemande(RegDate.get(2017 ,01, 23));
-		delaiDeclaration04.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delaiDeclaration04.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		declaration = new DeclarationImpotSource();
 		declaration.setId(44L);
 		delaiDeclaration04.setDeclaration(declaration);
@@ -67,7 +65,7 @@ public class ListeRecapitulativeDetailViewTest {
 		delaiDeclarationSet.add(delaiDeclaration02);
 		delaiDeclarationSet.add(delaiDeclaration03);
 		delaiDeclarationSet.add(delaiDeclaration04);
-		lr.setDelais(delaiDeclarationSet);
+		lr.setDelaisDeclaration(delaiDeclarationSet);
 
 		ProxyServiceInfrastructureService infraService = new ProxyServiceInfrastructureService();
 		infraService.setUp(new DefaultMockServiceInfrastructureService(){

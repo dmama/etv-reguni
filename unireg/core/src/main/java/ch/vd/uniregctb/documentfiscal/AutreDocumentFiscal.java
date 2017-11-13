@@ -1,114 +1,172 @@
 package ch.vd.uniregctb.documentfiscal;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.LinkedEntity;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 @Entity
-@Table(name = "AUTRE_DOCUMENT_FISCAL")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "DOC_TYPE", discriminatorType = DiscriminatorType.STRING, length = LengthConstants.AUTRE_DOCUMENT_FISCAL_TYPE)
-public abstract class AutreDocumentFiscal extends HibernateEntity implements LinkedEntity {
+public abstract class AutreDocumentFiscal extends DocumentFiscal {
 
-	private Long id;
-	private RegDate dateEnvoi;
-	private String cleArchivage;
-	private String cleDocument;
-	private Entreprise entreprise;
-
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
 	@Transient
-	@Override
-	public Long getKey() {
-		return id;
-	}
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "ID", nullable = false)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	@Column(name = "DATE_ENVOI", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateEnvoi() {
-		return dateEnvoi;
+		return Optional.ofNullable(getEtatEmis())
+				.map(EtatAutreDocumentFiscalEmis::getDateObtention)
+				.orElse(null);
 	}
 
 	public void setDateEnvoi(RegDate dateEnvoi) {
-		this.dateEnvoi = dateEnvoi;
+		final EtatDocumentFiscal etat = getDernierEtatOfType(TypeEtatDocumentFiscal.EMIS);
+		if (etat == null) {
+			addEtat(new EtatAutreDocumentFiscalEmis(dateEnvoi));
+		}
+		else {
+			etat.setDateObtention(dateEnvoi);
+		}
 	}
 
-	@Column(name = "CLE_ARCHIVAGE", length = LengthConstants.CLE_ARCHIVAGE_FOLDERS)
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
+	@Transient
 	public String getCleArchivage() {
-		return cleArchivage;
+		return Optional.ofNullable(getEtatEmis())
+				.map(EtatAutreDocumentFiscalEmis::getCleArchivage)
+				.orElse(null);
 	}
 
 	public void setCleArchivage(String cleArchivage) {
-		this.cleArchivage = cleArchivage;
+		sauverCleArchivage(TypeEtatDocumentFiscal.EMIS, cleArchivage);
 	}
 
-	@Column(name = "CLE_DOCUMENT", length = LengthConstants.CLE_DOCUMENT_DPERM)
+	// Compatibilité avec l'ancienne structure de données des autres documents fiscaux.
+	@Transient
 	public String getCleDocument() {
-		return cleDocument;
+		return Optional.ofNullable(getEtatEmis())
+				.map(EtatAutreDocumentFiscalEmis::getCleDocument)
+				.orElse(null);
 	}
 
 	public void setCleDocument(String cleDocument) {
-		this.cleDocument = cleDocument;
+		sauverCleDocument(TypeEtatDocumentFiscal.EMIS, cleDocument);
+	}
+
+	/**
+	 * Sauve la clé d'archivage sur le dernier état du type demandé pour le document. Vérifie la présence de l'état qui doit nécessairement avoir été créé par
+	 * ailleur. Vérifie l'absence de clé d'archivage dans l'état trouvé, car pas d'impression de document sans transition d'état.
+	 */
+	protected <E extends EtatAutreDocumentFiscalAvecDocumentArchive> void sauverCleArchivage(TypeEtatDocumentFiscal type, String cleArchivage) {
+		final EtatAutreDocumentFiscalAvecDocumentArchive etat = (EtatAutreDocumentFiscalAvecDocumentArchive) getDernierEtatOfType(type);
+		if (etat == null) {
+			throw new ProgrammingException(String.format("L'état du document n°%s introuvable! Document fiscal incomplet.", getId()));
+		}
+		if (etat.getCleArchivage() != null) {
+			throw new ProgrammingException(String.format("Une clé d'archivage est déjà présente dans le dernier état du document fiscal n°%s! ", getId()));
+		}
+		etat.setCleArchivage(cleArchivage);
+	}
+
+	/**
+	 * Sauve la clé de document (Repelec) sur le dernier état du type demandé pour le document. Vérifie la présence de l'état qui doit nécessairement avoir été créé par
+	 * ailleur. Vérifie l'absence de clé de document dans l'état trouvé, car pas d'impression de document sans transition d'état.
+	 */
+	protected <E extends EtatAutreDocumentFiscalAvecDocumentArchive> void sauverCleDocument(TypeEtatDocumentFiscal type, String cleDocument) {
+		final EtatAutreDocumentFiscalAvecDocumentArchive etat = (EtatAutreDocumentFiscalAvecDocumentArchive) getDernierEtatOfType(type);
+		if (etat == null) {
+			throw new ProgrammingException(String.format("L'état %s du document n°%s introuvable! Document fiscal incomplet.", type, getId()));
+		}
+		if (etat.getCleArchivage() != null) {
+			throw new ProgrammingException(String.format("Une clé de document est déjà présente dans le dernier état %s du document fiscal n°%s! ", type, getId()));
+		}
+		etat.setCleDocument(cleDocument);
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "ENTREPRISE_ID", nullable = false)
+	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
+	@Index(name = "IDX_DOCFISC_TRS_ID", columnNames = "TIERS_ID")
 	public Entreprise getEntreprise() {
-		return entreprise;
+		return (Entreprise) getTiers();
 	}
 
 	public void setEntreprise(Entreprise entreprise) {
-		this.entreprise = entreprise;
+		setTiers(entreprise);
+	}
+
+	@Transient
+	@Nullable
+	protected EtatAutreDocumentFiscalEmis getEtatEmis() {
+		final List<EtatDocumentFiscal> etatsEmis = getEtatsOfType(TypeEtatDocumentFiscal.EMIS, false);
+		if (etatsEmis.isEmpty()) {
+			return null;
+		}
+		else {
+			return (EtatAutreDocumentFiscalEmis) etatsEmis.get(0);
+		}
+	}
+
+	@Transient
+	@Nullable
+	protected EtatAutreDocumentFiscalRappele getEtatRappele() {
+		final List<EtatDocumentFiscal> etatsRappele = getEtatsOfType(TypeEtatDocumentFiscal.RAPPELE, false);
+		if (etatsRappele.isEmpty()) {
+			return null;
+		}
+		else {
+			return (EtatAutreDocumentFiscalRappele) etatsRappele.get(0);
+		}
+	}
+
+	@Transient
+	@Nullable
+	protected EtatAutreDocumentFiscalRetourne getEtatRetourne() {
+		final List<EtatDocumentFiscal> etatsRappele = getEtatsOfType(TypeEtatDocumentFiscal.RETOURNE, false);
+		if (etatsRappele.isEmpty()) {
+			return null;
+		}
+		else {
+			return (EtatAutreDocumentFiscalRetourne) etatsRappele.get(0);
+		}
 	}
 
 	@Transient
 	@Override
 	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
-		return entreprise == null ? null : Collections.singletonList(entreprise);
+		return getEntreprise() == null ? null : Collections.singletonList(getEntreprise());
 	}
 
 	@Transient
-	public TypeEtatAutreDocumentFiscal getEtat() {
-		return TypeEtatAutreDocumentFiscal.EMIS;
+	public TypeEtatDocumentFiscal getEtat() {
+		final EtatDocumentFiscal dernierEtat = getDernierEtat();
+		return dernierEtat != null ? dernierEtat.getType() : null;
 	}
 
 	@Transient
 	public Integer getPeriodeFiscale() {
-		return Optional.ofNullable(dateEnvoi)
+		return Optional.ofNullable(getDateEnvoi())
 				.map(RegDate::year)
 				.orElse(null);
+	}
+
+	@Transient
+	@Override
+	public boolean isSommable() {
+		return false;
+	}
+
+	@Transient
+	@Override
+	public boolean isRappelable() {
+		return false;
 	}
 }

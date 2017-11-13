@@ -13,7 +13,7 @@ public final class DelaiDeclarationAddAndSaveAccessor implements AddAndSaveHelpe
 
 	@Override
 	public Collection<DelaiDeclaration> getEntities(DeclarationImpotOrdinaire declarationImpotOrdinaire) {
-		return declarationImpotOrdinaire.getDelais();
+		return declarationImpotOrdinaire.getDelaisDeclaration();
 	}
 
 	@Override

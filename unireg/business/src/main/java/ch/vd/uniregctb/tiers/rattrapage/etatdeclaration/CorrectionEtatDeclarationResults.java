@@ -11,7 +11,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class CorrectionEtatDeclarationResults extends JobResults<Long, CorrectionEtatDeclarationResults> {
 
@@ -20,7 +20,7 @@ public class CorrectionEtatDeclarationResults extends JobResults<Long, Correctio
 		public final Long diId;
 		public final Long id;
 		public final RegDate dateObtention;
-		public final TypeEtatDeclaration type;
+		public final TypeEtatDocumentFiscal type;
 		public final Date logCreationDate;
 		public final String logCreationUser;
 		public final Date logModificationDate;

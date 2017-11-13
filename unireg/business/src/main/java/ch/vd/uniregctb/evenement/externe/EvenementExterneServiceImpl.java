@@ -13,7 +13,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EvenementExterneServiceImpl implements EvenementExterneService {
 
@@ -145,7 +145,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 			if (quittance.getDateEvenement() == null) {
 				throw new EvenementExterneException("Pour une annulation la date de retour est requise.");
 			}
-			final EtatDeclaration etatDeclaration = declarationImpotSource.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatDeclaration = declarationImpotSource.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE);
 			// S’il s’agit d’une annulation du retour, le retour a déjà été enregistré.
 			if (etatDeclaration == null) {
 				throw new EvenementExterneException(String.format("La déclaration impôt source sélectionnée (tiers=%d, période=%s) ne contient pas de retour à annuler.",
@@ -165,8 +165,8 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 		if (quittance.getType() == TypeQuittance.QUITTANCEMENT) {
 
 			// on annule les éventuels quittancements antérieurs si nécessaire
-			for (EtatDeclaration etat : declarationImpotSource.getEtats()) {
-				if (!etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+			for (EtatDeclaration etat : declarationImpotSource.getEtatsDeclaration()) {
+				if (!etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNE) {
 					etat.setAnnule(true);
 				}
 			}
@@ -178,7 +178,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 			declarationImpotSource.addEtat(etatDeclaration);
 		}
 		else if (quittance.getType() == TypeQuittance.ANNULATION) {
-			final EtatDeclaration etatDeclaration = declarationImpotSource.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatDeclaration = declarationImpotSource.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE);
 			etatDeclaration.setAnnule(true);
 		}
 		else {

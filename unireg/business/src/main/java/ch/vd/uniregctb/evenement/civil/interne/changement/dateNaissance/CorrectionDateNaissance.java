@@ -72,7 +72,7 @@ public class CorrectionDateNaissance extends ChangementBase {
 
 					// Lève une erreur si la nouvelle date de majorité ne tombe pas sur la même année que l'ancienne (il y a certainement des
 					// DIs et d'autres choses à mettre-à-jour)
-					if (ancienneDateMajorite.year() != nouvelleDateMajorite.year() && !pp.getDeclarations().isEmpty()) {
+					if (ancienneDateMajorite.year() != nouvelleDateMajorite.year() && !pp.getDocumentsFiscaux().isEmpty()) {
 						throw new EvenementCivilException("L'ancienne (" + RegDateHelper.dateToDisplayString(ancienneDateMajorite)
 								+ ") et la nouvelle date de majorité (" + RegDateHelper.dateToDisplayString(nouvelleDateMajorite)
 								+ ") ne tombent pas sur la même année. Veuillez vérifier les DIs.");

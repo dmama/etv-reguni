@@ -44,7 +44,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -161,7 +161,7 @@ public abstract class EnumHelper {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv2(type);
 	}
 
-	public static TaxDeclarationStatusType coreToWeb(TypeEtatDeclaration type) {
+	public static TaxDeclarationStatusType coreToWeb(TypeEtatDocumentFiscal type) {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(type);
 	}
 

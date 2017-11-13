@@ -23,7 +23,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 @Controller
@@ -91,7 +91,7 @@ public class DelaiController {
 		if (!delai.isAnnule()) {
 
 			// on refuse l'annulation du premier délai accordé
-			if (delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {
+			if (delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE) {
 				final RegDate premier = declaration.getPremierDelai();
 				if (declaration.getDelaiAccordeAu() == premier) {
 					throw new IllegalArgumentException("Le premier délai accordé ne peut pas être annulé.");

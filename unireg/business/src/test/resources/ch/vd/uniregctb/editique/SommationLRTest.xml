@@ -463,7 +463,7 @@
       <value>PP</value>
     </row>
   </table>
-  <table name="DECLARATION">
+  <table name="DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>ID</column>
     <column>DOCUMENT_TYPE</column>
@@ -496,16 +496,17 @@
       <value>7</value>
     </row>
   </table>
-  <table name="DELAI_DECLARATION">
+  <table name="DELAI_DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>ID</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>ETAT</column>
     <column>SURSIS</column>
     <column>ANNULATION_DATE</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -516,6 +517,7 @@
       <value>ACCORDE</value>
       <value>0</value>
       <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -527,6 +529,7 @@
       <value>ACCORDE</value>
       <value>0</value>
       <value>2008-03-25</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -538,25 +541,29 @@
       <value>ACCORDE</value>
       <value>0</value>
       <null/>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
-  <table name="ETAT_DECLARATION">
+  <table name="ETAT_DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>ID</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DATE_OBTENTION</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>20080101</value>
       <value>21</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>20080101</value>
       <value>22</value>
     </row>

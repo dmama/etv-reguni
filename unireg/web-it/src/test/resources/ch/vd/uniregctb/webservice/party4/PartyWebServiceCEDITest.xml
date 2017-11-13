@@ -4383,7 +4383,7 @@
     <column>AUTRE_TYPE</column>
     <column>TYPE_PM</column>
   </table>
-  <table name="DECLARATION">
+  <table name="DOCUMENT_FISCAL">
     <column>DOCUMENT_TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
@@ -4877,7 +4877,7 @@
       <value>0</value>
     </row>
   </table>
-  <table name="ETAT_DECLARATION">
+  <table name="ETAT_DOCUMENT_FISCAL">
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
@@ -4886,9 +4886,10 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>DATE_OBTENTION</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DATE_ENVOI_COURRIER</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <row>
       <value>8839530</value>
       <null/>
@@ -4898,7 +4899,8 @@
       <value><![CDATA[2006-05-09 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20060509</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>8839528</value>
     </row>
@@ -4911,7 +4913,8 @@
       <value><![CDATA[2006-01-25 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20060125</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>8839528</value>
     </row>
@@ -4924,7 +4927,8 @@
       <value><![CDATA[2008-08-29 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20080829</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>8839532</value>
     </row>
@@ -4937,7 +4941,8 @@
       <value><![CDATA[2008-01-25 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080125</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>8839532</value>
     </row>
@@ -4950,7 +4955,8 @@
       <value><![CDATA[2005-01-13 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20050113</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>8839537</value>
     </row>
@@ -4963,7 +4969,8 @@
       <value><![CDATA[2005-07-05 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20050705</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>8839537</value>
     </row>
@@ -4976,7 +4983,8 @@
       <value><![CDATA[2007-01-20 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20070120</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>8839541</value>
     </row>
@@ -4989,7 +4997,8 @@
       <value><![CDATA[2007-06-06 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20070606</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>8839541</value>
     </row>
@@ -5002,7 +5011,8 @@
       <value><![CDATA[2009-01-28 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20090128</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>8839546</value>
     </row>
@@ -5015,7 +5025,8 @@
       <value><![CDATA[2004-01-17 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20040117</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>8839550</value>
     </row>
@@ -5028,7 +5039,8 @@
       <value><![CDATA[2004-06-14 00:00:00.0]]></value>
       <value><![CDATA[ZAINYP  ]]></value>
       <value>20040614</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>8839550</value>
     </row>
@@ -5041,7 +5053,8 @@
       <value><![CDATA[2006-01-13 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20060113</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342518</value>
     </row>
@@ -5054,7 +5067,8 @@
       <value><![CDATA[2006-08-14 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20060814</value>
-      <value>SOMMEE</value>
+      <value>DI_SOMMEE</value>
+      <value>SOMME</value>
       <value>20060814</value>
       <value>3342518</value>
     </row>
@@ -5067,7 +5081,8 @@
       <value><![CDATA[2006-09-15 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20060915</value>
-      <value>ECHUE</value>
+      <value>DI_ECHUE</value>
+      <value>ECHU</value>
       <null/>
       <value>3342518</value>
     </row>
@@ -5080,7 +5095,8 @@
       <value><![CDATA[2008-01-25 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080125</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342584</value>
     </row>
@@ -5093,7 +5109,8 @@
       <value><![CDATA[2008-08-05 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080805</value>
-      <value>SOMMEE</value>
+      <value>DI_SOMMEE</value>
+      <value>SOMME</value>
       <value>20080805</value>
       <value>3342584</value>
     </row>
@@ -5106,7 +5123,8 @@
       <value><![CDATA[2008-09-08 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080908</value>
-      <value>ECHUE</value>
+      <value>DI_ECHUE</value>
+      <value>ECHU</value>
       <null/>
       <value>3342584</value>
     </row>
@@ -5119,7 +5137,8 @@
       <value><![CDATA[2004-01-21 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20040121</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342615</value>
     </row>
@@ -5132,7 +5151,8 @@
       <value><![CDATA[2004-05-25 00:00:00.0]]></value>
       <value><![CDATA[ZAIRMC  ]]></value>
       <value>20040525</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>3342615</value>
     </row>
@@ -5145,7 +5165,8 @@
       <value><![CDATA[2005-01-14 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20050114</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342643</value>
     </row>
@@ -5158,7 +5179,8 @@
       <value><![CDATA[2005-02-25 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20050225</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>3342643</value>
     </row>
@@ -5171,7 +5193,8 @@
       <value><![CDATA[2009-01-16 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20090116</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342669</value>
     </row>
@@ -5184,7 +5207,8 @@
       <value><![CDATA[2007-01-15 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20070115</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342552</value>
     </row>
@@ -5197,7 +5221,8 @@
       <value><![CDATA[2007-08-06 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20070806</value>
-      <value>ECHUE</value>
+      <value>DI_ECHUE</value>
+      <value>ECHU</value>
       <null/>
       <value>3342552</value>
     </row>
@@ -5210,7 +5235,8 @@
       <value><![CDATA[2007-07-03 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20070703</value>
-      <value>SOMMEE</value>
+      <value>DI_SOMMEE</value>
+      <value>SOMME</value>
       <value>20070703</value>
       <value>3342552</value>
     </row>
@@ -5223,7 +5249,8 @@
       <value><![CDATA[2008-07-10 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20080710</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>3342786</value>
     </row>
@@ -5236,7 +5263,8 @@
       <value><![CDATA[2008-01-25 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080125</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342786</value>
     </row>
@@ -5249,7 +5277,8 @@
       <value><![CDATA[2005-06-27 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20050627</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>3342815</value>
     </row>
@@ -5262,7 +5291,8 @@
       <value><![CDATA[2005-01-14 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20050114</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342815</value>
     </row>
@@ -5275,7 +5305,8 @@
       <value><![CDATA[2009-06-26 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20090630</value>
-      <value>SOMMEE</value>
+      <value>DI_SOMMEE</value>
+      <value>SOMME</value>
       <value>20090630</value>
       <value>3342849</value>
     </row>
@@ -5288,7 +5319,8 @@
       <value><![CDATA[2009-01-28 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20090128</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342849</value>
     </row>
@@ -5301,7 +5333,8 @@
       <value><![CDATA[2007-01-20 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20070120</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342875</value>
     </row>
@@ -5314,7 +5347,8 @@
       <value><![CDATA[2007-06-12 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20070612</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>3342875</value>
     </row>
@@ -5327,7 +5361,8 @@
       <value><![CDATA[2004-01-21 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20040121</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342914</value>
     </row>
@@ -5340,7 +5375,8 @@
       <value><![CDATA[2004-05-19 00:00:00.0]]></value>
       <value><![CDATA[ZAIMZC  ]]></value>
       <value>20040519</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>3342914</value>
     </row>
@@ -5353,7 +5389,8 @@
       <value><![CDATA[2006-01-25 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20060125</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <null/>
       <value>3342935</value>
     </row>
@@ -5366,12 +5403,13 @@
       <value><![CDATA[2006-07-12 00:00:00.0]]></value>
       <value><![CDATA[CEDI    ]]></value>
       <value>20060712</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <null/>
       <value>3342935</value>
     </row>
   </table>
-  <table name="DELAI_DECLARATION">
+  <table name="DELAI_DOCUMENT_FISCAL">
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
@@ -5384,7 +5422,8 @@
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>8839529</value>
       <null/>
@@ -5399,6 +5438,7 @@
       <value>20060125</value>
       <value>20060315</value>
       <value>8839528</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839533</value>
@@ -5414,6 +5454,7 @@
       <value>20080125</value>
       <value>20080930</value>
       <value>8839532</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839534</value>
@@ -5429,6 +5470,7 @@
       <value>20080513</value>
       <value>20080930</value>
       <value>8839532</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839538</value>
@@ -5444,6 +5486,7 @@
       <value>20050113</value>
       <value>20050315</value>
       <value>8839537</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839542</value>
@@ -5459,6 +5502,7 @@
       <value>20070220</value>
       <value>20070915</value>
       <value>8839541</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839543</value>
@@ -5474,6 +5518,7 @@
       <value>20070120</value>
       <value>20070915</value>
       <value>8839541</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839547</value>
@@ -5489,6 +5534,7 @@
       <value>20090626</value>
       <value>20090930</value>
       <value>8839546</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839548</value>
@@ -5504,6 +5550,7 @@
       <value>20090128</value>
       <value>20090930</value>
       <value>8839546</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>8839551</value>
@@ -5519,6 +5566,7 @@
       <value>20040117</value>
       <value>20040315</value>
       <value>8839550</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342524</value>
@@ -5534,6 +5582,7 @@
       <value>20060113</value>
       <value>20060315</value>
       <value>3342518</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342590</value>
@@ -5549,6 +5598,7 @@
       <value>20080125</value>
       <value>20080315</value>
       <value>3342584</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342624</value>
@@ -5564,6 +5614,7 @@
       <value>20040121</value>
       <value>20040315</value>
       <value>3342615</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342651</value>
@@ -5579,6 +5630,7 @@
       <value>20050114</value>
       <value>20050315</value>
       <value>3342643</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342676</value>
@@ -5594,6 +5646,7 @@
       <value>20090116</value>
       <value>20090315</value>
       <value>3342669</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342557</value>
@@ -5609,6 +5662,7 @@
       <value>20070115</value>
       <value>20070315</value>
       <value>3342552</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342795</value>
@@ -5624,6 +5678,7 @@
       <value>20080125</value>
       <value>20080315</value>
       <value>3342786</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342821</value>
@@ -5639,6 +5694,7 @@
       <value>20050114</value>
       <value>20050315</value>
       <value>3342815</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342856</value>
@@ -5654,6 +5710,7 @@
       <value>20090128</value>
       <value>20090315</value>
       <value>3342849</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342881</value>
@@ -5669,6 +5726,7 @@
       <value>20070120</value>
       <value>20070315</value>
       <value>3342875</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342920</value>
@@ -5684,6 +5742,7 @@
       <value>20040121</value>
       <value>20040315</value>
       <value>3342914</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>3342942</value>
@@ -5699,6 +5758,7 @@
       <value>20060125</value>
       <value>20060315</value>
       <value>3342935</value>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
 </dataset>

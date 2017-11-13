@@ -46,7 +46,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
@@ -121,7 +121,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);     // chaque année, au 31.12
 
-			final LettreBienvenue lb = addLettreBienvenue(entreprise, dateEnvoiDocument, delaiRetour, null, null, TypeLettreBienvenue.VD_RC);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiDocument);
 			final Ids res = new Ids();
 			res.idContribuable = entreprise.getNumero();
 			res.idDocument = lb.getId();
@@ -197,7 +199,9 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);     // chaque année, au 31.12
 
-			final LettreBienvenue lb = addLettreBienvenue(entreprise, dateEnvoiDocument, delaiRetour, null, null, TypeLettreBienvenue.VD_RC);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiDocument);
 			final Ids res = new Ids();
 			res.idContribuable = entreprise.getNumero();
 			res.idDocument = lb.getId();
@@ -268,7 +272,10 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 			addBouclement(entreprise, dateDebut, DayMonth.get(12, 31), 12);     // chaque année, au 31.12
 
-			final LettreBienvenue lb = addLettreBienvenue(entreprise, dateEnvoiDocument, delaiRetour, null, dateRappel, TypeLettreBienvenue.VD_RC);
+			final LettreBienvenue lb = addLettreBienvenue(entreprise, TypeLettreBienvenue.VD_RC);
+			addDelaiAutreDocumentFiscal(lb, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(lb, dateEnvoiDocument);
+			addEtatAutreDocumentFiscalRappele(lb, dateRappel);
 			final Ids res = new Ids();
 			res.idContribuable = entreprise.getNumero();
 			res.idDocument = lb.getId();
@@ -341,7 +348,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(anneeDeclaration, 1, 1), date(anneeDeclaration, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 			addEtatDeclarationEmise(di, dateEnvoiDocument);
-			addDelaiDeclaration(di, dateEnvoiDocument, delaiRetour, EtatDelaiDeclaration.ACCORDE);      // délai initial
+			addDelaiDeclaration(di, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);      // délai initial
 			addEtatDeclarationSommee(di, dateSommation, dateSommation, null);
 
 			return entreprise.getNumero();
@@ -353,7 +360,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			Assert.assertNotNull(entreprise);
 
 			final EtatDeclarationSommee etatSomme = entreprise.getDeclarations().stream()
-					.map(Declaration::getEtats)
+					.map(Declaration::getEtatsDeclaration)
 					.flatMap(Collection::stream)
 					.filter(EtatDeclarationSommee.class::isInstance)
 					.map(EtatDeclarationSommee.class::cast)
@@ -419,8 +426,8 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 			final DeclarationImpotOrdinairePM di = addDeclarationImpot(entreprise, pf, date(anneeDeclaration, 1, 1), date(anneeDeclaration, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 			addEtatDeclarationEmise(di, dateEnvoiDocument);
-			addDelaiDeclaration(di, dateEnvoiDocument, delaiRetour, EtatDelaiDeclaration.ACCORDE);      // délai initial
-			addDelaiDeclaration(di, dateObtentionNouveauDelai, delaiRetour.addMonths(1), EtatDelaiDeclaration.ACCORDE);     // nouveau délai
+			addDelaiDeclaration(di, dateEnvoiDocument, delaiRetour, EtatDelaiDocumentFiscal.ACCORDE);      // délai initial
+			addDelaiDeclaration(di, dateObtentionNouveauDelai, delaiRetour.addMonths(1), EtatDelaiDocumentFiscal.ACCORDE);     // nouveau délai
 
 			return entreprise.getNumero();
 		});
@@ -431,7 +438,7 @@ public class RetourDocumentSortantHandlerTest extends BusinessTest {
 			Assert.assertNotNull(entreprise);
 
 			final DelaiDeclaration dernierDelai = entreprise.getDeclarations().stream()
-					.map(Declaration::getDelais)
+					.map(Declaration::getDelaisDeclaration)
 					.flatMap(Collection::stream)
 					.max(Comparator.comparing(DelaiDeclaration::getDelaiAccordeAu))
 					.orElse(null);

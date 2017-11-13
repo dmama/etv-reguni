@@ -10,10 +10,13 @@ import org.hibernate.annotations.Type;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
+/**
+ * Un rappel a été émis pour la déclaration.
+ */
 @Entity
-@DiscriminatorValue("RAPPELEE")
+@DiscriminatorValue("DI_RAPPELEE")
 public class EtatDeclarationRappelee extends EtatDeclaration implements EtatDeclarationAvecDocumentArchive {
 
 	private RegDate dateEnvoiCourrier;
@@ -23,10 +26,10 @@ public class EtatDeclarationRappelee extends EtatDeclaration implements EtatDecl
 		super();
 	}
 
-	@Override
 	@Transient
-	public TypeEtatDeclaration getEtat() {
-		return TypeEtatDeclaration.RAPPELEE;
+	@Override
+	public TypeEtatDocumentFiscal getType() {
+		return TypeEtatDocumentFiscal.RAPPELE;
 	}
 
 	public EtatDeclarationRappelee(RegDate dateObtention, RegDate dateEnvoiCourrier) {

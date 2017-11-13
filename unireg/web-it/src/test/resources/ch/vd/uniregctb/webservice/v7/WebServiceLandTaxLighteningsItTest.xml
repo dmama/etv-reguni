@@ -372,58 +372,100 @@
 			<null/>
 		</row>
 	</table>
-	<table name="AUTRE_DOCUMENT_FISCAL">
-		<column>CLE_DOCUMENT</column>
-		<column>CLE_DOCUMENT_RAPPEL</column>
-		<column>DOC_TYPE</column>
-		<column>ID</column>
-		<column>ANNULATION_DATE</column>
-		<column>ANNULATION_USER</column>
+	<table name="DOCUMENT_FISCAL">
 		<column>LOG_CDATE</column>
 		<column>LOG_CUSER</column>
 		<column>LOG_MDATE</column>
 		<column>LOG_MUSER</column>
-		<column>CLE_ARCHIVAGE</column>
-		<column>DATE_ENVOI</column>
-		<column>CLE_ARCHIVAGE_RAPPEL</column>
-		<column>DATE_RAPPEL</column>
-		<column>DATE_RETOUR</column>
-		<column>DELAI_RETOUR</column>
-		<column>LB_TYPE</column>
-		<column>AR_DATE_DEMANDE</column>
-		<column>DBF_DATE_REQ_RADIATION</column>
-		<column>DBF_PERIODE_FISCALE</column>
+		<column>ID</column>
+		<column>DOCUMENT_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>LIBRE</column>
 		<column>DD_CODE_CONTROLE</column>
 		<column>DD_NUMERO_SEQUENCE</column>
 		<column>DD_PERIODE_FISCALE</column>
-		<column>ENTREPRISE_ID</column>
 		<column>DD_IMMEUBLE_ID</column>
 		<row>
-			<value>382378282</value>
-			<null />
-			<value>DemandeDegrevement</value>
-			<value>1</value>
-			<null />
-			<null />
 			<value>2016-12-14 11:55:03.571000</value>
 			<value>test</value>
 			<value>2016-12-14 11:55:03.574000</value>
 			<value>test</value>
-			<value>93030893</value>
-			<value>20160203</value>
-			<null />
-			<value>20160701</value>
-			<value>20161102</value>
-			<value>20160630</value>
-			<null />
-			<null />
-			<null />
-			<null />
+			<value>1</value>
+			<value>DemandeDegrevement</value>
+			<value>312</value>
+			<value>0</value>
 			<value>12345</value>
 			<value>1</value>
 			<value>2015</value>
-			<value>312</value>
 			<value>264310664</value>
+		</row>
+	</table>
+	<table name="DELAI_DOCUMENT_FISCAL">
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ID</column>
+		<column>DOCUMENT_FISCAL_ID</column>
+		<column>DATE_DEMANDE</column>
+		<column>DATE_TRAITEMENT</column>
+		<column>DELAI_ACCORDE_AU</column>
+		<column>ETAT</column>
+		<column>SURSIS</column>
+		<column>ANNULATION_DATE</column>
+		<column>DELAI_TYPE</column>
+		<row>
+			<value>2016-02-03 11:55:03.571000</value>
+			<value>test</value>
+			<value>2016-02-03 11:55:03.574000</value>
+			<value>test</value>
+			<value>31</value>
+			<value>1</value>
+			<value>20160203</value>
+			<value>20160203</value>
+			<value>20160630</value>
+			<value>ACCORDE</value>
+			<value>0</value>
+			<null/>
+			<value>DELAI_DECLARATION</value>
+		</row>
+	</table>
+	<table name="ETAT_DOCUMENT_FISCAL">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>ETAT_TYPE</column>
+		<column>TYPE</column>
+		<column>DATE_OBTENTION</column>
+		<column>DOCUMENT_FISCAL_ID</column>
+		<column>CLE_ARCHIVAGE</column>
+		<column>CLE_DOCUMENT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>990</value>
+			<value>AUTRE_EMIS</value>
+			<value>EMIS</value>
+			<value>20060320</value>
+			<value>1</value>
+			<value>93030893</value>
+			<value>DPERM-93030893</value>
+		</row>
+		<row>
+			<value>2016-07-01</value>
+			<value>991</value>
+			<value>AUTRE_RAPPELE</value>
+			<value>RAPPELE</value>
+			<value>20160701</value>
+			<value>1</value>
+			<value>92649173845</value>
+			<value>DPERM-92649173845</value>
+		</row>
+		<row>
+			<value>2016-11-02</value>
+			<value>992</value>
+			<value>AUTRE_RETOURNE</value>
+			<value>RETOURNE</value>
+			<value>20161102</value>
+			<value>1</value>
 		</row>
 	</table>
 </dataset>

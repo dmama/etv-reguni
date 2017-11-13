@@ -125,7 +125,7 @@ public interface DeclarationImpotService {
 	ListeDIsPPNonEmises produireListeDIsNonEmises(Integer annee, RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
 
 	/**
-	 * Fait passer à l'état <i>ECHUE</i> toutes les déclarations d'imposition ordinaires PP sommées et dont le délai de retour est dépassé.
+	 * Fait passer à l'état <i>ECHU</i> toutes les déclarations d'imposition ordinaires PP sommées et dont le délai de retour est dépassé.
 	 *
 	 * @param dateTraitement la date de traitement pour vérifier le dépassement du délai de retour, et - le cas échéant - pour définir la date d'obtention de l'état échu.
 	 * @param statusManager
@@ -376,7 +376,7 @@ public interface DeclarationImpotService {
 	EnvoiSommationsDIsPMResults envoyerSommationsPM(RegDate dateTraitement, Integer nombreMax, StatusManager statusManager);
 
 	/**
-	 * Fait passer à l'état <i>ECHUE</i> toutes les déclarations d'imposition ordinaires PP sommées et dont le délai de retour est dépassé.
+	 * Fait passer à l'état <i>ECHU</i> toutes les déclarations d'imposition ordinaires PP sommées et dont le délai de retour est dépassé.
 	 *
 	 * @param dateTraitement la date de traitement pour vérifier le dépassement du délai de retour, et - le cas échéant - pour définir la date d'obtention de l'état échu.
 	 * @param statusManager

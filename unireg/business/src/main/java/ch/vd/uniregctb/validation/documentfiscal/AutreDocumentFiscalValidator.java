@@ -15,10 +15,12 @@ public abstract class AutreDocumentFiscalValidator<T extends AutreDocumentFiscal
 		final ValidationResults vr = new ValidationResults();
 		if (!entity.isAnnule()) {
 
+/* On ne pas plus facilement tester (classe séparée)
 			// il doit toujours y avoir une date d'envoi
 			if (entity.getDateEnvoi() == null) {
 				vr.addError("La date d'envoi d'un document fiscal est obligatoire.");
 			}
+*/
 
 		}
 		return vr;

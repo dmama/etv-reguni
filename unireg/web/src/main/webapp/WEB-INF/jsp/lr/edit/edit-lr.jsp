@@ -37,7 +37,7 @@
 					<c:when test="${lr.etat != null}">
 						<tr class="<unireg:nextRowClass/>">
 							<td width="25%"><fmt:message key="label.etat.actuel"/>&nbsp;:</td>
-							<td width="25%"><fmt:message key="option.etat.avancement.${lr.etat}"/></td>
+							<td width="25%"><fmt:message key="option.etat.avancement.f.${lr.etat}"/></td>
 							<td width="25%"><fmt:message key="label.date.obtention.etat.actuel"/>&nbsp;:</td>
 							<td width="25%"><unireg:regdate regdate="${lr.dateObtentionEtat}"/></td>
 						</tr>

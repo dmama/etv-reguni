@@ -14,7 +14,7 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class DeclarationView implements Annulable {
 
@@ -24,7 +24,7 @@ public class DeclarationView implements Annulable {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final boolean annule;
-	private final TypeEtatDeclaration etat;
+	private final TypeEtatDocumentFiscal etat;
 	private final List<EtatDeclarationView> etats;
 	private final List<DelaiDeclarationView> delais;
 	private final RegDate delaiAccorde;
@@ -39,7 +39,7 @@ public class DeclarationView implements Annulable {
 		this.dateFin = declaration.getDateFin();
 		this.annule = declaration.isAnnule();
 
-		final EtatDeclaration etat = declaration.getDernierEtat();
+		final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
 		this.etat = (etat == null ? null : etat.getEtat());
 		if (etat instanceof EtatDeclarationRetournee) {
 			this.sourceRetour = ((EtatDeclarationRetournee) etat).getSource();
@@ -48,8 +48,8 @@ public class DeclarationView implements Annulable {
 			this.sourceRetour = null;
 		}
 
-		this.etats = initEtats(declaration.getEtats(), infraService, messageSource);
-		this.delais = initDelais(declaration.getDelais(), declaration.getPremierDelai(), infraService, messageSource);
+		this.etats = initEtats(declaration.getEtatsDeclaration(), infraService, messageSource);
+		this.delais = initDelais(declaration.getDelaisDeclaration(), declaration.getPremierDelai(), infraService, messageSource);
 
 		this.delaiAccorde = declaration.getDelaiAccordeAu();
 		this.dateRetour = declaration.getDateRetour();
@@ -100,7 +100,7 @@ public class DeclarationView implements Annulable {
 		return dateFin;
 	}
 
-	public TypeEtatDeclaration getEtat() {
+	public TypeEtatDocumentFiscal getEtat() {
 		return etat;
 	}
 

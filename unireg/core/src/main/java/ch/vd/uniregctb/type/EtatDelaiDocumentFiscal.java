@@ -3,7 +3,7 @@ package ch.vd.uniregctb.type;
 /**
  * Les différents états possibles d'un délai de déclaration
  */
-public enum EtatDelaiDeclaration {
+public enum EtatDelaiDocumentFiscal {
 	/**
 	 * Délai demandé, la décision d'octroi n'a pas encore été prise
 	 */

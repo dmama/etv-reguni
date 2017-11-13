@@ -89,7 +89,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -209,8 +209,8 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		}
 
 		// la DI n'est donc pas annulée... est-elle seulement retournée ?
-		final EtatDeclaration dernierEtat = declarationIdentifiee.getDernierEtat();
-		if (dernierEtat == null || dernierEtat.getEtat() != TypeEtatDeclaration.RETOURNEE) {
+		final EtatDeclaration dernierEtat = declarationIdentifiee.getDernierEtatDeclaration();
+		if (dernierEtat == null || dernierEtat.getEtat() != TypeEtatDocumentFiscal.RETOURNE) {
 			tacheService.genereTacheControleDossier(entreprise, Motifs.DI_NON_QUITTANCEE);
 			addRemarqueDonneesCompletes(entreprise, "Données de DI reçues sur la déclaration non-quittancée " + retour.getPf() + "/" + retour.getNoSequence(), retour);
 			return;
@@ -1202,8 +1202,8 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		final List<DeclarationImpotOrdinairePM> all = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, false);
 		final SortedSet<RegDate> datesQuittancement = new TreeSet<>();
 		for (DeclarationImpotOrdinairePM di : all) {
-			final EtatDeclaration etat = di.getDernierEtat();
-			if (etat != null && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+			final EtatDeclaration etat = di.getDernierEtatDeclaration();
+			if (etat != null && etat.getEtat() == TypeEtatDocumentFiscal.RETOURNE) {
 				datesQuittancement.add(etat.getDateObtention());
 			}
 		}
@@ -1377,7 +1377,7 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 
 			final int ancienNumeroSequence = di.getNumero();
 			di.setNumero(null);                                                 // recalcul nécessaire suite au changement de période fiscale
-			entreprise.getDeclarations().remove(di);
+			entreprise.getDocumentsFiscaux().remove(di);
 			entreprise.addDeclaration(di);
 
 			// on ajoute une remarque pour le suivi
@@ -1436,8 +1436,8 @@ public class RetourDIPMServiceImpl implements RetourDIPMService {
 		final List<DeclarationImpotOrdinairePM> all = entreprise.getDeclarationsTriees(DeclarationImpotOrdinairePM.class, false);
 		for (DeclarationImpotOrdinairePM di : all) {
 			if (di.getDateDebut().compareTo(date) > 0) {
-				final EtatDeclaration dernierEtat = di.getDernierEtat();
-				if (dernierEtat != null && dernierEtat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+				final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
+				if (dernierEtat != null && dernierEtat.getEtat() == TypeEtatDocumentFiscal.RETOURNE) {
 					return di;
 				}
 			}

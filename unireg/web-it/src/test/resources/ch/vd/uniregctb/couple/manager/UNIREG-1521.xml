@@ -4825,7 +4825,7 @@
     <column>CTB_ID</column>
     <column>TIERS_PRINCIPAL_ID</column>
   </table>
-  <table name="DECLARATION">
+  <table name="DOCUMENT_FISCAL">
     <column>DOCUMENT_TYPE</column>
     <column>ID</column>
     <column>ANNULATION_DATE</column>
@@ -4903,7 +4903,7 @@
       <value>0</value>
     </row>
   </table>
-  <table name="ETAT_DECLARATION">
+  <table name="ETAT_DOCUMENT_FISCAL">
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
@@ -4912,8 +4912,9 @@
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>DATE_OBTENTION</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <row>
       <value>15791148</value>
       <null/>
@@ -4923,7 +4924,8 @@
       <value><![CDATA[2008-11-05 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20081105</value>
-      <value>SOMMEE</value>
+      <value>DI_SOMMEE</value>
+      <value>SOMME</value>
       <value>15791137</value>
     </row>
     <row>
@@ -4935,7 +4937,8 @@
       <value><![CDATA[2008-01-28 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20080128</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>15791137</value>
     </row>
     <row>
@@ -4947,7 +4950,8 @@
       <value><![CDATA[2008-12-09 00:00:00.0]]></value>
       <value><![CDATA[ZAIRCX  ]]></value>
       <value>20081209</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>15791137</value>
     </row>
     <row>
@@ -4959,7 +4963,8 @@
       <value><![CDATA[2008-12-08 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20081208</value>
-      <value>ECHUE</value>
+      <value>DI_ECHUE</value>
+      <value>ECHU</value>
       <value>15791137</value>
     </row>
     <row>
@@ -4971,7 +4976,8 @@
       <value><![CDATA[2009-01-30 00:00:00.0]]></value>
       <value><![CDATA[BATCH   ]]></value>
       <value>20090130</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>15791162</value>
     </row>
     <row>
@@ -4983,7 +4989,8 @@
       <value><![CDATA[2009-10-22 11:45:50.829]]></value>
       <value>cedi-interfaces-user</value>
       <value>20091022</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>15791162</value>
     </row>
     <row>
@@ -4995,11 +5002,12 @@
       <value><![CDATA[2009-10-22 11:45:50.959]]></value>
       <value>cedi-interfaces-user</value>
       <value>20091022</value>
-      <value>SOMMEE</value>
+      <value>DI_SOMMEE</value>
+      <value>SOMME</value>
       <value>15791162</value>
     </row>
   </table>
-  <table name="DELAI_DECLARATION">
+  <table name="DELAI_DOCUMENT_FISCAL">
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>
@@ -5012,7 +5020,8 @@
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>15791143</value>
       <null/>
@@ -5027,6 +5036,7 @@
       <value>20080128</value>
       <value>20081031</value>
       <value>15791137</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>15791145</value>
@@ -5042,6 +5052,7 @@
       <value>20080428</value>
       <value>20081031</value>
       <value>15791137</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>15791165</value>
@@ -5057,6 +5068,7 @@
       <value>20090526</value>
       <value>20090930</value>
       <value>15791162</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>15791168</value>
@@ -5072,6 +5084,7 @@
       <value>20090130</value>
       <value>20090930</value>
       <value>15791162</value>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
 </dataset>

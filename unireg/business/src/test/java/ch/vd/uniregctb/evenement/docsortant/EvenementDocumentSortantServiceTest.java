@@ -23,6 +23,7 @@ import ch.vd.unireg.xml.event.docsortant.v1.Documents;
 import ch.vd.unireg.xml.event.docsortant.v1.Population;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalEmis;
 import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
 import ch.vd.uniregctb.editique.ConstantesEditique;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -34,6 +35,7 @@ import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.PersonneMoraleRF;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
@@ -96,8 +98,8 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 				Assert.assertNotNull(entreprise);
 
 				final LettreTypeInformationLiquidation lettre = new LettreTypeInformationLiquidation();
-				lettre.setDateEnvoi(dateEnvoiDocument);
-				lettre.setCleArchivage(cleArchivage);
+				final EtatAutreDocumentFiscalEmis etat = addEtatAutreDocumentFiscalEmis(lettre, dateEnvoiDocument);
+				etat.setCleArchivage(cleArchivage);
 				entreprise.addAutreDocumentFiscal(lettre);
 
 				final CTypeInfoArchivage infoArchivage = new CTypeInfoArchivage();
@@ -198,10 +200,10 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 				final DemandeDegrevementICI demande = new DemandeDegrevementICI();
 				demande.setCodeControle("H12345");
 				demande.setNumeroSequence(1);
-				demande.setCleArchivage(cleArchivage);
-				demande.setDateEnvoi(dateEnvoiDocument);
 				demande.setPeriodeFiscale(dateEnvoiDocument.year() + 1);
-				demande.setDelaiRetour(dateEnvoiDocument.addMonths(4));
+				addDelaiAutreDocumentFiscal(demande, dateEnvoiDocument, dateEnvoiDocument.addMonths(4), EtatDelaiDocumentFiscal.ACCORDE);
+				final EtatAutreDocumentFiscalEmis etat = addEtatAutreDocumentFiscalEmis(demande, dateEnvoiDocument);
+				etat.setCleArchivage(cleArchivage);
 				entreprise.addAutreDocumentFiscal(demande);
 
 				final CTypeInfoArchivage infoArchivage = new CTypeInfoArchivage();
@@ -289,7 +291,9 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 				addDroitPersonneMoraleRF(null, dateDebut, null, null, "Achat", null, "578567fdbdfbsd", "578567fdbdfbsc", new IdentifiantAffaireRF(484, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, pmRF, immeuble, null);
 				addRapprochementRF(entreprise, pmRF, null, null, TypeRapprochementRF.AUTO);
 
-				final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateEnvoiDocument, dateEnvoiDocument.addDays(30), null, null, dateEnvoiDocument.year() + 1, immeuble);
+				final DemandeDegrevementICI demande = addDemandeDegrevementICI(entreprise, dateEnvoiDocument.year() + 1, immeuble);
+				addDelaiAutreDocumentFiscal(demande, dateEnvoiDocument, dateEnvoiDocument.addDays(30), EtatDelaiDocumentFiscal.ACCORDE);
+				addEtatAutreDocumentFiscalEmis(demande, dateEnvoiDocument);
 				demande.setCodeControle("U74157");
 
 				return entreprise.getNumero();
@@ -311,7 +315,7 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 				Assert.assertNotNull(demande);
 				Assert.assertFalse(demande.isAnnule());
 
-				demande.setDateRappel(dateRappel);
+				addEtatAutreDocumentFiscalRappele(demande, dateRappel);
 
 				final CTypeInfoArchivage infoArchivage = new CTypeInfoArchivage();
 				infoArchivage.setDatTravail(String.valueOf(dateRappel.index()));

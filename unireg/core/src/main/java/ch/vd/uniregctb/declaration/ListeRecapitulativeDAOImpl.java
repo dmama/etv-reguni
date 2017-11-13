@@ -21,7 +21,7 @@ import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationImpotSource> implements  ListeRecapitulativeDAO {
 
@@ -117,9 +117,9 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 			parameters.put("dateDebut", periode);
 		}
 
-	    final TypeEtatDeclaration etat = criterion.getEtat();
+	    final TypeEtatDocumentFiscal etat = criterion.getEtat();
 	    if (etat != null) {
-			if (etat != TypeEtatDeclaration.EMISE) {
+			if (etat != TypeEtatDocumentFiscal.EMIS) {
 				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.class = ");
 
 				final Class<? extends EtatDeclaration> classeOfEtatDeclaration = EtatDeclarationHelper.getClasseOfEtatDeclaration(etat);
@@ -127,19 +127,19 @@ public class ListeRecapitulativeDAOImpl extends DeclarationDAOImpl<DeclarationIm
 				builder.append(" and etat.annulationDate is null)");
 			}
 
-			if (etat != TypeEtatDeclaration.RETOURNEE) {
+			if (etat != TypeEtatDocumentFiscal.RETOURNE) {
 
 				final List<Class<? extends EtatDeclaration>> classesEtatDeclarationsInterdits = new ArrayList<>(3);
 				classesEtatDeclarationsInterdits.add(EtatDeclarationRetournee.class);
 				switch (etat) {
-					case EMISE:
+					case EMIS:
 						classesEtatDeclarationsInterdits.add(EtatDeclarationSommee.class);
 						classesEtatDeclarationsInterdits.add(EtatDeclarationEchue.class);
 						break;
-					case SOMMEE:
+					case SOMME:
 						classesEtatDeclarationsInterdits.add(EtatDeclarationEchue.class);
 						break;
-					case ECHUE:
+					case ECHU:
 						break;
 					default:
 						throw new IllegalArgumentException("Valeur de l'état non-supportée : " + etat);

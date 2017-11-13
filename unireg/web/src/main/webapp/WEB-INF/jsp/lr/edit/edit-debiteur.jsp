@@ -50,7 +50,7 @@
 						<unireg:regdate regdate="${lr.delaiAccorde}"/>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.etat.avancement" >
-						<fmt:message key="option.etat.avancement.${lr.etat}" />
+						<fmt:message key="option.etat.avancement.f.${lr.etat}" />
 					</display:column>
 					<display:column style="action">
 						<c:if test="${!lr.annule}">

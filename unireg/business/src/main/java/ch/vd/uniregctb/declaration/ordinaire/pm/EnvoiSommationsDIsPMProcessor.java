@@ -30,8 +30,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.declaration.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -41,7 +41,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EnvoiSommationsDIsPMProcessor {
 
@@ -208,10 +208,10 @@ public class EnvoiSommationsDIsPMProcessor {
 	}
 
 	private boolean checkEtat(DeclarationImpotOrdinaire di, EnvoiSommationsDIsPMResults r) {
-		if (TypeEtatDeclaration.EMISE != di.getDernierEtat().getEtat() && TypeEtatDeclaration.SUSPENDUE != di.getDernierEtat().getEtat()) {
+		if (TypeEtatDocumentFiscal.EMIS != di.getDernierEtatDeclaration().getEtat() && TypeEtatDocumentFiscal.SUSPENDU != di.getDernierEtatDeclaration().getEtat()) {
 			// Ce cas pourrait eventuellement se produire dans le cas où une DI aurait 2 états à la même date,
 			// il s'agirait alors de données corrompues ...
-			final String msg = String.format("La di [id: %s] n'est ni à l'état 'EMISE', et ne peut donc être sommée", di.getId().toString());
+			final String msg = String.format("La di [id: %s] n'est ni à l'état 'EMIS', et ne peut donc être sommée", di.getId().toString());
 			LOGGER.error(msg);
 			r.addError(di, msg);
 			return false;
@@ -222,7 +222,7 @@ public class EnvoiSommationsDIsPMProcessor {
 	private void sommerDI(final DeclarationImpotOrdinairePM di, final RegDate dateTraitement) throws DeclarationException {
 		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement);
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition, null);
-		AddAndSaveHelper.addAndSave(di, etat, declarationImpotOrdinaireDAO::save, new EtatDeclarationAddAndSaveAccessor<>());
+		AddAndSaveHelper.addAndSave(di, etat, declarationImpotOrdinaireDAO::save, new EtatDocumentFiscalAddAndSaveAccessor<>());
 		diService.envoiSommationDIPMForBatch(di, dateTraitement, dateExpedition);
 	}
 
@@ -230,8 +230,8 @@ public class EnvoiSommationsDIsPMProcessor {
 	 * Si la DI est dans un état SUSPENDUE, il ne faut pas la sommer
 	 */
 	private boolean isSuspendue(DeclarationImpotOrdinaire di) {
-		final EtatDeclaration dernierEtat = di.getDernierEtat();
-		return dernierEtat != null && dernierEtat.getEtat() == TypeEtatDeclaration.SUSPENDUE;
+		final EtatDeclaration dernierEtat = di.getDernierEtatDeclaration();
+		return dernierEtat != null && dernierEtat.getEtat() == TypeEtatDocumentFiscal.SUSPENDU;
 	}
 
 	@SuppressWarnings("unchecked")

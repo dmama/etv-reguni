@@ -24,7 +24,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -384,7 +384,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 					lr.addEtat(etatDeclaration);
 
 					DelaiDeclaration delaiDeclaration = new DelaiDeclaration();
-					delaiDeclaration.setEtat(EtatDelaiDeclaration.ACCORDE);
+					delaiDeclaration.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 					delaiDeclaration.setDateTraitement(date(2001, 1, 1));
 					delaiDeclaration.setDelaiAccordeAu(date(2001, 6, 1));
 					delaiDeclaration.setCleArchivageCourrier(null);

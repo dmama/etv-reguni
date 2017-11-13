@@ -26,8 +26,8 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
  * Processeur qui traite une demande de délais collective.
@@ -136,7 +136,7 @@ public class DemandeDelaiCollectiveProcessor {
 	private static DelaiDeclaration newDelaiDeclaration(RegDate delai, RegDate dateTraitement) {
 		final DelaiDeclaration dd = new DelaiDeclaration();
 		dd.setCleArchivageCourrier(null);
-		dd.setEtat(EtatDelaiDeclaration.ACCORDE);
+		dd.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		dd.setDateDemande(dateTraitement);
 		dd.setDateTraitement(dateTraitement);
 		dd.setDelaiAccordeAu(delai);
@@ -159,9 +159,9 @@ public class DemandeDelaiCollectiveProcessor {
 
 		for (DeclarationImpotOrdinaire d : declarations) {
 			Assert.isFalse(d.isAnnule());
-			final TypeEtatDeclaration etatDeclaration = d.getDernierEtat().getEtat();
+			final TypeEtatDocumentFiscal etatDeclaration = d.getDernierEtatDeclaration().getEtat();
 			switch (etatDeclaration) {
-			case EMISE: {
+			case EMIS: {
 				final RegDate delaiExistant = d.getDelaiAccordeAu();
 				if (delaiExistant != null && delaiExistant.isAfterOrEqual(nouveauDelai)) {
 					// Le délai accordé est égal ou au delà du délai souhaité
@@ -173,19 +173,19 @@ public class DemandeDelaiCollectiveProcessor {
 				}
 				break;
 			}
-			case RETOURNEE:
+			case RETOURNE:
 				r.addErrorDeclarationRetournee(d);
 				break;
-			case ECHUE:
+			case ECHU:
 				r.addErrorDeclarationEchue(d);
 				break;
-			case RAPPELEE:
+			case RAPPELE:
 				r.addErrorDeclarationRappelee(d);
 				break;
-			case SUSPENDUE:
+			case SUSPENDU:
 				r.addErrorDeclarationSuspendue(d);
 				break;
-			case SOMMEE:
+			case SOMME:
 				r.addErrorDeclarationSommee(d);
 				break;
 			default:

@@ -33,10 +33,10 @@ import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
- * Processeur qui permet de faire passer les déclarations d'impôt ordinaires PM sommées à l'état <i>ECHUES</i> lorsque le délai de retour est
+ * Processeur qui permet de faire passer les déclarations d'impôt ordinaires PM sommées à l'état <i>ECHUS</i> lorsque le délai de retour est
  * dépassé.
  */
 public class EchoirDIsPMProcessor {
@@ -126,22 +126,22 @@ public class EchoirDIsPMProcessor {
 		final DeclarationImpotOrdinairePM di = hibernateTemplate.get(DeclarationImpotOrdinairePM.class, ident.getIdDeclaration());
 		Assert.notNull(di, "La déclaration n'existe pas.");
 
-		final EtatDeclaration etat = di.getDernierEtat();
+		final EtatDeclaration etat = di.getDernierEtatDeclaration();
 		Assert.notNull(etat, "La déclaration ne possède pas d'état.");
 
-		if (etat.getEtat() == TypeEtatDeclaration.SUSPENDUE) {
+		if (etat.getEtat() == TypeEtatDocumentFiscal.SUSPENDU) {
 			rapport.addDISuspendueIgnoree(di);
 			return;
 		}
 
 		// Vérifie l'état de la DI (en cas de bug)
-		if (etat.getEtat() != TypeEtatDeclaration.SOMMEE) {
-			rapport.addErrorEtatIncoherent(di, String.format("Etat attendu=%s, état constaté=%s. Erreur dans la requête SQL ?", TypeEtatDeclaration.SOMMEE, etat.getEtat()));
+		if (etat.getEtat() != TypeEtatDocumentFiscal.SOMME) {
+			rapport.addErrorEtatIncoherent(di, String.format("Etat attendu=%s, état constaté=%s. Erreur dans la requête SQL ?", TypeEtatDocumentFiscal.SOMME, etat.getEtat()));
 			return;
 		}
 
 		// vérification de la présence d'un éventuel sursis accordé
-		final DelaiDeclaration dernierDelai = di.getDernierDelaiAccorde();
+		final DelaiDeclaration dernierDelai = di.getDernierDelaiDeclarationAccorde();
 		if (dernierDelai != null) {
 			final RegDate delaiEffectif = getSeuilEcheanceApresDelaiOfficiel(dernierDelai.getDelaiAccordeAu());
 			if (delaiEffectif.isAfterOrEqual(rapport.dateTraitement)) {
@@ -155,7 +155,7 @@ public class EchoirDIsPMProcessor {
 		rapport.addDeclarationTraitee(di);
 
 		// un peu de paranoïa ne fait pas de mal
-		Assert.isTrue(di.getDernierEtat().getEtat() == TypeEtatDeclaration.ECHUE, "L'état après traitement n'est pas ECHUE.");
+		Assert.isTrue(di.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.ECHU, "L'état après traitement n'est pas ECHU.");
 	}
 
 	/**
@@ -168,11 +168,11 @@ public class EchoirDIsPMProcessor {
 		template.setReadOnly(true);
 
 		final StringBuilder b = new StringBuilder();
-		b.append("SELECT DI.ID, ES.DATE_OBTENTION, DI.TIERS_ID, T.OID FROM DECLARATION DI");
-		b.append(" JOIN ETAT_DECLARATION ES ON ES.DECLARATION_ID = DI.ID AND ES.ANNULATION_DATE IS NULL AND ES.TYPE='SOMMEE'");
+		b.append("SELECT DI.ID, ES.DATE_OBTENTION, DI.TIERS_ID, T.OID FROM DOCUMENT_FISCAL DI");
+		b.append(" JOIN ETAT_DOCUMENT_FISCAL ES ON ES.DOCUMENT_FISCAL_ID = DI.ID AND ES.ANNULATION_DATE IS NULL AND ES.TYPE='SOMME'");
 		b.append(" JOIN TIERS T ON T.NUMERO = DI.TIERS_ID ");
 		b.append(" WHERE DI.DOCUMENT_TYPE='DIPM' AND DI.ANNULATION_DATE IS NULL");
-		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DECLARATION ED WHERE ED.DECLARATION_ID = DI.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNEE', 'ECHUE'))");
+		b.append(" AND NOT EXISTS (SELECT 1 FROM ETAT_DOCUMENT_FISCAL ED WHERE ED.DOCUMENT_FISCAL_ID = DI.ID AND ED.ANNULATION_DATE IS NULL AND ED.TYPE IN ('RETOURNE', 'ECHU'))");
 		b.append(" ORDER BY DI.TIERS_ID");
 		final String sql = b.toString();
 

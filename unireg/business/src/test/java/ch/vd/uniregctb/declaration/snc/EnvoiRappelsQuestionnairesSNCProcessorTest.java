@@ -17,11 +17,11 @@ import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 
@@ -55,7 +55,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 				addEtatDeclarationEmise(questionnaire, RegDate.get());
 				addEtatDeclarationRetournee(questionnaire, RegDate.get());
-				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				return entreprise.getNumero();
 			}
 		});
@@ -83,8 +83,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final QuestionnaireSNC questionnaire = questionnaires.get(0);
 				Assert.assertNotNull(questionnaire);
 				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(2, questionnaire.getEtats().size());
-				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, questionnaire.getDernierEtat().getEtat());
+				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RETOURNE, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
 		});
 	}
@@ -107,7 +107,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(periode);
 				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 				addEtatDeclarationEmise(questionnaire, RegDate.get());
-				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				return entreprise.getNumero();
 			}
 		});
@@ -135,8 +135,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final QuestionnaireSNC questionnaire = questionnaires.get(0);
 				Assert.assertNotNull(questionnaire);
 				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(1, questionnaire.getEtats().size());
-				Assert.assertEquals(TypeEtatDeclaration.EMISE, questionnaire.getDernierEtat().getEtat());
+				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
 		});
 	}
@@ -159,7 +159,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(periode);
 				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 				addEtatDeclarationEmise(questionnaire, RegDate.get());
-				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				return entreprise.getNumero();
 			}
 		});
@@ -194,8 +194,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final QuestionnaireSNC questionnaire = questionnaires.get(0);
 				Assert.assertNotNull(questionnaire);
 				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(1, questionnaire.getEtats().size());
-				Assert.assertEquals(TypeEtatDeclaration.EMISE, questionnaire.getDernierEtat().getEtat());
+				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
 		});
 	}
@@ -220,7 +220,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(periode);
 				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 				addEtatDeclarationEmise(questionnaire, RegDate.get());
-				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				return entreprise.getNumero();
 			}
 		});
@@ -253,8 +253,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final QuestionnaireSNC questionnaire = questionnaires.get(0);
 				Assert.assertNotNull(questionnaire);
 				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(2, questionnaire.getEtats().size());
-				Assert.assertEquals(TypeEtatDeclaration.RAPPELEE, questionnaire.getDernierEtat().getEtat());
+				Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
 		});
 	}
@@ -281,13 +281,13 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final PeriodeFiscale pf = addPeriodeFiscale(periode1);
 					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				}
 				{
 					final PeriodeFiscale pf = addPeriodeFiscale(periode2);
 					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				}
 
 				return entreprise.getNumero();
@@ -331,8 +331,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final QuestionnaireSNC questionnaire = questionnaires.get(0);
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtats().size());
-					Assert.assertEquals(TypeEtatDeclaration.RAPPELEE, questionnaire.getDernierEtat().getEtat());
+					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 				{
 					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
@@ -342,8 +342,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final QuestionnaireSNC questionnaire = questionnaires.get(0);
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtats().size());
-					Assert.assertEquals(TypeEtatDeclaration.RAPPELEE, questionnaire.getDernierEtat().getEtat());
+					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 			}
 		});
@@ -371,13 +371,13 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final PeriodeFiscale pf = addPeriodeFiscale(periode1);
 					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				}
 				{
 					final PeriodeFiscale pf = addPeriodeFiscale(periode2);
 					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				}
 
 				return entreprise.getNumero();
@@ -421,8 +421,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final QuestionnaireSNC questionnaire = questionnaires.get(0);
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtats().size());
-					Assert.assertEquals(TypeEtatDeclaration.RAPPELEE, questionnaire.getDernierEtat().getEtat());
+					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 				{
 					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
@@ -432,8 +432,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final QuestionnaireSNC questionnaire = questionnaires.get(0);
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtats().size());
-					Assert.assertEquals(TypeEtatDeclaration.RAPPELEE, questionnaire.getDernierEtat().getEtat());
+					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 			}
 		});
@@ -461,13 +461,13 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final PeriodeFiscale pf = addPeriodeFiscale(periode1);
 					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				}
 				{
 					final PeriodeFiscale pf = addPeriodeFiscale(periode2);
 					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				}
 
 				return entreprise.getNumero();
@@ -505,8 +505,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final QuestionnaireSNC questionnaire = questionnaires.get(0);
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtats().size());
-					Assert.assertEquals(TypeEtatDeclaration.RAPPELEE, questionnaire.getDernierEtat().getEtat());
+					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 				{
 					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
@@ -516,8 +516,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final QuestionnaireSNC questionnaire = questionnaires.get(0);
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(1, questionnaire.getEtats().size());
-					Assert.assertEquals(TypeEtatDeclaration.EMISE, questionnaire.getDernierEtat().getEtat());
+					Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
+					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 			}
 		});
@@ -545,13 +545,13 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final PeriodeFiscale pf = addPeriodeFiscale(periode1);
 					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				}
 				{
 					final PeriodeFiscale pf = addPeriodeFiscale(periode2);
 					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				}
 
 				return entreprise.getNumero();
@@ -589,8 +589,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final QuestionnaireSNC questionnaire = questionnaires.get(0);
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(2, questionnaire.getEtats().size());
-					Assert.assertEquals(TypeEtatDeclaration.RAPPELEE, questionnaire.getDernierEtat().getEtat());
+					Assert.assertEquals(2, questionnaire.getEtatsDeclaration().size());
+					Assert.assertEquals(TypeEtatDocumentFiscal.RAPPELE, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 				{
 					final List<QuestionnaireSNC> questionnaires = entreprise.getDeclarationsDansPeriode(QuestionnaireSNC.class, periode2, true);
@@ -600,8 +600,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 					final QuestionnaireSNC questionnaire = questionnaires.get(0);
 					Assert.assertNotNull(questionnaire);
 					Assert.assertFalse(questionnaire.isAnnule());
-					Assert.assertEquals(1, questionnaire.getEtats().size());
-					Assert.assertEquals(TypeEtatDeclaration.EMISE, questionnaire.getDernierEtat().getEtat());
+					Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
+					Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
 				}
 			}
 		});
@@ -625,7 +625,7 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(periode);
 				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
 				addEtatDeclarationEmise(questionnaire, RegDate.get());
-				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 				return entreprise.getNumero();
 			}
 		});
@@ -660,8 +660,8 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 				final QuestionnaireSNC questionnaire = questionnaires.get(0);
 				Assert.assertNotNull(questionnaire);
 				Assert.assertFalse(questionnaire.isAnnule());
-				Assert.assertEquals(1, questionnaire.getEtats().size());
-				Assert.assertEquals(TypeEtatDeclaration.EMISE, questionnaire.getDernierEtat().getEtat());
+				Assert.assertEquals(1, questionnaire.getEtatsDeclaration().size());
+				Assert.assertEquals(TypeEtatDocumentFiscal.EMIS, questionnaire.getDernierEtatDeclaration().getEtat());
 			}
 		});
 	}

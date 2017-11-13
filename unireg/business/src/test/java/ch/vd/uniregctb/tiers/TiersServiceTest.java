@@ -90,7 +90,7 @@ import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -3824,10 +3824,10 @@ debut PF                                                                        
 
 				final PeriodeFiscale fiscale2009 = addPeriodeFiscale(anneeReference - 1);
 
-				addLR(dpi, date(anneePrecedente, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneePrecedente, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneePrecedente, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
-				addLR(dpi, date(anneePrecedente, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(anneePrecedente, 1, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDocumentFiscal.EMIS);
+				addLR(dpi, date(anneePrecedente, 4, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDocumentFiscal.EMIS);
+				addLR(dpi, date(anneePrecedente, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDocumentFiscal.EMIS);
+				addLR(dpi, date(anneePrecedente, 10, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale2009, TypeEtatDocumentFiscal.EMIS);
 				return dpi.getNumero();
 			}
 		});
@@ -4002,7 +4002,7 @@ debut PF                                                                        
 				addForDebiteur(dpi, date(2009, 6, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 				final PeriodeFiscale fiscale = addPeriodeFiscale(2009);
 
-				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(2009, 7, 1), PeriodiciteDecompte.TRIMESTRIEL, fiscale, TypeEtatDocumentFiscal.EMIS);
 				return dpi.getNumero();
 			}
 		});

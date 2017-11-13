@@ -110,7 +110,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 					final StatistiquesDIs.Key key = entry.getKey();
 					b.append(key.oid).append(COMMA);
 					b.append(escapeChars(description(key.typeCtb))).append(COMMA);
-					b.append(escapeChars(key.etat.description())).append(COMMA);
+					b.append(escapeChars(key.etat.descriptionF())).append(COMMA);
 					b.append(entry.getValue().nombre);
 					return true;
 				}

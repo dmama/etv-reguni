@@ -987,7 +987,7 @@
       <value>8</value>
     </row>
   </table>
-  <table name="DECLARATION">
+  <table name="DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>LOG_MUSER</column>
     <column>ID</column>
@@ -1051,15 +1051,16 @@
       <value>0</value>
     </row>
   </table>
-  <table name="DELAI_DECLARATION">
+  <table name="DELAI_DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>ID</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>ETAT</column>
     <column>SURSIS</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
@@ -1069,6 +1070,7 @@
       <value>20060315</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1079,19 +1081,22 @@
       <value>20060731</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
-  <table name="ETAT_DECLARATION">
+  <table name="ETAT_DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>ID</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DATE_OBTENTION</column>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
       <value>2</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>20060115</value>
     </row>
   </table>

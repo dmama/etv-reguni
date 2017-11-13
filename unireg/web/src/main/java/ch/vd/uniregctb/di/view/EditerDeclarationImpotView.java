@@ -23,9 +23,9 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
 import ch.vd.uniregctb.declaration.view.EtatDeclarationView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EditerDeclarationImpotView {
 
@@ -41,7 +41,7 @@ public class EditerDeclarationImpotView {
 	private RegDate dateFinExerciceCommercial;
 	private String codeControle;
 	private String sourceQuittancement;
-	private TypeEtatDeclaration dernierEtat;
+	private TypeEtatDocumentFiscal dernierEtat;
 	private List<DelaiDeclarationView> delais;
 	private List<EtatDeclarationView> etats;
 	private boolean isSommable;
@@ -87,7 +87,7 @@ public class EditerDeclarationImpotView {
 		this.sourceQuittancement = initSourceQuittancement(di);
 		this.dernierEtat = getDernierEtat(di);
 		this.delais = initDelais(di, infraService, messageSource);
-		this.etats = initEtats(di.getEtats(), infraService, messageSource);
+		this.etats = initEtats(di.getEtatsDeclaration(), infraService, messageSource);
 		this.isAllowedQuittancement = allowedQuittancement;
 		this.isAllowedDelai = allowedDelai;
 		this.isAllowedSommation = allowedSommation;
@@ -108,8 +108,8 @@ public class EditerDeclarationImpotView {
 
 	private static boolean initWasSommee(DeclarationImpotOrdinaire di) {
 		boolean wasSommee = false;
-		for (EtatDeclaration etat : di.getEtats()) {
-			if (!etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.SOMMEE) {
+		for (EtatDeclaration etat : di.getEtatsDeclaration()) {
+			if (!etat.isAnnule() && etat.getEtat() == TypeEtatDocumentFiscal.SOMME) {
 				wasSommee = true;
 				break;
 			}
@@ -118,9 +118,9 @@ public class EditerDeclarationImpotView {
 	}
 
 	public static boolean isSommable(DeclarationImpotOrdinaire di) {
-		final TypeEtatDeclaration dernierEtat = getDernierEtat(di);
+		final TypeEtatDocumentFiscal dernierEtat = getDernierEtat(di);
 		boolean isSommable = false;
-		if (dernierEtat == TypeEtatDeclaration.EMISE) {
+		if (dernierEtat == TypeEtatDocumentFiscal.EMIS) {
 			if (di.getDelaiAccordeAu() == null || RegDate.get().isAfter(di.getDelaiAccordeAu())) {
 				isSommable = true;
 			}
@@ -131,25 +131,25 @@ public class EditerDeclarationImpotView {
 	public static boolean isSuspendable(DeclarationImpotOrdinaire di) {
 		// seules les DI PM ont cette capacité
 		if (di instanceof DeclarationImpotOrdinairePM) {
-			final TypeEtatDeclaration dernierEtat = getDernierEtat(di);
-			return dernierEtat != TypeEtatDeclaration.RETOURNEE && dernierEtat != TypeEtatDeclaration.SUSPENDUE;
+			final TypeEtatDocumentFiscal dernierEtat = getDernierEtat(di);
+			return dernierEtat != TypeEtatDocumentFiscal.RETOURNE && dernierEtat != TypeEtatDocumentFiscal.SUSPENDU;
 		}
 
 		return false;
 	}
 
-	public static TypeEtatDeclaration getDernierEtat(DeclarationImpotOrdinaire di) {
-		final EtatDeclaration etatDI = di.getDernierEtat();
+	public static TypeEtatDocumentFiscal getDernierEtat(DeclarationImpotOrdinaire di) {
+		final EtatDeclaration etatDI = di.getDernierEtatDeclaration();
 		return etatDI == null ? null : etatDI.getEtat();
 	}
 
 	private static String initSourceQuittancement(DeclarationImpotOrdinaire di) {
-		final EtatDeclarationRetournee etatRourne = (EtatDeclarationRetournee) di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+		final EtatDeclarationRetournee etatRourne = (EtatDeclarationRetournee) di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.RETOURNE);
 		return etatRourne == null ? null : etatRourne.getSource();
 	}
 
 	private static List<DelaiDeclarationView> initDelais(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		final Set<DelaiDeclaration> delais = di.getDelais();
+		final Set<DelaiDeclaration> delais = di.getDelaisDeclaration();
 		if (delais == null || delais.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -172,7 +172,7 @@ public class EditerDeclarationImpotView {
 				.collect(Collectors.toMap(DelaiDeclarationView::getEtat,
 				                          Function.identity(),
 				                          (dd1, dd2) -> dd1,            // selon le tri ci-dessus, le premier vu est le dernier valide...
-				                          () -> new EnumMap<>(EtatDelaiDeclaration.class)))
+				                          () -> new EnumMap<>(EtatDelaiDocumentFiscal.class)))
 				.forEach((etat, dd) -> dd.setLastOfState(true));
 
 		return list;
@@ -231,7 +231,7 @@ public class EditerDeclarationImpotView {
 		return dateRetour;
 	}
 
-	public TypeEtatDeclaration getDernierEtat() {
+	public TypeEtatDocumentFiscal getDernierEtat() {
 		return dernierEtat;
 	}
 

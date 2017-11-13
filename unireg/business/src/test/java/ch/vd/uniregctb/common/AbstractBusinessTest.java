@@ -137,7 +137,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
 import ch.vd.uniregctb.type.TypeTiersEtiquette;
@@ -1169,10 +1169,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
 	protected DeclarationImpotSource addLRPeriodiciteUnique(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode) {
-		return addLRPeriodiciteUnique(debiteur, debut, fin, periode, TypeEtatDeclaration.EMISE);
+		return addLRPeriodiciteUnique(debiteur, debut, fin, periode, TypeEtatDocumentFiscal.EMIS);
 	}
 
-	protected DeclarationImpotSource addLRPeriodiciteUnique(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode, TypeEtatDeclaration typeEtat) {
+	protected DeclarationImpotSource addLRPeriodiciteUnique(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode, TypeEtatDocumentFiscal typeEtat) {
 		DeclarationImpotSource lr = new DeclarationImpotSource();
 		lr.setDateDebut(debut);
 		lr.setDateFin(fin);
@@ -1180,8 +1180,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		lr.setModeCommunication(ModeCommunication.PAPIER);
 		lr.setPeriodicite(PeriodiciteDecompte.UNIQUE);
 
-		// l'état "EMISE" si l'état demandé est autre (il faut au moins l'état "EMISE")
-		if (typeEtat != TypeEtatDeclaration.EMISE) {
+		// l'état "EMIS" si l'état demandé est autre (il faut au moins l'état "EMIS")
+		if (typeEtat != TypeEtatDocumentFiscal.EMIS) {
 			final EtatDeclaration etatEmission = new EtatDeclarationEmise();
 			etatEmission.setDateObtention(fin);
 			lr.addEtat(etatEmission);
@@ -1200,10 +1200,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
     protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, PeriodiciteDecompte periodicite, PeriodeFiscale periode) {
-        return addLR(debiteur, debut, periodicite, periode, TypeEtatDeclaration.EMISE);
+        return addLR(debiteur, debut, periodicite, periode, TypeEtatDocumentFiscal.EMIS);
     }
 
-    protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, PeriodiciteDecompte periodicite, PeriodeFiscale periode, TypeEtatDeclaration typeEtat) {
+    protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, PeriodiciteDecompte periodicite, PeriodeFiscale periode, TypeEtatDocumentFiscal typeEtat) {
         DeclarationImpotSource lr = new DeclarationImpotSource();
         lr.setDateDebut(debut);
 
@@ -1213,8 +1213,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         lr.setModeCommunication(ModeCommunication.PAPIER);
         lr.setPeriodicite(periodicite);
 
-        // l'état "EMISE" si l'état demandé est autre (il faut au moins l'état "EMISE")
-        if (typeEtat != TypeEtatDeclaration.EMISE) {
+        // l'état "EMIS" si l'état demandé est autre (il faut au moins l'état "EMIS")
+        if (typeEtat != TypeEtatDocumentFiscal.EMIS) {
             final EtatDeclaration etatEmission = new EtatDeclarationEmise();
             etatEmission.setDateObtention(fin);
             lr.addEtat(etatEmission);

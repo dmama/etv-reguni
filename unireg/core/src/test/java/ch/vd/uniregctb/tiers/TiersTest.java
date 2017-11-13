@@ -237,7 +237,7 @@ public class TiersTest extends WithoutSpringTest {
 		periode2009.setAnnee(2009);
 
 		final PersonnePhysique tiers = new PersonnePhysique(true);
-		assertEmpty(tiers.getDeclarations());
+		assertEmpty(tiers.getDocumentsFiscaux());
 
 		// 2008
 
@@ -283,7 +283,7 @@ public class TiersTest extends WithoutSpringTest {
 		periode2010.setAnnee(2010);
 
 		final PersonnePhysique tiers = new PersonnePhysique(true);
-		assertEmpty(tiers.getDeclarations());
+		assertEmpty(tiers.getDocumentsFiscaux());
 
 		// 2009
 
@@ -329,7 +329,7 @@ public class TiersTest extends WithoutSpringTest {
 		periode2012.setAnnee(2012);
 
 		final PersonnePhysique tiers = new PersonnePhysique(true);
-		assertEmpty(tiers.getDeclarations());
+		assertEmpty(tiers.getDocumentsFiscaux());
 
 		// 2011
 
@@ -383,13 +383,13 @@ public class TiersTest extends WithoutSpringTest {
 
 		final PersonnePhysique tiers = new PersonnePhysique(true);
 		final HashSet<Declaration> declarations = new HashSet<>();
-		tiers.setDeclarations(declarations);
+		tiers.addAllDeclarations(declarations);
 
 		// Déclarations préexistantes SANS code de contrôle
 
 		final DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
 		d1.setPeriode(periode);
-		declarations.add(d1);
+		tiers.addDeclaration(d1);
 
 		// Ajout d'une seconde déclaration et test que le code de contrôle a bien été généré et assigné sur les DEUX déclarations
 		final DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();

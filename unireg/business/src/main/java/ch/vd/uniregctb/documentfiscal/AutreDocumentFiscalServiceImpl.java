@@ -45,6 +45,7 @@ import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
@@ -166,9 +167,15 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 		final LettreBienvenue lettre = new LettreBienvenue();
 		lettre.setDateEnvoi(dateEnvoi);
-		lettre.setDelaiRetour(delaiRetour);
 		lettre.setType(typeLettre);
 		lettre.setEntreprise(entreprise);
+
+		final DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
+		delai.setDateDemande(dateTraitement);
+		delai.setDateTraitement(dateTraitement);
+		delai.setDelaiAccordeAu(delaiRetour);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		lettre.addDelai(delai);
 
 		final LettreBienvenue saved = hibernateTemplate.merge(lettre);
 		try {
@@ -263,12 +270,18 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
 		demande.setDateEnvoi(dateEnvoi);
-		demande.setDelaiRetour(delaiRetour);
 		demande.setCodeControle(buildCodeControleDemandeDegrevementICI(entreprise));
 		demande.setImmeuble(immeuble);
 		demande.setNumeroSequence(getNewSequenceNumberDemandeDegrevementICI(entreprise, periodeFiscale));
 		demande.setPeriodeFiscale(periodeFiscale);
 		demande.setEntreprise(entreprise);
+
+		final DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
+		delai.setDateDemande(dateTraitement);
+		delai.setDateTraitement(dateTraitement);
+		delai.setDelaiAccordeAu(delaiRetour);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		demande.addDelai(delai);
 
 		final DemandeDegrevementICI saved = hibernateTemplate.merge(demande);
 		entreprise.addAutreDocumentFiscal(saved);
@@ -292,12 +305,18 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
 		demande.setDateEnvoi(dateTraitement);
-		demande.setDelaiRetour(delaiRetour);
 		demande.setCodeControle(buildCodeControleDemandeDegrevementICI(entreprise));
 		demande.setImmeuble(immeuble);
 		demande.setNumeroSequence(getNewSequenceNumberDemandeDegrevementICI(entreprise, periodeFiscale));
 		demande.setPeriodeFiscale(periodeFiscale);
 		demande.setEntreprise(entreprise);
+
+		final DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
+		delai.setDateDemande(dateTraitement);
+		delai.setDateTraitement(dateTraitement);
+		delai.setDelaiAccordeAu(delaiRetour);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		demande.addDelai(delai);
 
 		final DemandeDegrevementICI saved = hibernateTemplate.merge(demande);
 		entreprise.addAutreDocumentFiscal(saved);
@@ -352,8 +371,9 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	}
 
 	@Override
-	public void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement) throws AutreDocumentFiscalException {
+	public void envoyerRappelLettreBienvenueBatch(LettreBienvenue lettre, RegDate dateTraitement, RegDate dateEnvoiRappel) throws AutreDocumentFiscalException {
 		try {
+			lettre.setDateRappel(dateEnvoiRappel);
 			editiqueCompositionService.imprimeRappelLettreBienvenueForBatch(lettre, dateTraitement);
 		}
 		catch (EditiqueException e) {
@@ -362,8 +382,9 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	}
 
 	@Override
-	public void envoyerRappelFormulaireDemandeDegrevementICIBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement) throws AutreDocumentFiscalException {
+	public void envoyerRappelFormulaireDemandeDegrevementICIBatch(DemandeDegrevementICI formulaire, RegDate dateTraitement, RegDate dateEnvoiRappel) throws AutreDocumentFiscalException {
 		try {
+			formulaire.setDateRappel(dateEnvoiRappel);
 			editiqueCompositionService.imprimeRappelFormulaireDemandeDegrevementICIForBatch(formulaire, dateTraitement);
 		}
 		catch (EditiqueException e) {

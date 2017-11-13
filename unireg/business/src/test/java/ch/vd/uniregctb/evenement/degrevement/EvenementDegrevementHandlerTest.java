@@ -51,6 +51,7 @@ import ch.vd.uniregctb.registrefoncier.ProprieteParEtageRF;
 import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
 
@@ -246,7 +247,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
-			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
+			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, pf, immeuble);
+			addDelaiAutreDocumentFiscal(formulaire, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(formulaire, dateEnvoiFormulaire);
 			Assert.assertNotNull(formulaire);
 			return new Ids(entreprise.getNumero(), immeuble.getId(), formulaire.getNumeroSequence());
 		});
@@ -384,7 +387,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
-			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
+			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, pf, immeuble);
+			addDelaiAutreDocumentFiscal(formulaire, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(formulaire, dateEnvoiFormulaire);
 			Assert.assertNotNull(formulaire);
 			return new Ids(entreprise.getNumero(), immeuble.getId(), formulaire.getNumeroSequence());
 		});
@@ -502,7 +507,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
-			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
+			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, pf, immeuble);
+			addDelaiAutreDocumentFiscal(formulaire, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(formulaire, dateEnvoiFormulaire);
 			Assert.assertNotNull(formulaire);
 			return new Ids(entreprise.getNumero(), immeuble.getId(), formulaire.getNumeroSequence());
 		});
@@ -632,7 +639,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			addEstimationFiscale(dateChargement, dateAchat, null, false, 1234L, String.valueOf(dateAchat.year()), immeuble);
 			addSurfaceAuSol(null, null, 100, "Chemin", immeuble);
 
-			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
+			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, pf, immeuble);
+			addDelaiAutreDocumentFiscal(formulaire, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(formulaire, dateEnvoiFormulaire);
 			Assert.assertNotNull(formulaire);
 			return new Ids(entreprise.getNumero(), immeuble.getId(), formulaire.getNumeroSequence());
 		});
@@ -770,7 +779,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			// et le troisième devrait se retrouver annulé
 			addDegrevementICI(entreprise, immeuble, pf + 1, null, new DonneesUtilisation(5L, 2L, 20L, BigDecimal.valueOf(1), BigDecimal.valueOf(1)), null, new DonneesLoiLogement(false, null, null, null));
 
-			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
+			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, pf, immeuble);
+			addDelaiAutreDocumentFiscal(formulaire, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(formulaire, dateEnvoiFormulaire);
 			Assert.assertNotNull(formulaire);
 			return new Ids(entreprise.getNumero(), immeuble.getId(), formulaire.getNumeroSequence());
 		});
@@ -1004,7 +1015,9 @@ public class EvenementDegrevementHandlerTest extends BusinessTest {
 			// une valeur pré-existante
 			addDegrevementICI(entreprise, immeuble, pf - 3, null, new DonneesUtilisation(10000L, 1000L, 100L, BigDecimal.valueOf(100), BigDecimal.valueOf(100)), null, null);
 
-			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), null, null, pf, immeuble);
+			final DemandeDegrevementICI formulaire = addDemandeDegrevementICI(entreprise, pf, immeuble);
+			addDelaiAutreDocumentFiscal(formulaire, dateEnvoiFormulaire, dateEnvoiFormulaire.addMonths(3), EtatDelaiDocumentFiscal.ACCORDE);
+			addEtatAutreDocumentFiscalEmis(formulaire, dateEnvoiFormulaire);
 			Assert.assertNotNull(formulaire);
 			return new Ids(entreprise.getNumero(), immeuble.getId(), formulaire.getNumeroSequence());
 		});

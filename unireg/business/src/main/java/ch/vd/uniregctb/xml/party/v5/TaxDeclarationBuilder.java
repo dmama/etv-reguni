@@ -26,19 +26,19 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
 public class TaxDeclarationBuilder {
 
-	private static final Set<TypeEtatDeclaration> ETATS_EXPOSES = EnumSet.of(TypeEtatDeclaration.ECHUE,
-	                                                                         TypeEtatDeclaration.EMISE,
-	                                                                         TypeEtatDeclaration.RETOURNEE,
-	                                                                         TypeEtatDeclaration.SOMMEE,
-	                                                                         TypeEtatDeclaration.RAPPELEE,
-	                                                                         TypeEtatDeclaration.SUSPENDUE);
+	private static final Set<TypeEtatDocumentFiscal> ETATS_EXPOSES = EnumSet.of(TypeEtatDocumentFiscal.ECHU,
+	                                                                            TypeEtatDocumentFiscal.EMIS,
+	                                                                            TypeEtatDocumentFiscal.RETOURNE,
+	                                                                            TypeEtatDocumentFiscal.SOMME,
+	                                                                            TypeEtatDocumentFiscal.RAPPELE,
+	                                                                            TypeEtatDocumentFiscal.SUSPENDU);
 
 	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(DeclarationImpotOrdinairePP declaration, @Nullable Set<PartyPart> parts) {
 
@@ -102,7 +102,7 @@ public class TaxDeclarationBuilder {
 
 	private static void fillTaxDeclarationParts(TaxDeclaration d, Declaration declaration, Set<PartyPart> parts) {
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
-			for (EtatDeclaration etat : declaration.getEtatsSorted()) {
+			for (EtatDeclaration etat : declaration.getEtatsDeclarationSorted()) {
 				// on n'expose pas les états qui ne sont pas connus par cette version de la XSD
 				if (ETATS_EXPOSES.contains(etat.getEtat())) {
 					d.getStatuses().add(newTaxDeclarationStatus(etat));
@@ -110,9 +110,9 @@ public class TaxDeclarationBuilder {
 			}
 		}
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
-			for (DelaiDeclaration delai : declaration.getDelaisSorted()) {
+			for (DelaiDeclaration delai : declaration.getDelaisDeclarationSorted()) {
 				// TODO c'est sans doute le moment d'exposer les autres aussi...
-				if (delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {
+				if (delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE) {
 					d.getDeadlines().add(newTaxDeclarationDeadline(delai));
 				}
 			}

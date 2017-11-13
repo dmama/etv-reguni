@@ -403,26 +403,16 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		this.dateDebutPremierExerciceCommercial = dateDebutPremierExerciceCommercial;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "ENTREPRISE_ID")
+	@Transient
 	public Set<AutreDocumentFiscal> getAutresDocumentsFiscaux() {
-		return autresDocumentsFiscaux;
-	}
-
-	public void setAutresDocumentsFiscaux(Set<AutreDocumentFiscal> autresDocumentsFiscaux) {
-		this.autresDocumentsFiscaux = autresDocumentsFiscaux;
+		return getDocumentsFiscaux() == null ? null : getDocumentsFiscaux().stream().filter(d -> AutreDocumentFiscal.class.isAssignableFrom(d.getClass())).map(d -> (AutreDocumentFiscal) d).collect(Collectors.toSet());
 	}
 
 	public void addAutreDocumentFiscal(AutreDocumentFiscal document) {
 		if (document.getEntreprise() != null && document.getEntreprise() != this) {
 			throw new IllegalArgumentException("Ce document est déjà associé à une autre entreprise.");
 		}
-
-		if (this.autresDocumentsFiscaux == null) {
-			this.autresDocumentsFiscaux = new HashSet<>();
-		}
-		this.autresDocumentsFiscaux.add(document);
-		document.setEntreprise(this);
+		addDocumentFiscal(document);
 	}
 
 
@@ -474,12 +464,13 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@NotNull
 	@Transient
 	public <T extends AutreDocumentFiscal> List<T> getAutresDocumentsFiscaux(Class<T> clazz, boolean sorted, boolean avecAnnules) {
-		if (this.autresDocumentsFiscaux == null || this.autresDocumentsFiscaux.isEmpty()) {
+		final Set<AutreDocumentFiscal> autresDocumentsFiscaux = getAutresDocumentsFiscaux();
+		if (autresDocumentsFiscaux == null || autresDocumentsFiscaux.isEmpty()) {
 			return Collections.emptyList();
 		}
 
-		final List<T> liste = new ArrayList<>(this.autresDocumentsFiscaux.size());
-		for (AutreDocumentFiscal adf : this.autresDocumentsFiscaux) {
+		final List<T> liste = new ArrayList<>(autresDocumentsFiscaux.size());
+		for (AutreDocumentFiscal adf : autresDocumentsFiscaux) {
 			if (adf != null && clazz.isAssignableFrom(adf.getClass())) {
 				if (avecAnnules || !adf.isAnnule()) {
 					//noinspection unchecked

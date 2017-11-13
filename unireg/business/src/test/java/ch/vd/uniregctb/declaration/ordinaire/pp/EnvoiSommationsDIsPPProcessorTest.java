@@ -27,7 +27,7 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -35,7 +35,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDocumentEmolument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 
@@ -77,7 +77,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
 				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
-				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -115,7 +115,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				addEtatDeclarationEmise(declaration, dateEmission);
 				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(-5), "ADDI");
 				addEtatDeclarationRetournee(declaration, dateDelaiInitial.addDays(5), "TEST");    // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
-				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -150,7 +150,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -185,7 +185,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -220,7 +220,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -232,7 +232,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire declarationImpotOrdinaire = diDao.get(diId);
-				final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) declarationImpotOrdinaire.getDernierEtat();
+				final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) declarationImpotOrdinaire.getDernierEtatDeclaration();
 
 				Assert.assertEquals(dateTraitement, etatSomme.getDateObtention());
 
@@ -260,7 +260,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -295,7 +295,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -331,7 +331,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -368,7 +368,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -409,7 +409,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 4, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -466,7 +466,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -508,7 +508,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
 				addEtatDeclarationRetournee(declaration, dateEmission.addDays(-5), "TEST");
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -546,7 +546,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
 				addEtatDeclarationSommee(declaration, delaiInitial.addMonths(1), delaiInitial.addMonths(1).addDays(3), null);
-				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, delaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return declaration.getId();
 			}
 		});
@@ -590,7 +590,7 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(mc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, dateEmission);
-				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(declaration, dateEmission, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				return new Ids(mc.getId(), declaration.getId());
 			}
 		});
@@ -642,15 +642,15 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 
 				final DeclarationImpotOrdinairePP diSans = addDeclarationImpot(pp, pfSans, date(pfSansEmolument, 1, 1), date(pfSansEmolument, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdSans);
 				addEtatDeclarationEmise(diSans, date(pfSansEmolument + 1, 1, 7));
-				addDelaiDeclaration(diSans, date(pfSansEmolument + 1, 1, 7), date(pfSansEmolument + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(diSans, date(pfSansEmolument + 1, 1, 7), date(pfSansEmolument + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
 				final DeclarationImpotOrdinairePP diAvec1 = addDeclarationImpot(pp, pfAvec1, date(pfAvecEmolument1, 1, 1), date(pfAvecEmolument1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdAvec1);
 				addEtatDeclarationEmise(diAvec1, date(pfAvecEmolument1 + 1, 1, 7));
-				addDelaiDeclaration(diAvec1, date(pfAvecEmolument1 + 1, 1, 7), date(pfAvecEmolument1 + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(diAvec1, date(pfAvecEmolument1 + 1, 1, 7), date(pfAvecEmolument1 + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
 				final DeclarationImpotOrdinairePP diAvec2 = addDeclarationImpot(pp, pfAvec2, date(pfAvecEmolument2, 1, 1), date(pfAvecEmolument2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, mdAvec2);
 				addEtatDeclarationEmise(diAvec2, date(pfAvecEmolument2 + 1, 1, 7));
-				addDelaiDeclaration(diAvec2, date(pfAvecEmolument2 + 1, 1, 7), date(pfAvecEmolument2 + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(diAvec2, date(pfAvecEmolument2 + 1, 1, 7), date(pfAvecEmolument2 + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
 				return pp.getNumero();
 			}
@@ -672,30 +672,30 @@ public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 				{
 					final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfSansEmolument, 1, 1));
 					Assert.assertNotNull(di);
-					final EtatDeclaration etat = di.getDernierEtat();
+					final EtatDeclaration etat = di.getDernierEtatDeclaration();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.SOMME, etat.getEtat());
 					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
 					Assert.assertNull(sommation.getEmolument());
 				}
 				{
 					final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfAvecEmolument1, 1, 1));
 					Assert.assertNotNull(di);
-					final EtatDeclaration etat = di.getDernierEtat();
+					final EtatDeclaration etat = di.getDernierEtatDeclaration();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.SOMME, etat.getEtat());
 					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
 					Assert.assertEquals((Integer) emolument1, sommation.getEmolument());
 				}
 				{
 					final DeclarationImpotOrdinairePP di = pp.getDeclarationActiveAt(date(pfAvecEmolument2, 1, 1));
 					Assert.assertNotNull(di);
-					final EtatDeclaration etat = di.getDernierEtat();
+					final EtatDeclaration etat = di.getDernierEtatDeclaration();
 					Assert.assertNotNull(etat);
 					Assert.assertFalse(etat.isAnnule());
-					Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+					Assert.assertEquals(TypeEtatDocumentFiscal.SOMME, etat.getEtat());
 					final EtatDeclarationSommee sommation = (EtatDeclarationSommee) etat;
 					Assert.assertEquals((Integer) emolument2, sommation.getEmolument());
 				}

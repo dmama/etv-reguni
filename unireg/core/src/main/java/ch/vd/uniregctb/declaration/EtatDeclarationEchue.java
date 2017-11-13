@@ -5,10 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
+/**
+ * Une notification d'échéance (= qui ouvre la porte à la taxation d'office) a été émise pour la déclaration
+ */
 @Entity
-@DiscriminatorValue("ECHUE")
+@DiscriminatorValue("DI_ECHUE")
 public class EtatDeclarationEchue extends EtatDeclaration {
 	public EtatDeclarationEchue() {
 		super();
@@ -18,9 +21,9 @@ public class EtatDeclarationEchue extends EtatDeclaration {
 		super(dateObtention);
 	}
 
-	@Override
 	@Transient
-	public TypeEtatDeclaration getEtat() {
-		return TypeEtatDeclaration.ECHUE;
+	@Override
+	public TypeEtatDocumentFiscal getType() {
+		return TypeEtatDocumentFiscal.ECHU;
 	}
 }

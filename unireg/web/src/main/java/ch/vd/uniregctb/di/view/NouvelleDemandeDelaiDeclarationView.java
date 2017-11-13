@@ -2,7 +2,7 @@ package ch.vd.uniregctb.di.view;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 
 @SuppressWarnings("UnusedDeclaration")
 public class NouvelleDemandeDelaiDeclarationView extends AbstractEditionDelaiDeclarationPMView {
@@ -13,7 +13,7 @@ public class NouvelleDemandeDelaiDeclarationView extends AbstractEditionDelaiDec
 	}
 
 	public NouvelleDemandeDelaiDeclarationView(DeclarationImpotOrdinaire di, RegDate delaiAccordeAu, boolean sursis) {
-		super(di, RegDate.get(), delaiAccordeAu, EtatDelaiDeclaration.ACCORDE);     // accordé par défaut
+		super(di, RegDate.get(), delaiAccordeAu, EtatDelaiDocumentFiscal.ACCORDE);     // accordé par défaut
 		this.sursis = sursis;
 	}
 

@@ -29,7 +29,7 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EnvoiSommationLRsEnMasseProcessor {
 
@@ -130,10 +130,10 @@ private final Logger LOGGER = LoggerFactory.getLogger(EnvoiLRsEnMasseProcessor.c
 	}
 
 	protected void traiteLR(DeclarationImpotSource lr, RegDate dateTraitement, EnvoiSommationLRsResults rapport) throws Exception {
-		if (lr.getDernierEtat().getEtat() == TypeEtatDeclaration.EMISE) {
+		if (lr.getDernierEtatDeclaration().getEtat() == TypeEtatDocumentFiscal.EMIS) {
 			RegDate dateDelaiSommation;
 			if (lr.getDelaiAccordeAu() == null) {
-				final RegDate dateExpedition = lr.getDernierEtat().getDateObtention();
+				final RegDate dateExpedition = lr.getDernierEtatDeclaration().getDateObtention();
 				// Délai de retour des listes
 				dateDelaiSommation = delaisService.getDateFinDelaiRetourListeRecapitulative(dateExpedition, lr.getDateFin());
 				// Ajout du délai administratif avant l'envoi de la sommation

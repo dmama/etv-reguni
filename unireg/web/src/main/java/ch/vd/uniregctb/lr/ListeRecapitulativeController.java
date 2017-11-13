@@ -76,7 +76,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -365,7 +365,7 @@ public class ListeRecapitulativeController {
 		delai.setDateDemande(RegDate.get());
 		delai.setDateTraitement(RegDate.get());
 		delai.setDelaiAccordeAu(view.getDelaiAccorde());
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		lr.addDelai(delai);
 
 		lr.setTiers(dpi);
@@ -589,7 +589,7 @@ public class ListeRecapitulativeController {
 		model.addAttribute("dateDebut", lr.getDateDebut());
 		model.addAttribute("dateFin", lr.getDateFin());
 		model.addAttribute("idListe", lr.getId());
-		model.addAttribute("ancienDelai", lr.getDernierDelaiAccorde().getDelaiAccordeAu());
+		model.addAttribute("ancienDelai", lr.getDernierDelaiDeclarationAccorde().getDelaiAccordeAu());
 		model.addAttribute("addDelaiCommand", view);
 		return "lr/edit/add-delai";
 	}
@@ -603,7 +603,7 @@ public class ListeRecapitulativeController {
 		}
 
 		final DeclarationImpotSource lr = getListeRecapitulative(view.getIdListe());
-		final DelaiDeclaration ancienDelai = lr.getDernierDelaiAccorde();
+		final DelaiDeclaration ancienDelai = lr.getDernierDelaiDeclarationAccorde();
 		if (RegDateHelper.isBeforeOrEqual(view.getDelaiAccorde(), ancienDelai.getDelaiAccordeAu(), NullDateBehavior.EARLIEST)) {
 			bindingResult.rejectValue("delaiAccorde", "error.delai.accorde.invalide");
 			return showAddDelai(model, lr, view);
@@ -613,7 +613,7 @@ public class ListeRecapitulativeController {
 		nouveauDelai.setDateDemande(view.getDateDemande());
 		nouveauDelai.setDateTraitement(RegDate.get());
 		nouveauDelai.setDelaiAccordeAu(view.getDelaiAccorde());
-		nouveauDelai.setEtat(EtatDelaiDeclaration.ACCORDE);
+		nouveauDelai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		lr.addDelai(nouveauDelai);
 
 		return "redirect:edit-lr.do?id=" + lr.getId();

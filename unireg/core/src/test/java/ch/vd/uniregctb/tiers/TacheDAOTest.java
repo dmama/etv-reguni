@@ -584,7 +584,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		pp0.setIdentificationsPersonnes(new HashSet());
 		pp0.setHabitant(false);
 		pp0.setAdressesTiers(new HashSet());
-		pp0.setDeclarations(new HashSet());
+		pp0.setDocumentsFiscaux(new HashSet());
 		pp0.setDroitsAccesAppliques(new HashSet());
 		pp0.setForsFiscaux(new HashSet());
 		pp0.setRapportsObjet(new HashSet());
@@ -606,7 +606,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		pp1.setIdentificationsPersonnes(new HashSet());
 		pp1.setHabitant(false);
 		pp1.setAdressesTiers(new HashSet());
-		pp1.setDeclarations(new HashSet());
+		pp1.setDocumentsFiscaux(new HashSet());
 		pp1.setDroitsAccesAppliques(new HashSet());
 		pp1.setForsFiscaux(new HashSet());
 		pp1.setRapportsObjet(new HashSet());

@@ -39,7 +39,7 @@
 					<td width="25%"><fmt:message key="label.type.declaration" />&nbsp;:</td>
 					<td width="25%"><c:if test="${command.typeDocument != null}"><fmt:message key="option.type.document.${command.typeDocument}"/></c:if></td>
 					<td width="25%"><fmt:message key="label.etat.courant" />&nbsp;:</td>
-					<td width="25%"><fmt:message key="option.etat.avancement.${command.dernierEtat}"/></td>
+					<td width="25%"><fmt:message key="option.etat.avancement.f.${command.dernierEtat}"/></td>
 				</tr>
 			</table>
 		</fieldset>

@@ -45,7 +45,7 @@ import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class ProduireStatsDIsProcessor {
 
@@ -147,7 +147,7 @@ public class ProduireStatsDIsProcessor {
 	private void traiterDIPP(DeclarationImpotOrdinairePP di, StatistiquesDIs rapport) {
 		final int oid = getOID(di);
 		final TypeContribuable type = getType(di);
-		final TypeEtatDeclaration etat = getEtat(di);
+		final TypeEtatDocumentFiscal etat = getEtat(di);
 
 		rapport.addStats(oid, type, etat);
 	}
@@ -157,7 +157,7 @@ public class ProduireStatsDIsProcessor {
 	 */
 	private void traiterDIPM(DeclarationImpotOrdinairePM di, StatistiquesDIs rapport) {
 		final TypeContribuable type = getType(di);
-		final TypeEtatDeclaration etat = getEtat(di);
+		final TypeEtatDocumentFiscal etat = getEtat(di);
 
 		rapport.addStats(ServiceInfrastructureService.noOIPM, type, etat);
 	}
@@ -267,8 +267,8 @@ public class ProduireStatsDIsProcessor {
 	/**
 	 * @return l'état courant de la DI spécifiée
 	 */
-	private TypeEtatDeclaration getEtat(DeclarationImpotOrdinaire di) {
-		return di.getDernierEtat().getEtat();
+	private TypeEtatDocumentFiscal getEtat(DeclarationImpotOrdinaire di) {
+		return di.getDernierEtatDeclaration().getEtat();
 	}
 
 	private static final String queryDIsPP = // ------------------------------------------------

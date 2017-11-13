@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<DeclarationImpotOrdinaire> implements DeclarationImpotOrdinaireDAO {
 
@@ -76,9 +76,9 @@ public class DeclarationImpotOrdinaireDAOImpl extends DeclarationDAOImpl<Declara
 			listRtr.addAll(list);
 		}
 		else {
-			final TypeEtatDeclaration etat = TypeEtatDeclaration.valueOf(criterion.getEtat());
+			final TypeEtatDocumentFiscal etat = TypeEtatDocumentFiscal.valueOf(criterion.getEtat());
 			for (DeclarationImpotOrdinaire di : list) {
-				if (di.getDernierEtat().getEtat() == etat) {
+				if (di.getDernierEtatDeclaration().getEtat() == etat) {
 					listRtr.add(di);
 				}
 			}

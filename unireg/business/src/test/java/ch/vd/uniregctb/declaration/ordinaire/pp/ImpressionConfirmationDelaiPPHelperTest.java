@@ -23,7 +23,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.etiquette.Etiquette;
 import ch.vd.uniregctb.etiquette.EtiquetteService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -52,7 +52,7 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 
 		DeclarationImpotOrdinairePP declaration = new DeclarationImpotOrdinairePP();
 		DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		delai.setDeclaration(declaration);
 		delai.setDelaiAccordeAu(date(2011, 9, 21));
 		delai.setId(84512325483L);
@@ -86,7 +86,7 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				addEtatDeclarationEmise(di, RegDate.get().addMonths(-1));
-				addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
 				return di.getId();
 			}
@@ -97,7 +97,7 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final DelaiDeclaration delai = addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 9, 30), EtatDelaiDeclaration.ACCORDE);
+				final DelaiDeclaration delai = addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
 				final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, RegDate.get(), "MOI", "0213160000", null, delai.getId(), delai.getLogCreationDate());
 				final FichierImpressionDocument doc = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params, "TOTO");
@@ -126,7 +126,7 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				addEtatDeclarationEmise(di, RegDate.get().addMonths(-1));
-				addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 6, 30), EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 6, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
 				final Etiquette collaborateur = etiquetteService.getEtiquette(CODE_ETIQUETTE_COLLABORATEUR);
 				Assert.assertNotNull(collaborateur);
@@ -141,7 +141,7 @@ public class ImpressionConfirmationDelaiPPHelperTest extends BusinessTest {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
-				final DelaiDeclaration delai = addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 9, 30), EtatDelaiDeclaration.ACCORDE);
+				final DelaiDeclaration delai = addDelaiDeclaration(di, RegDate.get(), date(annee + 1, 9, 30), EtatDelaiDocumentFiscal.ACCORDE);
 
 				final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, RegDate.get(), "MOI", "0213160000", null, delai.getId(), delai.getLogCreationDate());
 				final FichierImpressionDocument doc = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params, "TOTO");

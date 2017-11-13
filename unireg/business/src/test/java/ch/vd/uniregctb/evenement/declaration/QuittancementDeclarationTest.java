@@ -108,7 +108,7 @@ public class QuittancementDeclarationTest extends BusinessTest {
 				assertEquals(1, list.size());
 
 				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				final EtatDeclaration etat = declaration.getDernierEtat();
+				final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
 				assertTrue(etat instanceof EtatDeclarationRetournee);
 
 				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
@@ -172,7 +172,7 @@ public class QuittancementDeclarationTest extends BusinessTest {
 				assertEquals(1, list.size());
 
 				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				final EtatDeclaration etat = declaration.getDernierEtat();
+				final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
 				assertTrue(etat instanceof EtatDeclarationEmise);
 			}
 		});
@@ -226,7 +226,7 @@ public class QuittancementDeclarationTest extends BusinessTest {
 				assertEquals(1, list.size());
 
 				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
-				final EtatDeclaration etat = declaration.getDernierEtat();
+				final EtatDeclaration etat = declaration.getDernierEtatDeclaration();
 				assertTrue(etat instanceof EtatDeclarationRetournee);
 
 				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
@@ -278,7 +278,7 @@ public class QuittancementDeclarationTest extends BusinessTest {
 				assertEquals(1, list.size());
 
 				final QuestionnaireSNC qsnc = list.get(0);
-				final EtatDeclaration etat = qsnc.getDernierEtat();
+				final EtatDeclaration etat = qsnc.getDernierEtatDeclaration();
 				assertTrue(etat instanceof EtatDeclarationRetournee);
 
 				final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;

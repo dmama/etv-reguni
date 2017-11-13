@@ -47,7 +47,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
@@ -115,7 +115,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 
 	@Nullable
 	private static <T extends EtatDeclaration & EtatDeclarationAvecDocumentArchive> String getIdEtatDeclaration(Declaration declaration, Class<T> clazz) {
-		return declaration.getEtats().stream()
+		return declaration.getEtatsDeclaration().stream()
 				.filter(clazz::isInstance)
 				.map(clazz::cast)
 				.filter(AnnulableHelper::nonAnnule)
@@ -129,7 +129,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 
 	@Nullable
 	private static String getIdDelaiDeclaration(Declaration declaration, Predicate<? super DelaiDeclaration> predicate) {
-		return declaration.getDelais().stream()
+		return declaration.getDelaisDeclaration().stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(predicate)
 				.filter(delai -> delai.getCleDocument() == null)
@@ -194,7 +194,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
-		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDeclaration.ACCORDE && !delai.isSursis()),
+		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE && !delai.isSursis()),
 		                       infoArchivage);
 
 	}
@@ -207,7 +207,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
-		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDeclaration.REFUSE),
+		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDocumentFiscal.REFUSE),
 		                       infoArchivage);
 	}
 
@@ -219,7 +219,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		                       local,
 		                       di.getPeriode().getAnnee(),
 		                       di.getNumero(),
-		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDeclaration.ACCORDE && delai.isSursis()),
+		                       getIdDelaiDeclaration(di, delai -> delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE && delai.isSursis()),
 		                       infoArchivage);
 	}
 

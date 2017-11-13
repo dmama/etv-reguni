@@ -427,11 +427,14 @@
 
 	<bean id="droitAccesValidator" class="ch.vd.uniregctb.validation.droitacces.DroitAccesValidator" parent="dateRangeEntityValidator" />
 
-	<bean id="etatDeclarationValidator" class="ch.vd.uniregctb.validation.declaration.EtatDeclarationValidator" abstract="true" parent="entityValidator" />
+	<bean id="etatDocumentFiscalValidator" class="ch.vd.uniregctb.validation.documentfiscal.EtatDocumentFiscalValidator" abstract="true" parent="entityValidator" />
+	<bean id="etatAutreDocumentFiscalValidator" class="ch.vd.uniregctb.validation.documentfiscal.EtatAutreDocumentFiscalValidator" parent="etatDocumentFiscalValidator" />
+	<bean id="etatDeclarationValidator" class="ch.vd.uniregctb.validation.declaration.EtatDeclarationValidator" abstract="true" parent="etatDocumentFiscalValidator" />
 	<bean id="etatDeclarationSommeeValidator" class="ch.vd.uniregctb.validation.declaration.EtatDeclarationsommeeValidator" parent="etatDeclarationValidator" />
 	<bean id="concreteEtatDeclarationValidator" class="ch.vd.uniregctb.validation.declaration.ConcreteEtatDeclarationValidator" parent="etatDeclarationValidator" />
 
 	<bean id="delaiDeclarationValidator" class="ch.vd.uniregctb.validation.declaration.DelaiDeclarationValidator" parent="entityValidator"/>
+	<bean id="delaiAutreDocumentFiscalValidator" class="ch.vd.uniregctb.validation.documentfiscal.DelaiAutreDocumentFiscalValidator" parent="entityValidator"/>
 
 	<bean id="domicileEtablissementValidator" class="ch.vd.uniregctb.validation.tiers.DomicileEtablissementValidator" parent="localisationDateeValidator"/>
 

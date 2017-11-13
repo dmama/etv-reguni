@@ -33,6 +33,8 @@ import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationAvecNumeroSequence;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
+import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
+import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -574,22 +576,25 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	@Override
-	public synchronized void addDeclaration(Declaration declaration) {
-		if (declaration instanceof DeclarationAvecNumeroSequence) {
+	public synchronized void addDocumentFiscal(DocumentFiscal documentFiscal) {
+		if (documentFiscal instanceof DeclarationAvecNumeroSequence) {
+			DeclarationAvecNumeroSequence declaration = (DeclarationAvecNumeroSequence) documentFiscal;
 			final DeclarationAvecNumeroSequence avecNumero = (DeclarationAvecNumeroSequence) declaration;
 			if (avecNumero.getNumero() == null) {
 				// assignation d'un nouveau numéro de séquence par période fiscale
-				final Set<Declaration> declarations = getOrCreateDeclarationSet();
+				final Set<Declaration> declarations = getDeclarations();
 				final int pf = declaration.getPeriode().getAnnee();
 				int numero = 0;
 				Integer maxFound = null;
-				for (Declaration existante : declarations) {
-					if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationAvecNumeroSequence) {
-						++ numero;
+				if (declarations != null) {
+					for (Declaration existante : declarations) {
+						if (existante.getPeriode().getAnnee() == pf && existante instanceof DeclarationAvecNumeroSequence) {
+							++numero;
 
-						final Integer numeroExistante = ((DeclarationAvecNumeroSequence) existante).getNumero();
-						if (numeroExistante != null && (maxFound == null || numeroExistante > maxFound)) {
-							maxFound = numeroExistante;
+							final Integer numeroExistante = ((DeclarationAvecNumeroSequence) existante).getNumero();
+							if (numeroExistante != null && (maxFound == null || numeroExistante > maxFound)) {
+								maxFound = numeroExistante;
+							}
 						}
 					}
 				}
@@ -599,7 +604,12 @@ public abstract class Contribuable extends Tiers {
 						                     : Math.max(numero, maxFound) + 1);
 			}
 		}
-		super.addDeclaration(declaration);
+		super.addDocumentFiscal(documentFiscal);
+	}
+
+	@Override
+	public synchronized void addDeclaration(Declaration declaration) {
+		addDocumentFiscal(declaration);
 	}
 
 	@OneToMany(mappedBy = "contribuable", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

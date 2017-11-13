@@ -4099,7 +4099,7 @@
 		<column>CTB_ID</column>
 		<column>DECLARATION_ID</column>
 	</table>
-	<table name="ETAT_DECLARATION">
+	<table name="ETAT_DOCUMENT_FISCAL">
 		<column>TYPE</column>
 		<column>ID</column>
 		<column>ANNULATION_DATE</column>
@@ -4111,9 +4111,9 @@
 		<column>DATE_OBTENTION</column>
 		<column>DATE_ENVOI_COURRIER</column>
 		<column>SOURCE</column>
-		<column>DECLARATION_ID</column>
+		<column>DOCUMENT_FISCAL_ID</column>
 		<row>
-			<value>EMISE</value>
+			<value>EMIS</value>
 			<value>1</value>
 			<null />
 			<null />
@@ -4127,7 +4127,7 @@
 			<value>1</value>
 		</row>
 		<row>
-			<value>EMISE</value>
+			<value>EMIS</value>
 			<value>2</value>
 			<value><![CDATA[2009-03-04 00:00:00.0]]></value>
 			<null />
@@ -4141,7 +4141,7 @@
 			<value>3</value>
 		</row>
 	</table>
-	<table name="DELAI_DECLARATION">
+	<table name="DELAI_DOCUMENT_FISCAL">
 		<column>ID</column>
 		<column>ANNULATION_DATE</column>
 		<column>ANNULATION_USER</column>
@@ -4154,7 +4154,8 @@
 		<column>DATE_DEMANDE</column>
 		<column>DATE_TRAITEMENT</column>
 		<column>DELAI_ACCORDE_AU</column>
-		<column>DECLARATION_ID</column>
+		<column>DOCUMENT_FISCAL_ID</column>
+		<column>DELAI_TYPE</column>
 		<row>
 			<value>1</value>
 			<null />
@@ -4169,6 +4170,7 @@
 			<value>20080215</value>
 			<value>20080228</value>
 			<value>1</value>
+			<value>DELAI_DECLARATION</value>
 		</row>
 		<row>
 			<value>2</value>
@@ -4184,6 +4186,7 @@
 			<value>20080228</value>
 			<value>20070331</value>
 			<value>1</value>
+			<value>DELAI_DECLARATION</value>
 		</row>
 		<row>
 			<value>3</value>
@@ -4199,6 +4202,7 @@
 			<value>20080228</value>
 			<value>20070331</value>
 			<value>3</value>
+			<value>DELAI_DECLARATION</value>
 		</row>
 	</table>
 	<table name="BORDEREAU_MVT_DOSSIER">

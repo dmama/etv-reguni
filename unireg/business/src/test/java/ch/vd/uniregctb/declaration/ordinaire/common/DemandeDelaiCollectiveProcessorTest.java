@@ -26,7 +26,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
@@ -113,7 +113,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			assertEquals(0, rapport.traites.size());
 			assertEquals(1, rapport.ignores.size());
 			assertEquals(0, rapport.errors.size());
-			assertEquals(1, d.getDelais().size());
+			assertEquals(1, d.getDelaisDeclaration().size());
 			assertEquals(dateDelai, d.getDelaiAccordeAu());
 		}
 
@@ -127,7 +127,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			assertEquals(0, rapport.traites.size());
 			assertEquals(1, rapport.ignores.size());
 			assertEquals(0, rapport.errors.size());
-			assertEquals(1, d.getDelais().size());
+			assertEquals(1, d.getDelaisDeclaration().size());
 			assertEquals(dateDelai, d.getDelaiAccordeAu());
 		}
 
@@ -141,7 +141,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			assertEquals(1, rapport.traites.size());
 			assertEquals(0, rapport.ignores.size());
 			assertEquals(0, rapport.errors.size());
-			assertEquals(2, d.getDelais().size());
+			assertEquals(2, d.getDelaisDeclaration().size());
 			assertEquals(RegDate.get(2010, 9, 2), d.getDelaiAccordeAu());
 		}
 
@@ -319,7 +319,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
-				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationEmise(d, date(annee + 1, 1, 7));
 
 				return e.getNumero();
@@ -354,7 +354,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 					final Declaration d = e.getDerniereDeclaration(Declaration.class);
 					assertNotNull(d);
 					assertEquals((Integer) annee, d.getPeriode().getAnnee());
-					assertEquals(RegDateHelper.dateToDisplayString(dateDelaiDemande), 1, d.getDelais().size());
+					assertEquals(RegDateHelper.dateToDisplayString(dateDelaiDemande), 1, d.getDelaisDeclaration().size());
 					assertEquals(RegDateHelper.dateToDisplayString(dateDelaiDemande), dateDelaiInitial, d.getDelaiAccordeAu());
 				}
 			});
@@ -390,7 +390,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 					final Declaration d = e.getDerniereDeclaration(Declaration.class);
 					assertNotNull(d);
 					assertEquals((Integer) annee, d.getPeriode().getAnnee());
-					assertEquals(RegDateHelper.dateToDisplayString(dateDelaiDemande), nbDelaisAttendus, d.getDelais().size());
+					assertEquals(RegDateHelper.dateToDisplayString(dateDelaiDemande), nbDelaisAttendus, d.getDelaisDeclaration().size());
 					assertEquals(RegDateHelper.dateToDisplayString(dateDelaiDemande), dateDelaiDemande, d.getDelaiAccordeAu());
 				}
 			});
@@ -420,7 +420,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
-				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationEmise(d, date(annee + 1, 1, 7));
 
 				// TEST : La déclaration passe à l'état reçu :
@@ -471,7 +471,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
-				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationEmise(d, date(annee + 1, 1, 7));
 
 				// TEST : La déclaration passe à l'état sommée :
@@ -522,7 +522,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final Declaration d = addDeclarationImpot(e, periode, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 
-				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDeclaration.ACCORDE);
+				addDelaiDeclaration(d, dateTraitement, dateDelaiInitial, EtatDelaiDocumentFiscal.ACCORDE);
 				addEtatDeclarationEmise(d, date(annee + 1, 7, 1));
 
 				// TEST : La déclaration passe à l'état échue :

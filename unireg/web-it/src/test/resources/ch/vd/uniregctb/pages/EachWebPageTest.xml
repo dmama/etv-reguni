@@ -1428,7 +1428,7 @@
       <value>8</value>
     </row>
   </table>
-  <table name="DECLARATION">
+  <table name="DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>ID</column>
     <column>DOCUMENT_TYPE</column>
@@ -1506,15 +1506,16 @@
       <value>0</value>
     </row>
   </table>
-  <table name="DELAI_DECLARATION">
+  <table name="DELAI_DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>ID</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
     <column>DATE_DEMANDE</column>
     <column>DATE_TRAITEMENT</column>
     <column>DELAI_ACCORDE_AU</column>
     <column>ETAT</column>
     <column>SURSIS</column>
+    <column>DELAI_TYPE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -1524,6 +1525,7 @@
       <value>20080430</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1534,6 +1536,7 @@
       <value>20080731</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1544,6 +1547,7 @@
       <value>20080930</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1554,6 +1558,7 @@
       <value>20060315</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1564,6 +1569,7 @@
       <value>20060731</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1574,6 +1580,7 @@
       <value>20070315</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1584,6 +1591,7 @@
       <value>20080315</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1594,82 +1602,94 @@
       <value>20080915</value>
       <value>ACCORDE</value>
       <value>0</value>
+      <value>DELAI_DECLARATION</value>
     </row>
   </table>
-  <table name="ETAT_DECLARATION">
+  <table name="ETAT_DOCUMENT_FISCAL">
     <column>LOG_MDATE</column>
     <column>ID</column>
-    <column>DECLARATION_ID</column>
+    <column>DOCUMENT_FISCAL_ID</column>
+    <column>ETAT_TYPE</column>
     <column>TYPE</column>
     <column>DATE_OBTENTION</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
       <value>1</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>20080320</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>8</value>
       <value>1</value>
-      <value>SOMMEE</value>
+      <value>DI_SOMMEE</value>
+      <value>SOMME</value>
       <value>20080515</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>10</value>
       <value>1</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>20080525</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>9</value>
       <value>5</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>20080620</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>2</value>
       <value>2</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>20060115</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>3</value>
       <value>2</value>
-      <value>RETOURNEE</value>
+      <value>DI_RETOURNEE</value>
+      <value>RETOURNE</value>
       <value>20060413</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>4</value>
       <value>3</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>20070116</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>5</value>
       <value>3</value>
-      <value>SOMMEE</value>
+      <value>DI_SOMMEE</value>
+      <value>SOMME</value>
       <value>20070915</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>6</value>
       <value>3</value>
-      <value>ECHUE</value>
+      <value>DI_ECHUE</value>
+      <value>ECHU</value>
       <value>20071101</value>
     </row>
     <row>
       <value>2008-01-01</value>
       <value>7</value>
       <value>4</value>
-      <value>EMISE</value>
+      <value>DI_EMISE</value>
+      <value>EMIS</value>
       <value>20070115</value>
     </row>
   </table>

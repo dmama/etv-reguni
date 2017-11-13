@@ -53,7 +53,7 @@ public class TiersBasic {
 				pp0.setNumeroIndividu(282315L);
 				pp0.setHabitant(true);
 				pp0.setAdressesTiers(new HashSet());
-				pp0.setDeclarations(new HashSet());
+				pp0.setDocumentsFiscaux(new HashSet());
 				pp0.setDroitsAccesAppliques(new HashSet());
 				pp0.setForsFiscaux(new HashSet());
 				pp0.setRapportsObjet(new HashSet());
@@ -69,7 +69,7 @@ public class TiersBasic {
 				dpi0.setModeCommunication(ModeCommunication.SITE_WEB);
 				dpi0.setPeriodiciteDecompteAvantMigration(PeriodiciteDecompte.MENSUEL);
 				dpi0.setAdressesTiers(new HashSet());
-				dpi0.setDeclarations(new HashSet());
+				dpi0.setDocumentsFiscaux(new HashSet());
 				dpi0.setForsFiscaux(new HashSet());
 				dpi0.setRapportsObjet(new HashSet());
 				dpi0.setRapportsSujet(new HashSet());
@@ -81,7 +81,7 @@ public class TiersBasic {
 				e0.setDebiteurInactif(false);
 				e0.setLogModifDate(new Timestamp(1199142000000L));
 				e0.setAdressesTiers(new HashSet());
-				e0.setDeclarations(new HashSet());
+				e0.setDocumentsFiscaux(new HashSet());
 				e0.setForsFiscaux(new HashSet());
 				e0.setRapportsObjet(new HashSet());
 				e0.setRapportsSujet(new HashSet());
@@ -97,7 +97,7 @@ public class TiersBasic {
 				pp1.setNumeroIndividu(333528L);
 				pp1.setHabitant(true);
 				pp1.setAdressesTiers(new HashSet());
-				pp1.setDeclarations(new HashSet());
+				pp1.setDocumentsFiscaux(new HashSet());
 				pp1.setDroitsAccesAppliques(new HashSet());
 				pp1.setForsFiscaux(new HashSet());
 				pp1.setRapportsObjet(new HashSet());
@@ -111,7 +111,7 @@ public class TiersBasic {
 				mc0.setDebiteurInactif(false);
 				mc0.setLogModifDate(new Timestamp(1199142000000L));
 				mc0.setAdressesTiers(new HashSet());
-				mc0.setDeclarations(new HashSet());
+				mc0.setDocumentsFiscaux(new HashSet());
 				mc0.setForsFiscaux(new HashSet());
 				mc0.setRapportsObjet(new HashSet());
 				mc0.setRapportsSujet(new HashSet());
@@ -133,7 +133,7 @@ public class TiersBasic {
 				pp2.setNumeroIndividu(10001111L);
 				pp2.setHabitant(false);
 				pp2.setAdressesTiers(new HashSet());
-				pp2.setDeclarations(new HashSet());
+				pp2.setDocumentsFiscaux(new HashSet());
 				pp2.setDroitsAccesAppliques(new HashSet());
 				pp2.setForsFiscaux(new HashSet());
 				pp2.setRapportsObjet(new HashSet());
@@ -148,7 +148,7 @@ public class TiersBasic {
 				ac0.setDebiteurInactif(false);
 				ac0.setLogModifDate(new Timestamp(1199142000000L));
 				ac0.setAdressesTiers(new HashSet());
-				ac0.setDeclarations(new HashSet());
+				ac0.setDocumentsFiscaux(new HashSet());
 				ac0.setForsFiscaux(new HashSet());
 				ac0.setRapportsObjet(new HashSet());
 				ac0.setRapportsSujet(new HashSet());
@@ -164,7 +164,7 @@ public class TiersBasic {
 				pp3.setNumeroIndividu(333526L);
 				pp3.setHabitant(true);
 				pp3.setAdressesTiers(new HashSet());
-				pp3.setDeclarations(new HashSet());
+				pp3.setDocumentsFiscaux(new HashSet());
 				pp3.setDroitsAccesAppliques(new HashSet());
 				pp3.setForsFiscaux(new HashSet());
 				pp3.setRapportsObjet(new HashSet());
@@ -181,7 +181,7 @@ public class TiersBasic {
 				pp4.setNumeroIndividu(333529L);
 				pp4.setHabitant(true);
 				pp4.setAdressesTiers(new HashSet());
-				pp4.setDeclarations(new HashSet());
+				pp4.setDocumentsFiscaux(new HashSet());
 				pp4.setDroitsAccesAppliques(new HashSet());
 				pp4.setForsFiscaux(new HashSet());
 				pp4.setRapportsObjet(new HashSet());
@@ -198,7 +198,7 @@ public class TiersBasic {
 				pp5.setNumeroIndividu(333527L);
 				pp5.setHabitant(true);
 				pp5.setAdressesTiers(new HashSet());
-				pp5.setDeclarations(new HashSet());
+				pp5.setDocumentsFiscaux(new HashSet());
 				pp5.setDroitsAccesAppliques(new HashSet());
 				pp5.setForsFiscaux(new HashSet());
 				pp5.setRapportsObjet(new HashSet());
@@ -215,7 +215,7 @@ public class TiersBasic {
 				pp6.setNumeroIndividu(333525L);
 				pp6.setHabitant(true);
 				pp6.setAdressesTiers(new HashSet());
-				pp6.setDeclarations(new HashSet());
+				pp6.setDocumentsFiscaux(new HashSet());
 				pp6.setDroitsAccesAppliques(new HashSet());
 				pp6.setForsFiscaux(new HashSet());
 				pp6.setRapportsObjet(new HashSet());
@@ -232,7 +232,7 @@ public class TiersBasic {
 				pp7.setNumeroIndividu(333524L);
 				pp7.setHabitant(true);
 				pp7.setAdressesTiers(new HashSet());
-				pp7.setDeclarations(new HashSet());
+				pp7.setDocumentsFiscaux(new HashSet());
 				pp7.setDroitsAccesAppliques(new HashSet());
 				pp7.setForsFiscaux(new HashSet());
 				pp7.setRapportsObjet(new HashSet());
@@ -249,7 +249,7 @@ public class TiersBasic {
 				pp8.setNumeroIndividu(333524L);
 				pp8.setHabitant(true);
 				pp8.setAdressesTiers(new HashSet());
-				pp8.setDeclarations(new HashSet());
+				pp8.setDocumentsFiscaux(new HashSet());
 				pp8.setDroitsAccesAppliques(new HashSet());
 				pp8.setForsFiscaux(new HashSet());
 				pp8.setRapportsObjet(new HashSet());

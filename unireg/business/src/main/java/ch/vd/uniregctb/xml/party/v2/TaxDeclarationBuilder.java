@@ -18,17 +18,17 @@ import ch.vd.unireg.xml.party.v2.PartyPart;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
 public class TaxDeclarationBuilder {
 
-	private static final Set<TypeEtatDeclaration> ETATS_EXPOSES = EnumSet.of(TypeEtatDeclaration.ECHUE,
-	                                                                         TypeEtatDeclaration.EMISE,
-	                                                                         TypeEtatDeclaration.RETOURNEE,
-	                                                                         TypeEtatDeclaration.SOMMEE);
+	private static final Set<TypeEtatDocumentFiscal> ETATS_EXPOSES = EnumSet.of(TypeEtatDocumentFiscal.ECHU,
+	                                                                            TypeEtatDocumentFiscal.EMIS,
+	                                                                            TypeEtatDocumentFiscal.RETOURNE,
+	                                                                            TypeEtatDocumentFiscal.SOMME);
 
 	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP declaration, @Nullable Set<PartyPart> parts) {
 
@@ -76,7 +76,7 @@ public class TaxDeclarationBuilder {
 
 	private static void fillTaxDeclarationParts(TaxDeclaration d, ch.vd.uniregctb.declaration.Declaration declaration, Set<PartyPart> parts) {
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
-			for (ch.vd.uniregctb.declaration.EtatDeclaration etat : declaration.getEtatsSorted()) {
+			for (ch.vd.uniregctb.declaration.EtatDeclaration etat : declaration.getEtatsDeclarationSorted()) {
 				// on n'expose pas les nouveaux états qui ne sont pas connus par cette version de la XSD
 				if (ETATS_EXPOSES.contains(etat.getEtat())) {
 					d.getStatuses().add(newTaxDeclarationStatus(etat));
@@ -85,8 +85,8 @@ public class TaxDeclarationBuilder {
 		}
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES) && d instanceof OrdinaryTaxDeclaration) {
 			final OrdinaryTaxDeclaration otd = (OrdinaryTaxDeclaration) d;
-			for (DelaiDeclaration delai : declaration.getDelaisSorted()) {
-				if (delai.getEtat() == EtatDelaiDeclaration.ACCORDE) {          // les autres états ne sont pas connus à ce niveau de service
+			for (DelaiDeclaration delai : declaration.getDelaisDeclarationSorted()) {
+				if (delai.getEtat() == EtatDelaiDocumentFiscal.ACCORDE) {          // les autres états ne sont pas connus à ce niveau de service
 					otd.getDeadlines().add(newTaxDeclarationDeadline(delai));
 				}
 			}

@@ -9,7 +9,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class ImpressionLettreDecisionDelaiPMHelperParams {
 
@@ -48,7 +48,7 @@ public class ImpressionLettreDecisionDelaiPMHelperParams {
 		}
 
 		if (this.typeLettre == TypeLettre.ACCORD_SURSIS) {
-			final EtatDeclarationSommee sommation = (EtatDeclarationSommee) di.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE);
+			final EtatDeclarationSommee sommation = (EtatDeclarationSommee) di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.SOMME);
 			if (sommation == null) {
 				throw new EditiqueException("Tentative (vouée à l'échec) de génération d'un document de sursis alors que la déclaration n'est même pas sommée !");
 			}

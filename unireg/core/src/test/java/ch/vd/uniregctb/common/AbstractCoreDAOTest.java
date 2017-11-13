@@ -68,6 +68,11 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.DelaiAutreDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalEmis;
+import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalRappele;
+import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalRetourne;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.efacture.DocumentEFacture;
 import ch.vd.uniregctb.etiquette.Etiquette;
@@ -150,7 +155,7 @@ import ch.vd.uniregctb.tiers.TransfertPatrimoine;
 import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.ModeleFeuille;
@@ -165,7 +170,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
@@ -563,7 +568,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param dateRetourImprimee le délai de retour imprimé sur la déclaration
 	 * @param declarations       la collection de déclarations à asserter.
 	 */
-	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
+	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDocumentFiscal etat, TypeContribuable typeContribuable,
 	                                 TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate dateRetourImprimee, List<Declaration> declarations) {
 		assertNotNull(declarations);
 		assertEquals(declarations.size(), 1);
@@ -582,13 +587,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param delaiRetourImprime le délai de retour imprimé sur la déclaration
 	 * @param declaration        la déclaration à asserter.
 	 */
-	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
+	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDocumentFiscal etat, TypeContribuable typeContribuable,
 	                                 TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate delaiRetourImprime, Declaration declaration) {
 		assertNotNull(declaration);
 		DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declaration;
 		assertEquals(debut, di.getDateDebut());
 		assertEquals(fin, di.getDateFin());
-		final EtatDeclaration e = di.getDernierEtat();
+		final EtatDeclaration e = di.getDernierEtatDeclaration();
 		assertEquals(etat, (e == null ? null : e.getEtat()));
 		assertEquals(typeContribuable, di.getTypeContribuable());
 		assertEquals(typeDocument, di.getModeleDocument().getTypeDocument());
@@ -1238,6 +1243,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return etat;
 	}
 
+	protected EtatAutreDocumentFiscalEmis addEtatAutreDocumentFiscalEmis(AutreDocumentFiscal autreDocumentFiscal, RegDate dateObtention) {
+		final EtatAutreDocumentFiscalEmis etat = new EtatAutreDocumentFiscalEmis(dateObtention);
+		autreDocumentFiscal.addEtat(etat);
+		return etat;
+	}
+
 	protected EtatDeclarationEchue addEtatDeclarationEchue(Declaration declaration, RegDate dateObtention) {
 		final EtatDeclarationEchue etat = new EtatDeclarationEchue(dateObtention);
 		declaration.addEtat(etat);
@@ -1251,6 +1262,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected EtatDeclarationRetournee addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention, @Nullable String source) {
 		final EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention, source);
 		declaration.addEtat(etat);
+		return etat;
+	}
+
+	protected EtatAutreDocumentFiscalRetourne addEtatAutreDocumentFiscalRetourne(AutreDocumentFiscal autreDocumentFiscal, RegDate dateObtention) {
+		final EtatAutreDocumentFiscalRetourne etat = new EtatAutreDocumentFiscalRetourne(dateObtention);
+		autreDocumentFiscal.addEtat(etat);
 		return etat;
 	}
 
@@ -1268,19 +1285,36 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return etat;
 	}
 
+	protected EtatAutreDocumentFiscalRappele addEtatAutreDocumentFiscalRappele(AutreDocumentFiscal autreDocumentFiscal, RegDate dateObtention) {
+		Assert.assertTrue(autreDocumentFiscal.isRappelable());
+		final EtatAutreDocumentFiscalRappele etat = new EtatAutreDocumentFiscalRappele(dateObtention);
+		autreDocumentFiscal.addEtat(etat);
+		return etat;
+	}
+
 	protected EtatDeclarationSuspendue addEtatDeclarationSuspendue(Declaration declaration, RegDate dateObtention) {
 		final EtatDeclarationSuspendue etat = new EtatDeclarationSuspendue(dateObtention);
 		declaration.addEtat(etat);
 		return etat;
 	}
 
-	protected DelaiDeclaration addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu, EtatDelaiDeclaration etat) {
+	protected DelaiDeclaration addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat) {
 		final DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setEtat(etat);
 		delai.setDateTraitement(dateTraitement);
 		delai.setDateDemande(dateTraitement);
 		delai.setDelaiAccordeAu(delaiAccordeAu);
 		declaration.addDelai(delai);
+		return delai;
+	}
+
+	protected DelaiAutreDocumentFiscal addDelaiAutreDocumentFiscal(AutreDocumentFiscal autreDocumentFiscal, RegDate dateTraitement, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat) {
+		final DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
+		delai.setEtat(etat);
+		delai.setDateTraitement(dateTraitement);
+		delai.setDateDemande(dateTraitement);
+		delai.setDelaiAccordeAu(delaiAccordeAu);
+		autreDocumentFiscal.addDelai(delai);
 		return delai;
 	}
 
@@ -1424,22 +1458,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return tiersDAO.addAndSave(e, bouclement);
 	}
 
-	protected LettreBienvenue addLettreBienvenue(Entreprise e, RegDate dateEnvoi, RegDate delaiRetour, @Nullable RegDate dateRetour, @Nullable RegDate dateRappel, TypeLettreBienvenue type) {
+	protected LettreBienvenue addLettreBienvenue(Entreprise e, TypeLettreBienvenue type) {
 		final LettreBienvenue lettre = new LettreBienvenue();
-		lettre.setDateEnvoi(dateEnvoi);
-		lettre.setDelaiRetour(delaiRetour);
-		lettre.setDateRetour(dateRetour);
-		lettre.setDateRappel(dateRappel);
 		lettre.setType(type);
 		return tiersDAO.addAndSave(e, lettre);
 	}
 
-	protected DemandeDegrevementICI addDemandeDegrevementICI(Entreprise e, RegDate dateEnvoi, RegDate delaiRetour, @Nullable RegDate dateRetour, @Nullable RegDate dateRappel, int periodeFiscale, ImmeubleRF immeuble) {
+	protected DemandeDegrevementICI addDemandeDegrevementICI(Entreprise e, int periodeFiscale, ImmeubleRF immeuble) {
 		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
-		demande.setDateEnvoi(dateEnvoi);
-		demande.setDelaiRetour(delaiRetour);
-		demande.setDateRetour(dateRetour);
-		demande.setDateRappel(dateRappel);
 		demande.setPeriodeFiscale(periodeFiscale);
 		demande.setImmeuble(immeuble);
 		return addNumeroSequenceAndSave(e, demande);

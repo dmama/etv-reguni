@@ -29,8 +29,8 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
-import ch.vd.uniregctb.declaration.EtatDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.declaration.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleEmolument;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -49,7 +49,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeDocumentEmolument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class EnvoiSommationsDIsPPProcessor {
 
@@ -269,10 +269,10 @@ public class EnvoiSommationsDIsPPProcessor {
 	}
 
 	private boolean checkEtat(DeclarationImpotOrdinaire di, EnvoiSommationsDIsPPResults r) {
-		if (TypeEtatDeclaration.EMISE != di.getDernierEtat().getEtat()) {
+		if (TypeEtatDocumentFiscal.EMIS != di.getDernierEtatDeclaration().getEtat()) {
 			// Ce cas pourrait eventuellement se produire dans le cas ou une di aurait 2 états à la même date,
 			// il s'agirait alors de donnée corrompue ...
-			final String msg = String.format("La di [id: %s] n'est pas à l'état 'EMISE' et ne peut donc être sommée",	di.getId().toString());
+			final String msg = String.format("La di [id: %s] n'est pas à l'état 'EMIS' et ne peut donc être sommée",	di.getId().toString());
 			LOGGER.error(msg);
 			r.addError(di, msg);
 			return false;
@@ -285,7 +285,7 @@ public class EnvoiSommationsDIsPPProcessor {
 		final ParametrePeriodeFiscaleEmolument paramEmolument = di.getPeriode().getParametrePeriodeFiscaleEmolument(TypeDocumentEmolument.SOMMATION_DI_PP);
 		final Integer emolument = paramEmolument != null ? paramEmolument.getMontant() : null;
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement, dateExpedition, emolument);
-		AddAndSaveHelper.addAndSave(di, etat, declarationImpotOrdinaireDAO::save, new EtatDeclarationAddAndSaveAccessor<>());
+		AddAndSaveHelper.addAndSave(di, etat, declarationImpotOrdinaireDAO::save, new EtatDocumentFiscalAddAndSaveAccessor<>());
 		diService.envoiSommationDIPPForBatch(di, miseSousPliImpossible, dateTraitement, emolument);
 	}
 

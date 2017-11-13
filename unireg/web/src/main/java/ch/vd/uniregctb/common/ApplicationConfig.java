@@ -42,7 +42,8 @@ public class ApplicationConfig {
 	public static final String masterKeyEtatEvenementOrganisation = "option.etat.evenement.";
 	public static final String masterKeyCategorieEntreprise = "option.categorie.entreprise.";
 	public static final String masterKeyTypeAdresseTiers = "option.usage.";
-	public static final String masterKeyTypeEtatDocument = "option.etat.avancement.";
+	public static final String masterKeyTypeEtatDocumentM = "option.etat.avancement.m.";
+	public static final String masterKeyTypeEtatDocumentF = "option.etat.avancement.f.";
 	public static final String masterKeyPartenariat = "option.partenariat.";
 	public static final String masterKeyMotifOuverture = "option.motif.ouverture.";
 	public static final String masterKeyMotifFermeture = "option.motif.fermeture.";

@@ -49,7 +49,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.StatutMenageCommun;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
  *
@@ -291,7 +291,7 @@ public class ImpressionSommationDeclarationImpotPersonnesPhysiquesHelperImpl ext
 			final PeriodeFiscale pf = di.getPeriode();
 			final String pfStr = pf.getAnnee().toString();
 			periode.setAnneeFiscale(pfStr);
-			periode.setDateDecompte(RegDateHelper.toIndexString(di.getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention()));
+			periode.setDateDecompte(RegDateHelper.toIndexString(di.getDernierEtatDeclarationOfType(TypeEtatDocumentFiscal.EMIS).getDateObtention()));
 			periode.setDatDerCalculAc("");
 			final Entete entete = periode.addNewEntete();
 			final Tit tit = entete.addNewTit();

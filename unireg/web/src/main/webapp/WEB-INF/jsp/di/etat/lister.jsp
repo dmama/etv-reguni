@@ -24,16 +24,16 @@
 		<display:table name="command.etats" id="etat" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column titleKey="label.date.obtention">
 				<unireg:regdate regdate="${etat.dateObtention}"/>
-				<c:if test="${!etat.annule && etat.etat == 'SOMMEE'}">
+				<c:if test="${!etat.annule && etat.etat == 'SOMME'}">
 					&nbsp;
 					(<c:out value="${etat.dateEnvoiCourrierMessage}"/>)
 				</c:if>
 			</display:column>
 			<display:column titleKey="label.etat">
-				<fmt:message key="option.etat.avancement.${etat.etat}"/>
+				<fmt:message key="option.etat.avancement.f.${etat.etat}"/>
 			</display:column>
 			<display:column titleKey="label.source">
-				<c:if test="${etat.etat == 'RETOURNEE'}">
+				<c:if test="${etat.etat == 'RETOURNE'}">
 					<c:if test="${etat.source == null}">
 						<fmt:message key="option.source.quittancement.UNKNOWN"/>
 					</c:if>
@@ -45,11 +45,11 @@
 			<display:column style="action">
 				<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
 				<c:choose>
-					<c:when test="${!etat.annule && etat.etat == 'RETOURNEE' && command.allowedQuittancement}">
+					<c:when test="${!etat.annule && etat.etat == 'RETOURNE' && command.allowedQuittancement}">
 						<unireg:linkTo name="" title="Annuler le quittancement" confirm="Voulez-vous vraiment annuler ce quittancement ?"
 						               action="/di/etat/annuler-quittance.do" method="post" params="{id:${etat.id}}" link_class="delete"/>
 					</c:when>
-					<c:when test="${!etat.annule && etat.etat == 'SUSPENDUE' && command.allowedAnnulationSuspension}">
+					<c:when test="${!etat.annule && etat.etat == 'SUSPENDU' && command.allowedAnnulationSuspension}">
 						<unireg:linkTo name="" title="Annuler la suspension" confirm="Voulez-vous vraiment annuler cette suspension ?"
 						               action="/di/etat/annuler-suspension.do" method="post" params="{id:${etat.id}}" link_class="delete"/>
 					</c:when>

@@ -26,7 +26,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.TypeEtatAutreDocumentFiscal;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 public class RappelLettresBienvenueProcessor {
 
@@ -83,13 +83,13 @@ public class RappelLettresBienvenueProcessor {
 			final Entreprise entreprise = lettre.getEntreprise();
 
 			// 1. vérification de l'état de la lettre
-			if (lettre.getEtat() == TypeEtatAutreDocumentFiscal.RAPPELE) {
+			if (lettre.getEtat() == TypeEtatDocumentFiscal.RAPPELE) {
 				rapport.addLettreIgnoree(entreprise.getNumero(), lettre.getDateEnvoi(), RappelLettresBienvenueResults.RaisonIgnorement.LETTRE_DEJA_RAPPELEE);
 			}
-			else if (lettre.getEtat() == TypeEtatAutreDocumentFiscal.RETOURNE) {
+			else if (lettre.getEtat() == TypeEtatDocumentFiscal.RETOURNE) {
 				rapport.addLettreIgnoree(entreprise.getNumero(), lettre.getDateEnvoi(), RappelLettresBienvenueResults.RaisonIgnorement.LETTRE_DEJA_RETOURNEE);
 			}
-			else if (lettre.getEtat() != TypeEtatAutreDocumentFiscal.EMIS) {
+			else if (lettre.getEtat() != TypeEtatDocumentFiscal.EMIS) {
 				rapport.addRappelErreur(entreprise.getNumero(), lettre.getId(), "Etat de lettre inconnu : " + lettre.getEtat());
 			}
 			else {
@@ -101,8 +101,7 @@ public class RappelLettresBienvenueProcessor {
 				else {
 					// tout est bon, on peut envoyer la sauce
 					final RegDate dateEnvoiRappel = delaisService.getDateFinDelaiCadevImpressionLettreBienvenue(rapport.dateTraitement);
-					lettre.setDateRappel(dateEnvoiRappel);
-					autreDocumentFiscalService.envoyerRappelLettreBienvenueBatch(lettre, rapport.dateTraitement);
+					autreDocumentFiscalService.envoyerRappelLettreBienvenueBatch(lettre, rapport.dateTraitement, dateEnvoiRappel);
 					rapport.addRappelEnvoye(entreprise.getNumero(), lettre.getDateEnvoi());
 				}
 			}
@@ -118,7 +117,13 @@ public class RappelLettresBienvenueProcessor {
 				return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-						final String hql = "select distinct lb.id from LettreBienvenue as lb where lb.annulationDate is null and lb.dateRetour is null and lb.dateRappel is null and lb.delaiRetour < :dateTraitement order by lb.id";
+						final String hql = "select distinct lb.id from LettreBienvenue as lb" +
+								" where lb.annulationDate is null" +
+								" and exists (select etat.documentFiscal.id from EtatDocumentFiscal as etat where lb.id = etat.documentFiscal.id and etat.annulationDate is null and etat.etat = 'EMIS')" +
+								" and not exists (select etat.documentFiscal.id from EtatDocumentFiscal as etat where lb.id = etat.documentFiscal.id and etat.annulationDate is null and etat.etat in ('RAPPELE', 'RETOURNE'))" +
+								" and exists (select delai.documentFiscal.id from DelaiDocumentFiscal as delai where lb.id = delai.documentFiscal.id and delai.annulationDate is null and delai.delaiAccordeAu is not null and delai.etat = 'ACCORDE'" +
+								"              group by delai.documentFiscal.id having max(delai.delaiAccordeAu) < :dateTraitement)" +
+								" order by lb.id asc";
 						final Query query = session.createQuery(hql);
 						query.setParameter("dateTraitement", dateTraitement);
 						//noinspection unchecked

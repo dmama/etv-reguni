@@ -16,7 +16,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
  * <!-- begin-user-doc -->
@@ -132,11 +132,11 @@ public class DeclarationImpotSource extends Declaration {
 	public RegDate getDateSommation() {
 		RegDate dateSommation = null;
 		GregorianCalendar calSommation = new GregorianCalendar();
-		Set<EtatDeclaration> etatsDocument = getEtats();
+		Set<EtatDeclaration> etatsDocument = getEtatsDeclaration();
 		if (etatsDocument.size() == 1) {
 			Iterator<EtatDeclaration> itEtat = etatsDocument.iterator();
 			EtatDeclaration etat = itEtat.next();
-			if (etat.getEtat() == TypeEtatDeclaration.EMISE) {
+			if (etat.getEtat() == TypeEtatDocumentFiscal.EMIS) {
 				RegDate dateObtention = etat.getDateObtention();
 				calSommation.setTime(dateObtention.asJavaDate());
 				calSommation.add(Calendar.MONTH, 1);

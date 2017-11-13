@@ -58,7 +58,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.EtatDelaiDeclaration;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -253,15 +253,15 @@ public abstract class EvenementScenario extends NorentesScenario {
 		etat.setDeclaration(di);
 		final Set<EtatDeclaration> etats = new HashSet<>(1);
 		etats.add(etat);
-		di.setEtats(etats);
+		di.setEtatsDeclaration(etats);
 
 		final DelaiDeclaration delai = new DelaiDeclaration();
-		delai.setEtat(EtatDelaiDeclaration.ACCORDE);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
 		delai.setDateDemande(dateEmission);
 		delai.setDeclaration(di);
 		delai.setDelaiAccordeAu(dateEmission.addDays(delaiEnJours));
 		final Set<DelaiDeclaration> delais = new HashSet<>(1);
-		di.setDelais(delais);
+		di.setDelaisDeclaration(delais);
 
 		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(debut.year());
 		di.setPeriode(periode);

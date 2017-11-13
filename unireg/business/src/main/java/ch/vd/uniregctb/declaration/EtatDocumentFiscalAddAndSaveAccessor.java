@@ -6,13 +6,15 @@ import java.util.function.UnaryOperator;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AddAndSaveHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
 
 /**
  * @param <D> type de déclaration
  * @param <E> type d'état de déclaration
  * @see AddAndSaveHelper#addAndSave(HibernateEntity, HibernateEntity, UnaryOperator, AddAndSaveHelper.EntityAccessor)
  */
-public final class EtatDeclarationAddAndSaveAccessor<D extends Declaration, E extends EtatDeclaration> implements AddAndSaveHelper.EntityAccessor<D, E> {
+public final class EtatDocumentFiscalAddAndSaveAccessor<D extends DocumentFiscal, E extends EtatDocumentFiscal> implements AddAndSaveHelper.EntityAccessor<D, E> {
 
 	@Override
 	public Collection<? extends HibernateEntity> getEntities(D container) {

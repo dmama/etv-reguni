@@ -42,7 +42,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
@@ -578,7 +578,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 				assertEquals(date(2011, 4, 12), di.getDateRetour());
 
-				final EtatDeclaration dernier = di.getDernierEtat();
+				final EtatDeclaration dernier = di.getDernierEtatDeclaration();
 				assertNotNull(dernier);
 				assertInstanceOf(EtatDeclarationRetournee.class, dernier);
 
@@ -694,7 +694,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				final List<Declaration> decls = pp.getDeclarationsDansPeriode(Declaration.class, 2009, false);
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
-				assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, delaiAccorde, decls.get(0));
+				assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDocumentFiscal.EMIS, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, delaiAccorde, decls.get(0));
 				return null;
 			}
 		});
