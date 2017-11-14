@@ -3,6 +3,8 @@ package ch.vd.uniregctb.registrefoncier.communaute;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.registre.base.date.RegDate;
+
 public class AddPrincipalViewValidator implements Validator {
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -19,6 +21,8 @@ public class AddPrincipalViewValidator implements Validator {
 			final int periode = view.getPeriodeDebut();
 			if (periode < 1900 || periode > 9999) {
 				errors.rejectValue("periodeDebut", "error.param.annee");
+			} else if (periode > RegDate.get().year() +1) {
+				errors.rejectValue("periodeDebut", "error.principal.periode.fiscale");
 			}
 		}
 	}
