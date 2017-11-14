@@ -8,6 +8,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +72,7 @@ public class RetourDocumentSortantEsbHandler implements EsbMessageHandler, Initi
 	}
 
 	private void onMessage(EsbMessage message) throws EsbBusinessException {
+		final long start = System.nanoTime();
 		try {
 			final Quittance quittance = parse(message.getBodyAsSource());
 			handler.onQuittance(quittance, EsbMessageHelper.extractCustomHeaders(message));
@@ -78,6 +80,13 @@ public class RetourDocumentSortantEsbHandler implements EsbMessageHandler, Initi
 		catch (JAXBException | SAXException | IOException e) {
 			LOGGER.error(e.getMessage(), e);
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
+		}
+		finally {
+			final long end = System.nanoTime();
+			long duration = TimeUnit.NANOSECONDS.toMillis(end - start);
+			if(duration > 1000) {
+				LOGGER.error("onMessage = " + duration + " ms");
+			}
 		}
 	}
 
