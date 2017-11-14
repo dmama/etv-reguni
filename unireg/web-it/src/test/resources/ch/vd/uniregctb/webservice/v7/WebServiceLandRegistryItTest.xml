@@ -118,6 +118,64 @@
 			<null />
 		</row>
 		<row>
+			<value>PersonnePhysique</value>
+			<value>10092818</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>2008-01-01 00:00:00.0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>De Wit Tummers Gertrude</value>
+			<value>0</value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<value>De Wit Wouter</value>
+			<null />
+			<null />
+			<null />
+			<value>Gertrude</value>
+			<null />
+			<value>Gertrude Gudule Gudrun</value>
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
 			<value>Entreprise</value>                          <!-- TIERS_TYPE -->
 			<value>21550</value>                               <!-- NUMERO -->
 			<null />                                           <!-- ANNULATION_DATE -->
@@ -236,6 +294,36 @@
 			<value>_1f109152380ffd8901380ffe019d0ee7</value>
 			<null />
 			<null />
+		</row>
+	</table>
+	<table name="RAPPORT_ENTRE_TIERS">
+		<column>ID</column>
+		<column>RAPPORT_ENTRE_TIERS_TYPE</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>TIERS_SUJET_ID</column>
+		<column>TIERS_OBJET_ID</column>
+		<column>PRINCIPAL_COMM_HERITIERS</column>
+		<row>
+			<value>207633454</value>
+			<value>Heritage</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:01:11.920000</value>
+			<value>sirec05</value>
+			<value>2016-12-14 11:01:11.928000</value>
+			<value>sirec05</value>
+			<value>20171101</value>
+			<null />
+			<value>10092818</value>
+			<value>10035633</value>
+			<value>1</value>
 		</row>
 	</table>
 	<table name="RF_COMMUNE">

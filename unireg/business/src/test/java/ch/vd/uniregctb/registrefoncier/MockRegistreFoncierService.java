@@ -15,17 +15,12 @@ import ch.vd.uniregctb.tiers.Contribuable;
 
 public class MockRegistreFoncierService implements RegistreFoncierService {
 	@Override
-	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean includeVirtual) {
+	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean includeVirtualTransitive, boolean includeVirtualInheritance) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble, boolean includeVirtual) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public List<DroitRF> getDroitsForTiersRF(AyantDroitRF ayantDroitRF, boolean prefetchSituationsImmeuble, boolean includeVirtual) {
+	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble, boolean includeVirtualTransitive, boolean includeVirtualInheritance) {
 		throw new NotImplementedException();
 	}
 

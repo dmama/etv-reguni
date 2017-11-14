@@ -14,9 +14,11 @@ import ch.vd.unireg.xml.party.landregistry.v1.EasementRight;
 import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.uniregctb.common.AnnulableHelper;
@@ -30,6 +32,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteVirtuelRF;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
+import ch.vd.uniregctb.registrefoncier.DroitVirtuelHeriteRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -59,10 +62,11 @@ public abstract class LandRightBuilder {
 		strategies.put(DroitProprietePersonneMoraleRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprietePersonneMoraleRF) d, p));
 		strategies.put(DroitProprietePersonnePhysiqueRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprietePersonnePhysiqueRF) d, p));
 		strategies.put(DroitProprieteImmeubleRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteImmeubleRF) d, p));
-		strategies.put(DroitProprieteVirtuelRF.class, (d, p, c) -> newLandOwnershipRight((DroitProprieteVirtuelRF) d, p, c));
+		strategies.put(DroitProprieteVirtuelRF.class, (d, p, c) -> newVirtualLandOwnershipRight((DroitProprieteVirtuelRF) d, p, c));
 		strategies.put(UsufruitRF.class, (d, p, c) -> newUsufructRight((UsufruitRF) d, p, c));
 		strategies.put(DroitHabitationRF.class, (d, p, c) -> newHousingRight((DroitHabitationRF) d, p, c));
-		strategies.put(UsufruitVirtuelRF.class, (d, p, c) -> newUsufructRight((UsufruitVirtuelRF) d, p, c));
+		strategies.put(UsufruitVirtuelRF.class, (d, p, c) -> newVirtualUsufructRight((UsufruitVirtuelRF) d, p, c));
+		strategies.put(DroitVirtuelHeriteRF.class, (d, p, c) -> newVirtualInheritedLandRight((DroitVirtuelHeriteRF) d, p, c));
 	}
 
 	private LandRightBuilder() {
@@ -121,7 +125,7 @@ public abstract class LandRightBuilder {
 				                                     .collect(Collectors.toList()));
 	}
 
-	private static VirtualLandOwnershipRight newLandOwnershipRight(@NotNull DroitProprieteVirtuelRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
+	private static VirtualLandOwnershipRight newVirtualLandOwnershipRight(@NotNull DroitProprieteVirtuelRF droitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final VirtualLandOwnershipRight right = new VirtualLandOwnershipRight();
 		fillLandRight(droitRF, right);
 		right.setRightHolder(RightHolderBuilder.getRightHolder(droitRF.getAyantDroit(), ctbIdProvider));
@@ -140,7 +144,7 @@ public abstract class LandRightBuilder {
 		return right;
 	}
 
-	public static VirtualUsufructRight newUsufructRight(@NotNull UsufruitVirtuelRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
+	public static VirtualUsufructRight newVirtualUsufructRight(@NotNull UsufruitVirtuelRF usufruitRF, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
 		final VirtualUsufructRight right = new VirtualUsufructRight();
 		fillLandRight(usufruitRF, right);
 		right.setRightHolder(RightHolderBuilder.getRightHolder(usufruitRF.getAyantDroit(), ctbIdProvider));
@@ -155,6 +159,23 @@ public abstract class LandRightBuilder {
 		final HousingRight right = new HousingRight();
 		right.setId(droitHabitationRF.getId());
 		fillEasementRight(droitHabitationRF, right, ctbIdProvider, rightHolderComparator);
+		return right;
+	}
+
+	private static VirtualInheritedLandRight newVirtualInheritedLandRight(@NotNull DroitVirtuelHeriteRF droitVirtuel, @NotNull RightHolderBuilder.ContribuableIdProvider ctbIdProvider, @NotNull EasementRightHolderComparator rightHolderComparator) {
+
+		final LandRight reference = newLandRight(droitVirtuel.getReference(), ctbIdProvider, rightHolderComparator);
+		final boolean communauteImplicit = droitVirtuel.getNombreHeritiers() > 1;
+		final OwnershipType ownershipTypeOverride = (communauteImplicit ? OwnershipType.COLLECTIVE_OWNERSHIP : null);   // SIFISC-24999 (voir remarque de Carbo du 24.10.2017)
+
+		final VirtualInheritedLandRight right = new VirtualInheritedLandRight();
+		fillLandRight(droitVirtuel, right);
+		right.setRightHolder(RightHolderBuilder.getRightHolder(droitVirtuel.getHeritierId()));
+		right.setImmovablePropertyId(reference.getImmovablePropertyId());
+		right.setImplicitCommunity(communauteImplicit);
+		right.setInheritedFromId(droitVirtuel.getDecedeId());
+		right.setOwnershipTypeOverride(ownershipTypeOverride);
+		right.setReference(reference);
 		return right;
 	}
 

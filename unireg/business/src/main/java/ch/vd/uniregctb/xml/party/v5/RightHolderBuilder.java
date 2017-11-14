@@ -23,6 +23,10 @@ public abstract class RightHolderBuilder {
 	private RightHolderBuilder() {
 	}
 
+	/**
+	 * Interface fonctionnelle pour retourner le numéro de contibuable qui correspond à un tiers RF.
+	 */
+	@FunctionalInterface
 	public interface ContribuableIdProvider extends Function<TiersRF, Long> {
 
 	}
@@ -55,6 +59,11 @@ public abstract class RightHolderBuilder {
 		else {
 			return new RightHolder(ctbId.intValue(), null, null, null, 0, null);
 		}
+	}
+
+	@NotNull
+	public static RightHolder getRightHolder(@NotNull Long ctbId) {
+		return new RightHolder(ctbId.intValue(), null, null, null, 0, null);
 	}
 
 	@NotNull

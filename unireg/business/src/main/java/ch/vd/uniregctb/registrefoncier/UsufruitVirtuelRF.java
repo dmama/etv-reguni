@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * <li>il possède en plus le chemin vers l'immeuble concernée</li>
  * </ul>
  */
-public class UsufruitVirtuelRF extends DroitVirtuelRF {
+public class UsufruitVirtuelRF extends DroitVirtuelTransitifRF {
 
 	@Override
 	public @NotNull TypeDroit getTypeDroit() {

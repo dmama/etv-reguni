@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -444,5 +445,57 @@ public abstract class DroitRFHelper {
 			// Pas d'intersection
 			return null;
 		}
+	}
+
+	/**
+	 * Interface permettant d'adapter un droit en fonction de nouvelles valeurs de dates de début/fin.
+	 */
+	public interface AdapterCallback<T extends DroitRF> {
+		/**
+		 * Retourne une nouvelles instance de T adaptée au dates de début et de fin spécifié.
+		 *
+		 * @param range le range à adapter
+		 * @param debut la nouvelle date de début, ou <b>null</b> s'il ne faut pas adapter la date de début.
+		 * @param fin   la nouvelle date de fin, ou <b>null</b> s'il ne faut pas adapter la date de fin.
+		 * @return une nouvelle instance adaptée aux dates spécifiées.
+		 */
+		DroitRF adapt(T range, RegDate debut, RegDate fin);
+	}
+
+	/**
+	 * Equivalent de la méthode {@link DateRangeHelper#extract(List, List, DateRangeHelper.AdapterCallback)} spécialisée pour les droits RF.
+	 *
+	 * @param droits  une liste de droits
+	 * @param ranges  une liste de ranges
+	 * @param adapter l'adapteur pour créer les nouveaux droits
+	 * @return lea droits extraits
+	 */
+	public static <T extends DroitRF> List<DroitRF> extract(List<T> droits, List<? extends DateRange> ranges, AdapterCallback<T> adapter) {
+
+		if (droits == null || droits.isEmpty() || ranges == null || ranges.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<DroitRF> list = new ArrayList<>();
+
+		for (T d : droits) {
+			final DateRange droitRange = d.getRangeMetier();
+			for (DateRange r : ranges) {
+
+				final DateRange intersection = DateRangeHelper.intersection(droitRange, r);
+				if (intersection != null) {
+
+					final RegDate interDebut = intersection.getDateDebut();
+					final RegDate interFin = intersection.getDateFin();
+
+					// On adapte le début/fin que si nécessaire
+					final RegDate debut = (interDebut == droitRange.getDateDebut() ? null : interDebut);
+					final RegDate fin = (interFin == droitRange.getDateFin() ? null : interFin);
+					list.add(adapter.adapt(d, debut, fin));
+				}
+			}
+		}
+
+		return list;
 	}
 }

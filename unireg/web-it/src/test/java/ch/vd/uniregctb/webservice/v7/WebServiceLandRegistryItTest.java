@@ -46,6 +46,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.TaxEstimate;
 import ch.vd.unireg.xml.party.landregistry.v1.TotalArea;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
 import ch.vd.unireg.xml.party.v5.Party;
@@ -98,6 +99,49 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 
 		final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
 		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noTiers, 264822986L, 264310664, landRight0);
+	}
+
+	/**
+	 * <pre>
+	 *     +----------+
+	 *     |    PP    |       copropriété (1/4)    +-------------------------+
+	 *     | 10035633 |--------------------------->| Immeuble 0 (bien-fonds) |
+	 *     |          |                            +-------------------------+
+	 *     +----------+                                      ^
+	 *          ^                                            :
+	 *          | hérite de                                  :
+	 *          |                                            :
+	 *     +----------+                                      :
+	 *     |    PP    |      droit virtuel hérité            :
+	 *     | 10092818 |......................................+
+	 *     |          |
+	 *     +----------+
+	 * </pre>
+	 */
+	@Test
+	public void testGetPPVirtualInheritedLandRights() throws Exception {
+		final int noTiers = 10092818;
+		final int noDecede = 10035633;
+
+		final Pair<String, Map<String, ?>> params = buildUriAndParams(noTiers, EnumSet.of(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+		final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+		assertNotNull(resp);
+		assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+		final Party party = resp.getBody();
+		assertNotNull(party);
+		assertEquals(NaturalPerson.class, party.getClass());
+
+		final NaturalPerson naturalPerson = (NaturalPerson) party;
+		assertEquals("De Wit Wouter", naturalPerson.getOfficialName());
+		assertEquals("Gertrude", naturalPerson.getFirstName());
+
+		final List<LandRight> landRights = naturalPerson.getLandRights();
+		assertEquals(1, landRights.size());
+
+		final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
+		assertVirtualInheritedRight(noTiers, noDecede, RegDate.get(2017, 11, 1), null, "Succession", null, 264310664, false, landRight0);
+		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noDecede, 264822986L, 264310664, (LandOwnershipRight) landRight0.getReference());
 	}
 
 	/**
@@ -614,6 +658,17 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertEquals(endReason, landRight.getEndReason());
 		assertEquals(Integer.valueOf(taxPayerNumber), landRight.getRightHolder().getTaxPayerNumber());
 		assertEquals(immovablePropId, landRight.getImmovablePropertyId());
+	}
+
+	private static void assertVirtualInheritedRight(int heritierId, int decedeId, RegDate dateFrom, RegDate dateTo, String startReason, Object endReason, int immovablePropId, boolean implicitCommunity, VirtualInheritedLandRight right) {
+		assertDate(dateFrom, right.getDateFrom());
+		assertDate(dateTo, right.getDateTo());
+		assertEquals(startReason, right.getStartReason());
+		assertEquals(endReason, right.getEndReason());
+		assertEquals(immovablePropId, right.getImmovablePropertyId());
+		assertEquals(decedeId, right.getInheritedFromId());
+		assertRightHolderParty(heritierId, right.getRightHolder());
+		assertEquals(implicitCommunity, right.isImplicitCommunity());
 	}
 
 	private static void assertUsufructRight(RegDate dateFrom, RegDate dateTo, String startReason, String endReason, LandRight right) {

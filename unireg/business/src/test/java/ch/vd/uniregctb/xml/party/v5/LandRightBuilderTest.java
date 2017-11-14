@@ -21,6 +21,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.landregistry.v1.RightHolder;
 import ch.vd.unireg.xml.party.landregistry.v1.Share;
 import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
@@ -33,6 +34,7 @@ import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteVirtuelRF;
+import ch.vd.uniregctb.registrefoncier.DroitVirtuelHeriteRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
 import ch.vd.uniregctb.registrefoncier.GenrePropriete;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
@@ -53,6 +55,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.xml.DataHelper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -257,7 +260,7 @@ public class LandRightBuilderTest {
 	 * </pre>
 	 */
 	@Test
-	public void testNewLandOwnershipRightVirtualLandRight() throws Exception {
+	public void testNewVirtualTransitiveLandOwnershipRight() throws Exception {
 
 		final Long ctbId = 83838822L;
 
@@ -569,7 +572,7 @@ public class LandRightBuilderTest {
 	 * </pre>
 	 */
 	@Test
-	public void testNewVirtualUsfructRight() throws Exception {
+	public void testNewVirtualTransitiveUsfructRight() throws Exception {
 
 		final long ctbId1 = 2928282L;
 		final long ctbId2 = 4573282L;
@@ -768,6 +771,228 @@ public class LandRightBuilderTest {
 		// pour des raisons de compatibilité ascendante, ces deux propriétés sont encore renseignées
 		assertEquals(123456L, housingRight.getImmovablePropertyId());
 		assertEquals(Integer.valueOf((int) ctbId2), housingRight.getRightHolder().getTaxPayerNumber());
+	}
+
+	/**
+	 * <pre>
+	 *
+	 *
+	 *
+	 *  +----------+                +----------+       individuel (1/1)                +------------+
+	 *  |          | rapprochement  |          |-------------------------------------->|            |
+	 *  |  Décédé  |--------------->| Tiers RF |                                       | Immeuble 0 |
+	 *  |          |                |          |                           +..........>|            |
+	 *  +----------+                +----------+                           :           +------------+
+	 *      ^  ^                                                           :
+	 *      |  |  hérite de (principal)                                    :
+	 *      |  +-------------------------+                                 :
+	 *      | hérite de (secondaire)     |                                 :
+	 *  +------------+              +------------+  virtuel sur individuel :
+	 *  |            |              |            |.........................+
+	 *  | Héritier 1 |              | Héritier 2 |
+	 *  |            |              |            |
+	 *  +------------+              +------------+
+	 *
+	 * </pre>
+	 */
+	@Test
+	public void testNewVirtualInheritedLandRightOnLandOwnershipRight() throws Exception {
+
+		final Long decedeId = 18991911L;
+		final Long heritier2Id = 38978178L;
+
+		final Long ppId = 8292L;
+		final long dominantId = 2928282L;
+		final RegDate dateHeritage = RegDate.get(2017, 2, 27);
+
+		final PersonnePhysiqueRF ppRF = new PersonnePhysiqueRF();
+		ppRF.setIdRF("03040303");
+		ppRF.setId(ppId);
+
+		final ProprieteParEtageRF immeuble0 = new ProprieteParEtageRF();
+		immeuble0.setIdRF("a8388e8e83");
+		immeuble0.setId(dominantId);
+
+		final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
+		droit0.setId(23320L);
+		droit0.setMasterIdRF("28288228");
+		droit0.setVersionIdRF("1");
+		droit0.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		droit0.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit0.setMotifDebut("Achat");
+		droit0.setRegime(GenrePropriete.INDIVIDUELLE);
+		droit0.setPart(new Fraction(1, 1));
+		droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
+		droit0.setAyantDroit(ppRF);
+		droit0.setImmeuble(immeuble0);
+
+		final DroitVirtuelHeriteRF droit2 = new DroitVirtuelHeriteRF();
+		droit2.setDateDebutMetier(dateHeritage);
+		droit2.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit2.setMotifDebut("Succession");
+		droit2.setMotifFin("Achat");
+		droit2.setNombreHeritiers(2);
+		droit2.setReference(droit0);
+		droit2.setDecedeId(decedeId);
+		droit2.setHeritierId(heritier2Id);
+
+		// on construit le landRight
+		final LandRight landRight = LandRightBuilder.newLandRight(droit2, t -> decedeId, rightHolderComparator);
+		assertNotNull(landRight);
+		assertTrue(landRight instanceof VirtualInheritedLandRight);
+
+		// on vérifie le droit virtuel
+		final VirtualInheritedLandRight virtualRight = (VirtualInheritedLandRight) landRight;
+		assertNotNull(virtualRight);
+		assertEquals(dateHeritage, DataHelper.xmlToCore(virtualRight.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(virtualRight.getDateTo()));
+		assertEquals("Succession", virtualRight.getStartReason());
+		assertEquals("Achat", virtualRight.getEndReason());
+		assertNull(virtualRight.getCaseIdentifier());
+		assertEquals(Integer.valueOf(heritier2Id.intValue()), virtualRight.getRightHolder().getTaxPayerNumber());
+		assertEquals(decedeId.longValue(), virtualRight.getInheritedFromId());
+		assertEquals(dominantId, virtualRight.getImmovablePropertyId());
+		assertTrue(virtualRight.isImplicitCommunity());
+		assertEquals(OwnershipType.COLLECTIVE_OWNERSHIP, virtualRight.getOwnershipTypeOverride());
+
+		// on vérifie la référence héritée
+		final LandOwnershipRight reference = (LandOwnershipRight) virtualRight.getReference();
+		assertNotNull(reference);
+		assertEquals(23320L, reference.getId());
+		assertEquals(OwnershipType.SOLE_OWNERSHIP, reference.getType());
+		assertShare(1, 1, reference.getShare());
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(reference.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(reference.getDateTo()));
+		assertEquals("Achat", reference.getStartReason());
+		assertNull(reference.getEndReason());
+		assertCaseIdentifier(21, "2016/322/3", reference.getCaseIdentifier());
+		assertEquals(Integer.valueOf(decedeId.intValue()), reference.getRightHolder().getTaxPayerNumber());
+		assertEquals(dominantId, reference.getImmovablePropertyId());
+		assertNull(reference.getCommunityId());
+	}
+
+	/**
+	 * <pre>
+	 *
+	 *  +----------+                +----------+
+	 *  |          | rapprochement  |          |       individuel (1/1)                +------------+
+	 *  |  Décédé  |--------------->| Tiers RF |-------------------------------------->| Immeuble 0 |
+	 *  |          |                |          |                                       +------------+
+	 *  +----------+                +----------+                                          |
+	 *       ^                                                                            | fond dominant (20/100)
+	 *       |                                                                            v
+	 *       | hérite de                                                               +------------+
+	 *       |                                                            +...........>| Immeuble 1 |
+	 *  +----------+                                                      :            +------------+
+	 *  |          |      virtual sur virtuel                             :
+	 *  | Héritier |......................................................+
+	 *  |          |
+	 *  +----------+
+	 *
+	 * </pre>
+	 */
+	@Test
+	public void testNewVirtualInheritedLandRightOnVirtualLandOwnershipRight() throws Exception {
+
+		final Long decedeId = 18991911L;
+		final Long heritierId = 83838822L;
+
+		final Long ppId = 8292L;
+		final long dominantId = 2928282L;
+		final long servantId = 4222L;
+		final RegDate dateHeritage = RegDate.get(2017, 2, 27);
+
+		final PersonnePhysiqueRF ppRF = new PersonnePhysiqueRF();
+		ppRF.setIdRF("03040303");
+		ppRF.setId(ppId);
+
+		final ProprieteParEtageRF immeuble0 = new ProprieteParEtageRF();
+		immeuble0.setIdRF("a8388e8e83");
+		immeuble0.setId(dominantId);
+
+		final ImmeubleBeneficiaireRF beneficiaire0 = new ImmeubleBeneficiaireRF();
+		beneficiaire0.setIdRF(immeuble0.getIdRF());
+		beneficiaire0.setImmeuble(immeuble0);
+
+		final BienFondsRF immeuble1 = new BienFondsRF();
+		immeuble1.setIdRF("42432234");
+		immeuble1.setId(servantId);
+
+		final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
+		droit0.setId(23320L);
+		droit0.setMasterIdRF("28288228");
+		droit0.setVersionIdRF("1");
+		droit0.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		droit0.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit0.setMotifDebut("Achat");
+		droit0.setRegime(GenrePropriete.INDIVIDUELLE);
+		droit0.setPart(new Fraction(1, 1));
+		droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
+		droit0.setAyantDroit(ppRF);
+		droit0.setImmeuble(immeuble0);
+
+		final DroitProprieteImmeubleRF droit1 = new DroitProprieteImmeubleRF();
+		droit1.setId(23321L);
+		droit1.setMasterIdRF("4734733");
+		droit1.setVersionIdRF("1");
+		droit1.setDateDebutMetier(RegDate.get(2000, 1, 1));
+		droit1.setMotifDebut("Constitution de PPE");
+		droit1.setRegime(GenrePropriete.FONDS_DOMINANT);
+		droit1.setPart(new Fraction(3, 5));
+		droit1.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2000, 1, 1), "Constitution de PPE", new IdentifiantAffaireRF(21, 2000, 1, 0)));
+		droit1.setAyantDroit(beneficiaire0);
+		droit1.setImmeuble(immeuble1);
+
+		final DroitProprieteVirtuelRF droit2 = new DroitProprieteVirtuelRF();
+		droit2.setMasterIdRF("03030232");
+		droit2.setVersionIdRF("1");
+		droit2.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		droit2.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit2.setMotifDebut("Achat");
+		droit2.setAyantDroit(ppRF);
+		droit2.setImmeuble(immeuble1);
+		droit2.setChemin(Arrays.asList(droit0, droit1));
+
+		final DroitVirtuelHeriteRF droit3 = new DroitVirtuelHeriteRF();
+		droit3.setDateDebutMetier(dateHeritage);
+		droit3.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit3.setMotifDebut("Succession");
+		droit3.setMotifFin("Achat");
+		droit3.setNombreHeritiers(1);
+		droit3.setReference(droit2);
+		droit3.setDecedeId(decedeId);
+		droit3.setHeritierId(heritierId);
+
+		// on construit le landRight
+		final LandRight landRight = LandRightBuilder.newLandRight(droit3, t -> decedeId, rightHolderComparator);
+		assertNotNull(landRight);
+		assertTrue(landRight instanceof VirtualInheritedLandRight);
+
+		// on vérifie le droit virtuel
+		final VirtualInheritedLandRight virtualRight = (VirtualInheritedLandRight) landRight;
+		assertNotNull(virtualRight);
+		assertEquals(dateHeritage, DataHelper.xmlToCore(virtualRight.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(virtualRight.getDateTo()));
+		assertEquals("Succession", virtualRight.getStartReason());
+		assertEquals("Achat", virtualRight.getEndReason());
+		assertNull(virtualRight.getCaseIdentifier());
+		assertEquals(Integer.valueOf(heritierId.intValue()), virtualRight.getRightHolder().getTaxPayerNumber());
+		assertEquals(decedeId.longValue(), virtualRight.getInheritedFromId());
+		assertEquals(servantId, virtualRight.getImmovablePropertyId());
+		assertFalse(virtualRight.isImplicitCommunity());
+		assertNull(virtualRight.getOwnershipTypeOverride());
+
+		// on vérifie la référence héritée
+		final VirtualLandOwnershipRight virtualReference = (VirtualLandOwnershipRight) virtualRight.getReference();
+		assertNotNull(virtualReference);
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(virtualReference.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(virtualReference.getDateTo()));
+		assertEquals("Achat", virtualReference.getStartReason());
+		assertNull(virtualReference.getEndReason());
+		assertNull(virtualReference.getCaseIdentifier());
+		assertEquals(Integer.valueOf(decedeId.intValue()), virtualReference.getRightHolder().getTaxPayerNumber());
+		assertEquals(servantId, virtualReference.getImmovablePropertyId());
+		assertNull(virtualReference.getCommunityId());
 	}
 
 	public static void assertShare(int numerator, int denominator, Share share) {

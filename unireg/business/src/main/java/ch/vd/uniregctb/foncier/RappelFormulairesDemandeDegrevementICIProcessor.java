@@ -111,7 +111,7 @@ public class RappelFormulairesDemandeDegrevementICIProcessor {
 			else {
 				// [SIFISC-25066] la demande est émise... s'il n'existe aucun droit de propriété valide (selon ses dates métier) au 1er janvier de la PF du formulaire,
 				// alors on n'envoie pas de rappel, car en fait la demande n'aurait pas dû être envoyée
-				final boolean aucunDroit = registreFoncierService.getDroitsForCtb(entreprise, false).stream()
+				final boolean aucunDroit = registreFoncierService.getDroitsForCtb(entreprise, false, false).stream()
 						.filter(DroitProprieteRF.class::isInstance)
 						.map(DroitProprieteRF.class::cast)
 						.filter(droit -> droit.getImmeuble() == immeuble)

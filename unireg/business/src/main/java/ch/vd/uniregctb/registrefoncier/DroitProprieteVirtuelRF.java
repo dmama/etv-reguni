@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
  * <li>il possède en plus le chemin vers l'immeuble concerné</li>
  * </ul>
  */
-public class DroitProprieteVirtuelRF extends DroitVirtuelRF {
+public class DroitProprieteVirtuelRF extends DroitVirtuelTransitifRF {
 
 	/**
 	 * Si renseigné, la communauté à travers laquelle l'ayant-droit possède le droit de propriété.

@@ -20,31 +20,23 @@ public interface RegistreFoncierService {
 	/**
 	 * Détermine les droits sur des immeubles d'un contribuable Unireg.
 	 *
-	 * @param ctb            un contribuable Unireg
-	 * @param includeVirtual vrai s'il faut inclure les droits virtuels du contribuable
+	 * @param ctb                       un contribuable Unireg
+	 * @param includeVirtualTransitive  vrai s'il faut inclure les droits virtuels transitifs du contribuable
+	 * @param includeVirtualInheritance vrai s'il faut inclure les droits virtuels hérités du contribuable
 	 * @return une liste de droits.
 	 */
-	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean includeVirtual);
+	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean includeVirtualTransitive, boolean includeVirtualInheritance);
 
 	/**
 	 * Détermine les droits sur des immeubles d'un contribuable Unireg.
 	 *
 	 * @param ctb                        un contribuable Unireg
 	 * @param prefetchSituationsImmeuble vrai si les situations et les immeubles doivent être chargés dans le cache de session Hibernate
-	 * @param includeVirtual             vrai s'il faut inclure les droits virtuels du contribuable
+	 * @param includeVirtualTransitive   vrai s'il faut inclure les droits virtuels transitifs du contribuable
+	 * @param includeVirtualInheritance  vrai s'il faut inclure les droits virtuels hérités du contribuable
 	 * @return une liste de droits.
 	 */
-	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble, boolean includeVirtual);
-
-	/**
-	 * Détermine les droits sur des immeubles d'un tiers RF.
-	 *
-	 * @param ayantDroitRF               un ayant-droit RF
-	 * @param prefetchSituationsImmeuble vrai si les situations et les immeubles doivent être chargés dans le cache de session Hibernate
-	 * @param includeVirtual             vrai s'il faut inclure les droits virtuels du tiers RF
-	 * @return la liste des droits du tiers RF
-	 */
-	List<DroitRF> getDroitsForTiersRF(AyantDroitRF ayantDroitRF, boolean prefetchSituationsImmeuble, boolean includeVirtual);
+	List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble, boolean includeVirtualTransitive, boolean includeVirtualInheritance);
 
 	/**
 	 * @param immeubleId l'id technique d'un immeuble

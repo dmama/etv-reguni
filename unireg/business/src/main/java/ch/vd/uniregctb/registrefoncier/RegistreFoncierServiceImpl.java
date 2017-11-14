@@ -6,12 +6,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,12 +26,14 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.common.NomPrenomDates;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
@@ -40,6 +44,7 @@ import ch.vd.uniregctb.registrefoncier.dao.ModeleCommunauteRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.SituationRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -97,17 +102,43 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	}
 
 	@Override
-	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean includeVirtual) {
-		return getDroitsForCtb(ctb, false, includeVirtual);
+	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean includeVirtualTransitive, boolean includeVirtualInheritance) {
+		return getDroitsForCtb(ctb, false, includeVirtualTransitive, includeVirtualInheritance);
 	}
 
 	@Override
-	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble, boolean includeVirtual) {
-		return ctb.getRapprochementsRF().stream()
+	public List<DroitRF> getDroitsForCtb(@NotNull Contribuable ctb, boolean prefetchSituationsImmeuble, boolean includeVirtualTransitive, boolean includeVirtualInheritance) {
+
+		// on va chercher les droits du contribuable lui-même
+		final List<DroitRF> droits = ctb.getRapprochementsRF().stream()
 				.filter(AnnulableHelper::nonAnnule)                     // on ignore les rapprochements annulés
-				.flatMap(rapp -> getDroitsValides(rapp, prefetchSituationsImmeuble, includeVirtual))  // on demande les droits valides pour le rapprochement
+				.flatMap(rapp -> getDroitsValides(rapp,
+				                                  prefetchSituationsImmeuble,
+				                                  includeVirtualTransitive
+				))  // on demande les droits valides pour le rapprochement
 				.sorted()                             // on trie les droits pour garder un ordre constant entre chaque appel
 				.collect(Collectors.toList());
+
+		if (includeVirtualInheritance) {
+			// on détermine les liens d'héritage et on les regroupe par numéros de décédé
+			final Map<Long, List<Heritage>> heritages = ctb.getRapportsSujet().stream()
+					.filter(Heritage.class::isInstance)
+					.map(Heritage.class::cast)
+					.filter(AnnulableHelper::nonAnnule)
+					.collect(Collectors.toMap(Heritage::getObjetId, Collections::singletonList, ListUtils::union));
+
+
+			// on détermine les droits virtuels du tiers RF courant à partir des droits des tiers décédés dont il est l'héritier
+			final List<DroitRF> droitsVirtuels = heritages.entrySet().stream()
+					.map(this::resolveContribuable)
+					.map(pair -> determineDroitsHeritageVirtuels(ctb, pair.getFirst(), pair.getSecond(), includeVirtualTransitive))
+					.flatMap(Collection::stream)
+					.collect(Collectors.toList());
+
+			droits.addAll(droitsVirtuels);
+		}
+
+		return droits;
 	}
 
 	/**
@@ -137,22 +168,24 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	 *                                  |-------F--------|
 	 * </pre>
 	 *
-	 * @param rapprochement   un rapprochement entre un contribuable et un tiers RF
-	 * @param fetchSituations <code>true</code> s'il faut que les immeubles des droits retournés aient déjà leurs situations récupérées (optim)
-	 * @param includeVirtual  vrai s'il faut inclure les droits virtuels du contribuable
+	 * @param rapprochement            un rapprochement entre un contribuable et un tiers RF
+	 * @param fetchSituations          <code>true</code> s'il faut que les immeubles des droits retournés aient déjà leurs situations récupérées (optim)
+	 * @param includeVirtualTransitive vrai s'il faut inclure les droits virtuels transitifs du contribuable
 	 * @return les liste des droits valides pour le contribuable
 	 */
-	private Stream<DroitRF> getDroitsValides(RapprochementRF rapprochement, boolean fetchSituations, boolean includeVirtual) {
-		final List<DroitRF> droits = getDroitsForTiersRF(rapprochement.getTiersRF(), fetchSituations, includeVirtual);
+	private Stream<DroitRF> getDroitsValides(RapprochementRF rapprochement, boolean fetchSituations, boolean includeVirtualTransitive) {
+		final List<DroitRF> droits = getDroitsForTiersRF(rapprochement.getTiersRF(), fetchSituations, includeVirtualTransitive);
 		return droits.stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(d -> DateRangeHelper.intersect(d, rapprochement));
 	}
 
-	@Override
-	public List<DroitRF> getDroitsForTiersRF(AyantDroitRF ayantDroitRF, boolean prefetchSituationsImmeuble, boolean includeVirtual) {
+	List<DroitRF> getDroitsForTiersRF(AyantDroitRF ayantDroitRF, boolean prefetchSituationsImmeuble, boolean includeVirtualTransitive) {
+
+		// on charge les droits réels
 		final List<DroitRF> droits = droitRFDAO.findForAyantDroit(ayantDroitRF.getId(), prefetchSituationsImmeuble);
-		if (includeVirtual) {
+
+		if (includeVirtualTransitive) {
 			// on parcourt les droits entre immeubles pour déterminer la liste des droits virtuels
 			final List<DroitRF> droitsProprieteVirtuels = droits.stream()
 					.filter(AnnulableHelper::nonAnnule)
@@ -172,7 +205,53 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 					.collect(Collectors.toList());
 			droits.addAll(servitudesVirtuelles);
 		}
+
 		return droits;
+	}
+
+	@NotNull
+	private Pair<Contribuable, List<Heritage>> resolveContribuable(Map.Entry<Long, List<Heritage>> entry) {
+		final Contribuable decede = (Contribuable) tiersService.getTiers(entry.getKey());
+		if (decede == null) {
+			throw new TiersNotFoundException(entry.getKey());
+		}
+		return new Pair<>(decede, entry.getValue());
+	}
+
+	/**
+	 * Détermine les droits d'héritage virtuels qui existent sur un tiers RF pour un décédé particulier.
+	 *
+	 * @param heritier                 le contribuable héritier Unireg
+	 * @param decede                   le décédé
+	 * @param heritages                les liens d'héritage entre le tiers et le décédé
+	 * @param includeVirtualTransitive vrai s'il faut inclure les droits virtuels du décédé induits par des droits entre immeubles
+	 * @return la liste des droits virtuels
+	 */
+	private List<DroitRF> determineDroitsHeritageVirtuels(@NotNull Contribuable heritier, Contribuable decede, List<Heritage> heritages, boolean includeVirtualTransitive) {
+
+		final List<DroitRF> droitsDecede = getDroitsForCtb(decede, includeVirtualTransitive, false); // includeVirtualInheritance=false : on s'arrête au premier niveau d'héritage
+
+		final int nombreHeritiers = (int) decede.getRapportsObjet().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(Heritage.class::isInstance)
+				.count();
+
+		return DroitRFHelper.extract(droitsDecede, heritages, (range, debut, fin) -> {
+			final RegDate dateDebut = (debut == null ? range.getDateDebutMetier() : debut);
+			final String motifDebut = (debut == null ? range.getMotifDebut() : "Succession");
+			final RegDate dateFin = (fin == null ? range.getDateFinMetier() : fin);
+			final String motifFin = (fin == null ? range.getMotifFin() : "Succession");
+			final DroitVirtuelHeriteRF dv = new DroitVirtuelHeriteRF();
+			dv.setDecedeId(decede.getNumero());
+			dv.setHeritierId(heritier.getNumero());
+			dv.setNombreHeritiers(nombreHeritiers);
+			dv.setDateDebutMetier(dateDebut);
+			dv.setDateFinMetier(dateFin);
+			dv.setMotifDebut(motifDebut);
+			dv.setMotifFin(motifFin);
+			dv.setReference(range);
+			return dv;
+		});
 	}
 
 	/**

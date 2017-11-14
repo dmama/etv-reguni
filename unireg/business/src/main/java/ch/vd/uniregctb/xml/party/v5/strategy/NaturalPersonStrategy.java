@@ -26,8 +26,9 @@ import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
-import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
+import ch.vd.unireg.xml.party.landregistry.v1.RealLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualTransitiveLandRight;
 import ch.vd.unireg.xml.party.person.v5.Nationality;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategory;
@@ -242,7 +243,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		if (parts != null && parts.contains(PartyPart.RESIDENCY_PERIODS)) {
 			initResidencyPeriods(to, pp, context);
 		}
-		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS))) {
+		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
 			initLandRights(to, pp, parts, context);
 		}
 	}
@@ -257,7 +258,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		if (parts != null && parts.contains(PartyPart.RESIDENCY_PERIODS)) {
 			copyColl(to.getResidencyPeriods(), from.getResidencyPeriods());
 		}
-		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS))) {
+		if (parts != null && (parts.contains(PartyPart.LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) || parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
 			copyLandRights(to, from, parts, mode);
 		}
 	}
@@ -318,8 +319,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 	private void initLandRights(NaturalPerson to, PersonnePhysique pp, @NotNull Set<PartyPart> parts, Context context) {
 
-		final boolean includeVirtual = parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS);
-		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp, includeVirtual);
+		final boolean includeVirtualTransitive = parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS);
+		final boolean includeVirtualInheritance = parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS);
+		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp, includeVirtualTransitive, includeVirtualInheritance);
 
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
@@ -330,38 +332,63 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 				.forEach(landRights::add);
 	}
 
+	@SuppressWarnings("StatementWithEmptyBody")
 	private static void copyLandRights(NaturalPerson to, NaturalPerson from, Set<PartyPart> parts, CopyMode mode) {
+
+		if (!parts.contains(PartyPart.LAND_RIGHTS) && !parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) && !parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+			throw new IllegalArgumentException("Au moins un des parts LAND_RIGHTS, VIRTUAL_LAND_RIGHTS ou VIRTUAL_INHERITANCE_LAND_RIGHTS doit être spécifiée.");
+		}
 
 		// Les droits réels et les droits virtuels représentent deux ensembles qui se recoupent.
 		// Plus précisemment, les droits réels sont entièrement contenus dans les droits virtuels. En fonction
 		// du mode de copie, il est donc nécessaire de compléter ou de filtrer les droits.
 		if (mode == CopyMode.ADDITIVE) {
-			if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) || to.getLandRights() == null || to.getLandRights().isEmpty()) {
+			if (to.getLandRights() == null || to.getLandRights().isEmpty()
+					|| (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) && parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS))) {
+				// la collection de destination est vide (ou la source contient tous les droits), on copie tout
 				copyColl(to.getLandRights(), from.getLandRights());
+			}
+			else if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS)) {
+				// la collection de destination n'est pas vide, on ajoute uniquement les droits virtuels transitifs
+				to.getLandRights().addAll(from.getLandRights().stream()
+						                          .filter(VirtualTransitiveLandRight.class::isInstance)
+						                          .collect(Collectors.toList()));
+			}
+			else
+			if (parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+				// la collection de destination n'est pas vide, on ajoute uniquement les droits virtuels hérités
+				to.getLandRights().addAll(from.getLandRights().stream()
+						                          .filter(VirtualInheritedLandRight.class::isInstance)
+						                          .collect(Collectors.toList()));
+			}
+			else {
+				// rien à faire: soit la destination est vide et les droits réels sont copiés, soit les droits virtuels sont demandés et on n'arrive pas ici.
 			}
 		}
 		else {
 			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
-			if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS)) {
+			if (parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS) && parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+				// on veut tous les droits, on copie tout
 				copyColl(to.getLandRights(), from.getLandRights());
 			}
 			else {
-				// on supprime les éventuels droits virtuels s'ils ne sont pas demandés
+				// on ajoute les droits réels et les droits virtuels transitifs/hérités s'ils sont demandés
 				if (from.getLandRights() != null && !from.getLandRights().isEmpty()) {
 					to.getLandRights().clear();
 					to.getLandRights().addAll(from.getLandRights().stream()
-							                          .filter(NaturalPersonStrategy::isReel)
+							                          .filter(r -> rightMatchesPart(r, parts))
 							                          .collect(Collectors.toList()));
 				}
 				else {
 					to.getLandRights().clear();
 				}
 			}
-
 		}
 	}
 
-	private static boolean isReel(@NotNull LandRight f) {
-		return !(f instanceof VirtualLandOwnershipRight) && !(f instanceof VirtualUsufructRight);
+	private static boolean rightMatchesPart(LandRight right, Set<PartyPart> parts) {
+		return right instanceof RealLandRight
+				|| (right instanceof VirtualTransitiveLandRight && parts.contains(PartyPart.VIRTUAL_LAND_RIGHTS))
+				|| (right instanceof VirtualInheritedLandRight && parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
 	}
 }

@@ -1953,61 +1953,62 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkResidencyPeriods = PartyPart.RESIDENCY_PERIODS == p;
 		boolean checkLandTaxLightenings = PartyPart.LAND_TAX_LIGHTENINGS == p;
 		boolean checkInheritanceRelationships = PartyPart.INHERITANCE_RELATIONSHIPS == p;
+		boolean checkVirtualInheritedLandRights = PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS == p;
 
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkSimplifiedTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
 				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkImmovableProperties || checkBusinessYears || checkCorporationFlags
 				              || checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses || checkAgents || checkLabels
-				              || checkLandRights || checkVirtualLandRights || checkResidencyPeriods || checkLandTaxLightenings || checkInheritanceRelationships, "La partie [" + p + "] est inconnue");
+				              || checkLandRights || checkVirtualLandRights || checkResidencyPeriods || checkLandTaxLightenings || checkInheritanceRelationships || checkVirtualInheritedLandRights, "La partie [" + p + "] est inconnue");
 
-		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
-		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
-		assertNullOrNotNull(checkAddresses, tiers.getDebtProsecutionAddresses(), "debtProsecutionAddresses");
-		assertNullOrNotNull(checkAddresses, tiers.getRepresentationAddresses(), "representationAddresses");
-		assertNullOrNotNull(checkBankAccounts, tiers.getBankAccounts(), "bankAccounts");
-		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getMainTaxResidences(), "mainTaxResidences");
-		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getOtherTaxResidences(), "otherTaxResidences");
-		assertNullOrNotNull(checkManagingTaxResidences, tiers.getManagingTaxResidences(), "managingTaxResidences");
-		assertNullOrNotNull(checkRelationsBetweenParties || checkChildren || checkParents || checkInheritanceRelationships, tiers.getRelationsBetweenParties(), "relationsBetweenParties (" + p + ')');
+		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses" + "(" + p + ")");
+		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses" + "(" + p + ")");
+		assertNullOrNotNull(checkAddresses, tiers.getDebtProsecutionAddresses(), "debtProsecutionAddresses" + "(" + p + ")");
+		assertNullOrNotNull(checkAddresses, tiers.getRepresentationAddresses(), "representationAddresses" + "(" + p + ")");
+		assertNullOrNotNull(checkBankAccounts, tiers.getBankAccounts(), "bankAccounts" + "(" + p + ")");
+		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getMainTaxResidences(), "mainTaxResidences" + "(" + p + ")");
+		assertNullOrNotNull(checkTaxResidences || checkVirtualTaxResidences, tiers.getOtherTaxResidences(), "otherTaxResidences" + "(" + p + ")");
+		assertNullOrNotNull(checkManagingTaxResidences, tiers.getManagingTaxResidences(), "managingTaxResidences" + "(" + p + ")");
+		assertNullOrNotNull(checkRelationsBetweenParties || checkChildren || checkParents || checkInheritanceRelationships, tiers.getRelationsBetweenParties(), ("relationsBetweenParties (" + p + ')') + "(" + p + ")");
 
 		if (tiers instanceof Taxpayer) {
 			final Taxpayer ctb = (Taxpayer) tiers;
-			assertNullOrNotNull(checkTaxLiabilities, ctb.getTaxLiabilities(), "taxLiabilities");
-			assertNullOrNotNull(checkSimplifiedTaxLiabilities, ctb.getSimplifiedTaxLiabilityVD(), "simplifiedTaxLiabilityVD");
-			assertNullOrNotNull(checkSimplifiedTaxLiabilities, ctb.getSimplifiedTaxLiabilityCH(), "simplifiedTaxLiabilityCH");
-			assertNullOrNotNull(checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines, ctb.getTaxDeclarations(), "taxDeclarations");
-			assertNullOrNotNull(checkTaxationPeriods, ctb.getTaxationPeriods(), "taxationPeriods");
-			assertNullOrNotNull(checkFamilyStatuses, ctb.getFamilyStatuses(), "familyStatuses");
+			assertNullOrNotNull(checkTaxLiabilities, ctb.getTaxLiabilities(), "taxLiabilities" + "(" + p + ")");
+			assertNullOrNotNull(checkSimplifiedTaxLiabilities, ctb.getSimplifiedTaxLiabilityVD(), "simplifiedTaxLiabilityVD" + "(" + p + ")");
+			assertNullOrNotNull(checkSimplifiedTaxLiabilities, ctb.getSimplifiedTaxLiabilityCH(), "simplifiedTaxLiabilityCH" + "(" + p + ")");
+			assertNullOrNotNull(checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines, ctb.getTaxDeclarations(), "taxDeclarations" + "(" + p + ")");
+			assertNullOrNotNull(checkTaxationPeriods, ctb.getTaxationPeriods(), "taxationPeriods" + "(" + p + ")");
+			assertNullOrNotNull(checkFamilyStatuses, ctb.getFamilyStatuses(), "familyStatuses" + "(" + p + ")");
 			assertEmpty(ctb.getImmovableProperties());
-			assertNullOrNotNull(checkEbillingStatuses, ctb.getEbillingStatuses(), "ebillingStatuses");
-			assertNullOrNotNull(checkAgents, ctb.getAgents(), "agents");
+			assertNullOrNotNull(checkEbillingStatuses, ctb.getEbillingStatuses(), "ebillingStatuses" + "(" + p + ")");
+			assertNullOrNotNull(checkAgents, ctb.getAgents(), "agents" + "(" + p + ")");
 		}
 
 		if (tiers instanceof CommonHousehold) {
 			final CommonHousehold mc = (CommonHousehold) tiers;
-			assertNullOrNotNull(checkHouseholdMembers, mc.getMainTaxpayer(), "mainTaxpayer");
-			assertNullOrNotNull(checkHouseholdMembers, mc.getSecondaryTaxpayer(), "secondaryTaxpayer");
+			assertNullOrNotNull(checkHouseholdMembers, mc.getMainTaxpayer(), "mainTaxpayer" + "(" + p + ")");
+			assertNullOrNotNull(checkHouseholdMembers, mc.getSecondaryTaxpayer(), "secondaryTaxpayer" + "(" + p + ")");
 		}
 
 		if (tiers instanceof Corporation) {
 			final Corporation pm = (Corporation) tiers;
-			assertNullOrNotNull(checkCapitals, pm.getCapitals(), "capitals");
-			assertNullOrNotNull(checkTaxLightenings, pm.getTaxLightenings(), "taxLightenings");
-			assertNullOrNotNull(checkLegalForms, pm.getLegalForms(), "legalForms");
-			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsVD(), "taxSystemsVD");
-			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsCH(), "taxSystemsCH");
-			assertNullOrNotNull(checkLegalSeats, pm.getLegalSeats(), "legalSeats");
-			assertNullOrNotNull(checkBusinessYears, pm.getBusinessYears(), "businessYears");
-			assertNullOrNotNull(checkLandRights || checkVirtualLandRights, pm.getLandRights(), "landRights");
-			assertNullOrNotNull(checkLandTaxLightenings, pm.getIfoncExemptions(), "ifoncExemptions");
-			assertNullOrNotNull(checkLandTaxLightenings, pm.getIciAbatements(), "iciAbatements");
+			assertNullOrNotNull(checkCapitals, pm.getCapitals(), "capitals" + "(" + p + ")");
+			assertNullOrNotNull(checkTaxLightenings, pm.getTaxLightenings(), "taxLightenings" + "(" + p + ")");
+			assertNullOrNotNull(checkLegalForms, pm.getLegalForms(), "legalForms" + "(" + p + ")");
+			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsVD(), "taxSystemsVD" + "(" + p + ")");
+			assertNullOrNotNull(checkTaxSystems, pm.getTaxSystemsCH(), "taxSystemsCH" + "(" + p + ")");
+			assertNullOrNotNull(checkLegalSeats, pm.getLegalSeats(), "legalSeats" + "(" + p + ")");
+			assertNullOrNotNull(checkBusinessYears, pm.getBusinessYears(), "businessYears" + "(" + p + ")");
+			assertNullOrNotNull(checkLandRights || checkVirtualLandRights || checkVirtualInheritedLandRights, pm.getLandRights(), "landRights" + "(" + p + ")");
+			assertNullOrNotNull(checkLandTaxLightenings, pm.getIfoncExemptions(), "ifoncExemptions" + "(" + p + ")");
+			assertNullOrNotNull(checkLandTaxLightenings, pm.getIciAbatements(), "iciAbatements" + "(" + p + ")");
 		}
 
 		if (tiers instanceof NaturalPerson) {
 			final NaturalPerson np = (NaturalPerson) tiers;
-			assertNullOrNotNull(checkWithholdingTaxDeclarationPeriods, np.getWithholdingTaxationPeriods(), "withholdingTaxDelarationPeriods");
-			assertNullOrNotNull(checkResidencyPeriods, np.getResidencyPeriods(), "residencyPeriods");
-			assertNullOrNotNull(checkLandRights || checkVirtualLandRights, np.getLandRights(), "landRights");
+			assertNullOrNotNull(checkWithholdingTaxDeclarationPeriods, np.getWithholdingTaxationPeriods(), "withholdingTaxDelarationPeriods" + "(" + p + ")");
+			assertNullOrNotNull(checkResidencyPeriods, np.getResidencyPeriods(), "residencyPeriods" + "(" + p + ")");
+			assertNullOrNotNull(checkLandRights || checkVirtualLandRights || checkVirtualInheritedLandRights, np.getLandRights(), "landRights" + "(" + p + ")");
 		}
 	}
 

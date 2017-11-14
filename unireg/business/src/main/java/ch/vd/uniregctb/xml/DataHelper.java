@@ -1170,6 +1170,7 @@ public abstract class DataHelper {
 			case LAND_RIGHTS:
 			case VIRTUAL_LAND_RIGHTS:
 			case LAND_TAX_LIGHTENINGS:
+			case VIRTUAL_INHERITANCE_LAND_RIGHTS:
 				// TODO rien à faire pour le moment, mais ce n'est que partie remise...
 				break;
 			default:

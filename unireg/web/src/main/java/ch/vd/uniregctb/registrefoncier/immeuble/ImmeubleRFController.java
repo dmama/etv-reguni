@@ -66,7 +66,7 @@ public class ImmeubleRFController {
 			}
 
 			final Contribuable ctb = (Contribuable) tiers;
-			final List<DroitRF> droits = registreFoncierService.getDroitsForCtb(ctb, true, false);
+			final List<DroitRF> droits = registreFoncierService.getDroitsForCtb(ctb, true, false, false);
 			final List<DroitProprieteRF> droitsPropriete = droits.stream()
 					.filter(DroitProprieteRF.class::isInstance)
 					.map(DroitProprieteRF.class::cast)

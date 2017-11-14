@@ -53,7 +53,7 @@ import static org.junit.Assert.assertTrue;
 public class RegistreFoncierServiceTest extends BusinessTest {
 
 	private AyantDroitRFDAO ayantDroitRFDAO;
-	private RegistreFoncierService serviceRF;
+	private RegistreFoncierServiceImpl serviceRF;
 	private ModeleCommunauteRFDAO modeleCommunauteRFDAO;
 	private EvenementFiscalDAO evenementFiscalDAO;
 
@@ -61,7 +61,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		ayantDroitRFDAO = getBean(AyantDroitRFDAO.class, "ayantDroitRFDAO");
-		serviceRF = getBean(RegistreFoncierService.class, "serviceRF");
+		serviceRF = (RegistreFoncierServiceImpl) getBean(RegistreFoncierService.class, "serviceRF");
 		modeleCommunauteRFDAO = getBean(ModeleCommunauteRFDAO.class, "modeleCommunauteRFDAO");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 
@@ -129,7 +129,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
 				assertNotNull(ctb);
 
-				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, false);
+				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, false, false);
 				assertEquals(2, droits.size());
 
 				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
@@ -173,7 +173,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	 * Ce test vérifie que la méthode getDroitsForCtb fonctionne dans le cas passant.
 	 */
 	@Test
-	public void testGetDroitsVirtuelsForCtb() throws Exception {
+	public void testGetDroitsVirtuelsTransitifsForCtb() throws Exception {
 
 		final long noIndividu = 481548L;
 		final RegDate dateNaissance = date(1970, 7, 2);
@@ -238,7 +238,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(pp);
 				assertNotNull(ctb);
 
-				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, true);
+				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, true, false);
 				droits.sort(new DroitRFRangeMetierComparator());
 				assertEquals(3, droits.size());
 
@@ -406,7 +406,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 				// Droit F                                                                  2010-06-06 |------>
 				//
 
-				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, false);
+				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, false, false);
 				assertEquals(4, droits.size());
 
 				final DroitProprietePersonnePhysiqueRF droit0 = (DroitProprietePersonnePhysiqueRF) droits.get(0);
@@ -485,7 +485,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetDroitsVirtuelsForTiersRFCasSansDroitEntreImmeuble() throws Exception {
+	public void testGetDroitsVirtuelsTransitifsForTiersRFCasSansDroitEntreImmeuble() throws Exception {
 
 		// mise en place foncière
 		final Long tiersId = doInNewTransaction(status -> {
@@ -577,7 +577,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetDroitsVirtuelsForTiersRFCasAvecUnDroitEntreDeuxImmeubles() throws Exception {
+	public void testGetDroitsVirtuelsTransitifsForTiersRFCasAvecUnDroitEntreDeuxImmeubles() throws Exception {
 
 		class Ids {
 			Long tiers;
@@ -703,7 +703,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetDroitsVirtuelsForTiersRFCasAvecImmeublePossedeParDeuxAutresImmeubles() throws Exception {
+	public void testGetDroitsVirtuelsTransitifsForTiersRFCasAvecImmeublePossedeParDeuxAutresImmeubles() throws Exception {
 
 		class Ids {
 			Long tiers;
@@ -861,7 +861,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetDroitsVirtuelsForTiersRFCasAvecTroisImmeublesQuiSePossedentEnCascade() throws Exception {
+	public void testGetDroitsVirtuelsTransitifsForTiersRFCasAvecTroisImmeublesQuiSePossedentEnCascade() throws Exception {
 
 		class Ids {
 			Long tiers;
@@ -998,7 +998,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetDroitsVirtuelsForTiersRFCasAvecDeuxImmeublesEtCycle() throws Exception {
+	public void testGetDroitsVirtuelsTransitifsForTiersRFCasAvecDeuxImmeublesEtCycle() throws Exception {
 
 		class Ids {
 			Long tiers;
@@ -1122,7 +1122,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetUsufruitVirtuelsForTiersRFCasSansDroitEntreImmeuble() throws Exception {
+	public void testGetUsufruitVirtuelsTransitifsForTiersRFCasSansDroitEntreImmeuble() throws Exception {
 
 		// mise en place foncière
 		final Long tiersId = doInNewTransaction(status -> {
@@ -1199,7 +1199,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetUsufruitVirtuelsForTiersRFCasAvecUnDroitEntreDeuxImmeubles() throws Exception {
+	public void testGetUsufruitVirtuelsTransitifsForTiersRFCasAvecUnDroitEntreDeuxImmeubles() throws Exception {
 
 		class Ids {
 			Long tiers;
@@ -1317,7 +1317,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetUsufruitVirtuelsForTiersRFCasAvecUnDeuxImmeublesAyantChacunUnDroitSurUnTroisiemeImmeuble() throws Exception {
+	public void testGetUsufruitVirtuelsTransitifsForTiersRFCasAvecUnDeuxImmeublesAyantChacunUnDroitSurUnTroisiemeImmeuble() throws Exception {
 
 		class Ids {
 			Long tiers;
@@ -2360,6 +2360,151 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 			assertNull(event1.getDateValeur());
 			assertEquals(ids.communaute2, event1.getCommunaute().getId());
 			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-24999] Ce test vérifie que la méthode getDroitsForCtb fonctionne bien quand on demande les droits virtuels hérités.
+	 */
+	@Test
+	public void testGetDroitsVirtuelsHeritesForCtb() throws Exception {
+
+		final long noIndividu = 481548L;
+		final RegDate dateHeritage = RegDate.get(2001, 4, 17);
+
+		class Ids {
+			long decede;
+			long heritier;
+			long droit0;
+			long droit1;
+			long droit2;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1920, 7, 2), "Charles", "Widmer", Sexe.MASCULIN);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(1920, 7, 2), null);
+			}
+		});
+
+		// création de deux tiers, dont un décécé, avec une relation d'héritage
+		doInNewTransaction(status -> {
+			final PersonnePhysique decede = tiersService.createNonHabitantFromIndividu(noIndividu);
+			ids.decede = decede.getNumero();
+
+			final PersonnePhysique heritier = addNonHabitant("Benjamin", "Widmer", date(1970, 1, 1), Sexe.MASCULIN);
+			ids.heritier = heritier.getNumero();
+
+			addHeritage(heritier, decede, dateHeritage, null, true);
+			return null;
+		});
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// le tiers RF décédé avec deux immeubles + un lien de propriété entre les deux immeubles
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "some egrid", gland, 4298);
+
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+
+			final DroitProprietePersonnePhysiqueRF droit0 = addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null,
+			                                                                           "48390a0e044", "48390a0e043", new IdentifiantAffaireRF(123, 2004, 202, 3),
+			                                                                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble0, null);
+
+			final DroitProprietePersonnePhysiqueRF droit1 = addDroitPersonnePhysiqueRF(RegDate.get(1997, 10, 7), RegDate.get(1997, 7, 2), RegDate.get(2010, 2, 23), RegDate.get(2010, 2, 20), "Achat", "Achat",
+			                                                                           "47e7d7e773", "47e7d7e772", new IdentifiantAffaireRF(23, 1997, 13, 0),
+			                                                                           new Fraction(1, 3), GenrePropriete.COPROPRIETE, tiersRF, immeuble1, null);
+
+			final DroitProprieteImmeubleRF droit2 = addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(12, 345),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Constitution PPE", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 121, 2), "39393939", "1");
+			ids.droit0 = droit0.getId();
+			ids.droit1 = droit1.getId();
+			ids.droit2 = droit2.getId();
+
+			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(ids.decede);
+			addRapprochementRF(ctb, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
+			return null;
+		});
+
+		// on demande les droits sur l'héritier
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(ids.heritier);
+				assertNotNull(ctb);
+
+				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, true, true);
+				droits.sort(new DroitRFRangeMetierComparator());
+				assertEquals(3, droits.size());
+
+				// le premier droit virtuel
+				final DroitVirtuelHeriteRF droitVirtuel0 = (DroitVirtuelHeriteRF) droits.get(0);
+				assertEquals(dateHeritage, droitVirtuel0.getDateDebutMetier());
+				assertEquals(RegDate.get(2010, 2, 20), droitVirtuel0.getDateFinMetier());
+				assertEquals("Succession", droitVirtuel0.getMotifDebut());
+				assertEquals("Achat", droitVirtuel0.getMotifFin());
+
+				// la référence du droit hérité
+				final DroitProprietePersonnePhysiqueRF reference0 = (DroitProprietePersonnePhysiqueRF) droitVirtuel0.getReference();
+				assertNull(reference0.getCommunaute());
+				assertEquals(GenrePropriete.COPROPRIETE, reference0.getRegime());
+				assertEquals(new Fraction(1, 3), reference0.getPart());
+				assertEquals(RegDate.get(1997, 10, 7), reference0.getDateDebut());
+				assertEquals(RegDate.get(1997, 7, 2), reference0.getDateDebutMetier());
+				assertEquals(RegDate.get(2010, 2, 23), reference0.getDateFin());
+				assertEquals(RegDate.get(2010, 2, 20), reference0.getDateFinMetier());
+				assertEquals("Achat", reference0.getMotifDebut());
+				assertEquals("Achat", reference0.getMotifFin());
+				assertEquals("47e7d7e773", reference0.getMasterIdRF());
+				assertEquals("02faeee", reference0.getImmeuble().getIdRF());
+
+				// le deuxième droit virtuel
+				final DroitVirtuelHeriteRF droitVirtuel1 = (DroitVirtuelHeriteRF) droits.get(1);
+				assertEquals(RegDate.get(2004, 4, 12), droitVirtuel1.getDateDebutMetier());
+				assertNull(droitVirtuel1.getDateFinMetier());
+				assertEquals("Achat", droitVirtuel1.getMotifDebut());
+				assertNull(droitVirtuel1.getMotifFin());
+
+				// la référence du droit hérité
+				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droitVirtuel1.getReference();
+				assertNull(droit1.getCommunaute());
+				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
+				assertEquals(new Fraction(1, 1), droit1.getPart());
+				assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
+				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
+				assertNull(droit1.getDateFin());
+				assertNull(droit1.getDateFinMetier());
+				assertEquals("Achat", droit1.getMotifDebut());
+				assertNull(droit1.getMotifFin());
+				assertEquals("48390a0e044", droit1.getMasterIdRF());
+				assertEquals("01faeee", droit1.getImmeuble().getIdRF());
+
+				// le troisième droit virtuel
+				final DroitVirtuelHeriteRF droitVirtuel2 = (DroitVirtuelHeriteRF) droits.get(2);
+				assertEquals(RegDate.get(2004, 4, 12), droitVirtuel2.getDateDebutMetier());
+				assertNull(droitVirtuel2.getDateFinMetier());
+				assertEquals("Achat", droitVirtuel2.getMotifDebut());
+				assertNull(droitVirtuel2.getMotifFin());
+
+				// la référence du droit hérité (lui-même un droit virtuel transitif)
+				final DroitProprieteVirtuelRF droit2 = (DroitProprieteVirtuelRF) droitVirtuel2.getReference();
+				assertNull(droit2.getCommunaute());
+				assertNull(droit2.getDateDebut());
+				assertEquals(RegDate.get(2004, 4, 12), droit2.getDateDebutMetier());
+				assertNull(droit2.getDateFin());
+				assertNull(droit2.getDateFinMetier());
+				assertEquals("Achat", droit2.getMotifDebut());
+				assertNull(droit2.getMotifFin());
+				assertNull(droit2.getMasterIdRF());
+				assertEquals("02faeee", droit2.getImmeuble().getIdRF());
+			}
 		});
 	}
 

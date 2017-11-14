@@ -776,7 +776,7 @@ public class TiersManager implements MessageSourceAware {
 				                          (c1, c2) -> c2));
 
 		// les communes sur lesquelles l'entreprise a des immeubles
-		final Map<Integer, CommuneView> communes = registreFoncierService.getDroitsForCtb(ctb, true, false).stream()
+		final Map<Integer, CommuneView> communes = registreFoncierService.getDroitsForCtb(ctb, true, false, false).stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.flatMap(d -> d.getImmeubleList().stream())
 				.filter(AnnulableHelper::nonAnnule)
