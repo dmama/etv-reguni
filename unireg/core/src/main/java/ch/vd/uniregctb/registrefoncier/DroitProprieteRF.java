@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -26,8 +27,13 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Heritage;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
 
 @Entity
 public abstract class DroitProprieteRF extends DroitRF {
@@ -178,7 +184,11 @@ public abstract class DroitProprieteRF extends DroitRF {
 		if (ayantDroit instanceof TiersRF && (context == Context.TACHES || context == Context.DATA_EVENT)) {
 			final List<Object> list = new ArrayList<>();
 			// on cherche tous les contribuables concernés ou ayant été concernés par ce droit
-			list.addAll(findLinkedContribuables((TiersRF) ayantDroit));
+			final List<Contribuable> contribuables = findLinkedContribuables((TiersRF) ayantDroit);
+			list.addAll(contribuables);
+			// [SIFISC-24999] on ajoute les héritiers des contribuables trouvés (car les droits des décédés sont exposés sur les héritiers)
+			final List<EntityKey> keysHeritage = findHeirsKeys(contribuables);
+			list.addAll(keysHeritage);
 			// on ajoute l'immeuble, évidemment
 			list.add(immeuble);
 			return list;
@@ -200,6 +210,32 @@ public abstract class DroitProprieteRF extends DroitRF {
 						.map(RapprochementRF::getContribuable)
 						.collect(Collectors.toList()))
 				.orElseGet(Collections::emptyList);
+	}
+
+	/**
+	 * Détermine et retourne les clés d'entité des héritiers des contribuables spécifiés. Cette méthode s'arrête au premier niveau d'héritage comme convenu avec Raphaël Carbo en séance.
+	 *
+	 * @param contribuables une liste de contribuables
+	 * @return la liste des clés des héritiers.
+	 */
+	@NotNull
+	public static List<EntityKey> findHeirsKeys(@NotNull Collection<Contribuable> contribuables) {
+
+		if (contribuables.isEmpty()) {
+			// short path
+			return Collections.emptyList();
+		}
+
+		// on construit la liste des clés des héritiers
+		return contribuables.stream()
+				.map(Tiers::getRapportsObjet)       // on part du 'décédé'
+				.flatMap(Collection::stream)
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(Heritage.class::isInstance) // on prend les rapports d'héritage
+				.map(RapportEntreTiers::getSujetId) // on prend les ids des héritiers
+				.distinct()
+				.map(id -> new EntityKey(Tiers.class, id))
+				.collect(Collectors.toList());
 	}
 
 	@Transient

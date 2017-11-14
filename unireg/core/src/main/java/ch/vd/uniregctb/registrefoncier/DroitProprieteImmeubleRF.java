@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -38,7 +39,12 @@ public class DroitProprieteImmeubleRF extends DroitProprieteRF {
 		// on ne veut pas retourner les tiers Unireg dans le cas de la validation/indexation/parentés, car ils ne sont pas influencés par les données RF
 		if (context == Context.TACHES || context == Context.DATA_EVENT) {
 			// on va chercher tous les contribuables propriétaires virtuels
-			result.addAll(findLinkedContribuables(beneficiaire, new HashSet<>()));
+			final Collection<Contribuable> contribuables = findLinkedContribuables(beneficiaire, new HashSet<>());
+			result.addAll(contribuables);
+
+			// [SIFISC-24999] on ajoute les héritiers des contribuables trouvés (car les droits des décédés sont exposés sur les héritiers)
+			final List<EntityKey> keysHeritage = findHeirsKeys(contribuables);
+			result.addAll(keysHeritage);
 		}
 
 		return result;
