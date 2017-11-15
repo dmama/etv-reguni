@@ -4129,6 +4129,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>DI_EMISE</value>
 			<value>EMIS</value>
 			<value>2</value>
 			<value><![CDATA[2009-03-04 00:00:00.0]]></value>
