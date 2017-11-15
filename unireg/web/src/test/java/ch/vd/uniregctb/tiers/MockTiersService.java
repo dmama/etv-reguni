@@ -885,6 +885,11 @@ public class MockTiersService implements TiersService {
 	}
 
 	@Override
+	public @NotNull Set<HibernateEntity> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Set<Class<?>> classes, LinkedEntity.Context context, boolean includeAnnuled) {
+		return null;
+	}
+
+	@Override
 	public void adaptPremierePeriodicite(DebiteurPrestationImposable debiteurPrestationImposable, RegDate dateDebut) {
 
 	}

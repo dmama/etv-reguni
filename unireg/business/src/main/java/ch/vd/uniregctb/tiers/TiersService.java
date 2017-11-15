@@ -1546,6 +1546,18 @@ public interface TiersService {
 	@NotNull
 	<T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, LinkedEntity.Context context, boolean includeAnnuled);
 
+	/**
+	 * Analyse le graphe des entités liées et retourne toutes les entités trouvées.
+	 *
+	 * @param entity         une entité liée à d'autres entités.
+	 * @param classes        les types des entités désirées
+	 * @param context        le context d'appel de la méthode
+	 * @param includeAnnuled <b>vrai</b> s'il faut tenir compte des liens annulés (utile dans le cas d'une annulation de rapport-entre-tiers, par exemple); ou <b>faux</b> s'il ne faut pas en tenir compte.
+	 * @return l'ensemble des entités trouvées; ou un ensemble vide si aucune n'est trouvée.
+	 */
+	@NotNull
+	Set<HibernateEntity> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Set<Class<?>> classes, LinkedEntity.Context context, boolean includeAnnuled);
+
     /**
      * permet d'adapter la date de début de validité de la première périodicité en fonction d'une date
      */

@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.database;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.CallbackException;
@@ -110,22 +112,29 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		else if (entity instanceof LinkedEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
 			final LinkedEntity child = (LinkedEntity) entity;
 			// [SIFISC-915] En cas d'annulation, on DOIT inclure les liens nouvellement annulés pour invalider correctement les caches
-			// FIXME (msi) refactorer cet appel pour ne pas appeler 4 fois la méthode et parcourir 4 fois le même graphe !
-			final Set<Tiers> tiers = tiersService.getLinkedEntities(child, Tiers.class, LinkedEntity.Context.DATA_EVENT, isAnnulation);
-			for (Tiers t : tiers) {
-				dataEventService.onTiersChange(t.getNumero());
-			}
-			final Set<ImmeubleRF> immeubles = tiersService.getLinkedEntities(child, ImmeubleRF.class, LinkedEntity.Context.DATA_EVENT, isAnnulation);
-			for (ImmeubleRF i : immeubles) {
-				dataEventService.onImmeubleChange(i.getId());
-			}
-			final Set<BatimentRF> batiments = tiersService.getLinkedEntities(child, BatimentRF.class, LinkedEntity.Context.DATA_EVENT, isAnnulation);
-			for (BatimentRF b : batiments) {
-				dataEventService.onBatimentChange(b.getId());
-			}
-			final Set<CommunauteRF> communautes = tiersService.getLinkedEntities(child, CommunauteRF.class, LinkedEntity.Context.DATA_EVENT, isAnnulation);
-			for (CommunauteRF c : communautes) {
-				dataEventService.onCommunauteChange(c.getId());
+			final Set<HibernateEntity> linked = tiersService.getLinkedEntities(child,
+			                                                                   new HashSet<>(Arrays.asList(Tiers.class,
+			                                                                                               ImmeubleRF.class,
+			                                                                                               BatimentRF.class,
+			                                                                                               CommunauteRF.class)),
+			                                                                   LinkedEntity.Context.DATA_EVENT,
+			                                                                   isAnnulation);
+			for (HibernateEntity e : linked) {
+				if (e instanceof Tiers) {
+					dataEventService.onTiersChange(((Tiers) e).getNumero());
+				}
+				else if (e instanceof ImmeubleRF) {
+					dataEventService.onImmeubleChange(((ImmeubleRF) e).getId());
+				}
+				else if (e instanceof BatimentRF) {
+					dataEventService.onBatimentChange(((BatimentRF) e).getId());
+				}
+				else if (e instanceof CommunauteRF) {
+					dataEventService.onCommunauteChange(((CommunauteRF) e).getId());
+				}
+				else {
+					throw new IllegalArgumentException("Type d'entité inconnu = [" + e.getClass() + "]");
+				}
 			}
 		}
 		else if (entity instanceof DroitAcces) {
