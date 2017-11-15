@@ -1407,7 +1407,7 @@
 			<value>12500001</value>
 		</row>
 	</table>
-	<table name="DECLARATION">
+	<table name="DOCUMENT_FISCAL">
 		<column>DOCUMENT_TYPE</column>
 		<column>ID</column>
 		<column>ANNULATION_DATE</column>

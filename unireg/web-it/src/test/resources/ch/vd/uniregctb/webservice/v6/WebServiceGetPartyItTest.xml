@@ -3965,7 +3965,7 @@
 			<value>10149508</value>
 		</row>
 	</table>
-	<table name="DECLARATION">
+	<table name="DOCUMENT_FISCAL">
 		<column>DOCUMENT_TYPE</column>
 		<column>ID</column>
 		<column>ANNULATION_DATE</column>
