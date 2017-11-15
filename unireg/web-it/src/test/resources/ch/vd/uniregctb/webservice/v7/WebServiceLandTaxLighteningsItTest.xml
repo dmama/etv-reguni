@@ -427,7 +427,7 @@
 			<value>ACCORDE</value>
 			<value>0</value>
 			<null/>
-			<value>DELAI_DECLARATION</value>
+			<value>DELAI_AUTRE_DOCUMENT_FISCAL</value>
 		</row>
 	</table>
 	<table name="ETAT_DOCUMENT_FISCAL">
