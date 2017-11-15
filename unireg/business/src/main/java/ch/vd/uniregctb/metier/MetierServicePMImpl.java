@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +39,7 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.GentilDateRangeExtendedAdapterCallback;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.tache.TacheService;
@@ -885,7 +887,10 @@ public class MetierServicePMImpl implements MetierServicePM {
 				adresseSuisse.setNumeroRue(adresse.getNumeroTechniqueRue());
 			}
 			else {
-				adresseSuisse.setRue(adresse.getRueEtNumero().getRue());
+				Optional.ofNullable(adresse.getRueEtNumero())
+						.map(RueEtNumero::getRue)
+						.ifPresent(adresseSuisse::setRue);
+
 			}
 			final CasePostale casePostale = adresse.getCasePostale();
 			if (casePostale != null) {
@@ -911,7 +916,9 @@ public class MetierServicePMImpl implements MetierServicePM {
 		adresseTiers.setUsage(TypeAdresseTiers.COURRIER);
 		adresseTiers.setComplement("p.a. " + CollectionsUtils.concat(adresse.getNomsPrenomsOuRaisonsSociales(), ", "));
 		adresseTiers.setNumeroAppartement(adresse.getNumeroAppartement());
-		adresseTiers.setNumeroMaison(adresse.getRueEtNumero().getNumero());
+		Optional.ofNullable(adresse.getRueEtNumero())
+				.map(RueEtNumero::getNumero)
+				.ifPresent(adresseTiers::setNumeroMaison);
 		adresseTiers.setPermanente(true);
 		return adresseTiers;
 	}
