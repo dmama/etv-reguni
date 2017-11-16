@@ -907,6 +907,169 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		assertEquals(new HashSet<>(Arrays.asList(ids.immeuble0, ids.immeuble1)), eventService.changedImmeubles);
 	}
 
+	/**
+	 * [SIFISC-24999] Ce test vérifie que des événements sont bien envoyés sur les entreprises absorbantes si le droit du propriété d'une entreprise absorbée change.
+	 * <p>
+	 * <pre>
+	 *    +------------+           +----------+
+	 *    |  Absorbée  |---------->| Tiers RF |---------+
+	 *    +------------+           +----------+         | copropriété (1/3)
+	 *         ^                                        |
+	 *         |                                        v
+	 *    +------------+                           +------------+
+	 *    | Absorbante |                           | Immeuble 0 |
+	 *    +------------+                           +------------+
+	 * </pre>
+	 */
+	@Test//(timeout = 10000L)
+	public void testDetectDroitProprieteAvecFusionEntreprise() throws Exception {
+
+		assertEmpty(eventService.changedImmeubles);
+
+		class Ids {
+			Long absorbee;
+			Long absorbante;
+			Long immeuble0;
+		}
+		final Ids ids = new Ids();
+		final RegDate dateFusion = RegDate.get(2005, 7, 11);
+
+		// on crée les entreprises et l'immeuble
+		doInNewTransaction(status -> {
+
+			final Entreprise absorbee = addEntrepriseInconnueAuCivil("Fantôme", RegDate.get(1990, 1, 1));
+			final Entreprise absorbante = addEntrepriseInconnueAuCivil("Pacman", RegDate.get(1990, 1, 1));
+			addFusionEntreprises(absorbante, absorbee, dateFusion);
+
+			final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Fantôme", "1", "111", 111, null);
+			addRapprochementRF(absorbee, tiersRF, null, null, TypeRapprochementRF.AUTO);
+			ids.absorbee = absorbee.getId();
+			ids.absorbante = absorbante.getId();
+
+			// un tiers RF avec un immeuble
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "CHE0", laSarraz, 579);
+
+			// tiers RF -> immeuble0
+			addDroitPropriete(tiersRF, immeuble0, null, GenrePropriete.COPROPRIETE, new Fraction(1, 3),
+			                  RegDate.get(2004, 5, 21), null, RegDate.get(2004, 5, 21), null, "Achat", null,
+			                  new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044", "1");
+
+			ids.immeuble0 = immeuble0.getId();
+			return null;
+		});
+
+		// on vérifie que la création des immeubles et des tiers a bien provoqué l'envoi des notifications suivantes :
+		//  - 2 pour les tiers
+		//  - 1 pour l'immeuble
+		assertEquals(new HashSet<>(Arrays.asList(ids.absorbee, ids.absorbante)), eventService.changedTiers);
+		assertEquals(new HashSet<>(Collections.singletonList(ids.immeuble0)), eventService.changedImmeubles);
+
+		eventService.clear();
+
+		// on modifie le droit sur l'immeuble
+		doInNewTransaction(status -> {
+			final BienFondsRF immeuble0 = hibernateTemplate.get(BienFondsRF.class, ids.immeuble0);
+			final DroitProprieteRF droit0 = immeuble0.getDroitsPropriete().iterator().next();
+			assertNotNull(droit0);
+			droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2010, 1, 1), "Passage à la TV", null));
+			return null;
+		});
+
+		// on vérifie que la modification du droit a bien provoqué l'envoi des notifications suivantes :
+		//  - 2 pour les tiers
+		//  - 1 pour l'immeuble
+		assertEquals(new HashSet<>(Arrays.asList(ids.absorbee, ids.absorbante)), eventService.changedTiers);
+		assertEquals(new HashSet<>(Collections.singletonList(ids.immeuble0)), eventService.changedImmeubles);
+	}
+
+	/**
+	 * [SIFISC-24999] Ce test vérifie que des événements sont bien envoyés sur les entreprises absorbantes si le droit du propriété <b>de l'immeuble</b> possédé une entreprise absorbée change.
+	 * <p>
+	 * <pre>
+	 *     +----------+           +----------+
+	 *     |  Décédé  |---------->| Tiers RF |---------+
+	 *     +----------+           +----------+         | copropriété (1/3)
+	 *          ^                                      v
+	 *          |                                 +------------+
+	 *     +----------+                           | Immeuble 0 |--------------------+
+	 *     | Héritier |                           +------------+                    | ppe (1/5)
+	 *     +----------+                                                             v
+	 *                                                                        +------------+
+	 *                                                                        | Immeuble 1 |
+	 *                                                                        +------------+
+	 * </pre>
+	 */
+	@Test(timeout = 10000L)
+	public void testDetectDroitProprieteImmeubleAvecFusionEntreprise() throws Exception {
+
+		assertEmpty(eventService.changedImmeubles);
+
+		class Ids {
+			Long absorbee;
+			Long absorbante;
+			Long immeuble0;
+			Long immeuble1;
+		}
+		final Ids ids = new Ids();
+		final RegDate dateFusion = RegDate.get(2005, 7, 11);
+
+		// on crée le tiers et les immeubles (sans les droits entre immeubles)
+		doInNewTransaction(status -> {
+
+			final Entreprise absorbee = addEntrepriseInconnueAuCivil("Fantôme", RegDate.get(1990, 1, 1));
+			final Entreprise absorbante = addEntrepriseInconnueAuCivil("Pacman", RegDate.get(1990, 1, 1));
+			addFusionEntreprises(absorbante, absorbee, dateFusion);
+
+			final PersonneMoraleRF tiersRF = addPersonneMoraleRF("Fantôme", "1", "111", 111, null);
+			addRapprochementRF(absorbee, tiersRF, null, null, TypeRapprochementRF.AUTO);
+			ids.absorbee = absorbee.getId();
+			ids.absorbante = absorbante.getId();
+
+			// un tiers RF avec un immeuble qui possède un autre immeuble.
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "CHE0", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "CHE1", laSarraz, 4298);
+			addImmeubleBeneficiaireRF(immeuble0);
+
+			// tiers RF -> immeuble0
+			addDroitPropriete(tiersRF, immeuble0, null, GenrePropriete.COPROPRIETE, new Fraction(1, 3),
+			                  RegDate.get(2004, 5, 21), null, RegDate.get(2004, 5, 21), null, "Achat", null,
+			                  new IdentifiantAffaireRF(123, 2004, 202, 3), "48390a0e044", "1");
+
+			ids.immeuble0 = immeuble0.getId();
+			ids.immeuble1 = immeuble1.getId();
+			return null;
+		});
+
+		// on vérifie que la création des immeubles et des tiers a bien provoqué l'envoi des notifications suivantes :
+		//  - 2 pour les tiers
+		//  - 2 pour les immeubles
+		assertEquals(new HashSet<>(Arrays.asList(ids.absorbee, ids.absorbante)), eventService.changedTiers);
+		assertEquals(new HashSet<>(Arrays.asList(ids.immeuble0, ids.immeuble1)), eventService.changedImmeubles);
+
+		eventService.clear();
+
+		// on ajoute le droit de propriété entre les immeubles
+		doInNewTransaction(status -> {
+
+			final BienFondsRF immeuble0 = hibernateTemplate.get(BienFondsRF.class, ids.immeuble0);
+			final BienFondsRF immeuble1 = hibernateTemplate.get(BienFondsRF.class, ids.immeuble1);
+
+			// immeuble0 -> immeuble 1
+			addDroitPropriete(immeuble0, immeuble1, GenrePropriete.PPE, new Fraction(1, 5),
+			                  null, RegDate.get(2000, 1, 1), null, "Constitution de PPE", null,
+			                  new IdentifiantAffaireRF(123, 2000, 6, 1), "7686758448", "1");
+			return null;
+		});
+
+		// on vérifie que la création des immeubles et des tiers a bien provoqué l'envoi des notifications suivantes :
+		//  - 2 pour les tiers
+		//  - 2 pour les immeubles
+		assertEquals(new HashSet<>(Arrays.asList(ids.absorbee, ids.absorbante)), eventService.changedTiers);
+		assertEquals(new HashSet<>(Arrays.asList(ids.immeuble0, ids.immeuble1)), eventService.changedImmeubles);
+	}
+
 	@Test
 	public void testDetectSituationChange() throws Exception {
 

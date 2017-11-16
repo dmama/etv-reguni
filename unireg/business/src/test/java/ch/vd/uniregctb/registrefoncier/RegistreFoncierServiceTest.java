@@ -36,6 +36,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ModeleCommunauteRFDAO;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -2364,10 +2365,10 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [SIFISC-24999] Ce test vérifie que la méthode getDroitsForCtb fonctionne bien quand on demande les droits virtuels hérités.
+	 * [SIFISC-24999] Ce test vérifie que la méthode getDroitsForCtb fonctionne bien quand on demande les droits virtuels hérités lors d'une relatio d'héritage.
 	 */
 	@Test
-	public void testGetDroitsVirtuelsHeritesForCtb() throws Exception {
+	public void testGetDroitsVirtuelsHeritesCasHeritage() throws Exception {
 
 		final long noIndividu = 481548L;
 		final RegDate dateHeritage = RegDate.get(2001, 4, 17);
@@ -2474,6 +2475,139 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 				// la référence du droit hérité
 				final DroitProprietePersonnePhysiqueRF droit1 = (DroitProprietePersonnePhysiqueRF) droitVirtuel1.getReference();
+				assertNull(droit1.getCommunaute());
+				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
+				assertEquals(new Fraction(1, 1), droit1.getPart());
+				assertEquals(RegDate.get(2004, 5, 21), droit1.getDateDebut());
+				assertEquals(RegDate.get(2004, 4, 12), droit1.getDateDebutMetier());
+				assertNull(droit1.getDateFin());
+				assertNull(droit1.getDateFinMetier());
+				assertEquals("Achat", droit1.getMotifDebut());
+				assertNull(droit1.getMotifFin());
+				assertEquals("48390a0e044", droit1.getMasterIdRF());
+				assertEquals("01faeee", droit1.getImmeuble().getIdRF());
+
+				// le troisième droit virtuel
+				final DroitVirtuelHeriteRF droitVirtuel2 = (DroitVirtuelHeriteRF) droits.get(2);
+				assertEquals(RegDate.get(2004, 4, 12), droitVirtuel2.getDateDebutMetier());
+				assertNull(droitVirtuel2.getDateFinMetier());
+				assertEquals("Achat", droitVirtuel2.getMotifDebut());
+				assertNull(droitVirtuel2.getMotifFin());
+
+				// la référence du droit hérité (lui-même un droit virtuel transitif)
+				final DroitProprieteVirtuelRF droit2 = (DroitProprieteVirtuelRF) droitVirtuel2.getReference();
+				assertNull(droit2.getCommunaute());
+				assertNull(droit2.getDateDebut());
+				assertEquals(RegDate.get(2004, 4, 12), droit2.getDateDebutMetier());
+				assertNull(droit2.getDateFin());
+				assertNull(droit2.getDateFinMetier());
+				assertEquals("Achat", droit2.getMotifDebut());
+				assertNull(droit2.getMotifFin());
+				assertNull(droit2.getMasterIdRF());
+				assertEquals("02faeee", droit2.getImmeuble().getIdRF());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-24999] Ce test vérifie que la méthode getDroitsForCtb fonctionne bien quand on demande les droits virtuels hérités lors d'une relation de fusion d'entreprise.
+	 */
+	@Test
+	public void testGetDroitsVirtuelsHeritesCasFusionEntreprise() throws Exception {
+
+		final RegDate dateFusion = RegDate.get(2001, 4, 17);
+
+		class Ids {
+			long absorbee;
+			long absorbante;
+			long droit0;
+			long droit1;
+			long droit2;
+		}
+		final Ids ids = new Ids();
+
+		// création de deux entreprises, une absorbée et l'autre absorbante
+		doInNewTransaction(status -> {
+			final Entreprise absorbee = addEntrepriseInconnueAuCivil("Fantôme", RegDate.get(1990, 1, 1));
+			final Entreprise absorbante = addEntrepriseInconnueAuCivil("Pacman", RegDate.get(1990, 1, 1));
+			addFusionEntreprises(absorbante, absorbee, dateFusion);
+			ids.absorbee = absorbee.getNumero();
+			ids.absorbante = absorbante.getNumero();
+			return null;
+		});
+
+		// mise en place foncière
+		doInNewTransaction(status -> {
+
+			// l'entreprise absorbée RF avec deux immeubles + un lien de propriété entre les deux immeubles
+			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
+			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "some egrid", gland, 4298);
+
+			final PersonneMoraleRF absorbeeRF = addPersonneMoraleRF("Fantôme", "1", "111", 111, null);
+
+			final DroitProprietePersonneMoraleRF droit0 = addDroitPersonneMoraleRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null,
+			                                                                           "48390a0e044", "48390a0e043", new IdentifiantAffaireRF(123, 2004, 202, 3),
+			                                                                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, absorbeeRF, immeuble0, null);
+
+			final DroitProprietePersonneMoraleRF droit1 = addDroitPersonneMoraleRF(RegDate.get(1997, 10, 7), RegDate.get(1997, 7, 2), RegDate.get(2010, 2, 23), RegDate.get(2010, 2, 20), "Achat", "Achat",
+			                                                                           "47e7d7e773", "47e7d7e772", new IdentifiantAffaireRF(23, 1997, 13, 0),
+			                                                                           new Fraction(1, 3), GenrePropriete.COPROPRIETE, absorbeeRF, immeuble1, null);
+
+			final DroitProprieteImmeubleRF droit2 = addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(12, 345),
+			                                                          null, RegDate.get(2000, 1, 1), null, "Constitution PPE", null,
+			                                                          new IdentifiantAffaireRF(123, 2000, 121, 2), "39393939", "1");
+			ids.droit0 = droit0.getId();
+			ids.droit1 = droit1.getId();
+			ids.droit2 = droit2.getId();
+
+			final Entreprise ctb = (Entreprise) tiersDAO.get(ids.absorbee);
+			addRapprochementRF(ctb, absorbeeRF, RegDate.get(1990, 1, 1), null, TypeRapprochementRF.MANUEL);
+			return null;
+		});
+
+		// on demande les droits sur l'entreprise absorbante
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus transactionStatus) throws Exception {
+				final Entreprise ent = (Entreprise) tiersDAO.get(ids.absorbante);
+				assertNotNull(ent);
+
+				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ent, true, true);
+				droits.sort(new DroitRFRangeMetierComparator());
+				assertEquals(3, droits.size());
+
+				// le premier droit virtuel
+				final DroitVirtuelHeriteRF droitVirtuel0 = (DroitVirtuelHeriteRF) droits.get(0);
+				assertEquals(dateFusion, droitVirtuel0.getDateDebutMetier());
+				assertEquals(RegDate.get(2010, 2, 20), droitVirtuel0.getDateFinMetier());
+				assertEquals("Fusion", droitVirtuel0.getMotifDebut());
+				assertEquals("Achat", droitVirtuel0.getMotifFin());
+
+				// la référence du droit hérité
+				final DroitProprietePersonneMoraleRF reference0 = (DroitProprietePersonneMoraleRF) droitVirtuel0.getReference();
+				assertNull(reference0.getCommunaute());
+				assertEquals(GenrePropriete.COPROPRIETE, reference0.getRegime());
+				assertEquals(new Fraction(1, 3), reference0.getPart());
+				assertEquals(RegDate.get(1997, 10, 7), reference0.getDateDebut());
+				assertEquals(RegDate.get(1997, 7, 2), reference0.getDateDebutMetier());
+				assertEquals(RegDate.get(2010, 2, 23), reference0.getDateFin());
+				assertEquals(RegDate.get(2010, 2, 20), reference0.getDateFinMetier());
+				assertEquals("Achat", reference0.getMotifDebut());
+				assertEquals("Achat", reference0.getMotifFin());
+				assertEquals("47e7d7e773", reference0.getMasterIdRF());
+				assertEquals("02faeee", reference0.getImmeuble().getIdRF());
+
+				// le deuxième droit virtuel
+				final DroitVirtuelHeriteRF droitVirtuel1 = (DroitVirtuelHeriteRF) droits.get(1);
+				assertEquals(RegDate.get(2004, 4, 12), droitVirtuel1.getDateDebutMetier());
+				assertNull(droitVirtuel1.getDateFinMetier());
+				assertEquals("Achat", droitVirtuel1.getMotifDebut());
+				assertNull(droitVirtuel1.getMotifFin());
+
+				// la référence du droit hérité
+				final DroitProprietePersonneMoraleRF droit1 = (DroitProprietePersonneMoraleRF) droitVirtuel1.getReference();
 				assertNull(droit1.getCommunaute());
 				assertEquals(GenrePropriete.INDIVIDUELLE, droit1.getRegime());
 				assertEquals(new Fraction(1, 1), droit1.getPart());

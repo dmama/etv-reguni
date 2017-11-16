@@ -174,6 +174,87 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 
 	/**
 	 * <pre>
+	 *                       copropriété (1/4)      +-------------------------+
+	 *                    +------------------------>| Immeuble 0 (bien-fonds) |
+	 *     +---------+    |                         +-------------------------+
+	 *     |    PM   |----+                              ^                 ^
+	 *     |  21550  |                                   | ppe (20/100)    :
+	 *     |         |----+                              |                 :
+	 *     +---------+    |  individuelle (1/1)      +------------------+  :
+	 *          ^         +------------------------->| Immeuble 1 (ppe) |  :
+	 *          |                                    +------------------+  :
+	 *          |                                            ^             :
+	 *          | absorbe par fusion                         :             :
+	 *          |                                            :             :
+	 *     +----------+      droit virtuel hérité            :             :
+	 *     |    PM    |......................................+             :
+	 *     |   666    |      droit virtuel hérité                          :
+	 *     |          |....................................................+
+	 *     +----------+
+	 * </pre>
+	 */
+	@Test
+	public void testGetPMVirtualInheritedLandRights() throws Exception {
+
+		final int noAbsorbante = 666;
+		final int noAbsorbee = 21550; // BIGS Architecture et Entreprise Générale S.A.
+		final RegDate dateFusion = RegDate.get(2017, 11, 1);
+
+		// les droits réels de l'entreprise absorbée doivent posséder des dates 'dateInheritedTo' renseignées à la date de la fusion
+		{
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(noAbsorbee, EnumSet.of(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+			final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+			assertNotNull(resp);
+			assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+			final Party party = resp.getBody();
+			assertNotNull(party);
+			assertEquals(Corporation.class, party.getClass());
+
+			final Corporation corporation = (Corporation) party;
+			assertEquals("BIGS Architecture et Entreprise Générale S.A.", corporation.getName());
+
+			final List<LandRight> landRights = corporation.getLandRights();
+			assertEquals(2, landRights.size());
+
+			final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
+			assertDate(dateFusion, landRight0.getDateInheritedTo());
+			assertLandOwnershipRight(null, null, "Achat", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noAbsorbee, 264822986L, 264310664, landRight0);
+
+			final LandOwnershipRight landRight1 = (LandOwnershipRight) landRights.get(1);
+			assertDate(dateFusion, landRight1.getDateInheritedTo());
+			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Transfert", null, OwnershipType.SOLE_OWNERSHIP, 1, 1, noAbsorbee, null, 357426402, landRight1);
+		}
+
+		// les droits réels de l'entreprise absorbée doivent être exposés comme droits virtuels sur l'entreprise absorbante
+		{
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(noAbsorbante, EnumSet.of(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+			final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+			assertNotNull(resp);
+			assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+			final Party party = resp.getBody();
+			assertNotNull(party);
+			assertEquals(Corporation.class, party.getClass());
+
+			final Corporation corporation = (Corporation) party;
+			assertEquals("Frigos de Bressonnaz S.A. en liquidation", corporation.getName());
+
+			final List<LandRight> landRights = corporation.getLandRights();
+			assertEquals(2, landRights.size());
+
+			final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
+			assertVirtualInheritedRight(noAbsorbante, noAbsorbee, dateFusion, null, "Fusion", null, 264310664, false, landRight0);
+			assertLandOwnershipRight(null, null, "Achat", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noAbsorbee, 264822986L, 264310664, (LandOwnershipRight) landRight0.getReference());
+
+			final VirtualInheritedLandRight landRight1 = (VirtualInheritedLandRight) landRights.get(1);
+			assertVirtualInheritedRight(noAbsorbante, noAbsorbee, dateFusion, null, "Fusion", null, 357426402, false, landRight1);
+			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Transfert", null, OwnershipType.SOLE_OWNERSHIP, 1, 1, noAbsorbee, null, 357426402, (LandOwnershipRight) landRight1.getReference());
+		}
+	}
+
+	/**
+	 * <pre>
 	 *                       copropriété (1/4)    +-------------------------+
 	 *                    +---------------------->| Immeuble 0 (bien-fonds) |
 	 *     +---------+    |                       +-------------------------+

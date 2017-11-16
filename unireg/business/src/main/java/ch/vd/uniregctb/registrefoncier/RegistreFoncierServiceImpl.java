@@ -44,7 +44,11 @@ import ch.vd.uniregctb.registrefoncier.dao.ModeleCommunauteRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.SituationRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.Heritage;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -120,22 +124,40 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.collect(Collectors.toList());
 
 		if (includeVirtualInheritance) {
-			// on détermine les liens d'héritage et on les regroupe par numéros de décédé
-			final Map<Long, List<Heritage>> heritages = ctb.getRapportsSujet().stream()
-					.filter(Heritage.class::isInstance)
-					.map(Heritage.class::cast)
-					.filter(AnnulableHelper::nonAnnule)
-					.collect(Collectors.toMap(Heritage::getObjetId, Collections::singletonList, ListUtils::union));
+			if (ctb instanceof PersonnePhysique) {
+				// on détermine les liens d'héritage et on les regroupe par numéros de décédé
+				final Map<Long, List<Heritage>> heritages = ctb.getRapportsSujet().stream()
+						.filter(Heritage.class::isInstance)
+						.map(Heritage.class::cast)
+						.filter(AnnulableHelper::nonAnnule)
+						.collect(Collectors.toMap(Heritage::getObjetId, Collections::singletonList, ListUtils::union));
 
+				// on détermine les droits virtuels du tiers RF courant à partir des droits des tiers décédés dont il est l'héritier
+				final List<DroitRF> droitsVirtuels = heritages.entrySet().stream()
+						.map(this::resolveContribuable)
+						.map(pair -> determineDroitsHeritageVirtuels(ctb, pair.getFirst(), pair.getSecond(), includeVirtualTransitive))
+						.flatMap(Collection::stream)
+						.collect(Collectors.toList());
 
-			// on détermine les droits virtuels du tiers RF courant à partir des droits des tiers décédés dont il est l'héritier
-			final List<DroitRF> droitsVirtuels = heritages.entrySet().stream()
-					.map(this::resolveContribuable)
-					.map(pair -> determineDroitsHeritageVirtuels(ctb, pair.getFirst(), pair.getSecond(), includeVirtualTransitive))
-					.flatMap(Collection::stream)
-					.collect(Collectors.toList());
+				droits.addAll(droitsVirtuels);
+			}
+			else if (ctb instanceof Entreprise) {
+				// on détermine les liens de fusion d'entreprises et on les regroupe par numéros d'entreprise absorbée
+				final Map<Long, List<FusionEntreprises>> fusions = ctb.getRapportsObjet().stream()
+						.filter(FusionEntreprises.class::isInstance)
+						.map(FusionEntreprises.class::cast)
+						.filter(AnnulableHelper::nonAnnule)
+						.collect(Collectors.toMap(FusionEntreprises::getSujetId, Collections::singletonList, ListUtils::union));
 
-			droits.addAll(droitsVirtuels);
+				// on détermine les droits virtuels de l'entreprise RF courante à partir des droits des entreprises absorbées dont elle est le destinataire
+				final List<DroitRF> droitsVirtuels = fusions.entrySet().stream()
+						.map(this::resolveContribuable)
+						.map(pair -> determineDroitsFusionVirtuels(ctb, pair.getFirst(), pair.getSecond(), includeVirtualTransitive))
+						.flatMap(Collection::stream)
+						.collect(Collectors.toList());
+
+				droits.addAll(droitsVirtuels);
+			}
 		}
 
 		return droits;
@@ -210,7 +232,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	}
 
 	@NotNull
-	private Pair<Contribuable, List<Heritage>> resolveContribuable(Map.Entry<Long, List<Heritage>> entry) {
+	private <T extends RapportEntreTiers> Pair<Contribuable, List<T>> resolveContribuable(Map.Entry<Long, List<T>> entry) {
 		final Contribuable decede = (Contribuable) tiersService.getTiers(entry.getKey());
 		if (decede == null) {
 			throw new TiersNotFoundException(entry.getKey());
@@ -245,6 +267,39 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 			dv.setDecedeId(decede.getNumero());
 			dv.setHeritierId(heritier.getNumero());
 			dv.setNombreHeritiers(nombreHeritiers);
+			dv.setDateDebutMetier(dateDebut);
+			dv.setDateFinMetier(dateFin);
+			dv.setMotifDebut(motifDebut);
+			dv.setMotifFin(motifFin);
+			dv.setReference(range);
+			return dv;
+		});
+	}
+
+	/**
+	 * Détermine les droits de fusion virtuels qui existent sur une entreprise RF pour une entreprise absorbée particulière.
+	 *
+	 * @param absorbante               l'entreprise absorbante Unireg
+	 * @param absorbee                 l'entreprise absorbée
+	 * @param fusions                  les liens de fusion entre les entreprises absorbées et l'entreprise absorbante
+	 * @param includeVirtualTransitive vrai s'il faut inclure les droits virtuels du décédé induits par des droits entre immeubles
+	 * @return la liste des droits virtuels
+	 */
+	private List<DroitRF> determineDroitsFusionVirtuels(@NotNull Contribuable absorbante, @NotNull Contribuable absorbee, @NotNull List<FusionEntreprises> fusions, boolean includeVirtualTransitive) {
+
+		final List<DroitRF> droitsEntrepriseAbsorbee = getDroitsForCtb(absorbee, includeVirtualTransitive, false); // includeVirtualInheritance=false : on s'arrête au premier niveau de fusion
+
+		final int nombreEntrepriseAbsorbantes = 1;  // par définition, dans une fusion d'entreprises, il n'y a qu'une entreprise absorbante.
+
+		return DroitRFHelper.extract(droitsEntrepriseAbsorbee, fusions, (range, debut, fin) -> {
+			final RegDate dateDebut = (debut == null ? range.getDateDebutMetier() : debut);
+			final String motifDebut = (debut == null ? range.getMotifDebut() : "Fusion");
+			final RegDate dateFin = (fin == null ? range.getDateFinMetier() : fin);
+			final String motifFin = (fin == null ? range.getMotifFin() : "Fusion");
+			final DroitVirtuelHeriteRF dv = new DroitVirtuelHeriteRF();
+			dv.setDecedeId(absorbee.getNumero());
+			dv.setHeritierId(absorbante.getNumero());
+			dv.setNombreHeritiers(nombreEntrepriseAbsorbantes);
 			dv.setDateDebutMetier(dateDebut);
 			dv.setDateFinMetier(dateFin);
 			dv.setMotifDebut(motifDebut);

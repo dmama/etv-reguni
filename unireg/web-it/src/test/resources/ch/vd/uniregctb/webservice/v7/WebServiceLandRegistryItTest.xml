@@ -235,6 +235,66 @@
 			<value>101469711</value>                           <!-- NUMERO_ENTREPRISE -->
 			<value>19941014</value>                            <!-- DATE_DEBUT_PREMIER_EXERCICE -->
 		</row>
+		<row>
+			<value>Entreprise</value>                          <!-- TIERS_TYPE -->
+			<value>666</value>                               <!-- NUMERO -->
+			<null />                                           <!-- ANNULATION_DATE -->
+			<null />                                           <!-- ANNULATION_USER -->
+			<null />                                           <!-- LOG_CDATE -->
+			<null />                                           <!-- LOG_CUSER -->
+			<value>2008-01-01 00:00:00.0</value>               <!-- LOG_MDATE -->
+			<null />                                           <!-- LOG_MUSER -->
+			<null />                                           <!-- ADRESSE_BIC_SWIFT -->
+			<null />                                           <!-- ADRESSE_EMAIL -->
+			<null />                                           <!-- BLOC_REMB_AUTO -->
+			<null />                                           <!-- COMPLEMENT_NOM -->
+			<value>0</value>                                   <!-- DEBITEUR_INACTIF -->
+			<value>0</value>                                   <!-- INDEX_DIRTY -->
+			<null />                                           <!-- NUMERO_COMPTE_BANCAIRE -->
+			<null />                                           <!-- NUMERO_TELECOPIE -->
+			<null />                                           <!-- NUMERO_TEL_PORTABLE -->
+			<null />                                           <!-- NUMERO_TEL_PRIVE -->
+			<null />                                           <!-- NUMERO_TEL_PROF -->
+			<null />                                           <!-- OID -->
+			<null />                                           <!-- PERSONNE_CONTACT -->
+			<null />                                           <!-- REINDEX_ON -->
+			<null />                                           <!-- TITULAIRE_COMPTE_BANCAIRE -->
+			<null />                                           <!-- DATE_LIMITE_EXCLUSION -->
+			<null />                                           <!-- AC_FORME_JURIDIQUE -->
+			<null />                                           <!-- AC_NOM -->
+			<null />                                           <!-- DISTRICT_FISCAL_ID -->
+			<null />                                           <!-- REGION_FISCALE_ID -->
+			<null />                                           <!-- NUMERO_CA -->
+			<null />                                           <!-- CATEGORIE_IMPOT_SOURCE -->
+			<null />                                           <!-- LOGICIEL_ID -->
+			<null />                                           <!-- MODE_COM -->
+			<null />                                           <!-- DPI_NOM1 -->
+			<null />                                           <!-- DPI_NOM2 -->
+			<null />                                           <!-- PERIODE_DECOMPTE -->
+			<null />                                           <!-- PERIODICITE_DECOMPTE -->
+			<null />                                           <!-- SANS_LISTE_RECAP -->
+			<null />                                           <!-- SANS_RAPPEL -->
+			<null />                                           <!-- NUMERO_ETABLISSEMENT -->
+			<null />                                           <!-- ANCIEN_NUMERO_SOURCIER -->
+			<null />                                           <!-- NH_CAT_ETRANGER -->
+			<null />                                           <!-- NH_DATE_DEBUT_VALID_AUTORIS -->
+			<null />                                           <!-- DATE_DECES -->
+			<null />                                           <!-- NH_DATE_NAISSANCE -->
+			<null />                                           <!-- PP_HABITANT -->
+			<null />                                           <!-- MAJORITE_TRAITEE -->
+			<null />                                           <!-- NH_NOM -->
+			<null />                                           <!-- NH_NUMERO_ASSURE_SOCIAL -->
+			<null />                                           <!-- NUMERO_INDIVIDU -->
+			<null />                                           <!-- NH_NO_OFS_NATIONALITE -->
+			<null />                                           <!-- NH_PRENOM -->
+			<null />                                           <!-- NH_SEXE -->
+			<null />                                           <!-- NH_TOUS_PRENOMS -->
+			<null />                                           <!-- DPI_ACI_HC -->
+			<value>0</value>                                   <!-- IDE_DIRTY -->
+			<value>0</value>                                   <!-- IDE_DESACTIVE -->
+			<value>101645733</value>                           <!-- NUMERO_ENTREPRISE -->
+			<value>19860513</value>                            <!-- DATE_DEBUT_PREMIER_EXERCICE -->
+		</row>
 	</table>
 	<table name="RF_IMMEUBLE">
 		<column>TYPE</column>
@@ -323,6 +383,21 @@
 			<null />
 			<value>10092818</value>
 			<value>10035633</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>207633455</value>
+			<value>FusionEntreprises</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:01:11.920000</value>
+			<value>sirec05</value>
+			<value>2016-12-14 11:01:11.928000</value>
+			<value>sirec05</value>
+			<value>20171101</value>
+			<null />
+			<value>21550</value>    <!-- entreprise absorbée -->
+			<value>666</value>      <!-- entreprise absorbante -->
 			<value>1</value>
 		</row>
 	</table>

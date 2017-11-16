@@ -69,6 +69,7 @@ import ch.vd.uniregctb.registrefoncier.CommuneRF;
 import ch.vd.uniregctb.registrefoncier.DescriptionBatimentRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteCommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneMoraleRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonnePhysiqueRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
 import ch.vd.uniregctb.registrefoncier.Fraction;
@@ -402,6 +403,35 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	protected DroitProprietePersonnePhysiqueRF addDroitPropriete(PersonnePhysiqueRF tiersRF, ImmeubleRF immeuble, CommunauteRF communaute, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier,
 	                                                             RegDate dateFinMetier, String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF, String versionIdRF) {
 		DroitProprietePersonnePhysiqueRF droit = new DroitProprietePersonnePhysiqueRF();
+		droit.setCommunaute(communaute);
+		droit.setRegime(regime);
+		droit.setPart(part);
+		droit.setDateDebut(dateDebut);
+		droit.setDateFin(dateFin);
+		droit.setDateDebutMetier(dateDebutMetier);
+		droit.setDateFinMetier(dateFinMetier);
+		droit.setMotifDebut(motifDebut);
+		droit.setMotifFin(motifFin);
+		droit.setAyantDroit(tiersRF);
+		droit.setMasterIdRF(masterIdRF);
+		droit.setVersionIdRF(versionIdRF);
+		droit.setImmeuble(immeuble);
+		final RaisonAcquisitionRF raison = new RaisonAcquisitionRF(dateDebutMetier, motifDebut, numeroAffaire);
+		raison.setDateDebut(dateDebut);
+		droit.addRaisonAcquisition(raison);
+		droit = hibernateTemplate.merge(droit);
+
+		// [SIFISC-24553] on met-à-jour à la main de la liste des servitudes pour pouvoir parcourir le graphe des dépendances dans le DatabaseChangeInterceptor
+		droit = hibernateTemplate.merge(droit);
+		immeuble.addDroitPropriete(droit);
+		tiersRF.addDroitPropriete(droit);
+
+		return droit;
+	}
+
+	protected DroitProprietePersonneMoraleRF addDroitPropriete(PersonneMoraleRF tiersRF, ImmeubleRF immeuble, CommunauteRF communaute, GenrePropriete regime, Fraction part, RegDate dateDebut, RegDate dateFin, RegDate dateDebutMetier,
+	                                                           RegDate dateFinMetier, String motifDebut, String motifFin, IdentifiantAffaireRF numeroAffaire, String masterIdRF, String versionIdRF) {
+		DroitProprietePersonneMoraleRF droit = new DroitProprietePersonneMoraleRF();
 		droit.setCommunaute(communaute);
 		droit.setRegime(regime);
 		droit.setPart(part);

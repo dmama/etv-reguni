@@ -351,7 +351,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	}
 
 	@NotNull
-	private static LandRight updateDateDebutHeritage(@NotNull LandRight landRight, @Nullable RegDate dateDebutHeritage) {
+	public static LandRight updateDateDebutHeritage(@NotNull LandRight landRight, @Nullable RegDate dateDebutHeritage) {
 		if (dateDebutHeritage != null) {
 			if (landRight instanceof LandOwnershipRight) {
 				((LandOwnershipRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));

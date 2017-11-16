@@ -39,6 +39,7 @@ import ch.vd.unireg.xml.party.landtaxlightening.v1.IfoncExemption;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
 import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.foncier.DegrevementICI;
@@ -54,6 +55,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.FormeLegaleHisto;
+import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -68,6 +70,8 @@ import ch.vd.uniregctb.xml.party.v5.EasementRightHolderComparator;
 import ch.vd.uniregctb.xml.party.v5.LandRightBuilder;
 import ch.vd.uniregctb.xml.party.v5.LandTaxLighteningBuilder;
 import ch.vd.uniregctb.xml.party.v5.TaxLighteningBuilder;
+
+import static ch.vd.uniregctb.xml.party.v5.strategy.NaturalPersonStrategy.updateDateDebutHeritage;
 
 @SuppressWarnings("Duplicates")
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
@@ -421,12 +425,21 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		final boolean includeVirtualInheritance = parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS);
 		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(entreprise, includeVirtualTransitive, includeVirtualInheritance);
 
+		// [SIFISC-24999] si l'entreprise est absorbée dans une autre entreprise, on l'indique sur les droits de propriété
+		final RegDate dateDebutFusion = entreprise.getRapportsSujet().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(FusionEntreprises.class::isInstance)
+				.map(HibernateDateRangeEntity::getDateDebut)
+				.min(RegDate::compareTo)
+				.orElse(null);
+
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
 				.sorted(new DroitRFRangeMetierComparator())
 				.map((droitRF) -> LandRightBuilder.newLandRight(droitRF,
 				                                                context.registreFoncierService::getContribuableIdFor,
 				                                                new EasementRightHolderComparator(context.tiersService)))
+				.map(d -> updateDateDebutHeritage(d, dateDebutFusion))
 				.forEach(landRights::add);
 	}
 

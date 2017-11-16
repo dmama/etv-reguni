@@ -31,6 +31,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -182,13 +183,21 @@ public abstract class DroitProprieteRF extends DroitRF {
 	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
 		// on ne veut pas retourner les tiers Unireg dans le cas de la validation/indexation/parentés, car ils ne sont pas influencés par les données RF
 		if (ayantDroit instanceof TiersRF && (context == Context.TACHES || context == Context.DATA_EVENT)) {
+
 			final List<Object> list = new ArrayList<>();
+
 			// on cherche tous les contribuables concernés ou ayant été concernés par ce droit
 			final List<Contribuable> contribuables = findLinkedContribuables((TiersRF) ayantDroit);
 			list.addAll(contribuables);
+
 			// [SIFISC-24999] on ajoute les héritiers des contribuables trouvés (car les droits des décédés sont exposés sur les héritiers)
 			final List<EntityKey> keysHeritage = findHeirsKeys(contribuables);
 			list.addAll(keysHeritage);
+
+			// [SIFISC-24999] on ajoute les entreprises absorbantes en cas de fusion (car les droits des entreprises absorbées sont exposés sur les entreprises absorbantes)
+			final List<EntityKey> keysAcquiringCompany = findAcquiringOrganisationKeys(contribuables);
+			list.addAll(keysAcquiringCompany);
+
 			// on ajoute l'immeuble, évidemment
 			list.add(immeuble);
 			return list;
@@ -233,6 +242,32 @@ public abstract class DroitProprieteRF extends DroitRF {
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(Heritage.class::isInstance) // on prend les rapports d'héritage
 				.map(RapportEntreTiers::getSujetId) // on prend les ids des héritiers
+				.distinct()
+				.map(id -> new EntityKey(Tiers.class, id))
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Détermine et retourne les clés d'entité des entreprises absorbantes des contribuables spécifiés. Cette méthode s'arrête au premier niveau des fusions d'entreprises comme convenu avec Raphaël Carbo en séance.
+	 *
+	 * @param contribuables une liste de contribuables
+	 * @return la liste des clés des entreprises absorbantes.
+	 */
+	@NotNull
+	public static List<EntityKey> findAcquiringOrganisationKeys(@NotNull Collection<Contribuable> contribuables) {
+
+		if (contribuables.isEmpty()) {
+			// short path
+			return Collections.emptyList();
+		}
+
+		// on construit la liste des clés des entreprises absorbantes
+		return contribuables.stream()
+				.map(Tiers::getRapportsSujet)                   // on part de l'entreprise absorbée
+				.flatMap(Collection::stream)
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(FusionEntreprises.class::isInstance)    // on prend les rapports de fusion d'entreprise
+				.map(RapportEntreTiers::getObjetId)             // on prend les ids des entreprises absorbantes
 				.distinct()
 				.map(id -> new EntityKey(Tiers.class, id))
 				.collect(Collectors.toList());

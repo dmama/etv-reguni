@@ -45,6 +45,10 @@ public class DroitProprieteImmeubleRF extends DroitProprieteRF {
 			// [SIFISC-24999] on ajoute les héritiers des contribuables trouvés (car les droits des décédés sont exposés sur les héritiers)
 			final List<EntityKey> keysHeritage = findHeirsKeys(contribuables);
 			result.addAll(keysHeritage);
+
+			// [SIFISC-24999] on ajoute les entreprises absorbantes en cas de fusion (car les droits des entreprises absorbées sont exposés sur les entreprises absorbantes)
+			final List<EntityKey> keysAcquiringCompany = findAcquiringOrganisationKeys(contribuables);
+			result.addAll(keysAcquiringCompany);
 		}
 
 		return result;
