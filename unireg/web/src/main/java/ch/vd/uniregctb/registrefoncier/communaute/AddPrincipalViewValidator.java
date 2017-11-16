@@ -21,7 +21,7 @@ public class AddPrincipalViewValidator implements Validator {
 			final int periode = view.getPeriodeDebut();
 			if (periode < 1900 || periode > 9999) {
 				errors.rejectValue("periodeDebut", "error.param.annee");
-			} else if (periode > RegDate.get().year() +1) {
+			} else if (periode > RegDate.get().addYears(1).year()) {
 				errors.rejectValue("periodeDebut", "error.principal.periode.fiscale");
 			}
 		}
