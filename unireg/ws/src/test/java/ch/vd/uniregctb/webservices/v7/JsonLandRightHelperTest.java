@@ -36,15 +36,15 @@ public class JsonLandRightHelperTest extends WithoutSpringTest {
 
 	private static LandOwnershipRight buildLandOwnershipRight(long id, Date dateFrom, Date dateTo, String startReason, String endReason, CaseIdentifier caseIdentifier, RightHolder rightHolder, long immovablePropertyId, Share share,
 	                                                          OwnershipType type, Long communityId, List<AcquisitionReason> acquisitionReasons) {
-		return new LandOwnershipRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolder, immovablePropertyId, share, type, communityId, acquisitionReasons, 0, id, null);
+		return new LandOwnershipRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolder, immovablePropertyId, share, type, communityId, acquisitionReasons, 0, id, null, 0, null);
 	}
 
 	private static UsufructRight buildUsufructRight(long id, Date dateFrom, Date dateTo, String startReason, String endReason, CaseIdentifier caseIdentifier, List<RightHolder> rightHolders, List<Long> immovablePropertyIds) {
-		return new UsufructRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolders.get(0), immovablePropertyIds.get(0), rightHolders, immovablePropertyIds, 0, id, null);
+		return new UsufructRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolders.get(0), immovablePropertyIds.get(0), rightHolders, immovablePropertyIds, 0, id, null, 0, null);
 	}
 
 	private static HousingRight buildHousingRight(long id, Date dateFrom, Date dateTo, String startReason, String endReason, CaseIdentifier caseIdentifier, List<RightHolder> rightHolders, List<Long> immovablePropertyIds) {
-		return new HousingRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolders.get(0), immovablePropertyIds.get(0), rightHolders, immovablePropertyIds, 0, id, null);
+		return new HousingRight(dateFrom, dateTo, startReason, endReason, caseIdentifier, rightHolders.get(0), immovablePropertyIds.get(0), rightHolders, immovablePropertyIds, 0, id, null, 0, null);
 	}
 
 	private static LandRight doTest(LandRight src, LandRightType expectedType) {

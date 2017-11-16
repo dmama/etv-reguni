@@ -11,6 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.OwnershipType;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v5.Sex;
 import ch.vd.unireg.xml.party.relation.v4.Child;
@@ -21,14 +24,27 @@ import ch.vd.unireg.xml.party.relation.v4.WelfareAdvocate;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.regimefiscal.RegimeFiscalService;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
+import ch.vd.uniregctb.registrefoncier.CommuneRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
+import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.RegistreFoncierService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeRapprochementRF;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 
+import static ch.vd.uniregctb.xml.DataHelper.xmlToCore;
+import static ch.vd.uniregctb.xml.party.v5.LandRightBuilderTest.assertCaseIdentifier;
+import static ch.vd.uniregctb.xml.party.v5.LandRightBuilderTest.assertShare;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class NaturalPersonStrategyTest extends BusinessTest {
@@ -43,6 +59,7 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		context = new Context();
 		context.tiersService = getBean(TiersService.class, "tiersService");
 		context.regimeFiscalService = getBean(RegimeFiscalService.class, "regimeFiscalService");
+		context.registreFoncierService = getBean(RegistreFoncierService.class, "serviceRF");
 	}
 
 	/**
@@ -159,6 +176,66 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		assertInheritanceFrom(idDecede.intValue(), dateDeces, null, false, relationsHeritier2.get(0));
 	}
 
+	/**
+	 * [SIFISC-24999] Teste que la construction d'un party à partir d'un tiers qui possède des héritiers renseigne bien la date 'dateInheritedTo' sur les droits du décédé.
+	 */
+	@Test
+	public void testNewFromPartLandRightWithHeritiers() throws Exception {
+
+		final RegDate dateHeritage = RegDate.get(2005, 1, 1);
+
+		class Ids {
+			Long decede;
+			Long heritier1;
+			Long heritier2;
+			long immeuble;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			// données fiscales
+			final PersonnePhysique decede = addNonHabitant("Rodolf", "Laplancha", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier1 = addNonHabitant("Gudule", "Laplancha", RegDate.get(1980, 1, 1), Sexe.FEMININ);
+			final PersonnePhysique heritier2 = addNonHabitant("Morissonnette", "Laplancha", RegDate.get(1990, 1, 1), Sexe.FEMININ);
+			addHeritage(heritier1, decede, dateHeritage, null, true);
+			addHeritage(heritier2, decede, dateHeritage, null, false);
+
+			// données RF
+			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("PP0", "Rodolf", "Laplancha", RegDate.get(1920, 1, 1));
+			addRapprochementRF(decede, tiersRF, null, null, TypeRapprochementRF.AUTO);
+
+			final CommuneRF commune = addCommuneRF(61, "La Sarraz", 5498);
+			final BienFondsRF bienFonds = addBienFondsRF("BienFonds2", "CHBF2", commune, 30);
+			final IdentifiantAffaireRF numeroAffaire = new IdentifiantAffaireRF(61, 2000, 1, 1);
+			addDroitPersonnePhysiqueRF(null, RegDate.get(2000, 1, 1), null, null, "Achat", null, "DROIT0", "1", numeroAffaire,
+			                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, bienFonds, null);
+
+			ids.decede = decede.getId();
+			ids.heritier1 = heritier1.getId();
+			ids.heritier2 = heritier2.getId();
+			ids.immeuble = bienFonds.getId();
+			return null;
+		});
+
+		// on demande le droit et vérifie que la date 'dateInheritedTo' est bien renseignée
+		final NaturalPerson decede = newFrom(ids.decede, PartyPart.LAND_RIGHTS);
+		final List<LandRight> landRights = decede.getLandRights();
+		assertNotNull(landRights);
+		assertEquals(1, landRights.size());
+		final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
+		assertNotNull(landRight0);
+		assertNull(landRight0.getCommunityId());
+		assertEquals(OwnershipType.SOLE_OWNERSHIP, landRight0.getType());
+		assertShare(1, 1, landRight0.getShare());
+		assertEquals(date(2000, 1, 1), xmlToCore(landRight0.getDateFrom()));
+		assertNull(landRight0.getDateTo());
+		assertEquals("Achat", landRight0.getStartReason());
+		assertNull(landRight0.getEndReason());
+		assertCaseIdentifier(61, "2000/1/1", landRight0.getCaseIdentifier());
+		assertEquals(ids.immeuble, landRight0.getImmovablePropertyId());
+		assertEquals(dateHeritage, xmlToCore(landRight0.getDateInheritedTo()));
+	}
+
 	private NaturalPerson newFrom(long id, PartyPart... parts) throws Exception {
 		return doInNewTransaction(status -> {
 			final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, id);
@@ -176,8 +253,8 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		assertTrue(relation instanceof InheritanceTo);
 		final InheritanceTo inheritance = (InheritanceTo) relation;
 		assertEquals(id, inheritance.getOtherPartyNumber());
-		assertEquals(dateFrom, DataHelper.xmlToCore(inheritance.getDateFrom()));
-		assertEquals(dateTo, DataHelper.xmlToCore(inheritance.getDateTo()));
+		assertEquals(dateFrom, xmlToCore(inheritance.getDateFrom()));
+		assertEquals(dateTo, xmlToCore(inheritance.getDateTo()));
 		assertEquals(principal, inheritance.isPrincipal());
 	}
 
@@ -185,8 +262,8 @@ public class NaturalPersonStrategyTest extends BusinessTest {
 		assertTrue(relation instanceof InheritanceFrom);
 		final InheritanceFrom inheritance = (InheritanceFrom) relation;
 		assertEquals(id, inheritance.getOtherPartyNumber());
-		assertEquals(dateFrom, DataHelper.xmlToCore(inheritance.getDateFrom()));
-		assertEquals(dateTo, DataHelper.xmlToCore(inheritance.getDateTo()));
+		assertEquals(dateFrom, xmlToCore(inheritance.getDateFrom()));
+		assertEquals(dateTo, xmlToCore(inheritance.getDateTo()));
 		assertEquals(principal, inheritance.isPrincipal());
 	}
 }

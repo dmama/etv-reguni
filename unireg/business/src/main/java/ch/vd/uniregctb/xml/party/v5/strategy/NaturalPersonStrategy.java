@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -25,10 +26,15 @@ import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
+import ch.vd.unireg.xml.party.landregistry.v1.HousingRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
 import ch.vd.unireg.xml.party.landregistry.v1.RealLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.UsufructRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualInheritedLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualLandOwnershipRight;
 import ch.vd.unireg.xml.party.landregistry.v1.VirtualTransitiveLandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualUsufructRight;
 import ch.vd.unireg.xml.party.person.v5.Nationality;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v5.NaturalPersonCategory;
@@ -39,10 +45,13 @@ import ch.vd.unireg.xml.party.person.v5.ResidencyPeriod;
 import ch.vd.unireg.xml.party.taxresidence.v4.WithholdingTaxationPeriod;
 import ch.vd.unireg.xml.party.v5.PartyPart;
 import ch.vd.unireg.xml.party.v5.UidNumberList;
+import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.DroitRFRangeMetierComparator;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
@@ -323,13 +332,44 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		final boolean includeVirtualInheritance = parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS);
 		final List<DroitRF> droits = context.registreFoncierService.getDroitsForCtb(pp, includeVirtualTransitive, includeVirtualInheritance);
 
+		// [SIFISC-24999] si la personne physique possède des héritiers, on l'indique sur les droits de propriété
+		final RegDate dateDebutHeritage = pp.getRapportsObjet().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(Heritage.class::isInstance)
+				.map(HibernateDateRangeEntity::getDateDebut)
+				.min(RegDate::compareTo)
+				.orElse(null);
+
 		final List<LandRight> landRights = to.getLandRights();
 		droits.stream()
 				.sorted(new DroitRFRangeMetierComparator())
 				.map((droitRF) -> LandRightBuilder.newLandRight(droitRF,
 				                                                context.registreFoncierService::getContribuableIdFor,
 				                                                new EasementRightHolderComparator(context.tiersService)))
+				.map(d -> updateDateDebutHeritage(d, dateDebutHeritage))
 				.forEach(landRights::add);
+	}
+
+	@NotNull
+	private static LandRight updateDateDebutHeritage(@NotNull LandRight landRight, @Nullable RegDate dateDebutHeritage) {
+		if (dateDebutHeritage != null) {
+			if (landRight instanceof LandOwnershipRight) {
+				((LandOwnershipRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+			}
+			else if (landRight instanceof UsufructRight) {
+				((UsufructRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+			}
+			else if (landRight instanceof HousingRight) {
+				((HousingRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+			}
+			else if (landRight instanceof VirtualLandOwnershipRight) {
+				((VirtualLandOwnershipRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+			}
+			else if (landRight instanceof VirtualUsufructRight) {
+				((VirtualUsufructRight) landRight).setDateInheritedTo(DataHelper.coreToXMLv2(dateDebutHeritage));
+			}
+		}
+		return landRight;
 	}
 
 	@SuppressWarnings("StatementWithEmptyBody")

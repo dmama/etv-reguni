@@ -120,28 +120,56 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 	 */
 	@Test
 	public void testGetPPVirtualInheritedLandRights() throws Exception {
-		final int noTiers = 10092818;
-		final int noDecede = 10035633;
 
-		final Pair<String, Map<String, ?>> params = buildUriAndParams(noTiers, EnumSet.of(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
-		final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
-		assertNotNull(resp);
-		assertEquals(HttpStatus.OK, resp.getStatusCode());
+		final int noHeritier = 10092818;    // Gertrude De Wit Tummers
+		final int noDecede = 10035633;      // Elisabeth Tummers-De Wit Wouter
+		final RegDate dateHeritage = RegDate.get(2017, 11, 1);
 
-		final Party party = resp.getBody();
-		assertNotNull(party);
-		assertEquals(NaturalPerson.class, party.getClass());
+		// le droit réel possède bien une date 'dateInheritedTo' renseignée à la date d'héritage sur le décédé
+		{
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(noDecede, EnumSet.of(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+			final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+			assertNotNull(resp);
+			assertEquals(HttpStatus.OK, resp.getStatusCode());
 
-		final NaturalPerson naturalPerson = (NaturalPerson) party;
-		assertEquals("De Wit Wouter", naturalPerson.getOfficialName());
-		assertEquals("Gertrude", naturalPerson.getFirstName());
+			final Party party = resp.getBody();
+			assertNotNull(party);
+			assertEquals(NaturalPerson.class, party.getClass());
 
-		final List<LandRight> landRights = naturalPerson.getLandRights();
-		assertEquals(1, landRights.size());
+			final NaturalPerson naturalPerson = (NaturalPerson) party;
+			assertEquals("Tummers-De Wit Wouter", naturalPerson.getOfficialName());
+			assertEquals("Elisabeth", naturalPerson.getFirstName());
 
-		final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
-		assertVirtualInheritedRight(noTiers, noDecede, RegDate.get(2017, 11, 1), null, "Succession", null, 264310664, false, landRight0);
-		assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noDecede, 264822986L, 264310664, (LandOwnershipRight) landRight0.getReference());
+			final List<LandRight> landRights = naturalPerson.getLandRights();
+			assertEquals(1, landRights.size());
+
+			final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
+			assertDate(dateHeritage, landRight0.getDateInheritedTo());
+			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noDecede, 264822986L, 264310664, landRight0);
+		}
+
+		// le droit virtuel est bien exposé sur l'héritier
+		{
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(noHeritier, EnumSet.of(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS));
+			final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+			assertNotNull(resp);
+			assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+			final Party party = resp.getBody();
+			assertNotNull(party);
+			assertEquals(NaturalPerson.class, party.getClass());
+
+			final NaturalPerson naturalPerson = (NaturalPerson) party;
+			assertEquals("De Wit Wouter", naturalPerson.getOfficialName());
+			assertEquals("Gertrude", naturalPerson.getFirstName());
+
+			final List<LandRight> landRights = naturalPerson.getLandRights();
+			assertEquals(1, landRights.size());
+
+			final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
+			assertVirtualInheritedRight(noHeritier, noDecede, dateHeritage, null, "Succession", null, 264310664, false, landRight0);
+			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noDecede, 264822986L, 264310664, (LandOwnershipRight) landRight0.getReference());
+		}
 	}
 
 	/**
