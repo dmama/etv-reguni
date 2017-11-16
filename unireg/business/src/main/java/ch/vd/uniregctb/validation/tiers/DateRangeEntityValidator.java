@@ -29,14 +29,14 @@ public abstract class DateRangeEntityValidator<T extends DateRange> extends Enti
 		if (dateDebut == null && !isDateDebutNullAllowed()) {
 			results.addError(String.format("%s %s possède une date de début nulle", getEntityCategoryName(), getEntityDisplayString(entity)));
 		}
-		else if (dateDebut != null && !isDateDebutFutureAllowed() && dateDebut.isAfter(getFutureNPlusUnBeginDate())) {
+		else if (dateDebut != null && !isDateDebutFutureAllowed() && dateDebut.isAfter(getFutureBeginDate())) {
 			// la date de début d'une entité ne doit en aucun cas être dans le futur !
 			results.addError(String.format("%s %s possède une date de début dans le futur", getEntityCategoryName(), getEntityDisplayString(entity)));
 		}
 		if (dateFin == null && !isDateFinNullAllowed()) {
 			results.addError(String.format("%s %s possède une date de fin nulle", getEntityCategoryName(), getEntityDisplayString(entity)));
 		}
-		else if (dateFin != null && !isDateFinFutureAllowed() && dateFin.isAfter(getFutureNPlusUnBeginDate())) {
+		else if (dateFin != null && !isDateFinFutureAllowed() && dateFin.isAfter(getFutureBeginDate())) {
 			// la date de fin non plus, ne doit jamais être dans le futur !
 			results.addError(String.format("%s %s possède une date de fin dans le futur", getEntityCategoryName(), getEntityDisplayString(entity)));
 		}
@@ -83,10 +83,6 @@ public abstract class DateRangeEntityValidator<T extends DateRange> extends Enti
 	protected static RegDate getFutureBeginDate() {
 		final ReferenceDateAccessor accessor = getFutureBeginDateAccessor();
 		return accessor.getReferenceDate();
-	}
-
-	protected static RegDate getFutureNPlusUnBeginDate() {
-		return getFutureBeginDate().addYears(1);
 	}
 
 	protected static String rangeToString(@NotNull DateRange range) {
