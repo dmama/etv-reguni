@@ -2376,9 +2376,6 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		class Ids {
 			long decede;
 			long heritier;
-			long droit0;
-			long droit1;
-			long droit2;
 		}
 		final Ids ids = new Ids();
 
@@ -2406,28 +2403,28 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		// mise en place foncière
 		doInNewTransaction(status -> {
 
-			// le tiers RF décédé avec deux immeubles + un lien de propriété entre les deux immeubles
+			// le tiers RF décédé qui possède deux immeubles + un lien de propriété entre les deux immeubles + un usufruit sur un autre immeuble
 			final CommuneRF laSarraz = addCommuneRF(61, "La Sarraz", 5498);
 			final CommuneRF gland = addCommuneRF(242, "Gland", 5721);
-			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid", laSarraz, 579);
-			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "some egrid", gland, 4298);
+			final BienFondsRF immeuble0 = addBienFondsRF("01faeee", "some egrid 1", laSarraz, 579);
+			final BienFondsRF immeuble1 = addBienFondsRF("02faeee", "some egrid 2", gland, 4298);
+			final BienFondsRF immeuble2 = addBienFondsRF("03faeee", "some egrid 3", laSarraz, 321);
 
 			final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
 
-			final DroitProprietePersonnePhysiqueRF droit0 = addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null,
-			                                                                           "48390a0e044", "48390a0e043", new IdentifiantAffaireRF(123, 2004, 202, 3),
-			                                                                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble0, null);
+			addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null,
+			                           "48390a0e044", "48390a0e043", new IdentifiantAffaireRF(123, 2004, 202, 3),
+			                           new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble0, null);
 
-			final DroitProprietePersonnePhysiqueRF droit1 = addDroitPersonnePhysiqueRF(RegDate.get(1997, 10, 7), RegDate.get(1997, 7, 2), RegDate.get(2010, 2, 23), RegDate.get(2010, 2, 20), "Achat", "Achat",
-			                                                                           "47e7d7e773", "47e7d7e772", new IdentifiantAffaireRF(23, 1997, 13, 0),
-			                                                                           new Fraction(1, 3), GenrePropriete.COPROPRIETE, tiersRF, immeuble1, null);
+			addDroitPersonnePhysiqueRF(RegDate.get(1997, 10, 7), RegDate.get(1997, 7, 2), RegDate.get(2010, 2, 23), RegDate.get(2010, 2, 20), "Achat", "Achat",
+			                           "47e7d7e773", "47e7d7e772", new IdentifiantAffaireRF(23, 1997, 13, 0),
+			                           new Fraction(1, 3), GenrePropriete.COPROPRIETE, tiersRF, immeuble1, null);
 
-			final DroitProprieteImmeubleRF droit2 = addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(12, 345),
-			                                                          null, RegDate.get(2000, 1, 1), null, "Constitution PPE", null,
-			                                                          new IdentifiantAffaireRF(123, 2000, 121, 2), "39393939", "1");
-			ids.droit0 = droit0.getId();
-			ids.droit1 = droit1.getId();
-			ids.droit2 = droit2.getId();
+			addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(12, 345),
+			                  null, RegDate.get(2000, 1, 1), null, "Constitution PPE", null,
+			                  new IdentifiantAffaireRF(123, 2000, 121, 2), "39393939", "1");
+
+			addUsufruitRF(date(2001, 4, 12), date(2001, 4, 12), null, null, "Donation", null, "38939923", "1", null, null, tiersRF, immeuble2);
 
 			final PersonnePhysique ctb = (PersonnePhysique) tiersDAO.get(ids.decede);
 			addRapprochementRF(ctb, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
@@ -2443,7 +2440,7 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 
 				final List<DroitRF> droits = serviceRF.getDroitsForCtb(ctb, true, true);
 				droits.sort(new DroitRFRangeMetierComparator());
-				assertEquals(3, droits.size());
+				assertEquals(3, droits.size()); // le droit d'usufruit est ignoré
 
 				// le premier droit virtuel
 				final DroitVirtuelHeriteRF droitVirtuel0 = (DroitVirtuelHeriteRF) droits.get(0);

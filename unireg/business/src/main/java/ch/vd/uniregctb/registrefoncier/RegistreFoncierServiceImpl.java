@@ -253,12 +253,17 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 		final List<DroitRF> droitsDecede = getDroitsForCtb(decede, includeVirtualTransitive, false); // includeVirtualInheritance=false : on s'arrête au premier niveau d'héritage
 
+		// [SIFISC-24999] les servitudes ne sont pas héritées, on les ignore
+		final List<DroitRF> droitsProprieteDecede = droitsDecede.stream()
+				.filter(d -> d instanceof DroitProprieteRF || d instanceof DroitProprieteVirtuelRF)
+				.collect(Collectors.toList());
+
 		final int nombreHeritiers = (int) decede.getRapportsObjet().stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.filter(Heritage.class::isInstance)
 				.count();
 
-		return DroitRFHelper.extract(droitsDecede, heritages, (range, debut, fin) -> {
+		return DroitRFHelper.extract(droitsProprieteDecede, heritages, (range, debut, fin) -> {
 			final RegDate dateDebut = (debut == null ? range.getDateDebutMetier() : debut);
 			final String motifDebut = (debut == null ? range.getMotifDebut() : "Succession");
 			final RegDate dateFin = (fin == null ? range.getDateFinMetier() : fin);
