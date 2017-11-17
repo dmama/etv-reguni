@@ -132,6 +132,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 						final String msgErreur = String.format("Individu %d  non retourné par host-interfaces",da.getNoIndividuOperateur());
 						operateur = new Operateur();
 						operateur.setCode("");
+						operateur.setNom("");
 						operateur.setPrenom(msgErreur);
 
 					}
