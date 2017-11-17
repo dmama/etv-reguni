@@ -131,6 +131,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 						//SIFISC-26187 Pas d'opérateur trouvé, on créé un opérateur fantome pour l'affichage du message d'erreur dans le rapport
 						final String msgErreur = String.format("Individu %d  non retourné par host-interfaces",da.getNoIndividuOperateur());
 						operateur = new Operateur();
+						operateur.setCode("");
 						operateur.setPrenom(msgErreur);
 
 					}
