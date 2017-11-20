@@ -59,6 +59,7 @@ import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 import static ch.vd.uniregctb.tiers.AbstractTiersController.TYPE_RECHERCHE_NOM_MAP_NAME;
+import static ch.vd.uniregctb.tiers.AbstractTiersController.FORME_JURIDIQUE_MAP_NAME;
 
 @RequestMapping(value = "/registrefoncier/communaute")
 public class CommunauteRFController {
@@ -105,6 +106,7 @@ public class CommunauteRFController {
 	public String searchTiers(@Valid @ModelAttribute(value = "criteria") TiersCriteriaView criteria, BindingResult binding, Model model) throws Exception {
 
 		model.addAttribute(TYPE_RECHERCHE_NOM_MAP_NAME, tiersMapHelper.getMapTypeRechercheNom());
+		model.addAttribute(FORME_JURIDIQUE_MAP_NAME, tiersMapHelper.getMapFormesJuridiquesEntreprise());
 
 		if (binding.hasErrors() || criteria.isEmpty()) {
 			return "registrefoncier/communaute/searchTiers";
