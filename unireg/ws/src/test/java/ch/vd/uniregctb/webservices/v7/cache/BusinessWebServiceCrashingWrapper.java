@@ -26,6 +26,7 @@ import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
@@ -136,6 +137,12 @@ class BusinessWebServiceCrashingWrapper implements BusinessWebService {
 			result.getEntries().add(new Entry(partyNo, null, new ch.vd.unireg.xml.error.v1.Error(ErrorType.TECHNICAL, EXCEPTION_TEXT)));
 		}
 		return result;
+	}
+
+	@Override
+	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) throws AccessDeniedException, ServiceException {
+		check(deceasedId);
+		return target.getCommunityOfHeirs(user, deceasedId);
 	}
 
 	@Override

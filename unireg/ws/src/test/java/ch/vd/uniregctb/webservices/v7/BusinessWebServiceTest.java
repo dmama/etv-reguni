@@ -84,6 +84,9 @@ import ch.vd.unireg.xml.party.address.v3.PostAddress;
 import ch.vd.unireg.xml.party.address.v3.Recipient;
 import ch.vd.unireg.xml.party.address.v3.TariffZone;
 import ch.vd.unireg.xml.party.adminauth.v5.AdministrativeAuthority;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirLeader;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirMember;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.corporation.v5.BusinessYear;
 import ch.vd.unireg.xml.party.corporation.v5.Capital;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
@@ -5012,6 +5015,54 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertFoundEntry(ids.communaute2, entries.get(2));
 	}
 
+	/**
+	 * Ce test vérifie que la méthode 'getCommunitiesOfHeirs' fonctionne bien dans le cas passant.
+	 */
+	@Test
+	public void testGetCommunityOfHeirs() throws Exception {
+
+		class Ids {
+			long defunt;
+			long heritier1;
+			long heritier2;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			final PersonnePhysique defunt = addNonHabitant("Jean", "Peuplus", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier1 = addNonHabitant("Gemme", "Réjouï", RegDate.get(1990, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier2 = addNonHabitant("Carla", "Parselaibel", RegDate.get(1990, 1, 1), Sexe.FEMININ);
+			addHeritage(heritier1, defunt, RegDate.get(2016, 5, 13), null, true);
+			addHeritage(heritier2, defunt, RegDate.get(2016, 5, 15), null, false);
+
+			ids.defunt = defunt.getId();
+			ids.heritier1 = heritier1.getId();
+			ids.heritier2 = heritier2.getId();
+			return null;
+		});
+
+		// on demande deux communautés : une existante et une inconnue
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+		Assert.assertNull(service.getCommunityOfHeirs(user, -1));
+
+		// on vérifie qu'on reçoit bien trois réponses
+		final CommunityOfHeirs community = service.getCommunityOfHeirs(user, (int) ids.defunt);
+		Assert.assertNotNull(community);
+		Assert.assertEquals(ids.defunt, community.getInheritedFromNumber());
+		Assert.assertEquals(RegDate.get(2016, 5, 13), DataHelper.webToRegDate(community.getInheritanceDateFrom()));
+
+		final List<CommunityOfHeirMember> members = community.getMembers();
+		Assert.assertNotNull(members);
+		Assert.assertEquals(2, members.size());
+		assertMember(ids.heritier1, RegDate.get(2016, 5, 13), null, null, members.get(0));
+		assertMember(ids.heritier2, RegDate.get(2016, 5, 15), null, null, members.get(1));
+
+		final List<CommunityOfHeirLeader> leaders = community.getLeaders();
+		Assert.assertNotNull(leaders);
+		Assert.assertEquals(1, leaders.size());
+		assertLeader(ids.heritier1, RegDate.get(2016, 5, 13), null, null, leaders.get(0));
+	}
+
 	private static void assertOwnerNaturalPerson(String firstName, String lastName, RegDate dateOfBirth, RightHolder owner) {
 		final NaturalPersonIdentity identity = (NaturalPersonIdentity) owner.getIdentity();
 		Assert.assertEquals(firstName, identity.getFirstName());
@@ -5098,5 +5149,19 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		assertEquals(dateFrom, ch.vd.uniregctb.xml.DataHelper.xmlToCore(representative.getDateFrom()));
 		assertEquals(dateTo, ch.vd.uniregctb.xml.DataHelper.xmlToCore(representative.getDateTo()));
 		assertEquals(forced, representative.isExtensionToForcedExecution());
+	}
+
+	private static void assertMember(long taxPayerNumber, RegDate dateFrom, RegDate dateTo, RegDate cancellationDate, CommunityOfHeirMember member) {
+		assertEquals(taxPayerNumber, member.getTaxPayerNumber());
+		assertEquals(dateFrom, ch.vd.uniregctb.xml.DataHelper.xmlToCore(member.getDateFrom()));
+		assertEquals(dateTo, ch.vd.uniregctb.xml.DataHelper.xmlToCore(member.getDateTo()));
+		assertEquals(cancellationDate, ch.vd.uniregctb.xml.DataHelper.xmlToCore(member.getCancellationDate()));
+	}
+
+	private static void assertLeader(long taxPayerNumber, RegDate dateFrom, RegDate dateTo, RegDate cancellationDate, CommunityOfHeirLeader leader) {
+		assertEquals(taxPayerNumber, leader.getTaxPayerNumber());
+		assertEquals(dateFrom, ch.vd.uniregctb.xml.DataHelper.xmlToCore(leader.getDateFrom()));
+		assertEquals(dateTo, ch.vd.uniregctb.xml.DataHelper.xmlToCore(leader.getDateTo()));
+		assertEquals(cancellationDate, ch.vd.uniregctb.xml.DataHelper.xmlToCore(leader.getCancellationDate()));
 	}
 }

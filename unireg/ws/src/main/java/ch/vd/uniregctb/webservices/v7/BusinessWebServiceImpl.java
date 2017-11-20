@@ -77,6 +77,7 @@ import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
@@ -157,6 +158,7 @@ import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.infra.v1.TaxOfficesBuilder;
 import ch.vd.uniregctb.xml.party.v5.BuildingBuilder;
+import ch.vd.uniregctb.xml.party.v5.CommunityOfHeirsBuilder;
 import ch.vd.uniregctb.xml.party.v5.CommunityOfOwnersBuilder;
 import ch.vd.uniregctb.xml.party.v5.EasementRightHolderComparator;
 import ch.vd.uniregctb.xml.party.v5.ImmovablePropertyBuilder;
@@ -1011,6 +1013,14 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		return finalResult;
+	}
+
+	@Override
+	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) throws AccessDeniedException, ServiceException {
+		return doInTransaction(true, status ->
+				Optional.ofNullable(context.tiersDAO.get((long) deceasedId))
+						.map(CommunityOfHeirsBuilder::newCommunity)
+						.orElse(null));
 	}
 
 	@Override

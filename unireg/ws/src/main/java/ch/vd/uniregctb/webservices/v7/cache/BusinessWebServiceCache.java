@@ -40,6 +40,7 @@ import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.error.v1.Error;
 import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
@@ -212,7 +213,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		else {
 			// quelques données ont été trouvées dans le cache -> voyons maintenant ce qui manque
 			final List<Integer> uncachedId = extractUncachedPartyIds(partyNos, cachedEntries);
-			if (uncachedId == null || uncachedId.isEmpty()) {
+			if (uncachedId.isEmpty()) {
 				// rien de plus que ce qui est déjà caché
 				parties = new Parties();
 			}
@@ -235,6 +236,21 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		}
 
 		return parties;
+	}
+
+	@Override
+	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) throws AccessDeniedException, ServiceException {
+		final CommunityOfHeirs community;
+		final GetCommunityOfHeirsKey key = new GetCommunityOfHeirsKey(deceasedId);
+		final Element element = cache.get(key);
+		if (element == null) {
+			community = target.getCommunityOfHeirs(user, deceasedId);
+			cache.put(new Element(key, community));
+		}
+		else {
+			community = (CommunityOfHeirs) element.getObjectValue();
+		}
+		return community;
 	}
 
 	@NotNull
@@ -296,6 +312,7 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 		}
 	}
 
+	@NotNull
 	private List<Integer> extractUncachedPartyIds(List<Integer> partyNos, List<Party> cached) {
 		final List<Integer> cachedIds = new ArrayList<>(cached.size());
 		for (Party party : cached) {

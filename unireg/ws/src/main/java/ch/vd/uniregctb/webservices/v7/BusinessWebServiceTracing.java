@@ -24,6 +24,7 @@ import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
@@ -278,6 +279,25 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 		}
 		finally {
 			tracing.end(time, t, "getParties", resultSize, null);
+		}
+	}
+
+	@Override
+	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) throws AccessDeniedException, ServiceException {
+		Throwable t = null;
+		final long time = tracing.start();
+		int resultSize = 0;
+		try {
+			final CommunityOfHeirs community = target.getCommunityOfHeirs(user, deceasedId);
+			resultSize = (community == null ? 0 : 1);
+			return community;
+		}
+		catch (AccessDeniedException | ServiceException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getCommunityOfHeirs", resultSize, null);
 		}
 	}
 

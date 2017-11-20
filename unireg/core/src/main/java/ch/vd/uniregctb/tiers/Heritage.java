@@ -39,6 +39,11 @@ public class Heritage extends RapportEntreTiers {
 		this.principalCommunaute  = principal;
 	}
 
+	public Heritage(RegDate dateDebut, RegDate dateFin, Long heritierId, Long defuntId, Boolean principalCommunaute) {
+		super(dateDebut, dateFin, heritierId, defuntId);
+		this.principalCommunaute = principalCommunaute;
+	}
+
 	protected Heritage(Heritage heritage) {
 		super(heritage);
 	}

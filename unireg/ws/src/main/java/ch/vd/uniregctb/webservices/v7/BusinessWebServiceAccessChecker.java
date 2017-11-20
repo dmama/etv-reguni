@@ -21,6 +21,7 @@ import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
@@ -113,7 +114,15 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	@Override
 	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		// note: le contrôle d'accès à chaque tiers est fait dans l'implémentation
 		return target.getParties(user, partyNos, parts);
+	}
+
+	@Override
+	public CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) throws AccessDeniedException, ServiceException {
+		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		WebServiceHelper.checkPartyReadAccess(securityProvider, user, deceasedId);
+		return target.getCommunityOfHeirs(user, deceasedId);
 	}
 
 	@Override

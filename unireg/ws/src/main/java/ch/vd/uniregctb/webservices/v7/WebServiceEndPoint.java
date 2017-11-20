@@ -54,6 +54,7 @@ import ch.vd.unireg.xml.error.v1.ErrorType;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
@@ -100,6 +101,7 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 	private final ch.vd.unireg.ws.party.v7.ObjectFactory partyObjectFactory = new ch.vd.unireg.ws.party.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.fiscalevents.v7.ObjectFactory fiscalEventsObjectFactory = new ch.vd.unireg.ws.fiscalevents.v7.ObjectFactory();
 	private final ch.vd.unireg.ws.landregistry.v7.ObjectFactory landRegistryObjectFactory = new ch.vd.unireg.ws.landregistry.v7.ObjectFactory();
+	private final ch.vd.unireg.ws.communityofheirs.v7.ObjectFactory communityOfHeirsObjectFactory = new ch.vd.unireg.ws.communityofheirs.v7.ObjectFactory();
 
 	private BusinessWebService target;
 
@@ -346,6 +348,37 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 			}
 			catch (ServiceException e) {
 				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, getAcceptableMediaTypes(), ErrorType.TECHNICAL, e));
+			}
+		});
+	}
+
+	@Override
+	public Response getCommunityOfHeirs(int deceasedId, String user) {
+		final Supplier<String> params = () -> String.format("getCommunityOfHeirs{user=%s, deceasedId=%d}", WebServiceHelper.enquote(user), deceasedId);
+		return execute(user, params, READ_ACCESS_LOG, userLogin -> {
+			try {
+				final CommunityOfHeirs community = target.getCommunityOfHeirs(userLogin, deceasedId);
+				if (community == null) {
+					return ExecutionResult.with(WebServiceHelper.buildErrorResponse(Response.Status.NOT_FOUND, getAcceptableMediaTypes(), ErrorType.BUSINESS, "Le tiers n'existe pas ou ne possède pas d'héritiers."));
+				}
+				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
+				if (preferred == MediaType.APPLICATION_XML_TYPE) {
+					return ExecutionResult.with(Response.ok(communityOfHeirsObjectFactory.createCommunityOfHeirs(community), preferred).build(), 1);
+				}
+				return ExecutionResult.with(Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build());
+			}
+			catch (ServiceException e) {
+				final ErrorType errorType;
+				final Response.Status status;
+				if (e.getInfo() instanceof AccessDeniedExceptionInfo) {
+					errorType = ErrorType.ACCESS;
+					status = Response.Status.FORBIDDEN;
+				}
+				else {
+					errorType = e.getInfo() instanceof BusinessExceptionInfo ? ErrorType.BUSINESS : ErrorType.TECHNICAL;
+					status = Response.Status.INTERNAL_SERVER_ERROR;
+				}
+				return ExecutionResult.with(WebServiceHelper.buildErrorResponse(status, getAcceptableMediaTypes(), errorType, e));
 			}
 		});
 	}

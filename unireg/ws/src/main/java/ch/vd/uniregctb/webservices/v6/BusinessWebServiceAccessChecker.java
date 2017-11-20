@@ -104,6 +104,7 @@ public class BusinessWebServiceAccessChecker implements BusinessWebService {
 	@Override
 	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
 		WebServiceHelper.checkAccess(securityProvider, user, Role.VISU_ALL);
+		// note: le contrôle d'accès à chaque tiers est fait dans l'implémentation
 		return target.getParties(user, partyNos, parts);
 	}
 

@@ -21,6 +21,7 @@ import ch.vd.unireg.ws.parties.v7.Parties;
 import ch.vd.unireg.ws.security.v7.SecurityListResponse;
 import ch.vd.unireg.ws.security.v7.SecurityResponse;
 import ch.vd.unireg.xml.infra.taxoffices.v1.TaxOffices;
+import ch.vd.unireg.xml.party.communityofheirs.v1.CommunityOfHeirs;
 import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.ImmovableProperty;
@@ -172,6 +173,15 @@ public interface BusinessWebService {
 	 * @throws ServiceException en cas de problème à la constitution de l'entité à exporter
 	 */
 	Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException;
+
+	/**
+	 * @param user       désignation de l'opérateur pour le compte duquel les informations sont glânées
+	 * @param deceasedId le numéro de contribuable du décédé
+	 * @return la communité d'héritiers, ou <i>null</i> si le contribuable n'existe pas ou ne possède pas d'héritiers.
+	 * @throws AccessDeniedException si l'opérateur n'a pas le droit de faire ce genre de recherche
+	 * @throws ServiceException      en cas de problème à la constitution de l'entité à exporter
+	 */
+	CommunityOfHeirs getCommunityOfHeirs(UserLogin user, int deceasedId) throws AccessDeniedException, ServiceException;
 
 	/**
 	 * Récupère l'image de l'avatar du tiers demandé

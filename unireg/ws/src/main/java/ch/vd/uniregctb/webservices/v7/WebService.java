@@ -59,6 +59,11 @@ public interface WebService {
 	Response getParties(@QueryParam("user") String user, @QueryParam("partyNo") List<Integer> partyNos, @QueryParam("part") Set<PartyPart> parts);
 
 	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("/communityOfHeirs/{deceasedId}")
+	Response getCommunityOfHeirs(@PathParam("deceasedId") int deceasedId, @QueryParam("user") String user);
+
+	@GET
 	@Produces({MediaType.APPLICATION_XML, WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET})
 	@Path("/searchParty")
 	Response searchParty(@QueryParam("user") String user,
