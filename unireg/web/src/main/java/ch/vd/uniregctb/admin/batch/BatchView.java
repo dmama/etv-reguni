@@ -3,6 +3,7 @@ package ch.vd.uniregctb.admin.batch;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -21,10 +22,11 @@ public class BatchView {
 	private String runningMessage;
 	private Date lastStart;
 	private Date lastEnd;
+	private Long offset;
 	private Date duration;
 	private final Map<String, String> runningParams = new HashMap<>();
 
-	public BatchView(JobDefinition batch) {
+	public BatchView(JobDefinition batch, Optional<Long> offsetArg) {
 		this.name = batch.getName();
 		this.categorie = batch.getCategorie();
 		this.description = batch.getDescription();
@@ -34,6 +36,10 @@ public class BatchView {
 		this.runningMessage = batch.getRunningMessage();
 		this.lastStart = batch.getLastStart();
 		this.lastEnd = batch.getLastEnd();
+
+		if (offsetArg.isPresent()) {
+			this.offset = offsetArg.get();
+		}
 
 		final Map<String, Object> params = batch.getCurrentParametersDescription();
 		if (params != null) {
@@ -82,4 +88,6 @@ public class BatchView {
 	public Map<String, String> getRunningParams() {
 		return runningParams;
 	}
+
+	public Long getOffset() { return offset; }
 }

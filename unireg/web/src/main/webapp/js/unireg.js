@@ -1541,14 +1541,20 @@ var DateUtils = {
 		return left.getFullYear() == right.getFullYear() && left.getMonth() == right.getMonth() && left.getDate() && right.getDate();
 	},
 
-	durationToString: function(start, end) {
-		end = end || new Date();
+	durationToString: function(start, end, offset) {
+		var now = new Date();
+        // [SIFISC-27015] offset date de la jvm tomcat
+		if(offset != null) {
+			now = now.setTime(now.getTime() + offset);
+		}
+
+		end = end || now;
 		var milliseconds = end.getTime() - start.getTime();
 
-		var seconds = Math.floor((milliseconds / 1000) % 60);
-		var minutes = Math.floor(((milliseconds / 1000) / 60) % 60);
-		var hours = Math.floor(((milliseconds / 1000) / 3600) % 24);
-		var days = Math.floor((milliseconds / 1000) / (3600 * 24));
+		var seconds = Math.abs(Math.floor((milliseconds / 1000) % 60));
+		var minutes = Math.abs(Math.floor(((milliseconds / 1000) / 60) % 60));
+		var hours = Math.abs(Math.floor(((milliseconds / 1000) / 3600) % 24));
+		var days = Math.abs(Math.floor((milliseconds / 1000) / (3600 * 24)));
 
 		var duration;
 		if (days == 0) {
@@ -2366,6 +2372,7 @@ var Batch = {
 			var job = jobs[i];
 			var lastStart = job.lastStart ? new Date(job.lastStart) : null;
 			var lastEnd = job.lastEnd ? new Date(job.lastEnd) : null;
+			var offset = job.offset;
 			var isRunning = job.status == 'JOB_RUNNING';
 
 			// general description + status
@@ -2392,7 +2399,7 @@ var Batch = {
 			table += '<td nowrap="nowrap">' + DateUtils.toCompactString(lastStart) + '</td>';
 
 			if (lastStart) {
-				table += '<td nowrap="nowrap">' + DateUtils.durationToString(lastStart, lastEnd) + '</td>';
+				table += '<td nowrap="nowrap">' + DateUtils.durationToString(lastStart, lastEnd, offset) + '</td>';
 			}
 			else {
 				table += '<td nowrap="nowrap"></td>';

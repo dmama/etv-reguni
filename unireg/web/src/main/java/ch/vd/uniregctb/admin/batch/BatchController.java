@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.admin.BatchList;
 import ch.vd.uniregctb.common.EncodingFixHelper;
@@ -72,10 +74,11 @@ public class BatchController {
 		final Date limit = DateUtils.addMinutes(DateHelper.getCurrentDate(), -10);
 
 		final Collection<JobDefinition> jobs = batchScheduler.getJobs().values();
+		final Long offsetJVM = new Long(DateConstants.TIME_OFFSET);
 		for (JobDefinition job : jobs) {
 			final Date lastEnd = job.getLastEnd();
 			if (job.isRunning() || (lastEnd != null && limit.before(lastEnd))) {
-				list.add(new BatchView(job));
+				list.add(new BatchView(job, Optional.of(offsetJVM)));
 			}
 		}
 
