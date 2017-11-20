@@ -60,6 +60,7 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 
 import static ch.vd.uniregctb.tiers.AbstractTiersController.TYPE_RECHERCHE_NOM_MAP_NAME;
 import static ch.vd.uniregctb.tiers.AbstractTiersController.FORME_JURIDIQUE_MAP_NAME;
+import static ch.vd.uniregctb.tiers.AbstractTiersController.CATEGORIE_ENTREPRISE_MAP_NAME;
 
 @RequestMapping(value = "/registrefoncier/communaute")
 public class CommunauteRFController {
@@ -107,6 +108,7 @@ public class CommunauteRFController {
 
 		model.addAttribute(TYPE_RECHERCHE_NOM_MAP_NAME, tiersMapHelper.getMapTypeRechercheNom());
 		model.addAttribute(FORME_JURIDIQUE_MAP_NAME, tiersMapHelper.getMapFormesJuridiquesEntreprise());
+		model.addAttribute(CATEGORIE_ENTREPRISE_MAP_NAME, tiersMapHelper.getMapCategoriesEntreprise());
 
 		if (binding.hasErrors() || criteria.isEmpty()) {
 			return "registrefoncier/communaute/searchTiers";
