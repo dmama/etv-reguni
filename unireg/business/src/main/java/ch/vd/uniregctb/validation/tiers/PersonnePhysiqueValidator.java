@@ -1,14 +1,14 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateRange;
@@ -195,36 +195,82 @@ public class PersonnePhysiqueValidator extends ContribuableImpositionPersonnesPh
 
 		// [SIFISC-25655] Deux personnes physiques ne peuvent avoir plus d'un lien d'héritage qui les lie
 		if (rapportsSujet != null && !rapportsSujet.isEmpty()) {
-			// l'héritage ne peut venir plusieurs fois du même défunt...
-			// map, par id de défunt lié, du nombre d'occurrences de lien non-annulé
-			final Map<Long, Integer> idsDefunts = rapportsSujet.stream()
+			// l'héritage ne peut venir plusieurs fois du même défunt... (à cause de l'élection de principal, on peut se retrouver avec
+			// plusieurs liens d'héritage vers le même héritier, mais ils ne doivent pas se chevaucher)
+
+			// map, par id de défunt lié-> liste des liens d'héritage
+			final Map<Long, List<Heritage>> map = rapportsSujet.stream()
 					.filter(AnnulableHelper::nonAnnule)
 					.filter(Heritage.class::isInstance)
-					.map(RapportEntreTiers::getObjetId)
-					.filter(Objects::nonNull)               // blindage contre le rapport incomplet (écrans supergra ?)
-					.collect(Collectors.toMap(Function.identity(), id -> 1, (nb1, nb2) -> nb1 + nb2));
-			for (Map.Entry<Long, Integer> entry : idsDefunts.entrySet()) {
-				if (entry.getValue() > 1) {
-					results.addError(String.format("La personne physique %s possède plusieurs liens d'héritage vers le défunt %s",
-					                               FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()),
-					                               FormatNumeroHelper.numeroCTBToDisplay(entry.getKey())));
+					.map(Heritage.class::cast)
+					.collect(Collectors.toMap(RapportEntreTiers::getObjetId, Collections::singletonList, ListUtils::union));
+			for (Map.Entry<Long, List<Heritage>> entry : map.entrySet()) {
+				final List<DateRange> intersections = DateRangeHelper.overlaps(entry.getValue());
+				if (intersections != null) {
+					// génération des messages d'erreur
+					for (DateRange range : intersections) {
+						results.addError(String.format("La personne physique %s possède des liens d'héritage vers le défunt %s qui se chevauchent sur la période %s",
+						                               FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()),
+						                               FormatNumeroHelper.numeroCTBToDisplay(entry.getKey()),
+						                               DateRangeHelper.toDisplayString(range)));
+					}
 				}
 			}
 		}
+
 		if (rapportsObjet != null && !rapportsObjet.isEmpty()) {
-			// on ne peut léguer plusieurs fois au même héritier...
-			// map, par id d'héritier lié, du nombre d'occurrences de lien non-annulé
-			final Map<Long, Integer> idsHeritiers = rapportsObjet.stream()
+			// on ne peut léguer plusieurs fois au même héritier... (à cause de l'élection de principal, on peut se retrouver avec
+			// plusieurs liens d'héritage vers le même héritier, mais ils ne doivent pas se chevaucher)
+
+			// map, par id d'héritier lié -> liste des liens d'héritage
+			final Map<Long, List<Heritage>> map = rapportsObjet.stream()
 					.filter(AnnulableHelper::nonAnnule)
 					.filter(Heritage.class::isInstance)
-					.map(RapportEntreTiers::getSujetId)
-					.filter(Objects::nonNull)           // blindage contre le rapport incomplet (écrans supergra ?)
-					.collect(Collectors.toMap(Function.identity(), id -> 1, (nb1, nb2) -> nb1 + nb2));
-			for (Map.Entry<Long, Integer> entry : idsHeritiers.entrySet()) {
-				if (entry.getValue() > 1) {
-					results.addError(String.format("La personne physique %s possède plusieurs liens d'héritage vers l'héritier %s",
-					                               FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()),
-					                               FormatNumeroHelper.numeroCTBToDisplay(entry.getKey())));
+					.map(Heritage.class::cast)
+					.collect(Collectors.toMap(RapportEntreTiers::getSujetId, Collections::singletonList, ListUtils::union));
+
+			for (Map.Entry<Long, List<Heritage>> entry : map.entrySet()) {
+				final List<DateRange> intersections = DateRangeHelper.overlaps(entry.getValue());
+				if (intersections != null) {
+					// génération des messages d'erreur
+					for (DateRange range : intersections) {
+						results.addError(String.format("La personne physique %s possède des liens d'héritage vers l'héritier %s qui se chevauchent sur la période %s",
+						                               FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()),
+						                               FormatNumeroHelper.numeroCTBToDisplay(entry.getKey()),
+						                               DateRangeHelper.toDisplayString(range)));
+					}
+				}
+			}
+		}
+
+		if (rapportsObjet != null && !rapportsObjet.isEmpty()) {
+
+			final List<Heritage> heritages = rapportsObjet.stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(Heritage.class::isInstance)
+					.map(Heritage.class::cast)
+					.collect(Collectors.toList());
+
+			if (!heritages.isEmpty()) {
+
+				final List<Heritage> principaux = heritages.stream()
+						.filter(h -> h.getPrincipalCommunaute() != null && h.getPrincipalCommunaute())
+						.sorted(new DateRangeComparator<>())
+						.collect(Collectors.toList());
+
+				// [SIFISC-24999] Les héritages où l'héritier est élu principal sont mutuellement exclusifs (= on ne peut pas en avoir plusieurs actifs à un moment donné)
+				final List<DateRange> intersections = DateRangeHelper.overlaps(principaux);
+				if (intersections != null) {
+					// génération des messages d'erreur
+					for (DateRange range : intersections) {
+						results.addError(String.format("La période %s est couverte par plusieurs héritages où l'héritier est considéré comme le principal de la communauté d'héritiers", DateRangeHelper.toDisplayString(range)));
+					}
+				}
+
+				// [SIFISC-24999] Il doit toujours y avoir un principal à tout moment pendant la période de validité de l'héritage
+				final DateRange rangeHeritage = DateRangeHelper.getOverallRange(heritages);
+				if (!DateRangeHelper.isFullyCovered(rangeHeritage, principaux)) {
+					results.addError(String.format("La période de validité de l'héritage %s ne possède pas des héritiers désignés comme principaux en continu", DateRangeHelper.toDisplayString(rangeHeritage)));
 				}
 			}
 		}

@@ -155,25 +155,4 @@ public class HeritageValidatorTest extends AbstractValidatorTest<Heritage> {
 			                    warning);
 		}
 	}
-
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testHeritagePourDefuntDecedeAutreDate() throws Exception {
-		final RegDate dateDeces = date(2015, 7, 3);
-		final PersonnePhysique defunt = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
-		defunt.setDateDeces(dateDeces);
-		final PersonnePhysique heritier = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
-		final Heritage heritage = addHeritage(heritier, defunt, dateDeces, null, null);
-		final ValidationResults vr = validate(heritage);
-		Assert.assertNotNull(vr);
-		Assert.assertEquals(0, vr.getErrors().size());
-		Assert.assertEquals(1, vr.getWarnings().size());
-		{
-			final String warning = vr.getWarnings().get(0);
-			Assert.assertEquals(String.format("Le rapport entre tiers de type Héritage (03.07.2015 - ?) entre le tiers héritier %s et le tiers défunt(e) %s devrait débuter au lendemain de la date de décès du/de la défunt(e) (03.07.2015)",
-			                                  FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()),
-			                                  FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero())),
-			                    warning);
-		}
-	}
 }

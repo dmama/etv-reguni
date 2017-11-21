@@ -104,7 +104,7 @@ public class AnnulationDecesEchProcessorTest extends AbstractEvenementCivilEchPr
 			addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 
 			final PersonnePhysique heritier = addNonHabitant("Cylla", "Guèréfini", null, Sexe.FEMININ);
-			addHeritage(heritier, pp, dateDeces.getOneDayAfter(), null, null);
+			addHeritage(heritier, pp, dateDeces.getOneDayAfter(), null, true);
 
 			return pp.getNumero();
 		});

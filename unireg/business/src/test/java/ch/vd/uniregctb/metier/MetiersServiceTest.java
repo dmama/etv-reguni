@@ -2648,8 +2648,8 @@ public class MetiersServiceTest extends BusinessTest {
 			final PersonnePhysique legateur = addNonHabitant("Germaine", "Dellacorte", date(1933, 7, 3), Sexe.FEMININ);
 			legateur.setDateDeces(datePremierHeritage.getOneDayBefore());
 
-			addHeritage(defunt, legateur, datePremierHeritage, null, null);
-			addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null, null);        // on a déja placé le lien d'héritage avant de traiter le décès...
+			addHeritage(defunt, legateur, datePremierHeritage, null, true);
+			addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null, true);        // on a déja placé le lien d'héritage avant de traiter le décès...
 
 			final Ids res = new Ids();
 			res.defunt = defunt.getNumero();

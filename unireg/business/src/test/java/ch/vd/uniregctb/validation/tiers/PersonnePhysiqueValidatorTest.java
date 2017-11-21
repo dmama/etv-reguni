@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -28,6 +27,7 @@ import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -1172,6 +1172,9 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		assertEquals("La déclaration d'impôt hors-canton immeuble qui va du 01.01.2009 au 31.12.2009 ne correspond à aucune période d'imposition théorique", warnings.get(0));
 	}
 
+	/**
+	 * [SIFISC-24999] Vérifie que l'existence de plusieurs liens d'héritage vers la même personne est autorisée, du moment qu'il n'y a pas de chevauchement.
+	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testMultiplesLiensHeritageNonChevauchants() throws Exception {
@@ -1181,55 +1184,21 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		defunt.setDateDeces(dateDeces);
 		final PersonnePhysique heritier = addNonHabitant("Croquant", "Lapomme", date(1996, 7, 31), Sexe.MASCULIN);
 
-		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null, null);
-		addHeritage(heritier, defunt, date(2000, 1, 1), date(2000, 12, 31), null);        // donnée bidon..
+		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), date(2017, 9, 30), true);
+		addHeritage(heritier, defunt, date(2017, 10, 1), null, true);
 
 		// validation côté défunt
 		{
 			final ValidationResults results = validate(defunt);
-			assertTrue(results.hasErrors());
-			assertTrue(results.hasWarnings());
-
-			final List<String> erreurs = results.getErrors();
-			assertNotNull(erreurs);
-			assertEquals(1, erreurs.size());
-			final String expectedErreur = String.format("La personne physique %s possède plusieurs liens d'héritage vers l'héritier %s",
-			                                            FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
-			                                            FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()));
-			assertEquals(expectedErreur, erreurs.get(0));
-
-			final List<String> warnings = results.getWarnings();
-			assertNotNull(warnings);
-			assertEquals(1, warnings.size());
-			final String expectedWarning = String.format("Le rapport entre tiers de type Héritage (01.01.2000 - 31.12.2000) entre le tiers héritier %s et le tiers défunt(e) %s devrait débuter au lendemain de la date de décès du/de la défunt(e) (%s)",
-			                                             FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()),
-			                                             FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
-			                                             RegDateHelper.dateToDisplayString(dateDeces));
-			assertEquals(expectedWarning, warnings.get(0));
+			assertFalse(results.hasErrors());
+			assertFalse(results.hasWarnings());
 		}
 
 		// validation côté héritier
 		{
 			final ValidationResults results = validate(heritier);
-			assertTrue(results.hasErrors());
-			assertTrue(results.hasWarnings());
-
-			final List<String> erreurs = results.getErrors();
-			assertNotNull(erreurs);
-			assertEquals(1, erreurs.size());
-			final String expectedErreur = String.format("La personne physique %s possède plusieurs liens d'héritage vers le défunt %s",
-			                                            FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()),
-			                                            FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()));
-			assertEquals(expectedErreur, erreurs.get(0));
-
-			final List<String> warnings = results.getWarnings();
-			assertNotNull(warnings);
-			assertEquals(1, warnings.size());
-			final String expectedWarning = String.format("Le rapport entre tiers de type Héritage (01.01.2000 - 31.12.2000) entre le tiers héritier %s et le tiers défunt(e) %s devrait débuter au lendemain de la date de décès du/de la défunt(e) (%s)",
-			                                             FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()),
-			                                             FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
-			                                             RegDateHelper.dateToDisplayString(dateDeces));
-			assertEquals(expectedWarning, warnings.get(0));
+			assertFalse(results.hasErrors());
+			assertFalse(results.hasWarnings());
 		}
 	}
 
@@ -1242,7 +1211,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		defunt.setDateDeces(dateDeces);
 		final PersonnePhysique heritier = addNonHabitant("Croquant", "Lapomme", date(1996, 7, 31), Sexe.MASCULIN);
 
-		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null, null);
+		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), null, true);
 		addHeritage(heritier, defunt, dateDeces.getOneDayAfter(), dateDeces.addMonths(1), null);        // donnée bidon..
 
 		// validation côté défunt
@@ -1254,7 +1223,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			final List<String> erreurs = results.getErrors();
 			assertNotNull(erreurs);
 			assertEquals(1, erreurs.size());
-			final String expectedErreur = String.format("La personne physique %s possède plusieurs liens d'héritage vers l'héritier %s",
+			final String expectedErreur = String.format("La personne physique %s possède des liens d'héritage vers l'héritier %s qui se chevauchent sur la période [01.06.2017 ; 30.06.2017]",
 			                                            FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
 			                                            FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()));
 			assertEquals(expectedErreur, erreurs.get(0));
@@ -1269,10 +1238,126 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			final List<String> erreurs = results.getErrors();
 			assertNotNull(erreurs);
 			assertEquals(1, erreurs.size());
-			final String expectedErreur = String.format("La personne physique %s possède plusieurs liens d'héritage vers le défunt %s",
+			final String expectedErreur = String.format("La personne physique %s possède des liens d'héritage vers le défunt %s qui se chevauchent sur la période [01.06.2017 ; 30.06.2017]",
 			                                            FormatNumeroHelper.numeroCTBToDisplay(heritier.getNumero()),
 			                                            FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()));
 			assertEquals(expectedErreur, erreurs.get(0));
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testMultiplesLiensHeritagePrincipalChevauchants() throws Exception {
+
+		final RegDate dateDeces = date(2017, 5, 31);
+		final RegDate dateChangementPrincipal = date(2017, 10, 22);
+
+		final PersonnePhysique defunt = addNonHabitant("Mordant", "Lapomme", date(1964, 8, 21), Sexe.MASCULIN);
+		defunt.setDateDeces(dateDeces);
+		final PersonnePhysique heritier1 = addNonHabitant("Croquant", "Lapomme", date(1996, 7, 31), Sexe.MASCULIN);
+		final PersonnePhysique heritier2 = addNonHabitant("Tranchante", "Lapomme", date(1998, 2, 9), Sexe.FEMININ);
+		final PersonnePhysique heritier3 = addNonHabitant("Coupante", "Lapomme", date(1998, 2, 9), Sexe.FEMININ);
+
+		final Heritage heritage1 = addHeritage(heritier1, defunt, dateDeces.getOneDayAfter(), null, true);
+		final Heritage heritage2 = addHeritage(heritier2, defunt, dateDeces.getOneDayAfter(), null, false);
+
+		// deux héritiers principaux
+		{
+			heritage1.setPrincipalCommunaute(true);
+			heritage2.setPrincipalCommunaute(true);
+
+			final ValidationResults results = validate(defunt);
+			assertTrue(results.hasErrors());
+			assertFalse(results.hasWarnings());
+
+			final List<String> erreurs = results.getErrors();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			assertEquals("La période [01.06.2017 ; ] est couverte par plusieurs héritages où l'héritier est considéré comme le principal de la communauté d'héritiers",
+			             erreurs.get(0));
+		}
+
+		// un seul héritier principal
+		{
+			heritage1.setPrincipalCommunaute(true);
+			heritage2.setPrincipalCommunaute(false);
+
+			final ValidationResults results = validate(defunt);
+			assertFalse(results.hasErrors());
+			assertFalse(results.hasWarnings());
+		}
+
+		heritage1.setDateFin(dateChangementPrincipal.getOneDayBefore());
+		heritage2.setDateFin(dateChangementPrincipal.getOneDayBefore());
+		final Heritage heritage3 = addHeritage(heritier1, defunt, dateChangementPrincipal, null, true);
+		final Heritage heritage4 = addHeritage(heritier2, defunt, dateChangementPrincipal, null, null);
+
+		// deux héritiers principaux à tour de rôle
+		{
+			heritage1.setPrincipalCommunaute(true);
+			heritage2.setPrincipalCommunaute(false);
+			heritage3.setPrincipalCommunaute(false);
+			heritage4.setPrincipalCommunaute(true);
+
+			final ValidationResults results = validate(defunt);
+			assertFalse(results.hasErrors());
+			assertFalse(results.hasWarnings());
+		}
+
+		final Heritage heritage5 = addHeritage(heritier3, defunt, dateChangementPrincipal, null, null);
+
+		// trois héritiers principaux avec chevauchement des périodes de principaux
+		{
+			heritage5.setPrincipalCommunaute(true);
+
+			final ValidationResults results = validate(defunt);
+			assertTrue(results.hasErrors());
+			assertFalse(results.hasWarnings());
+
+			final List<String> erreurs = results.getErrors();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			assertEquals("La période [22.10.2017 ; ] est couverte par plusieurs héritages où l'héritier est considéré comme le principal de la communauté d'héritiers",
+			             erreurs.get(0));
+		}
+	}
+
+	/***
+	 * [SIFISC-24999] Ce test s'assure qu'il y a toujours un principal déterminé pendant toute la période de validité d'un héritage.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testMultipleLiensHeritagePrincipalToujoursDetermine() throws Exception {
+
+		final RegDate dateDeces = date(2017, 5, 31);
+		final RegDate dateChangementPrincipal = date(2017, 10, 22);
+
+		final PersonnePhysique defunt = addNonHabitant("Mordant", "Lapomme", date(1964, 8, 21), Sexe.MASCULIN);
+		defunt.setDateDeces(dateDeces);
+		final PersonnePhysique heritier1 = addNonHabitant("Croquant", "Lapomme", date(1996, 7, 31), Sexe.MASCULIN);
+		final PersonnePhysique heritier2 = addNonHabitant("Tranchante", "Lapomme", date(1998, 2, 9), Sexe.FEMININ);
+
+		// première période
+		addHeritage(heritier1, defunt, dateDeces.getOneDayAfter(), dateChangementPrincipal.getOneDayBefore(), true);
+		addHeritage(heritier2, defunt, dateDeces.getOneDayAfter(), dateChangementPrincipal.getOneDayBefore(), false);
+
+		// seconde période
+		final Heritage heritage2 = addHeritage(heritier2, defunt, dateChangementPrincipal, null, true);
+		addHeritage(heritier1, defunt, dateChangementPrincipal, null, false);
+
+		// la seconde période n'a pas de principal
+		{
+			heritage2.setPrincipalCommunaute(false);
+
+			final ValidationResults results = validate(defunt);
+			assertTrue(results.hasErrors());
+			assertFalse(results.hasWarnings());
+
+			final List<String> erreurs = results.getErrors();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			assertEquals("La période de validité de l'héritage [01.06.2017 ; ] ne possède pas des héritiers désignés comme principaux en continu",
+			             erreurs.get(0));
 		}
 	}
 }

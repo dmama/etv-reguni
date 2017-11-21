@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.validation.rapport;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.tiers.Heritage;
@@ -55,9 +54,6 @@ public class HeritageValidator extends RapportEntreTiersValidator<Heritage> {
 				final RegDate dateDeces = tiersService.getDateDeces((PersonnePhysique) defunt);
 				if (dateDeces == null) {
 					vr.addWarning(String.format("%s alors que le 'défunt' n'est pas décédé", getEntityDisplayString(ret)));
-				}
-				else if (dateDeces.getOneDayAfter() != ret.getDateDebut()) {
-					vr.addWarning(String.format("Le rapport entre tiers de type %s devrait débuter au lendemain de la date de décès du/de la défunt(e) (%s)", getEntityDisplayString(ret), RegDateHelper.dateToDisplayString(dateDeces)));
 				}
 			}
 		}
