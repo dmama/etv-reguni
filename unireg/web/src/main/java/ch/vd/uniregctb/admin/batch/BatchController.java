@@ -78,7 +78,7 @@ public class BatchController {
 		for (JobDefinition job : jobs) {
 			final Date lastEnd = job.getLastEnd();
 			if (job.isRunning() || (lastEnd != null && limit.before(lastEnd))) {
-				list.add(new BatchView(job, Optional.of(offsetJVM)));
+				list.add(new BatchView(job, offsetJVM));
 			}
 		}
 
