@@ -745,17 +745,18 @@ public class IdentificationController {
 		final WebParamPagination pagination = paginationStockee !=null? paginationStockee: new WebParamPagination(request, "message", 25);
 		final List<IdentificationMessagesResultView> listIdentifications;
 		final int nombreElements;
+		final TypeDemande types[] = getAllowedTypes();
 
 		if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_ADMIN)) {
 			listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION);
 			nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION);
 		}
 		else if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU,Role.MW_IDENT_CTB_GEST_BO)) {
-			listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
-			nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
+			listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES,types);
+			nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES,types);
 		}
 		else {//Cellule back office
-			final TypeDemande types[] = getAllowedTypes();
+
 			listIdentifications = identificationMessagesListManager.findEncoursSeul(criteria, pagination, types);
 			nombreElements = identificationMessagesListManager.countEnCoursSeul(criteria, types);
 		}
