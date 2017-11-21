@@ -50,10 +50,18 @@ public interface RapportEditManager {
 	boolean isEditionAllowed(long idRapport, @NotNull SensRapportEntreTiers sens);
 
 	/**
-	 * Persiste le rapport entre tiers
-	 * @param rapportView
+	 * Ajoute un nouveau rapport-entre-tiers
+	 *
+	 * @param rapportView la vue web du rapport à ajouter
 	 */
-	void save(RapportView rapportView) ;
+	void add(@NotNull RapportView rapportView);
+
+	/**
+	 * Met-à-jour un rapport-entre-tiers existant
+	 *
+	 * @param rapportView la vue web du rapport à mettre-à-jour
+	 */
+	void update(@NotNull RapportView rapportView);
 
 	/**
 	 * Annule le rapport

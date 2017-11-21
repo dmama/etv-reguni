@@ -197,71 +197,78 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * Persiste le rapport entre tiers
 	 */
 	@Override
-	public void save(RapportView rapportView) {
+	public void add(@NotNull RapportView rapportView) {
 
-		if (rapportView.getId() == null) {
+		if (rapportView.getId() != null) {
+			throw new IllegalArgumentException("Le rapport est déjà persisté.");
+		}
 
-			final TypeRapportEntreTiers type = rapportView.getTypeRapportEntreTiers().toCore();
-			final Tiers sujet; // sujet : pupille, curatelle, personne sous conseil légal ou substitué pour l'assujettissement
-			final Tiers objet; // objet : tuteur, curateur, conseil légal ou substituant pour l'assujettissement
+		final TypeRapportEntreTiers type = rapportView.getTypeRapportEntreTiers().toCore();
+		final Tiers sujet; // sujet : pupille, curatelle, personne sous conseil légal ou substitué pour l'assujettissement
+		final Tiers objet; // objet : tuteur, curateur, conseil légal ou substituant pour l'assujettissement
 
-			// récupère les données
-			final SensRapportEntreTiers sens = rapportView.getSensRapportEntreTiers();
-			if (sens == SensRapportEntreTiers.OBJET) {
-				sujet = tiersService.getTiers(rapportView.getTiers().getNumero());
-				objet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
-			}
-			else {
-				Assert.isEqual(SensRapportEntreTiers.SUJET, sens);
-				sujet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
-				objet = tiersService.getTiers(rapportView.getTiers().getNumero());
-			}
-			Assert.notNull(type);
-
-			// instancie le bon rapport
-			RapportEntreTiers rapport = type.newInstance();
-			rapport.setDateDebut(rapportView.getDateDebut());
-
-			// [UNIREG-755] tenir compte de l'extension de l'exécution à la création du rapport
-			if (rapport instanceof RepresentationConventionnelle) {
-				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapport;
-				repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
-				validateExecutionForcee(repres, sujet);
-			}
-
-			if (rapport instanceof RepresentationLegale) {
-				final RepresentationLegale representation = (RepresentationLegale) rapport;
-				final Long autoriteId = rapportView.getAutoriteTutelaireId();
-				if (autoriteId != null) {
-					CollectiviteAdministrative autorite = findAutorite(autoriteId);
-					representation.setAutoriteTutelaire(autorite);
-				}
-
-			}
-
-			if (rapport instanceof Heritage) {
-				final Heritage heritage =(Heritage) rapport;
-				heritage.setPrincipalCommunaute(rapportView.getPrincipalCommunaute());
-			}
-
-			// établit le rapport entre les deux tiers
-			tiersService.addRapport(rapport, sujet, objet);
+		// récupère les données
+		final SensRapportEntreTiers sens = rapportView.getSensRapportEntreTiers();
+		if (sens == SensRapportEntreTiers.OBJET) {
+			sujet = tiersService.getTiers(rapportView.getTiers().getNumero());
+			objet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
 		}
 		else {
-			// mise-à-jour du rapport
-			RapportEntreTiers rapportEntreTiers = rapportEntreTiersDAO.get(rapportView.getId());
-			rapportEntreTiers.setDateFin(rapportView.getDateFin());
-			if (rapportEntreTiers instanceof RapportPrestationImposable) {
-				RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
-			}
-			else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
-				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
-				repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
-				final Tiers sujet = tiersDAO.get(repres.getSujetId());
-				validateExecutionForcee(repres, sujet);
-			}
+			Assert.isEqual(SensRapportEntreTiers.SUJET, sens);
+			sujet = tiersService.getTiers(rapportView.getTiersLie().getNumero());
+			objet = tiersService.getTiers(rapportView.getTiers().getNumero());
+		}
+		Assert.notNull(type);
+
+		// instancie le bon rapport
+		RapportEntreTiers rapport = type.newInstance();
+		rapport.setDateDebut(rapportView.getDateDebut());
+
+		// [UNIREG-755] tenir compte de l'extension de l'exécution à la création du rapport
+		if (rapport instanceof RepresentationConventionnelle) {
+			final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapport;
+			repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
+			validateExecutionForcee(repres, sujet);
 		}
 
+		if (rapport instanceof RepresentationLegale) {
+			final RepresentationLegale representation = (RepresentationLegale) rapport;
+			final Long autoriteId = rapportView.getAutoriteTutelaireId();
+			if (autoriteId != null) {
+				CollectiviteAdministrative autorite = findAutorite(autoriteId);
+				representation.setAutoriteTutelaire(autorite);
+			}
+
+		}
+
+		if (rapport instanceof Heritage) {
+			final Heritage heritage =(Heritage) rapport;
+			heritage.setPrincipalCommunaute(rapportView.getPrincipalCommunaute());
+		}
+
+		// établit le rapport entre les deux tiers
+		tiersService.addRapport(rapport, sujet, objet);
+	}
+
+	@Override
+	public void update(@NotNull RapportView rapportView) {
+
+		if (rapportView.getId() == null) {
+			throw new IllegalArgumentException("Le rapport n'est pas déjà persisté.");
+		}
+
+		// mise-à-jour du rapport
+		RapportEntreTiers rapportEntreTiers = rapportEntreTiersDAO.get(rapportView.getId());
+		rapportEntreTiers.setDateFin(rapportView.getDateFin());
+		if (rapportEntreTiers instanceof RapportPrestationImposable) {
+			RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
+		}
+		else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
+			final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
+			repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
+			final Tiers sujet = tiersDAO.get(repres.getSujetId());
+			validateExecutionForcee(repres, sujet);
+		}
 	}
 
 	private CollectiviteAdministrative findAutorite(Long autoriteTutelaireId) {

@@ -85,7 +85,7 @@ public class RapportEditManagerTest extends WebTest {
 				// vérifie qu'il n'est PAS possible de sauver une représentation AVEC extension de l'exécution forcée
 				try {
 					rapport.setExtensionExecutionForcee(true);
-					manager.save(rapport);
+					manager.add(rapport);
 					fail("Il ne devrait pas être possible de sauver un rapport de représentation avec extension de l'exécution forcée sur un habitant");
 				}
 				catch (ValidationException e) {
@@ -95,7 +95,7 @@ public class RapportEditManagerTest extends WebTest {
 
 				// vérifie qu'il EST possible de sauver une représentation SANS extension de l'exécution forcée
 				rapport.setExtensionExecutionForcee(false);
-				manager.save(rapport);
+				manager.add(rapport);
 			}
 		});
 
@@ -147,7 +147,7 @@ public class RapportEditManagerTest extends WebTest {
 				// vérifie qu'il n'est PAS possible de sauver une représentation AVEC extension de l'exécution forcée
 				try {
 					rapport.setExtensionExecutionForcee(true);
-					manager.save(rapport);
+					manager.add(rapport);
 					fail("Il ne devrait pas être possible de sauver un rapport de représentation avec extension de l'exécution forcée sur un habitant");
 				}
 				catch (ValidationException e) {
@@ -157,7 +157,7 @@ public class RapportEditManagerTest extends WebTest {
 
 				// vérifie qu'il EST possible de sauver une représentation SANS extension de l'exécution forcée
 				rapport.setExtensionExecutionForcee(false);
-				manager.save(rapport);
+				manager.add(rapport);
 			}
 		});
 
@@ -206,7 +206,7 @@ public class RapportEditManagerTest extends WebTest {
 
 				// vérifie qu'il EST possible de sauver une représentation AVEC extension de l'exécution forcée
 				rapport.setExtensionExecutionForcee(true);
-				manager.save(rapport);
+				manager.add(rapport);
 			}
 		});
 
@@ -251,7 +251,7 @@ public class RapportEditManagerTest extends WebTest {
 				rapport.setTiersLie(new TiersGeneralView(noTiersSubstitue));
 				rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
 				rapport.setDateDebut(date(2014, 11, 11));
-				manager.save(rapport);
+				manager.add(rapport);
 			}
 		});
 
@@ -288,7 +288,7 @@ public class RapportEditManagerTest extends WebTest {
 			rapport.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET);  // le tiers lié est l'objet
 			rapport.setDateDebut(date(2014, 11, 11));
 			rapport.setPrincipalCommunaute(true);
-			manager.save(rapport);
+			manager.add(rapport);
 			return null;
 		});
 

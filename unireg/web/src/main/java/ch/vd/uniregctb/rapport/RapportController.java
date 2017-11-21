@@ -308,7 +308,7 @@ public class RapportController {
 		}
 
 		try {
-			rapportEditManager.save(view);
+			rapportEditManager.add(view);
 		}
 		catch (Exception e) {
 			LOGGER.error("Erreur à l'ajout d'un rapport entre les tiers " + numeroTiers + " et " + numeroTiersLie, e);
@@ -388,7 +388,7 @@ public class RapportController {
 		}
 
 		try {
-			rapportEditManager.save(view);
+			rapportEditManager.update(view);
 		}
 		catch (Exception e) {
 			LOGGER.error("Erreur à la modification d'un rapport entre les tiers " + numeroTiers + " et " + numeroTiersLie, e);
