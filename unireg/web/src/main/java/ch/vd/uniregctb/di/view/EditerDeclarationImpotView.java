@@ -20,8 +20,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
-import ch.vd.uniregctb.declaration.view.EtatDeclarationView;
+import ch.vd.uniregctb.declaration.view.DelaiDocumentFiscalView;
+import ch.vd.uniregctb.declaration.view.EtatDocumentFiscalView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -42,8 +42,8 @@ public class EditerDeclarationImpotView {
 	private String codeControle;
 	private String sourceQuittancement;
 	private TypeEtatDocumentFiscal dernierEtat;
-	private List<DelaiDeclarationView> delais;
-	private List<EtatDeclarationView> etats;
+	private List<DelaiDocumentFiscalView> delais;
+	private List<EtatDocumentFiscalView> etats;
 	private boolean isSommable;
 	/**
 	 * VRAI si la DI a été sommée (même si elle est maintenant retournée ou échue)
@@ -148,28 +148,28 @@ public class EditerDeclarationImpotView {
 		return etatRourne == null ? null : etatRourne.getSource();
 	}
 
-	private static List<DelaiDeclarationView> initDelais(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	private static List<DelaiDocumentFiscalView> initDelais(DeclarationImpotOrdinaire di, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		final Set<DelaiDeclaration> delais = di.getDelaisDeclaration();
 		if (delais == null || delais.isEmpty()) {
 			return Collections.emptyList();
 		}
 		final RegDate first = di.getPremierDelai();
-		final List<DelaiDeclarationView> list = new ArrayList<>(delais.size());
+		final List<DelaiDocumentFiscalView> list = new ArrayList<>(delais.size());
 		for (DelaiDeclaration delai : delais) {
-			final DelaiDeclarationView d = new DelaiDeclarationView(delai, infraService, messageSource);
+			final DelaiDocumentFiscalView d = new DelaiDocumentFiscalView(delai, infraService, messageSource);
 			d.setFirst(d.getDelaiAccordeAu() == first);
 			list.add(d);
 		}
 
 		// Trie par ordre décroissant des dates de traitement (pour tenir compte des délais non-accordés)
-		list.sort(Comparator.comparing(DelaiDeclarationView::getDateTraitement)
-				          .thenComparingLong(DelaiDeclarationView::getId)
+		list.sort(Comparator.comparing(DelaiDocumentFiscalView::getDateTraitement)
+				          .thenComparingLong(DelaiDocumentFiscalView::getId)
 				          .reversed());
 
 		// calcul du flag "lastOfState" pour le dernier délai à chaque état
 		list.stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.collect(Collectors.toMap(DelaiDeclarationView::getEtat,
+				.collect(Collectors.toMap(DelaiDocumentFiscalView::getEtat,
 				                          Function.identity(),
 				                          (dd1, dd2) -> dd1,            // selon le tri ci-dessus, le premier vu est le dernier valide...
 				                          () -> new EnumMap<>(EtatDelaiDocumentFiscal.class)))
@@ -178,10 +178,10 @@ public class EditerDeclarationImpotView {
 		return list;
 	}
 
-	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		final List<EtatDeclarationView> list = new ArrayList<>();
+	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
+		final List<EtatDocumentFiscalView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
-			list.add(new EtatDeclarationView(etat, infraService, messageSource));
+			list.add(new EtatDocumentFiscalView(etat, infraService, messageSource));
 		}
 		Collections.sort(list);
 		return list;
@@ -235,11 +235,11 @@ public class EditerDeclarationImpotView {
 		return dernierEtat;
 	}
 
-	public List<DelaiDeclarationView> getDelais() {
+	public List<DelaiDocumentFiscalView> getDelais() {
 		return delais;
 	}
 
-	public List<EtatDeclarationView> getEtats() {
+	public List<EtatDocumentFiscalView> getEtats() {
 		return etats;
 	}
 

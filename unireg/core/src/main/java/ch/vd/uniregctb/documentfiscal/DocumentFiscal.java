@@ -416,4 +416,6 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 		return getClass().getSimpleName();
 	}
 
+	@Transient
+	public abstract Integer getAnneePeriodeFiscale();
 }

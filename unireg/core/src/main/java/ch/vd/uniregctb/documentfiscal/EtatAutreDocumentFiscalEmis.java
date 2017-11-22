@@ -14,7 +14,7 @@ import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
  */
 @Entity
 @DiscriminatorValue(value = "AUTRE_EMIS")
-public class EtatAutreDocumentFiscalEmis extends EtatAutreDocumentFiscal implements EtatAutreDocumentFiscalAvecDocumentArchive {
+public class EtatAutreDocumentFiscalEmis extends EtatAutreDocumentFiscal implements EtatDocumentFiscalAvecDocumentArchive {
 
 	private String cleArchivage;
 	private String cleDocument;

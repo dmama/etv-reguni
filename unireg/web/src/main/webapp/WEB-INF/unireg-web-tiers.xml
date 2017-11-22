@@ -317,6 +317,7 @@
 		<property name="parametreAppService" ref="parametreAppService"/>
 		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
+		<property name="messageSource" ref="messageSource"/>
 	</bean>
 
 </beans>

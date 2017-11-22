@@ -66,8 +66,8 @@ public abstract class AutreDocumentFiscal extends DocumentFiscal {
 	 * Sauve la clé d'archivage sur le dernier état du type demandé pour le document. Vérifie la présence de l'état qui doit nécessairement avoir été créé par
 	 * ailleur. Vérifie l'absence de clé d'archivage dans l'état trouvé, car pas d'impression de document sans transition d'état.
 	 */
-	protected <E extends EtatAutreDocumentFiscalAvecDocumentArchive> void sauverCleArchivage(TypeEtatDocumentFiscal type, String cleArchivage) {
-		final EtatAutreDocumentFiscalAvecDocumentArchive etat = (EtatAutreDocumentFiscalAvecDocumentArchive) getDernierEtatOfType(type);
+	protected <E extends EtatDocumentFiscalAvecDocumentArchive> void sauverCleArchivage(TypeEtatDocumentFiscal type, String cleArchivage) {
+		final EtatDocumentFiscalAvecDocumentArchive etat = (EtatDocumentFiscalAvecDocumentArchive) getDernierEtatOfType(type);
 		if (etat == null) {
 			throw new ProgrammingException(String.format("L'état du document n°%s introuvable! Document fiscal incomplet.", getId()));
 		}
@@ -81,12 +81,12 @@ public abstract class AutreDocumentFiscal extends DocumentFiscal {
 	 * Sauve la clé de document (Repelec) sur le dernier état du type demandé pour le document. Vérifie la présence de l'état qui doit nécessairement avoir été créé par
 	 * ailleur. Vérifie l'absence de clé de document dans l'état trouvé, car pas d'impression de document sans transition d'état.
 	 */
-	protected <E extends EtatAutreDocumentFiscalAvecDocumentArchive> void sauverCleDocument(TypeEtatDocumentFiscal type, String cleDocument) {
-		final EtatAutreDocumentFiscalAvecDocumentArchive etat = (EtatAutreDocumentFiscalAvecDocumentArchive) getDernierEtatOfType(type);
+	protected <E extends EtatDocumentFiscalAvecDocumentArchive> void sauverCleDocument(TypeEtatDocumentFiscal type, String cleDocument) {
+		final EtatDocumentFiscalAvecDocumentArchive etat = (EtatDocumentFiscalAvecDocumentArchive) getDernierEtatOfType(type);
 		if (etat == null) {
 			throw new ProgrammingException(String.format("L'état %s du document n°%s introuvable! Document fiscal incomplet.", type, getId()));
 		}
-		if (etat.getCleArchivage() != null) {
+		if (etat.getCleDocument() != null) {
 			throw new ProgrammingException(String.format("Une clé de document est déjà présente dans le dernier état %s du document fiscal n°%s! ", type, getId()));
 		}
 		etat.setCleDocument(cleDocument);
@@ -168,5 +168,12 @@ public abstract class AutreDocumentFiscal extends DocumentFiscal {
 	@Override
 	public boolean isRappelable() {
 		return false;
+	}
+
+	@Transient
+	@Override
+	@Nullable
+	public Integer getAnneePeriodeFiscale() {
+		return this.getPeriodeFiscale();
 	}
 }

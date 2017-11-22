@@ -160,4 +160,35 @@ public class AutreDocumentFiscalController {
 		                                                                        null,
 		                                                                        erreur);
 	}
+
+/*
+
+	*/
+/**
+	 * @param id l'id de la déclaration d'impôt ordinaire
+	 * @return les détails d'une déclaration d'impôt au format JSON
+	 *//*
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/di/details.do", method = RequestMethod.GET)
+	@ResponseBody
+	public DeclarationImpotView detailsDI(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final DeclarationImpotOrdinaire decl = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
+		if (decl == null) {
+			return null;
+		}
+
+		// vérification des droits en lecture
+		final Long tiersId = decl.getTiers().getId();
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
+
+		return new DeclarationImpotView(decl, infraService, messageSource);
+	}
+*/
+
 }

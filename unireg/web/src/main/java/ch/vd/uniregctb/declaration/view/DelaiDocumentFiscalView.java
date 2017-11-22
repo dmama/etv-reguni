@@ -10,13 +10,13 @@ import org.springframework.context.MessageSource;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
-public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, Annulable {
+public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalView>, Annulable {
 
 	private Long id;
 	private RegDate dateDemande;
@@ -26,7 +26,7 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 	private RegDate dateExpedition;
 	private Boolean confirmationEcrite;
 	private String urlVisualisationExterneDocument;
-	private Long idDeclaration;
+	private Long idDocumentFiscal;
 	private Long tiersId;
 	private int declarationPeriode;
 	private DateRange declarationRange;
@@ -39,24 +39,24 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 	private boolean first;
 	private boolean lastOfState;
 
-	public DelaiDeclarationView() {
+	public DelaiDocumentFiscalView() {
 	}
 
-	public DelaiDeclarationView(DelaiDeclaration delai, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public DelaiDocumentFiscalView(DelaiDocumentFiscal delai, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		this.id = delai.getId();
 		this.annule = delai.isAnnule();
 		this.confirmationEcrite = StringUtils.isNotBlank(delai.getCleArchivageCourrier());
-		final Declaration declaration = delai.getDeclaration();
+		final DocumentFiscal documentFiscal = delai.getDocumentFiscal();
 		this.urlVisualisationExterneDocument = Optional.ofNullable(delai.getCleDocument())
 				.filter(StringUtils::isNotBlank)
-				.map(cle -> infraService.getUrlVisualisationDocument(declaration.getTiers().getNumero(), declaration.getPeriode().getAnnee(), cle))
+				.map(cle -> infraService.getUrlVisualisationDocument(documentFiscal.getTiers().getNumero(), documentFiscal.getAnneePeriodeFiscale(), cle))
 				.orElse(null);
 		this.dateDemande = delai.getDateDemande();
 		this.dateTraitement = delai.getDateTraitement();
 		this.delaiAccordeAu = delai.getDelaiAccordeAu();
 		this.logModifDate = delai.getLogModifDate();
 		this.logModifUser = delai.getLogModifUser();
-		this.idDeclaration = declaration.getId();
+		this.idDocumentFiscal = documentFiscal.getId();
 		this.etat = delai.getEtat();
 		this.etatMessage = messageSource.getMessage("option.etat.delai." + this.etat.name(), null, WebContextUtils.getDefaultLocale());
 		this.sursis = delai.isSursis();
@@ -110,12 +110,12 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 		this.urlVisualisationExterneDocument = urlVisualisationExterneDocument;
 	}
 
-	public Long getIdDeclaration() {
-		return idDeclaration;
+	public Long getIdDocumentFiscal() {
+		return idDocumentFiscal;
 	}
 
-	public void setIdDeclaration(Long idDeclaration) {
-		this.idDeclaration = idDeclaration;
+	public void setIdDocumentFiscal(Long idDocumentFiscal) {
+		this.idDocumentFiscal = idDocumentFiscal;
 	}
 
 	public Long getTiersId() {
@@ -217,10 +217,10 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, A
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(@NotNull DelaiDeclarationView delaiDeclarationView) {
-		int comparison = - dateTraitement.compareTo(delaiDeclarationView.dateTraitement);
+	public int compareTo(@NotNull DelaiDocumentFiscalView delaiDocumentFiscalView) {
+		int comparison = - dateTraitement.compareTo(delaiDocumentFiscalView.dateTraitement);
 		if (comparison == 0) {
-			comparison = - Long.compare(id, delaiDeclarationView.id);
+			comparison = - Long.compare(id, delaiDocumentFiscalView.id);
 		}
 		return comparison;
 	}

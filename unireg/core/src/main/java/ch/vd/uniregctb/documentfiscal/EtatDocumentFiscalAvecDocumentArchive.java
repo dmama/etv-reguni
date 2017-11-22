@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.documentfiscal;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Interface implémentée par les états des autres documents fiscaux qui ont un document archivé.
  */
-public interface EtatAutreDocumentFiscalAvecDocumentArchive {
+public interface EtatDocumentFiscalAvecDocumentArchive {
 
 	/**
 	 * @return la clé d'archivage du document dans FOLDERS
@@ -16,8 +18,9 @@ public interface EtatAutreDocumentFiscalAvecDocumentArchive {
 	void setCleArchivage(String cleArchivage);
 
 	/**
-	 * @return la clé de visualisation DPerm du document archivé
+	 * @return la clé de visualisation DPerm du document archivé, ou null
 	 */
+	@Nullable
 	String getCleDocument();
 
 	/**

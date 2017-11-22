@@ -23,6 +23,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -100,6 +101,7 @@ public class DegrevementExonerationController {
 	private ParametreAppService parametreAppService;
 	private AutreDocumentFiscalService autreDocumentFiscalService;
 	private RetourEditiqueControllerHelper retourEditiqueControllerHelper;
+	private MessageSource messageSource;
 
 	private static final Comparator<ImmeubleView> IMMEUBLE_VIEW_COMPARATOR = Comparator.comparing(ImmeubleView::getNoParcelle)
 			.thenComparing(Comparator.comparing(ImmeubleView::getIndex1, Comparator.nullsFirst(Comparator.naturalOrder())))
@@ -142,6 +144,10 @@ public class DegrevementExonerationController {
 
 	public void setRetourEditiqueControllerHelper(RetourEditiqueControllerHelper retourEditiqueControllerHelper) {
 		this.retourEditiqueControllerHelper = retourEditiqueControllerHelper;
+	}
+
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -301,7 +307,7 @@ public class DegrevementExonerationController {
 
 		final List<DemandeDegrevementICIView> demandes = entreprise.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
 				.filter(demande -> demande.getImmeuble() == immeuble)
-				.map(demande -> new DemandeDegrevementICIView(demande, infraService))
+				.map(demande -> new DemandeDegrevementICIView(demande, infraService, messageSource))
 				.sorted(Comparator.comparingInt(DemandeDegrevementICIView::getPeriodeFiscale).reversed())
 				.collect(Collectors.toList());
 
@@ -1066,7 +1072,7 @@ public class DegrevementExonerationController {
 		final ImmeubleRF immeuble = getImmeuble(idImmeuble);
 
 		final List<DemandeDegrevementICIView> demandes = getDemandesDegrevement(entreprise, immeuble, null, true).stream()
-				.map(dd -> new DemandeDegrevementICIView(dd, infraService))
+				.map(dd -> new DemandeDegrevementICIView(dd, infraService, messageSource))
 				.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparingInt(DemandeDegrevementICIView::getPeriodeFiscale).reversed()))
 				.collect(Collectors.toList());
 

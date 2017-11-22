@@ -7,6 +7,7 @@ import javax.persistence.Transient;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
@@ -14,8 +15,9 @@ import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
  */
 @Entity
 @DiscriminatorValue("DI_EMISE")
-public class EtatDeclarationEmise extends EtatDeclaration implements EtatDeclarationAvecDocumentArchive {
+public class EtatDeclarationEmise extends EtatDeclaration implements EtatDocumentFiscalAvecDocumentArchive {
 
+	private String cleArchivage;
 	private String cleDocument;
 
 	public EtatDeclarationEmise() {
@@ -30,6 +32,17 @@ public class EtatDeclarationEmise extends EtatDeclaration implements EtatDeclara
 	@Override
 	public TypeEtatDocumentFiscal getType() {
 		return TypeEtatDocumentFiscal.EMIS;
+	}
+
+	@Override
+	@Column(name = "CLE_ARCHIVAGE", length = LengthConstants.CLE_ARCHIVAGE_FOLDERS)
+	public String getCleArchivage() {
+		return cleArchivage;
+	}
+
+	@Override
+	public void setCleArchivage(String cleArchivage) {
+		this.cleArchivage = cleArchivage;
 	}
 
 	@Override

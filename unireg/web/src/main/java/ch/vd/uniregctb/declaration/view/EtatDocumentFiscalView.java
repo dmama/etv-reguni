@@ -9,17 +9,17 @@ import org.springframework.context.MessageSource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationAvecDocumentArchive;
 import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
-public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Annulable {
+public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView>, Annulable {
 
 	private final Long id;
 	private final RegDate dateObtention;
@@ -45,7 +45,7 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 	 */
 	private String urlVisualisationExterneDocument;
 
-	public EtatDeclarationView(EtatDeclaration etat, ServiceInfrastructureService infraService, MessageSource messageSource) {
+	public EtatDocumentFiscalView(EtatDocumentFiscal etat, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		this.id = etat.getId();
 		this.dateObtention = etat.getDateObtention();
 		this.logCreationDate = etat.getLogCreationDate();
@@ -76,20 +76,27 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 				                                                         WebContextUtils.getDefaultLocale());
 			}
 		}
-		if (etat instanceof EtatDeclarationRappelee) {
-			this.dateEnvoiCourrier = ((EtatDeclarationRappelee) etat).getDateEnvoiCourrier();
+		if (etat.getType() == TypeEtatDocumentFiscal.RAPPELE) {
+			if (etat instanceof EtatDeclarationRappelee) {
+				this.dateEnvoiCourrier = ((EtatDeclarationRappelee) etat).getDateEnvoiCourrier();
+			}
+			else {
+				this.dateEnvoiCourrier = etat.getDateObtention(); // FIXME SIFISC-21866: Faut-il aussi mettre en place une date d'envoi de courrier pour les autres docs?
+			}
 			this.dateEnvoiCourrierMessage = messageSource.getMessage("label.date.envoi.courrier",
 			                                                         new Object[]{RegDateHelper.dateToDisplayString(this.dateEnvoiCourrier)},
 			                                                         WebContextUtils.getDefaultLocale());
 		}
-		if (etat instanceof EtatDeclarationAvecDocumentArchive) {
-			final EtatDeclarationAvecDocumentArchive etatArchive = (EtatDeclarationAvecDocumentArchive) etat;
-			final Declaration declaration = etat.getDeclaration();
-			this.urlVisualisationExterneDocument = Optional.of(etatArchive)
-					.map(EtatDeclarationAvecDocumentArchive::getCleDocument)
-					.filter(StringUtils::isNotBlank)
-					.map(cle -> infraService.getUrlVisualisationDocument(declaration.getTiers().getNumero(), declaration.getPeriode().getAnnee(), cle))
-					.orElse(null);
+		if (etat instanceof EtatDocumentFiscalAvecDocumentArchive) {
+			final DocumentFiscal documentFiscal = etat.getDocumentFiscal();
+			final Integer anneePeriode = documentFiscal.getAnneePeriodeFiscale();
+			if (anneePeriode != null) {
+				this.urlVisualisationExterneDocument = Optional.of((EtatDocumentFiscalAvecDocumentArchive) etat)
+						.map(EtatDocumentFiscalAvecDocumentArchive::getCleDocument)
+						.filter(StringUtils::isNotBlank)
+						.map(cle -> infraService.getUrlVisualisationDocument(documentFiscal.getTiers().getNumero(), anneePeriode, cle))
+						.orElse(null);
+			}
 		}
 	}
 
@@ -135,7 +142,7 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 	}
 
 	@Override
-	public int compareTo(EtatDeclarationView o) {
+	public int compareTo(EtatDocumentFiscalView o) {
 		if (this.dateObtention == o.dateObtention) {
 			return -1 * logCreationDate.compareTo(o.logCreationDate);
 		}

@@ -16,7 +16,7 @@ import ch.vd.uniregctb.common.MockMessageSource;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
+import ch.vd.uniregctb.declaration.view.DelaiDocumentFiscalView;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 
@@ -77,7 +77,7 @@ public class ListeRecapitulativeDetailViewTest {
 
 		MessageSource messageSourceMock = new MockMessageSource();
 
-		List<DelaiDeclarationView> returnedList = ListeRecapitulativeDetailView.buildDelais(lr, infraService, messageSourceMock);
+		List<DelaiDocumentFiscalView> returnedList = ListeRecapitulativeDetailView.buildDelais(lr, infraService, messageSourceMock);
 
 		// Asserts
 		assertEquals(4, returnedList.size());

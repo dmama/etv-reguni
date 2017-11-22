@@ -29,19 +29,6 @@ public class AutreDocumentFiscalAvecSuiviView extends AutreDocumentFiscalView {
 				.orElse(null);
 	}
 
-	public AutreDocumentFiscalAvecSuiviView(AutreDocumentFiscalAvecSuivi doc, ServiceInfrastructureService infraService, String libelleType, String libelleSousType) {
-		super(doc, infraService, libelleType, libelleSousType);
-		this.dateRetour = doc.getDateRetour();
-		this.delaiRetour = doc.getDelaiRetour();
-		this.dateRappel = doc.getDateRappel();
-		this.avecCopieConformeRappel = StringUtils.isNotBlank(doc.getCleArchivageRappel()) && dateRappel != null;
-		this.urlVisualisationExterneRappel = Optional.ofNullable(doc.getCleDocumentRappel())
-				.filter(StringUtils::isNotBlank)
-				.filter(cle -> dateRappel != null)
-				.map(cle -> infraService.getUrlVisualisationDocument(getTiersId(), doc.getPeriodeFiscale(), cle))
-				.orElse(null);
-	}
-
 	public RegDate getDateRetour() {
 		return dateRetour;
 	}

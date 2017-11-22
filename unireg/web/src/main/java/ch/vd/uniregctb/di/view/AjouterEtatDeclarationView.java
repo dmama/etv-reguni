@@ -12,7 +12,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.view.EtatDeclarationView;
+import ch.vd.uniregctb.declaration.view.EtatDocumentFiscalView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
@@ -24,7 +24,7 @@ public class AjouterEtatDeclarationView {
 	private int periodeFiscale;
 	private RegDate dateDebutPeriodeImposition;
 	private RegDate dateFinPeriodeImposition;
-	private List<EtatDeclarationView> etats;
+	private List<EtatDocumentFiscalView> etats;
 	private boolean typeDocumentEditable;
 
 	// Données modifiables du formulaire
@@ -64,10 +64,10 @@ public class AjouterEtatDeclarationView {
 		return etatDI == null ? null : etatDI.getEtat();
 	}
 
-	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		final List<EtatDeclarationView> list = new ArrayList<>();
+	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDeclaration> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
+		final List<EtatDocumentFiscalView> list = new ArrayList<>();
 		for (EtatDeclaration etat : etats) {
-			list.add(new EtatDeclarationView(etat, infraService, messageSource));
+			list.add(new EtatDocumentFiscalView(etat, infraService, messageSource));
 		}
 		Collections.sort(list);
 		return list;
@@ -113,7 +113,7 @@ public class AjouterEtatDeclarationView {
 		this.dateRetour = dateRetour;
 	}
 
-	public List<EtatDeclarationView> getEtats() {
+	public List<EtatDocumentFiscalView> getEtats() {
 		return etats;
 	}
 

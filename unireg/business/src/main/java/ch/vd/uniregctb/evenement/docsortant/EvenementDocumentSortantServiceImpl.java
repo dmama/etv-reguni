@@ -32,7 +32,6 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationAvecDocumentArchive;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
@@ -40,6 +39,7 @@ import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
 import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
@@ -114,7 +114,7 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	@Nullable
-	private static <T extends EtatDeclaration & EtatDeclarationAvecDocumentArchive> String getIdEtatDeclaration(Declaration declaration, Class<T> clazz) {
+	private static <T extends EtatDeclaration & EtatDocumentFiscalAvecDocumentArchive> String getIdEtatDeclaration(Declaration declaration, Class<T> clazz) {
 		return declaration.getEtatsDeclaration().stream()
 				.filter(clazz::isInstance)
 				.map(clazz::cast)

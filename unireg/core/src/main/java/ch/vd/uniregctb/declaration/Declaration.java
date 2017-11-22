@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -272,4 +273,12 @@ public abstract class Declaration extends DocumentFiscal implements DateRange {
 	public DelaiDeclaration getDernierDelaiDeclarationAccorde() {
 		return (DelaiDeclaration) getDernierDelaiAccorde();
 	}
+
+	@Transient
+	@Override
+	@Nullable
+	public Integer getAnneePeriodeFiscale() {
+		return this.getPeriode() == null ? null : this.getPeriode().getAnnee();
+	}
+
 }

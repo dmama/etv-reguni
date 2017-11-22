@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
@@ -20,10 +21,11 @@ import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
  */
 @Entity
 @DiscriminatorValue("DI_SOMMEE")
-public class EtatDeclarationSommee extends EtatDeclaration implements EtatDeclarationAvecDocumentArchive {
+public class EtatDeclarationSommee extends EtatDeclaration implements EtatDocumentFiscalAvecDocumentArchive {
 
 	private RegDate dateEnvoiCourrier;
 	private Integer emolument;
+	private String cleArchivage;
 	private String cleDocument;
 
 	public EtatDeclarationSommee() {
@@ -60,6 +62,17 @@ public class EtatDeclarationSommee extends EtatDeclaration implements EtatDeclar
 
 	public void setEmolument(Integer emolument) {
 		this.emolument = emolument;
+	}
+
+	@Override
+	@Column(name = "CLE_ARCHIVAGE", length = LengthConstants.CLE_ARCHIVAGE_FOLDERS)
+	public String getCleArchivage() {
+		return cleArchivage;
+	}
+
+	@Override
+	public void setCleArchivage(String cleArchivage) {
+		this.cleArchivage = cleArchivage;
 	}
 
 	@Override

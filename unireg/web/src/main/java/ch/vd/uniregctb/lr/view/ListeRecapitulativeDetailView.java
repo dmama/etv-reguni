@@ -13,7 +13,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.view.DelaiDeclarationView;
+import ch.vd.uniregctb.declaration.view.DelaiDocumentFiscalView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
@@ -26,7 +26,7 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 	private final RegDate dateFin;
 	private final RegDate dateRetour;
 	private final RegDate delaiAccorde;
-	private final List<DelaiDeclarationView> delais;
+	private final List<DelaiDocumentFiscalView> delais;
 	private final TypeEtatDocumentFiscal etat;
 	private final RegDate dateObtentionEtat;
 	private final boolean annule;
@@ -49,7 +49,7 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 		this.delais = buildDelais(lr, infraService, messageSource);
 		this.delaiAccorde = this.delais.stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.map(DelaiDeclarationView::getDelaiAccordeAu)
+				.map(DelaiDocumentFiscalView::getDelaiAccordeAu)
 				.max(Comparator.naturalOrder())
 				.orElse(null);
 		this.annule = lr.isAnnule();
@@ -87,16 +87,16 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 		this.imprimable = true;
 	}
 
-	static List<DelaiDeclarationView> buildDelais(DeclarationImpotSource lr, ServiceInfrastructureService infraService, MessageSource messageSource) {
-		final List<DelaiDeclarationView> delais = lr.getDelaisDeclaration().stream()
+	static List<DelaiDocumentFiscalView> buildDelais(DeclarationImpotSource lr, ServiceInfrastructureService infraService, MessageSource messageSource) {
+		final List<DelaiDocumentFiscalView> delais = lr.getDelaisDeclaration().stream()
 				.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparing(DelaiDeclaration::getDateDemande, Comparator.nullsLast(Comparator.reverseOrder()))))
-				.map(delai -> new DelaiDeclarationView(delai, infraService, messageSource))
+				.map(delai -> new DelaiDocumentFiscalView(delai, infraService, messageSource))
 				.collect(Collectors.toList());
 
 		// le premier n'est pas annulable, il faut dont l'identifier comme tel
 		delais.stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.min(Comparator.comparingLong(DelaiDeclarationView::getId))
+				.min(Comparator.comparingLong(DelaiDocumentFiscalView::getId))
 				.ifPresent(delai -> delai.setFirst(true));
 
 		return delais;
@@ -128,7 +128,7 @@ public class ListeRecapitulativeDetailView implements Annulable, DateRange {
 		return delaiAccorde;
 	}
 
-	public List<DelaiDeclarationView> getDelais() {
+	public List<DelaiDocumentFiscalView> getDelais() {
 		return delais;
 	}
 

@@ -19,7 +19,6 @@ import ch.vd.unireg.xml.event.docsortant.retour.v3.DocumentQuittance;
 import ch.vd.unireg.xml.event.docsortant.retour.v3.Quittance;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.EtatDeclarationAvecDocumentArchive;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
@@ -27,6 +26,7 @@ import ch.vd.uniregctb.documentfiscal.AutorisationRadiationRC;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalAvecSuivi;
 import ch.vd.uniregctb.documentfiscal.DemandeBilanFinal;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
 import ch.vd.uniregctb.documentfiscal.LettreBienvenue;
 import ch.vd.uniregctb.documentfiscal.LettreTypeInformationLiquidation;
 import ch.vd.uniregctb.efacture.DocumentEFacture;
@@ -299,9 +299,9 @@ public class RetourDocumentSortantHandlerImpl implements RetourDocumentSortantHa
 		}
 	}
 
-	private static final class EtatDeclarationAvecDocumentArchiveKeyAssignator implements KeyAssignator<EtatDeclarationAvecDocumentArchive> {
+	private static final class EtatDeclarationAvecDocumentArchiveKeyAssignator implements KeyAssignator<EtatDocumentFiscalAvecDocumentArchive> {
 		@Override
-		public void assignKey(EtatDeclarationAvecDocumentArchive entity, String key) {
+		public void assignKey(EtatDocumentFiscalAvecDocumentArchive entity, String key) {
 			entity.setCleDocument(key);
 		}
 	}
