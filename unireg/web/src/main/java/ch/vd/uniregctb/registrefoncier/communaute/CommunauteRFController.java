@@ -58,9 +58,9 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
-import static ch.vd.uniregctb.tiers.AbstractTiersController.TYPE_RECHERCHE_NOM_MAP_NAME;
-import static ch.vd.uniregctb.tiers.AbstractTiersController.FORME_JURIDIQUE_MAP_NAME;
 import static ch.vd.uniregctb.tiers.AbstractTiersController.CATEGORIE_ENTREPRISE_MAP_NAME;
+import static ch.vd.uniregctb.tiers.AbstractTiersController.FORME_JURIDIQUE_MAP_NAME;
+import static ch.vd.uniregctb.tiers.AbstractTiersController.TYPE_RECHERCHE_NOM_MAP_NAME;
 
 @RequestMapping(value = "/registrefoncier/communaute")
 public class CommunauteRFController {
@@ -306,14 +306,16 @@ public class CommunauteRFController {
 
 		// on regroupe ces communautés par modèle de communauté
 		final Map<Long, ModeleCommunauteForTiersView> map = new HashMap<>();
-		for (CommunauteRF c : communautes) {
-			for (RegroupementCommunauteRF r : c.getRegroupements()) {
-				final ModeleCommunauteRF modele = r.getModele();
-				final ModeleCommunauteForTiersView modeleView = map.computeIfAbsent(modele.getId(),
-				                                                                    k -> new ModeleCommunauteForTiersView(ctb.getNumero(), modele, tiersService, registreFoncierService));
-				modeleView.addRegroupement(new RegroupementRFView(r, registreFoncierService));
-			}
-		}
+		communautes.stream()
+				.map(CommunauteRF::getRegroupements)
+				.flatMap(Collection::stream)
+				.filter(AnnulableHelper::nonAnnule)
+				.forEach(r -> {
+					final ModeleCommunauteRF modele = r.getModele();
+					final ModeleCommunauteForTiersView modeleView = map.computeIfAbsent(modele.getId(),
+					                                                                    k -> new ModeleCommunauteForTiersView(ctb.getNumero(), modele, tiersService, registreFoncierService));
+					modeleView.addRegroupement(new RegroupementRFView(r, registreFoncierService));
+				});
 
 		final List<ModeleCommunauteForTiersView> modeles = map.values().stream()
 				.sorted(new ModeleCommunauteForTiersComparator())
