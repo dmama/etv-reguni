@@ -302,14 +302,16 @@ public class CommunauteRFController {
 
 		// on regroupe ces communautés par modèle de communauté
 		final Map<Long, ModeleCommunauteForTiersView> map = new HashMap<>();
-		for (CommunauteRF c : communautes) {
-			for (RegroupementCommunauteRF r : c.getRegroupements()) {
-				final ModeleCommunauteRF modele = r.getModele();
-				final ModeleCommunauteForTiersView modeleView = map.computeIfAbsent(modele.getId(),
-				                                                                    k -> new ModeleCommunauteForTiersView(ctb.getNumero(), modele, tiersService, registreFoncierService));
-				modeleView.addRegroupement(new RegroupementRFView(r, registreFoncierService));
-			}
-		}
+		communautes.stream()
+				.map(CommunauteRF::getRegroupements)
+				.flatMap(Collection::stream)
+				.filter(AnnulableHelper::nonAnnule)
+				.forEach(r -> {
+					final ModeleCommunauteRF modele = r.getModele();
+					final ModeleCommunauteForTiersView modeleView = map.computeIfAbsent(modele.getId(),
+					                                                                    k -> new ModeleCommunauteForTiersView(ctb.getNumero(), modele, tiersService, registreFoncierService));
+					modeleView.addRegroupement(new RegroupementRFView(r, registreFoncierService));
+				});
 
 		final List<ModeleCommunauteForTiersView> modeles = map.values().stream()
 				.sorted(new ModeleCommunauteForTiersComparator())
