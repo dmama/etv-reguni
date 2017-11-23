@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -364,7 +363,7 @@ public class MockIndividu implements Individu {
 		if (adresses == null) {
 			return Collections.emptyList();
 		}
-		return Collections.unmodifiableList(adresses.stream().collect(Collectors.toList()));
+		return Collections.unmodifiableList(adresses);
 	}
 
 	public void addAdresse(MockAdresse adresse) {

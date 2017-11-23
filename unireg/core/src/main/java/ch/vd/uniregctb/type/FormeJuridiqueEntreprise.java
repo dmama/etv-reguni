@@ -49,7 +49,7 @@ public enum FormeJuridiqueEntreprise {
 	ENT_HS("Entreprise étrangère", "0441", TypeFormeJuridique.ETRANGER, false);
 
 	private final String codeECH;
-	private final String libellé;
+	private final String libelle;
 	private final TypeFormeJuridique type;
 	private final boolean creable;
 
@@ -75,7 +75,7 @@ public enum FormeJuridiqueEntreprise {
 			throw new IllegalArgumentException("Toute forme juridique utilisée ici doit avoir un libellé.");
 		}
 		this.codeECH = codeECH;
-		this.libellé = libelle;
+		this.libelle = libelle;
 		this.type = type;
 		this.creable = creable;
 	}
@@ -87,7 +87,7 @@ public enum FormeJuridiqueEntreprise {
 
 	@NotNull
 	public String getLibelle() {
-		return libellé;
+		return libelle;
 	}
 
 	public TypeFormeJuridique getType() {

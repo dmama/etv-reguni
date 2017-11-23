@@ -53,9 +53,9 @@ import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NumeroCtbStringRenderer;
-import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.StringComparator;
+import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresEntreprise;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
@@ -196,21 +196,18 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			// recherche peut prendre quelques secondes (minutes ?), donc on met ça dans un thread séparés afin de ne pas
 			// poser de problème de lenteur exagérée au démarrage de l'application (surtout pour l'équipe de développement
 			// qui peut avoir à démarrer l'application souvent...)
-			final Thread thread = new Thread() {
-				@Override
-				public void run() {
-					LOGGER.info("Préchargement des valeurs pour les critères de recherche pour l'identification des contribuables.");
-					try {
-						updateCriteres();
-					}
-					catch (Throwable t) {
-						LOGGER.error("Exception lors du pré-chargement des valeurs pour les critères de recherche des messages d'identification de contribuable", t);
-					}
-					finally {
-						LOGGER.info("Préchargement terminé.");
-					}
+			final Thread thread = new Thread(() -> {
+				LOGGER.info("Préchargement des valeurs pour les critères de recherche pour l'identification des contribuables.");
+				try {
+					updateCriteres();
 				}
-			};
+				catch (Throwable t) {
+					LOGGER.error("Exception lors du pré-chargement des valeurs pour les critères de recherche des messages d'identification de contribuable", t);
+				}
+				finally {
+					LOGGER.info("Préchargement terminé.");
+				}
+			});
 			thread.setDaemon(true);         // si la JVM doit être arrêtée avant que l'update soit terminé, on n'a pas besoin d'attendre...
 			thread.start();
 		}
