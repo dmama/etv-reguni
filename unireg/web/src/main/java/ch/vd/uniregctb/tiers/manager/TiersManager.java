@@ -123,7 +123,6 @@ import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportEntreTiersKey;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -359,43 +358,7 @@ public class TiersManager implements MessageSourceAware {
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsSujet()) {
 			final RapportEntreTiersKey key = new RapportEntreTiersKey(rapportEntreTiers.getType(), RapportEntreTiersKey.Source.SUJET);
 			if (RapportHelper.ALLOWED_VISU_COMPLETE.contains(key)) {
-				final RapportView rapportView = new RapportView();
-				rapportView.setId(rapportEntreTiers.getId());
-				rapportView.setAnnule(rapportEntreTiers.isAnnule());
-				rapportView.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
-				rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.fromCore(rapportEntreTiers.getType()));
-				rapportView.setDateDebut(rapportEntreTiers.getDateDebut());
-				rapportView.setDateFin(rapportEntreTiers.getDateFin());
-
-				final Tiers tiersObjet = tiersDAO.get(rapportEntreTiers.getObjetId());
-				rapportView.setNumero(tiersObjet.getNumero());
-
-				List<String> nomObjet;
-				try {
-					nomObjet = adresseService.getNomCourrier(tiersObjet, null, false);
-				}
-				catch (Exception e) {
-					nomObjet = new ArrayList<>();
-					nomObjet.add(e.getMessage());
-				}
-				if (nomObjet != null && !nomObjet.isEmpty()) {
-					rapportView.setNomCourrier(nomObjet);
-				}
-
-				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
-				rapportView.setToolTipMessage(toolTipMessage);
-
-				if (rapportEntreTiers instanceof RepresentationConventionnelle) {
-					final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
-					final Boolean b = repres.getExtensionExecutionForcee();
-					rapportView.setExtensionExecutionForcee(b != null && b);
-					final boolean isHorsSuisse = isHorsSuisse(rapportEntreTiers.getSujetId(), rapportEntreTiers);
-					rapportView.setExtensionExecutionForceeAllowed(isHorsSuisse); // [UNIREG-2655]
-				}
-				else if (rapportEntreTiers instanceof RepresentationLegale) {
-					setNomAutoriteTutelaire(rapportEntreTiers, rapportView);
-
-				}
+				final RapportView rapportView = new RapportView(rapportEntreTiers, SensRapportEntreTiers.SUJET, tiersService, adresseService);
 				rapportsView.add(rapportView);
 			}
 		}

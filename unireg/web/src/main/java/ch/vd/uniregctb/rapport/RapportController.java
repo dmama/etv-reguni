@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -39,6 +40,7 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.common.pagination.ParamPagination;
@@ -47,6 +49,7 @@ import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.rapport.manager.RapportEditManager;
 import ch.vd.uniregctb.rapport.view.RapportListView;
 import ch.vd.uniregctb.rapport.view.RapportView;
+import ch.vd.uniregctb.rapport.view.SetPrincipalView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -54,6 +57,7 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportEntreTiersKey;
@@ -91,6 +95,7 @@ public class RapportController {
 	private RapportEditManager rapportEditManager;
 	private Validator rapportAddValidator;
 	private RapportEditValidator rapportEditValidator;
+	private Validator setPrincipalValidator;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -145,6 +150,10 @@ public class RapportController {
 
 	public void setRapportEditValidator(RapportEditValidator rapportEditValidator) {
 		this.rapportEditValidator = rapportEditValidator;
+	}
+
+	public void setSetPrincipalValidator(Validator setPrincipalValidator) {
+		this.setPrincipalValidator = setPrincipalValidator;
 	}
 
 	private Set<RapportEntreTiersKey> getAllowedTypes() {
@@ -397,6 +406,85 @@ public class RapportController {
 
 		final String viewRetour = StringUtils.isBlank(view.getViewRetour()) ? "/rapport/list.do?id=" + view.getNumeroCourant() : view.getViewRetour();
 		return "redirect:" + viewRetour;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	@InitBinder(value = "principalView")
+	public void initBinderForSetPrincipal(WebDataBinder binder) {
+		binder.setValidator(setPrincipalValidator);
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
+	}
+
+	/**
+	 * Affiche le formulaire de sélection d'un héritier comme principal d'une communauté d'héritiers.
+	 */
+	@RequestMapping(value = "/setprincipal.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String setPrincipal(@RequestParam("idRapport") long idRapport, Model model) {
+
+		final RapportEntreTiers rapport = rapportEntreTiersDAO.get(idRapport);
+		if (rapport == null) {
+			throw new ObjectNotFoundException("Le rapport-entre-tiers n°" + idRapport + " n'existe pas.");
+		}
+		if (!(rapport instanceof Heritage)) {
+			throw new IllegalArgumentException("Le rapport-entre-tiers n°" + idRapport + " n'est pas un héritage.");
+		}
+
+		final Long defuntId = rapport.getObjetId();
+		final Long heritierId = rapport.getSujetId();
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnLecture(defuntId);
+		controllerUtils.checkAccesDossierEnLecture(heritierId);
+
+		model.addAttribute("principalView", new SetPrincipalView(idRapport, defuntId, heritierId));
+		model.addAttribute("principaux", getHistoPrincipaux(defuntId));
+
+		return "tiers/edition/rapport/set-principal";
+	}
+
+	/**
+	 * Sélectionne l'héritier spécifié comme principal de la communauté d'héritier.
+	 */
+	@RequestMapping(value = "/setprincipal.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	public String setPrincipal(@Valid @ModelAttribute("principalView") SetPrincipalView view, BindingResult binding, Model model) {
+
+		if (binding.hasErrors()) {
+			model.addAttribute("principaux", getHistoPrincipaux(view.getDefuntId()));
+			return "tiers/edition/rapport/set-principal";
+		}
+
+		final Long defuntId = view.getDefuntId();
+		final Long heritierId = view.getHeritierId();
+
+		// checks de sécurité
+		controllerUtils.checkAccesDossierEnEcriture(defuntId);
+		controllerUtils.checkAccesDossierEnEcriture(heritierId);
+
+		rapportEditManager.setPrincipal(view.getDefuntId(), view.getHeritierId(), view.getDateDebut());
+		Flash.message("Le tiers n°" + FormatNumeroHelper.numeroCTBToDisplay(view.getHeritierId()) +
+				              " a été désigné comme principal de la communauté à partir du " +
+				              RegDateHelper.dateToDisplayString(view.getDateDebut()) + ".");
+
+		return "redirect:/rapport/list.do?id=" + view.getDefuntId();
+	}
+
+	/**
+	 * @param defuntId l'id d'un tiers décédé
+	 * @return l'historique des héritages avec le flag 'principal' actif
+	 */
+	private List<RapportView> getHistoPrincipaux(Long defuntId) {
+		final Tiers defunt = tiersDAO.get(defuntId);
+		if (defunt == null) {
+			throw new TiersNotFoundException(defuntId);
+		}
+		return defunt.getRapportsObjet().stream()
+				.filter(Heritage.class::isInstance)
+				.map(Heritage.class::cast)
+				.filter(h -> h.getPrincipalCommunaute() != null && h.getPrincipalCommunaute())
+				.map(r -> new RapportView(r, SensRapportEntreTiers.OBJET, tiersService, adresseService))
+				.collect(Collectors.toList());
 	}
 
 	/**

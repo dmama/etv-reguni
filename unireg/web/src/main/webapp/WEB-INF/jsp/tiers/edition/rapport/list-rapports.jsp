@@ -90,9 +90,12 @@
 				</display:column>
 			</c:if>
 			<c:if test="${hasPrincipalCommunaute}">
-				<display:column sortable ="true" titleKey="label.principal.communaute.heritiers">
+				<display:column sortable ="true" titleKey="label.principal.communaute.heritiers" style="vertical-align:middle">
 					<c:if test="${dossierApparente.natureRapportEntreTiers == 'Heritage'}">
 						<input type="checkbox" <c:if test="${dossierApparente.principalCommunaute}">checked="true"</c:if> disabled="true"/>
+						<c:if test="${!dossierApparente.annule && dossierApparente.natureRapportEntreTiers == 'Heritage' && !dossierApparente.principalCommunaute && dossierApparente.dateFin == null}">
+							<unireg:linkTo name="" action="/rapport/setprincipal.do" method="GET" params="{idRapport:${dossierApparente.id}}" link_class="select" title="Choisir comme principal"/>
+						</c:if>
 					</c:if>
 				</display:column>
 			</c:if>

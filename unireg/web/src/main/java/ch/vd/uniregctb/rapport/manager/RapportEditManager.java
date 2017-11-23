@@ -3,6 +3,7 @@ package ch.vd.uniregctb.rapport.manager;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
@@ -95,4 +96,12 @@ public interface RapportEditManager {
 	@Transactional(readOnly = true)
 	TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, ServiceInfrastructureException;
 
+	/**
+	 * Désigne l'héritier comme membre principal de la communauté d'héritiers.
+	 *
+	 * @param defuntId   l'id du défunt
+	 * @param heritierId l'id de l'héritier qui doit devenir principal
+	 * @param dateDebut  la date de début de validité
+	 */
+	void setPrincipal(long defuntId, long heritierId, @NotNull RegDate dateDebut);
 }

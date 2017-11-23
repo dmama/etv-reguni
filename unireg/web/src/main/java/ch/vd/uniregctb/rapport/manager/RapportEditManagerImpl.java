@@ -1,15 +1,20 @@
 package ch.vd.uniregctb.rapport.manager;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.common.pagination.WebParamPagination;
@@ -242,8 +247,20 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 
 		if (rapport instanceof Heritage) {
-			final Heritage heritage =(Heritage) rapport;
-			heritage.setPrincipalCommunaute(rapportView.getPrincipalCommunaute());
+			final Heritage heritage = (Heritage) rapport;
+
+			final List<Heritage> principaux = objet.getRapportsObjet().stream()
+					.filter(AnnulableHelper::nonAnnule)
+					.filter(Heritage.class::isInstance)
+					.map(Heritage.class::cast)
+					.filter(h -> h.getPrincipalCommunaute() != null && h.getPrincipalCommunaute())
+					.collect(Collectors.toList());
+			final boolean principalDefini = DateRangeHelper.intersect(heritage, principaux);
+
+			// [SIFISC-24999] on défigne automatiquement le tiers comme principal s'il n'y a pas déjà un principal défini,
+			// autrement le validateur ne laissera pas passer l'ajout de l'héritage (et l'utilisateur pourra toujours
+			// changer le principal plus tard)
+			heritage.setPrincipalCommunaute(!principalDefini);
 		}
 
 		// établit le rapport entre les deux tiers
@@ -361,5 +378,92 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 
 		return tiersEditView;
+	}
+
+	/**
+	 * Enregistre l'héritier spécifié comme héritier principal de la communauté d'héritier du défunt spécifié.
+	 *
+	 * @param defuntId   l'id du défunt
+	 * @param heritierId l'id de l'héritier qui doit devenir principal
+	 * @param dateDebut  la date de début de validité
+	 */
+	@Override
+	public void setPrincipal(long defuntId, long heritierId, @NotNull RegDate dateDebut) {
+
+		final Tiers defunt = tiersDAO.get(defuntId);
+		if (defunt == null) {
+			throw new TiersNotFoundException(defuntId);
+		}
+		final Tiers newPrincipal = tiersDAO.get(heritierId);
+		if (newPrincipal == null) {
+			throw new TiersNotFoundException(heritierId);
+		}
+
+		// on recherche le lien d'héritage 'principal' courant
+		final Heritage currentHeritagePrincipal = defunt.getRapportsObjet().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(Heritage.class::isInstance)
+				.map(Heritage.class::cast)
+				.filter(h -> h.getPrincipalCommunaute() != null && h.getPrincipalCommunaute())
+				.max(Comparator.comparing(Heritage::getDateDebut, RegDate::compareTo))
+				.orElseThrow(() -> new IllegalArgumentException("Il devrait toujours y avoir un lien d'héritage principal"));
+		if (dateDebut.isBefore(currentHeritagePrincipal.getDateDebut())) {
+			throw new IllegalArgumentException("Il n'est pas possible d'intercaler un principal entre deux périodes existantes");
+		}
+
+		final Tiers oldPrincipal = tiersDAO.get(currentHeritagePrincipal.getSujetId());
+		if (oldPrincipal == null) {
+			throw new TiersNotFoundException(currentHeritagePrincipal.getSujetId());
+		}
+
+		// on recherche le lien d'héritage courant de l'héritier à désigner comme principal
+		final Heritage currentHeritageHeritier = defunt.getRapportsObjet().stream()
+				.filter(AnnulableHelper::nonAnnule)
+				.filter(Heritage.class::isInstance)
+				.map(Heritage.class::cast)
+				.filter(h -> h.getSujetId().equals(heritierId))
+				.max(Comparator.comparing(Heritage::getDateDebut, RegDate::compareTo))
+				.orElseThrow(() -> new IllegalArgumentException("Il devrait toujours y avoir un lien d'héritage pour l'héritier spécifié."));
+		if (dateDebut.isBefore(currentHeritageHeritier.getDateDebut())) {
+			throw new IllegalArgumentException("Il n'est pas possible de choisir un principal avant la date de la dernière période");
+		}
+
+		// on enlève le flag principal sur le rapport d'héritage qui l'a actuellement
+		if (dateDebut == currentHeritagePrincipal.getDateDebut()) {
+			// la date de début correspond à la date de début du rapport d'héritage 'principal' existant :
+			// on annule le rapport existant et on le recrée sans le flag 'principal'
+			final Heritage clone = currentHeritagePrincipal.duplicate();
+			clone.setPrincipalCommunaute(false);
+			tiersService.addRapport(clone, oldPrincipal, defunt);
+			currentHeritagePrincipal.setAnnule(true);
+		}
+		else {
+			// la date de début est postérieur à la date de début du rapport d'héritage existant :
+			// on ferme le rapport existant et on en crée une copie sans le flag 'principal' qui débute à la date qui va bien.
+			final Heritage clone = currentHeritagePrincipal.duplicate();
+			clone.setDateDebut(dateDebut);
+			clone.setPrincipalCommunaute(false);
+			tiersService.addRapport(clone, oldPrincipal, defunt);
+			currentHeritagePrincipal.setDateFin(dateDebut.getOneDayBefore());
+		}
+
+		// on ajoute le flag principal sur le rapport d'héritage de l'héritier désigné
+		if (dateDebut == currentHeritageHeritier.getDateDebut()) {
+			// la date de début correspond à la date de début du rapport d'héritage existant de l'héritier :
+			// on annule le rapport existant et on le recrée avec le flag 'principal'
+			final Heritage clone = currentHeritageHeritier.duplicate();
+			clone.setPrincipalCommunaute(true);
+			tiersService.addRapport(clone, newPrincipal, defunt);
+			currentHeritageHeritier.setAnnule(true);
+		}
+		else {
+			// la date de début est postérieur à la date de début du rapport d'héritage existant de l'héritier :
+			// on ferme le rapport existant et on en crée une copie avec le flag 'principal' qui débute à la date qui va bien.
+			final Heritage clone = currentHeritageHeritier.duplicate();
+			clone.setDateDebut(dateDebut);
+			clone.setPrincipalCommunaute(true);
+			tiersService.addRapport(clone, newPrincipal, defunt);
+			currentHeritageHeritier.setDateFin(dateDebut.getOneDayBefore());
+		}
 	}
 }

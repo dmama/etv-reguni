@@ -59,7 +59,8 @@ span.pdf-grayed,
 a.key,
 a.save,
 a.printer,
-a.calendar {
+a.calendar,
+a.select {
 	/* Ne pas optimiser ces "background-xxx" en "background:" car cela surcharge implicitement l'élément "background-image" que l'on ne veut pas surcharger */
 	background-position: left top;
 	background-repeat: no-repeat;
@@ -99,7 +100,8 @@ span.pdf-grayed:hover,
 a.key:hover,
 a.save:hover,
 a.printer:hover,
-a.calendar:hover {
+a.calendar:hover,
+a.select:hover {
 	background-repeat: no-repeat;
 	text-decoration: none;
 }
@@ -334,6 +336,21 @@ a.reOpen {
 }
 a.reOpen:hover {
 	background-image: url(reopen_on.png);
+}
+
+a.select {
+	width: 13px;
+	height: 13px;
+	background-image: url(select_off.png);
+}
+a.select:hover {
+	background-image: url(select_on.png);
+}
+
+legend a.select:hover {
+	background-repeat: no-repeat;
+	z-index: 500;
+	text-decoration: none;
 }
 
 .margin_right_10 {

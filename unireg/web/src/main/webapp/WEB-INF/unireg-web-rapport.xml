@@ -60,6 +60,7 @@
 		<property name="rapportEditManager" ref="rapportEditManager" />
 		<property name="rapportAddValidator" ref="rapportAddValidator" />
 		<property name="rapportEditValidator" ref="rapportEditValidator" />
+		<property name="setPrincipalValidator" ref="setPrincipalValidator" />
 	</bean>
 
 	<bean id="rapportEditManager" class="ch.vd.uniregctb.rapport.manager.RapportEditManagerImpl" parent="tiersManager">
@@ -75,6 +76,10 @@
 	</bean>
 
 	<bean id="rapportEditValidator" class="ch.vd.uniregctb.tiers.validator.RapportEditValidator" />
+
+	<bean id="setPrincipalValidator" class="ch.vd.uniregctb.rapport.validator.SetPrincipalValidator">
+		<property name="tiersDAO" ref="tiersDAO"/>
+	</bean>
 
 	<bean id="rapportsPrestationEditController" class="ch.vd.uniregctb.tiers.RapportsPrestationEditController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />

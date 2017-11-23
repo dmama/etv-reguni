@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.rapport.manager;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -21,6 +24,7 @@ import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -259,7 +263,7 @@ public class RapportEditManagerTest extends WebTest {
 	}
 
 	/**
-	 * [SIFISC-24999] Vérifie que le flag 'principal' est bien sauvé sur un rapport d'héritage.
+	 * [SIFISC-24999] Vérifie que le flag 'principal' est bien sauvé sur un premier rapport d'héritage.
 	 */
 	@Test
 	public void testSaveRapportHeritage() throws Exception {
@@ -287,7 +291,7 @@ public class RapportEditManagerTest extends WebTest {
 			rapport.setTiersLie(new TiersGeneralView(ids.heritier));
 			rapport.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET);  // le tiers lié est l'objet
 			rapport.setDateDebut(date(2014, 11, 11));
-			rapport.setPrincipalCommunaute(true);
+			//rapport.setPrincipalCommunaute(true); ---> pas besoin de le mettre, la méthode l'ajoute automatiquement sur le premier héritage
 			manager.add(rapport);
 			return null;
 		});
@@ -311,6 +315,123 @@ public class RapportEditManagerTest extends WebTest {
 			assertTrue(heritage0.getPrincipalCommunaute());
 			return null;
 		});
+	}
+
+	/**
+	 * Vérifie que le choix d'un principal valable à partir de la même date de début que le principal courant fonctionne bien.
+	 */
+	@Test
+	public void testSetPrincipalMemeDateDebut() throws Exception {
+
+		final RegDate dateHeritage = RegDate.get(2000, 1, 1);
+
+		class Ids {
+			Long defunt;
+			Long heritier1;
+			Long heritier2;
+		}
+		final Ids ids = new Ids();
+
+		// on créé les personnes et les liens d'héritage
+		doInNewTransaction(status -> {
+			final PersonnePhysique defunt = addNonHabitant("Jean", "Peuplu", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier1 = addNonHabitant("Jaime", "Rejoui", RegDate.get(1980, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier2 = addNonHabitant("Annie", "Rejoui", RegDate.get(1980, 1, 1), Sexe.FEMININ);
+			addHeritage(heritier1, defunt, dateHeritage, null, true);
+			addHeritage(heritier2, defunt, dateHeritage, null, false);
+			ids.defunt = defunt.getId();
+			ids.heritier1 = heritier1.getId();
+			ids.heritier2 = heritier2.getId();
+			return null;
+		});
+
+		// on sélectionne le deuxième héritier comme principal à partir de la date d'héritage
+		doInNewTransaction(status -> {
+			manager.setPrincipal(ids.defunt, ids.heritier2, dateHeritage);
+			return null;
+		});
+
+		// on vérifie que tout est ok
+		doInNewTransaction(status -> {
+			final Tiers defunt = tiersDAO.get(ids.defunt);
+			final List<Heritage> heritages = defunt.getRapportsObjet().stream()
+					.filter(Heritage.class::isInstance)
+					.map(Heritage.class::cast)
+					.sorted(Comparator.comparing(Heritage::getId))
+					.collect(Collectors.toList());
+			assertEquals(4, heritages.size());
+			// les deux rapports préexistants sont annulés
+			assertHeritage(dateHeritage, null, ids.defunt, ids.heritier1, true, true, heritages.get(0));
+			assertHeritage(dateHeritage, null, ids.defunt, ids.heritier2, false, true, heritages.get(1));
+			// l'héritier 2 est maintenant le principal à la place de l'héritier 1
+			assertHeritage(dateHeritage, null, ids.defunt, ids.heritier1, false, false, heritages.get(2));
+			assertHeritage(dateHeritage, null, ids.defunt, ids.heritier2, true, false, heritages.get(3));
+			return null;
+		});
+	}
+
+	/**
+	 * Vérifie que le choix d'un principal valable à partir d'une date de début postérieur à la date d'héritage fonctionne bien.
+	 */
+	@Test
+	public void testSetPrincipalDateDebutPosterieure() throws Exception {
+
+		final RegDate dateHeritage = RegDate.get(2000, 1, 1);
+		final RegDate dateChangement = RegDate.get(2004, 7, 1);
+
+		class Ids {
+			Long defunt;
+			Long heritier1;
+			Long heritier2;
+		}
+		final Ids ids = new Ids();
+
+		// on créé les personnes et les liens d'héritage
+		doInNewTransaction(status -> {
+			final PersonnePhysique defunt = addNonHabitant("Jean", "Peuplu", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier1 = addNonHabitant("Jaime", "Rejoui", RegDate.get(1980, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier2 = addNonHabitant("Annie", "Rejoui", RegDate.get(1980, 1, 1), Sexe.FEMININ);
+			addHeritage(heritier1, defunt, dateHeritage, null, true);
+			addHeritage(heritier2, defunt, dateHeritage, null, false);
+			ids.defunt = defunt.getId();
+			ids.heritier1 = heritier1.getId();
+			ids.heritier2 = heritier2.getId();
+			return null;
+		});
+
+		// on sélectionne le deuxième héritier comme principal à une date postérieure au début de l'héritage
+		doInNewTransaction(status -> {
+			manager.setPrincipal(ids.defunt, ids.heritier2, dateChangement);
+			return null;
+		});
+
+		// on vérifie que tout est ok
+		doInNewTransaction(status -> {
+			final Tiers defunt = tiersDAO.get(ids.defunt);
+			final List<Heritage> heritages = defunt.getRapportsObjet().stream()
+					.filter(Heritage.class::isInstance)
+					.map(Heritage.class::cast)
+					.sorted(Comparator.comparing(Heritage::getId))
+					.collect(Collectors.toList());
+			assertEquals(4, heritages.size());
+			// les deux rapports préexistants sont fermés à la veille du changement
+			assertHeritage(dateHeritage, dateChangement.getOneDayBefore(), ids.defunt, ids.heritier1, true, false, heritages.get(0));
+			assertHeritage(dateHeritage, dateChangement.getOneDayBefore(), ids.defunt, ids.heritier2, false, false, heritages.get(1));
+			// l'héritier 2 est maintenant le principal à la place de l'héritier 1
+			assertHeritage(dateChangement, null, ids.defunt, ids.heritier1, false, false, heritages.get(2));
+			assertHeritage(dateChangement, null, ids.defunt, ids.heritier2, true, false, heritages.get(3));
+			return null;
+		});
+	}
+
+	private static void assertHeritage(RegDate dateDebut, RegDate dateFin, Long defuntId, Long heritierId, boolean principal, boolean annule, Heritage heritage) {
+		assertNotNull(heritage);
+		assertEquals(dateDebut, heritage.getDateDebut());
+		assertEquals(dateFin, heritage.getDateFin());
+		assertEquals(annule, heritage.isAnnule());
+		assertEquals(defuntId, heritage.getObjetId());
+		assertEquals(heritierId, heritage.getSujetId());
+		assertEquals(principal, heritage.getPrincipalCommunaute());
 	}
 
 	private void assertUneRepresentationConventionnelle(final boolean executionForcee, final long noTiersRepresente) throws Exception {

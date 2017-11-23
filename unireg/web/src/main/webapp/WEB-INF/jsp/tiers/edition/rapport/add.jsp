@@ -106,12 +106,6 @@
 						<form:checkbox id="executionForcee" path="extensionExecutionForcee" />
 					</p>
 
-					<p>
-						<%-- Election du principal de communauté d'héritier (seulement pour HERITAGE) --%>
-						<label id="principalCommunauteLabel" for="principalCommunaute">Principal de la communauté d'héritiers :</label>
-						<form:checkbox id="principalCommunaute" path="principalCommunaute" />
-					</p>
-
 				</fieldset>
 
 				<script type="text/javascript">
@@ -219,18 +213,6 @@
 							}
 						},
 
-						refreshPrincipalCommunaute: function() {
-							var type = $('#typeRapport');
-							if (type.val() === 'HERITAGE') {
-								$('#principalCommunaute').show();
-								$('#principalCommunauteLabel').show();
-							}
-							else {
-								$('#principalCommunaute').hide();
-								$('#principalCommunauteLabel').hide();
-							}
-						},
-
 						refreshAutoriteTutelaire: function() {
 							var type = $('#typeRapport');
 							if (type.val() === 'TUTELLE' || type.val() === 'CURATELLE' || type.val() === 'CONSEIL_LEGAL') {
@@ -250,7 +232,6 @@
 
 						refreshAll: function() {
 							this.refreshExecutionForcee();
-							this.refreshPrincipalCommunaute();
 							this.refreshLegend();
 							this.refreshAutoriteTutelaire();
 						},
