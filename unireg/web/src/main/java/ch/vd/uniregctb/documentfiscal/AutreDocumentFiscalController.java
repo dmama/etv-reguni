@@ -8,7 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.SessionFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -17,15 +20,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -42,6 +49,11 @@ public class AutreDocumentFiscalController {
 	private AutreDocumentFiscalManager autreDocumentFiscalManager;
 	private TiersMapHelper tiersMapHelper;
 	private RetourEditiqueControllerHelper retourEditiqueControllerHelper;
+	private SessionFactory sessionFactory;
+	private ControllerUtils controllerUtils;
+	private MessageSource messageSource;
+	private ServiceInfrastructureService infraService;
+	private HibernateTemplate hibernateTemplate;
 
 	private static final Map<Role, Set<TypeAutreDocumentFiscalEmettableManuellement>> TYPES_DOC_ALLOWED = buildTypesDocAllowed();
 
@@ -67,6 +79,26 @@ public class AutreDocumentFiscalController {
 
 	public void setRetourEditiqueControllerHelper(RetourEditiqueControllerHelper retourEditiqueControllerHelper) {
 		this.retourEditiqueControllerHelper = retourEditiqueControllerHelper;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
+
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@InitBinder(value = "print")
@@ -161,34 +193,24 @@ public class AutreDocumentFiscalController {
 		                                                                        erreur);
 	}
 
-/*
-
-	*/
-/**
-	 * @param id l'id de la déclaration d'impôt ordinaire
-	 * @return les détails d'une déclaration d'impôt au format JSON
-	 *//*
-
+	@RequestMapping(value = "/details.do", method = RequestMethod.GET)
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
-	@RequestMapping(value = "/di/details.do", method = RequestMethod.GET)
 	@ResponseBody
-	public DeclarationImpotView detailsDI(@RequestParam("id") long id) throws AccessDeniedException {
-
+	public AutreDocumentFiscalView detailsAutreDocFiscal(@RequestParam("id") long id) throws AccessDeniedException {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
-		final DeclarationImpotOrdinaire decl = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
-		if (decl == null) {
+		final AutreDocumentFiscal autreDocumentFiscal = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, id);
+		//final AutreDocumentFiscal autreDocumentFiscal = hibernateTemplate.get(AutreDocumentFiscal.class, id);
+		if (autreDocumentFiscal == null) {
 			return null;
 		}
 
-		// vérification des droits en lecture
-		final Long tiersId = decl.getTiers().getId();
+		// Vérification des droits en lecture
+		final Long tiersId = autreDocumentFiscal.getTiers().getId();
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
-		return new DeclarationImpotView(decl, infraService, messageSource);
+		return AutreDocumentFiscalViewFactory.buildView(autreDocumentFiscal, infraService, messageSource);
 	}
-*/
-
 }

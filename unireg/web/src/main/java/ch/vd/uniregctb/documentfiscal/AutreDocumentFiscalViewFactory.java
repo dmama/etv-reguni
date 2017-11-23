@@ -7,6 +7,7 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.registrefoncier.allegement.DemandeDegrevementICIView;
 
 /**
  * Factory des vues d'autres documents fiscaux
@@ -31,7 +32,7 @@ public abstract class AutreDocumentFiscalViewFactory {
 		addToMap(map, AutorisationRadiationRC.class,            (document, infraService, messageSource) -> new AutreDocumentFiscalView(document, infraService, messageSource, "label.autre.document.fiscal.autorisation.radiation.rc", null));
 		addToMap(map, DemandeBilanFinal.class,                  (document, infraService, messageSource) -> new AutreDocumentFiscalView(document, infraService, messageSource, "label.autre.document.fiscal.demande.bilan.final", null));
 		addToMap(map, LettreTypeInformationLiquidation.class,   (document, infraService, messageSource) -> new AutreDocumentFiscalView(document, infraService, messageSource, "label.autre.document.fiscal.lettre.liquidation", null));
-		addToMap(map, DemandeDegrevementICI.class,              (document, infraService, messageSource) -> new AutreDocumentFiscalAvecSuiviView(document, infraService, messageSource, "label.autre.document.fiscal.formulaire.demande.degrevement.ici", null));
+		addToMap(map, DemandeDegrevementICI.class,              (document, infraService, messageSource) -> new DemandeDegrevementICIView(document, infraService, messageSource, "label.autre.document.fiscal.formulaire.demande.degrevement.ici", null));
 		return map;
 	}
 

@@ -2720,7 +2720,7 @@ var Decl = {
 				info += '<tr class="odd"><td width="25%">Type déclaration&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(di.typeDocumentMessage) + '</td>';
 				info += '<td width="25%">&nbsp;</td><td width="25%">&nbsp;</td></tr></table></fieldset>\n';
 
-				var delais = pp ? Decl._buildDelaisPPISTable(di.delais) :  Decl._buildDelaisPMTable(di.delais);
+				var delais = pp ? Decl._buildDelaisPPISTable(di.delais) :  Decl._buildDelaisPMTable(di.delais, true);
 				var etats = Decl._buidlEtatsTable(di.etats, false);
 
 				var dialog = Dialog.create_dialog_div('details-di-dialog');
@@ -2816,6 +2816,151 @@ var Decl = {
 		.error(Ajax.notifyErrorHandler("affichage des détails du questionnaire SNC"));
 	},
 
+	/**
+	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) d'une lettre de bienvenue dont l'id est passé en paramètre.
+	 * @param docId l'id de la lettre de bienvenue à afficher.
+	 */
+	open_details_lb: function(docId) {
+
+		$.getJSON(App.curl("/autresdocs/details.do?id=") + docId + "&" + new Date().getTime(), function(doc) {
+			/** @namespace doc.delais */
+			/** @namespace doc.etats */
+			/** @namespace doc.libelleTypeDocument */
+			/** @namespace doc.libelleSousType */
+			if (doc) {
+				var info = '<fieldset class="information"><legend><span>Caractéristiques de la lettre de bienvenue</span></legend>';
+				info += '<table><tr class="odd"><td width="25%">Type entreprise&nbsp;:</td><td width="75%">' + StringUtils.escapeHTML(doc.libelleSousType) + '</td></tr>';
+				info += '</table></fieldset>\n';
+
+				var delais = "";
+				if (doc.delais.length > 0) {
+					delais = Decl._buildDelaisPMTable(doc.delais, false);
+				}
+				var etats = Decl._buidlEtatsTable(doc.etats, true);
+
+				var dialog = Dialog.create_dialog_div('details-di-dialog');
+				dialog.html(info + delais + etats);
+
+				dialog.dialog({
+					              title: "Détails de la lettre de bienvenue",
+					              width: 650,
+					              modal: true,
+					              buttons: {
+						              Ok: function() {
+							              dialog.dialog("close");
+						              }
+					              }
+				              });
+			}
+			else {
+				alert("La lettre de bienvenue n'existe pas.");
+			}
+		})
+			.error(Ajax.notifyErrorHandler("affichage des détails de la lettre de bienvenue"));
+	},
+
+	/**
+	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) d'un formulaire de demande de dégrèvement ICI dont l'id est passé en paramètre.
+	 * @param docId l'id de la déclaration à afficher.
+	 */
+	open_details_ddici: function(docId) {
+
+		$.getJSON(App.curl("/autresdocs/details.do?id=") + docId + "&" + new Date().getTime(), function(doc) {
+			/** @namespace doc.delais */
+			/** @namespace doc.etats */
+			/** @namespace doc.libelleTypeDocument */
+			/** @namespace doc.libelleSousType */
+			/** @namespace doc.periodeFiscale */
+			/** @namespace doc.codeControle */
+			if (doc) {
+				var info = '<fieldset class="information"><legend><span>Caractéristiques du formulaire de demande de dégrèvement ICI</span></legend>';
+				info += '<table><tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(doc.periodeFiscale) + '</td>';
+				info += '<td width="25%">Code de contrôle&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(doc.codeControle) + '</td></tr>';
+				info += '</table></fieldset>\n';
+
+				var delais = "";
+				if (doc.delais.length > 0) {
+					delais = Decl._buildDelaisPMTable(doc.delais, false);
+				}
+				var etats = Decl._buidlEtatsTable(doc.etats, true);
+
+				var dialog = Dialog.create_dialog_div('details-di-dialog');
+				dialog.html(info + delais + etats);
+
+				dialog.dialog({
+					              title: "Détails du formulaire de demande de dégrèvement ICI",
+					              width: 650,
+					              modal: true,
+					              buttons: {
+						              Ok: function() {
+							              dialog.dialog("close");
+						              }
+					              }
+				              });
+			}
+			else {
+				alert("Le formulaire de demande de dégrèvement ICI n'existe pas.");
+			}
+		})
+			.error(Ajax.notifyErrorHandler("affichage des détails du formulaire de demande de dégrèvement ICI"));
+	},
+
+	/**
+	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) d'un document fiscal sans dont l'id est passé en paramètre.
+	 * @param docId l'id de la déclaration à afficher.
+	 */
+	open_details_doc_sans_suivi: function(docId) {
+
+		$.getJSON(App.curl("/autresdocs/details.do?id=") + docId + "&" + new Date().getTime(), function(doc) {
+			/** @namespace doc.delais */
+			/** @namespace doc.etats */
+			/** @namespace doc.libelleTypeDocument */
+			/** @namespace doc.libelleSousType */
+			/** @namespace doc.periodeFiscale */
+			/** @namespace doc.dateRequisitionRadiation */
+			/** @namespace doc.dateDemande */
+			if (doc) {
+				var info = '<fieldset class="information"><legend><span>Caractéristiques du document fiscal</span></legend>';
+				info += '<table><tr class="odd"><td width="25%">Genre de document&nbsp;:</td><td width="75%">' + StringUtils.escapeHTML(doc.libelleTypeDocument) + '</td></tr>';
+				if (doc.periodeFiscale) {
+					info += '<tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(doc.periodeFiscale) + '</td></tr>';
+				}
+				if (doc.dateRequisitionRadiation) {
+					info += '<tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(doc.dateRequisitionRadiation) + '</td></tr>';
+				}
+				if (doc.dateDemande) {
+					info += '<tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(doc.dateDemande) + '</td></tr>';
+				}
+				info += '</table></fieldset>\n';
+
+				var delais = "";
+				if (doc.delais.length > 0) {
+					delais = Decl._buildDelaisPMTable(doc.delais, false);
+				}
+				var etats = Decl._buidlEtatsTable(doc.etats, true);
+
+				var dialog = Dialog.create_dialog_div('details-di-dialog');
+				dialog.html(info + delais + etats);
+
+				dialog.dialog({
+					              title: "Détails du document fiscal",
+					              width: 650,
+					              modal: true,
+					              buttons: {
+						              Ok: function() {
+							              dialog.dialog("close");
+						              }
+					              }
+				              });
+			}
+			else {
+				alert("Le document fiscal n'existe pas.");
+			}
+		})
+			.error(Ajax.notifyErrorHandler("affichage des détails du document fiscal"));
+	},
+
+
 	_buildDelaisPPISTable: function (delais) {
 		var html = '';
 		if (delais) {
@@ -2856,12 +3001,15 @@ var Decl = {
 		return html;
 	},
 
-	_buildDelaisPMTable: function (delais) {
+	_buildDelaisPMTable: function (delais, avecDecision) {
 		var html = '';
 		if (delais) {
 			html = '<fieldset><legend><span>Délais</span></legend>';
-			html +=
-				'<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Date traitement</th><th>Décision</th><th>Confirmation écrite</th><th>Délai accordé</th><th></th></tr></thead><tbody>';
+			html += '<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Date traitement</th>';
+			if (avecDecision) {
+				html += '<th>Décision</th>';
+			}
+			html += '<th>Confirmation écrite</th><th>Délai accordé</th><th></th></tr></thead><tbody>';
 			for (var i in delais) {
 				//noinspection JSUnfilteredForInLoop
 				var d = delais[i];
@@ -2872,8 +3020,11 @@ var Decl = {
 				/** @namespace d.dateTraitement */
 				/** @namespace d.etat */
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
-				html += '<td>' + RegDate.format(d.dateDemande) + '</td><td>' + RegDate.format(d.dateTraitement) + '</td>';
-				html += '<td>' + StringUtils.escapeHTML(d.etatMessage) + '</td>';
+				html += '<td>' + RegDate.format(d.dateDemande) + '</td>';
+				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
+				if (avecDecision) {
+					html += '<td>' + StringUtils.escapeHTML(d.etatMessage) + '</td>';
+				}
 				html += '<td>';
 				if (d.etat != 'DEMANDE') {
 					if (d.urlVisualisationExterneDocument != null) {

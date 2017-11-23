@@ -12,6 +12,11 @@
 		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="messageSource" ref="messageSource"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<bean id="autreDocumentFiscalManager" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalManagerImpl">

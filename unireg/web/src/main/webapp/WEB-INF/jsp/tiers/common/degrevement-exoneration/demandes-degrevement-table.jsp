@@ -53,6 +53,9 @@
 	<display:column class="action" style="width: 5%;">
 		<c:choose>
 			<c:when test="${mode == 'visu'}">
+				<c:if test="${!demande.annule}">
+					<a href="#" class="detail" title="DocFiscal" onclick="Decl.open_details_ddici(<c:out value="${demande.id}"/>); return false;">&nbsp;</a>
+				</c:if>
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${demande.id}"/>
 			</c:when>
 			<c:when test="${mode == 'edit' && !demande.annule}">

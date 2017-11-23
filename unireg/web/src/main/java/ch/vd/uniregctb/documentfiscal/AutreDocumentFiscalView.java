@@ -7,6 +7,7 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.view.DocumentFiscalView;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -18,6 +19,14 @@ public class AutreDocumentFiscalView extends DocumentFiscalView {
 	private final boolean avecCopieConformeEnvoi;
 	private final String urlVisualisationExterneDocument;
 
+	private int periodeFiscale;
+
+	// Demande de bilan finale
+	private RegDate dateRequisitionRadiation;
+
+	// Autorisation de radiaton RC
+	private RegDate dateDemande;
+
 	public AutreDocumentFiscalView(AutreDocumentFiscal doc, ServiceInfrastructureService infraService, MessageSource messageSource, String typeKey, String subtypeKey) {
 		super(doc, infraService, messageSource);
 		this.dateEnvoi = doc.getDateEnvoi();
@@ -28,6 +37,17 @@ public class AutreDocumentFiscalView extends DocumentFiscalView {
 				.filter(StringUtils::isNotBlank)
 				.map(cle -> infraService.getUrlVisualisationDocument(this.getTiersId(), doc.getPeriodeFiscale(), cle))
 				.orElse(null);
+
+		if (doc instanceof DemandeBilanFinal) {
+			this.dateRequisitionRadiation = ((DemandeBilanFinal) doc).getDateRequisitionRadiation();
+			this.periodeFiscale = doc.getPeriodeFiscale();
+		}
+		else if (doc instanceof AutorisationRadiationRC) {
+			this.dateDemande = ((AutorisationRadiationRC) doc).getDateDemande();
+		}
+		else if (doc instanceof DemandeDegrevementICI) {
+			this.periodeFiscale = doc.getPeriodeFiscale();
+		}
 	}
 
 	private String getLibelle(MessageSource messageSource, String typeKey) {
@@ -52,5 +72,29 @@ public class AutreDocumentFiscalView extends DocumentFiscalView {
 
 	public String getUrlVisualisationExterneDocument() {
 		return urlVisualisationExterneDocument;
+	}
+
+	public int getPeriodeFiscale() {
+		return periodeFiscale;
+	}
+
+	public void setPeriodeFiscale(int periodeFiscale) {
+		this.periodeFiscale = periodeFiscale;
+	}
+
+	public RegDate getDateRequisitionRadiation() {
+		return dateRequisitionRadiation;
+	}
+
+	public void setDateRequisitionRadiation(RegDate dateRequisitionRadiation) {
+		this.dateRequisitionRadiation = dateRequisitionRadiation;
+	}
+
+	public RegDate getDateDemande() {
+		return dateDemande;
+	}
+
+	public void setDateDemande(RegDate dateDemande) {
+		this.dateDemande = dateDemande;
 	}
 }

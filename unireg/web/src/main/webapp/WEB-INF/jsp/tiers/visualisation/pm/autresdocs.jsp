@@ -51,6 +51,9 @@
 				<fmt:message key="option.etat.avancement.m.${docFiscal.etat}" />
 			</display:column>
 			<display:column class="action">
+				<c:if test="${!docFiscal.annule}">
+					<a href="#" class="detail" title="DocFiscal" onclick="Decl.open_details_lb(<c:out value="${docFiscal.id}"/>); return false;">&nbsp;</a>
+				</c:if>
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>
 			</display:column>
 		</display:table>
@@ -93,6 +96,9 @@
 				</c:choose>
 			</display:column>
 			<display:column class="action">
+				<c:if test="${!docFiscal.annule}">
+					<a href="#" class="detail" title="DocFiscal" onclick="Decl.open_details_doc_sans_suivi(<c:out value="${docFiscal.id}"/>); return false;">&nbsp;</a>
+				</c:if>
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>
 			</display:column>
 		</display:table>

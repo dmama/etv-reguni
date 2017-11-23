@@ -8,17 +8,16 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class DemandeDegrevementICIView extends AutreDocumentFiscalAvecSuiviView {
 
-	private final int periodeFiscale;
 	private final String codeControle;
 
 	public DemandeDegrevementICIView(DemandeDegrevementICI doc, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		super(doc, infraService, messageSource,null, null);
-		this.periodeFiscale = doc.getPeriodeFiscale();
 		this.codeControle = doc.getCodeControle();
 	}
 
-	public int getPeriodeFiscale() {
-		return periodeFiscale;
+	public DemandeDegrevementICIView(DemandeDegrevementICI doc, ServiceInfrastructureService infraService, MessageSource messageSource, String typeKey, String subtypeKey) {
+		super(doc, infraService, messageSource,typeKey, subtypeKey);
+		this.codeControle = doc.getCodeControle();
 	}
 
 	public String getCodeControle() {
