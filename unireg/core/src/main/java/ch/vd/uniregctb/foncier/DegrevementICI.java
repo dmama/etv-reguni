@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.Duplicable;
@@ -19,6 +20,10 @@ import ch.vd.uniregctb.common.Duplicable;
 @Entity
 @DiscriminatorValue(value = "DegrevementICI")
 public class DegrevementICI extends AllegementFoncier implements Duplicable<DegrevementICI> {
+
+	// big décimals avec précision de 2 décimales
+	private static final BigDecimal ZERO = BigDecimal.valueOf(0L, 2);
+	private static final BigDecimal CENT = BigDecimal.valueOf(10000L, 2);
 
 	private DonneesUtilisation location;
 	private DonneesUtilisation propreUsage;
@@ -121,40 +126,39 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 	 * en compte la part de propre usage complète, et la part de location déterminée par le contrôle sur la loi sur le logement)
 	 */
 	@Transient
-	@Nullable
+	@NotNull
 	public BigDecimal getPourcentageDegrevement() {
 		final Optional<BigDecimal> loc = Optional.ofNullable(this.location).map(DonneesUtilisation::getPourcentageArrete);
 		final Optional<BigDecimal> pu = Optional.ofNullable(this.propreUsage).map(DonneesUtilisation::getPourcentageArrete);
 		if (loc.isPresent() || pu.isPresent()) {
 			// si l'un des deux est là, on peut déduire l'autre, au pire
-			final BigDecimal cent = BigDecimal.valueOf(100L);
 			//noinspection ConstantConditions
-			final BigDecimal location = loc.orElseGet(() -> cent.subtract(pu.get()));
-			final BigDecimal propreUsage = pu.orElseGet(() -> cent.subtract(location));
-			if (propreUsage.compareTo(cent) >= 0) {
+			final BigDecimal location = loc.orElseGet(() -> CENT.subtract(pu.get()));
+			final BigDecimal propreUsage = pu.orElseGet(() -> CENT.subtract(location));
+			if (propreUsage.compareTo(CENT) >= 0) {
 				// de toute façon, on ne pourra pas faire plus...
-				return cent;
+				return CENT;
 			}
 
 			// prise en compte de la loi sur le logement
 			final Optional<BigDecimal> loiLogement = this.loiLogement != null && this.loiLogement.getControleOfficeLogement() != null && this.loiLogement.getControleOfficeLogement()
 					? Optional.ofNullable(this.loiLogement.getPourcentageCaractereSocial())
-					: Optional.of(BigDecimal.ZERO);
+					: Optional.of(ZERO);
 			if (loiLogement.isPresent()) {
 				// PU + (LL * LOC)
 				final BigDecimal calc = propreUsage.add(loiLogement.get().multiply(location).movePointLeft(2));
 
 				// limitation à la plage autorisée 0-100
 				//noinspection ConstantConditions
-				return Stream.of(BigDecimal.ZERO,
-				                 Stream.of(calc, cent).min(Comparator.naturalOrder()).get())
+				return Stream.of(ZERO,
+				                 Stream.of(calc, CENT).min(Comparator.naturalOrder()).get())
 						.max(Comparator.naturalOrder())
 						.get()
-						.stripTrailingZeros();
+						.setScale(2, BigDecimal.ROUND_HALF_EVEN);
 			}
 		}
 
 		// [SIFISC-26123] si aucune valeur n'est arrêtée, le dégrèvement final doit être 0% (et non pas une valeur nulle)
-		return BigDecimal.ZERO;
+		return ZERO;
 	}
 }
