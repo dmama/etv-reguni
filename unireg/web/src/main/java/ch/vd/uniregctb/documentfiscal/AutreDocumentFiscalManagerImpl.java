@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
@@ -85,6 +86,25 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		final List<AutreDocumentFiscalView> views = new ArrayList<>(adfs.size());
 		for (AutreDocumentFiscal adf : CollectionsUtils.revertedOrder(adfs)) {
 			if (!(adf instanceof AutreDocumentFiscalAvecSuivi)) {
+				views.add(AutreDocumentFiscalViewFactory.buildView(adf, infraService, messageSource));
+			}
+		}
+		return views;
+	}
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@Override
+	public List<AutreDocumentFiscalView> getAutresDocumentsFiscauxAvecSuivi(long noCtb) {
+		final Entreprise entreprise = getEntreprise(noCtb);
+
+		final List<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux(AutreDocumentFiscal.class, true, true);
+		if (adfs.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<AutreDocumentFiscalView> views = new ArrayList<>(adfs.size());
+		for (AutreDocumentFiscal adf : CollectionsUtils.revertedOrder(adfs)) {
+			if (adf instanceof AutreDocumentFiscalAvecSuivi && !(adf instanceof DemandeDegrevementICI)) {
 				views.add(AutreDocumentFiscalViewFactory.buildView(adf, infraService, messageSource));
 			}
 		}

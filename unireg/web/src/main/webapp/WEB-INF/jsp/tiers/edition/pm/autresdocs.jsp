@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="docsAvecSuivi" type="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalListView"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
 		<fmt:message key="title.autre.document.fiscal.edition">
@@ -12,7 +14,6 @@
 	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 		<unireg:bandeauTiers numero="${pmId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" titre="Caractéristiques du contribuable"/>
-
 		<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 		<fieldset>
 			<legend><span><fmt:message key="label.autre.document.fiscal.nouvel.envoi"/></span></legend>
@@ -160,6 +161,71 @@
 			</script>
 
 		</fieldset>
+
+
+		<!-- Debut Caracteristiques autres documents avec suivi -->
+		<fieldset>
+			<legend><span><fmt:message key="label.autres.documents.fiscaux.suivis" /></span></legend>
+			<authz:authorize ifAnyGranted="ROLE_GEST_QUIT_LETTRE_BIENVENUE">
+				<table border="0">
+					<tr><td>
+						<unireg:linkTo name="Ajouter" action="/autresdocs/choisir.do" method="get" params="{tiersId:${docsAvecSuivi.ctbId},url_memorize:false}" title="Ajouter un autre document fiscal [FIXME]" link_class="add noprint"/>
+					</td></tr>
+				</table>
+			</authz:authorize>
+
+			<c:if test="${not empty docsAvecSuivi.docs}">
+				<display:table name="docsAvecSuivi.docs" id="doc" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/autresdocs/edit-list.do" sort="list">
+					<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucun.doc.trouve" /></span></display:setProperty>
+					<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.doc.trouve" /></span></display:setProperty>
+					<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.docs.trouves" /></span></display:setProperty>
+					<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.docs.trouves" /></span></display:setProperty>
+
+					<display:column sortable="true" titleKey="label.autre.document.fiscal.type.document">
+						${doc.libelleTypeDocument}
+					</display:column>
+					<display:column sortable="true" titleKey="label.autre.document.fiscal.soustype.document">
+						${doc.libelleSousType}
+					</display:column>
+					<display:column sortable ="true" titleKey="label.date.emission" sortProperty="dateDebut">
+						<unireg:regdate regdate="${doc.dateEnvoi}"/>
+					</display:column>
+					<display:column sortable ="true" titleKey="label.date.delai.accorde" sortProperty="delaiAccorde">
+						<unireg:regdate regdate="${doc.delaiAccorde}"/>
+					</display:column>
+					<display:column sortable ="true" titleKey="label.date.retour" sortProperty="dateRetour">
+						<unireg:regdate regdate="${doc.dateRetour}"/>
+					</display:column>
+					<display:column sortable ="true" titleKey="label.etat.avancement" >
+						<fmt:message key="option.etat.avancement.f.${doc.etat}" />
+						<c:if test="${doc.dateRetour != null}">
+							<c:if test="${doc.sourceRetour == null}">
+								(<fmt:message key="option.source.quittancement.UNKNOWN" />)
+							</c:if>
+							<c:if test="${doc.sourceRetour != null}">
+								(<fmt:message key="option.source.quittancement.${doc.sourceRetour}" />)
+							</c:if>
+						</c:if>
+					</display:column>
+					<display:column style="action">
+						<authz:authorize ifAnyGranted="ROLE_GEST_QUIT_LETTRE_BIENVENUE">
+							<c:if test="${!doc.annule}">
+								<unireg:linkTo name="" action="/autresdocs/editer.do" method="get" params="{id:${doc.id}}" title="Editer le document fiscal" link_class="edit"/>
+							</c:if>
+						</authz:authorize>
+						<authz:authorize ifAnyGranted="ROLE_GEST_QUIT_LETTRE_BIENVENUE">
+							<c:if test="${doc.annule}">
+								<unireg:linkTo name="" title="Désannuler le document fiscal" action="/autresdocs/desannuler.do" method="post" params="{id:${doc.id}}"
+								               confirm="Voulez-vous vraiment désannuler ce document fiscal ?" link_class="undelete" />
+							</c:if>
+						</authz:authorize>
+					</display:column>
+					<display:setProperty name="paging.banner.all_items_found" value=""/>
+					<display:setProperty name="paging.banner.one_item_found" value=""/>
+				</display:table>
+			</c:if>
+		</fieldset>
+		<!-- Fin Caracteristiques autres documents avec suivi -->
 
 		<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 		<fieldset>

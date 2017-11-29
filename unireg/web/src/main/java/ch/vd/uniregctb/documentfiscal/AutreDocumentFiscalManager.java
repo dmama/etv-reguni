@@ -17,6 +17,9 @@ public interface AutreDocumentFiscalManager {
 	List<AutreDocumentFiscalView> getAutresDocumentsFiscauxSansSuivi(long noCtb);
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	List<AutreDocumentFiscalView> getAutresDocumentsFiscauxAvecSuivi(long noCtb);
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	boolean hasAnyEtat(long noCtb, TypeEtatEntreprise... types);
 
 	@Transactional(rollbackFor = Throwable.class)

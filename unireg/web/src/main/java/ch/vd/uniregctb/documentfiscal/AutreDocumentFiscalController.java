@@ -108,14 +108,19 @@ public class AutreDocumentFiscalController {
 	}
 
 	private void checkAnyRight() throws AccessDeniedException {
-		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ENVOI_AUTORISATION_RADIATION, Role.ENVOI_DEMANDE_BILAN_FINAL, Role.ENVOI_LETTRE_TYPE_INFO_LIQUIDATION)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ENVOI_AUTORISATION_RADIATION, Role.ENVOI_DEMANDE_BILAN_FINAL, Role.ENVOI_LETTRE_TYPE_INFO_LIQUIDATION,
+		                                 Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour gérer les autres documents fiscaux.");
 		}
 	}
 
+	/**
+	 * Affiche le panneau d'édition des autres documents fiscaux
+	 */
 	@RequestMapping(value = "/edit-list.do", method = RequestMethod.GET)
 	public String showEditList(Model model, @RequestParam(value = "pmId") long idEntreprise) {
 		checkAnyRight();
+
 		return showEditList(model, new ImprimerAutreDocumentFiscalView(idEntreprise, null));
 	}
 
@@ -139,14 +144,22 @@ public class AutreDocumentFiscalController {
 
 	private String showEditList(Model model, ImprimerAutreDocumentFiscalView view) {
 		final long idEntreprise = view.getNoEntreprise();
+
+		// vérification des droits en écriture
+		controllerUtils.checkAccesDossierEnEcriture(idEntreprise);
+
 		model.addAttribute("pmId", idEntreprise);
 		model.addAttribute("documents", autreDocumentFiscalManager.getAutresDocumentsFiscauxSansSuivi(idEntreprise));
 		model.addAttribute("typesDocument", getTypesAutreDocumentFiscalEmettableManuellement());
 		model.addAttribute("print", view);
 		model.addAttribute("isRadieeRCOuDissoute", autreDocumentFiscalManager.hasAnyEtat(idEntreprise, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
+		model.addAttribute("docsAvecSuivi", new AutreDocumentFiscalListView(idEntreprise, autreDocumentFiscalManager.getAutresDocumentsFiscauxAvecSuivi(idEntreprise)));
 		return "tiers/edition/pm/autresdocs";
 	}
 
+	/**
+	 * Impression (et ajout sur l'entreprise) d'un nouveau document
+	 */
 	@RequestMapping(value = "/print.do", method = RequestMethod.POST)
 	public String imprimerNouveauDocument(@Valid @ModelAttribute("print") final ImprimerAutreDocumentFiscalView view, BindingResult bindingResult, Model model) throws IOException {
 		if (bindingResult.hasErrors()) {
@@ -193,6 +206,9 @@ public class AutreDocumentFiscalController {
 		                                                                        erreur);
 	}
 
+	/**
+	 * Affichage de la fenêtre de détail pour un autre document fiscal
+	 */
 	@RequestMapping(value = "/details.do", method = RequestMethod.GET)
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@ResponseBody
