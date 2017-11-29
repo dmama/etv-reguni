@@ -135,10 +135,9 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 			return ZERO;
 		}
 
-		// si l'un des deux est là, on peut déduire l'autre, au pire
-		//noinspection ConstantConditions
-		final BigDecimal location = loc.orElseGet(() -> CENT.subtract(pu.get()));
-		final BigDecimal propreUsage = pu.orElseGet(() -> CENT.subtract(location));
+		// [SIFISC-27250] note: si l'un des deux valeurs manque, il ne faut pas la déduire à partir de l'autre
+		final BigDecimal location = loc.orElse(ZERO);
+		final BigDecimal propreUsage = pu.orElse(ZERO);
 		if (propreUsage.compareTo(CENT) >= 0) {
 			// de toute façon, on ne pourra pas faire plus...
 			return CENT;
@@ -152,17 +151,17 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 
 		// dégrèvement = PU + (LL * LOC)
 		final BigDecimal social = caractereSocial.multiply(location).movePointLeft(2);
-		final BigDecimal calc = propreUsage.add(social);
+		final BigDecimal degrevement = propreUsage.add(social);
 
 		// limitation à la plage autorisée 0-100
-		if (calc.compareTo(ZERO) <= 0) {
+		if (degrevement.compareTo(ZERO) <= 0) {
 			return ZERO;
 		}
-		else if (calc.compareTo(CENT) >= 0) {
+		else if (degrevement.compareTo(CENT) >= 0) {
 			return CENT;
 		}
 		else {
-			return calc.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+			return degrevement.setScale(2, BigDecimal.ROUND_HALF_EVEN);
 		}
 
 	}
