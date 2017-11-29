@@ -8,9 +8,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.jetbrains.annotations.NotNull;
@@ -131,35 +129,41 @@ public class DegrevementICI extends AllegementFoncier implements Duplicable<Degr
 	public BigDecimal getPourcentageDegrevement() {
 		final Optional<BigDecimal> loc = Optional.ofNullable(this.location).map(DonneesUtilisation::getPourcentageArrete);
 		final Optional<BigDecimal> pu = Optional.ofNullable(this.propreUsage).map(DonneesUtilisation::getPourcentageArrete);
-		if (loc.isPresent() || pu.isPresent()) {
-			// si l'un des deux est là, on peut déduire l'autre, au pire
-			//noinspection ConstantConditions
-			final BigDecimal location = loc.orElseGet(() -> CENT.subtract(pu.get()));
-			final BigDecimal propreUsage = pu.orElseGet(() -> CENT.subtract(location));
-			if (propreUsage.compareTo(CENT) >= 0) {
-				// de toute façon, on ne pourra pas faire plus...
-				return CENT;
-			}
 
-			// prise en compte de la loi sur le logement
-			final Optional<BigDecimal> loiLogement = this.loiLogement != null && this.loiLogement.getControleOfficeLogement() != null && this.loiLogement.getControleOfficeLogement()
-					? Optional.ofNullable(this.loiLogement.getPourcentageCaractereSocial())
-					: Optional.of(ZERO);
-			if (loiLogement.isPresent()) {
-				// PU + (LL * LOC)
-				final BigDecimal calc = propreUsage.add(loiLogement.get().multiply(location).movePointLeft(2));
-
-				// limitation à la plage autorisée 0-100
-				//noinspection ConstantConditions
-				return Stream.of(ZERO,
-				                 Stream.of(calc, CENT).min(Comparator.naturalOrder()).get())
-						.max(Comparator.naturalOrder())
-						.get()
-						.setScale(2, BigDecimal.ROUND_HALF_EVEN);
-			}
+		if (!loc.isPresent() && !pu.isPresent()) {
+			// [SIFISC-26123] si aucune valeur n'est arrêtée, le dégrèvement final doit être 0% (et non pas une valeur nulle)
+			return ZERO;
 		}
 
-		// [SIFISC-26123] si aucune valeur n'est arrêtée, le dégrèvement final doit être 0% (et non pas une valeur nulle)
-		return ZERO;
+		// si l'un des deux est là, on peut déduire l'autre, au pire
+		//noinspection ConstantConditions
+		final BigDecimal location = loc.orElseGet(() -> CENT.subtract(pu.get()));
+		final BigDecimal propreUsage = pu.orElseGet(() -> CENT.subtract(location));
+		if (propreUsage.compareTo(CENT) >= 0) {
+			// de toute façon, on ne pourra pas faire plus...
+			return CENT;
+		}
+
+		// prise en compte de la loi sur le logement
+		final BigDecimal caractereSocial = Optional.ofNullable(this.loiLogement)
+				.filter(l -> BooleanUtils.isTrue(l.getControleOfficeLogement()))
+				.map(DonneesLoiLogement::getPourcentageCaractereSocial)
+				.orElse(ZERO);
+
+		// dégrèvement = PU + (LL * LOC)
+		final BigDecimal social = caractereSocial.multiply(location).movePointLeft(2);
+		final BigDecimal calc = propreUsage.add(social);
+
+		// limitation à la plage autorisée 0-100
+		if (calc.compareTo(ZERO) <= 0) {
+			return ZERO;
+		}
+		else if (calc.compareTo(CENT) >= 0) {
+			return CENT;
+		}
+		else {
+			return calc.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+		}
+
 	}
 }
