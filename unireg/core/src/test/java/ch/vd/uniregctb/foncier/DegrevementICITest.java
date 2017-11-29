@@ -124,19 +124,19 @@ public class DegrevementICITest extends WithoutSpringTest {
 		Assert.assertEquals(ZERO, createDegrevement(ZERO, null, null, null).getPourcentageDegrevement());
 
 		// usage propre=null + location=0 => degrevement=0
-//		Assert.assertEquals(ZERO, createDegrevement(null, ZERO, null, null).getPourcentageDegrevement());
+		Assert.assertEquals(ZERO, createDegrevement(null, ZERO, null, null).getPourcentageDegrevement());
 
 		// usage propre=75 + location=null => degrevement=75
 		Assert.assertEquals(SEPTANTE_CINQ, createDegrevement(SEPTANTE_CINQ, null, null, null).getPourcentageDegrevement());
 
 		// usage propre=null + location=75 => degrevement=0
-//		Assert.assertEquals(ZERO, createDegrevement(null, SEPTANTE_CINQ, null, null).getPourcentageDegrevement());
+		Assert.assertEquals(ZERO, createDegrevement(null, SEPTANTE_CINQ, null, null).getPourcentageDegrevement());
 
 		// usage propre=30 + location=null *sans* contrôle de l'office du logement => degrevement=30
 		Assert.assertEquals(TRENTE, createDegrevement(TRENTE, null, false, CINQUANTE).getPourcentageDegrevement());
 
 		// usage propre=30 + location=null *avec* contrôle de l'office du logement => degrevement=30
-//		Assert.assertEquals(TRENTE, createDegrevement(TRENTE, null, true, CINQUANTE).getPourcentageDegrevement());
+		Assert.assertEquals(TRENTE, createDegrevement(TRENTE, null, true, CINQUANTE).getPourcentageDegrevement());
 
 		// usage propre=20 + location=80 *avec* contrôle de l'office du logement => degrevement=30
 		Assert.assertEquals(TRENTE, createDegrevement(TRENTE, null, true, null).getPourcentageDegrevement());
@@ -189,7 +189,7 @@ public class DegrevementICITest extends WithoutSpringTest {
 		deg.setLocation(new DonneesUtilisation(167L, 167L, 167L, BigDecimal.valueOf(20L), BigDecimal.valueOf(40L)));
 		deg.setLoiLogement(new DonneesLoiLogement(Boolean.FALSE, null, null, null));
 
-		Assert.assertEquals(SOIXANTE, deg.getPourcentageDegrevement());
+		Assert.assertEquals(ZERO, deg.getPourcentageDegrevement()); // SIFISC-27250
 	}
 
 	@Test
