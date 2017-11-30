@@ -15,7 +15,6 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 		<property name="messageSource" ref="messageSource"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
-		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 

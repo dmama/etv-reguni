@@ -27,19 +27,21 @@ import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.uniregctb.utils.WebContextUtils;
 
 @Controller
 @RequestMapping("/autresdocs")
@@ -53,7 +55,6 @@ public class AutreDocumentFiscalController {
 	private ControllerUtils controllerUtils;
 	private MessageSource messageSource;
 	private ServiceInfrastructureService infraService;
-	private HibernateTemplate hibernateTemplate;
 
 	private static final Map<Role, Set<TypeAutreDocumentFiscalEmettableManuellement>> TYPES_DOC_ALLOWED = buildTypesDocAllowed();
 
@@ -95,10 +96,6 @@ public class AutreDocumentFiscalController {
 
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
-	}
-
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@InitBinder(value = "print")
@@ -218,7 +215,6 @@ public class AutreDocumentFiscalController {
 		}
 
 		final AutreDocumentFiscal autreDocumentFiscal = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, id);
-		//final AutreDocumentFiscal autreDocumentFiscal = hibernateTemplate.get(AutreDocumentFiscal.class, id);
 		if (autreDocumentFiscal == null) {
 			return null;
 		}
@@ -229,4 +225,39 @@ public class AutreDocumentFiscalController {
 
 		return AutreDocumentFiscalViewFactory.buildView(autreDocumentFiscal, infraService, messageSource);
 	}
+
+	/**
+	 * Affiche un écran qui permet d'éditer d'un document fiscal avec suivi.
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/editer.do", method = RequestMethod.GET)
+	public String editer(@RequestParam("id") long id,
+	                     Model model) throws AccessDeniedException {
+
+		/* Pour l'instant, la lettre de bienvenue est le seul document fiscal avec suivi qu'on est susceptible d'éditer. */
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des documents fiscaux.");
+		}
+
+		final AutreDocumentFiscal docFisc = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, id);
+		if (docFisc == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.docfisc.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final Entreprise ctb = (Entreprise) docFisc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final AutreDocumentFiscalView view;
+
+		if (docFisc instanceof AutreDocumentFiscalAvecSuivi) {
+			view = AutreDocumentFiscalViewFactory.buildView(docFisc, infraService, messageSource);
+		}
+		else {
+			throw new IllegalArgumentException("Le document fiscal n°" + id + " n'est pas un document fiscal avec suivi.");
+		}
+
+		model.addAttribute("command", view);
+		return "documentfiscal/editer";
+	}
+
 }
