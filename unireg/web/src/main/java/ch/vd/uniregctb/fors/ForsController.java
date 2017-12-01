@@ -574,6 +574,14 @@ public class ForsController {
 		if (result.hasErrors()) {
 			model.addAttribute("rattachements", getMapMotifsRattachementForsSecondaires(ctb));
 			model.addAttribute("genresImpot", getMapGenresImpotForsSecondaires(ctb));
+			// [SIFISC-27087] récupération du nom de l'autorité fiscale à partir de son numéro
+			if(view.getNoAutoriteFiscale() != null) {
+				Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNoAutoriteFiscale(), null);
+				if(commune != null) {
+					view.setAutoriteFiscaleNom(commune.getNomOfficiel());
+				}
+			}
+
 			return "fors/secondaire/add";
 		}
 

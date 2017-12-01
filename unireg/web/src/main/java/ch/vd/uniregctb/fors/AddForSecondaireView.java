@@ -21,6 +21,7 @@ public class AddForSecondaireView implements AddForRevenuFortuneView {
 	private MotifRattachement motifRattachement;
 	private GenreImpot genreImpot;
 	private Integer noAutoriteFiscale;
+	private String autoriteFiscaleNom;
 
 	public AddForSecondaireView() {
 	}
@@ -112,6 +113,14 @@ public class AddForSecondaireView implements AddForRevenuFortuneView {
 
 	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
 		this.noAutoriteFiscale = noAutoriteFiscale;
+	}
+
+	public String getAutoriteFiscaleNom() {
+		return autoriteFiscaleNom;
+	}
+
+	public void setAutoriteFiscaleNom(String autoriteFiscaleNom) {
+		this.autoriteFiscaleNom = autoriteFiscaleNom;
 	}
 
 	@Override
