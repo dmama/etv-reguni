@@ -225,6 +225,7 @@
 		<property name="paramService" ref="parametreAppService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="autorisationManager" ref="autorisationManager"/>
+		<property name="infrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
 	<bean id="decisionAciController" class="ch.vd.uniregctb.decision.aci.DecisionAciController">

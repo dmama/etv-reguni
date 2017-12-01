@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -37,6 +38,7 @@ import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -84,6 +86,7 @@ public class ForsController {
 	private Validator forsValidator;
 	private SecurityProviderInterface securityProvider;
 	private ParametreAppService paramService;
+	private ServiceInfrastructureService infrastructureService;
 	private HibernateTemplate hibernateTemplate;
 	private AutorisationManager autorisationManager;
 
@@ -127,6 +130,8 @@ public class ForsController {
 	public void setParamService(ParametreAppService paramService) {
 		this.paramService = paramService;
 	}
+
+	public void setInfrastructureService(ServiceInfrastructureService infrastructureService) { this.infrastructureService = infrastructureService; }
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -341,6 +346,14 @@ public class ForsController {
 			model.addAttribute("modesImposition", getMapModesImposition(ctb));
 			model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
 			model.addAttribute("genresImpot", getMapGenresImpotForsPrincipaux(ctb));
+			// [SIFISC-27087] récupération du nom de l'autorité fiscale à partir de son numéro
+			if(view.getNoAutoriteFiscale() != null) {
+				Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNoAutoriteFiscale(), null);
+				if(commune != null) {
+					view.setAutoriteFiscaleNom(commune.getNomOfficiel());
+				}
+			}
+
 			return "fors/principal/add";
 		}
 
@@ -1061,4 +1074,7 @@ public class ForsController {
 		}
 		return motifsRattachementForAutreElementImposable;
 	}
+
+
+
 }
