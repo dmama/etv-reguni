@@ -340,6 +340,11 @@ public class EvenementFiscalMockService implements EvenementFiscalService {
 	}
 
 	@Override
+	public void publierModificationHeritageCommunaute(RegDate dateDebut, CommunauteRF communaute) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void publierDebutRapprochementTiersRF(RegDate dateDebut, RapprochementRF rapprochement) {
 		throw new UnsupportedOperationException();
 	}

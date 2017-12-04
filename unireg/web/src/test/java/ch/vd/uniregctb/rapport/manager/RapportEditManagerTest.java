@@ -15,10 +15,21 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.evenement.fiscal.CollectingEvenementFiscalSender;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
+import ch.vd.uniregctb.registrefoncier.BienFondsRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
+import ch.vd.uniregctb.registrefoncier.Fraction;
+import ch.vd.uniregctb.registrefoncier.GenrePropriete;
+import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
+import ch.vd.uniregctb.registrefoncier.PersonnePhysiqueRF;
+import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
 import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -27,6 +38,7 @@ import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeRapprochementRF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,11 +49,17 @@ import static org.junit.Assert.fail;
 public class RapportEditManagerTest extends WebTest {
 
 	private RapportEditManager manager;
+	private CollectingEvenementFiscalSender evenementFiscalSender;
+	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		manager = getBean(RapportEditManager.class, "rapportEditManager");
+		evenementFiscalSender = getBean(CollectingEvenementFiscalSender.class, "evenementFiscalSender");
+		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
+
+		evenementFiscalSender.reset();
 	}
 
 	/**
@@ -269,16 +287,16 @@ public class RapportEditManagerTest extends WebTest {
 	public void testSaveRapportHeritage() throws Exception {
 
 		class Ids {
-			Long decede;
+			Long defunt;
 			Long heritier;
 		}
 		final Ids ids = new Ids();
 
 		// on créé deux personnes
 		doInNewTransaction(status -> {
-			final PersonnePhysique decede = addNonHabitant("Jean", "Peuplu", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique defunt = addNonHabitant("Jean", "Peuplu", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
 			final PersonnePhysique heritier = addNonHabitant("Jaime", "Rejoui", RegDate.get(1980, 1, 1), Sexe.MASCULIN);
-			ids.decede = decede.getId();
+			ids.defunt = defunt.getId();
 			ids.heritier = heritier.getId();
 			return null;
 		});
@@ -287,9 +305,9 @@ public class RapportEditManagerTest extends WebTest {
 		doInNewTransaction(status -> {
 			final RapportView rapport = new RapportView();
 			rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.HERITAGE);
-			rapport.setTiers(new TiersGeneralView(ids.decede));
+			rapport.setTiers(new TiersGeneralView(ids.defunt));
 			rapport.setTiersLie(new TiersGeneralView(ids.heritier));
-			rapport.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET);  // le tiers lié est l'objet
+			rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);  // le tiers lié (héritier) est le sujet
 			rapport.setDateDebut(date(2014, 11, 11));
 			//rapport.setPrincipalCommunaute(true); ---> pas besoin de le mettre, la méthode l'ajoute automatiquement sur le premier héritage
 			manager.add(rapport);
@@ -298,20 +316,20 @@ public class RapportEditManagerTest extends WebTest {
 
 		// on vérifie que le rapport a bien été créé correctement
 		doInNewTransaction(status -> {
-			final PersonnePhysique decede = hibernateTemplate.get(PersonnePhysique.class, ids.decede);
-			assertNotNull(decede);
+			final PersonnePhysique defunt = hibernateTemplate.get(PersonnePhysique.class, ids.defunt);
+			assertNotNull(defunt);
 
-			final Set<RapportEntreTiers> rapportsSujet = decede.getRapportsSujet();
-			assertNotNull(rapportsSujet);
-			assertEquals(1, rapportsSujet.size());
+			final Set<RapportEntreTiers> rapportsObjets = defunt.getRapportsObjet();
+			assertNotNull(rapportsObjets);
+			assertEquals(1, rapportsObjets.size());
 
-			final RapportEntreTiers rapport0 = rapportsSujet.iterator().next();
+			final RapportEntreTiers rapport0 = rapportsObjets.iterator().next();
 			assertNotNull(rapport0);
 			assertTrue(rapport0 instanceof Heritage);
 
 			final Heritage heritage0 = (Heritage) rapport0;
-			assertEquals(ids.decede, heritage0.getSujetId());
-			assertEquals(ids.heritier, heritage0.getObjetId());
+			assertEquals(ids.defunt, heritage0.getObjetId());
+			assertEquals(ids.heritier, heritage0.getSujetId());
 			assertTrue(heritage0.getPrincipalCommunaute());
 			return null;
 		});
@@ -421,6 +439,162 @@ public class RapportEditManagerTest extends WebTest {
 			assertHeritage(dateChangement, null, ids.defunt, ids.heritier1, false, false, heritages.get(2));
 			assertHeritage(dateChangement, null, ids.defunt, ids.heritier2, true, false, heritages.get(3));
 			return null;
+		});
+	}
+
+	/**
+	 * [SIFISC-24999] Vérifie qu'un événement fiscal sur la communauté RF est bien envoyé lorsqu'un nouveau rapport d'héritage est ajouté sur un membre existant d'une communauté.
+	 */
+	@Test
+	public void testSaveRapportHeritageAvecCommunauteRF() throws Exception {
+
+		final RegDate dateDebutHeritage = date(2014, 11, 11);
+
+		class Ids {
+			Long defunt;
+			Long heritier;
+			Long communaute;
+		}
+		final Ids ids = new Ids();
+
+		// on créé deux personnes et une communauté RF à laquelle le défunt appartient.
+		doInNewTransaction(status -> {
+			// partie fiscale
+			final PersonnePhysique defunt = addNonHabitant("Jean", "Peuplu", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier = addNonHabitant("Jaime", "Rejoui", RegDate.get(1980, 1, 1), Sexe.MASCULIN);
+
+			// partie RF
+			final BienFondsRF immeuble = addImmeubleRF("3893983");
+			final PersonnePhysiqueRF ppRF1 = addPersonnePhysiqueRF("Jean", "Peuplu", RegDate.get(1920, 1, 1), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF ppRF2 = addPersonnePhysiqueRF("Brigitte", "Widmer", date(1970, 7, 2), "434545", 411451L, null);
+
+			final CommunauteRF communaute = addCommunauteRF("2892929", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			addDroitPropriete(ppRF1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                                                                  date(2005, 3, 2), null,
+			                                                                  null, null,
+			                                                                  "Succession", null,
+			                                                                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+			                                                                  "573853733gdbtq", "1");
+			addDroitPropriete(ppRF2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                                                                  date(2005, 3, 2), null,
+			                                                                  null, null,
+			                                                                  "Succession", null,
+			                                                                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+			                                                                  "498238238d", "1");
+			addRapprochementRF(defunt, ppRF1, date(2000, 1, 1), null, TypeRapprochementRF.AUTO);
+
+			ids.defunt = defunt.getId();
+			ids.heritier = heritier.getId();
+			ids.communaute = communaute.getId();
+			return null;
+		});
+
+		// on ajoute un lien d'héritage
+		doInNewTransaction(status -> {
+			final RapportView rapport = new RapportView();
+			rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.HERITAGE);
+			rapport.setTiers(new TiersGeneralView(ids.defunt));
+			rapport.setTiersLie(new TiersGeneralView(ids.heritier));
+			rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);  // le tiers lié (héritier) est le sujet
+			rapport.setDateDebut(dateDebutHeritage);
+			manager.add(rapport);
+			return null;
+		});
+
+		// on vérifie qu'un événement fiscal de changement sur la communauté a été envoyé
+		assertEquals(1, evenementFiscalSender.getCount());
+
+		// Vérifie que l'événement est dans la base
+		doInNewTransaction(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+				assertEquals(1, events.size());
+
+				final EvenementFiscalCommunaute event0 = (EvenementFiscalCommunaute) events.get(0);
+				assertEquals(EvenementFiscalCommunaute.TypeEvenementFiscalCommunaute.HERITAGE, event0.getType());
+				assertEquals(dateDebutHeritage, event0.getDateValeur());
+				assertEquals(ids.communaute, event0.getCommunaute().getId());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-24999] Vérifie qu'un événement fiscal sur la communauté RF est bien envoyé lorsqu'un nouveau rapport d'héritage est ajouté sur un membre existant d'une communauté.
+	 */
+	@Test
+	public void testSetPrincipalAvecCommunauteRF() throws Exception {
+
+		final RegDate dateHeritage = RegDate.get(2000, 1, 1);
+
+		class Ids {
+			Long defunt;
+			Long heritier1;
+			Long heritier2;
+			Long communaute;
+		}
+		final Ids ids = new Ids();
+
+		// on créé les personnes, les liens d'héritage et une communauté RF à laquelle le défunt appartient.
+		doInNewTransaction(status -> {
+
+			// partie fiscale
+			final PersonnePhysique defunt = addNonHabitant("Jean", "Peuplu", RegDate.get(1920, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier1 = addNonHabitant("Jaime", "Rejoui", RegDate.get(1980, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique heritier2 = addNonHabitant("Annie", "Rejoui", RegDate.get(1980, 1, 1), Sexe.FEMININ);
+			addHeritage(heritier1, defunt, dateHeritage, null, true);
+			addHeritage(heritier2, defunt, dateHeritage, null, false);
+
+			// partie RF
+			final BienFondsRF immeuble = addImmeubleRF("3893983");
+			final PersonnePhysiqueRF ppRF1 = addPersonnePhysiqueRF("Jean", "Peuplu", RegDate.get(1920, 1, 1), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF ppRF2 = addPersonnePhysiqueRF("Brigitte", "Widmer", date(1970, 7, 2), "434545", 411451L, null);
+
+			final CommunauteRF communaute = addCommunauteRF("2892929", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			addDroitPropriete(ppRF1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                  date(2005, 3, 2), null,
+			                  null, null,
+			                  "Succession", null,
+			                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+			                  "573853733gdbtq", "1");
+			addDroitPropriete(ppRF2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+			                  date(2005, 3, 2), null,
+			                  null, null,
+			                  "Succession", null,
+			                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+			                  "498238238d", "1");
+			addRapprochementRF(defunt, ppRF1, date(2000, 1, 1), null, TypeRapprochementRF.AUTO);
+
+			ids.defunt = defunt.getId();
+			ids.heritier1 = heritier1.getId();
+			ids.heritier2 = heritier2.getId();
+			ids.communaute = communaute.getId();
+			return null;
+		});
+
+		evenementFiscalSender.reset();
+
+		// on sélectionne le deuxième héritier comme principal à partir de la date d'héritage
+		doInNewTransaction(status -> {
+			manager.setPrincipal(ids.defunt, ids.heritier2, dateHeritage);
+			return null;
+		});
+
+		// on vérifie qu'un événement fiscal de changement sur la communauté a été envoyé
+		assertEquals(1, evenementFiscalSender.getCount());
+
+		// Vérifie que l'événement est dans la base
+		doInNewTransaction(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+				assertEquals(1, events.size());
+
+				final EvenementFiscalCommunaute event0 = (EvenementFiscalCommunaute) events.get(0);
+				assertEquals(EvenementFiscalCommunaute.TypeEvenementFiscalCommunaute.CHANGEMENT_PRINCIPAL, event0.getType());
+				assertEquals(dateHeritage, event0.getDateValeur());
+				assertEquals(ids.communaute, event0.getCommunaute().getId());
+			}
 		});
 	}
 

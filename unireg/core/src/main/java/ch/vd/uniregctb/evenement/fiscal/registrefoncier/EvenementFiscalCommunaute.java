@@ -22,10 +22,17 @@ import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 public class EvenementFiscalCommunaute extends EvenementFiscalRF {
 
 	/**
-	 * Différents types d'événements fiscaux autour des fors
+	 * Différents types d'événements fiscaux autour des communautés RF
 	 */
 	public enum TypeEvenementFiscalCommunaute {
-		CHANGEMENT_PRINCIPAL
+		/**
+		 * Le principal de la communauté à changé.
+		 */
+		CHANGEMENT_PRINCIPAL,
+		/**
+		 * Un tiers est décédé et a été substitués par ses héritiers dans la communauté.
+		 */
+		HERITAGE
 	}
 
 	private CommunauteRF communaute;

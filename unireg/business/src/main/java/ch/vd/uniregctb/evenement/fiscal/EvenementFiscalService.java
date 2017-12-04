@@ -478,6 +478,14 @@ public interface EvenementFiscalService {
 	void publierModificationPrincipalCommunaute(RegDate dateDebut, CommunauteRF communaute);
 
 	/**
+	 * Publie un événement de modification d'une communauté suite au décès et à l'ouverture de l'héritage d'un membre de la communauté.
+	 *
+	 * @param dateDebut  la date de début de l'héritage (ou du changement de l'héritage)
+	 * @param communaute la communauté en question
+	 */
+	void publierModificationHeritageCommunaute(RegDate dateDebut, CommunauteRF communaute);
+
+	/**
 	 * Publie un événement de début de rapprochement entre un tiers Unireg et un tiers RF.
 	 *
 	 * @param dateDebut     la date de début du rapprochement

@@ -286,6 +286,11 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 	}
 
 	@Override
+	public void publierModificationHeritageCommunaute(RegDate dateDebut, CommunauteRF communaute) {
+
+	}
+
+	@Override
 	public void publierDebutRapprochementTiersRF(RegDate dateDebut, RapprochementRF rapprochement) {
 
 	}

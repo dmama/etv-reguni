@@ -379,6 +379,11 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	}
 
 	@Override
+	public void publierModificationHeritageCommunaute(RegDate dateDebut, CommunauteRF communaute) {
+		saveAndPublish(new EvenementFiscalCommunaute(dateDebut, communaute, EvenementFiscalCommunaute.TypeEvenementFiscalCommunaute.HERITAGE));
+	}
+
+	@Override
 	public void publierDebutRapprochementTiersRF(RegDate dateDebut, RapprochementRF rapprochement) {
 		saveAndPublish(new EvenementFiscalRapprochementTiersRF(dateDebut, rapprochement, EvenementFiscalRapprochementTiersRF.TypeEvenementFiscalRapprochement.OUVERTURE));
 	}

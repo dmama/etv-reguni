@@ -68,6 +68,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
+		<property name="evenementFiscalService" ref="evenementFiscalService" />
 	</bean>
 
 	<bean id="rapportAddValidator" class="ch.vd.uniregctb.rapport.validator.RapportAddValidator" >

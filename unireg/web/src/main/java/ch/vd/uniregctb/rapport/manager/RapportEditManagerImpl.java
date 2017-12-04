@@ -2,6 +2,7 @@ package ch.vd.uniregctb.rapport.manager;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -18,10 +19,12 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.common.pagination.WebParamPagination;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -49,6 +52,8 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  *
  */
 public class RapportEditManagerImpl extends TiersManager implements RapportEditManager {
+
+	private EvenementFiscalService evenementFiscalService;
 
 	/**
 	 * Alimente la vue RapportView
@@ -261,6 +266,10 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			// autrement le validateur ne laissera pas passer l'ajout de l'héritage (et l'utilisateur pourra toujours
 			// changer le principal plus tard)
 			heritage.setPrincipalCommunaute(!principalDefini);
+
+			// on envoie les événements fiscaux de modification des communautés RF impactées
+			final Set<CommunauteRF> communautes = Heritage.findCommunautesRF((PersonnePhysique) objet);
+			communautes.forEach(communaute -> evenementFiscalService.publierModificationHeritageCommunaute(heritage.getDateDebut(), communaute));
 		}
 
 		// établit le rapport entre les deux tiers
@@ -277,14 +286,18 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		// mise-à-jour du rapport
 		RapportEntreTiers rapportEntreTiers = rapportEntreTiersDAO.get(rapportView.getId());
 		rapportEntreTiers.setDateFin(rapportView.getDateFin());
-		if (rapportEntreTiers instanceof RapportPrestationImposable) {
-			RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
-		}
-		else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
+
+		if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 			final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
 			repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
 			final Tiers sujet = tiersDAO.get(repres.getSujetId());
 			validateExecutionForcee(repres, sujet);
+		}
+		else if (rapportEntreTiers instanceof Heritage) {
+			// on envoie les événements fiscaux de modification des communautés RF impactées
+			final Tiers objet = tiersDAO.get(rapportEntreTiers.getObjetId());
+			final Set<CommunauteRF> communautes = Heritage.findCommunautesRF((PersonnePhysique) objet);
+			communautes.forEach(communaute -> evenementFiscalService.publierModificationHeritageCommunaute(rapportEntreTiers.getDateDebut(), communaute));
 		}
 	}
 
@@ -310,6 +323,13 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	public void annulerRapport(Long idRapport) {
 		RapportEntreTiers rapport = rapportEntreTiersDAO.get(idRapport);
 		rapport.setAnnule(true);
+
+		if (rapport instanceof Heritage) {
+			// on envoie les événements fiscaux de modification des communautés RF impactées
+			final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(rapport.getObjetId());
+			final Set<CommunauteRF> communautes = Heritage.findCommunautesRF(defunt);
+			communautes.forEach(communaute -> evenementFiscalService.publierModificationHeritageCommunaute(rapport.getDateDebut(), communaute));
+		}
 	}
 
 
@@ -465,5 +485,13 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			tiersService.addRapport(clone, newPrincipal, defunt);
 			currentHeritageHeritier.setDateFin(dateDebut.getOneDayBefore());
 		}
+
+		// on envoie les événements fiscaux de modification des communautés RF impactées
+		final Set<CommunauteRF> communautes = Heritage.findCommunautesRF((PersonnePhysique) defunt);
+		communautes.forEach(communaute -> evenementFiscalService.publierModificationPrincipalCommunaute(dateDebut, communaute));
+	}
+
+	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
+		this.evenementFiscalService = evenementFiscalService;
 	}
 }

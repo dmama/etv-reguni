@@ -722,6 +722,13 @@ public class EvenementFiscalV5FactoryImpl implements EvenementFiscalV5Factory, I
 				event.setData1(RegDateHelper.dateToXmlDateString(evenementFiscal.getDateValeur()));
 				event.setData2(String.valueOf(evenementFiscal.getCommunaute().getId()));
 				break;
+			case HERITAGE:
+				event = new FutureEvent();
+				// [SIFISC-24999] le type d'événement de modification de communauté n'existe pas en v5, on utilise le type de réserve 'futur' pour cela.
+				event.setType("COMMUNITY_MEMBERS_INHERITANCE_UPDATE");
+				event.setData1(RegDateHelper.dateToXmlDateString(evenementFiscal.getDateValeur()));
+				event.setData2(String.valueOf(evenementFiscal.getCommunaute().getId()));
+				break;
 			default:
 				throw new IllegalArgumentException("Type d'événement inconnu = [" + evenementFiscal.getType() + "]");
 			}

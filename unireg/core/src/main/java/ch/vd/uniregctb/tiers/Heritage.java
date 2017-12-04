@@ -5,6 +5,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -18,6 +19,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
 import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -123,24 +125,33 @@ public class Heritage extends RapportEntreTiers {
 
 			// on ajoute les éventuelles communautés RF dont le défunt fait partie
 			final PersonnePhysique defunt = context.getHibernateTemplate().get(PersonnePhysique.class, getObjetId());
-			Optional.ofNullable(defunt)
-					.map(Contribuable::getRapprochementsRF)
-					.ifPresent(rapprochements -> {
-						final Set<?> communautes = rapprochements.stream()
-								.filter(AnnulableHelper::nonAnnule)
-								.map(RapprochementRF::getTiersRF)
-								.map(AyantDroitRF::getDroitsPropriete)
-								.flatMap(Collection::stream)
-								.filter(AnnulableHelper::nonAnnule)
-								.filter(DroitProprietePersonneRF.class::isInstance)
-								.map(DroitProprietePersonneRF.class::cast)
-								.filter(d -> d.getCommunaute() != null)
-								.map(DroitProprietePersonneRF::getCommunaute)
-								.collect(Collectors.toSet());
-						entities.addAll(communautes);
-					});
+			entities.addAll(findCommunautesRF(defunt));
 		}
 
 		return entities;
+	}
+
+	/**
+	 * Détermine les communautés RF dans lesquelles la personne physique spécifiée est membre.
+	 *
+	 * @param pp une personne physique
+	 * @return l'ensemble des communautés RF demandées
+	 */
+	@NotNull
+	public static Set<CommunauteRF> findCommunautesRF(@Nullable PersonnePhysique pp) {
+		return Optional.ofNullable(pp)
+				.map(Contribuable::getRapprochementsRF)
+				.map(r -> r.stream()
+						.filter(AnnulableHelper::nonAnnule)
+						.map(RapprochementRF::getTiersRF)
+						.map(AyantDroitRF::getDroitsPropriete)
+						.flatMap(Collection::stream)
+						.filter(AnnulableHelper::nonAnnule)
+						.filter(DroitProprietePersonneRF.class::isInstance)
+						.map(DroitProprietePersonneRF.class::cast)
+						.filter(d -> d.getCommunaute() != null)
+						.map(DroitProprietePersonneRF::getCommunaute)
+						.collect(Collectors.toSet()))
+				.orElse(Collections.emptySet());
 	}
 }
