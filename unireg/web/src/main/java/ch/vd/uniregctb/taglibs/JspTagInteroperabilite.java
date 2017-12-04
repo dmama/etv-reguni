@@ -129,6 +129,7 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 		final Set<NatureTiers> naturesTiersPersonnePhysique = EnumSet.of(NatureTiers.Habitant, NatureTiers.NonHabitant);
 		final Set<NatureTiers> naturesTiersContribuablePP = EnumSet.of(NatureTiers.Habitant, NatureTiers.NonHabitant, NatureTiers.MenageCommun);
 		final boolean isEntreprise = natureTiers == NatureTiers.Entreprise;
+		final boolean isDebiteurIS = natureTiers == NatureTiers.DebiteurPrestationImposable;
 		final boolean isPersonnePhysique = naturesTiersPersonnePhysique.contains(natureTiers);
 		final boolean isContribuablePP = naturesTiersContribuablePP.contains(natureTiers);
 		final boolean showTAOPP = !debiteurInactif || isContribuablePP;
@@ -137,7 +138,7 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 		final boolean showTAOPM = isEntreprise;
 		final boolean showTAOICIIFONC = isEntreprise || isPersonnePhysique;
 		final boolean showSIPF = true;
-		final boolean showDPERM = isContribuablePP;
+		final boolean showDPERM = isContribuablePP || isDebiteurIS || isEntreprise;
 
 		//
 		// voir également le fichier unireg.js, fonction Search._build_html_simple_results()
