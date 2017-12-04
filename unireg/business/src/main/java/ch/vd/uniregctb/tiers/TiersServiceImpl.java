@@ -6944,6 +6944,13 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
+	@NotNull
+	public Map<Long, CommunauteHeritiers> getCommunautesHeritiers(@NotNull Collection<Long> tiersIds) {
+		return tiersDAO.getLiensHeritage(tiersIds).stream()
+				.collect(Collectors.toMap(Heritage::getObjetId, CommunauteHeritiers::new, CommunauteHeritiers::merge));
+	}
+
+	@Override
 	public Entreprise getEntreprise(Etablissement etablissement, RegDate date) {
 		final RegDate notreDate = date == null ? RegDate.get() : date;
 

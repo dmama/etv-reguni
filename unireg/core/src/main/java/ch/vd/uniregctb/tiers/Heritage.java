@@ -5,6 +5,9 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -46,6 +49,13 @@ public class Heritage extends RapportEntreTiers {
 
 	protected Heritage(Heritage heritage) {
 		super(heritage);
+	}
+
+	@NotNull
+	public static Heritage adapt(@NotNull Heritage range, @Nullable RegDate debut, @Nullable RegDate fin) {
+		final RegDate dateDebut = (debut == null ? range.getDateDebut() : debut);
+		final RegDate dateFin = (fin == null ? range.getDateFin() : fin);
+		return new Heritage(dateDebut, dateFin, range.getSujetId(), range.getObjetId(), range.getPrincipalCommunaute());
 	}
 
 	@Override

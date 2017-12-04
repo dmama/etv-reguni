@@ -26,6 +26,7 @@ import org.hibernate.criterion.Subqueries;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.internal.SessionImpl;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +124,14 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		return ids;
+	}
+
+	@Override
+	public @NotNull List<Heritage> getLiensHeritage(@NotNull Collection<Long> tiersIds) {
+		final Query query = getCurrentSession().createQuery("from Heritage where objetId in (:ids) and annulationDate is null");
+		query.setParameterList("ids", tiersIds);
+		//noinspection unchecked
+		return query.list();
 	}
 
 	@SuppressWarnings({"unchecked"})

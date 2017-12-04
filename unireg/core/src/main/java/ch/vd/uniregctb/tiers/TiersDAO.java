@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.dao.GenericDAO;
@@ -48,6 +49,13 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return l'id spécifié + les ids des tiers liés
 	 */
 	Set<Long> getRelatedIds(long id, int maxDepth);
+
+	/**
+	 * @param tiersIds des ids de tiers
+	 * @return les liens d'héritages non-annulés pour les tiers <i>défunts</i> spécifiés.
+	 */
+	@NotNull
+	List<Heritage> getLiensHeritage(@NotNull Collection<Long> tiersIds);
 
 	/**
 	 * Liste des collections associées à un tiers.

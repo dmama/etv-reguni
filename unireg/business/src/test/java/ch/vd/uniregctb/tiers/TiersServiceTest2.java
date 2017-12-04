@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.tiers;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -9,6 +12,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
@@ -29,6 +34,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class TiersServiceTest2 extends BusinessTest {
@@ -307,5 +313,67 @@ public class TiersServiceTest2 extends BusinessTest {
 				assertFalse("Redevenu habitant ?", pp.isHabitantVD());
 			}
 		});
+	}
+
+	@Test
+	public void testGetCommunautesHeritiers() throws Exception {
+
+		class Ids {
+			Long heinrich;
+			Long hans;
+			Long lieselotte;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+			final PersonnePhysique heinrich = addNonHabitant("Heinrich", "Schaudi", RegDate.get(1950, 2, 3), Sexe.MASCULIN);
+			final PersonnePhysique hans = addNonHabitant("Hans", "Schaudi", RegDate.get(1977, 11, 6), Sexe.MASCULIN);
+			final PersonnePhysique lieselotte = addNonHabitant("Lieselotte", "Mayer", RegDate.get(1979, 5, 22), Sexe.FEMININ);
+
+			// Au réveillon de l'an 2000, Heinrich abuse des Schnitzels et décède peu après d'une
+			// occlusion intestinale (paix à son âme). Hans et Lieselotte sont désignés comme ses héritiers.
+			addHeritage(hans, heinrich, RegDate.get(2000, 1, 1), RegDate.get(2009, 12, 31), true);
+			addHeritage(lieselotte, heinrich, RegDate.get(2000, 1, 1), RegDate.get(2009, 12, 31), false);
+
+			// En 2010, Lieselotte reprend la pharmacie de son oncle et fait fortune grâce à la vente de Zahnpasta,
+			// elle devient donc naturellement le principal de la communauté d'héritiers de Heinrich.
+			addHeritage(lieselotte, heinrich, RegDate.get(2010, 1, 1), null, true);
+			addHeritage(hans, heinrich, RegDate.get(2010, 1, 1), null, false);
+
+			ids.heinrich = heinrich.getId();
+			ids.hans = hans.getId();
+			ids.lieselotte = lieselotte.getId();
+			return null;
+		});
+
+		doInNewTransaction(status -> {
+			final Map<Long, CommunauteHeritiers> communautes = tiersService.getCommunautesHeritiers(Arrays.asList(ids.heinrich, ids.hans, ids.lieselotte));
+			assertNotNull(communautes);
+			assertEquals(1, communautes.size());
+
+			final CommunauteHeritiers communaute = communautes.get(ids.heinrich);
+			assertNotNull(communaute);
+			assertEquals(ids.heinrich.longValue(), communaute.getDefuntId());
+			assertEquals(RegDate.get(2000, 1, 1), communaute.getDateDebut());
+			assertNull(communaute.getDateFin());
+
+			final List<Heritage> heritages = communaute.getLiensHeritage();
+			assertEquals(4, heritages.size());
+			heritages.sort(new DateRangeComparator<Heritage>().thenComparing(Comparator.comparing(Heritage::getSujetId)));
+			assertHeritage(ids.heinrich, ids.hans, RegDate.get(2000, 1, 1), RegDate.get(2009, 12, 31), true, heritages.get(0));
+			assertHeritage(ids.heinrich, ids.lieselotte, RegDate.get(2000, 1, 1), RegDate.get(2009, 12, 31), false, heritages.get(1));
+			assertHeritage(ids.heinrich, ids.hans, RegDate.get(2010, 1, 1), null, false, heritages.get(2));
+			assertHeritage(ids.heinrich, ids.lieselotte, RegDate.get(2010, 1, 1), null, true, heritages.get(3));
+			return null;
+		});
+	}
+
+	private static void assertHeritage(Long defuntId, Long heritierId, RegDate dateDebut, RegDate dateFin, Boolean principalCommunaute, Heritage heritage) {
+		assertNotNull(heritage);
+		assertEquals(defuntId, heritage.getObjetId());
+		assertEquals(heritierId, heritage.getSujetId());
+		assertEquals(dateDebut, heritage.getDateDebut());
+		assertEquals(dateFin, heritage.getDateFin());
+		assertEquals(principalCommunaute, heritage.getPrincipalCommunaute());
 	}
 }

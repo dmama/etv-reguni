@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -76,6 +77,11 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public Set<Long> getRelatedIds(long id, int maxDepth) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public @NotNull List<Heritage> getLiensHeritage(@NotNull Collection<Long> tiersIds) {
 		throw new NotImplementedException();
 	}
 

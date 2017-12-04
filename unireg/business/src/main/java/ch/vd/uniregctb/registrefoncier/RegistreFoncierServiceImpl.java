@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +44,7 @@ import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ModeleCommunauteRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.SituationRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.DroitRFHelper;
+import ch.vd.uniregctb.tiers.CommunauteHeritiers;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.FusionEntreprises;
@@ -446,10 +448,16 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	public CommunauteRFMembreInfo getCommunauteMembreInfo(@NotNull CommunauteRF communaute) {
 
 		// on va chercher les infos de la communauté
-		final CommunauteRFMembreInfo info = communaute.buildMembreInfoNonTries();
+		CommunauteRFMembreInfo info = communaute.buildMembreInfoNonTries();
+
+		// [SIFISC-24999] on remplace les défunts par leurs héritiers dans la liste des membres
+		final Map<Long, CommunauteHeritiers> communautesHeritiers = tiersService.getCommunautesHeritiers(info.getCtbIds());
+		if (!communautesHeritiers.isEmpty()) {
+			info = info.apply(communautesHeritiers);
+		}
 
 		// [SIFISC-24595] on détermine l'historique des principaux
-		final List<CommunauteRFPrincipalInfo> principaux = buildPrincipalHisto(communaute);
+		final List<CommunauteRFPrincipalInfo> principaux = buildPrincipalHisto(communaute, communautesHeritiers);
 		info.setPrincipaux(principaux);
 
 		// [SIFISC-23747] on trie la collection de tiers de telle manière que le leader de la communauté soit en première position
@@ -491,19 +499,45 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	/**
 	 * Construit la vue historique des principaux (par défaut + explicites) pour une communauté.
 	 *
-	 * @param communaute une modèle de communauté
+	 * @param communauteRF         une communauté RF
+	 * @param communautesHeritiers les communautés d'héritiers Unireg identifiés pour les membres de la communauté RF
 	 * @return l'historique des principaux
 	 */
 	@NotNull
-	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull CommunauteRF communaute) {
+	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull CommunauteRF communauteRF, @NotNull Map<Long, CommunauteHeritiers> communautesHeritiers) {
 
 		// on calcule l'historique regroupement par regroupement et on additionne bout-à-bout les périodes
-		final List<CommunauteRFPrincipalInfo> histo = communaute.getRegroupements().stream()
+		List<CommunauteRFPrincipalInfo> histo = communauteRF.getRegroupements().stream()
 				.filter(AnnulableHelper::nonAnnule)
 				.sorted(new DateRangeComparator<>())
 				.map(this::buildPrincipalHisto)
 				.flatMap(Collection::stream)
 				.collect(Collectors.toList());
+
+		// [SIFISC-24999] on remplace chaque principal RF qui possède une communauté d'héritiers Unireg par ses héritiers
+		for (int i = histo.size() - 1; i >= 0; i--) {
+			final CommunauteRFPrincipalInfo info = histo.get(i);
+			final CommunauteHeritiers communaute = communautesHeritiers.get(info.getCtbId());
+
+			if (communaute != null && DateRangeHelper.intersect(info, communaute)) {
+
+				// on ne considère que les héritiers principaux
+				final List<Heritage> liensHeritage = communaute.getLiensHeritage().stream()
+						.filter(h -> BooleanUtils.isTrue(h.getPrincipalCommunaute()))
+						.collect(Collectors.toList());
+
+				// on limite la validité des liens d'héritage à la période de validité de principal du défunt
+				final List<Heritage> extract = DateRangeHelper.extract(liensHeritage, info.getDateDebut(), info.getDateFin(), Heritage::adapt);
+
+				// on traduit les liens d'héritage en périodes de principal des héritiers
+				final List<CommunauteRFPrincipalInfo> periodesHeritiers = extract.stream()
+						.map(h -> new CommunauteRFPrincipalInfo(null, null, h.getDateDebut(), h.getDateFin(), h.getSujetId(), false))
+						.collect(Collectors.toList());
+
+				// on surcharge la période de principal du défunt avec celles des héritiers calculées ci-dessus
+				histo = DateRangeHelper.override(histo, periodesHeritiers, CommunauteRFPrincipalInfo::adapter);
+			}
+		}
 
 		// on fusionne les périodes qui peuvent l'être
 		return DateRangeHelper.collate(histo);

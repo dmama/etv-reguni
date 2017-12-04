@@ -176,6 +176,122 @@
 			<null />
 		</row>
 		<row>
+			<value>PersonnePhysique</value>
+			<value>10094444</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>2008-01-01 00:00:00.0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>Breu Rodolf</value>
+			<value>0</value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<value>Breu</value>
+			<null />
+			<null />
+			<null />
+			<value>Rodolf</value>
+			<null />
+			<value>Rodolf</value>
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>10093333</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>2008-01-01 00:00:00.0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>De Wit Tummers Aglaë</value>
+			<value>0</value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<value>De Wit Wouter</value>
+			<null />
+			<null />
+			<null />
+			<value>Aglaë</value>
+			<null />
+			<value>Aglaë Sophie</value>
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
 			<value>Entreprise</value>                          <!-- TIERS_TYPE -->
 			<value>21550</value>                               <!-- NUMERO -->
 			<null />                                           <!-- ANNULATION_DATE -->
@@ -379,6 +495,21 @@
 			<value>sirec05</value>
 			<value>2016-12-14 11:01:11.928000</value>
 			<value>sirec05</value>
+			<value>20170101</value>
+			<value>20171031</value>
+			<value>10093333</value>
+			<value>10035633</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>207633455</value>
+			<value>Heritage</value>
+			<null />
+			<null />
+			<value>2016-12-14 11:01:11.920000</value>
+			<value>sirec05</value>
+			<value>2016-12-14 11:01:11.928000</value>
+			<value>sirec05</value>
 			<value>20171101</value>
 			<null />
 			<value>10092818</value>
@@ -386,7 +517,7 @@
 			<value>1</value>
 		</row>
 		<row>
-			<value>207633455</value>
+			<value>207633456</value>
 			<value>FusionEntreprises</value>
 			<null />
 			<null />
@@ -1315,6 +1446,159 @@
 			<null />
 			<value>AUTO</value>
 			<value>21550</value>
+			<value>306862280</value>
+		</row>
+	</table>
+	<table name="RF_MODELE_COMMUNAUTE">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>MEMBRES_HASH_CODE</column>
+		<row>
+			<value>74</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2017-11-30 15:11:17.491]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value><![CDATA[2017-11-30 15:11:17.494]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value>963169235</value>
+		</row>
+		<row>
+			<value>75</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2017-11-30 15:11:17.528]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value><![CDATA[2017-11-30 15:11:17.53]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value>1034045714</value>
+		</row>
+	</table>
+	<table name="RF_REGROUPEMENT_COMMUNAUTE">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>COMMUNAUTE_ID</column>
+		<column>MODEL_ID</column>
+		<row>
+			<value>77</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2017-11-30 15:11:17.565]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value><![CDATA[2017-11-30 15:11:17.566]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value>20171018</value>
+			<null/>
+			<value>264822986</value>
+			<value>75</value>
+		</row>
+		<row>
+			<value>78</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2017-11-30 15:11:17.568]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value><![CDATA[2017-11-30 15:11:17.568]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<null/>
+			<value>20171017</value>
+			<value>264822986</value>
+			<value>74</value>
+		</row>
+	</table>
+	<table name="RF_PRINCIPAL_COMMUNAUTE">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>MODEL_COMMUNAUTE_ID</column>
+		<column>PRINCIPAL_ID</column>
+		<row>
+			<value>1</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2017-11-30 15:11:17.565]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value><![CDATA[2017-11-30 15:11:17.566]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value>20161201</value>
+			<value>20161231</value>
+			<value>74</value>
+			<value>306862280</value>
+		</row>
+		<row>
+			<value>2</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2017-11-30 15:11:17.565]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value><![CDATA[2017-11-30 15:11:17.566]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value>20170101</value>
+			<null/>
+			<value>74</value>
+			<value>264832266</value>
+		</row>
+		<row>
+			<value>3</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2017-11-30 15:11:17.565]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value><![CDATA[2017-11-30 15:11:17.566]]></value>
+			<value>RattrapageModelesCommunautesRFJob</value>
+			<value>20161201</value>
+			<null/>
+			<value>75</value>
+			<value>264832266</value>
+		</row>
+	</table>
+	<table name="RF_MEMBRE_COMMUNAUTE">
+		<column>MODEL_COMMUNAUTE_ID</column>
+		<column>AYANT_DROIT_ID</column>
+		<row>
+			<value>74</value>
+			<value>264832266</value>
+		</row>
+		<row>
+			<value>74</value>
+			<value>265004083</value>
+		</row>
+		<row>
+			<value>74</value>
+			<value>265043583</value>
+		</row>
+		<row>
+			<value>74</value>
+			<value>306862280</value>
+		</row>
+		<row>
+			<value>75</value>
+			<value>264832266</value>
+		</row>
+		<row>
+			<value>75</value>
+			<value>265043583</value>
+		</row>
+		<row>
+			<value>75</value>
 			<value>306862280</value>
 		</row>
 	</table>

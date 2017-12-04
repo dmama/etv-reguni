@@ -2028,6 +2028,146 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 	}
 
 	/**
+	 * [SIFISC-24999] Ce test vérifie que les communautés d'héritiers Unireg provoquent bien le remplacement du tiers Unireg décédé par ses héritiers.
+	 */
+	@Test
+	public void testGetCommunauteMembreInfoCommunauteAvecHeritiersUnireg() throws Exception {
+
+		final class Ids {
+			Long defunt;
+			Long membre2;
+			Long membre3;
+			Long heritier1;
+			Long heritier2;
+			long communaute;
+		}
+
+		final RegDate dateDebutCommunaute = date(2005, 3, 2);
+		final RegDate dateDebutHeritage = RegDate.get(2005, 6, 12);
+		final RegDate dateChangementHeritierPrincipal = RegDate.get(2005, 10, 4);
+		final RegDate dateChangementPrincipalRF = RegDate.get(2006, 1, 1);
+
+		// on créé une communauté de 3 personnes dont une décédée avec deux héritiers Unireg
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			// les membres de la communauté
+			final PersonnePhysique defunt = addNonHabitant("Philip", "Linconnu", date(1967, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique nonhab2 = addNonHabitant("Elodie", "Loongle", date(1980, 11, 22), Sexe.FEMININ);
+			final PersonnePhysique nonhab3 = addNonHabitant("Edouard", "Loongle", date(1990,6, 8), Sexe.MASCULIN);
+			final PersonnePhysiqueRF ppRF1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF ppRF2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			final PersonnePhysiqueRF ppRF3 = addPersonnePhysiqueRF("263564617", "Edouard", "Loongle", date(1990,6, 8));
+			addRapprochementRF(defunt, ppRF1, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(nonhab2, ppRF2, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(nonhab3, ppRF3, null, null, TypeRapprochementRF.AUTO);
+
+			// la communauté RF
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(ppRF1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(ppRF2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			final DroitProprietePersonnePhysiqueRF droit3 =
+					addDroitPropriete(ppRF3, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "3838322111", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+			communaute.addMembre(droit3);
+
+			final ModeleCommunauteRF modele = addModeleCommunauteRF(ppRF1, ppRF2, ppRF3);
+			addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
+
+			// on choisit explicitement le défunt comme principal jusqu'à la fin de 2005
+			final PrincipalCommunauteRF principal1 = new PrincipalCommunauteRF();
+			principal1.setPrincipal(ppRF1);
+			principal1.setDateDebut(dateDebutCommunaute);
+			principal1.setDateFin(dateChangementPrincipalRF.getOneDayBefore());
+			modele.addPrincipal(principal1);
+
+			// puis, on choisit explicitement la pp2
+			final PrincipalCommunauteRF principal2 = new PrincipalCommunauteRF();
+			principal2.setPrincipal(ppRF2);
+			principal2.setDateDebut(dateChangementPrincipalRF);
+			principal2.setDateFin(null);
+			modele.addPrincipal(principal2);
+
+			// les héritiers
+			final PersonnePhysique heritier1 = addNonHabitant("Cosette", "Devantoi", date(1990, 6, 8), Sexe.FEMININ);
+			final PersonnePhysique heritier2 = addNonHabitant("Lucette", "Devantoi", date(1993, 9, 20), Sexe.FEMININ);
+			addHeritage(heritier1, defunt, dateDebutHeritage, dateChangementHeritierPrincipal.getOneDayBefore(), true);
+			addHeritage(heritier2, defunt, dateDebutHeritage, dateChangementHeritierPrincipal.getOneDayBefore(), false);
+			addHeritage(heritier2, defunt, dateChangementHeritierPrincipal, null, true);
+			addHeritage(heritier1, defunt, dateChangementHeritierPrincipal, null, false);
+
+			final Ids res = new Ids();
+			res.defunt = defunt.getId();
+			res.membre2 = nonhab2.getId();
+			res.membre3 = nonhab3.getId();
+			res.heritier1 = heritier1.getId();
+			res.heritier2 = heritier2.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		// on demande les infos de la communauté
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final CommunauteRF communaute = hibernateTemplate.get(CommunauteRF.class, ids.communaute);
+				assertNotNull(communaute);
+
+				// la communauté possède 4 membres (3 membres de base - le défunt + les deux héritiers)
+				final CommunauteRFMembreInfo info = serviceRF.getCommunauteMembreInfo(communaute);
+				assertNotNull(info);
+				assertEquals(4, info.getCount());
+				assertEquals(Arrays.asList(ids.membre2, ids.heritier1, ids.heritier2, ids.membre3), info.getCtbIds());
+
+				final List<CommunauteRFPrincipalInfo> principaux = info.getPrincipaux();
+				assertEquals(4, principaux.size());
+
+				// la période où le défunt est le principal (mais pas encore décédé)
+				final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+				assertEquals(ids.defunt.longValue(), principal0.getCtbId());
+				assertEquals(dateDebutCommunaute, principal0.getDateDebut());
+				assertEquals(dateDebutHeritage.getOneDayBefore(), principal0.getDateFin());
+
+				// la période où le défunt est le principal, mais remplacé par son premier héritier principal
+				final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
+				assertEquals(ids.heritier1.longValue(), principal1.getCtbId());
+				assertEquals(dateDebutHeritage, principal1.getDateDebut());
+				assertEquals(dateChangementHeritierPrincipal.getOneDayBefore(), principal1.getDateFin());
+
+				// la période où le défunt est le principal, mais remplacé par son second héritier principal
+				final CommunauteRFPrincipalInfo principal2 = principaux.get(2);
+				assertEquals(ids.heritier2.longValue(), principal2.getCtbId());
+				assertEquals(dateChangementHeritierPrincipal, principal2.getDateDebut());
+				assertEquals(dateChangementPrincipalRF.getOneDayBefore(), principal2.getDateFin());
+
+				// la période où le tiers n°2 est le principal RF
+				final CommunauteRFPrincipalInfo principal3 = principaux.get(3);
+				assertEquals(ids.membre2.longValue(), principal3.getCtbId());
+				assertEquals(dateChangementPrincipalRF, principal3.getDateDebut());
+				assertNull(principal3.getDateFin());
+			}
+		});
+	}
+
+	/**
 	 * [SIFISC-24595] Vérifie que l'ajout d'un principal sur une communauté sans principal défini fonctionne bien.
 	 */
 	@Test

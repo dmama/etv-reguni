@@ -61,6 +61,8 @@ public interface RegistreFoncierService {
 
 	/**
 	 * Construit et retourne les informations du point-de-vue Unireg sur les membres d'une communauté RF.
+	 * <p/>
+	 * <b>Note:</b> cette méthode tient compte des rapports-entre-tiers d'héritage et complète la communauté RF en y ajoutant les héritiers des membres décédés.
 	 *
 	 * @param communaute une communauté
 	 * @return les infos trouvée; ou <b>null</b> si la communauté est inconnue.

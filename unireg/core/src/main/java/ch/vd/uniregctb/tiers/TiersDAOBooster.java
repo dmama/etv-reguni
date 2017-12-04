@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,6 +136,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	@Override
 	public Set<Long> getRelatedIds(long id, int maxDepth) {
 		return target.getRelatedIds(id, maxDepth);
+	}
+
+	@Override
+	public @NotNull List<Heritage> getLiensHeritage(@NotNull Collection<Long> tiersIds) {
+		return target.getLiensHeritage(tiersIds);
 	}
 
 	@Override

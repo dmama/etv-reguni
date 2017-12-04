@@ -28,6 +28,7 @@ import ch.vd.unireg.xml.party.landregistry.v1.Building;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingDescription;
 import ch.vd.unireg.xml.party.landregistry.v1.BuildingSetting;
 import ch.vd.unireg.xml.party.landregistry.v1.CaseIdentifier;
+import ch.vd.unireg.xml.party.landregistry.v1.CommunityLeader;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwners;
 import ch.vd.unireg.xml.party.landregistry.v1.CommunityOfOwnersType;
 import ch.vd.unireg.xml.party.landregistry.v1.CondominiumOwnership;
@@ -107,15 +108,16 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 	 *     |    PP    |       copropriété (1/4)    +-------------------------+
 	 *     | 10035633 |--------------------------->| Immeuble 0 (bien-fonds) |
 	 *     |          |                            +-------------------------+
-	 *     +----------+                                      ^
-	 *          ^                                            :
-	 *          | hérite de                                  :
-	 *          |                                            :
-	 *     +----------+                                      :
-	 *     |    PP    |      droit virtuel hérité            :
-	 *     | 10092818 |......................................+
-	 *     |          |
-	 *     +----------+
+	 *     +----------+                                        ^
+	 *          ^                                              :
+	 *          | héritent de                                  :
+	 *          +---------------+                              :
+	 *          |               |                              :
+	 *     +----------+    +----------+                        :
+	 *     |    PP    |    |    PP    |  droit virtuel hérité  :
+	 *     | 10093333 |    | 10092818 |........................+
+	 *     |          |    |          |
+	 *     +----------+    +----------+
 	 * </pre>
 	 */
 	@Test
@@ -123,7 +125,6 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 
 		final int noHeritier = 10092818;    // Gertrude De Wit Tummers
 		final int noDecede = 10035633;      // Elisabeth Tummers-De Wit Wouter
-		final RegDate dateHeritage = RegDate.get(2017, 11, 1);
 
 		// le droit réel possède bien une date 'dateInheritedTo' renseignée à la date d'héritage sur le décédé
 		{
@@ -144,7 +145,7 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 			assertEquals(1, landRights.size());
 
 			final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
-			assertDate(dateHeritage, landRight0.getDateInheritedTo());
+			assertDate(RegDate.get(2017, 1, 1), landRight0.getDateInheritedTo());
 			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noDecede, 264822986L, 264310664, landRight0);
 		}
 
@@ -167,7 +168,7 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 			assertEquals(1, landRights.size());
 
 			final VirtualInheritedLandRight landRight0 = (VirtualInheritedLandRight) landRights.get(0);
-			assertVirtualInheritedRight(noHeritier, noDecede, dateHeritage, null, "Succession", null, 264310664, false, landRight0);
+			assertVirtualInheritedRight(noHeritier, noDecede, RegDate.get(2017, 11, 1), null, "Succession", null, 264310664, true, landRight0);
 			assertLandOwnershipRight(RegDate.get(1981, 3, 6), null, "Succession", null, OwnershipType.SIMPLE_CO_OWNERSHIP, 1, 4, noDecede, 264822986L, 264310664, (LandOwnershipRight) landRight0.getReference());
 		}
 	}
@@ -567,6 +568,9 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertEntry(buildingId2, entries.get(1));
 	}
 
+	/**
+	 * [SIFISC-24999] Vérifie qu'une communauté de propriétaire est bien exposée, notamment dans le cas où un des membres est décédé (= il doit être remplacé par ses héritiers)
+	 */
 	@Test
 	public void testGetCommunityOfOwner() throws Exception {
 
@@ -583,12 +587,23 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 
 		final List<RightHolder> members = community.getMembers();
 		assertNotNull(members);
-		assertEquals(4, members.size());
+		assertEquals(5, members.size());    // 4 membres RF - un défunt + 2 héritiers
 		// [SIFISC-23747] les membres de la communauté doivent être triés
-		assertRightHolderParty(21550, members.get(0));      // Entreprise "BIGS Architecture et Entreprise Générale S.A."
-		assertRightHolderParty(10035633, members.get(1));   // Personne physique "Elisabeth Astrid Mary"
-		assertRightHolderNaturalPerson("Raymonde", "Grandjean", null, members.get(2));
-		assertRightHolderNaturalPerson(null, "Berard Renée", null, members.get(3));
+		// [SIFISC-24999] le défunt ne fait pas partie des membres : assertRightHolderParty(10035633, members.get(0));   // Personne physique "Elisabeth Astrid Mary"
+		assertRightHolderParty(10092818, members.get(0));   // Héritier "De Wit Tummers Gertrude"
+		assertRightHolderParty(21550, members.get(1));      // Entreprise "BIGS Architecture et Entreprise Générale S.A."
+		assertRightHolderParty(10093333, members.get(2));   // Héritier "De Wit Tummers Aglaë"
+		assertRightHolderNaturalPerson("Raymonde", "Grandjean", null, members.get(3));
+		assertRightHolderNaturalPerson(null, "Berard Renée", null, members.get(4));
+
+		final List<CommunityLeader> leaders = community.getLeaders();
+		assertNotNull(leaders);
+		assertEquals(3, leaders.size());
+		// l'entreprise 'principal' en 2016
+		assertCommunityLeader(null, RegDate.get(2016, 12, 31), 21550, leaders.get(0));
+		// le défunt 'principal' depuis 2017 mais remplacé par ses deux héritiers
+		assertCommunityLeader(RegDate.get(2017, 1, 1), RegDate.get(2017, 10, 31), 10093333, leaders.get(1));
+		assertCommunityLeader(RegDate.get(2017, 11, 1), null, 10092818, leaders.get(2));
 
 		// SIFISC-24457
 		final LandOwnershipRight landRight = community.getLandRight();
@@ -850,5 +865,12 @@ public class WebServiceLandRegistryItTest extends AbstractWebServiceItTest {
 		assertNull(entry.getCommunityOfOwners());
 		assertEquals(ErrorType.BUSINESS, entry.getError().getType());
 		assertEquals("La communauté n°[" + communityId + "] n'existe pas.", entry.getError().getErrorMessage());
+	}
+
+	private static void assertCommunityLeader(RegDate dateFrom, RegDate dateTo, int taxPayerNumber, CommunityLeader leader) {
+		assertNotNull(leader);
+		assertDate(dateFrom, leader.getDateFrom());
+		assertDate(dateTo, leader.getDateTo());
+		assertEquals(taxPayerNumber, leader.getTaxPayerNumber());
 	}
 }

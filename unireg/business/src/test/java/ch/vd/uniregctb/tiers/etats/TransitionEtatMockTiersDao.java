@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.Heritage;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -86,6 +88,11 @@ class TransitionEtatMockTiersDao extends TiersDAOImpl implements TiersDAO {
 
 	@Override
 	public Set<Long> getRelatedIds(long id, int maxDepth) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public @NotNull List<Heritage> getLiensHeritage(@NotNull Collection<Long> tiersIds) {
 		throw new UnsupportedOperationException();
 	}
 
