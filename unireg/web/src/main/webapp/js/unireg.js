@@ -1544,8 +1544,8 @@ var DateUtils = {
 	durationToString: function(start, end, offset) {
 		var now = new Date();
         // [SIFISC-27015] offset date de la jvm tomcat
-		if(offset != null) {
-			now = now.setTime(now.getTime() + offset);
+		if (offset) {
+			now.setTime(now.getTime() + offset);
 		}
 
 		end = end || now;
