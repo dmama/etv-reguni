@@ -285,15 +285,15 @@ public class AutreDocumentFiscalController {
 	}
 
 	/**
-	 * Affiche un écran qui permet de choisir les paramètres pour l'ajout d'une demande de délai sur une DI PM
+	 * Affiche un écran qui permet de choisir les paramètres pour l'ajout d'une demande de délai
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.GET)
 	public String ajouterDelaiDiPM(@RequestParam("id") long id,
 	                               Model model) throws AccessDeniedException {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
-			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
+		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
+			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un délai à un autre document fiscal.");
 		}
 
 		final AutreDocumentFiscal docFisc = getDocumentFiscal(id);
@@ -317,15 +317,15 @@ public class AutreDocumentFiscalController {
 	}
 
 	/**
-	 * Ajoute un délai sur une DI PM
+	 * Ajoute un délai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
 	public String ajouterDemandeDelaiPM(@Valid @ModelAttribute("command") final EditionDelaiAutreDocumentFiscalView view,
 	                                    BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
-			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une DI");
+		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
+			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'un autre document fiscal");
 		}
 
 		final Long id = view.getIdDocumentFiscal();
@@ -348,5 +348,28 @@ public class AutreDocumentFiscalController {
 		return "redirect:/autresdocs/editer.do?id=" + id;
 	}
 
+	/**
+	 * Annule un délai
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/delai/annuler.do", method = RequestMethod.POST)
+	public String annuler(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
+			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'un autre document fiscal");
+		}
+
+		final DelaiDocumentFiscal delai = (DelaiDocumentFiscal) sessionFactory.getCurrentSession().get(DelaiDocumentFiscal.class, id);
+		if (delai == null) {
+			throw new IllegalArgumentException("Le délai n°" + id + " n'existe pas.");
+		}
+
+		final Entreprise ctb = (Entreprise) delai.getDocumentFiscal().getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		delai.setAnnule(true);
+
+		return "redirect:/autresdocs/editer.do?id=" + delai.getDocumentFiscal().getId();
+	}
 
 }

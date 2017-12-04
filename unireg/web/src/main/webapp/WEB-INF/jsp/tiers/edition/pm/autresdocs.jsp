@@ -166,6 +166,7 @@
 		<!-- Debut Caracteristiques autres documents avec suivi -->
 		<fieldset>
 			<legend><span><fmt:message key="label.autres.documents.fiscaux.suivis" /></span></legend>
+<%--
 			<authz:authorize ifAnyGranted="ROLE_GEST_QUIT_LETTRE_BIENVENUE">
 				<table border="0">
 					<tr><td>
@@ -173,6 +174,7 @@
 					</td></tr>
 				</table>
 			</authz:authorize>
+--%>
 
 			<c:if test="${not empty docsAvecSuivi.docs}">
 				<display:table name="docsAvecSuivi.docs" id="doc" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/autresdocs/edit-list.do" sort="list">
