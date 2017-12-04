@@ -128,6 +128,9 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 
 	@Override
 	public @NotNull List<Heritage> getLiensHeritage(@NotNull Collection<Long> tiersIds) {
+		if (tiersIds.isEmpty()) {
+			return Collections.emptyList();
+		}
 		final Query query = getCurrentSession().createQuery("from Heritage where objetId in (:ids) and annulationDate is null");
 		query.setParameterList("ids", tiersIds);
 		//noinspection unchecked
