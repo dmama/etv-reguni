@@ -30,8 +30,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
 /**
@@ -223,7 +224,7 @@ public abstract class EtatDocumentFiscal<E extends EtatDocumentFiscal> extends H
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return documentFiscal == null ? null : Collections.singletonList(documentFiscal);
 	}
 

@@ -25,8 +25,9 @@ import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.MandatOuAssimile;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeMandat;
 
@@ -225,7 +226,7 @@ public abstract class AdresseMandataire extends HibernateDateRangeEntity impleme
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return mandant != null ? Collections.singletonList(mandant) : null;
 	}
 

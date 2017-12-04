@@ -22,9 +22,10 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 
 @Entity
 @Table(name = "ALLEGEMENT_FONCIER")
@@ -105,7 +106,7 @@ public abstract class AllegementFoncier extends HibernateDateRangeEntity impleme
 	}
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return contribuable != null ? Collections.singletonList(contribuable) : null;
 	}
 }

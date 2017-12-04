@@ -26,7 +26,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
 
 @Entity
 @Table(name = "RF_DROIT", uniqueConstraints = {

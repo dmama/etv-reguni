@@ -19,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.type.DayMonth;
 
 @Entity
@@ -91,7 +93,7 @@ public class Bouclement extends HibernateEntity implements LinkedEntity {
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return entreprise == null ? null : Collections.singletonList(entreprise);
 	}
 }

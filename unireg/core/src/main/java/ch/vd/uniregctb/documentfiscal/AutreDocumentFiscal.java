@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ProgrammingException;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
@@ -141,7 +142,7 @@ public abstract class AutreDocumentFiscal extends DocumentFiscal {
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return getEntreprise() == null ? null : Collections.singletonList(getEntreprise());
 	}
 

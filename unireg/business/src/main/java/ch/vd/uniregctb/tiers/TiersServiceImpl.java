@@ -100,6 +100,8 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.Rerangeable;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -5227,21 +5229,21 @@ public class TiersServiceImpl implements TiersService {
 
 	@NotNull
 	@Override
-	public <T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, @NotNull LinkedEntity.Context context, boolean includeAnnuled) {
+	public <T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, LinkedEntityContext context, boolean includeAnnuled) {
 		//noinspection unchecked
 		return (Set<T>) getLinkedEntities(entity, Collections.singleton(clazz), context, includeAnnuled);
 	}
 
 	@NotNull
 	@Override
-	public Set<HibernateEntity> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Set<Class<?>> classes, LinkedEntity.Context context, boolean includeAnnuled) {
+	public Set<HibernateEntity> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Set<Class<?>> classes, LinkedEntityContext context, boolean includeAnnuled) {
 		final Set<HibernateEntity> linked = new HashSet<>();
 		final Set<Object> visited = new HashSet<>(); // contient les entités et les clés déjà visitées
 		extractLinkedEntities(entity, classes, context, includeAnnuled, linked, visited);
 		return linked;
 	}
 
-	private void extractLinkedEntities(LinkedEntity entity, @NotNull Set<Class<?>> classes, @NotNull LinkedEntity.@NotNull Context context, boolean includeAnnuled, Set<HibernateEntity> linked, Set<Object> visited) {
+	private void extractLinkedEntities(LinkedEntity entity, @NotNull Set<Class<?>> classes, @NotNull LinkedEntityContext context, boolean includeAnnuled, Set<HibernateEntity> linked, Set<Object> visited) {
 		final List<?> list = entity.getLinkedEntities(context, includeAnnuled);
 		if (list == null) {
 			return;

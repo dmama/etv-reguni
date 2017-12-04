@@ -27,8 +27,9 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 //TODO(BNM) Reflechir a une implementation plus simple:
@@ -250,7 +251,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange<
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return debiteur == null ? null : Collections.singletonList(debiteur);
 	}
 }

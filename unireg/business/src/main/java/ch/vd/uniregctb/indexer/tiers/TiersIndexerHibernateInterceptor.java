@@ -28,9 +28,11 @@ import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.common.StandardBatchIterator;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 
 public class TiersIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean {
@@ -58,7 +60,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		}
 		else if (entity instanceof LinkedEntity) {
 			final LinkedEntity linked = (LinkedEntity) entity;
-			final List<?> linkedEntities = linked.getLinkedEntities(LinkedEntity.Context.INDEXATION, true);
+			final List<?> linkedEntities = linked.getLinkedEntities(new LinkedEntityContext(LinkedEntityPhase.INDEXATION), true);
 			if (linkedEntities != null && !linkedEntities.isEmpty()) {
 				for (Object linkedEntity : linkedEntities) {
 					if (linkedEntity instanceof Tiers) {

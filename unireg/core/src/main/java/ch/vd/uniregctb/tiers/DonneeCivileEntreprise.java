@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 
 @Entity
 @Table(name = "DONNEE_CIVILE_ENTREPRISE")
@@ -70,7 +72,7 @@ public abstract class DonneeCivileEntreprise extends HibernateDateRangeEntity im
 	}
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return entreprise == null ? null : Collections.singletonList(entreprise);
 	}
 }

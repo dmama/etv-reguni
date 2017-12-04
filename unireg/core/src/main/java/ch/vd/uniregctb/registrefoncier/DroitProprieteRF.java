@@ -30,6 +30,8 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.Heritage;
@@ -180,9 +182,9 @@ public abstract class DroitProprieteRF extends DroitRF {
 	}
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		// on ne veut pas retourner les tiers Unireg dans le cas de la validation/indexation/parentés, car ils ne sont pas influencés par les données RF
-		if (ayantDroit instanceof TiersRF && (context == Context.TACHES || context == Context.DATA_EVENT)) {
+		if (ayantDroit instanceof TiersRF && (context.getPhase() == LinkedEntityPhase.TACHES || context.getPhase() == LinkedEntityPhase.DATA_EVENT)) {
 
 			final List<Object> list = new ArrayList<>();
 

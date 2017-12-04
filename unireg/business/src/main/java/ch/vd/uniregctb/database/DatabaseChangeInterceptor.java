@@ -12,6 +12,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
@@ -20,7 +23,6 @@ import ch.vd.uniregctb.registrefoncier.CommunauteRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -117,7 +119,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			                                                                                               ImmeubleRF.class,
 			                                                                                               BatimentRF.class,
 			                                                                                               CommunauteRF.class)),
-			                                                                   LinkedEntity.Context.DATA_EVENT,
+			                                                                   new LinkedEntityContext(LinkedEntityPhase.DATA_EVENT),
 			                                                                   isAnnulation);
 			for (HibernateEntity e : linked) {
 				if (e instanceof Tiers) {

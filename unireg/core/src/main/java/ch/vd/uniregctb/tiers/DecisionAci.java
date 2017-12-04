@@ -23,6 +23,8 @@ import ch.vd.uniregctb.common.BusinessComparable;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 @Entity
@@ -99,7 +101,7 @@ public class DecisionAci extends LocalisationDatee implements LinkedEntity, Dupl
 
 	@Transient
 	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return contribuable == null ? null : Collections.singletonList(contribuable);
 	}
 

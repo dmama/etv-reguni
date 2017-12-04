@@ -23,9 +23,11 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.StackedThreadLocal;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -60,7 +62,7 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 		}
 		else if (entity instanceof LinkedEntity) {
 			final LinkedEntity linkedEntity = (LinkedEntity) entity;
-			final Set<Tiers> tiers = tiersService.getLinkedEntities(linkedEntity, Tiers.class, LinkedEntity.Context.PARENTES, isAnnulation);
+			final Set<Tiers> tiers = tiersService.getLinkedEntities(linkedEntity, Tiers.class, new LinkedEntityContext(LinkedEntityPhase.PARENTES), isAnnulation);
 			for (Tiers t : tiers) {
 				if (t instanceof PersonnePhysique) {
 					final PersonnePhysique pp = (PersonnePhysique) t;

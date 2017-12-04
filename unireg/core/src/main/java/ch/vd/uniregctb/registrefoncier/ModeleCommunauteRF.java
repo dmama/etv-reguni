@@ -27,7 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 
 /**
  * Modèle de communauté qui permet de regrouper les communautés RF constituées des mêmes membres.
@@ -180,7 +181,7 @@ public class ModeleCommunauteRF extends HibernateEntity implements LinkedEntity 
 	}
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull LinkedEntity.Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		// si le modèle de communauté change, on veut notifier que les regroupements concernés ont changé
 		return regroupements == null ? null : new ArrayList<Object>(regroupements);
 	}

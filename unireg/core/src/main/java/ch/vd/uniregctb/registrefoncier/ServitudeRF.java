@@ -21,6 +21,8 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 
 /**
  * Servitude sur un immeuble. L'ayant-droit d'un droit habitation est soit une personne morale, soit une personne physique.
@@ -173,9 +175,9 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 	}
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		// on ne veut pas retourner les tiers Unireg dans le cas de la validation/indexation/parentés, car ils ne sont pas influencés par les données RF
-		if ((context == Context.TACHES || context == Context.DATA_EVENT) && ayantDroits != null) {
+		if ((context.getPhase() == LinkedEntityPhase.TACHES || context.getPhase() == LinkedEntityPhase.DATA_EVENT) && ayantDroits != null) {
 			final List<Object> list = new ArrayList<>();
 			for (AyantDroitRF ayantDroit : ayantDroits) {
 				if (ayantDroit instanceof TiersRF) {

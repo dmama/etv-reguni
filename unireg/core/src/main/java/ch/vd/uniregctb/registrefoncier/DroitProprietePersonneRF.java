@@ -11,7 +11,7 @@ import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 
 @Entity
 public abstract class DroitProprietePersonneRF extends DroitProprieteRF {
@@ -36,7 +36,7 @@ public abstract class DroitProprietePersonneRF extends DroitProprieteRF {
 	}
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull LinkedEntity.Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 
 		final List<?> linkedEntities = super.getLinkedEntities(context, includeAnnuled);
 		if (communaute == null) {

@@ -16,8 +16,9 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.EntityKey;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 
 /**
@@ -28,7 +29,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 public class DroitProprieteImmeubleRF extends DroitProprieteRF {
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull LinkedEntity.@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		final List<?> entites = super.getLinkedEntities(context, includeAnnuled);
 
 		// [SIFISC-24600] on ajoute l'immeuble bénéficiaire du droit
@@ -37,7 +38,7 @@ public class DroitProprieteImmeubleRF extends DroitProprieteRF {
 		result.add(beneficiaire.getImmeuble());
 
 		// on ne veut pas retourner les tiers Unireg dans le cas de la validation/indexation/parentés, car ils ne sont pas influencés par les données RF
-		if (context == Context.TACHES || context == Context.DATA_EVENT) {
+		if (context.getPhase() == LinkedEntityPhase.TACHES || context.getPhase() == LinkedEntityPhase.DATA_EVENT) {
 			// on va chercher tous les contribuables propriétaires virtuels
 			final Collection<Contribuable> contribuables = findLinkedContribuables(beneficiaire, new HashSet<>());
 			result.addAll(contribuables);

@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 
 @Entity
 @Table(name = "IDENTIFICATION_ENTREPRISE")
@@ -74,7 +76,7 @@ public class IdentificationEntreprise extends HibernateEntity implements LinkedE
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return ctb == null ? null : Collections.singletonList(ctb);
 	}
 }

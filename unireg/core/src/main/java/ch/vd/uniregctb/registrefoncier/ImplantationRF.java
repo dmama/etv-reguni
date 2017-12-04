@@ -24,7 +24,8 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 
 /**
  * L'implantation d'un bâtiment sur une parcelle (immeuble)
@@ -145,7 +146,7 @@ public class ImplantationRF extends HibernateDateRangeEntity implements LinkedEn
 	}
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return Arrays.asList(immeuble, batiment);
 	}
 }

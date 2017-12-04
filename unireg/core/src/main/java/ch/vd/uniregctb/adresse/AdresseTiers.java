@@ -26,7 +26,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
@@ -115,7 +116,7 @@ public abstract class AdresseTiers extends HibernateDateRangeEntity implements C
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return tiers == null ? null : Collections.singletonList(tiers);
 	}
 }

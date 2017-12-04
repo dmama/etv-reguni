@@ -49,7 +49,6 @@ import ch.vd.uniregctb.registrefoncier.TypeCommunaute;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -473,7 +472,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 	}
 
 	/**
-	 * [SIFISC-24979] Ce test vérifie que la méthode {@link ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF#getLinkedEntities(LinkedEntity.Context, boolean)}
+	 * [SIFISC-24979] Ce test vérifie que la méthode {@link ch.vd.uniregctb.registrefoncier.DroitProprieteImmeubleRF#getLinkedEntities(ch.vd.uniregctb.common.linkedentity.LinkedEntityContext, boolean)}
 	 * ne crashe pas lorsqu'on ajoute un lien entre immeubles et que l'immeuble dominant est possédé par une communauté.
 	 */
 	@Test

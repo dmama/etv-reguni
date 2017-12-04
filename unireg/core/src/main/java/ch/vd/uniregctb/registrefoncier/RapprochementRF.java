@@ -30,8 +30,10 @@ import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.Rerangeable;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
 
 @Entity
@@ -125,9 +127,9 @@ public class RapprochementRF extends HibernateDateRangeEntity implements Duplica
 	}
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 
-		if (context == Context.VALIDATION || context == Context.INDEXATION || context == Context.PARENTES || context == Context.TACHES) {
+		if (context.getPhase() == LinkedEntityPhase.VALIDATION || context.getPhase() == LinkedEntityPhase.INDEXATION || context.getPhase() == LinkedEntityPhase.PARENTES || context.getPhase() == LinkedEntityPhase.TACHES) {
 			// dans les contextes de validation/indexation/parentés, on ne remonte pas sur le contribuable ou
 			// le tiers RF : ces deux entités sont autoporteuses et ne sont pas influencées par le rapprochement.
 			// dans le context des tâches, on ne fait rien car seul les changements de fors fiscaux induisent des générations de tâches.

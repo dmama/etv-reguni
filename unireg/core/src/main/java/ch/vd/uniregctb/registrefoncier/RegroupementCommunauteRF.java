@@ -20,7 +20,8 @@ import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 
 /**
  * Lien entre une communauté RF (issue de Capitastra) et une communauté de référence (données propres à Unireg)
@@ -92,7 +93,7 @@ public class RegroupementCommunauteRF extends HibernateDateRangeEntity implement
 	}
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull LinkedEntity.Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		if (!includeAnnuled && isAnnule()) {
 			return null;
 		}

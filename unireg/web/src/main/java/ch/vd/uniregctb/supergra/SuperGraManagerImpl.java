@@ -40,6 +40,9 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.ReflexionUtils;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 import ch.vd.uniregctb.data.FiscalDataEventListener;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -118,7 +121,6 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Parente;
@@ -508,7 +510,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	}
 
 	private <T extends HibernateEntity> void addLinkedEntities(@NotNull Map<EntityKey, HibernateEntity> mainEntities, @NotNull LinkedEntity entity, @NotNull Class<T> clazz, @NotNull EntityType entityType, boolean includeAnnuled) {
-		final Set<T> linked = tiersService.getLinkedEntities(entity, clazz, LinkedEntity.Context.VALIDATION, includeAnnuled);
+		final Set<T> linked = tiersService.getLinkedEntities(entity, clazz, new LinkedEntityContext(LinkedEntityPhase.VALIDATION), includeAnnuled);
 		for (T t : linked) {
 			if (t != null) {
 				final EntityKey key = new EntityKey(entityType, (Long) t.getKey());

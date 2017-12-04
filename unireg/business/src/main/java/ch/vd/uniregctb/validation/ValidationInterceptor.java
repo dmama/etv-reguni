@@ -16,10 +16,12 @@ import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 
 public class ValidationInterceptor implements ModificationSubInterceptor, InitializingBean, DisposableBean, Switchable {
 
@@ -103,7 +105,7 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 		// si l'objet pointe vers d'autres objets validables, on les valide aussi
 		if (object instanceof LinkedEntity) {
 			final LinkedEntity entity =(LinkedEntity) object;
-			final List<?> linked = entity.getLinkedEntities(LinkedEntity.Context.VALIDATION, isAnnulation);
+			final List<?> linked = entity.getLinkedEntities(new LinkedEntityContext(LinkedEntityPhase.VALIDATION), isAnnulation);
 			if (linked != null) {
 				for (Object o : linked) {
 					if (o instanceof EntityKey) {

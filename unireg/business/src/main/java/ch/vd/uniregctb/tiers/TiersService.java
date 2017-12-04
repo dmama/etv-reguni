@@ -27,6 +27,8 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -1545,7 +1547,7 @@ public interface TiersService {
 	 * @return l'ensemble des entités trouvées; ou un ensemble vide si aucune n'est trouvée.
 	 */
 	@NotNull
-	<T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, LinkedEntity.Context context, boolean includeAnnuled);
+	<T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, LinkedEntityContext context, boolean includeAnnuled);
 
 	/**
 	 * Analyse le graphe des entités liées et retourne toutes les entités trouvées.
@@ -1557,7 +1559,7 @@ public interface TiersService {
 	 * @return l'ensemble des entités trouvées; ou un ensemble vide si aucune n'est trouvée.
 	 */
 	@NotNull
-	Set<HibernateEntity> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Set<Class<?>> classes, LinkedEntity.Context context, boolean includeAnnuled);
+	Set<HibernateEntity> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Set<Class<?>> classes, LinkedEntityContext context, boolean includeAnnuled);
 
     /**
      * permet d'adapter la date de début de validité de la première périodicité en fonction d'une date

@@ -20,7 +20,8 @@ import org.hibernate.annotations.Index;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 
 @Entity
 @Table(name = "RF_PRINCIPAL_COMMUNAUTE")
@@ -86,7 +87,7 @@ public class PrincipalCommunauteRF extends HibernateDateRangeEntity implements L
 	}
 
 	@Override
-	public List<?> getLinkedEntities(@NotNull LinkedEntity.Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		// si le principal de communauté change (création, modification ou annulation), on veut notifier que le modèle correspondant a changé
 		return modeleCommunaute == null ? null : Collections.singletonList(modeleCommunaute);
 	}

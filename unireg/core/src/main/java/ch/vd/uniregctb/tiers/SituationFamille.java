@@ -24,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.type.EtatCivil;
 
 @Entity
@@ -104,7 +106,7 @@ public abstract class SituationFamille extends HibernateDateRangeEntity implemen
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 		return contribuable == null ? null : Collections.singletonList(contribuable);
 	}
 }

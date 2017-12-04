@@ -28,6 +28,8 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -882,12 +884,13 @@ public class MockTiersService implements TiersService {
 
 	@NotNull
 	@Override
-	public <T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, LinkedEntity.Context context, boolean includeAnnuled) {
+	public <T extends HibernateEntity> Set<T> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Class<T> clazz, LinkedEntityContext context, boolean includeAnnuled) {
 		return null;
 	}
 
+	@NotNull
 	@Override
-	public @NotNull Set<HibernateEntity> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Set<Class<?>> classes, LinkedEntity.Context context, boolean includeAnnuled) {
+	public Set<HibernateEntity> getLinkedEntities(@NotNull LinkedEntity entity, @NotNull Set<Class<?>> classes, LinkedEntityContext context, boolean includeAnnuled) {
 		return null;
 	}
 

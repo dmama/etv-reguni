@@ -26,6 +26,8 @@ import ch.vd.uniregctb.common.BusinessComparable;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 @Entity
@@ -137,7 +139,7 @@ public abstract class RapportEntreTiers extends HibernateDateRangeEntity impleme
 
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 
 		if (!includeAnnuled && isAnnule()) {
 			return null;

@@ -9,8 +9,8 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
 import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 
 /**
  * <!-- begin-user-doc -->

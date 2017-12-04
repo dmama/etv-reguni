@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.EntityKey;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 
 @Entity
 public abstract class RepresentationLegale extends RapportEntreTiers {
@@ -52,7 +53,7 @@ public abstract class RepresentationLegale extends RapportEntreTiers {
 	@SuppressWarnings({"unchecked"})
 	@Override
 	@Transient
-	public List<?> getLinkedEntities(@NotNull Context context, boolean includeAnnuled) {
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
 
 		if (!includeAnnuled && isAnnule()) {
 			return null;
