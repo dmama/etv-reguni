@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 public interface AutreDocumentFiscalManager {
@@ -24,4 +25,10 @@ public interface AutreDocumentFiscalManager {
 
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat createAndPrint(ImprimerAutreDocumentFiscalView view) throws AutreDocumentFiscalException;
+
+	@Transactional(rollbackFor = Throwable.class)
+	Long saveNouveauDelai(Long idDoc, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat);
+
+	@Transactional(rollbackFor = Throwable.class)
+	void saveDelai(Long idDelai, EtatDelaiDocumentFiscal etat, RegDate delaiAccordeAu);
 }

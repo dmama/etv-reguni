@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.documentfiscal;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.EnumMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.SessionFactory;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
@@ -33,12 +37,14 @@ import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.utils.RegDateEditor;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -55,6 +61,7 @@ public class AutreDocumentFiscalController {
 	private ControllerUtils controllerUtils;
 	private MessageSource messageSource;
 	private ServiceInfrastructureService infraService;
+	private DelaisService delaisService;
 
 	private static final Map<Role, Set<TypeAutreDocumentFiscalEmettableManuellement>> TYPES_DOC_ALLOWED = buildTypesDocAllowed();
 
@@ -96,6 +103,17 @@ public class AutreDocumentFiscalController {
 
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setDelaisService(DelaisService delaisService) {
+		this.delaisService = delaisService;
+	}
+
+	@InitBinder()
+	public void initAjouterBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(RegDate.class, "dateDemande", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "ancienDelaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
 	@InitBinder(value = "print")
@@ -239,10 +257,7 @@ public class AutreDocumentFiscalController {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des documents fiscaux.");
 		}
 
-		final AutreDocumentFiscal docFisc = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, id);
-		if (docFisc == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.docfisc.inexistant", null, WebContextUtils.getDefaultLocale()));
-		}
+		final AutreDocumentFiscal docFisc = getDocumentFiscal(id);
 
 		final Entreprise ctb = (Entreprise) docFisc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
@@ -259,5 +274,79 @@ public class AutreDocumentFiscalController {
 		model.addAttribute("command", view);
 		return "documentfiscal/editer";
 	}
+
+	@NotNull
+	private AutreDocumentFiscal getDocumentFiscal(@RequestParam("id") long id) {
+		final AutreDocumentFiscal docFisc = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, id);
+		if (docFisc == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.docfisc.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+		return docFisc;
+	}
+
+	/**
+	 * Affiche un écran qui permet de choisir les paramètres pour l'ajout d'une demande de délai sur une DI PM
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.GET)
+	public String ajouterDelaiDiPM(@RequestParam("id") long id,
+	                               Model model) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
+			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
+		}
+
+		final AutreDocumentFiscal docFisc = getDocumentFiscal(id);
+
+		final Entreprise ctb = (Entreprise) docFisc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final RegDate delaiAccordeAu = determineDateAccordDelaiParDefaut(docFisc.getDelaiAccordeAu());
+		model.addAttribute("command", new EditionDelaiAutreDocumentFiscalView(docFisc, delaiAccordeAu));
+		return "documentfiscal/delai/ajouter";
+	}
+
+	/**
+	 * [SIFISC-18869] la date par défaut du délai accordé (sursis ou pas) ne doit de toute façon pas être dans le passé
+	 * @param delaiPrecedent la date actuelle du délai accordé
+	 * @return la nouvelle date à proposer comme délai par défaut
+	 */
+	private RegDate determineDateAccordDelaiParDefaut(RegDate delaiPrecedent) {
+		final RegDate delaiNormal = delaisService.getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(delaiPrecedent);
+		return RegDateHelper.maximum(delaiNormal, RegDate.get(), NullDateBehavior.EARLIEST);
+	}
+
+	/**
+	 * Ajoute un délai sur une DI PM
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
+	public String ajouterDemandeDelaiPM(@Valid @ModelAttribute("command") final EditionDelaiAutreDocumentFiscalView view,
+	                                    BindingResult result, Model model, HttpServletResponse response) throws Exception {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PM)) {
+			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une DI");
+		}
+
+		final Long id = view.getIdDocumentFiscal();
+
+		if (result.hasErrors()) {
+			final AutreDocumentFiscal documentFiscal = getDocumentFiscal(id);
+			view.resetDocumentInfo(documentFiscal);
+			return "autresdocs/delai/ajouter";
+		}
+
+		// Vérifie les paramètres
+		final AutreDocumentFiscal docFisc = getDocumentFiscal(id);
+
+		final Entreprise ctb = (Entreprise) docFisc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// On ajoute le délai
+		final RegDate delaiAccordeAu = view.getDelaiAccordeAu();
+		autreDocumentFiscalManager.saveNouveauDelai(id, view.getDateDemande(), delaiAccordeAu, EtatDelaiDocumentFiscal.ACCORDE);
+		return "redirect:/autresdocs/editer.do?id=" + id;
+	}
+
 
 }

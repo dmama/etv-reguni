@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -22,6 +23,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
@@ -31,6 +33,8 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 	private MessageSource messageSource;
 	private AutreDocumentFiscalService autreDocumentFiscalService;
 	private ServiceInfrastructureService infraService;
+	private SessionFactory sessionFactory;
+	private DelaiAutreDocumentFiscalDAO delaiAutreDocumentFiscalDAO;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -47,6 +51,14 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	public void setDelaiAutreDocumentFiscalDAO(DelaiAutreDocumentFiscalDAO delaiDocumentFiscalDAO) {
+		this.delaiAutreDocumentFiscalDAO = delaiDocumentFiscalDAO;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -152,5 +164,30 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 			return autreDocumentFiscalService.envoyerLettreTypeInformationLiquidationOnline(entreprise, RegDate.get());
 		}
 		throw new IllegalArgumentException("Type de document non-supporté : " + view.getTypeDocument());
+	}
+
+	/**
+	 * Persiste en base le delai
+	 */
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public Long saveNouveauDelai(Long idDoc, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat) {
+		final AutreDocumentFiscal docFisc = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, idDoc);
+		DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
+		delai.setDateTraitement(RegDate.get());
+		delai.setDateDemande(dateDemande);
+		delai.setEtat(etat);
+		delai.setDelaiAccordeAu(delaiAccordeAu);
+		delai = autreDocumentFiscalService.addAndSave(docFisc, delai);
+		return delai.getId();
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public void saveDelai(Long idDelai, EtatDelaiDocumentFiscal etat, RegDate delaiAccordeAu) {
+		final DelaiAutreDocumentFiscal delai = delaiAutreDocumentFiscalDAO.get(idDelai);
+		delai.setDateTraitement(RegDate.get());
+		delai.setEtat(etat);
+		delai.setDelaiAccordeAu(delaiAccordeAu);
 	}
 }

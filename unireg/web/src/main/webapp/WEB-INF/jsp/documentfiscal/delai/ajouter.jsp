@@ -1,33 +1,24 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="command" type="ch.vd.uniregctb.documentfiscal.EditionDelaiAutreDocumentFiscalView"--%>
+
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="head"/>
 	<tiles:put name="title">
-		<c:choose>
-			<c:when test="${command.sursis}">
-				<c:set var="titleKey" value="title.enregistrement.sursis.di"/>
-			</c:when>
-			<c:otherwise>
-				<c:set var="titleKey" value="title.enregistrement.demande.delai.di"/>
-			</c:otherwise>
-		</c:choose>
+		<c:set var="titleKey" value="title.enregistrement.demande.delai.docfisc"/>
 		<fmt:message key="${titleKey}">
-			<fmt:param>${command.declarationPeriode}</fmt:param>
-			<fmt:param><unireg:date date="${command.declarationRange.dateDebut}"/></fmt:param>
-			<fmt:param><unireg:date date="${command.declarationRange.dateFin}"/></fmt:param>
+			<fmt:param>${command.perdiode}</fmt:param>
 			<fmt:param><unireg:numCTB numero="${command.tiersId}"/></fmt:param>
 		</fmt:message>
 	</tiles:put>
 	<tiles:put name="body">
-		<form:form method="post" name="theForm" id="formAddDelai" action="ajouter-pm.do">
+		<form:form method="post" name="theForm" id="formAddDelai" action="ajouter.do">
 
 			<form:errors cssClass="error"/>
 
-			<form:hidden path="idDeclaration"/>
+			<form:hidden path="idDocumentFiscal"/>
 			<form:hidden path="ancienDelaiAccorde"/>
-			<form:hidden path="typeImpression" id="typeImpression"/>
-			<form:hidden path="sursis"/>
 
 			<fieldset>
 				<legend><span><fmt:message key="label.etats"/></span></legend>
@@ -46,40 +37,15 @@
 						<td style="width: 25%;"><unireg:date date="${command.ancienDelaiAccorde}"/></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.decision"/>&nbsp;:</td>
-						<td>
-							<c:choose>
-								<c:when test="${command.sursis}">
-									<fmt:message key="option.etat.delai.ACCORDE"/>
-									<input type="hidden" id="decision" name="decision" value="ACCORDE"/>
-								</c:when>
-								<c:otherwise>
-									<form:select id="decision" path="decision" onchange="DelaiPM.toggleDecision();">
-										<form:options items="${decisionsDelai}"/>
-									</form:select>
-								</c:otherwise>
-							</c:choose>
-						</td>
-						<td>
-							<div class="siDelaiAccorde">
-								<c:choose>
-									<c:when test="${command.sursis}">
-										<fmt:message key="label.date.sursis.accorde"/>&nbsp;:
-									</c:when>
-									<c:otherwise>
-										<fmt:message key="label.date.delai.accorde"/>&nbsp;:
-									</c:otherwise>
-								</c:choose>
-							</div>
-						</td>
-						<td>
-							<div class="siDelaiAccorde">
-								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-									<jsp:param name="path" value="delaiAccordeAu"/>
-									<jsp:param name="id" value="delaiAccordeAu"/>
-									<jsp:param name="mandatory" value="true" />
-								</jsp:include>
-							</div>
+						<td style="width: 25%;"></td>
+						<td style="width: 25%;"></td>
+						<td style="width: 25%;"><fmt:message key="label.date.delai.accorde"/>&nbsp;:</td>
+						<td style="width: 25%;">
+							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+								<jsp:param name="path" value="delaiAccordeAu"/>
+								<jsp:param name="id" value="delaiAccordeAu"/>
+								<jsp:param name="mandatory" value="true" />
+							</jsp:include>
 						</td>
 					</tr>
 				</table>
@@ -88,16 +54,12 @@
 
 			<table border="0">
 				<tr>
-					<td width="25%" align="right">
-						<input type="button" id="envoi-auto" value="Envoi courrier automatique" onclick="return DelaiPM.ajouterDelai(this, 'BATCH');" style="display: none;">
+					<td width="25%">&nbsp;</td>
+					<td width="25%">
+						<input type="submit" id="ajouter" value="Ajouter">
 					</td>
 					<td width="25%">
-						<input type="button" id="envoi-manuel" value="Envoi courrier manuel" onclick="return DelaiPM.ajouterDelai(this, 'LOCAL');" style="display: none;">
-						<input type="button" id="ajouter" value="Ajouter" onclick="return DelaiPM.ajouterDelai(this, null);">
-						<unireg:buttonTo id="retour" name="Retour" visible="false" action="/di/editer.do" method="get" params="{id:${command.idDeclaration}}"/>
-					</td>
-					<td width="25%">
-						<unireg:buttonTo id="annuler" name="Annuler" action="/di/editer.do" method="get" params="{id:${command.idDeclaration}}"/>
+						<unireg:buttonTo id="annuler" name="Annuler" action="/autresdocs/editer.do" method="get" params="{id:${command.idDocumentFiscal}}"/>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>
@@ -108,16 +70,16 @@
 			var DelaiPM = {
 
 				verifierDelaiDI: function() {
-					var dateExpedition = '${command.dateExpedition}';
+					var dateDemande = '${command.dateDemande}';
 					var delaiAccordeAu = $('#delaiAccordeAu').val();
-					if (DateUtils.validate(delaiAccordeAu) && DateUtils.compare(DateUtils.addYear(dateExpedition, 1, 'yyyy.MM.dd'), DateUtils.getDate(delaiAccordeAu, 'dd.MM.yyyy')) == -1) {
+					if (DateUtils.validate(delaiAccordeAu) && DateUtils.compare(DateUtils.addYear(dateDemande, 1, 'yyyy.MM.dd'), DateUtils.getDate(delaiAccordeAu, 'dd.MM.yyyy')) == -1) {
 						return confirm("Ce délai est située plus d'un an dans le futur à compter de la date d'expédition de la DI. Voulez-vous le sauver ?");
 					}
 					return true;
 				},
 
 				ajouterDelai: function(button, type) {
-					if ($('#decision').val() == 'ACCORDE' && !this.verifierDelaiDI()) {
+					if (!this.verifierDelaiDI()) {
 						return false;
 					}
 
@@ -130,27 +92,8 @@
 					$('#retour').show();
 
 					return true;
-				},
-
-				toggleDecision: function() {
-					var decisionSelectionnee = $('#decision').val();
-					$('.siDelaiAccorde, .siDelaiRefuse, #envoi-auto, #envoi-manuel, #ajouter').hide();
-					if (decisionSelectionnee == 'ACCORDE') {
-						$('.siDelaiAccorde').show();
-						$('#envoi-auto, #envoi-manuel').show();
-					}
-					else if (decisionSelectionnee == 'REFUSE') {
-						$('.siDelaiRefuse').show();
-						$('#envoi-auto, #envoi-manuel').show();
-					}
-					else {
-						$('#ajouter').show();
-					}
 				}
 			};
-
-			// première exécution au chargement de la page...
-			DelaiPM.toggleDecision();
 
 		</script>
 	</tiles:put>

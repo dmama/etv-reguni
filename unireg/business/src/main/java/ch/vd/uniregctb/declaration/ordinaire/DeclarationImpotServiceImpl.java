@@ -29,11 +29,9 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.declaration.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.declaration.ordinaire.common.DelaiDeclarationAddAndSaveAccessor;
 import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMAEmettreProcessor;
@@ -65,6 +63,8 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ProduireListeDIsNonEmisesProcessor;
+import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscalAddAndSaveAccessor;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAddAndSaveAccessor;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -675,7 +675,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public DelaiDeclaration addAndSave(DeclarationImpotOrdinaire declaration, DelaiDeclaration delai) {
-		return AddAndSaveHelper.addAndSave(declaration, delai, hibernateTemplate::merge, DelaiDeclarationAddAndSaveAccessor.INSTANCE);
+		return AddAndSaveHelper.addAndSave(declaration, delai, hibernateTemplate::merge, new DelaiDocumentFiscalAddAndSaveAccessor<>());
 	}
 
 	@Override

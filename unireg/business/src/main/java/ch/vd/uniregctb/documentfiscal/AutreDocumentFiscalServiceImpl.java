@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.uniregctb.common.AddAndSaveHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -187,6 +188,17 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		}
 		return saved;
 	}
+
+	@Override
+	public DelaiAutreDocumentFiscal addAndSave(AutreDocumentFiscal doc, DelaiAutreDocumentFiscal delai) {
+		return AddAndSaveHelper.addAndSave(doc, delai, hibernateTemplate::merge, new DelaiDocumentFiscalAddAndSaveAccessor<>());
+	}
+
+	@Override
+	public <T extends EtatAutreDocumentFiscal> T addAndSave(AutreDocumentFiscal doc, T etat) {
+		return AddAndSaveHelper.addAndSave(doc, etat, hibernateTemplate::merge, new EtatDocumentFiscalAddAndSaveAccessor<>());
+	}
+
 
 	private TypeLettreBienvenue computeTypeLettreBienvenue(Entreprise e, RegDate dateTraitement, RegDate dateDebutNouvelAssujettissement) throws AutreDocumentFiscalException {
 

@@ -16,12 +16,16 @@
 		<property name="messageSource" ref="messageSource"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="delaisService" ref="delaisService"/>
 	</bean>
 
 	<bean id="autreDocumentFiscalManager" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalManagerImpl">
 		<property name="tiersService" ref="tiersService"/>
+		<property name="messageSource" ref="messageSource"/>
 		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="delaiAutreDocumentFiscalDAO" ref="delaiAutreDocumentFiscalDAO"/>
 	</bean>
 
 </beans>
