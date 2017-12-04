@@ -90,7 +90,7 @@
 						    </c:when>
 						    <c:otherwise>
 							    <display:column sortable ="true" titleKey="label.nom.prenom" >
-									<span class="civTip" id="civildata">
+									<span class="civTip" id="civildata" name="${personne.numero}">
 										<c:out value="${personne.nom1}" />
 										<c:if test="${personne.nom2 != null}">
 											<br><c:out value="${personne.nom2}" />
@@ -104,7 +104,7 @@
 								    <c:out value="${personne.npa}" />
 							    </display:column>
 							    <display:column sortable ="true" titleKey="label.localitePays" >
-									<span  class="adrTip" id="adressedata">
+									<span  class="adrTip" id="adressedata" name="${personne.numero}">
 										<c:out value="${personne.localiteOuPays}" />
 									</span>
 							    </display:column>
