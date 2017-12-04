@@ -4,11 +4,22 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
+import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
+import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
+import ch.vd.uniregctb.registrefoncier.DroitProprietePersonneRF;
+import ch.vd.uniregctb.registrefoncier.RapprochementRF;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -95,5 +106,41 @@ public class Heritage extends RapportEntreTiers {
 	protected String getBusinessName() {
 		// redéfini ici à cause de l'accent qui n'apparaît pas dans le nom de la classe...
 		return "Héritage";
+	}
+
+	@Override
+	public List<?> getLinkedEntities(@NotNull LinkedEntityContext context, boolean includeAnnuled) {
+
+		if (!includeAnnuled && isAnnule()) {
+			return null;
+		}
+
+		//noinspection unchecked
+		final List<Object> entities = (List<Object>) super.getLinkedEntities(context, includeAnnuled);
+
+		// on ne retourne les communautés RF que dans le cas de l'envoi de data events, car les autres phases (validation, indexation et tâches) ne sont pas influencées par les données du RF
+		if (context.getPhase() == LinkedEntityPhase.DATA_EVENT) {
+
+			// on ajoute les éventuelles communautés RF dont le défunt fait partie
+			final PersonnePhysique defunt = context.getHibernateTemplate().get(PersonnePhysique.class, getObjetId());
+			Optional.ofNullable(defunt)
+					.map(Contribuable::getRapprochementsRF)
+					.ifPresent(rapprochements -> {
+						final Set<?> communautes = rapprochements.stream()
+								.filter(AnnulableHelper::nonAnnule)
+								.map(RapprochementRF::getTiersRF)
+								.map(AyantDroitRF::getDroitsPropriete)
+								.flatMap(Collection::stream)
+								.filter(AnnulableHelper::nonAnnule)
+								.filter(DroitProprietePersonneRF.class::isInstance)
+								.map(DroitProprietePersonneRF.class::cast)
+								.filter(d -> d.getCommunaute() != null)
+								.map(DroitProprietePersonneRF::getCommunaute)
+								.collect(Collectors.toSet());
+						entities.addAll(communautes);
+					});
+		}
+
+		return entities;
 	}
 }

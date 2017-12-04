@@ -16,6 +16,7 @@ import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.registrefoncier.BatimentRF;
@@ -38,6 +39,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 	private ModificationInterceptor parent;
 	private DataEventService dataEventService;
 	private TiersService tiersService;
+	private HibernateTemplate hibernateTemplate;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParent(ModificationInterceptor parent) {
@@ -50,6 +52,10 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
@@ -108,57 +114,62 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		else if (entity instanceof RapportEntreTiers) {
 			final RapportEntreTiers ret = (RapportEntreTiers) entity;
 			dataEventService.onRelationshipChange(ret.getType(), ret.getSujetId(), ret.getObjetId());
-			dataEventService.onTiersChange(ret.getSujetId());
-			dataEventService.onTiersChange(ret.getObjetId());
+			handleLinkedEntity(ret, isAnnulation);
 		}
 		else if (entity instanceof LinkedEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
-			final LinkedEntity child = (LinkedEntity) entity;
-			// [SIFISC-915] En cas d'annulation, on DOIT inclure les liens nouvellement annulés pour invalider correctement les caches
-			final Set<HibernateEntity> linked = tiersService.getLinkedEntities(child,
-			                                                                   new HashSet<>(Arrays.asList(Tiers.class,
-			                                                                                               ImmeubleRF.class,
-			                                                                                               BatimentRF.class,
-			                                                                                               CommunauteRF.class)),
-			                                                                   new LinkedEntityContext(LinkedEntityPhase.DATA_EVENT),
-			                                                                   isAnnulation);
-			for (HibernateEntity e : linked) {
-				if (e instanceof Tiers) {
-					dataEventService.onTiersChange(((Tiers) e).getNumero());
-				}
-				else if (e instanceof ImmeubleRF) {
-					dataEventService.onImmeubleChange(((ImmeubleRF) e).getId());
-				}
-				else if (e instanceof BatimentRF) {
-					dataEventService.onBatimentChange(((BatimentRF) e).getId());
-				}
-				else if (e instanceof CommunauteRF) {
-					dataEventService.onCommunauteChange(((CommunauteRF) e).getId());
-				}
-				else {
-					throw new IllegalArgumentException("Type d'entité inconnu = [" + e.getClass() + "]");
-				}
-			}
+			handleLinkedEntity((LinkedEntity) entity, isAnnulation);
 		}
 		else if (entity instanceof DroitAcces) {
 			// [UNIREG-1191] Un droit d'accès a été modifié en base => on purge tous les tiers impactés par le changement
-			final DroitAcces da = (DroitAcces) entity;
-			final Contribuable ctb = da.getTiers();
+			handleDroitAcces((DroitAcces) entity);
+		}
+	}
 
-			// le tiers lui-même
-			final Long numero = ctb.getNumero();
-			if (numero != null) {
-				dataEventService.onDroitAccessChange(numero);
+	private void handleLinkedEntity(LinkedEntity child, boolean isAnnulation) {
+		// [SIFISC-915] En cas d'annulation, on DOIT inclure les liens nouvellement annulés pour invalider correctement les caches
+		final Set<HibernateEntity> linked = tiersService.getLinkedEntities(child,
+		                                                                   new HashSet<>(Arrays.asList(Tiers.class,
+		                                                                                               ImmeubleRF.class,
+		                                                                                               BatimentRF.class,
+		                                                                                               CommunauteRF.class)),
+		                                                                   new LinkedEntityContext(LinkedEntityPhase.DATA_EVENT, hibernateTemplate),
+		                                                                   isAnnulation);
+		for (HibernateEntity e : linked) {
+			if (e instanceof Tiers) {
+				dataEventService.onTiersChange(((Tiers) e).getNumero());
 			}
+			else if (e instanceof ImmeubleRF) {
+				dataEventService.onImmeubleChange(((ImmeubleRF) e).getId());
+			}
+			else if (e instanceof BatimentRF) {
+				dataEventService.onBatimentChange(((BatimentRF) e).getId());
+			}
+			else if (e instanceof CommunauteRF) {
+				dataEventService.onCommunauteChange(((CommunauteRF) e).getId());
+			}
+			else {
+				throw new IllegalArgumentException("Type d'entité inconnu = [" + e.getClass() + "]");
+			}
+		}
+	}
 
-			// tous les ménages communs auxquel il a pu appartenir, ou les établissements liés
-			final Set<RapportEntreTiers> rapports = ctb.getRapportsSujet();
-			if (rapports != null) {
-				final Set<TypeRapportEntreTiers> typesPropages = EnumSet.of(TypeRapportEntreTiers.APPARTENANCE_MENAGE,
-				                                                            TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
-				for (RapportEntreTiers r : rapports) {
-					if (!r.isAnnule() && typesPropages.contains(r.getType())) {
-						dataEventService.onDroitAccessChange(r.getObjetId());
-					}
+	private void handleDroitAcces(DroitAcces da) {
+		final Contribuable ctb = da.getTiers();
+
+		// le tiers lui-même
+		final Long numero = ctb.getNumero();
+		if (numero != null) {
+			dataEventService.onDroitAccessChange(numero);
+		}
+
+		// tous les ménages communs auxquel il a pu appartenir, ou les établissements liés
+		final Set<RapportEntreTiers> rapports = ctb.getRapportsSujet();
+		if (rapports != null) {
+			final Set<TypeRapportEntreTiers> typesPropages = EnumSet.of(TypeRapportEntreTiers.APPARTENANCE_MENAGE,
+			                                                            TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
+			for (RapportEntreTiers r : rapports) {
+				if (!r.isAnnule() && typesPropages.contains(r.getType())) {
+					dataEventService.onDroitAccessChange(r.getObjetId());
 				}
 			}
 		}

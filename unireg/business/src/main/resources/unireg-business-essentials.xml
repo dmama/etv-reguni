@@ -23,6 +23,7 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="dialect" ref="hibernateDialect" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<bean id="officeImpotHibernateInterceptor" class="ch.vd.uniregctb.indexer.tiers.OfficeImpotHibernateInterceptor">
@@ -36,6 +37,7 @@
 		<property name="parent" ref="modificationInterceptor" />
 		<property name="tacheService" ref="tacheService" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<bean id="validationInterceptor" class="ch.vd.uniregctb.validation.ValidationInterceptor">
@@ -48,6 +50,7 @@
 		<property name="parent" ref="modificationInterceptor"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
 	<bean id="annonceIDEHibernateInterceptor" class="ch.vd.uniregctb.evenement.ide.AnnonceIDEHibernateInterceptor">
@@ -240,6 +243,7 @@
 		<property name="parent" ref="modificationInterceptor" />
 		<property name="dataEventService" ref="dataEventService" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<bean id="dataEventService" class="ch.vd.uniregctb.data.DataEventServiceImpl" />

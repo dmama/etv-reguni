@@ -31,6 +31,7 @@ import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -44,6 +45,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	private GlobalTiersIndexer indexer;
 	private PlatformTransactionManager transactionManager;
 	private Dialect dialect;
+	private HibernateTemplate hibernateTemplate;
 
 	private final StackedThreadLocal<Set<Long>> modifiedEntities = new StackedThreadLocal<>(HashSet::new);
 
@@ -60,7 +62,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		}
 		else if (entity instanceof LinkedEntity) {
 			final LinkedEntity linked = (LinkedEntity) entity;
-			final List<?> linkedEntities = linked.getLinkedEntities(new LinkedEntityContext(LinkedEntityPhase.INDEXATION), true);
+			final List<?> linkedEntities = linked.getLinkedEntities(new LinkedEntityContext(LinkedEntityPhase.INDEXATION, hibernateTemplate), true);
 			if (linkedEntities != null && !linkedEntities.isEmpty()) {
 				for (Object linkedEntity : linkedEntities) {
 					if (linkedEntity instanceof Tiers) {
@@ -239,6 +241,10 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDialect(Dialect dialect) {
 		this.dialect = dialect;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override

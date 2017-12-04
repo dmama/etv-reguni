@@ -510,7 +510,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	}
 
 	private <T extends HibernateEntity> void addLinkedEntities(@NotNull Map<EntityKey, HibernateEntity> mainEntities, @NotNull LinkedEntity entity, @NotNull Class<T> clazz, @NotNull EntityType entityType, boolean includeAnnuled) {
-		final Set<T> linked = tiersService.getLinkedEntities(entity, clazz, new LinkedEntityContext(LinkedEntityPhase.VALIDATION), includeAnnuled);
+		final Set<T> linked = tiersService.getLinkedEntities(entity, clazz, new LinkedEntityContext(LinkedEntityPhase.VALIDATION, hibernateTemplate), includeAnnuled);
 		for (T t : linked) {
 			if (t != null) {
 				final EntityKey key = new EntityKey(entityType, (Long) t.getKey());

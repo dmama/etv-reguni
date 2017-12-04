@@ -19,6 +19,7 @@ import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -35,6 +36,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	private ModificationInterceptor parent;
 	private TacheService tacheService;
 	private TiersService tiersService;
+	private HibernateTemplate hibernateTemplate;
 
 	private final StackedThreadLocal<Set<Long>> modifiedCtbIds = new StackedThreadLocal<>(HashSet::new);
 
@@ -53,7 +55,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		}
 		else if (entity instanceof LinkedEntity) {
 			final LinkedEntity linkedEntity = (LinkedEntity) entity;
-			final Set<Tiers> tiers = tiersService.getLinkedEntities(linkedEntity, Tiers.class, new LinkedEntityContext(LinkedEntityPhase.TACHES), isAnnulation);
+			final Set<Tiers> tiers = tiersService.getLinkedEntities(linkedEntity, Tiers.class, new LinkedEntityContext(LinkedEntityPhase.TACHES, hibernateTemplate), isAnnulation);
 			for (Tiers t : tiers) {
 				if (t instanceof Contribuable) {
 					final Contribuable ctb = (Contribuable) t;
@@ -170,6 +172,10 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override

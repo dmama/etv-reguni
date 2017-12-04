@@ -105,7 +105,7 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 		// si l'objet pointe vers d'autres objets validables, on les valide aussi
 		if (object instanceof LinkedEntity) {
 			final LinkedEntity entity =(LinkedEntity) object;
-			final List<?> linked = entity.getLinkedEntities(new LinkedEntityContext(LinkedEntityPhase.VALIDATION), isAnnulation);
+			final List<?> linked = entity.getLinkedEntities(new LinkedEntityContext(LinkedEntityPhase.VALIDATION, hibernateTemplate), isAnnulation);
 			if (linked != null) {
 				for (Object o : linked) {
 					if (o instanceof EntityKey) {

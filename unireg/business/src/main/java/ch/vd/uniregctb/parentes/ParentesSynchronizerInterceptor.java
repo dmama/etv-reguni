@@ -26,6 +26,7 @@ import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntity;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntityContext;
 import ch.vd.uniregctb.common.linkedentity.LinkedEntityPhase;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -42,6 +43,7 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 	private ModificationInterceptor parent;
 	private TiersService tiersService;
 	private PlatformTransactionManager transactionManager;
+	private HibernateTemplate hibernateTemplate;
 
 	private final Random randomGenerator = new Random();
 
@@ -62,7 +64,7 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 		}
 		else if (entity instanceof LinkedEntity) {
 			final LinkedEntity linkedEntity = (LinkedEntity) entity;
-			final Set<Tiers> tiers = tiersService.getLinkedEntities(linkedEntity, Tiers.class, new LinkedEntityContext(LinkedEntityPhase.PARENTES), isAnnulation);
+			final Set<Tiers> tiers = tiersService.getLinkedEntities(linkedEntity, Tiers.class, new LinkedEntityContext(LinkedEntityPhase.PARENTES, hibernateTemplate), isAnnulation);
 			for (Tiers t : tiers) {
 				if (t instanceof PersonnePhysique) {
 					final PersonnePhysique pp = (PersonnePhysique) t;
@@ -242,6 +244,10 @@ public class ParentesSynchronizerInterceptor implements ModificationSubIntercept
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override

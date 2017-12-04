@@ -84,6 +84,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		interceptor.setDataEventService(eventService);
 		interceptor.setTiersService(getBean(TiersService.class, "tiersService"));
 		interceptor.setParent(getBean(ModificationInterceptor.class, "modificationInterceptor"));
+		interceptor.setHibernateTemplate(hibernateTemplate);
 		interceptor.afterPropertiesSet();
 	}
 
@@ -1649,6 +1650,101 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 		});
 
 		// on vérifie l'envoi de notification de changement de communauté sur la communauté existante
+		assertEquals(1, eventService.changedCommunautes.size());
+		assertTrue(eventService.changedCommunautes.contains(ids.communaute));
+	}
+
+	/**
+	 * [SIFISC-24999] détection de la propagation de l'ajout d'un héritage sur une communauté RF
+	 */
+	@Test
+	public void testDetectChangementCommunauteDepuisHeritageEntreTiers() throws Exception {
+
+		assertEmpty(eventService.changedCommunautes);
+
+		final class Ids {
+			long pp1;
+			long modele;
+			long communaute;
+		}
+
+		// on créé une communauté de 3 personnes en DB et les tiers Unireg équivalents
+		final Ids ids = doInNewTransactionAndSession(status -> {
+
+			final RegDate dateDebutCommunaute = date(2005, 3, 2);
+
+			// tiers Unireg
+			final PersonnePhysique pp1 = addNonHabitant("Philip", "Linconnu", date(1967, 4, 2), Sexe.MASCULIN);
+			final PersonnePhysique pp2 = addNonHabitant("Elodie", "Loongle", date(1980, 11, 22), Sexe.FEMININ);
+			final PersonnePhysique pp3 = addNonHabitant("Giu", "Rastata", date(1990, 7, 3), Sexe.FEMININ);
+
+			// tiers RF
+			final PersonnePhysiqueRF ppRF1 = addPersonnePhysiqueRF("43423872389", "Philip", "Linconnu", date(1967, 4, 2));
+			final PersonnePhysiqueRF ppRF2 = addPersonnePhysiqueRF("2252415156", "Elodie", "Loongle", date(1980, 11, 22));
+			final PersonnePhysiqueRF ppRF3 = addPersonnePhysiqueRF("3493939", "Giu", "Rastata", date(1990, 7, 3));
+
+			addRapprochementRF(pp1, ppRF1, date(2000, 1, 1), null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(pp2, ppRF2, date(2000, 1, 1), null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(pp3, ppRF3, date(2000, 1, 1), null, TypeRapprochementRF.AUTO);
+
+			// communauté
+			final CommunauteRF communaute = addCommunauteRF("538534zugwhj", TypeCommunaute.COMMUNAUTE_HEREDITAIRE);
+			final ImmeubleRF immeuble = addImmeubleRF("5r37858725g3b");
+			final DroitProprietePersonnePhysiqueRF droit1 =
+					addDroitPropriete(ppRF1, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "573853733gdbtq", "1");
+			final DroitProprietePersonnePhysiqueRF droit2 =
+					addDroitPropriete(ppRF2, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "43938383838", "1");
+			final DroitProprietePersonnePhysiqueRF droit3 =
+					addDroitPropriete(ppRF3, immeuble, communaute, GenrePropriete.COMMUNE, new Fraction(1, 1),
+					                  date(2005, 3, 2), null,
+					                  dateDebutCommunaute, null,
+					                  "Succession", null,
+					                  new IdentifiantAffaireRF(42, 2005, 32, 1),
+					                  "178461561561", "1");
+			communaute.addMembre(droit1);
+			communaute.addMembre(droit2);
+			communaute.addMembre(droit3);
+
+			final ModeleCommunauteRF modele = addModeleCommunauteRF(ppRF1, ppRF2, ppRF3);
+			addRegroupementRF(communaute, modele, dateDebutCommunaute, null);
+
+			final PrincipalCommunauteRF principal = new PrincipalCommunauteRF();
+			principal.setPrincipal(ppRF3);
+			principal.setDateDebut(dateDebutCommunaute);
+			modele.addPrincipal(principal);
+
+			final Ids res = new Ids();
+			res.pp1 = pp1.getId();
+			res.modele = modele.getId();
+			res.communaute = communaute.getId();
+			return res;
+		});
+
+		eventService.clear();
+		assertEmpty(eventService.changedCommunautes);
+
+		// on ajoute un héritier sur le tiers numéro 1
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+				final PersonnePhysique pp1 = hibernateTemplate.get(PersonnePhysique.class, ids.pp1);
+				final PersonnePhysique pp4 = addNonHabitant("Jojo", "Linconnu", date(1992, 1, 26), Sexe.MASCULIN);
+				addHeritage(pp4, pp1, date(2017,1,1), null, true);
+			}
+		});
+
+		// on vérifie l'envoi de notification de changement de communauté sur la communauté Rf du défunt
 		assertEquals(1, eventService.changedCommunautes.size());
 		assertTrue(eventService.changedCommunautes.contains(ids.communaute));
 	}
