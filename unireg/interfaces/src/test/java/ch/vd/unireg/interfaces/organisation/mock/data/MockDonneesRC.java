@@ -58,7 +58,10 @@ public class MockDonneesRC implements DonneesRC {
 		throw new UnsupportedOperationException();
 	}
 
-	public void addAdresseLegale(RegDate dateDebut, @Nullable RegDate dateFin, AdresseLegaleRCEnt nouvelleAdresseLegale) {
+	public void addAdresseLegale(AdresseLegaleRCEnt nouvelleAdresseLegale) {
+		final RegDate dateDebut = nouvelleAdresseLegale.getDateDebut();
+		final RegDate dateFin = nouvelleAdresseLegale.getDateFin();
+
 		final Map.Entry<RegDate, AdresseLegaleRCEnt> previousEntry = adresseLegale.lastEntry();
 		if (previousEntry != null) {
 			final AdresseLegaleRCEnt previous = previousEntry.getValue();

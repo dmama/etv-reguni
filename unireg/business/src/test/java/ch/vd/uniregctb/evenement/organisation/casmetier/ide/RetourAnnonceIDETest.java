@@ -143,9 +143,9 @@ public class RetourAnnonceIDETest extends AbstractEvenementOrganisationProcessor
 				                                                                        null, null,
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996");
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) org.getDonneesSites().get(0).getDonneesRegistreIDE();
-				donneesRegistreIDE.addAdresseEffective(date(2016, 9, 5), null, new AdresseEffectiveRCEnt(date(2016, 9, 5), null, MockLocalite.Renens.getNom(), "1", null, MockLocalite.Renens.getNoOrdre(),
-				                                                                                         MockLocalite.Renens.getNPA().toString(),null, MockPays.Suisse.getNoOfsEtatSouverain(),
-				                                                                                         MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), null, null, null));
+				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2016, 9, 5), null, MockLocalite.Renens.getNom(), "1", null, MockLocalite.Renens.getNoOrdre(),
+				                                                                 MockLocalite.Renens.getNPA().toString(), null, MockPays.Suisse.getNoOfsEtatSouverain(),
+				                                                                 MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), null, null, null));
 				addOrganisation(org);
 			}
 		});
@@ -304,9 +304,9 @@ public class RetourAnnonceIDETest extends AbstractEvenementOrganisationProcessor
 				                                                                        null, null,
 				                                                                        StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.ASSOCIATION, "CHE999999996");
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) org.getDonneesSites().get(0).getDonneesRegistreIDE();
-				donneesRegistreIDE.addAdresseEffective(date(2016, 9, 5), null, new AdresseEffectiveRCEnt(date(2016, 9, 5), null, MockLocalite.Renens.getNom(), "1", null, MockLocalite.Renens.getNoOrdre(),
-				                                                                                         MockLocalite.Renens.getNPA().toString(),null, MockPays.Suisse.getNoOfsEtatSouverain(),
-				                                                                                         MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), null, null, null));
+				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2016, 9, 5), null, MockLocalite.Renens.getNom(), "1", null, MockLocalite.Renens.getNoOrdre(),
+				                                                                 MockLocalite.Renens.getNPA().toString(), null, MockPays.Suisse.getNoOfsEtatSouverain(),
+				                                                                 MockRue.Renens.QuatorzeAvril.getDesignationCourrier(), null, null, null));
 				addOrganisation(org);
 			}
 		});

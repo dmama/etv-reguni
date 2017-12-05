@@ -1,6 +1,5 @@
 package ch.vd.unireg.interfaces.organisation.data.builder;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +42,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 
 	@Override
 	public OrganisationRCEnt build() {
-		return new OrganisationRCEnt(numeroOrganisation, Collections.emptyMap(), sites,
-		                             donneesSites);
+		return new OrganisationRCEnt(numeroOrganisation, sites, donneesSites);
 	}
 
 	public OrganisationBuilder addSite(@NotNull Long cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {

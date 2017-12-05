@@ -8,58 +8,64 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
- * Contient toutes les adresses civiles d'un individu regroupées par type
+ * Contient toutes les adresses civiles d'un individu ou d'une entreprise regroupées par type
  */
 public class AdressesCivilesHisto {
 	public final List<Adresse> principales;
 	public final List<Adresse> courriers;
 	public final List<Adresse> secondaires;
 	public final List<Adresse> tutelles;
+	public final List<Adresse> casesPostales;
 
 	public AdressesCivilesHisto() {
 		this.principales = new ArrayList<>();
 		this.courriers = new ArrayList<>();
 		this.secondaires = new ArrayList<>();
 		this.tutelles = new ArrayList<>();
+		this.casesPostales = new ArrayList<>();
 	}
 
 	public List<Adresse> ofType(TypeAdresseCivil type) {
-		if (TypeAdresseCivil.PRINCIPALE == type) {
+		switch (type) {
+		case PRINCIPALE:
 			return principales;
-		}
-		else if (TypeAdresseCivil.COURRIER == type) {
+		case COURRIER:
 			return courriers;
-		}
-		else if (TypeAdresseCivil.SECONDAIRE == type) {
+		case SECONDAIRE:
 			return secondaires;
-		}
-		else {
-			Assert.isTrue(TypeAdresseCivil.TUTEUR == type);
+		case TUTEUR:
 			return tutelles;
+		case CASE_POSTALE:
+			return casesPostales;
+		default:
+			throw new IllegalArgumentException("Type d'adresse inconnu = [" + type + "]");
 		}
 	}
 
 	public void add(Adresse adresse) {
-		if (adresse.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
+		switch (adresse.getTypeAdresse()) {
+		case PRINCIPALE:
 			principales.add(adresse);
-		}
-		else if (adresse.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
+			break;
+		case COURRIER:
 			courriers.add(adresse);
-		}
-		else if (adresse.getTypeAdresse() == TypeAdresseCivil.SECONDAIRE) {
+			break;
+		case SECONDAIRE:
 			secondaires.add(adresse);
-		}
-		else if (adresse.getTypeAdresse() == TypeAdresseCivil.TUTEUR) {
+			break;
+		case TUTEUR:
 			tutelles.add(adresse);
-		}
-		else {
-			Assert.fail();
+			break;
+		case CASE_POSTALE:
+			casesPostales.add(adresse);
+			break;
+		default:
+			throw new IllegalArgumentException("Type d'adresse inconnu = [" + adresse.getTypeAdresse() + "]");
 		}
 	}
 
@@ -83,6 +89,7 @@ public class AdressesCivilesHisto {
 		courriers.sort(comparator);
 		secondaires.sort(comparator);
 		tutelles.sort(comparator);
+		casesPostales.sort(comparator);
 	}
 
 	/**
@@ -98,6 +105,7 @@ public class AdressesCivilesHisto {
 		// [SIFISC-6942] les adresses secondaires *peuvent* se chevaucher
 		// validateNonChevauchement(secondaires, "secondaire", strict);
 		validateNonChevauchement(tutelles, "tutelle", strict);
+		validateNonChevauchement(casesPostales, "case postale", strict);
 	}
 
 	private static void validateNonChevauchement(List<Adresse> adresses, String typeAdresse, boolean strict) throws DonneesCivilesException {
@@ -185,11 +193,11 @@ public class AdressesCivilesHisto {
 	 */
 	public RegDate getVeryFirstDate() {
 		RegDate first = RegDateHelper.getLateDate();
-		if (principales != null && !principales.isEmpty()) {
+		if (!principales.isEmpty()) {
 			Adresse a = principales.get(0);
 			first = RegDateHelper.minimum(first, a.getDateDebut(), NullDateBehavior.EARLIEST);
 		}
-		if (courriers != null && !courriers.isEmpty()) {
+		if (!courriers.isEmpty()) {
 			Adresse a = courriers.get(0);
 			first = RegDateHelper.minimum(first, a.getDateDebut(), NullDateBehavior.EARLIEST);
 		}
@@ -201,11 +209,11 @@ public class AdressesCivilesHisto {
 	 */
 	public RegDate getVeryLastDate() {
 		RegDate last = RegDateHelper.getEarlyDate();
-		if (principales != null && !principales.isEmpty()) {
+		if (!principales.isEmpty()) {
 			Adresse a = principales.get(principales.size() - 1);
 			last = RegDateHelper.maximum(last, a.getDateFin(), NullDateBehavior.LATEST);
 		}
-		if (courriers != null && !courriers.isEmpty()) {
+		if (!courriers.isEmpty()) {
 			Adresse a = courriers.get(courriers.size() - 1);
 			last = RegDateHelper.maximum(last, a.getDateFin(), NullDateBehavior.LATEST);
 		}

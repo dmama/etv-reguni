@@ -18,7 +18,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /*
  * Cette classe permet d'adapter une adresse civile à l'interface d'adresse générique, optionnellement en surchargeant ses dates de début/fin de validité.
@@ -54,7 +53,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.rue = resolveNomRue(adresse.getNumeroRue(), adresse.getRue());
 
 		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
-		if (validationResult != null && validationResult.hasErrors()) {
+		if (validationResult.hasErrors()) {
 			throw new DonneesCivilesException(buildContext(adresse), validationResult.getErrors());
 		}
 	}
@@ -81,7 +80,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.rue = resolveNomRue(adresse.getNumeroRue(), adresse.getRue());
 
 		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
-		if (validationResult != null && validationResult.hasErrors()) {
+		if (validationResult.hasErrors()) {
 			throw new DonneesCivilesException(buildContext(adresse), validationResult.getErrors());
 		}
 	}
@@ -108,7 +107,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.rue = resolveNomRue(adresse.getNumeroRue(), adresse.getRue());
 
 		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
-		if (validationResult != null && validationResult.hasErrors()) {
+		if (validationResult.hasErrors()) {
 			throw new DonneesCivilesException(buildContext(adresse), validationResult.getErrors());
 		}
 	}
@@ -136,26 +135,13 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.rue = resolveNomRue(adresse.getNumeroRue(), adresse.getRue());
 
 		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
-		if (validationResult != null && validationResult.hasErrors()) {
+		if (validationResult.hasErrors()) {
 			throw new DonneesCivilesException(buildContext(adresse), validationResult.getErrors());
 		}
 	}
 
 	private static String buildContext(Adresse adresse) {
-		final String type;
-		if (TypeAdresseCivil.COURRIER == adresse.getTypeAdresse()) {
-			type = "courrier";
-		}
-		else if (TypeAdresseCivil.PRINCIPALE == adresse.getTypeAdresse()) {
-			type = "principal";
-		}
-		else if (TypeAdresseCivil.SECONDAIRE == adresse.getTypeAdresse()) {
-			type = "secondaire";
-		}
-		else {
-			type = "tutelle";
-		}
-		return "adresse civile " + type + " :";
+		return "adresse civile " + adresse.getTypeAdresse().getDescription() + " :";
 	}
 
 	/**

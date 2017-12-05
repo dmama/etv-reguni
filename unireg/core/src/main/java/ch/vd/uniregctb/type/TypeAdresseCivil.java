@@ -1,28 +1,38 @@
 package ch.vd.uniregctb.type;
 
 public enum TypeAdresseCivil {
-	SECONDAIRE,
-	PRINCIPALE,
-	COURRIER,
-	TUTEUR;
+	SECONDAIRE("secondaire"),
+	PRINCIPALE("principale"),
+	COURRIER("courrier"),
+	TUTEUR("tutelle"),
+	CASE_POSTALE("case postale");
+
+	private String description;
+
+	TypeAdresseCivil(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
+	}
 
 	public static TypeAdresseCivil fromDbValue(String val) {
 		if (val == null) {
 			return null;
 		}
-		if ("C".equals(val)) {
+		switch (val) {
+		case "C":
 			return TypeAdresseCivil.COURRIER;
-		}
-		else if ("P".equals(val)) {
+		case "P":
 			return TypeAdresseCivil.PRINCIPALE;
-		}
-		else if ("S".equals(val)) {
+		case "S":
 			return TypeAdresseCivil.SECONDAIRE;
-		}
-		else if ("T".equals(val)) {
+		case "T":
 			return TypeAdresseCivil.TUTEUR;
-		}
-		else {
+		case "B":
+			return TypeAdresseCivil.CASE_POSTALE;
+		default:
 			throw new IllegalArgumentException("Code d'adresse civil inconnu = [" + val + "]");
 		}
 	}
@@ -37,6 +47,8 @@ public enum TypeAdresseCivil {
 			return "S";
 		case TUTEUR:
 			return "T";
+		case CASE_POSTALE:
+			return "B";
 		default:
 			throw new IllegalArgumentException("Type d'adresse civil inconnu = [" + this + "]");
 		}

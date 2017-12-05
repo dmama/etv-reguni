@@ -14,7 +14,7 @@ public class AdresseBoitePostaleRCEnt extends AdresseRCEnt<AdresseBoitePostaleRC
 
 	@Override
 	public TypeAdresseCivil getTypeAdresse() {
-		return TypeAdresseCivil.COURRIER;
+		return TypeAdresseCivil.CASE_POSTALE;
 	}
 
 	@Override

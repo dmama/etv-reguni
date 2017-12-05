@@ -27,7 +27,6 @@ import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class ServiceOrganisationImpl implements ServiceOrganisationService {
 
@@ -88,14 +87,9 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	@NotNull
 	protected AdressesCivilesHisto getAdressesCivilesHistoriques(List<Adresse> adresses) {
 		final AdressesCivilesHisto resultat = new AdressesCivilesHisto();
-		if (adresses != null && !adresses.isEmpty()) {
+		if (adresses != null) {
 			for (Adresse adresse : adresses) {
-				if (adresse.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
-					resultat.courriers.add(adresse);
-				}
-				else {
-					resultat.principales.add(adresse);
-				}
+				resultat.add(adresse);
 			}
 		}
 		try {

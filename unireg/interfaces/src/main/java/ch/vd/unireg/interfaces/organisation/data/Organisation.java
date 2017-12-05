@@ -89,7 +89,7 @@ public interface Organisation {
 	List<Domicile> getSiegesPrincipaux();
 
 	/**
-	 * @return Raison sociale de l'organisation à une date donnée
+	 * @return l'historique des adresses de l'entreprise, triées par ordre chronologique croissant.
 	 */
 	List<Adresse> getAdresses();
 

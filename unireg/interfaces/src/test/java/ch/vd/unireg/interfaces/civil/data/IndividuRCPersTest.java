@@ -15,6 +15,7 @@ import ch.ech.ech0011.v5.Destination;
 import ch.ech.ech0044.v2.NamedPersonId;
 import ch.ech.ech0044.v2.PersonIdentificationPartner;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
@@ -878,7 +879,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		return pi;
 	}
 
-	private static void assertAdresse(@Nullable RegDate dateDebut, @Nullable RegDate dateFin, @Nullable String rue, @Nullable String localite, Adresse adresse) {
+	public static void assertAdresse(@Nullable RegDate dateDebut, @Nullable RegDate dateFin, @Nullable String rue, @Nullable String localite, Adresse adresse) {
 		assertNotNull(adresse);
 		assertEquals(dateDebut, adresse.getDateDebut());
 		assertEquals(dateFin, adresse.getDateFin());
@@ -886,7 +887,16 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals(localite, adresse.getLocalite());
 	}
 
-	private static void assertAdresse(@Nullable RegDate dateDebut, @Nullable Localisation provenance, @Nullable RegDate dateFin, @Nullable Localisation destination, @Nullable String rue,
+	public static void assertAdresse(@NotNull TypeAdresseCivil type, @Nullable RegDate dateDebut, @Nullable RegDate dateFin, @Nullable String rue, @Nullable String localite, Adresse adresse) {
+		assertNotNull(adresse);
+		assertEquals(dateDebut, adresse.getDateDebut());
+		assertEquals(dateFin, adresse.getDateFin());
+		assertEquals(rue, adresse.getRue());
+		assertEquals(localite, adresse.getLocalite());
+		assertEquals(type, adresse.getTypeAdresse());
+	}
+
+	public static void assertAdresse(@Nullable RegDate dateDebut, @Nullable Localisation provenance, @Nullable RegDate dateFin, @Nullable Localisation destination, @Nullable String rue,
 	                                  @Nullable String localite, Adresse adresse) {
 		assertNotNull(adresse);
 		assertEquals(dateDebut, adresse.getDateDebut());

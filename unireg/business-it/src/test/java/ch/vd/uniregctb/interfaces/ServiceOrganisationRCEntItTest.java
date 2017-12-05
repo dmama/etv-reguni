@@ -21,7 +21,6 @@ import java.util.List;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.util.ResourceUtils;
@@ -34,6 +33,8 @@ import ch.vd.evd0022.v3.TypeOfLocation;
 import ch.vd.evd0023.v3.ListOfNoticeRequest;
 import ch.vd.evd0023.v3.ObjectFactory;
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
@@ -55,7 +56,16 @@ import ch.vd.unireg.wsclient.rcent.RcEntClientImpl;
 import ch.vd.unireg.wsclient.rcent.RcEntNoticeQuery;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
+
+import static ch.vd.unireg.interfaces.civil.data.IndividuRCPersTest.assertAdresse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc"})
 public class ServiceOrganisationRCEntItTest extends BusinessItTest {
@@ -108,7 +118,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	@Test(timeout = 30000)
 	public void testGetOrganisation() throws Exception {
 		Organisation org = service.getOrganisationHistory(ID_BCV);
-		Assert.assertNotNull(org);
+		assertNotNull(org);
 		assertContains(NOM_BCV, org.getNom().get(0).getPayload());
 	}
 
@@ -116,54 +126,54 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	@Test(timeout = 30000)
 	public void testGetPseudoOrganisationHistory() throws Exception {
 		Organisation org = service.getOrganisationEvent(ID_EVT).get(ID_ORGANISATION_EVT).getPseudoHistory();
-		Assert.assertNotNull(org);
+		assertNotNull(org);
 		assertContains(ID_NOM_EVT, org.getNom().get(0).getPayload());
 	}
 
 	@Test(timeout = 30000)
 	public void testGetOrganisationByNoIde() throws Exception {
 		final ServiceOrganisationRaw.Identifiers ids = service.getOrganisationByNoIde(IDE_SUCC);
-		Assert.assertNotNull(ids);
-		Assert.assertEquals(ID_ORGANISATION_SUCC, ids.idCantonalOrganisation);
-		Assert.assertEquals(ID_SUCC, ids.idCantonalSite);
+		assertNotNull(ids);
+		assertEquals(ID_ORGANISATION_SUCC, ids.idCantonalOrganisation);
+		assertEquals(ID_SUCC, ids.idCantonalSite);
 	}
 
 	@Test(timeout = 30000)
 	public void testRCEntClientGetOrganisationWithoutValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(false);
 		OrganisationData data = client.getOrganisation(ID_BCV, null, true);
-		Assert.assertNotNull(data);
-		Assert.assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		assertNotNull(data);
+		assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
 
 		// la BCV possède maintenant, depuis le chargement REE, quelques établissements secondaires... il faut donc trouver l'établissement principal
 		boolean foundPrincipal = false;
 		for (OrganisationLocation location : data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation()) {
 			if (location.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL) {
-				Assert.assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
+				assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
 				foundPrincipal = true;
-				Assert.assertEquals(NOM_BCV, location.getName());
+				assertEquals(NOM_BCV, location.getName());
 			}
 		}
-		Assert.assertTrue(foundPrincipal);
+		assertTrue(foundPrincipal);
 	}
 
 	@Test(timeout = 30000)
 	public void testRCEntClientGetOrganisationWithValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
 		OrganisationData data = client.getOrganisation(ID_BCV, null, true);
-		Assert.assertNotNull(data);
-		Assert.assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		assertNotNull(data);
+		assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
 
 		// la BCV possède maintenant, depuis le chargement REE, quelques établissements secondaires... il faut donc trouver l'établissement principal
 		boolean foundPrincipal = false;
 		for (OrganisationLocation location : data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation()) {
 			if (location.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL) {
-				Assert.assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
+				assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
 				foundPrincipal = true;
-				Assert.assertEquals(NOM_BCV, location.getName());
+				assertEquals(NOM_BCV, location.getName());
 			}
 		}
-		Assert.assertTrue(foundPrincipal);
+		assertTrue(foundPrincipal);
 	}
 
 	@Test(timeout = 30000)
@@ -171,19 +181,19 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_BCV;
 		String xml = getUrlContent(url);
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(false).unmarshal(new StringReader(xml))).getValue();
-		Assert.assertNotNull(data);
-		Assert.assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		assertNotNull(data);
+		assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
 
 		// la BCV possède maintenant, depuis le chargement REE, quelques établissements secondaires... il faut donc trouver l'établissement principal
 		boolean foundPrincipal = false;
 		for (OrganisationLocation location : data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation()) {
 			if (location.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL) {
-				Assert.assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
+				assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
 				foundPrincipal = true;
-				Assert.assertEquals(NOM_BCV, location.getName());
+				assertEquals(NOM_BCV, location.getName());
 			}
 		}
-		Assert.assertTrue(foundPrincipal);
+		assertTrue(foundPrincipal);
 	}
 
 	@Test(timeout = 30000)
@@ -191,27 +201,27 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + ID_BCV;
 		String xml = getUrlContent(url);
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(xml))).getValue();
-		Assert.assertNotNull(data);
-		Assert.assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		assertNotNull(data);
+		assertEquals(ID_BCV, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
 
 		// la BCV possède maintenant, depuis le chargement REE, quelques établissements secondaires... il faut donc trouver l'établissement principal
 		boolean foundPrincipal = false;
 		for (OrganisationLocation location : data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation()) {
 			if (location.getTypeOfLocation() == TypeOfLocation.ETABLISSEMENT_PRINCIPAL) {
-				Assert.assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
+				assertFalse(foundPrincipal);     // on ne doit le trouver qu'une seule fois !
 				foundPrincipal = true;
-				Assert.assertEquals(NOM_BCV, location.getName());
+				assertEquals(NOM_BCV, location.getName());
 			}
 		}
-		Assert.assertTrue(foundPrincipal);
+		assertTrue(foundPrincipal);
 	}
 
 	@Test(timeout = 30000)
 	public void testSampleOrganisationWithValidation() throws Exception {
 		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(loadFile(FILE_SAMPLE_ORGANISATION_100983251_HISTORY)))).getValue();
-		Assert.assertNotNull(data);
-		Assert.assertEquals(ID_BOMACO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
-		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
+		assertNotNull(data);
+		assertEquals(ID_BOMACO, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
+		assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationLocation().get(0).getName());
 	}
 
 	@Test(timeout = 30000)
@@ -220,8 +230,8 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		String xml = getUrlContent(url);
 		final ListOfNoticeRequest listOfNoticeRequest = (ListOfNoticeRequest) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(xml))).getValue();
 
-		Assert.assertNotNull(listOfNoticeRequest);
-		Assert.assertEquals(1, listOfNoticeRequest.getNumberOfResults());
+		assertNotNull(listOfNoticeRequest);
+		assertEquals(1, listOfNoticeRequest.getNumberOfResults());
 
 	}
 
@@ -232,20 +242,20 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		rcEntNoticeQuery.setUserId(USER_ID);
 		rcEntNoticeQuery.setNoticeId(ID_ANNONCE);
 		final Page<NoticeRequestReport> pages = client.findNotices(rcEntNoticeQuery, null, 1, 10);
-		Assert.assertNotNull(pages);
-		Assert.assertEquals(1, pages.getTotalElements());
+		assertNotNull(pages);
+		assertEquals(1, pages.getTotalElements());
 		final List<NoticeRequestReport> listOfNoticeRequest = pages.getContent();
-		Assert.assertEquals(1, listOfNoticeRequest.size());
-		Assert.assertEquals(Long.toString(ID_ANNONCE), listOfNoticeRequest.get(0).getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId());
+		assertEquals(1, listOfNoticeRequest.size());
+		assertEquals(Long.toString(ID_ANNONCE), listOfNoticeRequest.get(0).getNoticeRequest().getNoticeRequestHeader().getNoticeRequestIdentification().getNoticeRequestId());
 	}
 
 	@Test(timeout = 30000)
 	public void testGetAnnonceIDE() throws Exception {
 		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE, null);
 
-		Assert.assertNotNull(annonceIDE);
-		Assert.assertEquals(ID_ANNONCE, annonceIDE.getNumero().longValue());
-		Assert.assertEquals(StatutAnnonce.ACCEPTE_IDE, annonceIDE.getStatut().getStatut());
+		assertNotNull(annonceIDE);
+		assertEquals(ID_ANNONCE, annonceIDE.getNumero().longValue());
+		assertEquals(StatutAnnonce.ACCEPTE_IDE, annonceIDE.getStatut().getStatut());
 	}
 
 	@Test(timeout = 30000)
@@ -259,9 +269,9 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		                                                                    adresse, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(proto);
 
-		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
-		Assert.assertEquals(StatutAnnonce.VALIDATION_SANS_ERREUR, statut.getStatut());
-		Assert.assertNull(statut.getErreurs());
+		assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
+		assertEquals(StatutAnnonce.VALIDATION_SANS_ERREUR, statut.getStatut());
+		assertNull(statut.getErreurs());
 	}
 
 	@Test(timeout = 30000)
@@ -269,7 +279,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(new ProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), new AnnonceIDEData.UtilisateurImpl(RCEntAnnonceIDEHelper.UNIREG_USER, null), TypeDeSite.ETABLISSEMENT_PRINCIPAL, null,
 		                                                                                   new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG)));
 
-		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
+		assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
 		// TODO: check le contenu
 	}
 
@@ -280,8 +290,48 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		                                                                    "Fabrication d'objet synthétiques", null, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(proto);
 
-		Assert.assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
+		assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
 		// TODO: Meilleurs contrôle du contenu quand les messages retournés auront été réparés
+	}
+
+	/**
+	 * [SIFISC-24996] Ce test vérifie que les adresses <i>case postale</i> d'une entreprises sont bien retournées par la méthode <i>getAdressesOrganisationHisto</i>.
+	 */
+	@Test(timeout = 30000)
+	public void testGetAdressesOrganisationHistoAvecBoitePostale() throws Exception {
+
+		// tiers 34301, numéro cantonal = 101830038
+		final AdressesCivilesHisto adresses = service.getAdressesOrganisationHisto(101830038);
+		assertNotNull(adresses);
+		assertEquals(0, adresses.principales.size());
+		assertEquals(0, adresses.secondaires.size());
+		assertEquals(0, adresses.tutelles.size());
+
+		assertEquals(2, adresses.courriers.size());
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.courriers.get(0));
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.courriers.get(1));
+
+		assertEquals(1, adresses.casesPostales.size());
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), null, null, "Savigny", adresses.casesPostales.get(0));
+		assertEquals("Case Postale 38", adresses.casesPostales.get(0).getCasePostale().toString());
+	}
+
+	/**
+	 * [SIFISC-24996] Ce test vérifie que les adresses <i>case postale</i> d'une entreprises sont bien exposées sur l'entreprises retournée par la méthode <i>getOrganisationHistory</i>.
+	 */
+	@Test(timeout = 30000)
+	public void testGetOrganisationHistoryAvecBoitePostale() throws Exception {
+
+		// tiers 34301, numéro cantonal = 101830038
+		final Organisation org = service.getOrganisationHistory(101830038);
+		assertNotNull(org);
+
+		final List<Adresse> adresses = org.getAdresses();
+		assertEquals(3, adresses.size());
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.get(0));
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), null, null, "Savigny", adresses.get(1));
+		assertEquals("Case Postale 38", adresses.get(1).getCasePostale().toString());
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.get(2));
 	}
 
 	private RcEntClient createRCEntClient(boolean validating) throws Exception {

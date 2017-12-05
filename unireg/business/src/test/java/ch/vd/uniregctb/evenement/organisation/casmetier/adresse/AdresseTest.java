@@ -82,15 +82,13 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
-				donneesRegistreIDE.addAdresseEffective(date(2015, 7, 8), null,
-						new AdresseEffectiveRCEnt(date(2015, 7, 8), null, MockLocalite.Lausanne.getNom(), "1", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
-						                          MockPays.Suisse.getNoOfsEtatSouverain(), "Rue du Père Noël", null, null, null)
-				);
+				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
+				                                                                 MockLocalite.Lausanne.getNom(), "1", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
+				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Rue du Père Noël", null, null, null));
 				final MockDonneesRC donneesRC = (MockDonneesRC) sitePrincipal.getDonneesRC();
-				donneesRC.addAdresseLegale(date(2015, 7, 8), null,
-				                           new AdresseLegaleRCEnt(date(2015, 7, 8), null, MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
-				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null)
-				);
+				donneesRC.addAdresseLegale(new AdresseLegaleRCEnt(date(2015, 7, 8), null,
+				                                                  MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
+				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
 				addOrganisation(org);
 			}
 		});
@@ -197,10 +195,9 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRC donneesRC = (MockDonneesRC) sitePrincipal.getDonneesRC();
-				donneesRC.addAdresseLegale(date(2015, 7, 8), null,
-				                           new AdresseLegaleRCEnt(date(2015, 7, 8), null, MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
-				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null)
-				);
+				donneesRC.addAdresseLegale(new AdresseLegaleRCEnt(date(2015, 7, 8), null,
+				                                                  MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
+				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
 				addOrganisation(org);
 			}
 		});
@@ -309,10 +306,9 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRC donneesRC = (MockDonneesRC) sitePrincipal.getDonneesRC();
-				donneesRC.addAdresseLegale(date(2015, 7, 8), null,
-						new AdresseLegaleRCEnt(date(2015, 7, 8), null, MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
-						                       MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null)
-				);
+				donneesRC.addAdresseLegale(new AdresseLegaleRCEnt(date(2015, 7, 8), null,
+				                                                  MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
+				                                                  MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
 				addOrganisation(org);
 			}
 		});
@@ -420,10 +416,9 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
-				donneesRegistreIDE.addAdresseEffective(date(2015, 7, 8), null,
-						new AdresseEffectiveRCEnt(date(2015, 7, 8), null, MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
-						                       MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null)
-				);
+				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
+				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
+				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
 				addOrganisation(org);
 			}
 		});
@@ -536,10 +531,9 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
-				donneesRegistreIDE.addAdresseEffective(date(2015, 7, 8), null,
-						new AdresseEffectiveRCEnt(date(2015, 7, 8), null, MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
-						                       MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null)
-				);
+				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
+				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
+				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
 				addOrganisation(org);
 			}
 		});
@@ -672,10 +666,9 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
-				donneesRegistreIDE.addAdresseEffective(date(2015, 7, 8), null,
-						new AdresseEffectiveRCEnt(date(2015, 7, 8), null, MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
-						                       MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null)
-				);
+				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
+				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
+				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
 				addOrganisation(org);
 			}
 		});
@@ -787,10 +780,9 @@ public class AdresseTest extends AbstractEvenementOrganisationProcessorTest {
 						                                           StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, "CHE999999996");
 				MockSiteOrganisation sitePrincipal = (MockSiteOrganisation) org.getSitePrincipaux().get(0).getPayload();
 				final MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) sitePrincipal.getDonneesRegistreIDE();
-				donneesRegistreIDE.addAdresseEffective(date(2015, 7, 8), null,
-				                                       new AdresseEffectiveRCEnt(date(2015, 7, 8), null, MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
-				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null)
-				);
+				donneesRegistreIDE.addAdresseEffective(new AdresseEffectiveRCEnt(date(2015, 7, 8), null,
+				                                                                 MockLocalite.Lausanne.getNom(), "427", null, null, MockLocalite.Lausanne.getNPA().toString(), null,
+				                                                                 MockPays.Suisse.getNoOfsEtatSouverain(), "Place des Aligators", null, null, null));
 				addOrganisation(org);
 			}
 		});

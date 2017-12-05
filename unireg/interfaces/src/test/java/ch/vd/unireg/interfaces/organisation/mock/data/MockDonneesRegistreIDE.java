@@ -7,7 +7,6 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.AdresseBoitePostaleRCEnt;
@@ -51,7 +50,10 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 		throw new UnsupportedOperationException();
 	}
 
-	public void addAdresseBoitePostale(RegDate dateDebut, @Nullable RegDate dateFin, AdresseBoitePostaleRCEnt nouvelleAdresseBoitePostale) {
+	public void addAdresseBoitePostale(AdresseBoitePostaleRCEnt nouvelleAdresseBoitePostale) {
+		final RegDate dateDebut = nouvelleAdresseBoitePostale.getDateDebut();
+		final RegDate dateFin = nouvelleAdresseBoitePostale.getDateFin();
+
 		final Map.Entry<RegDate, AdresseBoitePostaleRCEnt> previousEntry = adresseBoitePostale.lastEntry();
 		if (previousEntry != null) {
 			final AdresseBoitePostaleRCEnt previous = previousEntry.getValue();
@@ -72,7 +74,10 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 		throw new UnsupportedOperationException();
 	}
 
-	public void addAdresseEffective(RegDate dateDebut, @Nullable RegDate dateFin, AdresseEffectiveRCEnt nouvelleAdresseEffective) {
+	public void addAdresseEffective(AdresseEffectiveRCEnt nouvelleAdresseEffective) {
+		final RegDate dateDebut = nouvelleAdresseEffective.getDateDebut();
+		final RegDate dateFin = nouvelleAdresseEffective.getDateFin();
+
 		final Map.Entry<RegDate, AdresseEffectiveRCEnt> previousEntry = adresseEffective.lastEntry();
 		if (previousEntry != null) {
 			final AdresseEffectiveRCEnt previous = previousEntry.getValue();

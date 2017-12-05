@@ -2,9 +2,11 @@ package ch.vd.unireg.interfaces.organisation.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -161,37 +163,61 @@ public abstract class OrganisationHelper {
 		return siteSecondaires;
 	}
 
-	private static List<Adresse> concat(@Nullable List<? extends Adresse> one, @Nullable List<? extends Adresse> two) {
-		final List<Adresse> liste = new ArrayList<>((one != null ? one.size() : 0) + (two != null ? two.size() : 0));
-		if (one != null) {
-			liste.addAll(one);
+	@SafeVarargs
+	@NotNull
+	private static List<Adresse> concat(List<? extends Adresse>... lists) {
+
+		final int count = (int) Arrays.stream(lists)
+				.filter(Objects::nonNull)
+				.mapToLong(Collection::size).sum();
+
+		final List<Adresse> liste = new ArrayList<>(count);
+		for (List<? extends Adresse> list : lists) {
+			if (list != null) {
+				liste.addAll(list);
+			}
 		}
-		if (two != null) {
-			liste.addAll(two);
-		}
+
 		return liste;
 	}
 
 	public static List<Adresse> getAdresses(Map<Long, ? extends SiteOrganisation> donneesSites) {
-		final List<AdresseLegaleRCEnt> rcLegale = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), new SiteDataExtractor<List<AdresseLegaleRCEnt>>() {
-			@Override
-			public List<AdresseLegaleRCEnt> extractData(SiteOrganisation site) {
-				return site.getDonneesRC() == null ? null : site.getDonneesRC().getAdresseLegale();
-			}
-		});
-		final List<AdresseEffectiveRCEnt> ideEffective = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), new SiteDataExtractor<List<AdresseEffectiveRCEnt>>() {
-			@Override
-			public List<AdresseEffectiveRCEnt> extractData(SiteOrganisation site) {
-				return site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseEffective();
-			}
-		});
-		return concat(rcLegale, ideEffective);
+		// on récupère les adresses
+		final List<AdresseLegaleRCEnt> rcLegale = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), OrganisationHelper::getAdresseLegale);
+		final List<AdresseEffectiveRCEnt> ideEffective = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), OrganisationHelper::getAdresseEffective);
+		final List<AdresseBoitePostaleRCEnt> casePostale = extractDataFromSitesPrincipaux(donneesSites, new DateRangeLimitatorImpl<>(), OrganisationHelper::getAdresseCasePostale);
+
+		// on les trie pour faire bon genre
+		final List<Adresse> adresses = concat(rcLegale, ideEffective, casePostale);
+		adresses.sort(new DateRangeComparator<>());
+		return adresses;
 	}
 
 	public static List<Adresse> getAdressesPourSite(SiteOrganisation site) {
-		final List<AdresseLegaleRCEnt> rcLegale = site.getDonneesRC() == null ? null : site.getDonneesRC().getAdresseLegale();
-		final List<AdresseEffectiveRCEnt> ideEffective = site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseEffective();
-		return concat(rcLegale, ideEffective);
+		// on récupère les adresses
+		final List<AdresseLegaleRCEnt> rcLegale = getAdresseLegale(site);
+		final List<AdresseEffectiveRCEnt> ideEffective = getAdresseEffective(site);
+		final List<AdresseBoitePostaleRCEnt> casePostale = getAdresseCasePostale(site);
+
+		// on les trie pour faire bon genre
+		final List<Adresse> adresses = concat(rcLegale, ideEffective, casePostale);
+		adresses.sort(new DateRangeComparator<>());
+		return adresses;
+	}
+
+	@Nullable
+	private static List<AdresseLegaleRCEnt> getAdresseLegale(SiteOrganisation site) {
+		return site.getDonneesRC() == null ? null : site.getDonneesRC().getAdresseLegale();
+	}
+
+	@Nullable
+	private static List<AdresseEffectiveRCEnt> getAdresseEffective(SiteOrganisation site) {
+		return site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseEffective();
+	}
+
+	@Nullable
+	private static List<AdresseBoitePostaleRCEnt> getAdresseCasePostale(SiteOrganisation site) {
+		return site.getDonneesRegistreIDE() == null ? null : site.getDonneesRegistreIDE().getAdresseBoitePostale();
 	}
 
 	/**

@@ -15,7 +15,6 @@ public class RCEntOrganisationHelper {
 	public static Organisation get(ch.vd.unireg.interfaces.organisation.rcent.adapter.model.Organisation organisation, ServiceInfrastructureRaw infraService) {
 		return new OrganisationRCEnt(
 				organisation.getCantonalId(),
-				RCEntHelper.convert(organisation.getOrganisationIdentifiers()),
 				RCEntHelper.convert(organisation.getLocations()),
 				convertLocations(organisation.getLocationData(), infraService)
 		);
