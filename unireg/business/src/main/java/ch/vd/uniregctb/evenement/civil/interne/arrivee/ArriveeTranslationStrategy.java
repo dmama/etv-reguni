@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 
 import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
@@ -10,6 +9,7 @@ import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationSt
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
 
 /**
  * Gère l'arrivée d'un individu dans les cas suivants:
@@ -77,7 +77,7 @@ public class ArriveeTranslationStrategy implements EvenementCivilTranslationStra
 			if (adressesCiviles.principale != null && adressesCiviles.principale.getDateDebut() == event.getDateEvenement()) {
 				return true;
 			}
-			else if (adressesCiviles.secondaire != null && adressesCiviles.secondaire.getDateDebut() == event.getDateEvenement()) {
+			else if (adressesCiviles.secondaireCourante != null && adressesCiviles.secondaireCourante.getDateDebut() == event.getDateEvenement()) {
 				return false;
 			}
 			else {

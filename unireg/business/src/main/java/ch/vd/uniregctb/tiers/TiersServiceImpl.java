@@ -120,8 +120,8 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -1989,7 +1989,7 @@ public class TiersServiceImpl implements TiersService {
 			// [SIFISC-13741] Mais on ne tient plus compte que des adresses actives (finies, les recherches de destinations !)
 			// [SIFISC-11521] Les adresses secondaires ne sont pas toujours bonnes à prendre...
 			final RegDate dateReference = date == null ? RegDate.get() : date;
-			final AdressesCivilesActives adresses = serviceCivilService.getAdresses(numeroIndividu, dateReference, false);
+			final AdressesCiviles adresses = serviceCivilService.getAdresses(numeroIndividu, dateReference, false);
 			return isAdresseVaudoise(adresses.principale) || (!residencePrincipaleSeulement && hasAdresseVaudoise(adresses.secondaires));
 		}
 		catch (ServiceInfrastructureException e) {
@@ -2022,7 +2022,7 @@ public class TiersServiceImpl implements TiersService {
 		final RegDate dateDeces = individu.getDateDeces();      // les décédés civils ne sont plus habitants...
 		final DateRange limitationRangeDeces = new DateRangeHelper.Range(null, dateDeces);
 
-		final AdressesCivilesHistoriques adresses = serviceCivilService.getAdressesHisto(numeroIndividu, false);
+		final AdressesCivilesHisto adresses = serviceCivilService.getAdressesHisto(numeroIndividu, false);
 		final List<DateRange> presencesVaudoises = Stream.of(adresses.principales,
 		                                                     residencePrincipaleSeulement ? null : adresses.secondaires)
 				.filter(Objects::nonNull)

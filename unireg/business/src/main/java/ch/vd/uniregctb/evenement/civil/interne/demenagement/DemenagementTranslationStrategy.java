@@ -18,7 +18,7 @@ import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStr
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
 
 /**
  * Règles métiers permettant de traiter les événements de déménagement intra communal.
@@ -181,8 +181,8 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 
 
 		try {
-			final AdressesCivilesActives adresseAvant = context.getServiceCivil().getAdresses(principal, veilleDemenagement, false);
-			final AdressesCivilesActives adresseApres = context.getServiceCivil().getAdresses(principal, jourDemenagement, false);
+			final AdressesCiviles adresseAvant = context.getServiceCivil().getAdresses(principal, veilleDemenagement, false);
+			final AdressesCiviles adresseApres = context.getServiceCivil().getAdresses(principal, jourDemenagement, false);
 
 			if (adresseAvant.principale == null) {
 				throw new EvenementCivilException(
@@ -218,7 +218,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	private boolean isDemenagementPrincipal(EvenementCivilContext context, Long principal, RegDate jourDemenagement) throws
 			EvenementCivilException {
 		try {
-			final AdressesCivilesActives nouvelleAdresse = context.getServiceCivil().getAdresses(principal, jourDemenagement, false);
+			final AdressesCiviles nouvelleAdresse = context.getServiceCivil().getAdresses(principal, jourDemenagement, false);
 
 			final Adresse principale = nouvelleAdresse.principale;
 			if (principale != null && principale.getDateDebut().equals(jourDemenagement)) {
@@ -300,7 +300,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	private boolean isDemenagementSecondaire(EvenementCivilContext context, Long principal, RegDate jourDemenagement) throws
 			EvenementCivilException {
 		try {
-			final AdressesCivilesActives nouvelleAdresse = context.getServiceCivil().getAdresses(principal, jourDemenagement, false);
+			final AdressesCiviles nouvelleAdresse = context.getServiceCivil().getAdresses(principal, jourDemenagement, false);
 
 			List<Adresse> adressesSecondaires = nouvelleAdresse.secondaires;
 			if (estVide(adressesSecondaires)) {

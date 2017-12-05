@@ -18,7 +18,7 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -67,13 +67,13 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	}
 
 	@Override
-	public AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException {
+	public AdressesCivilesHisto getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException {
 		assertTargetNotNull();
 		return service.getAdressesOrganisationHisto(noOrganisation);
 	}
 
 	@Override
-	public AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
+	public AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
 		assertTargetNotNull();
 		return service.getAdressesSiteOrganisationHisto(noSite);
 	}

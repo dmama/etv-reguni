@@ -24,8 +24,9 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class ServiceOrganisationImpl implements ServiceOrganisationService {
@@ -74,7 +75,7 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	}
 
 	@Override
-	public AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException {
+	public AdressesCivilesHisto getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException {
 		final Organisation organisation = getOrganisationHistory(noOrganisation);
 		if (organisation == null) {
 			return null;
@@ -85,8 +86,8 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	}
 
 	@NotNull
-	protected AdressesCivilesHistoriques getAdressesCivilesHistoriques(List<Adresse> adresses) {
-		final AdressesCivilesHistoriques resultat = new AdressesCivilesHistoriques();
+	protected AdressesCivilesHisto getAdressesCivilesHistoriques(List<Adresse> adresses) {
+		final AdressesCivilesHisto resultat = new AdressesCivilesHisto();
 		if (adresses != null && !adresses.isEmpty()) {
 			for (Adresse adresse : adresses) {
 				if (adresse.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
@@ -97,11 +98,17 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 				}
 			}
 		}
+		try {
+			resultat.finish(false);
+		}
+		catch (DonneesCivilesException e) {
+			throw new ServiceOrganisationException(e);
+		}
 		return resultat;
 	}
 
 	@Override
-	public AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
+	public AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
 		final SiteOrganisation site = getOrganisationHistory(getOrganisationPourSite(noSite)).getSiteForNo(noSite);
 		if (site == null) {
 			return null;

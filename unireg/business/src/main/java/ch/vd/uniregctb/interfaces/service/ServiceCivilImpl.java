@@ -29,8 +29,8 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 
 public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServiceWrapper {
@@ -66,9 +66,9 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	}
 
 	@Override
-	public final AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
+	public final AdressesCiviles getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
 
-		AdressesCivilesActives resultat = new AdressesCivilesActives();
+		AdressesCiviles resultat = new AdressesCiviles();
 
 		try {
 			// [SIFISC-4250] on demande systématiquement la date 'null' pour pouvoir reconstruire les dates de fin des adresses qui n'en auraient pas
@@ -95,14 +95,14 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	}
 
 	@Override
-	public final AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
+	public final AdressesCivilesHisto getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 
 		final Individu individu = getIndividu(noIndividu, null, AttributeIndividu.ADRESSES);
 		if (individu == null) {
 			return null;
 		}
 
-		final AdressesCivilesHistoriques resultat = new AdressesCivilesHistoriques();
+		final AdressesCivilesHisto resultat = new AdressesCivilesHisto();
 		final Collection<Adresse> adressesCiviles = individu.getAdresses();
 		if (adressesCiviles != null) {
 			for (Adresse adresse : adressesCiviles) {
@@ -262,7 +262,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	 */
 	@Override
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate date, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
-		final AdressesCivilesHistoriques histo = getAdressesHisto(noIndividu, strict);
+		final AdressesCivilesHisto histo = getAdressesHisto(noIndividu, strict);
 		if (histo == null) {
 			throw new IndividuNotFoundException(noIndividu);
 		}

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 
 public abstract class DepartDecaleHelper {
 

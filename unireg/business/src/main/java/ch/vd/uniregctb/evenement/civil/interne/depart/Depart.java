@@ -35,7 +35,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -549,7 +549,7 @@ public abstract class Depart extends Mouvement {
 	private List<LieuResidence> getLieuxResidencePrincipale(PersonnePhysique pp) throws EvenementCivilException {
 		if (pp.isConnuAuCivil()) {
 			try {
-				final AdressesCivilesHistoriques adresses = context.getServiceCivil().getAdressesHisto(pp.getNumeroIndividu(), false);
+				final AdressesCivilesHisto adresses = context.getServiceCivil().getAdressesHisto(pp.getNumeroIndividu(), false);
 				return getLieuResidences(adresses.principales);
 			}
 			catch (DonneesCivilesException e) {
@@ -565,7 +565,7 @@ public abstract class Depart extends Mouvement {
 	private List<LieuResidence> getLieuxResidenceSecondaire(PersonnePhysique pp) throws EvenementCivilException {
 		if (pp.isConnuAuCivil()) {
 			try {
-				final AdressesCivilesHistoriques adresses = context.getServiceCivil().getAdressesHisto(pp.getNumeroIndividu(), false);
+				final AdressesCivilesHisto adresses = context.getServiceCivil().getAdressesHisto(pp.getNumeroIndividu(), false);
 				return getLieuResidences(adresses.secondaires);
 			}
 			catch (DonneesCivilesException e) {

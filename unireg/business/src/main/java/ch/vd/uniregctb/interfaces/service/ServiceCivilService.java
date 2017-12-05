@@ -19,8 +19,8 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 
 public interface ServiceCivilService {
 
@@ -37,7 +37,7 @@ public interface ServiceCivilService {
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
 	 */
-	AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException;
+	AdressesCiviles getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException;
 
 	/**
 	 * Retourne l'historique des adresses civiles.
@@ -49,7 +49,7 @@ public interface ServiceCivilService {
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
 	 */
-	AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException;
+	AdressesCivilesHisto getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException;
 
 	/**
 	 * Construit la liste des communes de domiciles connues pour l'individu donné, et ce depuis une date de référence

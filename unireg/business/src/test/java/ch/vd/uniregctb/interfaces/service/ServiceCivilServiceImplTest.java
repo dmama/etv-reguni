@@ -17,10 +17,10 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static org.junit.Assert.assertEquals;
@@ -306,10 +306,10 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			}
 		});
 
-		final AdressesCiviles adresses = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, RegDate.get(2002, 7, 1), false));
+		final AdressesCiviles adresses = serviceCivil.getAdresses(noIndividu, RegDate.get(2002, 7, 1), false);
 		assertNotNull(adresses);
 		assertNull(adresses.courrier);
-		assertNull(adresses.secondaire);
+		assertNull(adresses.secondaireCourante);
 		assertNull(adresses.tutelle);
 
 		// l'adresse la plus récente doit être retournée

@@ -4,7 +4,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -12,6 +11,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
@@ -29,11 +29,11 @@ public class ArriveeSecondaire extends Arrivee {
 		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
 
 		final AdressesCiviles anciennesAdresses = getAdresses(context, veilleArrivee);
-		ancienneAdresse = anciennesAdresses.secondaire;
+		ancienneAdresse = anciennesAdresses.secondaireCourante;
 		ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, veilleArrivee);
 
 		final AdressesCiviles nouvellesAdresses = getAdresses(context, dateArrivee);
-		nouvelleAdresse = nouvellesAdresses.secondaire;
+		nouvelleAdresse = nouvellesAdresses.secondaireCourante;
 		nouvelleCommune = getCommuneByAdresse(context, nouvelleAdresse, dateArrivee);
 	}
 
@@ -44,11 +44,11 @@ public class ArriveeSecondaire extends Arrivee {
 		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
 
 		final AdressesCiviles anciennesAdresses = getAdresses(context, veilleArrivee);
-		ancienneAdresse = anciennesAdresses.secondaire;
+		ancienneAdresse = anciennesAdresses.secondaireCourante;
 		ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, veilleArrivee);
 
 		final AdressesCiviles nouvellesAdresses = getAdresses(context, dateArrivee);
-		nouvelleAdresse = nouvellesAdresses.secondaire;
+		nouvelleAdresse = nouvellesAdresses.secondaireCourante;
 		nouvelleCommune = getCommuneByAdresse(context, nouvelleAdresse, dateArrivee);
 	}
 

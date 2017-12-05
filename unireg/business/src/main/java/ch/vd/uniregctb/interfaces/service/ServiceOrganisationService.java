@@ -16,7 +16,7 @@ import ch.vd.unireg.interfaces.organisation.data.BaseAnnonceIDE;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.ServiceOrganisationEvent;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 
 public interface ServiceOrganisationService {
 
@@ -64,14 +64,14 @@ public interface ServiceOrganisationService {
 	 * @return l'historique des adresses de cette organisation
 	 * @throws ServiceOrganisationException en cas de souci
 	 */
-	AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException;
+	AdressesCivilesHisto getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException;
 
 	/**
 	 * @param noSite l'identifiant cantonal d'un site
 	 * @return l'historique des adresses de ce site
 	 * @throws ServiceOrganisationException en cas de souci
 	 */
-	AdressesCivilesHistoriques getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException;
+	AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException;
 
 	/**
 	 * <p>

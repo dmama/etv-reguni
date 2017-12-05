@@ -1551,7 +1551,7 @@ public class AdresseServiceTest extends BusinessTest {
 				fail();
 			}
 			catch (AdresseException e) {
-				assertEquals("L'adresse civile courrier qui commence le 2000.03.20 et finit le null chevauche l'adresse précédente qui commence le 2000.01.01 et finit le 2000.07.12", e.getMessage());
+				assertEquals("L'adresse civile courrier qui commence le 20.03.2000 (et qui est toujours active) chevauche l'adresse précédente qui commence le 01.01.2000 et finit le 12.07.2000", e.getMessage());
 			}
 		}
 	}

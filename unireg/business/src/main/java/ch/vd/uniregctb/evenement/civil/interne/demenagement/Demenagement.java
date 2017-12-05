@@ -10,7 +10,6 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EtatCivilHelper;
@@ -25,6 +24,7 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -71,7 +71,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		final AdressesCiviles adresses;
 		try {
 
-			adresses = new AdressesCiviles(context.getServiceCivil().getAdresses(super.getNoIndividu(), oneDayBefore, false));
+			adresses = context.getServiceCivil().getAdresses(super.getNoIndividu(), oneDayBefore, false);
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementCivilException(e);

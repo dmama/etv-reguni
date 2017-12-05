@@ -9,7 +9,6 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -136,7 +136,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			assertTrue(!declarations.isEmpty(), "Mauvais nombre de déclarations");
 
 			// vérification que les adresses civiles sont à Bex
-			final AdressesCiviles adresses = new AdressesCiviles(serviceCivilService.getAdresses(noIndSebastien, RegDate.get(), false));
+			final AdressesCiviles adresses = serviceCivilService.getAdresses(noIndSebastien, RegDate.get(), false);
 			assertEquals(communeDepart.getNomOfficiel(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeDepart.getNomOfficiel());
 		}
 
@@ -162,7 +162,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "For pas attaché à la bonne commune");
 
 			// vérification que les adresses civiles sont à Zurich
-			final AdressesCiviles adresses = new AdressesCiviles(serviceCivilService.getAdresses(noIndSebastien, dateDepart.addDays(1), false));
+			final AdressesCiviles adresses = serviceCivilService.getAdresses(noIndSebastien, dateDepart.addDays(1), false);
 			assertEquals(communeArrivee.getNomOfficiel(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeArrivee.getNomOfficiel());
 		}
 

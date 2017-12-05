@@ -73,7 +73,7 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.individu.WebCivilService;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -1062,7 +1062,7 @@ public class TiersManager implements MessageSourceAware {
 		final Long noIndividu = pp.getNumeroIndividu();
 		final List<AdresseCivilView> adresses = new ArrayList<>();
 		if (noIndividu != null) {
-			final AdressesCivilesHistoriques adressesCivilesHisto = serviceCivilService.getAdressesHisto(noIndividu, false);
+			final AdressesCivilesHisto adressesCivilesHisto = serviceCivilService.getAdressesHisto(noIndividu, false);
 			fillAdressesCivilesViews(adresses, adressesCivilesHisto);
 		}
 		return adresses;
@@ -1071,7 +1071,7 @@ public class TiersManager implements MessageSourceAware {
 	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Entreprise entreprise) throws DonneesCivilesException {
 		final List<AdresseCivilView> adresses = new ArrayList<>();
 		if (entreprise.isConnueAuCivil()) {
-			final AdressesCivilesHistoriques histo = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
+			final AdressesCivilesHisto histo = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
 			fillAdressesCivilesViews(adresses, histo);
 		}
 		return adresses;
@@ -1080,13 +1080,13 @@ public class TiersManager implements MessageSourceAware {
 	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Etablissement etb) throws DonneesCivilesException {
 		final List<AdresseCivilView> adresses = new ArrayList<>();
 		if (etb.isConnuAuCivil()) {
-			final AdressesCivilesHistoriques histo = serviceOrganisationService.getAdressesSiteOrganisationHisto(etb.getNumeroEtablissement());
+			final AdressesCivilesHisto histo = serviceOrganisationService.getAdressesSiteOrganisationHisto(etb.getNumeroEtablissement());
 			fillAdressesCivilesViews(adresses, histo);
 		}
 		return adresses;
 	}
 
-	private void fillAdressesCivilesViews(List<AdresseCivilView> dest, AdressesCivilesHistoriques histo) throws DonneesCivilesException {
+	private void fillAdressesCivilesViews(List<AdresseCivilView> dest, AdressesCivilesHisto histo) throws DonneesCivilesException {
 		if (histo != null) {
 			// on remplit tous les types d'adresse
 			for (TypeAdresseCivil type : TYPES_ADRESSES_CIVILES) {
@@ -1210,7 +1210,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 	}
 
-	public void fillAdressesHistoCivilesView(List<AdresseCivilView> adressesView, AdressesCivilesHistoriques adressesCivilesHisto, TypeAdresseCivil type) throws DonneesCivilesException {
+	public void fillAdressesHistoCivilesView(List<AdresseCivilView> adressesView, AdressesCivilesHisto adressesCivilesHisto, TypeAdresseCivil type) throws DonneesCivilesException {
 		final List<Adresse> adresses = adressesCivilesHisto.ofType(type);
 		if (adresses == null) {
 			// rien à faire

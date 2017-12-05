@@ -28,7 +28,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -38,6 +37,7 @@ import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -451,7 +451,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 
 		// Adresse actuelle
-		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement, false));
+		final AdressesCiviles adresseVaud = serviceCivil.getAdresses(noIndividu, dateEvenement, false);
 		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
 		if (principale && adressePrincipale != null) {
 			// Initialisation d'une date de fin de validité pour la résidence principale
@@ -471,7 +471,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 
 		// Nouvelles adresses
-		final AdressesCiviles adresseHorsVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement.getOneDayAfter(), false));
+		final AdressesCiviles adresseHorsVaud = serviceCivil.getAdresses(noIndividu, dateEvenement.getOneDayAfter(), false);
 		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
 
 		// Nouvelle commune
@@ -480,8 +480,8 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		// En cas de depart d'une residence secondaire
 		final MockCommune communeSecondaire ;
 		final MockAdresse adresseSecondaire;
-		if (!principale && adresseVaud.secondaire != null) {
-			adresseSecondaire = (MockAdresse) adresseVaud.secondaire;
+		if (!principale && adresseVaud.secondaireCourante != null) {
+			adresseSecondaire = (MockAdresse) adresseVaud.secondaireCourante;
 			communeSecondaire = (MockCommune) serviceInfra.getCommuneByAdresse(adresseSecondaire, dateEvenement.getOneDayAfter());
 			noOFS = communeSecondaire.getNoOFS();
 		}
@@ -508,7 +508,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 
 		// Adresse actuelle
-		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement, false));
+		final AdressesCiviles adresseVaud = serviceCivil.getAdresses(noIndividu, dateEvenement, false);
 		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
 		if (adressePrincipale != null) {
 			// Initialisation d'une date de fin de validité pour la résidence principale
@@ -521,7 +521,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 
 		// Nouvelles adresses
-		final AdressesCiviles adresseHorsVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement.getOneDayAfter(), false));
+		final AdressesCiviles adresseHorsVaud = serviceCivil.getAdresses(noIndividu, dateEvenement.getOneDayAfter(), false);
 		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
 
 		return new DepartPrincipal(individu, null, dateEvenement, noOFS, adressePrincipale, communeVd, nouvelleAdresse, nouvelleCommune, context, isRegPP);
@@ -548,13 +548,13 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		// mise-en-place des données à DATE_EVENEMENT
 		final Individu individu = serviceCivil.getIndividu((long) 1234, null);
-		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses((long) 1234, DATE_EVENEMENT, false));
+		final AdressesCiviles adresseVaud = serviceCivil.getAdresses((long) 1234, DATE_EVENEMENT, false);
 		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
 		adressePrincipale.setDateFinValidite(DATE_EVENEMENT);
 
 		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale, DATE_EVENEMENT);
 		int noOFS = communeVd.getNoOFS();
-		final AdressesCiviles adresseHorsVaud = new AdressesCiviles(serviceCivil.getAdresses((long) 1234, DATE_EVENEMENT.getOneDayAfter(), false));
+		final AdressesCiviles adresseHorsVaud = serviceCivil.getAdresses((long) 1234, DATE_EVENEMENT.getOneDayAfter(), false);
 		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
 		final MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse, DATE_EVENEMENT.getOneDayAfter());
 

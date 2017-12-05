@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adresse;
+package ch.vd.uniregctb.interfaces.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -11,17 +11,23 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
  * Contient toutes les adresses civiles d'un individu regroupées par type
  */
 public class AdressesCivilesHisto {
-	public List<Adresse> principales = new ArrayList<>();
-	public List<Adresse> courriers = new ArrayList<>();
-	public List<Adresse> secondaires = new ArrayList<>();
-	public List<Adresse> tutelles = new ArrayList<>();
+	public final List<Adresse> principales;
+	public final List<Adresse> courriers;
+	public final List<Adresse> secondaires;
+	public final List<Adresse> tutelles;
+
+	public AdressesCivilesHisto() {
+		this.principales = new ArrayList<>();
+		this.courriers = new ArrayList<>();
+		this.secondaires = new ArrayList<>();
+		this.tutelles = new ArrayList<>();
+	}
 
 	public List<Adresse> ofType(TypeAdresseCivil type) {
 		if (TypeAdresseCivil.PRINCIPALE == type) {
@@ -77,25 +83,6 @@ public class AdressesCivilesHisto {
 		courriers.sort(comparator);
 		secondaires.sort(comparator);
 		tutelles.sort(comparator);
-	}
-
-	/**
-	 * Constructeur permettant de construire une AdresseCivileHisto à partir d'une adresseCivilesHistoriques et d'y appliquer les traitements propres à  AdresseCivileHisto
-	 *
-	 * @param adressesHistoriques les adresses historiques
-	 * @param strict              si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger
-	 *                            les données (dans la mesure du possible) pour ne pas lever d'exception.
-	 * @throws DonneesCivilesException
-	 */
-	public AdressesCivilesHisto(AdressesCivilesHistoriques adressesHistoriques, boolean strict) throws DonneesCivilesException {
-		this.principales = adressesHistoriques.principales;
-		this.courriers = adressesHistoriques.courriers;
-		this.secondaires = adressesHistoriques.secondaires;
-		this.tutelles = adressesHistoriques.tutelles;
-		finish(strict);
-	}
-
-	public AdressesCivilesHisto() {
 	}
 
 	/**

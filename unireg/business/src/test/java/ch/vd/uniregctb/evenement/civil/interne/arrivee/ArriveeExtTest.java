@@ -24,10 +24,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -89,8 +89,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -169,7 +169,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -266,7 +266,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
 		final Individu individuHorsCouple = serviceCivil.getIndividu(noIndividuHorsCouple, dateArrivee);
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -358,8 +358,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		final MessageCollector collector = buildMessageCollector();
 
@@ -447,8 +447,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		final MessageCollector collector = buildMessageCollector();
 
@@ -541,8 +541,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(noIndividuLAbbaye, dateArrivee);
-				final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-				final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+				final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+				final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 				// erreur: devrait être MockCommune.Fraction.LAbbaye ou ...
 				final ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(),
@@ -563,8 +563,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee);
-				final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-				final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+				final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+				final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 				// erreur: devrait être MockCommune.Fraction.LeLieu
 				final ArriveePrincipale arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(),
@@ -628,8 +628,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(noIndividuLeSentier, dateArrivee);
-				final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-				final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+				final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+				final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeChenit.getNoOFS(), MockCommune.Lausanne,
 				                                              MockCommune.LeChenit, anciennesAdresses.principale, nouvellesAdresses.principale, context);
@@ -648,8 +648,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee);
-				final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-				final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+				final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+				final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.LeLieu.getNoOFS(), MockCommune.LAbbaye, MockCommune.LeLieu,
 				                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
@@ -734,8 +734,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		final MessageCollector collector = buildMessageCollector();
 
@@ -802,8 +802,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
@@ -892,8 +892,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		/*
 		 * Création de l'habitant et de sa situation avant l'arrivée
@@ -991,8 +991,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
@@ -1080,8 +1080,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
@@ -1170,8 +1170,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		/*
 		 * Création de l'habitant et de sa situation avant l'arrivée
@@ -1291,8 +1291,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -1431,8 +1431,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -1581,8 +1581,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -1705,8 +1705,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -1811,8 +1811,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
 
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -1946,8 +1946,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		});
 		
 		final Individu individu = serviceCivil.getIndividu(numeroIndividu, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 		
 		final long numeroCTB = doInNewTransaction(new TxCallback<Long>() {
 			@SuppressWarnings("deprecation")
@@ -2085,8 +2085,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee);
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee);
-		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
-		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
+		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
+		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
 		
 		final class Couple {
 			final long idPrincipal;

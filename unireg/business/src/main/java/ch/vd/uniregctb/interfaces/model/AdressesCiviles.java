@@ -12,10 +12,14 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 /**
  * Contient les adresses civiles à un instant donné d'individu regroupées par type
  */
-public class AdressesCivilesActives {
+public class AdressesCiviles {
 	public Adresse principale;
 	public Adresse courrier;
 	public List<Adresse> secondaires;
+	/**
+	 * L'adresse secondaire courante, c'est-à-dire l'adresse secondaire valide la plus récente (= la dernière de la liste).
+	 */
+	public Adresse secondaireCourante;
 	public Adresse tutelle;
 
 	public void set(Adresse adresse, boolean strict) throws DonneesCivilesException {
@@ -56,11 +60,32 @@ public class AdressesCivilesActives {
 			}
 		}
 		else if (adresse.getTypeAdresse() == TypeAdresseCivil.SECONDAIRE) {
+
 			if (secondaires == null) {
 				secondaires = new ArrayList<>();
 			}
 			secondaires.add(adresse);
 
+			if (secondaireCourante == null) {
+				secondaireCourante = adresse;
+			}
+			else {
+				/*if (strict) {
+					throw new DonneesCivilesException("Plus d'une adresse 'secondaire' détectée");
+				}*/
+				//TODO [UNIREG-2033] RegPP permet actuellement d'ouvrir plusieurs adresses secondaires pour un individu dans le civil
+			//UNIREG ne gère pas encore la liste des adresses secondaires(besoin de spécifications). Afin d'éviter un crash web
+			//on supprime la lever de l'exception et on ne prend en compte que la dernière adresse secondaire renseignée.
+				
+
+				// deux adresses valides à la même date -> on prend la plus récente en espérant que ce soit la plus juste
+				if (DateRangeComparator.compareRanges(secondaireCourante, adresse) > 0) {
+					// on ne change rien
+				}
+				else {
+					secondaireCourante = adresse;
+				}
+			}
 		}
 		else if (adresse.getTypeAdresse() == TypeAdresseCivil.TUTEUR) {
 			if (tutelle == null) {
@@ -93,12 +118,11 @@ public class AdressesCivilesActives {
 			return courrier;
 		}
 		else if (TypeAdresseCivil.SECONDAIRE == type) {
-			return null;
+			return secondaireCourante;
 		}
 		else {
 			Assert.isTrue(TypeAdresseCivil.TUTEUR == type);
 			return tutelle;
 		}
 	}
-
 }

@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
@@ -16,6 +15,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -40,13 +40,13 @@ public class DepartSecondaire extends Depart {
 
 		final RegDate dateDepart = getDate();
 		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
-		this.ancienneAdresse = anciennesAdresses.secondaire;
+		this.ancienneAdresse = anciennesAdresses.secondaireCourante;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
 		this.numeroOfsEntiteForAnnonce = getNumeroOfsCommuneAnnonce();
 
 		final RegDate lendemainDepart = dateDepart.getOneDayAfter();
 		final AdressesCiviles nouvellesAdresses = getAdresses(context, lendemainDepart);
-		final Adresse nouvelleAdresseSecondaire = nouvellesAdresses.secondaire;
+		final Adresse nouvelleAdresseSecondaire = nouvellesAdresses.secondaireCourante;
 		this.nouvelleCommune = getCommuneByAdresse(context, nouvelleAdresseSecondaire, lendemainDepart);
 		this.nouvelleLocalisation = computeNouvelleLocalisation(ancienneAdresse, nouvelleAdresseSecondaire, nouvelleCommune);
 	}

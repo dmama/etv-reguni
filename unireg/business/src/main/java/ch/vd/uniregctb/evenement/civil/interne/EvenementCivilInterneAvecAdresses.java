@@ -7,13 +7,13 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.common.Adresse;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
 
 public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilInterne {
 
@@ -38,11 +38,11 @@ public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilIn
 		// Distinction adresse principale et adresse courrier
 		// On recupère les adresses à la date de l'événement plus 1 jour
 		try {
-			final AdressesCiviles adresses =  new AdressesCiviles(context.getServiceCivil().getAdresses(evenement.getNumeroIndividuPrincipal(), evenement.getDateEvenement().getOneDayAfter(), false));
+			final AdressesCiviles adresses =  context.getServiceCivil().getAdresses(evenement.getNumeroIndividuPrincipal(), evenement.getDateEvenement().getOneDayAfter(), false);
 			Assert.notNull(adresses, "L'individu principal n'a pas d'adresse valide");
 
 			this.adressePrincipale = adresses.principale;
-			this.adresseSecondaire = adresses.secondaire;
+			this.adresseSecondaire = adresses.secondaireCourante;
 			this.adresseCourrier = adresses.courrier;
 		}
 		catch (DonneesCivilesException e) {
@@ -56,11 +56,11 @@ public abstract class EvenementCivilInterneAvecAdresses extends EvenementCivilIn
 		// Distinction adresse principale et adresse courrier
 		// On recupère les adresses à la date de l'événement plus 1 jour
 		try {
-			final AdressesCiviles adresses =  new AdressesCiviles(context.getServiceCivil().getAdresses(evenement.getNumeroIndividu(), evenement.getDateEvenement().getOneDayAfter(), false));
+			final AdressesCiviles adresses =  context.getServiceCivil().getAdresses(evenement.getNumeroIndividu(), evenement.getDateEvenement().getOneDayAfter(), false);
 			Assert.notNull(adresses, "L'individu n'a pas d'adresse valide");
 
 			this.adressePrincipale = adresses.principale;
-			this.adresseSecondaire = adresses.secondaire;
+			this.adresseSecondaire = adresses.secondaireCourante;
 			this.adresseCourrier = adresses.courrier;
 		}
 		catch (DonneesCivilesException e) {

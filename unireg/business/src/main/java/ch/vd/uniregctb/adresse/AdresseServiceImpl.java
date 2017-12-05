@@ -40,7 +40,8 @@ import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AdressesCiviles;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -615,7 +616,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final AdresseEnvoiDetaillee adresse;
 
 		try {
-			final AdressesCiviles adressesCourantes = new AdressesCiviles(serviceCivilService.getAdresses(individu.getNoTechnique(), date, strict));
+			final AdressesCiviles adressesCourantes = serviceCivilService.getAdresses(individu.getNoTechnique(), date, strict);
 			final Adresse adresseCourrier = adressesCourantes.courrier;
 
 			adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE_PERS, date, date, adresseCourrier == null, localiteInvalideMatcherService);
@@ -1721,7 +1722,7 @@ public class AdresseServiceImpl implements AdresseService {
 	@Override
 	public AdressesCiviles getAdressesCiviles(long numeroIndividu, RegDate date, boolean strict) throws AdresseException {
 		try {
-			return new AdressesCiviles(serviceCivilService.getAdresses(numeroIndividu, date, strict));
+			return serviceCivilService.getAdresses(numeroIndividu, date, strict);
 		}
 		catch (DonneesCivilesException e) {
 			throw new AdresseDataException(e);
@@ -1795,11 +1796,11 @@ public class AdresseServiceImpl implements AdresseService {
 
 	public AdressesCivilesHisto getAdressesCivilesHisto(long numeroIndividu, boolean strict) throws AdresseException {
 		try {
-			final AdressesCivilesHistoriques adressesHisto = serviceCivilService.getAdressesHisto(numeroIndividu, strict);
+			final AdressesCivilesHisto adressesHisto = serviceCivilService.getAdressesHisto(numeroIndividu, strict);
 			if (adressesHisto == null) {
 				throw new IndividuNotFoundException(numeroIndividu);
 			}
-			return new AdressesCivilesHisto(adressesHisto, strict);
+			return adressesHisto;
 		}
 		catch (DonneesCivilesException e) {
 			throw new AdresseDataException(e);
@@ -1845,11 +1846,7 @@ public class AdresseServiceImpl implements AdresseService {
 			throw new OrganisationNotFoundException(entreprise);
 		}
 
-		final AdressesCivilesHistoriques adressesCiviles = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
-		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
-		adresses.principales.addAll(adressesCiviles.principales);
-		adresses.courriers.addAll(adressesCiviles.courriers);
-		return adresses;
+		return serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
 	}
 
 	private AdressesCivilesHisto getAdressesCivilesHisto(Etablissement etablissement) {
@@ -1858,11 +1855,7 @@ public class AdresseServiceImpl implements AdresseService {
 			throw new OrganisationNotFoundException(etablissement);
 		}
 
-		final AdressesCivilesHistoriques adressesCiviles = serviceOrganisationService.getAdressesSiteOrganisationHisto(etablissement.getNumeroEtablissement());
-		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
-		adresses.principales.addAll(adressesCiviles.principales);
-		adresses.courriers.addAll(adressesCiviles.courriers);
-		return adresses;
+		return serviceOrganisationService.getAdressesSiteOrganisationHisto(etablissement.getNumeroEtablissement());
 	}
 
 	private AdressesCiviles getAdressesCiviles(Entreprise entreprise, RegDate date) throws AdresseDataException {

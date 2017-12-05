@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.depart;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,8 +10,8 @@ import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHisto;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class DepartDecaleHelperTest extends WithoutSpringTest {
@@ -46,9 +43,9 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
 		final RegDate date = date(2010, 2, 18);
 		final Adresse courrier = buildAdresse(date.addMonths(-1), date, TypeAdresseCivil.COURRIER, "Rue du bourg", "12", "9999", "Loin");
-		adresses.courriers = Collections.singletonList(courrier);
+		adresses.add(courrier);
 		final Adresse tutelle = buildAdresse(date.addMonths(-1), date, TypeAdresseCivil.TUTEUR, "Rue du bourg", "12", "9999", "Loin");
-		adresses.tutelles = Collections.singletonList(tutelle);
+		adresses.add(tutelle);
 
 		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(date, 0, adresses));
 		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(date, 1, adresses));
@@ -63,7 +60,9 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), date.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(date, date, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(date.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.principales = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		final Adresse found = DepartDecaleHelper.getAdresseResidenceTerminee(date, 0, adresses);
 		Assert.assertNotNull(found);
@@ -77,7 +76,9 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), date.addDays(-1), TypeAdresseCivil.SECONDAIRE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(date, date, TypeAdresseCivil.SECONDAIRE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(date.addDays(1), null, TypeAdresseCivil.SECONDAIRE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.secondaires = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		final Adresse found = DepartDecaleHelper.getAdresseResidenceTerminee(date, 0, adresses);
 		Assert.assertNotNull(found);
@@ -91,10 +92,12 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), date.addDays(-1), TypeAdresseCivil.SECONDAIRE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(date, date, TypeAdresseCivil.SECONDAIRE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(date.addDays(1), null, TypeAdresseCivil.SECONDAIRE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.secondaires = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		final Adresse prn = buildAdresse(date(2000, 1, 1), null, TypeAdresseCivil.PRINCIPALE, "Rue de la liberté", "56", "8888", "Là");
-		adresses.principales = Collections.singletonList(prn);
+		adresses.add(prn);
 
 		final Adresse found = DepartDecaleHelper.getAdresseResidenceTerminee(date, 0, adresses);
 		Assert.assertNotNull(found);
@@ -109,10 +112,12 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), date.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(date, date, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(date.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.principales = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		final Adresse sec = buildAdresse(date(2000, 1, 1), date, TypeAdresseCivil.SECONDAIRE, "Rue de la liberté", "56", "8888", "Là");
-		adresses.secondaires = Collections.singletonList(sec);
+		adresses.add(sec);
 
 		final Adresse found = DepartDecaleHelper.getAdresseResidenceTerminee(date, 0, adresses);
 		Assert.assertNotNull(found);
@@ -128,7 +133,9 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), dateAdresse.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(dateAdresse, dateAdresse, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(dateAdresse.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.principales = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		// décalage interdit
 		{
@@ -157,10 +164,12 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), dateAdresse.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(dateAdresse, dateAdresse, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(dateAdresse.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.principales = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		final Adresse sec = buildAdresse(date(2000, 1, 1), dateAdresse, TypeAdresseCivil.SECONDAIRE, "Rue de la liberté", "56", "8888", "Là");
-		adresses.secondaires = Collections.singletonList(sec);
+		adresses.add(sec);
 
 		// décalage interdit
 		{
@@ -189,10 +198,12 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), dateAdresse.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(dateAdresse, dateAdresse, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(dateAdresse.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.principales = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		final Adresse sec = buildAdresse(date(2000, 1, 1), dateAdresse.addDays(1), TypeAdresseCivil.SECONDAIRE, "Rue de la liberté", "56", "8888", "Là");
-		adresses.secondaires = Collections.singletonList(sec);
+		adresses.add(sec);
 
 		// décalage interdit
 		{
@@ -223,7 +234,9 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), dateAdresse.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(dateAdresse, dateAdresse, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(dateAdresse.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.principales = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(dateEvenement, 0, adresses));
 		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(dateEvenement, 1, adresses));
@@ -238,11 +251,13 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), date.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(date, date, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(date.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.principales = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		final MockAdresse sec = buildAdresse(date(2000, 1, 1), date, TypeAdresseCivil.SECONDAIRE, "Rue de la liberté", "56", "8888", "Là");
 		sec.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.PaysInconnu.getNoOFS(), null));
-		adresses.secondaires = Collections.<Adresse>singletonList(sec);
+		adresses.add(sec);
 
 		final Adresse found = DepartDecaleHelper.getAdresseResidenceTerminee(date, 0, adresses);
 		Assert.assertNotNull(found);
@@ -257,11 +272,13 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), date.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(date, date, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(date.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.principales = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		final MockAdresse sec = buildAdresse(date(2000, 1, 1), date, TypeAdresseCivil.SECONDAIRE, "Rue de la liberté", "56", "8888", "Là");
 		sec.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.PaysInconnu.getNoOFS(), null));
-		adresses.secondaires = Collections.<Adresse>singletonList(sec);
+		adresses.add(sec);
 
 		final Adresse found = DepartDecaleHelper.getAdresseResidenceTerminee(date.getOneDayAfter(), 1, adresses);
 		Assert.assertNotNull(found);
@@ -276,11 +293,13 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 		final Adresse avant = buildAdresse(date(2000, 1, 1), date.addDays(-1), TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "12", "9999", "Loin");
 		final Adresse pendant = buildAdresse(date, date, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "13", "9999", "Loin");
 		final Adresse apres = buildAdresse(date.addDays(1), null, TypeAdresseCivil.PRINCIPALE, "Rue du bourg", "14", "9999", "Loin");
-		adresses.principales = Arrays.asList(avant, pendant, apres);
+		adresses.add(avant);
+		adresses.add(pendant);
+		adresses.add(apres);
 
 		final MockAdresse sec = buildAdresse(date(2000, 1, 1), date.getOneDayBefore(), TypeAdresseCivil.SECONDAIRE, "Rue de la liberté", "56", "8888", "Là");
 		sec.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.PaysInconnu.getNoOFS(), null));
-		adresses.secondaires = Collections.<Adresse>singletonList(sec);
+		adresses.add(sec);
 
 		final Adresse found = DepartDecaleHelper.getAdresseResidenceTerminee(date, 0, adresses);
 		Assert.assertNotNull(found);
