@@ -7,6 +7,10 @@
 		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
 	</bean>
 
+	<bean id="editionAutreDocumentFiscalValidator" class="ch.vd.uniregctb.documentfiscal.EditionAutreDocumentFiscalValidator">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+
 	<bean id="autreDocumentFiscalController" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalController">
 		<property name="securityProvider" ref="securityProviderInterface"/>
 		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
@@ -17,6 +21,7 @@
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="delaisService" ref="delaisService"/>
+		<property name="editionValidator" ref="editionAutreDocumentFiscalValidator"/>
 	</bean>
 
 	<bean id="autreDocumentFiscalManager" class="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalManagerImpl">

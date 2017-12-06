@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -63,6 +64,8 @@ public class AutreDocumentFiscalController {
 	private ServiceInfrastructureService infraService;
 	private DelaisService delaisService;
 
+	private Validator editionValidator;
+
 	private static final Map<Role, Set<TypeAutreDocumentFiscalEmettableManuellement>> TYPES_DOC_ALLOWED = buildTypesDocAllowed();
 
 	private static Map<Role, Set<TypeAutreDocumentFiscalEmettableManuellement>> buildTypesDocAllowed() {
@@ -109,8 +112,13 @@ public class AutreDocumentFiscalController {
 		this.delaisService = delaisService;
 	}
 
-	@InitBinder()
+	public void setEditionValidator(Validator editionValidator) {
+		this.editionValidator = editionValidator;
+	}
+
+	@InitBinder(value = "ajouterView")
 	public void initAjouterBinder(WebDataBinder binder) {
+		binder.setValidator(editionValidator);
 		binder.registerCustomEditor(RegDate.class, "dateDemande", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "ancienDelaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
@@ -302,7 +310,7 @@ public class AutreDocumentFiscalController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final RegDate delaiAccordeAu = determineDateAccordDelaiParDefaut(docFisc.getDelaiAccordeAu());
-		model.addAttribute("command", new EditionDelaiAutreDocumentFiscalView(docFisc, delaiAccordeAu));
+		model.addAttribute("ajouterView", new EditionDelaiAutreDocumentFiscalView(docFisc, delaiAccordeAu));
 		return "documentfiscal/delai/ajouter";
 	}
 
@@ -321,7 +329,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
-	public String ajouterDemandeDelaiPM(@Valid @ModelAttribute("command") final EditionDelaiAutreDocumentFiscalView view,
+	public String ajouterDemandeDelaiPM(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view,
 	                                    BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
@@ -333,7 +341,7 @@ public class AutreDocumentFiscalController {
 		if (result.hasErrors()) {
 			final AutreDocumentFiscal documentFiscal = getDocumentFiscal(id);
 			view.resetDocumentInfo(documentFiscal);
-			return "autresdocs/delai/ajouter";
+			return "documentfiscal/delai/ajouter";
 		}
 
 		// Vérifie les paramètres
