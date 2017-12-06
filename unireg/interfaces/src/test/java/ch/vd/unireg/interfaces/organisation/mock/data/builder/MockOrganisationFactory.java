@@ -32,6 +32,7 @@ public abstract class MockOrganisationFactory {
 	public static final MockOrganisation CURIA_TREUHAND = createCuriaTreuhand();
 	public static final MockOrganisation JAL_HOLDING = createJalHolding();
 	public static final MockOrganisation BANQUE_COOP = createBanqueCoop();
+	public static final MockOrganisation TENNIS_CLUB_FOREL_SAVIGNY = createTennisClub();
 
 	public static MockOrganisation createDummySA(long cantonalId, String nom, RegDate dateDebut) {
 		FormeLegale formeLegale = FormeLegale.N_0106_SOCIETE_ANONYME;
@@ -346,6 +347,33 @@ public abstract class MockOrganisationFactory {
 		org.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, null, "Paradestrasse 2", MockLocalite.Bale, dateDebut, null));
 		final MockSiteOrganisation siteOrganisation = (MockSiteOrganisation) org.getDonneesSites().get(0);
 		siteOrganisation.addNomAdditionnel(dateDebut, null, "Banque Coop SA");
+		return org;
+	}
+
+	private static MockOrganisation createTennisClub() {
+
+		final RegDate dateDebut = RegDate.get(2016, 9, 21);
+		final RegDate dateDemenagement = RegDate.get(2017, 8, 23);
+		final MockOrganisation org = createOrganisation(101830038L, 101830039L,
+		                                                "Tennis-Club Forel-Savigny",
+		                                                dateDebut,
+		                                                null,
+		                                                FormeLegale.N_0109_ASSOCIATION,
+		                                                TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		                                                MockCommune.Savigny.getNoOFS(),
+		                                                StatusInscriptionRC.NON_INSCRIT,
+		                                                null,
+		                                                StatusRegistreIDE.DEFINITIF,
+		                                                TypeOrganisationRegistreIDE.ASSOCIATION,
+		                                                "CHE310742139");
+
+		final MockSiteOrganisation site = (MockSiteOrganisation) org.getDonneesSites().get(0);
+		site.changeDomicile(dateDemenagement, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.ForelLavaux.getNoOFS());
+
+		org.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, null, MockLocalite.Savigny, dateDebut, dateDemenagement.getOneDayBefore()));
+		org.addAdresse(new MockAdresse(TypeAdresseCivil.COURRIER, null, "Route de Vevey", MockLocalite.ForelLavaux, dateDemenagement, null));
+		org.addAdresse(new MockAdresse(TypeAdresseCivil.CASE_POSTALE, new CasePostale(TexteCasePostale.CASE_POSTALE, 38), null, MockLocalite.Savigny, RegDate.get(2016, 12, 15), null));
+
 		return org;
 	}
 }

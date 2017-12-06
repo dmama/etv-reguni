@@ -69,6 +69,16 @@ public class AdressesCivilesHisto {
 		}
 	}
 
+	public List<Adresse> getAll() {
+		final List<Adresse> all = new ArrayList<>(principales.size() + courriers.size() + secondaires.size() + tutelles.size() + casesPostales.size());
+		all.addAll(principales);
+		all.addAll(courriers);
+		all.addAll(secondaires);
+		all.addAll(tutelles);
+		all.addAll(casesPostales);
+		return all;
+	}
+
 	/**
 	 * @param strict si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données
 	 *               (dans la mesure du possible) pour ne pas lever d'exception.
@@ -238,6 +248,4 @@ public class AdressesCivilesHisto {
 		}
 		return adresses;
 	}
-
-
 }

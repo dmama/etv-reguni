@@ -1068,13 +1068,20 @@ public class TiersManager implements MessageSourceAware {
 		return adresses;
 	}
 
+	@NotNull
 	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Entreprise entreprise) throws DonneesCivilesException {
-		final List<AdresseCivilView> adresses = new ArrayList<>();
-		if (entreprise.isConnueAuCivil()) {
-			final AdressesCivilesHisto histo = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
-			fillAdressesCivilesViews(adresses, histo);
+		if (!entreprise.isConnueAuCivil()) {
+			return Collections.emptyList();
 		}
-		return adresses;
+		final AdressesCivilesHisto histo = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
+		if (histo == null) {
+			return Collections.emptyList();
+		}
+		// [SIFISC-24996] on veut afficher toutes les adresses civiles des entreprises (y compris les adresses 'cases postales')
+		return histo.getAll().stream()
+				.map(AdresseCivilView::new)
+				.sorted(new AdresseCivilViewComparator())
+				.collect(Collectors.toList());
 	}
 
 	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Etablissement etb) throws DonneesCivilesException {

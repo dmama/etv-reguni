@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +18,11 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.common.pagination.WebParamPagination;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.common.pagination.WebParamPagination;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.HistoFlag;
 import ch.vd.uniregctb.tiers.HistoFlags;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -134,9 +139,7 @@ public class TiersVisuManagerTest extends WebTest {
 
 	}
 
-
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesCivilesPrincipalHC() throws Exception {
 
 	    serviceCivil.setUp(new MockServiceCivil() {
@@ -178,22 +181,66 @@ public class TiersVisuManagerTest extends WebTest {
 			}
 		});
 
-		final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		final TiersVisuView view = tiersVisuManager.getView(numeros.numeroContribuableMenage,
-		                                              buildHistoFlags(true, true, true, true, true, true,true, true, true, false,false),
-		                                              true, true, true, true, webParamPagination);
-		final List<AdresseView> adressesMenage = view.getHistoriqueAdresses();
-		final List<AdresseCivilView> adressesZotan = view.getHistoriqueAdressesCiviles();
-		final List<AdresseCivilView> adressesMarie = view.getHistoriqueAdressesCivilesConjoint();
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
+				final TiersVisuView view = tiersVisuManager.getView(numeros.numeroContribuableMenage,
+				                                                    buildHistoFlags(true, true, true, true, true, true, true, true, true, false, false),
+				                                                    true, true, true, true, webParamPagination);
+				final List<AdresseView> adressesMenage = view.getHistoriqueAdresses();
+				final List<AdresseCivilView> adressesZotan = view.getHistoriqueAdressesCiviles();
+				final List<AdresseCivilView> adressesMarie = view.getHistoriqueAdressesCivilesConjoint();
 
-		/*
-		 * 2 * courrier
-		 * 2 * representation (1 fiscale + 1 défaut)
-		 * 2 * poursuite (1 défaut)
-		 */
-		assertEquals(2, adressesZotan.size());
-		assertEquals(date(2009, 12, 18), adressesZotan.get(0).getDateDebut());
-		assertNull(adressesZotan.get(0).getLocalite());
+				// 2 * courrier
+				// 2 * representation (1 fiscale + 1 défaut)
+				// 2 * poursuite (1 défaut)
+				assertEquals(2, adressesZotan.size());
+				assertEquals(date(2009, 12, 18), adressesZotan.get(0).getDateDebut());
+				assertNull(adressesZotan.get(0).getLocalite());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-24996] Ce test vérifie que toutes les adresses civiles des entreprises sont bien affichées (notamment les adresses 'case postale').
+	 */
+	@Test
+	public void testGetAdresseCivilesEntreprise() throws Exception {
+
+		// on insère les données du Tennis-Club de Forel-Savigny (qui possède une boîte postale)
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.TENNIS_CLUB_FOREL_SAVIGNY);
+			}
+		});
+
+		final Long id = doInNewTransaction(status -> {
+			final Entreprise tennisClub = addEntrepriseConnueAuCivil(101830038L);
+			return tennisClub.getId();
+		});
+
+		// on construit la vue 'web' de l'entreprise
+		final TiersVisuView view = doInNewTransaction(new TxCallback<TiersVisuView>() {
+			@Override
+			public TiersVisuView execute(TransactionStatus status) throws Exception {
+				final WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
+				final HistoFlags flags = buildHistoFlags(true, true, false, false, false, false, false, false, false, false, false);
+				return tiersVisuManager.getView(id, flags, false, false, false, false, webParamPagination);
+			}
+		});
+		assertNotNull(view);
+
+		// on vérifie que les adresses sont bien exposées
+		final List<AdresseCivilView> histo = view.getHistoriqueAdressesCiviles();
+		assertNotNull(histo);
+		assertEquals(3, histo.size());
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "1072 Forel (Lavaux)", histo.get(0));
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "1073 Savigny", histo.get(1));
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), null, null, "1073 Savigny", histo.get(2));
+		assertEquals("Case Postale 38", histo.get(2).getCasePostale());
 	}
 
 	public TiersVisuManager getTiersVisuManager() {
@@ -204,4 +251,12 @@ public class TiersVisuManagerTest extends WebTest {
 		this.tiersVisuManager = tiersVisuManager;
 	}
 
+	public static void assertAdresse(@NotNull TypeAdresseCivil type, @Nullable RegDate dateDebut, @Nullable RegDate dateFin, @Nullable String rue, @Nullable String localite, AdresseCivilView adresse) {
+		assertNotNull(adresse);
+		assertEquals(dateDebut, adresse.getDateDebut());
+		assertEquals(dateFin, adresse.getDateFin());
+		assertEquals(rue, adresse.getRue());
+		assertEquals(localite, adresse.getLocalite());
+		assertEquals(type, adresse.getUsageCivil());
+	}
 }

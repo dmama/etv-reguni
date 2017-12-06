@@ -8,13 +8,13 @@ import ch.vd.uniregctb.common.GentilComparator;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
- * Tri des adresses civiles par type (Courrier, Représentation, Poursuite, Domicile), puis par dates croissantes.
+ * Tri des adresses civiles par type (Courrier, Représentation, Poursuite, Domicile), puis par dates décroissantes.
  */
 public final class AdresseCivilViewComparator implements Comparator<AdresseCivilView> {
 
-	//UNIREG-1813 la liste des types d'adresse est donnée dans l'ordre suivant: Domicile(P), Courrier(C), Secondaire(S).  P correspondant à Principal
+	//UNIREG-1813 la liste des types d'adresse est donnée dans l'ordre suivant: Domicile(P), Courrier(C), Secondaire(S), Case Postale (B).  P correspondant à Principal
 	private static final Comparator<TypeAdresseCivil> usageComparator =
-			new GentilComparator<>(Arrays.asList(TypeAdresseCivil.PRINCIPALE, TypeAdresseCivil.COURRIER, TypeAdresseCivil.SECONDAIRE));
+			new GentilComparator<>(Arrays.asList(TypeAdresseCivil.PRINCIPALE, TypeAdresseCivil.COURRIER, TypeAdresseCivil.SECONDAIRE, TypeAdresseCivil.CASE_POSTALE));
 
 	@Override
 	public int compare(AdresseCivilView o1, AdresseCivilView o2) {

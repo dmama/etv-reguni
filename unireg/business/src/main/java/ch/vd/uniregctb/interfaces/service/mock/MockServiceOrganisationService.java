@@ -48,6 +48,7 @@ public class MockServiceOrganisationService implements ServiceOrganisationServic
 		return null;
 	}
 
+	@Nullable
 	@Override
 	public AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
 		return null;

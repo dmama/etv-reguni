@@ -68,9 +68,10 @@ public interface ServiceOrganisationService {
 
 	/**
 	 * @param noSite l'identifiant cantonal d'un site
-	 * @return l'historique des adresses de ce site
+	 * @return l'historique des adresses de ce site; ou <b>null</b> si le site n'existe pas.
 	 * @throws ServiceOrganisationException en cas de souci
 	 */
+	@Nullable
 	AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException;
 
 	/**

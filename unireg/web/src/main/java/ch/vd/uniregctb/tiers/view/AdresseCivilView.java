@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers.view;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
@@ -26,6 +28,10 @@ public class AdresseCivilView implements DateRange, Annulable {
 	private final Integer ewid;
 	private final LocalisationView localisationPrecedente;
 	private final LocalisationView localisationSuivante;
+
+	public AdresseCivilView(@NotNull Adresse adresse) {
+		this(adresse, adresse.getTypeAdresse());
+	}
 
 	public AdresseCivilView(Adresse adresse, TypeAdresseCivil type) {
 		this.usageCivil = type;

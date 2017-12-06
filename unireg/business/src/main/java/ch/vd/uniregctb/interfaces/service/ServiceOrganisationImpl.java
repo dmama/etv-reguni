@@ -101,6 +101,7 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		return resultat;
 	}
 
+	@Nullable
 	@Override
 	public AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
 		final SiteOrganisation site = getOrganisationHistory(getOrganisationPourSite(noSite)).getSiteForNo(noSite);

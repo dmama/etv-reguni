@@ -72,6 +72,7 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 		return service.getAdressesOrganisationHisto(noOrganisation);
 	}
 
+	@Nullable
 	@Override
 	public AdressesCivilesHisto getAdressesSiteOrganisationHisto(long noSite) throws ServiceOrganisationException {
 		assertTargetNotNull();
