@@ -117,11 +117,16 @@ public class AutreDocumentFiscalController {
 	}
 
 	@InitBinder(value = "ajouterView")
-	public void initAjouterBinder(WebDataBinder binder) {
+	public void initAjouterDelaiBinder(WebDataBinder binder) {
 		binder.setValidator(editionValidator);
 		binder.registerCustomEditor(RegDate.class, "dateDemande", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "ancienDelaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+	}
+	@InitBinder(value = "ajouterQuittance")
+	public void initAjouterQuittanceBinder(WebDataBinder binder) {
+		//binder.setValidator(editionValidator);
+		binder.registerCustomEditor(RegDate.class, "dateRetour", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
 	@InitBinder(value = "print")
@@ -240,10 +245,7 @@ public class AutreDocumentFiscalController {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
-		final AutreDocumentFiscal autreDocumentFiscal = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, id);
-		if (autreDocumentFiscal == null) {
-			return null;
-		}
+		final AutreDocumentFiscal autreDocumentFiscal = getDocumentFiscal(id);
 
 		// Vérification des droits en lecture
 		final Long tiersId = autreDocumentFiscal.getTiers().getId();
@@ -265,15 +267,15 @@ public class AutreDocumentFiscalController {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des documents fiscaux.");
 		}
 
-		final AutreDocumentFiscal docFisc = getDocumentFiscal(id);
+		final AutreDocumentFiscal doc = getDocumentFiscal(id);
 
-		final Entreprise ctb = (Entreprise) docFisc.getTiers();
+		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final AutreDocumentFiscalView view;
 
-		if (docFisc instanceof AutreDocumentFiscalAvecSuivi) {
-			view = AutreDocumentFiscalViewFactory.buildView(docFisc, infraService, messageSource);
+		if (doc instanceof AutreDocumentFiscalAvecSuivi) {
+			view = AutreDocumentFiscalViewFactory.buildView(doc, infraService, messageSource);
 		}
 		else {
 			throw new IllegalArgumentException("Le document fiscal n°" + id + " n'est pas un document fiscal avec suivi.");
@@ -285,11 +287,11 @@ public class AutreDocumentFiscalController {
 
 	@NotNull
 	private AutreDocumentFiscal getDocumentFiscal(@RequestParam("id") long id) {
-		final AutreDocumentFiscal docFisc = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, id);
-		if (docFisc == null) {
+		final AutreDocumentFiscal doc = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, id);
+		if (doc == null) {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.docfisc.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
-		return docFisc;
+		return doc;
 	}
 
 	/**
@@ -304,13 +306,13 @@ public class AutreDocumentFiscalController {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un délai à un autre document fiscal.");
 		}
 
-		final AutreDocumentFiscal docFisc = getDocumentFiscal(id);
+		final AutreDocumentFiscal doc = getDocumentFiscal(id);
 
-		final Entreprise ctb = (Entreprise) docFisc.getTiers();
+		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final RegDate delaiAccordeAu = determineDateAccordDelaiParDefaut(docFisc.getDelaiAccordeAu());
-		model.addAttribute("ajouterView", new EditionDelaiAutreDocumentFiscalView(docFisc, delaiAccordeAu));
+		final RegDate delaiAccordeAu = determineDateAccordDelaiParDefaut(doc.getDelaiAccordeAu());
+		model.addAttribute("ajouterView", new EditionDelaiAutreDocumentFiscalView(doc, delaiAccordeAu));
 		return "documentfiscal/delai/ajouter";
 	}
 
@@ -345,9 +347,9 @@ public class AutreDocumentFiscalController {
 		}
 
 		// Vérifie les paramètres
-		final AutreDocumentFiscal docFisc = getDocumentFiscal(id);
+		final AutreDocumentFiscal doc = getDocumentFiscal(id);
 
-		final Entreprise ctb = (Entreprise) docFisc.getTiers();
+		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On ajoute le délai
@@ -378,6 +380,106 @@ public class AutreDocumentFiscalController {
 		delai.setAnnule(true);
 
 		return "redirect:/autresdocs/editer.do?id=" + delai.getDocumentFiscal().getId();
+	}
+
+	/**
+	 * Affiche un écran qui permet de quittancer un autre document fiscal avec suivi.
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/etat/ajouter-quittance.do", method = RequestMethod.GET)
+	public String ajouterEtat(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");
+		}
+
+		final AutreDocumentFiscal doc = getDocumentFiscal(id);
+		if (!(doc instanceof LettreBienvenue)) {
+			throw new IllegalArgumentException("A ce jour, seule une lettre de bienvenue peut être quittancée via l'IHM des autres documents fiscaux.");
+		}
+
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		AjouterEtatAutreDocumentFiscalView view = new AjouterEtatAutreDocumentFiscalView(doc, infraService, messageSource);
+		if (view.getDateRetour() == null) {
+			view.setDateRetour(RegDate.get());
+		}
+
+		model.addAttribute("ajouterQuittance", view);
+
+		return "documentfiscal/etat/ajouter-quittance";
+	}
+
+	/**
+	 * Quittance d'un autre document fiscal avec suivi
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/etat/ajouter-quittance.do", method = RequestMethod.POST)
+	public String ajouterEtat(@Valid @ModelAttribute("ajouterQuittance") final AjouterEtatAutreDocumentFiscalView view, BindingResult result, Model model) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");
+		}
+
+		final AutreDocumentFiscal doc = getDocumentFiscal(view.getId());
+
+		if (result.hasErrors()) {
+			view.resetDocumentInfo(doc, infraService, messageSource);
+			return "documentfiscal/etat/ajouter-quittance";
+		}
+
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// On quittance
+		if (doc instanceof LettreBienvenue) {
+
+			// FIXME: Le deuxième @Transactionnal ci-dessous ne fonctionne pas: le proxy débloque et la méthode n'est pas exécutée!
+			autreDocumentFiscalManager.quittanceLettreBienvenue(view.getId(), view.getDateRetour());
+		}
+		else {
+			throw new IllegalArgumentException("A ce jour, seule une lettre de bienvenue peut être quittancée via l'IHM des autres documents fiscaux.");
+		}
+
+		return "redirect:/autresdocs/editer.do?id=" + doc.getId();
+	}
+
+	/**
+	 * Annuler le quittancement spécifié.
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/etat/annuler-quittance.do", method = RequestMethod.POST)
+	public String annulerQuittancement(@RequestParam("id") final long id) throws Exception {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");
+		}
+
+		// Vérifie les paramètres
+		final EtatAutreDocumentFiscal etat = (EtatAutreDocumentFiscal) sessionFactory.getCurrentSession().get(EtatAutreDocumentFiscal.class, id);
+		if (etat == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.etat.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+		if (!(etat instanceof EtatAutreDocumentFiscalRetourne)) {
+			throw new IllegalArgumentException("Seuls les quittancements peuvent être annulés.");
+		}
+
+		final AutreDocumentFiscal doc = getDocumentFiscal(etat.getAutreDocumentFiscal().getId());
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// On annule le quittancement
+		final EtatAutreDocumentFiscalRetourne retour = (EtatAutreDocumentFiscalRetourne) etat;
+		if (doc instanceof LettreBienvenue) {
+			retour.setAnnule(true);
+		}
+		else {
+			throw new IllegalArgumentException("A ce jour, seul le quittancement d'une lettre de bienvenue peut être annulé via l'IHM des autres documents fiscaux.");
+		}
+
+		Flash.message("Le quittancement du " + RegDateHelper.dateToDisplayString(retour.getDateObtention()) + " a été annulé.");
+		return "redirect:/autresdocs/editer.do?id=" + doc.getId();
 	}
 
 }
