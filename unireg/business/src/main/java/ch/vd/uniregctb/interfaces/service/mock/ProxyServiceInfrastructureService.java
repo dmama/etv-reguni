@@ -322,6 +322,12 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
+	@Nullable
+	public TypeRegimeFiscal getRegimeFiscal(@NotNull String code) throws ServiceInfrastructureException {
+		return target.getRegimeFiscal(code);
+	}
+
+	@Override
 	public List<GenreImpotMandataire> getGenresImpotMandataires() throws ServiceInfrastructureException {
 		return target.getGenresImpotMandataires();
 	}

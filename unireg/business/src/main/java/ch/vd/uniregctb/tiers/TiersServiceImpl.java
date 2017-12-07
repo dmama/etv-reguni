@@ -6317,6 +6317,7 @@ public class TiersServiceImpl implements TiersService {
 		mandant.addAdresseMandataire(mandat);
 	}
 
+	@NotNull
 	@Override
 	public List<DateRange> getPeriodesNonSocieteDePersonnesNiIndividuelle(Entreprise entreprise) {
 		final Organisation organisation = getOrganisation(entreprise);

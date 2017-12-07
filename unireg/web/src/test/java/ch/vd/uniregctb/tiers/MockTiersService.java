@@ -1232,6 +1232,7 @@ public class MockTiersService implements TiersService {
 
 	}
 
+	@NotNull
 	@Override
 	public List<DateRange> getPeriodesNonSocieteDePersonnesNiIndividuelle(Entreprise entreprise) {
 		return null;

@@ -523,6 +523,14 @@ public interface ServiceInfrastructureService {
 	List<TypeRegimeFiscal> getRegimesFiscaux() throws ServiceInfrastructureException;
 
 	/**
+	 * @param code le code d'un régime fiscal
+	 * @return le régime fiscal qui correspond au code spécifié; ou <b>null</b> si le régime n'existe pas.
+	 * @throws ServiceInfrastructureException en cas de souci
+	 */
+	@Nullable
+	TypeRegimeFiscal getRegimeFiscal(@NotNull String code) throws ServiceInfrastructureException;
+
+	/**
 	 * @return l'ensemble des différents genres d'impôt utilisables dans les mandats spéciaux
 	 * @throws ServiceInfrastructureException en cas de souci
 	 */

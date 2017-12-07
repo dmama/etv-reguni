@@ -2208,6 +2208,7 @@ public interface TiersService {
      * @param entreprise une entreprise
      * @return la liste des périodes (triées, non chevauchantes) pendant lesquelles on est certain que la société n'est pas une société de personnes (= SNC, SC) ni individuelle
      */
+    @NotNull
     List<DateRange> getPeriodesNonSocieteDePersonnesNiIndividuelle(Entreprise entreprise);
 
     /**

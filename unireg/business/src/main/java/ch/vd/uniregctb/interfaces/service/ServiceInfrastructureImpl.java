@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -759,6 +760,16 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public List<TypeRegimeFiscal> getRegimesFiscaux() throws ServiceInfrastructureException {
 		return rawService.getTousLesRegimesFiscaux();
+	}
+
+	@Override
+	@Nullable
+	public TypeRegimeFiscal getRegimeFiscal(@NotNull String code) throws ServiceInfrastructureException {
+		// TODO (msi) faut-il tenir compte des périodes de validité et retourner le régime courant ?
+		return rawService.getTousLesRegimesFiscaux().stream()
+				.filter(r -> Objects.equals(r.getCode(), code))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override

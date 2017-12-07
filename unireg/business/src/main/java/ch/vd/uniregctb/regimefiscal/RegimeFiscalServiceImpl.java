@@ -2,7 +2,6 @@ package ch.vd.uniregctb.regimefiscal;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -38,19 +37,13 @@ public class RegimeFiscalServiceImpl implements RegimeFiscalService {
 
 	@Override
 	@NotNull
-	public TypeRegimeFiscal getTypeRegimeFiscal(@NotNull String codeRegime) throws RegimeFiscalServiceException {
-		Objects.requireNonNull(codeRegime, "Impossible de déterminer le type de régime fiscal sans son code.");
-
-		final List<TypeRegimeFiscal> typesRegimesFiscaux = serviceInfra.getRegimesFiscaux();
-		final List<TypeRegimeFiscal> typesRegimeFiscal = typesRegimesFiscaux.stream().filter(r -> codeRegime.equals(r.getCode())).collect(Collectors.toList());
-		if (typesRegimeFiscal.size() > 1) {
-			throw new RegimeFiscalServiceException(String.format("Fatal: Deux ou plus types de régime fiscal partagent le même code '%s'. Problème de configuration FiDoR.", codeRegime));
+	public TypeRegimeFiscal getTypeRegimeFiscal(@NotNull String code) throws RegimeFiscalServiceException {
+		final TypeRegimeFiscal regimeFiscal = serviceInfra.getRegimeFiscal(code);
+		if (regimeFiscal == null) {
+			throw new RegimeFiscalServiceException(String.format("Aucun type de régime fiscal ne correspond au code fourni '%s'. " +
+					                                                     "Soit le code est erroné, soit il manque des données dans FiDoR.", code));
 		}
-		if (typesRegimeFiscal.size() == 0) {
-			throw new RegimeFiscalServiceException(String.format("Aucun type de régime fiscal ne correspond au code fourni '%s'. Soit le code est erroné, soit il manque des données dans FiDoR.",
-			                                                     codeRegime));
-		}
-		return typesRegimeFiscal.get(0);
+		return regimeFiscal;
 	}
 
 	@Override
