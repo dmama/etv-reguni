@@ -548,7 +548,7 @@
 
     <bean id="validationJob" parent="schedulerJob" class="ch.vd.uniregctb.validation.ValidationJob">
         <constructor-arg value="616"/>
-        <constructor-arg value="Valider tous les tiers et générer un rapport d'erreurs pour ceux qui ne conviennent pas"/>
+        <constructor-arg value="Valider les tiers et générer un rapport d'erreurs pour ceux qui ne conviennent pas"/>
         <property name="tiersDAO" ref="tiersDAO"/>
         <property name="transactionManager" ref="transactionManager"/>
         <property name="rapportService" ref="rapportService"/>

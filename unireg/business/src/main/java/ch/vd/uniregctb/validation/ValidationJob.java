@@ -1,16 +1,18 @@
 package ch.vd.uniregctb.validation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -27,8 +29,10 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
+import ch.vd.uniregctb.scheduler.JobParamMultiSelectEnum;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.TypeTiers;
 
 /**
  * Job qui permet de tester la cohérence des données d'un point de vue Unireg.
@@ -41,6 +45,7 @@ public class ValidationJob extends JobDefinition {
 
 	public static final String NAME = "ValidationJob";
 
+	public static final String POPULATION = "POPULATION";
 	public static final String P_IMPOSITION = "P_IMPOSITION";
 	public static final String ADRESSES = "ADRESSES";
 	public static final String MODE_STRICT = "MODE_STRICT";
@@ -88,7 +93,7 @@ public class ValidationJob extends JobDefinition {
 		param3.setName(NB_THREADS);
 		param3.setMandatory(true);
 		param3.setType(new JobParamInteger());
-		addParameterDefinition(param3, 4);
+		addParameterDefinition(param3, 8);
 
 		final JobParam param4 = new JobParam();
 		param4.setDescription("Mode strict");
@@ -96,6 +101,13 @@ public class ValidationJob extends JobDefinition {
 		param4.setMandatory(false);
 		param4.setType(new JobParamBoolean());
 		addParameterDefinition(param4, Boolean.TRUE);
+
+		final JobParam param5 = new JobParam();
+		param5.setDescription("Population");
+		param5.setName(POPULATION);
+		param5.setMandatory(true);
+		param5.setType(new JobParamMultiSelectEnum(TypeTiers.class));
+		addParameterDefinition(param5, Arrays.asList(TypeTiers.values()));
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -139,6 +151,7 @@ public class ValidationJob extends JobDefinition {
 
 		final StatusManager statusManager = getStatusManager();
 
+		final List<TypeTiers> typesTiers = getMultiSelectEnumValue(params, POPULATION, TypeTiers.class);
 		final boolean calculatePeriodesImposition = getBooleanValue(params, P_IMPOSITION);
 		final boolean coherencePeriodesImpositionWrtDIs = getBooleanValue(params, DI);
 		final boolean calculateAdresses = getBooleanValue(params, ADRESSES);
@@ -146,8 +159,8 @@ public class ValidationJob extends JobDefinition {
 		final boolean modeStrict = getBooleanValue(params, MODE_STRICT);
 
 		// Chargement des ids des tiers à processer
-		statusManager.setMessage("Chargement des ids de tous les tiers...");
-		final List<Long> ids = getTiersIds(statusManager);
+		statusManager.setMessage("Chargement des ids des tiers...");
+		final List<Long> ids = getTiersIds(typesTiers, statusManager);
 
 		// Processing des tiers
 		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculatePeriodesImposition, coherencePeriodesImpositionWrtDIs, calculateAdresses, modeStrict, tiersService,
@@ -162,17 +175,23 @@ public class ValidationJob extends JobDefinition {
 		Audit.success("Le batch de validation des tiers est terminé", rapport);
 	}
 
-	private List<Long> getTiersIds(final StatusManager statusManager) {
+	private List<Long> getTiersIds(@NotNull List<TypeTiers> typesTiers, final StatusManager statusManager) {
+
+		if (typesTiers.isEmpty()) {
+			throw new IllegalArgumentException("La liste des types de tiers est vide.");
+		}
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				//noinspection unchecked
-				return hibernateTemplate.find("select t.numero from Tiers t order by t.numero asc", null);
-			}
+		final List<Long> ids = template.execute(status -> {
+			//noinspection unchecked
+			final Map<String, Object> params = new HashMap<>();
+			params.put("classes", typesTiers.stream()
+					.map(TypeTiers::getConcreteTiersClass)
+					.map(Class::getSimpleName)
+					.collect(Collectors.toList()));
+			return hibernateTemplate.find("select t.numero from Tiers t where t.class in (:classes) order by t.numero asc", params, null);
 		});
 
 		statusManager.setMessage(String.format("%d tiers trouvés", ids.size()));
