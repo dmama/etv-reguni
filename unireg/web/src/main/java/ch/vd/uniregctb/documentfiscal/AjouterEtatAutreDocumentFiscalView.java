@@ -20,8 +20,10 @@ public class AjouterEtatAutreDocumentFiscalView {
 	private String libelleTypeDocument;
 	private List<EtatDocumentFiscalView> etats;
 
-	// Données modifiables du formulaire
+	// id du document
 	private Long id;
+
+	// Données modifiables du formulaire
 	private RegDate dateRetour;
 
 	public AjouterEtatAutreDocumentFiscalView() {

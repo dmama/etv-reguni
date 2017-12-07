@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
@@ -63,7 +64,7 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 
 	@Transactional(rollbackFor = Throwable.class)
 	@Override
-	public ResultatQuittancement quittanceLettreBienvenue(long noCtb, RegDate dateRetour) {
+	public ResultatQuittancement quittanceLettreBienvenuePourCtb(long noCtb, RegDate dateRetour) {
 		final Entreprise entreprise;
 		try {
 			entreprise = getEntreprise(noCtb);
@@ -84,6 +85,23 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 			}
 		}
 		return ResultatQuittancement.rienAQuittancer(TypeAutreDocumentFiscalQuittanceable.LETTRE_BIENVENUE);
+	}
+
+	@Override
+	public boolean quittanceLettreBienvenue(long id, RegDate dateRetour) {
+
+		final LettreBienvenue lettreBienvenue = (LettreBienvenue) sessionFactory.getCurrentSession().get(LettreBienvenue.class, id);
+		if (lettreBienvenue == null) {
+			throw new ObjectNotFoundException(String.format("Lettre de bienvenue introuvable pour le numéro %s", id));
+		}
+		if (dateRetour.isAfter(RegDate.get())) {
+			throw new IllegalArgumentException("La date de retour de la lettre de bienvenue ne peut être ultérieure à la date du jour.");
+		}
+		if (lettreBienvenue.getEtat() != TypeEtatDocumentFiscal.RETOURNE) {
+			lettreBienvenue.setDateRetour(dateRetour);
+			return true;
+		}
+		return false;
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)

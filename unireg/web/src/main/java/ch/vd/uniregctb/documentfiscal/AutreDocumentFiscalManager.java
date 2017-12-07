@@ -12,7 +12,15 @@ import ch.vd.uniregctb.type.TypeEtatEntreprise;
 public interface AutreDocumentFiscalManager {
 
 	@Transactional(rollbackFor = Throwable.class)
-	ResultatQuittancement quittanceLettreBienvenue(long noCtb, RegDate dateRetour);
+	ResultatQuittancement quittanceLettreBienvenuePourCtb(long noCtb, RegDate dateRetour);
+
+	/**
+	 * Quittance manuelle de la lettre de bienvenue.
+	 * @param id l'identifiant de la lettre de bienvenue
+	 * @param dateRetour la date de retour du document
+	 * @return <code>true</code> si un état retourné à été créé, <code>false</code> s'il en existait déjà un.
+	 */
+	boolean quittanceLettreBienvenue(long id, RegDate dateRetour);
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	List<AutreDocumentFiscalView> getAutresDocumentsFiscauxSansSuivi(long noCtb);

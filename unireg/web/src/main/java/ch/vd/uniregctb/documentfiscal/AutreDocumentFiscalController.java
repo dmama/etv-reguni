@@ -32,6 +32,7 @@ import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -125,7 +126,7 @@ public class AutreDocumentFiscalController {
 	}
 	@InitBinder(value = "ajouterQuittance")
 	public void initAjouterQuittanceBinder(WebDataBinder binder) {
-		//binder.setValidator(editionValidator);
+		binder.setValidator(editionValidator);
 		binder.registerCustomEditor(RegDate.class, "dateRetour", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
@@ -422,21 +423,27 @@ public class AutreDocumentFiscalController {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");
 		}
 
-		final AutreDocumentFiscal doc = getDocumentFiscal(view.getId());
-
 		if (result.hasErrors()) {
+			final AutreDocumentFiscal doc = getDocumentFiscal(view.getId());
 			view.resetDocumentInfo(doc, infraService, messageSource);
 			return "documentfiscal/etat/ajouter-quittance";
 		}
+
+		final AutreDocumentFiscal doc = getDocumentFiscal(view.getId());
 
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On quittance
 		if (doc instanceof LettreBienvenue) {
-
-			// FIXME: Le deuxième @Transactionnal ci-dessous ne fonctionne pas: le proxy débloque et la méthode n'est pas exécutée!
-			autreDocumentFiscalManager.quittanceLettreBienvenue(view.getId(), view.getDateRetour());
+			final boolean success = autreDocumentFiscalManager.quittanceLettreBienvenue(doc.getId(), view.getDateRetour());
+			if (success) {
+				Flash.message(String.format("La lettre de bienvenue n°%s a été quittancée avec succès.", FormatNumeroHelper.numeroCTBToDisplay(doc.getId())));
+			}
+			else {
+				Flash.warning(String.format("La lettre de bienvenue n°%s, étant déjà retournée en date du %s, n'a pas été quittancée à nouveau.",
+				                            FormatNumeroHelper.numeroCTBToDisplay(doc.getId()), RegDateHelper.dateToDisplayString(doc.getDateRetour())));
+			}
 		}
 		else {
 			throw new IllegalArgumentException("A ce jour, seule une lettre de bienvenue peut être quittancée via l'IHM des autres documents fiscaux.");
