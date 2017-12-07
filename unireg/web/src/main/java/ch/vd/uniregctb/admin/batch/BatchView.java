@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.admin.batch;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -27,7 +30,7 @@ public class BatchView {
 	private final Map<String, String> runningParams = new HashMap<>();
 
 	public BatchView(JobDefinition batch) {
-		this(batch, new Long(0L));
+		this(batch, 0L);
 	}
 
 	public BatchView(JobDefinition batch, Long offsetArg) {
@@ -45,8 +48,27 @@ public class BatchView {
 		final Map<String, Object> params = batch.getCurrentParametersDescription();
 		if (params != null) {
 			for (Map.Entry<String, Object> entry : params.entrySet()) {
-				this.runningParams.put(entry.getKey(), entry.getValue() == null ? null : entry.getValue().toString());
+				this.runningParams.put(entry.getKey(), valueToString(entry.getValue()));
 			}
+		}
+	}
+
+	@Nullable
+	private static String valueToString(Object value) {
+		if (value == null) {
+			return null;
+		}
+		if (value instanceof String) {
+			return (String) value;
+		}
+		else if (value instanceof Object[]) {
+			final Object[] array = (Object[]) value;
+			return String.join(", ", Arrays.stream(array)
+					.map(Object::toString)
+					.collect(Collectors.toList()));
+		}
+		else {
+			return value.toString();
 		}
 	}
 

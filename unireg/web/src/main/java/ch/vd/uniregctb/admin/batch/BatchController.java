@@ -8,10 +8,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Controller;
@@ -38,6 +41,8 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 @Controller
 @RequestMapping(value = "/admin/")
 public class BatchController {
+
+	private final Logger LOGGER = LoggerFactory.getLogger(BatchController.class);
 
 	private BatchScheduler batchScheduler;
 	private SecurityProviderInterface securityProvider;
@@ -112,6 +117,7 @@ public class BatchController {
 			return null;
 		}
 		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
 			return EncodingFixHelper.breakToIso(e.getMessage());
 		}
 	}
@@ -128,14 +134,15 @@ public class BatchController {
 					final Object value = param.getValue();
 					final Object typedValue;
 					if (value instanceof String) {
-						final String stringValue = (String) value;
-						if (StringUtils.isEmpty(stringValue)) {
-							typedValue = null;
+						typedValue = parseStringParam(jobparam, (String) value);
+					}
+					else if (value instanceof String[]) {
+						final String[] values = (String[]) value;
+						final Object[] typedValues = new Object[values.length];
+						for (int i = 0; i < values.length; i++) {
+							typedValues[i] = parseStringParam(jobparam, values[i]);
 						}
-						else {
-							final JobParamType type = jobparam.getType();
-							typedValue = type.stringToValue(stringValue.trim());
-						}
+						typedValue = typedValues;
 					}
 					else if (value instanceof CommonsMultipartFile) {
 						final CommonsMultipartFile file = (CommonsMultipartFile) value;
@@ -150,6 +157,19 @@ public class BatchController {
 		}
 
 		return params;
+	}
+
+	@Nullable
+	private Object parseStringParam(@NotNull JobParam jobparam, @Nullable String stringValue) {
+		final Object typedValue;
+		if (StringUtils.isEmpty(stringValue)) {
+			typedValue = null;
+		}
+		else {
+			final JobParamType type = jobparam.getType();
+			typedValue = type.stringToValue(stringValue.trim());
+		}
+		return typedValue;
 	}
 
 	/**

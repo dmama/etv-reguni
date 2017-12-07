@@ -10,15 +10,17 @@ public class JobParamDescription {
 	private String name;
 	private boolean mandatory;
 	private String type;
+	private boolean multiValues;
 	private String[] enumValues;
 
 	public JobParamDescription() {
 	}
 
-	public JobParamDescription(String name, boolean mandatory, Class<?> type, Collection<String> allowedValues) {
+	public JobParamDescription(String name, boolean mandatory, Class<?> type, boolean multiValues, Collection<String> allowedValues) {
 		this.name = name;
 		this.mandatory = mandatory;
 		this.type = (type.isEnum() ? Enum.class : type).getSimpleName().toLowerCase();
+		this.multiValues = multiValues;
 
 		if (allowedValues == null || allowedValues.isEmpty()) {
 			this.enumValues = null;
@@ -50,6 +52,14 @@ public class JobParamDescription {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public boolean isMultiValues() {
+		return multiValues;
+	}
+
+	public void setMultiValues(boolean multiValues) {
+		this.multiValues = multiValues;
 	}
 
 	public String[] getEnumValues() {

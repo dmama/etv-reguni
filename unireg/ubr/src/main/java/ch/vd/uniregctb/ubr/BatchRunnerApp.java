@@ -285,12 +285,14 @@ public class BatchRunnerApp {
 		public final String name;
 		public final String type;
 		public final String mandatoryFlag;
+		public final String multiValues;
 		public final String enumValues;
 
-		public ParamLine(String name, String type, String mandatoryFlag, String enumValues) {
+		public ParamLine(String name, String type, String mandatoryFlag, String multiValues, String enumValues) {
 			this.name = name;
 			this.type = type;
 			this.mandatoryFlag = mandatoryFlag;
+			this.multiValues = multiValues;
 			this.enumValues = enumValues;
 		}
 
@@ -298,11 +300,12 @@ public class BatchRunnerApp {
 			this.name = p.getName();
 			this.type = p.getType();
 			this.mandatoryFlag = p.isMandatory() ? "Y" : "N";
+			this.multiValues = p.isMultiValues() ? "Y" : "N";
 			this.enumValues = p.getEnumValues() == null || p.getEnumValues().length == 0 ? N_A : ArrayUtils.toString(p.getEnumValues());
 		}
 
 		public void println(String format) {
-			final String line = String.format(format, name, type, mandatoryFlag, enumValues);
+			final String line = String.format(format, name, type, mandatoryFlag, multiValues, enumValues);
 			System.out.println(line);
 		}
 	}
@@ -315,12 +318,13 @@ public class BatchRunnerApp {
 			System.out.println();
 
 			final List<ParamLine> lines = new ArrayList<>(pl.size() + 1);
-			lines.add(new ParamLine("name", "type", "mandatory", "enum values"));
+			lines.add(new ParamLine("name", "type", "mandatory", "multivalues", "enum values"));
 
 			int maxName = "name".length();
 			int maxType = "type".length();
-			int maxEnum = "enum values".length();
 			int maxMandatory = "mandatory".length();
+			int maxMultivalues = "multivalues".length();
+			int maxEnum = "enum values".length();
 
 			for (JobParamDescription p : pl) {
 				final ParamLine line = new ParamLine(p);
@@ -331,13 +335,13 @@ public class BatchRunnerApp {
 				maxEnum = Math.max(maxEnum, line.enumValues.length());
 			}
 
-			final String format = "%" + (maxName + 8) + "s | %" + (maxType + 2) + "s | %" + maxMandatory + "s | %" + maxEnum + 's';
+			final String format = "%" + (maxName + 8) + "s | %" + (maxType + 2) + "s | %" + maxMandatory + "s | %" + maxMultivalues + "s | %" + maxEnum + 's';
 
 			for (int i = 0; i < lines.size(); ++i) {
 				final ParamLine line = lines.get(i);
 				line.println(format);
 				if (i == 0) {
-					System.out.println("      " + fillString('-', maxName + maxType + maxMandatory + maxEnum + 15));
+					System.out.println("      " + fillString('-', maxName + maxType + maxMandatory + maxMultivalues + maxEnum + 18));
 				}
 			}
 		}

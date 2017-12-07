@@ -41,6 +41,7 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamDynamicEnum;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
+import ch.vd.uniregctb.scheduler.JobParamMultiSelectEnum;
 import ch.vd.uniregctb.scheduler.JobParamType;
 import ch.vd.uniregctb.ubr.JobConstants;
 import ch.vd.uniregctb.ubr.JobDescription;
@@ -159,7 +160,7 @@ public class WebServiceEndPoint implements WebService {
 				if (param.isEnabled()) {
 					final Collection<String> allowedValues;
 					final JobParamType type = param.getType();
-					if (type instanceof JobParamEnum) {
+					if (type instanceof JobParamEnum || type instanceof JobParamMultiSelectEnum) {
 						allowedValues = Arrays.stream(type.getConcreteClass().getEnumConstants())
 								.map(Enum.class::cast)
 								.map(Enum::name)
@@ -173,7 +174,8 @@ public class WebServiceEndPoint implements WebService {
 					else {
 						allowedValues = null;
 					}
-					destParams.add(new JobParamDescription(param.getName(), param.isMandatory(), type.getConcreteClass(), allowedValues));
+					final boolean multiValues = (type instanceof JobParamMultiSelectEnum);
+					destParams.add(new JobParamDescription(param.getName(), param.isMandatory(), type.getConcreteClass(), multiValues, allowedValues));
 				}
 			}
 		}
@@ -293,6 +295,13 @@ public class WebServiceEndPoint implements WebService {
 									.type(APPLICATION_JSON_WITH_UTF8_CHARSET)
 									.entity("File-typed parameter " + untyped.getKey() + " is not well-formed")
 									.build();
+						}
+						else if (parameterType instanceof JobParamMultiSelectEnum) {
+							final String ps = (String) parameterValue;
+							typedValue = Arrays.stream(ps.split(","))
+									.map(String::trim)
+									.map(parameterType::stringToValue)
+									.collect(Collectors.toList());
 						}
 						else {
 							// on passe par la représentation en String

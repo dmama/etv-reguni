@@ -5,6 +5,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -20,6 +21,7 @@ import ch.vd.uniregctb.scheduler.JobParamCommune;
 import ch.vd.uniregctb.scheduler.JobParamDynamicEnum;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamFile;
+import ch.vd.uniregctb.scheduler.JobParamMultiSelectEnum;
 import ch.vd.uniregctb.scheduler.JobParamOfficeImpot;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
 import ch.vd.uniregctb.security.Role;
@@ -121,6 +123,9 @@ public class JspTagBatchForm extends BodyTagSupport {
 		if (param.getType() instanceof JobParamEnum) {
 			return renderEnumParam(job, param);
 		}
+		else if (param.getType() instanceof JobParamMultiSelectEnum) {
+			return renderMultiSelectEnumParam(job, param);
+		}
 		else if (param.getType() instanceof JobParamDynamicEnum) {
 			return renderDynamicEnumParam(job, param);
 		}
@@ -213,6 +218,30 @@ public class JspTagBatchForm extends BodyTagSupport {
 		for (Enum<?> e : enums) {
 			b.append("<option value=\"").append(e.toString()).append('\"');
 			if (defaultValue == e) {
+				b.append(" selected=\"selected\"");
+			}
+			b.append('>').append(e.toString()).append("</option>\n");
+		}
+		b.append("</select>");
+		return b.toString();
+	}
+
+	private static String renderMultiSelectEnumParam(GestionJob job, JobParam param) {
+
+		//noinspection unchecked
+		final Collection<Enum<?>> defaultValue = (Collection<Enum<?>>) job.getJobDefinition().getDefaultWebValue(param.getName());
+		final JobParamMultiSelectEnum type = (JobParamMultiSelectEnum) param.getType();
+		final Enum<?>[] enums = (Enum<?>[]) type.getConcreteClass().getEnumConstants();
+
+		final StringBuilder b = new StringBuilder();
+		b.append("<select size=\"").append(enums.length).append("\"  name=\"").append(getBatchParamNameInForm(param)).append("\" multiple>\n");
+
+		if (!param.isMandatory()) {
+			b.append("<option/>\n");
+		}
+		for (Enum<?> e : enums) {
+			b.append("<option value=\"").append(e.toString()).append('\"');
+			if (defaultValue != null && defaultValue.contains(e)) {
 				b.append(" selected=\"selected\"");
 			}
 			b.append('>').append(e.toString()).append("</option>\n");

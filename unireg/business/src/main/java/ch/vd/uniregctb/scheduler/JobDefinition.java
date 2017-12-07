@@ -713,11 +713,11 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	}
 
 	/**
-	 * Extrait la valeur d'un paramètre de type énuméré, et retourne la.
+	 * Extrait et retourne la valeur d'un paramètre de type énuméré.
 	 *
 	 * @param params les paramètres
-	 * @param key la clé du paramètre
-	 * @param clazz class du type énuméré
+	 * @param key    la clé du paramètre
+	 * @param clazz  class du type énuméré
 	 * @return la valeur du paramètre; ou <b>null</b> si le paramètre n'est pas renseigné.
 	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, si aucun paramètre de ce nom n'a été défini, ou la valeur est invalide
 	 */
@@ -742,6 +742,60 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 			throw new IllegalArgumentException(String.format("Valeur invalide pour le paramètre %s : '%s'", key, value));
 		}
 		return value;
+	}
+
+	/**
+	 * Extrait et retourne les valeurs d'un paramètre de type énuméré multi-select.
+	 *
+	 * @param params les paramètres
+	 * @param key    la clé du paramètre
+	 * @param clazz  class du type énuméré
+	 * @return les valeurs du paramètre; ou une liste vide si le paramètre n'est pas renseigné.
+	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, si aucun paramètre de ce nom n'a été défini, ou la valeur est invalide
+	 */
+	protected final <T extends Enum<T>> List<T> getMultiSelectEnumValue(Map<String, Object> params, String key, Class<T> clazz) {
+		final JobParam parameterDefinition = getParameterDefinition(key, true);
+		final List<T> values = new ArrayList<>();
+		if (params != null) {
+			final Object v = params.get(key);
+			if (v instanceof String) {
+				final String s = (String) v;
+				values.add(Enum.valueOf(clazz, s));
+			}
+			else if (v instanceof Iterable) {
+				for (Object o : (Iterable) v) {
+					if (o instanceof String) {
+						values.add(Enum.valueOf(clazz, (String) o));
+					}
+					else {
+						//noinspection unchecked
+						values.add((T) o);
+					}
+				}
+			}
+			else if (v instanceof Object[]) {
+				for (Object o : (Object[]) v) {
+					if (o instanceof String) {
+						values.add(Enum.valueOf(clazz, (String) o));
+					}
+					else {
+						//noinspection unchecked
+						values.add((T) o);
+					}
+				}
+			}
+			else {
+				//noinspection unchecked
+				values.add((T) v);
+			}
+		}
+		if (values.isEmpty() && parameterDefinition.isMandatory()) {
+			throw new IllegalArgumentException(String.format("Paramètre obligatoire non renseigné : %s", key));
+		}
+		if (values instanceof RestrictedAccess && !((RestrictedAccess) values).isAllowed()) {
+			throw new IllegalArgumentException(String.format("Valeur invalide pour le paramètre %s : '%s'", key, values));
+		}
+		return values;
 	}
 
 	/**
