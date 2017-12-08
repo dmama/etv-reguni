@@ -41,4 +41,6 @@ public interface AutreDocumentFiscalManager {
 	void saveDelai(Long idDelai, EtatDelaiDocumentFiscal etat, RegDate delaiAccordeAu);
 
 	void annulerAutreDocumentFiscal(AutreDocumentFiscal doc);
+
+	void desannulerAutreDocumentFiscal(AutreDocumentFiscal doc);
 }

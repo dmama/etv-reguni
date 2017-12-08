@@ -216,4 +216,12 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		}
 		doc.setAnnule(true);
 	}
+
+	@Override
+	public void desannulerAutreDocumentFiscal(AutreDocumentFiscal doc) {
+		if (!doc.isAnnule()) {
+			throw new IllegalArgumentException(String.format("Le document fiscal n°%s n'est pas annulé! Impossible de le désannuler.", doc.getId()));
+		}
+		doc.setAnnule(false);
+	}
 }

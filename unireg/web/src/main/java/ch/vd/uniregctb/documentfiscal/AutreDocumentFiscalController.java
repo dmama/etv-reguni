@@ -513,4 +513,37 @@ public class AutreDocumentFiscalController {
 		return "redirect:/autresdocs/edit-list.do?pmId=" + ctb.getId();
 	}
 
+	/**
+	 * Désannuler une déclaration d'impôt ordinaire PM.
+	 *
+	 * @param id l'id de la déclaration d'impôt ordinaire à désannuler
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/desannuler.do", method = RequestMethod.POST)
+	public String desannulerDeclarationImpotPM(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des autres documents fiscaux.");
+		}
+
+		final AutreDocumentFiscal doc = getDocumentFiscal(id);
+
+		if (!(doc instanceof LettreBienvenue)) {
+			throw new IllegalArgumentException("Le document fiscal n°" + id + " n'est pas un document annulable.");
+		}
+
+		if (!doc.isAnnule()) {
+			throw new IllegalArgumentException("La document fiscal n°" + id + " n'est pas annulée.");
+		}
+
+		// vérification des droits en écriture
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// désannulation de l'autre document fiscal
+		autreDocumentFiscalManager.desannulerAutreDocumentFiscal(doc);
+
+		return "redirect:/autresdocs/edit-list.do?pmId=" + ctb.getId();
+	}
+
 }
