@@ -2922,14 +2922,14 @@ var Decl = {
 			if (doc) {
 				var info = '<fieldset class="information"><legend><span>Caractéristiques du document fiscal</span></legend>';
 				info += '<table><tr class="odd"><td width="25%">Genre de document&nbsp;:</td><td width="75%">' + StringUtils.escapeHTML(doc.libelleTypeDocument) + '</td></tr>';
-				if (doc.periodeFiscale) {
+				if (doc.periodeFiscale > 0) {
 					info += '<tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(doc.periodeFiscale) + '</td></tr>';
 				}
 				if (doc.dateRequisitionRadiation) {
-					info += '<tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(doc.dateRequisitionRadiation) + '</td></tr>';
+					info += '<tr class="odd"><td width="25%">Date de réquisition&nbsp;:</td><td width="25%">' +  RegDate.format(doc.dateRequisitionRadiation) + '</td></tr>';
 				}
 				if (doc.dateDemande) {
-					info += '<tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(doc.dateDemande) + '</td></tr>';
+					info += '<tr class="odd"><td width="25%">Date de demande&nbsp;:</td><td width="25%">' + RegDate.format(doc.dateDemande) + '</td></tr>';
 				}
 				info += '</table></fieldset>\n';
 
