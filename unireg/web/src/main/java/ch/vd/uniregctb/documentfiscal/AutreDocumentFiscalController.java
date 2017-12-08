@@ -489,4 +489,28 @@ public class AutreDocumentFiscalController {
 		return "redirect:/autresdocs/editer.do?id=" + doc.getId();
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/annuler.do", method = RequestMethod.POST)
+	public String annuler(@RequestParam("id") long id, @RequestParam(value = "tacheId", required = false) Long tacheId) throws AccessDeniedException {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final AutreDocumentFiscal doc = getDocumentFiscal(id);
+
+		if (!(doc instanceof LettreBienvenue)) {
+			throw new IllegalArgumentException("Le document fiscal n°" + id + " n'est pas un document annulable.");
+		}
+
+		// vérification des droits en écriture
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// annulation de l'autre document fiscal
+		autreDocumentFiscalManager.annulerAutreDocumentFiscal(doc);
+
+		return "redirect:/autresdocs/edit-list.do?pmId=" + ctb.getId();
+	}
+
 }

@@ -39,4 +39,6 @@ public interface AutreDocumentFiscalManager {
 
 	@Transactional(rollbackFor = Throwable.class)
 	void saveDelai(Long idDelai, EtatDelaiDocumentFiscal etat, RegDate delaiAccordeAu);
+
+	void annulerAutreDocumentFiscal(AutreDocumentFiscal doc);
 }

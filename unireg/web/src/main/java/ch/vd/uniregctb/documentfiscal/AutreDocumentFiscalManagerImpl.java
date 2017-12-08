@@ -208,4 +208,12 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		delai.setEtat(etat);
 		delai.setDelaiAccordeAu(delaiAccordeAu);
 	}
+
+	@Override
+	public void annulerAutreDocumentFiscal(AutreDocumentFiscal doc) {
+		if (doc.isAnnule()) {
+			throw new IllegalArgumentException(String.format("Le document fiscal n°%s est déjà annulé! Impossible de l'annuler à nouveau.", doc.getId()));
+		}
+		doc.setAnnule(true);
+	}
 }
