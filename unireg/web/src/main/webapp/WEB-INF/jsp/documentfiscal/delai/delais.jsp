@@ -35,9 +35,7 @@
 			</c:if>
 		</display:column>
 		<display:column style="action">
-			<c:if test="${page == 'visu' }">
-				<unireg:consulterLog entityNature="DelaiDocumentFiscal" entityId="${delai.id}"/>
-			</c:if>
+			<unireg:consulterLog entityNature="DelaiDocumentFiscal" entityId="${delai.id}"/>
 			<c:if test="${page == 'edit'}">
 				<c:if test="${delai.etat == 'DEMANDE' && !delai.annule}">
 					<unireg:linkTo name="" title="Accorder/refuser le délai" action="/autresdocs/delai/editer.do" params="{id:${delai.id}}" link_class="edit"/>

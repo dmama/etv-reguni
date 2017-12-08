@@ -2994,7 +2994,7 @@ var Decl = {
 				}
 				html += '</td>';
 				html += '<td>' + RegDate.format(d.dateTraitement) + '</td>';
-				html += '<td>' + Link.consulterLog('DelaiDeclaration', d.id) + '</td></tr>';
+				html += '<td>' + Link.consulterLog('DelaiDocumentFiscal', d.id) + '</td></tr>';
 			}
 			html += '</tbody></table></fieldset>\n';
 		}
@@ -3043,7 +3043,7 @@ var Decl = {
 				else {
 					html += '<td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
 				}
-				html += '<td>' + Link.consulterLog('DelaiDeclaration', d.id) + '</td></tr>';
+				html += '<td>' + Link.consulterLog('DelaiDocumentFiscal', d.id) + '</td></tr>';
 			}
 			html += '</tbody></table></fieldset>\n';
 		}
@@ -3112,7 +3112,7 @@ var Decl = {
 					}
 					html += '</td>';
 				}
-				html += '<td>' + Link.consulterLog('EtatDeclaration', e.id) + '</td></tr>';
+				html += '<td>' + Link.consulterLog('EtatDocumentFiscal', e.id) + '</td></tr>';
 			}
 		}
 		return html;

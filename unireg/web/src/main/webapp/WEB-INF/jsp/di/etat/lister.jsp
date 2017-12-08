@@ -43,7 +43,7 @@
 				</c:if>
 			</display:column>
 			<display:column style="action">
-				<unireg:consulterLog entityNature="EtatDeclaration" entityId="${etat.id}"/>
+				<unireg:consulterLog entityNature="EtatDocumentFiscal" entityId="${etat.id}"/>
 				<c:choose>
 					<c:when test="${!etat.annule && etat.etat == 'RETOURNE' && command.allowedQuittancement}">
 						<unireg:linkTo name="" title="Annuler le quittancement" confirm="Voulez-vous vraiment annuler ce quittancement ?"
