@@ -2,6 +2,7 @@ package ch.vd.uniregctb.rapport;
 
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -9,6 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TemporaryFile;
+import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
 /**
@@ -27,7 +29,7 @@ public class PdfValidationRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport de la validation de tous les tiers");
+		addTitrePrincipal("Rapport de la validation des tiers");
 
 		// Paramètres
 		addEntete1("Paramètres");
@@ -37,6 +39,9 @@ public class PdfValidationRapport extends PdfRapport {
 				table.addLigne("Calcul des assujettissements:", Boolean.toString(results.calculatePeriodesImposition));
 				table.addLigne("Cohérence des dates des DIs", Boolean.toString(results.coherencePeriodesImpositionWrtDIs));
 				table.addLigne("Calcul des adresses:", Boolean.toString(results.calculateAdresses));
+				table.addLigne("Population:", String.join(", ", results.population.stream()
+						.map(TypeTiers::getDescription)
+						.collect(Collectors.toList())));
 			});
 		}
 

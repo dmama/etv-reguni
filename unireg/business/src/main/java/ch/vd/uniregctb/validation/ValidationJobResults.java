@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.validation;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -11,6 +14,7 @@ import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.TypeTiers;
 
 /**
  * Contient les données brutes permettant de générer le rapport de l'exécution de la validation des tiers.
@@ -83,6 +87,7 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 	public final boolean coherencePeriodesImpositionWrtDIs;
 	public final boolean calculateAdresses;
 	public final boolean modeStrict;
+	public final Set<TypeTiers> population;
 
 	public int nbTiersTotal;
 	public final List<Erreur> erreursValidation = new ArrayList<>();
@@ -92,13 +97,14 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 	public boolean interrompu;
 
 	public ValidationJobResults(RegDate dateTraitement, boolean calculatePeriodesImposition, boolean coherencePeriodesImpositionWrtDIs,
-	                            boolean calculateAdresses, boolean modeStrict, TiersService tiersService, AdresseService adresseService) {
+	                            boolean calculateAdresses, boolean modeStrict, TiersService tiersService, AdresseService adresseService, Collection<TypeTiers> population) {
 		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 		this.calculatePeriodesImposition = calculatePeriodesImposition;
 		this.coherencePeriodesImpositionWrtDIs = coherencePeriodesImpositionWrtDIs;
 		this.calculateAdresses = calculateAdresses;
 		this.modeStrict = modeStrict;
+		this.population = new HashSet<>(population);
 	}
 
 	public int getNbTiersTotal() {

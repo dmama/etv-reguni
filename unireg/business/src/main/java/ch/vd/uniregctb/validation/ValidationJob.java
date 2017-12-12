@@ -164,7 +164,7 @@ public class ValidationJob extends JobDefinition {
 
 		// Processing des tiers
 		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculatePeriodesImposition, coherencePeriodesImpositionWrtDIs, calculateAdresses, modeStrict, tiersService,
-				adresseService);
+		                                                              adresseService, typesTiers);
 		processAll(ids, results, nbThreads, statusManager);
 		results.end();
 
