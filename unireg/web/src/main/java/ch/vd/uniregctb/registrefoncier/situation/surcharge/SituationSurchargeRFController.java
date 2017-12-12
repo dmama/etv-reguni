@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.EntiteOFS;
+import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.pagination.WebParamPagination;
@@ -48,6 +50,7 @@ public class SituationSurchargeRFController {
 	private SituationRFDAO situationRFDAO;
 	private RegistreFoncierService registreFoncierService;
 	private String urlGeoVD;
+	private ControllerUtils controllerUtils;
 
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
@@ -65,6 +68,8 @@ public class SituationSurchargeRFController {
 		this.urlGeoVD = urlGeoVD;
 	}
 
+	public void setControllerUtils(ControllerUtils controllerUtils) { this.controllerUtils = controllerUtils; }
+
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String list(Model model, HttpServletRequest request) {
@@ -76,9 +81,14 @@ public class SituationSurchargeRFController {
 
 		final WebParamPagination pagination = new WebParamPagination(request, TABLE_SITUATIONS, SITUATION_PAGE_SIZE);
 
+		// [SIFISC-26599] Construction de la liste de paramètres pour lien url
+		final String params = controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_SITUATIONS);
+		String paramsString = (params!=null && !params.isEmpty())?params+"&":"";
+		final String action = "/registrefoncier/situation/surcharge/show.do?"+paramsString+"id=";
+
 		final List<SituationRF> situations = situationRFDAO.findSituationNonSurchargeesSurCommunes(noOfsCommunes, pagination);
 		final List<SituationSummaryView> views = situations.stream()
-				.map(situation -> new SituationSummaryView(situation, serviceInfrastructureService))
+				.map(situation -> new SituationSummaryView(situation, serviceInfrastructureService, action+situation.getId()))
 				.collect(Collectors.toList());
 		final int count = situationRFDAO.countSituationsNonSurchargeesSurCommunes(noOfsCommunes);
 
@@ -89,15 +99,20 @@ public class SituationSurchargeRFController {
 		return "registrefoncier/situation/surcharge/list";
 	}
 
-	@RequestMapping(value = "/show.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/show.do",
+			method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String show(Model model, @RequestParam(value = "id") long idSituation) {
+	public String show(Model model, HttpServletRequest request,
+	                   @RequestParam(value = "id") long idSituation) {
 
 		final SituationRF situation = situationRFDAO.get(idSituation);
 		if (situation == null) {
 			throw new ObjectNotFoundException("La situation avec l'id=[" + idSituation + "] n'existe pas.");
 		}
-		initModelForCurrentSituation(model, situation);
+
+		// [SIFISC-26599] Construction de la liste de paramètres pour lien url
+		String params = controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_SITUATIONS);
+		initModelForCurrentSituation(model, situation, params);
 
 
 		model.addAttribute("surcharge", new SituationSurchargeView(situation));
@@ -105,7 +120,7 @@ public class SituationSurchargeRFController {
 		return "registrefoncier/situation/surcharge/show";
 	}
 
-	private void initModelForCurrentSituation(@NotNull Model model, @NotNull SituationRF situation) {
+	private void initModelForCurrentSituation(@NotNull Model model, @NotNull SituationRF situation, String params) {
 
 		// on construit la map commune faîtière -> liste des fractions
 		final List<Commune> communes = serviceInfrastructureService.getCommunesVD();
@@ -118,12 +133,15 @@ public class SituationSurchargeRFController {
 		                                                          ListUtils::union));
 
 		// La situation courante
-		final SituationFullView currentSituation = new SituationFullView(situation, registreFoncierService::getCapitastraURL);
+		String paramsString = (params!=null && !params.isEmpty())?"?"+params:"";
+		final String listAction = "/registrefoncier/situation/surcharge/list.do"+paramsString;
+		final String showAction = "/registrefoncier/situation/surcharge/show.do"+paramsString;
+		final SituationFullView currentSituation = new SituationFullView(situation, registreFoncierService::getCapitastraURL, showAction, listAction);
 
 		// Les autres situations
 		final List<SituationSummaryView> otherSituations = situation.getImmeuble().getSituations().stream()
 				.filter(s -> !s.getId().equals(situation.getId()))
-				.map(s -> new SituationSummaryView(s, serviceInfrastructureService))
+				.map(s -> new SituationSummaryView(s, serviceInfrastructureService, showAction+s.getId()))
 				.collect(Collectors.toList());
 
 		model.addAttribute("currentSituation", currentSituation);
@@ -140,16 +158,20 @@ public class SituationSurchargeRFController {
 	@SecurityCheck(rolesToCheck = {Role.GEST_FRACTIONS_COMMUNE_RF}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	@RequestMapping(value = "/show.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
-	public String apply(@Valid @ModelAttribute("surcharge") final SituationSurchargeView surcharge, BindingResult result, Model model) {
+	public String apply(@Valid @ModelAttribute("surcharge") final SituationSurchargeView surcharge,
+	                    HttpServletRequest request, BindingResult result, Model model) {
 
 		final SituationRF situation = situationRFDAO.get(surcharge.getSituationId());
 		if (situation == null) {
 			throw new ObjectNotFoundException("La situation avec l'id=[" + surcharge.getSituationId() + "] n'existe pas.");
 		}
 
+		// [SIFISC-26599] Construction de la liste de paramètres pour lien url
+		final String params = controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_SITUATIONS);
+
 		if (result.hasErrors()) {
 			// erreurs : on réaffiche le formulaire
-			initModelForCurrentSituation(model, situation);
+			initModelForCurrentSituation(model, situation, params);
 			model.addAttribute("surcharge", surcharge);
 			return "registrefoncier/situation/surcharge/show";
 		}
@@ -158,6 +180,8 @@ public class SituationSurchargeRFController {
 		registreFoncierService.surchargerCommuneFiscaleSituation(situation.getId(), surcharge.getNoOfsSurcharge());
 		Flash.message("La fraction de commune a bien été renseignée sur la parcelle n°" + situation.getNoParcelle() + " de la commune " + situation.getCommune().getNomRf(), 4000);
 
-		return "redirect:/registrefoncier/situation/surcharge/list.do";
+		String paramsString = (params!=null && !params.isEmpty())?"?"+StringEscapeUtils.unescapeXml(params):"";
+		return "redirect:/registrefoncier/situation/surcharge/list.do"+ paramsString;
 	}
+
 }

@@ -22,7 +22,7 @@
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.situations.trouvees"/></span></display:setProperty>
 
 			<display:column titleKey="label.id.situation.rf" sortable="true" sortName="id">
-				<unireg:linkTo name="${situation.id}" action="/registrefoncier/situation/surcharge/show.do" params="{id:${situation.id}}"/>
+				<unireg:linkTo name="${situation.id}" action="${situation.action}"/>
 				<input type="hidden" name="ids" value="${situation.id}"/>
 			</display:column>
 			<display:column titleKey="label.date.debut" sortable="true" sortName="dateDebut">

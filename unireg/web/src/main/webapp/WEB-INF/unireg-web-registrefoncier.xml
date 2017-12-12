@@ -59,6 +59,7 @@
 		<property name="situationRFDAO" ref="situationRFDAO"/>
 		<property name="registreFoncierService" ref="serviceRF"/>
 		<property name="urlGeoVD" value="${extprop.geo.vd.url}"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<!-- Rapprochement des tiers RF avec les contribuables Unireg -->

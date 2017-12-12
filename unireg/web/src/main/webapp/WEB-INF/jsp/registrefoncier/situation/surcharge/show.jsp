@@ -17,7 +17,7 @@
 	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 
-		<unireg:linkTo name="<< Retour à la liste" action="/registrefoncier/situation/surcharge/list.do"/>
+		<unireg:linkTo name="<< Retour à la liste" action="${currentSituation.listAction}"/>
 
 		<fieldset class="information">
 			<legend><span><fmt:message key="title.details.situation" /></span></legend>
@@ -58,7 +58,7 @@
 			<%--@elvariable id="surcharge" type="ch.vd.uniregctb.registrefoncier.situation.surcharge.SituationSurchargeView"--%>
 			<%--@elvariable id="mapFaitieresFractions" type="java.util.Map"--%>
 			<%--@elvariable id="fraction" type="ch.vd.uniregctb.tiers.view.CommuneView"--%>
-			<form:form method="post" commandName="surcharge" action="show.do">
+			<form:form method="post" commandName="surcharge" action="${currentSituation.showAction}" htmlEscape="false">
 				<form:hidden path="situationId"/>
 				<table border="0">
 					<tr class="<unireg:nextRowClass/>" >
@@ -77,7 +77,7 @@
 						<td width="25%"></td>
 						<td width="75%" style="padding-top: 10px">
 							<input class="submit" type="submit" value="Appliquer" style="margin-right: 10px"/>
-							<unireg:buttonTo name="Annuler" method="get" action="/registrefoncier/situation/surcharge/list.do"/>
+							<unireg:buttonTo name="Annuler" method="get" action="${currentSituation.listAction}"/>
 						</td>
 					</tr>
 				</table>
