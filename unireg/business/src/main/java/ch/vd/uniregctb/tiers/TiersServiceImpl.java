@@ -6317,37 +6317,6 @@ public class TiersServiceImpl implements TiersService {
 		mandant.addAdresseMandataire(mandat);
 	}
 
-	@NotNull
-	@Override
-	public List<DateRange> getPeriodesNonSocieteDePersonnesNiIndividuelle(Entreprise entreprise) {
-		final Organisation organisation = getOrganisation(entreprise);
-		final List<DateRange> brutto = new LinkedList<>();
-		if (organisation != null) {
-			final Set<FormeLegale> sp = EnumSet.of(FormeLegale.N_0103_SOCIETE_NOM_COLLECTIF, FormeLegale.N_0104_SOCIETE_EN_COMMANDITE, FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE);
-
-			// connue au civil -> les données civiles reignent en maître
-			final List<DateRanged<FormeLegale>> all = organisation.getFormeLegale();
-			for (DateRanged<FormeLegale> data : all) {
-				if (!sp.contains(data.getPayload())) {
-					brutto.add(data);
-				}
-			}
-		}
-		else {
-			final Set<FormeJuridiqueEntreprise> sp = EnumSet.of(FormeJuridiqueEntreprise.SC, FormeJuridiqueEntreprise.SNC);
-
-			// inconnue au civil, ce sont donc nos données fiscales qui font foi
-			final List<FormeJuridiqueFiscaleEntreprise> all = entreprise.getFormesJuridiquesNonAnnuleesTriees();
-			for (FormeJuridiqueFiscaleEntreprise data : all) {
-				if (!sp.contains(data.getFormeJuridique())) {
-					brutto.add(data);
-				}
-			}
-		}
-		final List<DateRange> res = DateRangeHelper.collateRange(brutto);
-		return res.isEmpty() ? Collections.emptyList() : brutto;
-	}
-
 	@Override
 	public Organisation getOrganisation(@NotNull Entreprise entreprise) {
 		// inconnue au registre civil, pas difficile...

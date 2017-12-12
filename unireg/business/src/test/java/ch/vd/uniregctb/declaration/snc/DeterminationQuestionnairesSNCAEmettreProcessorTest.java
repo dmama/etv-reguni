@@ -533,21 +533,19 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 		final int pf = 2014;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf2013 = addPeriodeFiscale(2013);
-				final PeriodeFiscale pf2014 = addPeriodeFiscale(pf);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf2013 = addPeriodeFiscale(2013);
+			final PeriodeFiscale pf2014 = addPeriodeFiscale(pf);
 
-				final RegDate dateDebutEntreprise = date(2008, 8, 12);
-				final RegDate dateFinEntreprise = date(2013, 9, 30);
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				addQuestionnaireSNC(entreprise, pf2013);
-				return entreprise.getNumero();
-			}
+			final RegDate dateDebutEntreprise = date(2008, 8, 12);
+			final RegDate dateFinEntreprise = date(2013, 9, 30);
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, dateFinEntreprise, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			addQuestionnaireSNC(entreprise, pf2013);
+			return entreprise.getNumero();
 		});
 
 		// vérification en base de données
@@ -599,22 +597,20 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 		final int pf = 2014;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf2013 = addPeriodeFiscale(2013);
-				final PeriodeFiscale pf2014 = addPeriodeFiscale(pf);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf2013 = addPeriodeFiscale(2013);
+			final PeriodeFiscale pf2014 = addPeriodeFiscale(pf);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				final RegDate dateDebutEntreprise = date(2008, 8, 12);
-				final RegDate dateFinEntreprise = date(2013, 9, 30);
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement), RegDate.get(pf, 3, 1), RegDate.get(pf, 12, 3), CategorieEntreprise.SP, entreprise, oipm);    // cette tâche est en trop!
-				return entreprise.getNumero();
-			}
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			final RegDate dateDebutEntreprise = date(2008, 8, 12);
+			final RegDate dateFinEntreprise = date(2013, 9, 30);
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, dateFinEntreprise, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(dateTraitement), RegDate.get(pf, 3, 1), RegDate.get(pf, 12, 3), CategorieEntreprise.SP, entreprise, oipm);    // cette tâche est en trop!
+			return entreprise.getNumero();
 		});
 
 		// vérification en base de données
@@ -678,20 +674,18 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 		final int pf = 2014;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale pf2014 = addPeriodeFiscale(pf);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final PeriodeFiscale pf2014 = addPeriodeFiscale(pf);
 
-				final RegDate dateDebutEntreprise = date(2008, 8, 12);
-				final RegDate dateFinEntreprise = date(2013, 9, 30);
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				addQuestionnaireSNC(entreprise, pf2014);        // celui-ci ne devrait pas exister, en fait...
-				return entreprise.getNumero();
-			}
+			final RegDate dateDebutEntreprise = date(2008, 8, 12);
+			final RegDate dateFinEntreprise = date(2013, 9, 30);
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebutEntreprise, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, dateFinEntreprise, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, dateFinEntreprise, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			addQuestionnaireSNC(entreprise, pf2014);        // celui-ci ne devrait pas exister, en fait...
+			return entreprise.getNumero();
 		});
 
 		// vérification en base de données
@@ -1081,18 +1075,16 @@ public class DeterminationQuestionnairesSNCAEmettreProcessorTest extends Busines
 		final int pf = 2014;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				addPeriodeFiscale(pf);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			addPeriodeFiscale(pf);
 
-				final RegDate dateDebutEntreprise = date(2008, 8, 12);
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebutEntreprise, date(2013, 1, 2), FormeJuridiqueEntreprise.SNC);     // forme juridique terminée
-				addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
-				addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				return entreprise.getNumero();
-			}
+			final RegDate dateDebutEntreprise = date(2008, 8, 12);
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebutEntreprise, date(2013, 1, 2), FormeJuridiqueEntreprise.SNC);     // forme juridique terminée
+			addRegimeFiscalVD(entreprise, dateDebutEntreprise, date(2013, 1, 2), MockTypeRegimeFiscal.SOCIETE_PERS); // régime fiscal terminé en 2013
+			addRaisonSociale(entreprise, dateDebutEntreprise, null, "Ma société de personnes");
+			addForPrincipal(entreprise, dateDebutEntreprise, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			return entreprise.getNumero();
 		});
 
 		// vérification en base de données

@@ -8,11 +8,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.common.TicketService;
@@ -68,15 +68,13 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				return entreprise.getNumero();
-			}
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			return entreprise.getNumero();
 		});
 
 		// lancement du job
@@ -105,20 +103,18 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				final TacheEnvoiQuestionnaireSNC tache = addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise, oipm);
-				tache.setAnnule(true);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			final TacheEnvoiQuestionnaireSNC tache = addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise, oipm);
+			tache.setAnnule(true);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// lancement du job
@@ -147,19 +143,17 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.TRAITE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise, oipm);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.TRAITE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise, oipm);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// lancement du job
@@ -188,24 +182,22 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 2, 1), date(periode, 10, 31), CategorieEntreprise.SP, entreprise, oipm);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 2, 1), date(periode, 10, 31), CategorieEntreprise.SP, entreprise, oipm);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(periode);
-				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf, date(periode, 4, 12), date(periode, 7, 23));        // dans le cas d'un questionnaire existant, on ne ré-aligne rien, a priori
-				addEtatDeclarationEmise(questionnaire, RegDate.get().addMonths(-6));
-				addDelaiDeclaration(questionnaire, RegDate.get().addMonths(-6), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
+			final PeriodeFiscale pf = addPeriodeFiscale(periode);
+			final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf, date(periode, 4, 12), date(periode, 7, 23));        // dans le cas d'un questionnaire existant, on ne ré-aligne rien, a priori
+			addEtatDeclarationEmise(questionnaire, RegDate.get().addMonths(-6));
+			addDelaiDeclaration(questionnaire, RegDate.get().addMonths(-6), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// lancement du job
@@ -262,19 +254,17 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode - 1, 1, 1), date(periode - 1, 12, 31), CategorieEntreprise.SP, entreprise, oipm);
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode - 1, 1, 1), date(periode - 1, 12, 31), CategorieEntreprise.SP, entreprise, oipm);
 
-				return entreprise.getNumero();
-			}
+			return entreprise.getNumero();
 		});
 
 		// lancement du job
@@ -303,19 +293,17 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise, oipm);
-				addPeriodeFiscale(periode);
-				return entreprise.getNumero();
-			}
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise, oipm);
+			addPeriodeFiscale(periode);
+			return entreprise.getNumero();
 		});
 
 		// lancement du job
@@ -345,19 +333,17 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise, oipm);
-				addPeriodeFiscale(periode);
-				return entreprise.getNumero();
-			}
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise, oipm);
+			addPeriodeFiscale(periode);
+			return entreprise.getNumero();
 		});
 
 		// lancement du job
@@ -458,30 +444,29 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
 
-				final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise1, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise1, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise1, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise1, oipm);
+			final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise1, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise1, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise1, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise1, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise1, oipm);
 
-				final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise2, dateDebut, null, "Tous ensemble!");
-				addFormeJuridique(entreprise2, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise2, oipm);
+			final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise2, dateDebut, null, "Tous ensemble!");
+			addFormeJuridique(entreprise2, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise2, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise2, oipm);
 
-				addPeriodeFiscale(periode);
+			addPeriodeFiscale(periode);
 
-				final Ids ids = new Ids();
-				ids.pm1 = entreprise1.getNumero();
-				ids.pm2 = entreprise2.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pm1 = entreprise1.getNumero();
+			ids1.pm2 = entreprise2.getNumero();
+			return ids1;
 		});
 
 		// lancement du job
@@ -634,30 +619,29 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
 
-				final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise1, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise1, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise1, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise1, oipm);
+			final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise1, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise1, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise1, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise1, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise1, oipm);
 
-				final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise2, dateDebut, null, "Tous ensemble!");
-				addFormeJuridique(entreprise2, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise2, oipm);
+			final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise2, dateDebut, null, "Tous ensemble!");
+			addFormeJuridique(entreprise2, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise2, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise2, oipm);
 
-				addPeriodeFiscale(periode);
+			addPeriodeFiscale(periode);
 
-				final Ids ids = new Ids();
-				ids.pm1 = entreprise1.getNumero();
-				ids.pm2 = entreprise2.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pm1 = entreprise1.getNumero();
+			ids1.pm2 = entreprise2.getNumero();
+			return ids1;
 		});
 
 		// lancement du job
@@ -810,30 +794,29 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		}
 
 		// mise en place fiscale
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
-			@Override
-			public Ids doInTransaction(TransactionStatus status) {
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+		final Ids ids = doInNewTransactionAndSession(status -> {
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
 
-				final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise1, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise1, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise1, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise1, oipm);
+			final Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise1, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise1, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise1, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise1, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise1, oipm);
 
-				final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise2, dateDebut, null, "Tous ensemble!");
-				addFormeJuridique(entreprise2, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise2, oipm);
+			final Entreprise entreprise2 = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise2, dateDebut, null, "Tous ensemble!");
+			addFormeJuridique(entreprise2, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise2, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise2, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 1), date(periode, 12, 31), CategorieEntreprise.SP, entreprise2, oipm);
 
-				addPeriodeFiscale(periode);
+			addPeriodeFiscale(periode);
 
-				final Ids ids = new Ids();
-				ids.pm1 = entreprise1.getNumero();
-				ids.pm2 = entreprise2.getNumero();
-				return ids;
-			}
+			final Ids ids1 = new Ids();
+			ids1.pm1 = entreprise1.getNumero();
+			ids1.pm2 = entreprise2.getNumero();
+			return ids1;
 		});
 
 		// lancement du job
@@ -942,20 +925,18 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				// dates à redresser : 05.04 -> 09.22 doit devenir 01.01 -> 31.12
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise, oipm);
-				addPeriodeFiscale(periode);
-				return entreprise.getNumero();
-			}
+			// dates à redresser : 05.04 -> 09.22 doit devenir 01.01 -> 31.12
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise, oipm);
+			addPeriodeFiscale(periode);
+			return entreprise.getNumero();
 		});
 
 		// lancement du job
@@ -1039,31 +1020,24 @@ public class EnvoiQuestionnairesSNCEnMasseProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(periode, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pmId = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(periode, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 3), date(periode, 4, 1), CategorieEntreprise.SP, entreprise, oipm);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise, oipm);
-				addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 9, 30), date(periode, 12, 25), CategorieEntreprise.SP, entreprise, oipm);
-				addPeriodeFiscale(periode);
-				return entreprise.getNumero();
-			}
+			final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 1, 3), date(periode, 4, 1), CategorieEntreprise.SP, entreprise, oipm);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 4, 5), date(periode, 9, 22), CategorieEntreprise.SP, entreprise, oipm);
+			addTacheEnvoiQuestionnaireSNC(TypeEtatTache.EN_INSTANCE, Tache.getDefaultEcheance(RegDate.get()), date(periode, 9, 30), date(periode, 12, 25), CategorieEntreprise.SP, entreprise, oipm);
+			addPeriodeFiscale(periode);
+			return entreprise.getNumero();
 		});
 
 		// lancement du job
 		final RegDate dateTraitement = RegDate.get().addMonths(-1);
-		final EnvoiQuestionnairesSNCEnMasseResults results = doUnderSwitch(tacheSynchronizer, true, new ExecuteCallback<EnvoiQuestionnairesSNCEnMasseResults>() {
-			@Override
-			public EnvoiQuestionnairesSNCEnMasseResults execute() throws Exception {
-				return processor.run(periode, dateTraitement, null, null);
-			}
-		});
+		final EnvoiQuestionnairesSNCEnMasseResults results = doUnderSwitch(tacheSynchronizer, true, () -> processor.run(periode, dateTraitement, null, null));
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getNombreEnvoyes());
 		Assert.assertEquals(0, results.getNombreIgnores());

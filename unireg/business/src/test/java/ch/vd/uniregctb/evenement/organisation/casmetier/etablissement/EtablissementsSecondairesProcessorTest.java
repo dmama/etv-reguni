@@ -1053,8 +1053,8 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 		);
 	}
 
-	/*
-	Simulation d'un hypothétique changement de genre d'impôt de REVENU/FORTUNE à BENEFICE/CAPITAL puis retour à REVENU/FORTUNE
+	/**
+	 * Simulation d'un hypothétique changement de genre d'impôt de REVENU/FORTUNE à BENEFICE/CAPITAL puis retour à REVENU/FORTUNE
 	 */
 	@Test(timeout = 10000L)
 	public void testDebutES2CommuneForPrincipalChgmtGenreImpot() throws Exception {
@@ -1092,32 +1092,32 @@ public class EtablissementsSecondairesProcessorTest extends AbstractEvenementOrg
 
 		// Création de l'entreprise
 
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
-			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+		doInNewTransactionAndSession(status -> {
+			Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 
-				Etablissement etablissement = addEtablissement();
-				etablissement.setNumeroEtablissement(noSite);
+			Etablissement etablissement = addEtablissement();
+			etablissement.setNumeroEtablissement(noSite);
 
-				addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
+			addActiviteEconomique(entreprise, etablissement, date(2010, 6, 24), null, true);
 
-				Etablissement etablissementSecondaire = addEtablissement();
-				etablissementSecondaire.setNumeroEtablissement(noSite2);
+			Etablissement etablissementSecondaire = addEtablissement();
+			etablissementSecondaire.setNumeroEtablissement(noSite2);
 
-				addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
+			addActiviteEconomique(entreprise, etablissementSecondaire, date(2010, 6, 24), null, false);
 
-				addRegimeFiscalVD(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
-				// Ici CHGT_MODE_IMPOSITION utilisé faute de mieux.
-				addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, date(2014, 12, 31), MotifFor.CHGT_MODE_IMPOSITION,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
-				addForPrincipal(entreprise, date(2015, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2015, 7, 7), MotifFor.CHGT_MODE_IMPOSITION,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
-				addForPrincipal(entreprise, date(2015, 7, 8), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
-				return entreprise;
-			}
+			addRegimeFiscalVD(entreprise, date(2010, 6, 24), date(2014, 12, 31), MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalVD(entreprise, date(2015, 1, 1), date(2015, 7, 7), MockTypeRegimeFiscal.ORDINAIRE_PM);
+			addRegimeFiscalVD(entreprise, date(2015, 7, 8), null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(entreprise, date(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+
+			// Ici CHGT_MODE_IMPOSITION utilisé faute de mieux.
+			addForPrincipal(entreprise, date(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, date(2014, 12, 31), MotifFor.CHGT_MODE_IMPOSITION,
+			                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+			addForPrincipal(entreprise, date(2015, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2015, 7, 7), MotifFor.CHGT_MODE_IMPOSITION,
+			                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
+			addForPrincipal(entreprise, date(2015, 7, 8), MotifFor.DEBUT_EXPLOITATION, null, null,
+			                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.REVENU_FORTUNE);
+			return entreprise;
 		});
 
 		// Création de l'événement

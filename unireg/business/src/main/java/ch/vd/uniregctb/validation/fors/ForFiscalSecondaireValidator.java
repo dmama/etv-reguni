@@ -3,6 +3,8 @@ package ch.vd.uniregctb.validation.fors;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -30,7 +32,7 @@ public class ForFiscalSecondaireValidator extends ForFiscalRevenuFortuneValidato
 	}
 
 	@Override
-	protected boolean isGenreImpotCoherent(ForFiscalSecondaire ff) {
+	protected boolean isGenreImpotCoherent(@NotNull ForFiscalSecondaire ff) {
 		return GENRES_IMPOT_AUTORISES.contains(ff.getGenreImpot());
 	}
 

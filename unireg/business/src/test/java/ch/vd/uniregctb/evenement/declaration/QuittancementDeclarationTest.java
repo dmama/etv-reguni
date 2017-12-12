@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.xml.event.declaration.ack.v2.DeclarationAck;
 import ch.vd.unireg.xml.event.declaration.v2.DeclarationIdentifier;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -243,17 +243,15 @@ public class QuittancementDeclarationTest extends BusinessTest {
 		final int pf = 2015;
 
 		// mise en place fiscale
-		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
-				final PeriodeFiscale periode = addPeriodeFiscale(pf);
-				final QuestionnaireSNC qsnc = addQuestionnaireSNC(entreprise, periode, date(pf, 1, 1), date(pf, 12, 31));
-				addEtatDeclarationEmise(qsnc, date(pf + 1, 1, 16));
-				return entreprise.getNumero();
-			}
+		final long id = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+			final PeriodeFiscale periode = addPeriodeFiscale(pf);
+			final QuestionnaireSNC qsnc = addQuestionnaireSNC(entreprise, periode, date(pf, 1, 1), date(pf, 12, 31));
+			addEtatDeclarationEmise(qsnc, date(pf + 1, 1, 16));
+			return entreprise.getNumero();
 		});
 
 		// Simule la réception d'un événement de quittancement du questionnaire

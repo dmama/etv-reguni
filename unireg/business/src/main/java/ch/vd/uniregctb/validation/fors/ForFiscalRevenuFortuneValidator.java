@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.validation.fors;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -34,7 +36,7 @@ public abstract class ForFiscalRevenuFortuneValidator<T extends ForFiscalRevenuF
 		return vr;
 	}
 
-	protected boolean isGenreImpotCoherent(T ff) {
+	protected boolean isGenreImpotCoherent(@NotNull T ff) {
 		return ff.getGenreImpot() == GenreImpot.REVENU_FORTUNE;
 	}
 

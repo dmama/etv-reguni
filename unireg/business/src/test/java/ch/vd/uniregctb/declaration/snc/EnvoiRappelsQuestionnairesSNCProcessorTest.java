@@ -5,7 +5,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
@@ -43,21 +42,19 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(periode);
-				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-				addEtatDeclarationEmise(questionnaire, RegDate.get());
-				addEtatDeclarationRetournee(questionnaire, RegDate.get());
-				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				return entreprise.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(periode);
+			final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+			addEtatDeclarationEmise(questionnaire, RegDate.get());
+			addEtatDeclarationRetournee(questionnaire, RegDate.get());
+			addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processus de rappel
@@ -96,20 +93,18 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(periode);
-				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-				addEtatDeclarationEmise(questionnaire, RegDate.get());
-				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				return entreprise.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(periode);
+			final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+			addEtatDeclarationEmise(questionnaire, RegDate.get());
+			addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processus de rappel
@@ -148,20 +143,18 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(periode);
-				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-				addEtatDeclarationEmise(questionnaire, RegDate.get());
-				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				return entreprise.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(periode);
+			final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+			addEtatDeclarationEmise(questionnaire, RegDate.get());
+			addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processus de rappel
@@ -207,22 +200,19 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(periode);
-				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-				addEtatDeclarationEmise(questionnaire, RegDate.get());
-				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				return entreprise.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(periode);
+			final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+			addEtatDeclarationEmise(questionnaire, RegDate.get());
+			addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processus de rappel
@@ -267,31 +257,28 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		final int periode2 = 2015;
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(periode1);
-					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				}
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(periode2);
-					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				}
-
-				return entreprise.getNumero();
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(periode1);
+				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+				addEtatDeclarationEmise(questionnaire, RegDate.get());
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 			}
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(periode2);
+				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+				addEtatDeclarationEmise(questionnaire, RegDate.get());
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// lancement du processus de rappel
@@ -357,31 +344,28 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		final int periode2 = 2015;
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(periode1);
-					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				}
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(periode2);
-					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				}
-
-				return entreprise.getNumero();
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(periode1);
+				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+				addEtatDeclarationEmise(questionnaire, RegDate.get());
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 			}
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(periode2);
+				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+				addEtatDeclarationEmise(questionnaire, RegDate.get());
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// lancement du processus de rappel
@@ -447,31 +431,28 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		final int periode2 = 2015;
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(periode1);
-					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				}
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(periode2);
-					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				}
-
-				return entreprise.getNumero();
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(periode1);
+				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+				addEtatDeclarationEmise(questionnaire, RegDate.get());
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 			}
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(periode2);
+				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+				addEtatDeclarationEmise(questionnaire, RegDate.get());
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// lancement du processus de rappel
@@ -531,31 +512,28 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		final int periode2 = 2015;
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addRegimeFiscalCH(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(periode1);
-					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				}
-				{
-					final PeriodeFiscale pf = addPeriodeFiscale(periode2);
-					final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-					addEtatDeclarationEmise(questionnaire, RegDate.get());
-					addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				}
-
-				return entreprise.getNumero();
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(periode1);
+				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+				addEtatDeclarationEmise(questionnaire, RegDate.get());
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
 			}
+			{
+				final PeriodeFiscale pf = addPeriodeFiscale(periode2);
+				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+				addEtatDeclarationEmise(questionnaire, RegDate.get());
+				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
+			}
+
+			return entreprise.getNumero();
 		});
 
 		// lancement du processus de rappel
@@ -614,20 +592,18 @@ public class EnvoiRappelsQuestionnairesSNCProcessorTest extends BusinessTest {
 		final int periode = 2015;
 
 		// mise en place fiscale
-		final long pm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
-				addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
-				addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
-				addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(periode - 1, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);   // il n'y a plus de for sur 2015...
+		final long pm = doInNewTransactionAndSession(status -> {
+			final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+			addRaisonSociale(entreprise, dateDebut, null, "Ensemble pour aller plus loin");
+			addFormeJuridique(entreprise, dateDebut, null, FormeJuridiqueEntreprise.SNC);
+			addRegimeFiscalVD(entreprise, dateDebut, null, MockTypeRegimeFiscal.SOCIETE_PERS);
+			addForPrincipal(entreprise, dateDebut, MotifFor.DEBUT_EXPLOITATION, date(periode - 1, 12, 31), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);   // il n'y a plus de for sur 2015...
 
-				final PeriodeFiscale pf = addPeriodeFiscale(periode);
-				final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
-				addEtatDeclarationEmise(questionnaire, RegDate.get());
-				addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
-				return entreprise.getNumero();
-			}
+			final PeriodeFiscale pf = addPeriodeFiscale(periode);
+			final QuestionnaireSNC questionnaire = addQuestionnaireSNC(entreprise, pf);
+			addEtatDeclarationEmise(questionnaire, RegDate.get());
+			addDelaiDeclaration(questionnaire, RegDate.get(), RegDate.get().addMonths(6), EtatDelaiDocumentFiscal.ACCORDE);
+			return entreprise.getNumero();
 		});
 
 		// lancement du processus de rappel

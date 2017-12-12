@@ -354,7 +354,7 @@
 	<bean id="forFiscalPrincipalValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalPrincipalValidator" abstract="true" parent="forFiscalRevenuFortuneValidator" />
 	<bean id="forFiscalPrincipalPPValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalPrincipalPPValidator" parent="forFiscalPrincipalValidator" />
 	<bean id="forFiscalPrincipalPMValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalPrincipalPMValidator" parent="forFiscalPrincipalValidator">
-		<property name="tiersService" ref="tiersService"/>
+		<property name="regimeFiscalService" ref="regimeFiscalService"/>
 	</bean>
 	<bean id="forFiscalSecondaireValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalSecondaireValidator" parent="forFiscalRevenuFortuneValidator" />
 	<bean id="forFiscalAutreElementImposableValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalAutreElementImposableValidator" parent="forFiscalRevenuFortuneValidator" />

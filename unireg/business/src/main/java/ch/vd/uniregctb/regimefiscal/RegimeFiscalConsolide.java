@@ -93,8 +93,18 @@ public class RegimeFiscalConsolide implements DateRange, Annulable {
 		return typeRegimeFiscal.getCategorie();
 	}
 
+	/**
+	 * @return <code>true</code> si le régime fiscal correspond à celui "en attente de détermination"
+	 */
 	public boolean isIndetermine() {
 		return typeRegimeFiscal.isIndetermine();
+	}
+
+	/**
+	 * @return <code>true</code> si le régime fiscal correspond à la catégorie "Société de personnes".
+	 */
+	public boolean isSocieteDePersonnes() {
+		return typeRegimeFiscal.isSocieteDePersonnes();
 	}
 
 	@Nullable
