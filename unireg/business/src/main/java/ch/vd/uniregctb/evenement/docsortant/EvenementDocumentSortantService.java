@@ -42,8 +42,8 @@ public interface EvenementDocumentSortantService {
 	
 	void signaleSommationDeclarationImpot(DeclarationImpotOrdinairePM di, CTypeInfoArchivage infoArchivage, boolean local);
 	
-	void signaleLettreBienvenue(LettreBienvenue lettre, CTypeInfoArchivage infoArchivage, boolean local);
-	
+	void signaleLettreBienvenue(LettreBienvenue lettre, CTypeInfoArchivage infoArchivage, boolean local, boolean duplicata);
+
 	void signaleRappelLettreBienvenue(LettreBienvenue lettre, CTypeInfoArchivage infoArchivage, boolean local);
 
 	void signaleDeclarationImpot(DeclarationImpotOrdinairePP di, @Nullable TypeDocument typeDocumentOverride, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local, boolean duplicata);

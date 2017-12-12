@@ -15,7 +15,7 @@
 	</table>
 
 	<c:if test="${not empty command.etats}">
-		<display:table name="command.etats" id="etat" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="command.etats" id="etat" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column titleKey="label.date.obtention">
 				<unireg:regdate regdate="${etat.dateObtention}"/>
 				<c:if test="${!etat.annule && etat.etat == 'SOMME'}">

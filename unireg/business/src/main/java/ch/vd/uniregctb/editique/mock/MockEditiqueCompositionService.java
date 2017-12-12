@@ -149,6 +149,11 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	@Override
+	public EditiqueResultat imprimeDuplicataLettreBienvenueOnline(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
+		return dummyResultat();
+	}
+
+	@Override
 	public void imprimeRappelLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
 	}
 

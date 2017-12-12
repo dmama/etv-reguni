@@ -55,54 +55,8 @@
 			<unireg:buttonTo name="Retour" action="/autresdocs/edit-list.do" id="boutonRetour" method="get" params="{pmId:${command.tiersId}}"/>
 
 			<!-- Duplicata Document fiscal -->
-			<input type="button" id="bouton_duplicata" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="return open_imprime_docfisc(${command.id});">
-			<script type="text/javascript">
-				function open_imprime_docfisc(id) {
-					var dialog = Dialog.create_dialog_div('imprime-docfisc-dialog');
-
-					// charge le contenu de la boîte de dialogue
-					dialog.load(App.curl('/autresdocs/duplicata.do') + '?id=' + id + '&' + new Date().getTime());
-
-					dialog.dialog({
-						              title: "Impression d'un duplicata",
-						              height: 350,
-						              width:  500,
-						              modal: true,
-						              buttons: {
-							              "Imprimer": function() {
-								              // les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal
-
-								              // correction des nombres de feuilles invalides
-								              var form = dialog.find('#formImpression');
-								              var invalidNumbers = form.find(':text').filter(function() {return !(/^[0-9]+/.test(this.value));});
-								              invalidNumbers.val('0');
-
-								              // il doit y avoir au moins une feuille de demandée
-								              var nbtotal = 0;
-								              form.find(":text").each(function() {nbtotal += Number($(this).val());});
-								              if (nbtotal < 1) {
-									              alert("Il faut sélectionner au moins une feuille à imprimer !");
-									              return;
-								              }
-
-								              var buttons = $('.ui-button');
-								              buttons.each(function () {
-									              if ($(this).text() == 'Imprimer') {
-										              $(this).addClass('ui-state-disabled');
-										              $(this).attr('disabled', true);
-									              }
-								              });
-
-								              form.attr('action', App.curl('/autresdocs/duplicata.do'));
-								              form.submit();
-							              },
-							              "Fermer": function() {
-								              dialog.dialog("close");
-							              }
-						              }
-					              });
-				}
-			</script>
+			<unireg:buttonTo name="Imprimer duplicata" action="/autresdocs/duplicata.do" id="bouton_duplicata" method="post" params="{id:${command.id}}"
+			                 confirm="Voulez-vous imprimer un duplicata pour la lettre de bienvenue (impression locale)?"/>
 
 			<!-- Annulation Document fiscal -->
 			<unireg:buttonTo name="Annuler document fiscal" confirm="Voulez-vous vraiment annuler ce document fiscal ?"

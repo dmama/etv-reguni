@@ -546,4 +546,59 @@ public class AutreDocumentFiscalController {
 		return "redirect:/autresdocs/edit-list.do?pmId=" + ctb.getId();
 	}
 
+	/**
+	 * Imprime un duplicata de DI PM
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/duplicata.do", method = RequestMethod.POST)
+	public String duplicataDeclarationPersonnesMorales(@RequestParam("id") long id,
+	                                                   HttpServletResponse response) throws Exception {
+
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec pour imprimer des duplicata de lettre de bienvenue.");
+		}
+
+		final AutreDocumentFiscal doc = getDocumentFiscal(id);
+
+		// vérification des droits en écriture
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final EditiqueResultat resultat = autreDocumentFiscalManager.envoieImpressionLocalDuplicataLettreBienvenue(id);
+		final RedirectEditLettreBienvenue inbox = new RedirectEditLettreBienvenue(id);
+		final RedirectEditLettreBienvenueApresErreur erreur = new RedirectEditLettreBienvenueApresErreur(id, messageSource);
+		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "lb", inbox, null, erreur);
+	}
+
+	private static class RedirectEditLettreBienvenue implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> {
+		private final long id;
+
+		public RedirectEditLettreBienvenue(long id) {
+			this.id = id;
+		}
+
+		@Override
+		public String doJob(EditiqueResultatReroutageInbox resultat) {
+			return "redirect:/autresdocs/editer.do?id=" + id;
+		}
+	}
+
+	private static class RedirectEditLettreBienvenueApresErreur implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> {
+		private final long id;
+		private final MessageSource messageSource;
+
+		public RedirectEditLettreBienvenueApresErreur(long id, MessageSource messageSource) {
+			this.id = id;
+			this.messageSource = messageSource;
+		}
+
+		@Override
+		public String doJob(EditiqueResultatErreur resultat) {
+			final String message = messageSource.getMessage("global.error.communication.editique", null, WebContextUtils.getDefaultLocale());
+			Flash.error(message);
+			return "redirect:/autresdocs/editer.do?id=" + id;
+		}
+	}
+
+
 }

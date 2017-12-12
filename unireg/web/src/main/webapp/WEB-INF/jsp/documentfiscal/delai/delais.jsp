@@ -6,7 +6,7 @@
 
 <c:if test="${not empty command.delais}">
 
-	<display:table 	name="command.delais" id="delai" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+	<display:table 	name="command.delais" id="delai" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column titleKey="label.date.demande">
 			<unireg:regdate regdate="${delai.dateDemande}" />
 		</display:column>

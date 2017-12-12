@@ -190,6 +190,16 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	}
 
 	@Override
+	public EditiqueResultat imprimeDuplicataLettreBienvenueOnline(LettreBienvenue lettre) throws AutreDocumentFiscalException {
+		try {
+			return editiqueCompositionService.imprimeDuplicataLettreBienvenueOnline(lettre, RegDate.get());
+		}
+		catch (EditiqueException e) {
+			throw new AutreDocumentFiscalException(e);
+		}
+	}
+
+	@Override
 	public DelaiAutreDocumentFiscal addAndSave(AutreDocumentFiscal doc, DelaiAutreDocumentFiscal delai) {
 		return AddAndSaveHelper.addAndSave(doc, delai, hibernateTemplate::merge, new DelaiDocumentFiscalAddAndSaveAccessor<>());
 	}

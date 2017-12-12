@@ -14,6 +14,8 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -120,6 +122,19 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 			}
 		}
 		return views;
+	}
+
+	@Override
+	public EditiqueResultat envoieImpressionLocalDuplicataLettreBienvenue(Long id) throws AutreDocumentFiscalException {
+
+		final LettreBienvenue lettre = (LettreBienvenue) sessionFactory.getCurrentSession().get(LettreBienvenue.class, id);
+
+		String messageInfoImpression = String.format("Impression (%s/%s) d'un duplicata de lettre de bienvenue pour le contribuable %d",
+		                                             AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), lettre.getTiers().getNumero());
+
+		Audit.info(messageInfoImpression);
+
+		return autreDocumentFiscalService.imprimeDuplicataLettreBienvenueOnline(lettre);
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)

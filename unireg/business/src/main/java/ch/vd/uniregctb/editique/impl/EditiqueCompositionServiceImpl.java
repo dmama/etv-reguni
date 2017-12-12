@@ -562,7 +562,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionLettreBienvenueHelper.getTypeDocumentEditique();
 
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document original = impressionLettreBienvenueHelper.buildDocument(lettre, dateTraitement, true);
+		final FichierImpression.Document original = impressionLettreBienvenueHelper.buildDocument(lettre, dateTraitement, true, false);
 		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
 		root.getDocument().add(original);
 		if (copieMandataire != null) {
@@ -572,12 +572,44 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		// sauvegarde de la clé d'archivage
 		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
 		if (infoArchivage != null) {
-			evenementDocumentSortantService.signaleLettreBienvenue(lettre, infoArchivage, false);
+			evenementDocumentSortantService.signaleLettreBienvenue(lettre, infoArchivage, false, false);
 			lettre.setCleArchivage(infoArchivage.getIdDocument());
 		}
 
 		final String nomDocument = impressionLettreBienvenueHelper.construitIdDocument(lettre);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, infoArchivage != null);
+	}
+
+	@Override
+	public EditiqueResultat imprimeDuplicataLettreBienvenueOnline(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
+		return imprimeLettreBienvenueOnline(lettre, dateTraitement, true);
+	}
+
+	private EditiqueResultat imprimeLettreBienvenueOnline(LettreBienvenue lettre, RegDate dateTraitement, boolean isDuplicata) throws EditiqueException {
+		final TypeDocumentEditique typeDocument = impressionLettreBienvenueHelper.getTypeDocumentEditique();
+
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document original = impressionLettreBienvenueHelper.buildDocument(lettre, dateTraitement, false, isDuplicata);
+		final FichierImpression.Document copieMandataire = impressionLettreDecisionDelaiPMHelper.buildCopieMandataire(original, lettre.getEntreprise(), dateTraitement);
+		root.getDocument().add(original);
+		if (copieMandataire != null) {
+			root.getDocument().add(copieMandataire);
+		}
+
+		// sauvegarde de la clé d'archivage
+		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
+		if (infoArchivage != null) {
+			evenementDocumentSortantService.signaleLettreBienvenue(lettre, infoArchivage, isDuplicata, isDuplicata);
+			if (!isDuplicata) {
+				lettre.setCleArchivage(infoArchivage.getIdDocument());
+			}
+		}
+
+		final String description = String.format("Document 'Lettre de bienvenue' du contribuable %s",
+		                                         FormatNumeroHelper.numeroCTBToDisplay(lettre.getTiers().getNumero()));
+
+		final String nomDocument = impressionLettreBienvenueHelper.construitIdDocument(lettre);
+		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, infoArchivage != null, description);
 	}
 
 	@Override

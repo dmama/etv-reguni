@@ -62,6 +62,14 @@ public interface AutreDocumentFiscalService {
 	LettreBienvenue envoyerLettreBienvenueBatch(Entreprise e, RegDate dateTraitement, RegDate dateDebutNouvelAssujettissement) throws AutreDocumentFiscalException;
 
 	/**
+	 *
+	 * @param lettre
+	 * @return
+	 * @throws AutreDocumentFiscalException
+	 */
+	EditiqueResultat imprimeDuplicataLettreBienvenueOnline(LettreBienvenue lettre) throws AutreDocumentFiscalException;
+
+	/**
 	 * Sauve et attache un délai sur un autre document fiscal.
 	 * @param doc le document
 	 * @param delai le délai

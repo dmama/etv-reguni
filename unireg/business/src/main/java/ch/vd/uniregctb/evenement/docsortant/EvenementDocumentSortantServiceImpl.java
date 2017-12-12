@@ -245,11 +245,21 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 		map.put(TypeLettreBienvenue.VD_RC, TypeDocumentSortant.LETTRE_BIENVENUE_RC_VD);
 		return map;
 	}
+	private static final Map<TypeLettreBienvenue, TypeDocumentSortant> TYPE_DUPLICATA_LETTRE_BIENVENUE_SORTANTE = buildMappingTypesDuplicataLettreBienvenueSortante();
+
+	private static Map<TypeLettreBienvenue, TypeDocumentSortant> buildMappingTypesDuplicataLettreBienvenueSortante() {
+		final Map<TypeLettreBienvenue, TypeDocumentSortant> map = new EnumMap<>(TypeLettreBienvenue.class);
+		map.put(TypeLettreBienvenue.APM_VD_NON_RC, TypeDocumentSortant.DUPLICATA_LETTRE_BIENENUE_APM);
+		map.put(TypeLettreBienvenue.HS_HC_ETABLISSEMENT, TypeDocumentSortant.DUPLICATA_LETTRE_BIENVENUE_PM_HC_ETABLISSEMENT);
+		map.put(TypeLettreBienvenue.HS_HC_IMMEUBLE, TypeDocumentSortant.DUPLICATA_LETTRE_BIENVENUE_PM_HC_IMMEUBLE);
+		map.put(TypeLettreBienvenue.VD_RC, TypeDocumentSortant.DUPLICATA_LETTRE_BIENVENUE_RC_VD);
+		return map;
+	}
 
 	@Override
-	public void signaleLettreBienvenue(LettreBienvenue lettre, CTypeInfoArchivage infoArchivage, boolean local) {
+	public void signaleLettreBienvenue(LettreBienvenue lettre, CTypeInfoArchivage infoArchivage, boolean local, boolean duplicata) {
 		signaleDocumentSortant("LB",
-		                       TYPE_LETTRE_BIENVENUE_SORTANTE.get(lettre.getType()),
+		                       (duplicata ? TYPE_DUPLICATA_LETTRE_BIENVENUE_SORTANTE : TYPE_LETTRE_BIENVENUE_SORTANTE).get(lettre.getType()),
 		                       lettre.getEntreprise(),
 		                       local,
 		                       lettre.getPeriodeFiscale(),

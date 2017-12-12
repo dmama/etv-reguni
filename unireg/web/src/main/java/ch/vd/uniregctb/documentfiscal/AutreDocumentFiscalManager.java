@@ -25,6 +25,8 @@ public interface AutreDocumentFiscalManager {
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	List<AutreDocumentFiscalView> getAutresDocumentsFiscauxSansSuivi(long noCtb);
 
+	EditiqueResultat envoieImpressionLocalDuplicataLettreBienvenue(Long id) throws AutreDocumentFiscalException;
+
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	List<AutreDocumentFiscalView> getAutresDocumentsFiscauxAvecSuivi(long noCtb);
 
