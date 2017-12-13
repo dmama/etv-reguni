@@ -43,7 +43,7 @@
 			<display:column sortable ="true" titleKey="label.date.delai.accorde" sortProperty="delaiRetour">
 				<unireg:regdate regdate="${docFiscal.delaiRetour}"/>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.date.rappel" sortProperty="dateRetour">
+			<display:column sortable ="true" titleKey="label.date.rappel" sortProperty="dateRappel">
 				<unireg:regdate regdate="${docFiscal.dateRappel}"/>
 				<c:choose>
 					<c:when test="${docFiscal.urlVisualisationExterneRappel != null}">

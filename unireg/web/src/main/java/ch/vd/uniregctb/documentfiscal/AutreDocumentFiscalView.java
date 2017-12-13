@@ -14,10 +14,12 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 public class AutreDocumentFiscalView extends DocumentFiscalView {
 
 	private final RegDate dateEnvoi;
+	private final RegDate dateRappel;
 	private final String libelleTypeDocument;
 	private final String libelleSousType;
 	private final boolean avecCopieConformeEnvoi;
 	private final String urlVisualisationExterneDocument;
+	private final String urlVisualisationExterneRappel;
 
 	private int periodeFiscale;
 
@@ -37,7 +39,18 @@ public class AutreDocumentFiscalView extends DocumentFiscalView {
 				.filter(StringUtils::isNotBlank)
 				.map(cle -> infraService.getUrlVisualisationDocument(this.getTiersId(), doc.getPeriodeFiscale(), cle))
 				.orElse(null);
-
+		if (doc instanceof AutreDocumentFiscalAvecSuivi) {
+			final AutreDocumentFiscalAvecSuivi docFisc = (AutreDocumentFiscalAvecSuivi) doc;
+			this.dateRappel = docFisc.getDateRappel();
+			this.urlVisualisationExterneRappel = Optional.ofNullable(docFisc.getCleDocumentRappel())
+					.filter(StringUtils::isNotBlank)
+					.map(cle -> infraService.getUrlVisualisationDocument(this.getTiersId(), doc.getPeriodeFiscale(), cle))
+					.orElse(null);
+		}
+		else {
+			this.dateRappel = null;
+			this.urlVisualisationExterneRappel = null;
+		}
 		if (doc instanceof DemandeBilanFinal) {
 			this.dateRequisitionRadiation = ((DemandeBilanFinal) doc).getDateRequisitionRadiation();
 			this.periodeFiscale = doc.getPeriodeFiscale();
@@ -58,6 +71,10 @@ public class AutreDocumentFiscalView extends DocumentFiscalView {
 		return dateEnvoi;
 	}
 
+	public RegDate getDateRappel() {
+		return dateRappel;
+	}
+
 	public String getLibelleTypeDocument() {
 		return libelleTypeDocument;
 	}
@@ -72,6 +89,10 @@ public class AutreDocumentFiscalView extends DocumentFiscalView {
 
 	public String getUrlVisualisationExterneDocument() {
 		return urlVisualisationExterneDocument;
+	}
+
+	public String getUrlVisualisationExterneRappel() {
+		return urlVisualisationExterneRappel;
 	}
 
 	public int getPeriodeFiscale() {

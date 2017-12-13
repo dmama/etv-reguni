@@ -166,17 +166,9 @@
 		<!-- Debut Caracteristiques autres documents avec suivi -->
 		<fieldset>
 			<legend><span><fmt:message key="label.autres.documents.fiscaux.suivis" /></span></legend>
-<%--
-			<authz:authorize ifAnyGranted="ROLE_GEST_QUIT_LETTRE_BIENVENUE">
-				<table border="0">
-					<tr><td>
-						<unireg:linkTo name="Ajouter" action="/autresdocs/choisir.do" method="get" params="{tiersId:${docsAvecSuivi.ctbId},url_memorize:false}" title="Ajouter un autre document fiscal [FIXME]" link_class="add noprint"/>
-					</td></tr>
-				</table>
-			</authz:authorize>
---%>
 
 			<c:if test="${not empty docsAvecSuivi.docs}">
+				<%--@elvariable id="doc" type="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView"--%>
 				<display:table name="docsAvecSuivi.docs" id="doc" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" requestURI="/autresdocs/edit-list.do" sort="list">
 					<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.aucun.doc.trouve" /></span></display:setProperty>
 					<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.doc.trouve" /></span></display:setProperty>
@@ -191,9 +183,18 @@
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.emission" sortProperty="dateDebut">
 						<unireg:regdate regdate="${doc.dateEnvoi}"/>
+						<c:if test="${doc.urlVisualisationExterneDocument != null}">
+							&nbsp;<a href="#" class="pdf" title="Visualisation du courrier" onclick="VisuExterneDoc.openWindow('${doc.urlVisualisationExterneDocument}');">&nbsp;</a>
+						</c:if>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.delai.accorde" sortProperty="delaiAccorde">
 						<unireg:regdate regdate="${doc.delaiAccorde}"/>
+					</display:column>
+					<display:column sortable ="true" titleKey="label.date.rappel" sortProperty="dateRappel">
+						<unireg:regdate regdate="${doc.dateRappel}"/>
+						<c:if test="${doc.urlVisualisationExterneRappel != null}">
+							&nbsp;<a href="#" class="pdf" title="Visualisation du courrier de rappel" onclick="VisuExterneDoc.openWindow('${doc.urlVisualisationExterneRappel}');">&nbsp;</a>
+						</c:if>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.retour" sortProperty="dateRetour">
 						<unireg:regdate regdate="${doc.dateRetour}"/>
