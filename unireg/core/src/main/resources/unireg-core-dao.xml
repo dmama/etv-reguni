@@ -68,6 +68,8 @@
 	</bean>
 	<bean id="delaiDeclarationDAO" class="ch.vd.uniregctb.declaration.DelaiDeclarationDAOImpl" parent="hibernateDao">
 	</bean>
+	<bean id="delaiAutreDocumentFiscalDAO" class="ch.vd.uniregctb.documentfiscal.DelaiAutreDocumentFiscalDAOImpl" parent="hibernateDao">
+	</bean>
 	<bean id="identCtbDAO" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAOImpl" parent="hibernateDao">
 	</bean>
 	<bean id="remarqueDAO" class="ch.vd.uniregctb.tiers.dao.RemarqueDAOImpl" parent="hibernateDao"/>
@@ -75,6 +77,7 @@
 	<bean id="periodiciteDAO" class="ch.vd.uniregctb.declaration.PeriodiciteDAOImpl" parent="hibernateDao"/>
 
 	<bean id="etatDeclarationDAO" class="ch.vd.uniregctb.declaration.EtatDeclarationDAOImpl" parent="hibernateDao"/>
+	<bean id="etatAutreDocumentFiscalDAO" class="ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalDAOImpl" parent="hibernateDao"/>
 
 	<bean id="reqdesEvenementDAO" class="ch.vd.uniregctb.reqdes.EvenementReqDesDAOImpl" parent="hibernateDao"/>
 	<bean id="reqdesUniteTraitementDAO" class="ch.vd.uniregctb.reqdes.UniteTraitementDAOImpl" parent="hibernateDao"/>

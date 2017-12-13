@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.documentfiscal;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
@@ -12,10 +13,16 @@ import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
  */
 @Entity
 @DiscriminatorValue(value = "AUTRE_RETOURNE")
-public class EtatAutreDocumentFiscalRetourne extends EtatAutreDocumentFiscal {
+public class EtatAutreDocumentFiscalRetourne extends EtatAutreDocumentFiscal implements SourceQuittancement {
+
+	/**
+	 * [SIFISC-1782] La source du quittancement de la déclaration (CEDI, ADDI ou manuel).
+	 */
+	private String source;
 
 	public EtatAutreDocumentFiscalRetourne() {
 		super();
+		this.source = SOURCE_WEB;
 	}
 
 	@Transient
@@ -26,5 +33,16 @@ public class EtatAutreDocumentFiscalRetourne extends EtatAutreDocumentFiscal {
 
 	public EtatAutreDocumentFiscalRetourne(RegDate dateObtention) {
 		super(dateObtention);
+		this.source = SOURCE_WEB;
+	}
+
+	@Override
+	@Column(name = "SOURCE")
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 }

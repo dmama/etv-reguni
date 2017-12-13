@@ -54,7 +54,7 @@
 		<c:choose>
 			<c:when test="${mode == 'visu'}">
 				<c:if test="${!demande.annule}">
-					<a href="#" class="detail" title="DocFiscal" onclick="Decl.open_details_ddici(<c:out value="${demande.id}"/>); return false;">&nbsp;</a>
+					<a href="#" class="detail" title="Détail de la demande de dégrèvement ICI" onclick="Decl.open_details_ddici(<c:out value="${demande.id}"/>); return false;">&nbsp;</a>
 				</c:if>
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${demande.id}"/>
 			</c:when>

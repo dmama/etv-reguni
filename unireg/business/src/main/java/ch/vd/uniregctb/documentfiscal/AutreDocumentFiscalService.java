@@ -62,6 +62,30 @@ public interface AutreDocumentFiscalService {
 	LettreBienvenue envoyerLettreBienvenueBatch(Entreprise e, RegDate dateTraitement, RegDate dateDebutNouvelAssujettissement) throws AutreDocumentFiscalException;
 
 	/**
+	 *
+	 * @param lettre
+	 * @return
+	 * @throws AutreDocumentFiscalException
+	 */
+	EditiqueResultat imprimeDuplicataLettreBienvenueOnline(LettreBienvenue lettre) throws AutreDocumentFiscalException;
+
+	/**
+	 * Sauve et attache un délai sur un autre document fiscal.
+	 * @param doc le document
+	 * @param delai le délai
+	 * @return l'instance persistée de délai
+	 */
+	DelaiAutreDocumentFiscal addAndSave(AutreDocumentFiscal doc, DelaiAutreDocumentFiscal delai);
+
+	/**
+	 * Sauve et attache un état sur un autre document fiscal.
+	 * @param doc le document
+	 * @param etat l'état
+	 * @return l'instance persistée de l'état
+	 */
+	<T extends EtatAutreDocumentFiscal> T addAndSave(AutreDocumentFiscal doc, T etat);
+
+	/**
 	 * @param e entreprise pour laquelle on doit envoyer un formulaire de demande de dégrèvement (en mode batch)
 	 * @param immeuble immeuble concerné par la demande de dégrèvement
 	 * @param periodeFiscale période fiscale à partir de laquelle le dégrèvement peut intervenir

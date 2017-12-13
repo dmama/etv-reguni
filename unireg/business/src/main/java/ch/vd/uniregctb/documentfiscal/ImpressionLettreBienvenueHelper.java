@@ -10,7 +10,7 @@ public interface ImpressionLettreBienvenueHelper extends EditiqueAbstractHelper 
 
 	TypeDocumentEditique getTypeDocumentEditique();
 
-	FichierImpression.Document buildDocument(LettreBienvenue lettre, RegDate dateTraitement, boolean batch) throws EditiqueException;
+	FichierImpression.Document buildDocument(LettreBienvenue lettre, RegDate dateTraitement, boolean batch, boolean duplicata) throws EditiqueException;
 
 	String construitIdDocument(LettreBienvenue lettre);
 

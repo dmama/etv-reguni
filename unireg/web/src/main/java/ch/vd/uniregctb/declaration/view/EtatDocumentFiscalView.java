@@ -10,11 +10,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
 import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
 import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscalAvecDocumentArchive;
+import ch.vd.uniregctb.documentfiscal.SourceQuittancement;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -53,8 +53,8 @@ public class EtatDocumentFiscalView implements Comparable<EtatDocumentFiscalView
 		this.etat = etat.getEtat();
 		this.etatMessage = messageSource.getMessage("option.etat.avancement.f." + this.etat.name(), null, WebContextUtils.getDefaultLocale());
 
-		if (etat instanceof EtatDeclarationRetournee) {
-			this.source = ((EtatDeclarationRetournee) etat).getSource();
+		if (etat instanceof SourceQuittancement) {
+			this.source = ((SourceQuittancement) etat).getSource();
 			if (this.source == null) {
 				this.sourceMessage = messageSource.getMessage("option.source.quittancement.UNKNOWN", null, WebContextUtils.getDefaultLocale());
 			}

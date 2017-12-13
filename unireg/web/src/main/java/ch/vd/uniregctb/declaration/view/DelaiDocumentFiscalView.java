@@ -28,7 +28,7 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 	private String urlVisualisationExterneDocument;
 	private Long idDocumentFiscal;
 	private Long tiersId;
-	private int declarationPeriode;
+	private int periode;
 	private DateRange declarationRange;
 	private String logModifUser;
 	private Timestamp logModifDate;
@@ -126,12 +126,12 @@ public class DelaiDocumentFiscalView implements Comparable<DelaiDocumentFiscalVi
 		this.tiersId = tiersId;
 	}
 
-	public int getDeclarationPeriode() {
-		return declarationPeriode;
+	public int getPeriode() {
+		return periode;
 	}
 
-	public void setDeclarationPeriode(int declarationPeriode) {
-		this.declarationPeriode = declarationPeriode;
+	public void setPeriode(int periode) {
+		this.periode = periode;
 	}
 
 	public DateRange getDeclarationRange() {

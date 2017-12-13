@@ -6,6 +6,17 @@
 <unireg:setAuth var="autorisations" tiersId="${command.entreprise.id}"/>
 
 <span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
+
+<c:if test="${autorisations.autresDocumentsFiscaux}">
+	<table border="0">
+		<tr><td>
+			<c:if test="${empty param['message'] && empty param['retour']}">
+				<unireg:raccourciModifier link="../autresdocs/edit-list.do?pmId=${command.tiers.numero}" tooltip="Modifier" display="label.bouton.modifier"/>
+			</c:if>
+		</td></tr>
+	</table>
+</c:if>
+
 <fieldset>
 	<legend><span><fmt:message key="label.autres.documents.fiscaux.suivis"/></span></legend>
 
@@ -52,7 +63,7 @@
 			</display:column>
 			<display:column class="action">
 				<c:if test="${!docFiscal.annule}">
-					<a href="#" class="detail" title="DocFiscal" onclick="Decl.open_details_lb(<c:out value="${docFiscal.id}"/>); return false;">&nbsp;</a>
+					<a href="#" class="detail" title="Détail du document fiscal" onclick="Decl.open_details_lb(<c:out value="${docFiscal.id}"/>); return false;">&nbsp;</a>
 				</c:if>
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>
 			</display:column>
@@ -64,16 +75,6 @@
 
 <fieldset>
 	<legend><span><fmt:message key="label.autres.documents.fiscaux.non.suivis"/></span></legend>
-
-	<c:if test="${autorisations.autresDocumentsFiscaux}">
-		<table border="0">
-			<tr><td>
-				<c:if test="${empty param['message'] && empty param['retour']}">
-					<unireg:raccourciModifier link="../autresdocs/edit-list.do?pmId=${command.tiers.numero}" tooltip="Modifier" display="label.bouton.modifier"/>
-				</c:if>
-			</td></tr>
-		</table>
-	</c:if>
 
 	<c:if test="${not empty command.autresDocumentsFiscauxNonSuivis}">
 		<display:table name="${command.autresDocumentsFiscauxNonSuivis}" id="docFiscal" htmlId="docFiscalSansSuivi" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" sort="list">
@@ -97,7 +98,7 @@
 			</display:column>
 			<display:column class="action">
 				<c:if test="${!docFiscal.annule}">
-					<a href="#" class="detail" title="DocFiscal" onclick="Decl.open_details_doc_sans_suivi(<c:out value="${docFiscal.id}"/>); return false;">&nbsp;</a>
+					<a href="#" class="detail" title="Détail du document fiscal" onclick="Decl.open_details_doc_sans_suivi(<c:out value="${docFiscal.id}"/>); return false;">&nbsp;</a>
 				</c:if>
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${docFiscal.id}"/>
 			</display:column>

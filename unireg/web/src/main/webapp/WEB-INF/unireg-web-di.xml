@@ -46,7 +46,7 @@
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
 		<property name="parametres" ref="parametreAppService" />
-		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
+		<property name="delaiDocumentFiscalDAO" ref="delaiDeclarationDAO" />
 		<property name="validationService" ref="validationService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />

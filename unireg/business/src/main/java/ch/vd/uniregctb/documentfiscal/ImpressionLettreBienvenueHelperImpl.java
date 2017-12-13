@@ -12,6 +12,7 @@ import ch.vd.editique.unireg.CTypeInfoEnteteDocument;
 import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.editique.unireg.STypeLettreBienvenue;
 import ch.vd.editique.unireg.STypeZoneAffranchissement;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.editique.ConstantesEditique;
@@ -33,12 +34,13 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperI
 	}
 
 	@Override
-	public FichierImpression.Document buildDocument(LettreBienvenue lettre, RegDate dateTraitement, boolean batch) throws EditiqueException {
+	public FichierImpression.Document buildDocument(LettreBienvenue lettre, RegDate dateTraitement, boolean batch, boolean duplicata) throws EditiqueException {
 		try {
 			final Entreprise entreprise = lettre.getEntreprise();
 			final CTypeInfoDocument infoDocument = buildInfoDocument(getAdresseEnvoi(entreprise), entreprise);
 			final CTypeInfoArchivage infoArchivage = buildInfoArchivage(getTypeDocumentEditique(), construitCleArchivage(lettre), entreprise.getNumero(), dateTraitement);
-			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, lettre.getDateEnvoi(), TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
+			final RegDate dateEnvoi = duplicata ? dateTraitement : lettre.getDateEnvoi();
+			final CTypeInfoEnteteDocument infoEnteteDocument = buildInfoEnteteDocument(entreprise, dateEnvoi, TRAITE_PAR, NOM_SERVICE_EXPEDITEUR, infraService.getACIOIPM(), infraService.getCAT());
 			final FichierImpression.Document.LettreBienvenue lb = new FichierImpression.Document.LettreBienvenue(mapType(lettre.getType()));
 
 			final FichierImpression.Document document = new FichierImpression.Document();
@@ -92,14 +94,14 @@ public class ImpressionLettreBienvenueHelperImpl extends EditiqueAbstractHelperI
 	public String construitIdDocument(LettreBienvenue lettre) {
 		return String.format("LB %s %s",
 		                     StringUtils.leftPad(lettre.getEntreprise().getNumero().toString(), 9, '0'),
-		                     new SimpleDateFormat("yyyyMMddHHmmssSSS").format(lettre.getLogCreationDate()));
+		                     new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 	}
 
 	@Override
 	public String construitCleArchivage(LettreBienvenue lettre) {
 		return String.format("%s %s",
 		                     StringUtils.rightPad("Lettre bienvenue", 19, ' '),
-		                     new SimpleDateFormat("MMddHHmmssSSS").format(lettre.getLogCreationDate())
+		                     new SimpleDateFormat("MMddHHmmssSSS").format(DateHelper.getCurrentDate())
 		);
 	}
 }

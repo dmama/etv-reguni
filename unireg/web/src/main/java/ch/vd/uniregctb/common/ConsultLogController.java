@@ -18,6 +18,8 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
 import ch.vd.uniregctb.etiquette.EtiquetteTiers;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
@@ -89,7 +91,9 @@ public class ConsultLogController {
 		EvenementRFImport(EvenementRFImport.class),
 		EvenementRFMutation(EvenementRFMutation.class),
 		AllegementFoncier(AllegementFoncier.class),
-		DroitRF(DroitRF.class);
+		DroitRF(DroitRF.class),
+		DelaiDocumentFiscal(DelaiDocumentFiscal.class),
+		EtatDocumentFiscal(EtatDocumentFiscal.class);
 
 		private final Class<? extends HibernateEntity> entityClass;
 

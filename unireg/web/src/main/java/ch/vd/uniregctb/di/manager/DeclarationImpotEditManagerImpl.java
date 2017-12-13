@@ -112,7 +112,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private TacheDAO tacheDAO;
 	private EditiqueCompositionService editiqueCompositionService;
 	private MessageSource messageSource;
-	private DelaiDeclarationDAO delaiDeclarationDAO;
+	private DelaiDeclarationDAO delaiDocumentFiscalDAO;
 	private ValidationService validationService;
 	private ParametreAppService parametres;
 	private BamMessageSender bamMessageSender;
@@ -643,7 +643,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveDelai(Long idDelai, EtatDelaiDocumentFiscal etat, RegDate delaiAccordeAu) {
-		final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+		final DelaiDeclaration delai = delaiDocumentFiscalDAO.get(idDelai);
 		delai.setDateTraitement(RegDate.get());
 		delai.setEtat(etat);
 		delai.setDelaiAccordeAu(delaiAccordeAu);
@@ -685,7 +685,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalConfirmationDelaiPP(Long idDI, Long idDelai) throws EditiqueException {
 		try {
-			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+			final DelaiDeclaration delai = delaiDocumentFiscalDAO.get(idDelai);
 			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) diDAO.get(idDI);
 			final Pair<EditiqueResultat, String> resultat = editiqueCompositionService.imprimeConfirmationDelaiOnline(di, delai);
 			delai.setCleArchivageCourrier(resultat.getRight());
@@ -700,7 +700,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocaleLettreDecisionDelaiPM(Long idDelai) throws EditiqueException {
 		try {
-			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+			final DelaiDeclaration delai = delaiDocumentFiscalDAO.get(idDelai);
 			final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) delai.getDeclaration();
 			final Pair<EditiqueResultat, String> resultat;
 			switch (delai.getEtat()) {
@@ -723,7 +723,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Transactional(rollbackFor = Throwable.class)
 	public void envoieImpressionBatchLettreDecisionDelaiPM(Long idDelai) throws EditiqueException {
 		try {
-			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+			final DelaiDeclaration delai = delaiDocumentFiscalDAO.get(idDelai);
 			final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) delai.getDeclaration();
 			final String cle;
 			switch (delai.getEtat()) {
@@ -804,8 +804,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDelaiDeclarationDAO(DelaiDeclarationDAO delaiDeclarationDAO) {
-		this.delaiDeclarationDAO = delaiDeclarationDAO;
+	public void setDelaiDocumentFiscalDAO(DelaiDeclarationDAO delaiDocumentFiscalDAO) {
+		this.delaiDocumentFiscalDAO = delaiDocumentFiscalDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

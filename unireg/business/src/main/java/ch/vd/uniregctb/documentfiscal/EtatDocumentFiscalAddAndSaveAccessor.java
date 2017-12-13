@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.uniregctb.documentfiscal;
 
 import java.util.Collection;
 import java.util.function.UnaryOperator;
@@ -6,18 +6,16 @@ import java.util.function.UnaryOperator;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AddAndSaveHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
-import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
 
 /**
- * @param <D> type de déclaration
- * @param <E> type d'état de déclaration
+ * @param <D> type de document fiscal
+ * @param <E> type d'état de document fiscal
  * @see AddAndSaveHelper#addAndSave(HibernateEntity, HibernateEntity, UnaryOperator, AddAndSaveHelper.EntityAccessor)
  */
 public final class EtatDocumentFiscalAddAndSaveAccessor<D extends DocumentFiscal, E extends EtatDocumentFiscal> implements AddAndSaveHelper.EntityAccessor<D, E> {
 
 	@Override
-	public Collection<? extends HibernateEntity> getEntities(D container) {
+	public Collection<? extends EtatDocumentFiscal> getEntities(D container) {
 		return container.getEtats();
 	}
 

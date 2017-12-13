@@ -7,20 +7,26 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
@@ -30,6 +36,8 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 	private MessageSource messageSource;
 	private AutreDocumentFiscalService autreDocumentFiscalService;
 	private ServiceInfrastructureService infraService;
+	private SessionFactory sessionFactory;
+	private DelaiAutreDocumentFiscalDAO delaiAutreDocumentFiscalDAO;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -48,9 +56,17 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		this.messageSource = messageSource;
 	}
 
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	public void setDelaiAutreDocumentFiscalDAO(DelaiAutreDocumentFiscalDAO delaiDocumentFiscalDAO) {
+		this.delaiAutreDocumentFiscalDAO = delaiDocumentFiscalDAO;
+	}
+
 	@Transactional(rollbackFor = Throwable.class)
 	@Override
-	public ResultatQuittancement quittanceLettreBienvenue(long noCtb, RegDate dateRetour) {
+	public ResultatQuittancement quittanceLettreBienvenuePourCtb(long noCtb, RegDate dateRetour) {
 		final Entreprise entreprise;
 		try {
 			entreprise = getEntreprise(noCtb);
@@ -73,6 +89,23 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		return ResultatQuittancement.rienAQuittancer(TypeAutreDocumentFiscalQuittanceable.LETTRE_BIENVENUE);
 	}
 
+	@Override
+	public boolean quittanceLettreBienvenue(long id, RegDate dateRetour) {
+
+		final LettreBienvenue lettreBienvenue = (LettreBienvenue) sessionFactory.getCurrentSession().get(LettreBienvenue.class, id);
+		if (lettreBienvenue == null) {
+			throw new ObjectNotFoundException(String.format("Lettre de bienvenue introuvable pour le numéro %s", id));
+		}
+		if (dateRetour.isAfter(RegDate.get())) {
+			throw new IllegalArgumentException("La date de retour de la lettre de bienvenue ne peut être ultérieure à la date du jour.");
+		}
+		if (lettreBienvenue.getEtat() != TypeEtatDocumentFiscal.RETOURNE) {
+			lettreBienvenue.setDateRetour(dateRetour);
+			return true;
+		}
+		return false;
+	}
+
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@Override
 	public List<AutreDocumentFiscalView> getAutresDocumentsFiscauxSansSuivi(long noCtb) {
@@ -85,6 +118,38 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		final List<AutreDocumentFiscalView> views = new ArrayList<>(adfs.size());
 		for (AutreDocumentFiscal adf : CollectionsUtils.revertedOrder(adfs)) {
 			if (!(adf instanceof AutreDocumentFiscalAvecSuivi)) {
+				views.add(AutreDocumentFiscalViewFactory.buildView(adf, infraService, messageSource));
+			}
+		}
+		return views;
+	}
+
+	@Override
+	public EditiqueResultat envoieImpressionLocalDuplicataLettreBienvenue(Long id) throws AutreDocumentFiscalException {
+
+		final LettreBienvenue lettre = (LettreBienvenue) sessionFactory.getCurrentSession().get(LettreBienvenue.class, id);
+
+		String messageInfoImpression = String.format("Impression (%s/%s) d'un duplicata de lettre de bienvenue pour le contribuable %d",
+		                                             AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), lettre.getTiers().getNumero());
+
+		Audit.info(messageInfoImpression);
+
+		return autreDocumentFiscalService.imprimeDuplicataLettreBienvenueOnline(lettre);
+	}
+
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@Override
+	public List<AutreDocumentFiscalView> getAutresDocumentsFiscauxAvecSuivi(long noCtb) {
+		final Entreprise entreprise = getEntreprise(noCtb);
+
+		final List<AutreDocumentFiscal> adfs = entreprise.getAutresDocumentsFiscaux(AutreDocumentFiscal.class, true, true);
+		if (adfs.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<AutreDocumentFiscalView> views = new ArrayList<>(adfs.size());
+		for (AutreDocumentFiscal adf : CollectionsUtils.revertedOrder(adfs)) {
+			if (adf instanceof AutreDocumentFiscalAvecSuivi && !(adf instanceof DemandeDegrevementICI)) {
 				views.add(AutreDocumentFiscalViewFactory.buildView(adf, infraService, messageSource));
 			}
 		}
@@ -132,5 +197,46 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 			return autreDocumentFiscalService.envoyerLettreTypeInformationLiquidationOnline(entreprise, RegDate.get());
 		}
 		throw new IllegalArgumentException("Type de document non-supporté : " + view.getTypeDocument());
+	}
+
+	/**
+	 * Persiste en base le delai
+	 */
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public Long saveNouveauDelai(Long idDoc, RegDate dateDemande, RegDate delaiAccordeAu, EtatDelaiDocumentFiscal etat) {
+		final AutreDocumentFiscal docFisc = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, idDoc);
+		DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
+		delai.setDateTraitement(RegDate.get());
+		delai.setDateDemande(dateDemande);
+		delai.setEtat(etat);
+		delai.setDelaiAccordeAu(delaiAccordeAu);
+		delai = autreDocumentFiscalService.addAndSave(docFisc, delai);
+		return delai.getId();
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public void saveDelai(Long idDelai, EtatDelaiDocumentFiscal etat, RegDate delaiAccordeAu) {
+		final DelaiAutreDocumentFiscal delai = delaiAutreDocumentFiscalDAO.get(idDelai);
+		delai.setDateTraitement(RegDate.get());
+		delai.setEtat(etat);
+		delai.setDelaiAccordeAu(delaiAccordeAu);
+	}
+
+	@Override
+	public void annulerAutreDocumentFiscal(AutreDocumentFiscal doc) {
+		if (doc.isAnnule()) {
+			throw new IllegalArgumentException(String.format("Le document fiscal n°%s est déjà annulé! Impossible de l'annuler à nouveau.", doc.getId()));
+		}
+		doc.setAnnule(true);
+	}
+
+	@Override
+	public void desannulerAutreDocumentFiscal(AutreDocumentFiscal doc) {
+		if (!doc.isAnnule()) {
+			throw new IllegalArgumentException(String.format("Le document fiscal n°%s n'est pas annulé! Impossible de le désannuler.", doc.getId()));
+		}
+		doc.setAnnule(false);
 	}
 }

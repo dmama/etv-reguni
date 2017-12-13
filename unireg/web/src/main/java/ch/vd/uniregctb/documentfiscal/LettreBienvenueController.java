@@ -43,7 +43,7 @@ public class LettreBienvenueController {
 	@RequestMapping(value = "/quittancement/beep.do", method = RequestMethod.POST)
 	public String doQuittancement(@RequestParam(value = "noctb", required = true) long noCtb) throws Exception {
 		checkDroitQuittanceurEnSerie(securityProvider);
-		final ResultatQuittancement result = autreDocumentFiscalManager.quittanceLettreBienvenue(noCtb, RegDate.get());
+		final ResultatQuittancement result = autreDocumentFiscalManager.quittanceLettreBienvenuePourCtb(noCtb, RegDate.get());
 		if (result.isOk()) {
 			Flash.message(String.format("La lettre de bienvenue de l'entreprise %s a été quittancée avec succès.", FormatNumeroHelper.numeroCTBToDisplay(noCtb)));
 		}
