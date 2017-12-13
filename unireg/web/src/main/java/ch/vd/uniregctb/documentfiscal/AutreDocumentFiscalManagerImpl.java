@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -129,8 +130,10 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 
 		final LettreBienvenue lettre = (LettreBienvenue) sessionFactory.getCurrentSession().get(LettreBienvenue.class, id);
 
-		String messageInfoImpression = String.format("Impression (%s/%s) d'un duplicata de lettre de bienvenue pour le contribuable %d",
-		                                             AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), lettre.getTiers().getNumero());
+		final AutreDocumentFiscalView docView = AutreDocumentFiscalViewFactory.buildView(lettre, infraService, messageSource);
+		String messageInfoImpression = String.format("Impression (%s/%s) d'un duplicata de la lettre de bienvenue (%s) pour le contribuable %s",
+		                                             AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(),
+		                                             docView.getLibelleSousType(), FormatNumeroHelper.numeroCTBToDisplay(lettre.getTiers().getNumero()));
 
 		Audit.info(messageInfoImpression);
 
