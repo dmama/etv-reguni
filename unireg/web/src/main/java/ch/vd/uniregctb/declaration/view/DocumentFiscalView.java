@@ -9,10 +9,10 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
 import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.SourceQuittancement;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeEtatDocumentFiscal;
 
@@ -35,8 +35,8 @@ public abstract class DocumentFiscalView implements Annulable {
 
 		final EtatDocumentFiscal etat = documentFiscal.getDernierEtat();
 		this.etat = (etat == null ? null : etat.getEtat());
-		if (etat instanceof EtatDeclarationRetournee) {
-			this.sourceRetour = ((EtatDeclarationRetournee) etat).getSource();
+		if (etat instanceof SourceQuittancement) {
+			this.sourceRetour = ((SourceQuittancement) etat).getSource();
 		}
 		else {
 			this.sourceRetour = null;
