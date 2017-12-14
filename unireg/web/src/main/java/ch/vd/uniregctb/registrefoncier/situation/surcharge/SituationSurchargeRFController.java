@@ -94,7 +94,7 @@ public class SituationSurchargeRFController {
 		model.addAttribute("situations", views);
 		model.addAttribute("count", count);
 		model.addAttribute("pageSize", SITUATION_PAGE_SIZE);
-		model.addAttribute("params", paramString);
+		model.addAttribute("retourParams", paramString);
 
 		return "registrefoncier/situation/surcharge/list";
 	}
@@ -146,7 +146,7 @@ public class SituationSurchargeRFController {
 		model.addAttribute("otherSituations", otherSituations);
 		model.addAttribute("mapFaitieresFractions", mapFaitieresFractions);
 		model.addAttribute("urlGeoVD", urlGeoVD);
-		model.addAttribute("params", paramString);
+		model.addAttribute("retourParams", paramString);
 	}
 
 	@InitBinder(value = "surcharge")
