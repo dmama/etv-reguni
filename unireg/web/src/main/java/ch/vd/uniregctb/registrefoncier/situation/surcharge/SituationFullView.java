@@ -40,27 +40,7 @@ public class SituationFullView {
 	 */
 	private ImmeubleSummaryView immeuble;
 
-	/**
-	 * Lien url vers le détail d'une situation
-	 */
-	private String showAction;
-
-	/**
-	 * lien url vers la liste
-	 */
-	private String listAction;
-
-	/**
-	 * Paramètres :
-	 * <ul>
-	 *     <li>Ordre de tri (ascendant/descendant)</li>
-	 *     <li>Critère de tri (colonne de tri)</li>
-	 *     <li>Numéro de la page (pagination)</li>
-	 * </ul>
-	 */
-	private String params;
-
-	public SituationFullView(@NotNull SituationRF situation, @NotNull CapitastraURLProvider capitastraURLProvider, @NotNull String showAction, String listAction) {
+	public SituationFullView(@NotNull SituationRF situation, @NotNull CapitastraURLProvider capitastraURLProvider) {
 		this.id = situation.getId();
 		this.dateDebut = situation.getDateDebut();
 		this.dateFin = situation.getDateFin();
@@ -68,8 +48,6 @@ public class SituationFullView {
 		this.indexes = SituationSummaryView.buildIndexes(situation.getIndex1(), situation.getIndex2(), situation.getIndex3());
 		this.communeRF = new CommuneView(situation.getCommune().getNoOfs(), situation.getCommune().getNomRf());
 		this.immeuble = new ImmeubleSummaryView(situation.getImmeuble(), capitastraURLProvider);
-		this.showAction = showAction;
-		this.listAction = listAction;
 	}
 
 	public Long getId() {
@@ -99,8 +77,4 @@ public class SituationFullView {
 	public ImmeubleSummaryView getImmeuble() {
 		return immeuble;
 	}
-
-	public String getShowAction() { return showAction; }
-
-	public String getListAction() { return listAction; }
 }

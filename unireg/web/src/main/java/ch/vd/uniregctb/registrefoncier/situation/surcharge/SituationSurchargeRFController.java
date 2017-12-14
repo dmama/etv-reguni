@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,18 +84,17 @@ public class SituationSurchargeRFController {
 
 		// [SIFISC-26599] Construction de la liste de paramètres pour lien url
 		final String params = controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_SITUATIONS);
-		String paramsString = (params!=null && !params.isEmpty())?params+"&":"";
-		final String action = "/registrefoncier/situation/surcharge/show.do?"+paramsString+"id=";
-
+		String paramString = StringUtils.isBlank(params)?"":"&amp;"+params;
 		final List<SituationRF> situations = situationRFDAO.findSituationNonSurchargeesSurCommunes(noOfsCommunes, pagination);
 		final List<SituationSummaryView> views = situations.stream()
-				.map(situation -> new SituationSummaryView(situation, serviceInfrastructureService, action+situation.getId()))
+				.map(situation -> new SituationSummaryView(situation, serviceInfrastructureService))
 				.collect(Collectors.toList());
 		final int count = situationRFDAO.countSituationsNonSurchargeesSurCommunes(noOfsCommunes);
 
 		model.addAttribute("situations", views);
 		model.addAttribute("count", count);
 		model.addAttribute("pageSize", SITUATION_PAGE_SIZE);
+		model.addAttribute("params", paramString);
 
 		return "registrefoncier/situation/surcharge/list";
 	}
@@ -110,17 +110,14 @@ public class SituationSurchargeRFController {
 			throw new ObjectNotFoundException("La situation avec l'id=[" + idSituation + "] n'existe pas.");
 		}
 
-		// [SIFISC-26599] Construction de la liste de paramètres pour lien url
-		String params = controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_SITUATIONS);
-		initModelForCurrentSituation(model, situation, params);
-
+		initModelForCurrentSituation(model, situation, request);
 
 		model.addAttribute("surcharge", new SituationSurchargeView(situation));
 
 		return "registrefoncier/situation/surcharge/show";
 	}
 
-	private void initModelForCurrentSituation(@NotNull Model model, @NotNull SituationRF situation, String params) {
+	private void initModelForCurrentSituation(@NotNull Model model, @NotNull SituationRF situation, HttpServletRequest request) {
 
 		// on construit la map commune faîtière -> liste des fractions
 		final List<Commune> communes = serviceInfrastructureService.getCommunesVD();
@@ -133,21 +130,23 @@ public class SituationSurchargeRFController {
 		                                                          ListUtils::union));
 
 		// La situation courante
-		String paramsString = (params!=null && !params.isEmpty())?"?"+params:"";
-		final String listAction = "/registrefoncier/situation/surcharge/list.do"+paramsString;
-		final String showAction = "/registrefoncier/situation/surcharge/show.do"+paramsString;
-		final SituationFullView currentSituation = new SituationFullView(situation, registreFoncierService::getCapitastraURL, showAction, listAction);
+		final SituationFullView currentSituation = new SituationFullView(situation, registreFoncierService::getCapitastraURL);
 
 		// Les autres situations
 		final List<SituationSummaryView> otherSituations = situation.getImmeuble().getSituations().stream()
 				.filter(s -> !s.getId().equals(situation.getId()))
-				.map(s -> new SituationSummaryView(s, serviceInfrastructureService, showAction+s.getId()))
+				.map(s -> new SituationSummaryView(s, serviceInfrastructureService))
 				.collect(Collectors.toList());
+
+		// [SIFISC-26599] Construction de la liste de paramètres pour lien url
+		final String params = controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_SITUATIONS);
+		String paramString = StringUtils.isBlank(params)?"":"?"+params;
 
 		model.addAttribute("currentSituation", currentSituation);
 		model.addAttribute("otherSituations", otherSituations);
 		model.addAttribute("mapFaitieresFractions", mapFaitieresFractions);
 		model.addAttribute("urlGeoVD", urlGeoVD);
+		model.addAttribute("params", paramString);
 	}
 
 	@InitBinder(value = "surcharge")
@@ -166,12 +165,9 @@ public class SituationSurchargeRFController {
 			throw new ObjectNotFoundException("La situation avec l'id=[" + surcharge.getSituationId() + "] n'existe pas.");
 		}
 
-		// [SIFISC-26599] Construction de la liste de paramètres pour lien url
-		final String params = controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_SITUATIONS);
-
 		if (result.hasErrors()) {
 			// erreurs : on réaffiche le formulaire
-			initModelForCurrentSituation(model, situation, params);
+			initModelForCurrentSituation(model, situation, request);
 			model.addAttribute("surcharge", surcharge);
 			return "registrefoncier/situation/surcharge/show";
 		}
@@ -180,6 +176,8 @@ public class SituationSurchargeRFController {
 		registreFoncierService.surchargerCommuneFiscaleSituation(situation.getId(), surcharge.getNoOfsSurcharge());
 		Flash.message("La fraction de commune a bien été renseignée sur la parcelle n°" + situation.getNoParcelle() + " de la commune " + situation.getCommune().getNomRf(), 4000);
 
+		// [SIFISC-26599] Construction de la liste de paramètres pour lien url
+		final String params = controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_SITUATIONS);
 		String paramsString = (params!=null && !params.isEmpty())?"?"+StringEscapeUtils.unescapeXml(params):"";
 		return "redirect:/registrefoncier/situation/surcharge/list.do"+ paramsString;
 	}

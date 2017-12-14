@@ -50,13 +50,7 @@ public class SituationSummaryView {
 	 */
 	private ImmeubleSummaryView immeuble;
 
-	/**
-	 * Lien url vers le détail d'une situation
-	 */
-	private String action;
-
-
-	public SituationSummaryView(@NotNull SituationRF situation, @NotNull ServiceInfrastructureService serviceInfrastructureService, @NotNull String action) {
+	public SituationSummaryView(@NotNull SituationRF situation, @NotNull ServiceInfrastructureService serviceInfrastructureService) {
 		this.id = situation.getId();
 		this.dateDebut = situation.getDateDebut();
 		this.dateFin = situation.getDateFin();
@@ -65,7 +59,6 @@ public class SituationSummaryView {
 		this.communeRF = new CommuneView(situation.getCommune().getNoOfs(), situation.getCommune().getNomRf());
 		this.communeSurchargee = resolveCommune(situation.getNoOfsCommuneSurchargee(), situation.getDateDebut(), serviceInfrastructureService);
 		this.immeuble = new ImmeubleSummaryView(situation.getImmeuble(), null);
-		this.action = action;
 	}
 
 	@Nullable
@@ -128,6 +121,4 @@ public class SituationSummaryView {
 	public ImmeubleSummaryView getImmeuble() {
 		return immeuble;
 	}
-
-	public String getAction() { return action; }
 }
