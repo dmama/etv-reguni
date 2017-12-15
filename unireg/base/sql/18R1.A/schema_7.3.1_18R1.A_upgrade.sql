@@ -111,6 +111,15 @@ INSERT INTO ETAT_DOCUMENT_FISCAL (ID, ETAT_TYPE, TYPE, ANNULATION_DATE, ANNULATI
 	FROM AUTRE_DOCUMENT_FISCAL
 	WHERE DATE_RETOUR IS NOT NULL;
 
+-- Ajouter la source de quittancement aux lettres de bienvenue déjà retournées.
+UPDATE ETAT_DOCUMENT_FISCAL ETAT
+SET SOURCE = 'WEB'
+WHERE EXISTS (
+  SELECT *
+  FROM DOCUMENT_FISCAL D, ETAT_DOCUMENT_FISCAL E
+  WHERE E.DOCUMENT_FISCAL_ID = D.ID AND E.ID = ETAT.ID AND D.DOCUMENT_TYPE = 'LettreBienvenue' AND E.TYPE = 'RETOURNE' AND E.SOURCE IS NULL
+);
+
 -- Création des délais pour les documents concernés --
 ------------------------------------------------------
 -- LOG_CDATE et LOG_CUSER sont repris de LOG_CDATE et LOG_CUSER de l'original.
