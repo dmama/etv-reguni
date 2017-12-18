@@ -300,7 +300,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.GET)
-	public String ajouterDelaiDiPM(@RequestParam("id") long id,
+	public String ajouterDelai(@RequestParam("id") long id,
 	                               Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
@@ -332,7 +332,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
-	public String ajouterDemandeDelaiPM(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view,
+	public String ajouterDelai(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view,
 	                                    BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
@@ -516,11 +516,11 @@ public class AutreDocumentFiscalController {
 	/**
 	 * Désannuler une déclaration d'impôt ordinaire PM.
 	 *
-	 * @param id l'id de la déclaration d'impôt ordinaire à désannuler
+	 * @param id l'id du document fiscal à désannuler
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/desannuler.do", method = RequestMethod.POST)
-	public String desannulerDeclarationImpotPM(@RequestParam("id") long id) throws AccessDeniedException {
+	public String desannulerDocumentFiscal(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des autres documents fiscaux.");
