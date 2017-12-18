@@ -107,6 +107,23 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		return false;
 	}
 
+	@Override
+	public boolean quittanceDemandeDegrevement(long id, RegDate dateRetour) {
+
+		final DemandeDegrevementICI demande = (DemandeDegrevementICI) sessionFactory.getCurrentSession().get(DemandeDegrevementICI.class, id);
+		if (demande == null) {
+			throw new ObjectNotFoundException(String.format("Demande de dégrèvement ICI introuvable pour le numéro %s", id));
+		}
+		if (dateRetour.isAfter(RegDate.get())) {
+			throw new IllegalArgumentException("La date de retour de la demande de dégrèvement ICI ne peut être ultérieure à la date du jour.");
+		}
+		if (demande.getEtat() != TypeEtatDocumentFiscal.RETOURNE) {
+			demande.setDateRetour(dateRetour);
+			return true;
+		}
+		return false;
+	}
+
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@Override
 	public List<AutreDocumentFiscalView> getAutresDocumentsFiscauxSansSuivi(long noCtb) {

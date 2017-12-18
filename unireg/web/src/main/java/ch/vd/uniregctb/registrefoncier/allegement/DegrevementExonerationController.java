@@ -53,14 +53,18 @@ import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.EntrepriseNotFoundException;
 import ch.vd.uniregctb.common.Equalator;
 import ch.vd.uniregctb.common.Flash;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.documentfiscal.AjouterEtatAutreDocumentFiscalView;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalManager;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
 import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.uniregctb.documentfiscal.EditionDelaiAutreDocumentFiscalView;
+import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscalRetourne;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
@@ -94,6 +98,7 @@ import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.utils.DecimalNumberEditor;
 import ch.vd.uniregctb.utils.IntegerEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.uniregctb.utils.WebContextUtils;
 
 @Controller
 @RequestMapping(value = "/degrevement-exoneration")
@@ -1246,42 +1251,6 @@ public class DegrevementExonerationController {
 		return showEditDemandeDegrevement(model, demande, view);
 	}
 
-	@RequestMapping(value = "/edit-demande-degrevement.do", method = RequestMethod.POST)
-	@Transactional(rollbackFor = Throwable.class)
-	public String doEditDemandeDegrevement(Model model,
-	                                       @Valid @ModelAttribute(value = "editDemandeDegrevementCommand") EditDemandeDegrevementView view,
-	                                       BindingResult bindingResult) {
-
-		if (bindingResult.hasErrors()) {
-			return showEditDemandeDegrevement(model, view);
-		}
-
-		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits d'accès suffisants pour effectuer cette opération.");
-		}
-
-		final DemandeDegrevementICI demande = getDemandeDegrevement(view.getIdDemandeDegrevement());
-		final Entreprise entreprise = demande.getEntreprise();
-		final ImmeubleRF immeuble = demande.getImmeuble();
-		controllerUtils.checkAccesDossierEnEcriture(entreprise.getNumero());
-
-		// on ne doit pas pouvoir réutiliser la période fiscale d'une donnée existante
-		final List<DemandeDegrevementICI> autres = getDemandesDegrevement(entreprise, immeuble, demande, false);
-		if (autres.stream().anyMatch(exo -> Objects.equals(exo.getPeriodeFiscale(), view.getPeriodeFiscale()))) {
-			bindingResult.rejectValue("periodeFiscale", "error.demande.degrevement.periode.fiscale.deja.utilisee");
-			return showEditDemandeDegrevement(model, demande, view);
-		}
-
-		// la date de retour ne doit pas être avant la date d'émission
-		if (view.getDateRetour() != null && view.getDateRetour().isBefore(demande.getDateEnvoi())) {
-			bindingResult.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission");
-			return showEditDemandeDegrevement(model, demande, view);
-		}
-
-		demande.setDateRetour(view.getDateRetour());
-		return "redirect:/degrevement-exoneration/edit-demandes-degrevement.do?idContribuable=" + entreprise.getNumero() + "&idImmeuble=" + immeuble.getId();
-	}
-
 	@InitBinder(value = "ajouterView")
 	public void initAjouterDelaiBinder(WebDataBinder binder) {
 		binder.setValidator(editionValidator);
@@ -1383,4 +1352,96 @@ public class DegrevementExonerationController {
 		return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + delai.getDocumentFiscal().getId();
 	}
 
+	/**
+	 * Affiche un écran qui permet de quittancer une demande de dégrèvement ICI.
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/etat/ajouter-quittance.do", method = RequestMethod.GET)
+	public String ajouterEtat(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des demandes de dégrèvement ICI.");
+		}
+
+		final DemandeDegrevementICI doc = getDemandeDegrevement(id);
+
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		AjouterEtatAutreDocumentFiscalView view = new AjouterEtatAutreDocumentFiscalView(doc, infraService, messageSource);
+		if (view.getDateRetour() == null) {
+			view.setDateRetour(RegDate.get());
+		}
+
+		model.addAttribute("ajouterQuittance", view);
+
+		return "tiers/edition/pm/degrevement-exoneration/etat/ajouter-quittance";
+	}
+
+	/**
+	 * Quittance d'un autre document fiscal avec suivi
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/etat/ajouter-quittance.do", method = RequestMethod.POST)
+	public String ajouterEtat(@Valid @ModelAttribute("ajouterQuittance") final AjouterEtatAutreDocumentFiscalView view, BindingResult result, Model model) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des demandes de dégrèvement ICI.");
+		}
+
+		if (result.hasErrors()) {
+			final DemandeDegrevementICI doc = getDemandeDegrevement(view.getId());
+			view.resetDocumentInfo(doc, infraService, messageSource);
+			return "tiers/edition/pm/degrevement-exoneration/etat/ajouter-quittance";
+		}
+
+		final DemandeDegrevementICI doc = getDemandeDegrevement(view.getId());
+
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// On quittance
+		final boolean success = autreDocumentFiscalManager.quittanceDemandeDegrevement(doc.getId(), view.getDateRetour());
+		if (success) {
+			Flash.message(String.format("La demande de dégrèvement ICI n°%s a été quittancée avec succès.", FormatNumeroHelper.numeroCTBToDisplay(doc.getId())));
+		}
+		else {
+			Flash.warning(String.format("La demande de dégrèvement ICI n°%s, étant déjà retournée en date du %s, n'a pas été quittancée à nouveau.",
+			                            FormatNumeroHelper.numeroCTBToDisplay(doc.getId()), RegDateHelper.dateToDisplayString(doc.getDateRetour())));
+		}
+
+		return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + doc.getId();
+	}
+
+	/**
+	 * Annuler le quittancement spécifié.
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/etat/annuler-quittance.do", method = RequestMethod.POST)
+	public String annulerQuittancement(@RequestParam("id") final long id) throws Exception {
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des demandes de dégrèvement ICI.");
+		}
+
+		// Vérifie les paramètres
+		final EtatAutreDocumentFiscal etat = (EtatAutreDocumentFiscal) sessionFactory.getCurrentSession().get(EtatAutreDocumentFiscal.class, id);
+		if (etat == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.etat.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+		if (!(etat instanceof EtatAutreDocumentFiscalRetourne)) {
+			throw new IllegalArgumentException("Seuls les quittancements peuvent être annulés.");
+		}
+
+		final DemandeDegrevementICI doc = getDemandeDegrevement(etat.getAutreDocumentFiscal().getId());
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// On annule le quittancement
+		final EtatAutreDocumentFiscalRetourne retour = (EtatAutreDocumentFiscalRetourne) etat;
+		retour.setAnnule(true);
+
+		Flash.message("Le quittancement du " + RegDateHelper.dateToDisplayString(retour.getDateObtention()) + " a été annulé.");
+		return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + doc.getId();
+	}
 }
