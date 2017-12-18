@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.registrefoncier.allegement;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -54,7 +57,10 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalManager;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
+import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.EditionDelaiAutreDocumentFiscalView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
@@ -66,6 +72,7 @@ import ch.vd.uniregctb.foncier.DonneesUtilisation;
 import ch.vd.uniregctb.foncier.ExonerationIFONC;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.EstimationRF;
@@ -83,6 +90,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.ChoixImmeubleView;
 import ch.vd.uniregctb.tiers.view.ImmeubleView;
+import ch.vd.uniregctb.type.EtatDelaiDocumentFiscal;
 import ch.vd.uniregctb.utils.DecimalNumberEditor;
 import ch.vd.uniregctb.utils.IntegerEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -102,6 +110,13 @@ public class DegrevementExonerationController {
 	private AutreDocumentFiscalService autreDocumentFiscalService;
 	private RetourEditiqueControllerHelper retourEditiqueControllerHelper;
 	private MessageSource messageSource;
+	private DelaisService delaisService;
+	private SessionFactory sessionFactory;
+
+	private Validator editionValidator;
+
+	// Certaines fonctions sont génériques et peuvent être partagées
+	private AutreDocumentFiscalManager autreDocumentFiscalManager;
 
 	private static final Comparator<ImmeubleView> IMMEUBLE_VIEW_COMPARATOR = Comparator.comparing(ImmeubleView::getNoParcelle)
 			.thenComparing(Comparator.comparing(ImmeubleView::getIndex1, Comparator.nullsFirst(Comparator.naturalOrder())))
@@ -148,6 +163,22 @@ public class DegrevementExonerationController {
 
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setDelaisService(DelaisService delaisService) {
+		this.delaisService = delaisService;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	public void setAutreDocumentFiscalManager(AutreDocumentFiscalManager autreDocumentFiscalManager) {
+		this.autreDocumentFiscalManager = autreDocumentFiscalManager;
+	}
+
+	public void setEditionValidator(Validator editionValidator) {
+		this.editionValidator = editionValidator;
 	}
 
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -1200,7 +1231,7 @@ public class DegrevementExonerationController {
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	public String editDemandeDegrevement(Model model, @RequestParam(value = "id") long idDemande) {
 		final DemandeDegrevementICI demande = getDemandeDegrevement(idDemande);
-		return showEditDemandeDegrevement(model, demande, new EditDemandeDegrevementView(demande));
+		return showEditDemandeDegrevement(model, demande, new EditDemandeDegrevementView(demande, infraService, messageSource));
 	}
 
 	private String showEditDemandeDegrevement(Model model, DemandeDegrevementICI demande, EditDemandeDegrevementView view) {
@@ -1250,4 +1281,106 @@ public class DegrevementExonerationController {
 		demande.setDateRetour(view.getDateRetour());
 		return "redirect:/degrevement-exoneration/edit-demandes-degrevement.do?idContribuable=" + entreprise.getNumero() + "&idImmeuble=" + immeuble.getId();
 	}
+
+	@InitBinder(value = "ajouterView")
+	public void initAjouterDelaiBinder(WebDataBinder binder) {
+		binder.setValidator(editionValidator);
+		binder.registerCustomEditor(RegDate.class, "dateDemande", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "ancienDelaiAccorde", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+	}
+	@InitBinder(value = "ajouterQuittance")
+	public void initAjouterQuittanceBinder(WebDataBinder binder) {
+		binder.setValidator(editionValidator);
+		binder.registerCustomEditor(RegDate.class, "dateRetour", new RegDateEditor(false, false, false, RegDateHelper.StringFormat.DISPLAY));
+	}
+
+	/**
+	 * Affiche un écran qui permet de choisir les paramètres pour l'ajout d'une demande de délai
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.GET)
+	public String ajouterDelai(@RequestParam("id") long id,
+	                               Model model) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un délai à une demande de dégrèvement ICI.");
+		}
+
+		final DemandeDegrevementICI doc = getDemandeDegrevement(id);
+
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final RegDate delaiAccordeAu = determineDateAccordDelaiParDefaut(doc.getDelaiAccordeAu());
+		model.addAttribute("ajouterView", new EditionDelaiAutreDocumentFiscalView(doc, delaiAccordeAu));
+		return "tiers/edition/pm/degrevement-exoneration/delai/ajouter";
+	}
+
+	/**
+	 * [SIFISC-18869] la date par défaut du délai accordé (sursis ou pas) ne doit de toute façon pas être dans le passé
+	 * @param delaiPrecedent la date actuelle du délai accordé
+	 * @return la nouvelle date à proposer comme délai par défaut
+	 */
+	private RegDate determineDateAccordDelaiParDefaut(RegDate delaiPrecedent) {
+		final RegDate delaiNormal = delaisService.getDateFinDelaiRetourDeclarationImpotPMEmiseManuellement(delaiPrecedent);
+		return RegDateHelper.maximum(delaiNormal, RegDate.get(), NullDateBehavior.EARLIEST);
+	}
+
+	/**
+	 * Ajoute un délai
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
+	public String ajouterDelai(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view,
+	                                    BindingResult result, Model model, HttpServletResponse response) throws Exception {
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une demande de dégrèvement ICI");
+		}
+
+		final Long id = view.getIdDocumentFiscal();
+
+		if (result.hasErrors()) {
+			final DemandeDegrevementICI documentFiscal = getDemandeDegrevement(id);
+			view.resetDocumentInfo(documentFiscal);
+			return "tiers/edition/pm/degrevement-exoneration/delai/ajouter";
+		}
+
+		// Vérifie les paramètres
+		final DemandeDegrevementICI doc = getDemandeDegrevement(id);
+
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// On ajoute le délai
+		final RegDate delaiAccordeAu = view.getDelaiAccordeAu();
+		autreDocumentFiscalManager.saveNouveauDelai(id, view.getDateDemande(), delaiAccordeAu, EtatDelaiDocumentFiscal.ACCORDE);
+		return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
+	}
+
+	/**
+	 * Annule un délai
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/delai/annuler.do", method = RequestMethod.POST)
+	public String annuler(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une demande de dégrèvement ICI.");
+		}
+
+		final DelaiDocumentFiscal delai = (DelaiDocumentFiscal) sessionFactory.getCurrentSession().get(DelaiDocumentFiscal.class, id);
+		if (delai == null) {
+			throw new IllegalArgumentException("Le délai n°" + id + " n'existe pas.");
+		}
+
+		final Entreprise ctb = (Entreprise) delai.getDocumentFiscal().getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		delai.setAnnule(true);
+
+		return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + delai.getDocumentFiscal().getId();
+	}
+
 }

@@ -3,6 +3,7 @@
 
 <%--@elvariable id="idContribuable" type="java.lang.Long"--%>
 <%--@elvariable id="immeuble" type="ch.vd.uniregctb.registrefoncier.allegement.ResumeImmeubleView"--%>
+<%--@elvariable id="immeuble" type="ch.vd.uniregctb.registrefoncier.allegement.DemandeDegrevementICIView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
@@ -30,19 +31,20 @@
 					<jsp:param name="commandName" value="editDemandeDegrevementCommand"/>
 					<jsp:param name="allowPeriodeEdit" value="false"/>
 					<jsp:param name="allowDelaiEdit" value="false"/>
-					<jsp:param name="allowRetourEdit" value="true"/>
+					<jsp:param name="allowRetourEdit" value="false"/>
 				</jsp:include>
 			</fieldset>
 
+			<!-- Debut Delais -->
+			<jsp:include page="delai/lister.jsp"/>
+			<!-- Fin Delais -->
+
+			<!-- Debut Etats -->
+			<jsp:include page="etat/lister.jsp"/>
+			<!-- Fin Etats -->
+
 			<!-- Debut Bouton -->
-			<div style="padding: 0 25%;">
-				<div style="padding: 0 20%; display: inline">
-					<input type="button" value="<fmt:message key='label.bouton.sauver'/>" onclick="Form.disableButtonAndSubmitForm(this, 'editDemandeDegrevementForm');"/>
-				</div>
-				<div style="padding: 0 20%; display: inline">
-					<unireg:buttonTo name="Retour" action="/degrevement-exoneration/edit-demandes-degrevement.do" params="{idContribuable:${idContribuable},idImmeuble:${immeuble.idImmeuble}}" method="GET"/>
-				</div>
-			</div>
+			<unireg:buttonTo name="Retour" action="/degrevement-exoneration/edit-demandes-degrevement.do" params="{idContribuable:${idContribuable},idImmeuble:${immeuble.idImmeuble}}" method="GET"/>
 			<!-- Fin Bouton -->
 
 		</form:form>
