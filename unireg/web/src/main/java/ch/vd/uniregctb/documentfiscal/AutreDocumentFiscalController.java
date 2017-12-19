@@ -520,7 +520,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/desannuler.do", method = RequestMethod.POST)
-	public String desannulerDocumentFiscal(@RequestParam("id") long id) throws AccessDeniedException {
+	public String desannuler(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des autres documents fiscaux.");
@@ -551,7 +551,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/duplicata.do", method = RequestMethod.POST)
-	public String duplicataDeclarationPersonnesMorales(@RequestParam("id") long id,
+	public String duplicataLettreBienvenue(@RequestParam("id") long id,
 	                                                   HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
