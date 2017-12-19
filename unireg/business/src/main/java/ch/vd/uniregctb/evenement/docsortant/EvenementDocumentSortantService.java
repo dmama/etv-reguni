@@ -60,7 +60,7 @@ public interface EvenementDocumentSortantService {
 
 	void signaleDocumentEFacture(TypeDocument typeDoc, Tiers tiers, InfoArchivageDocument.InfoArchivage infoArchivage, boolean local);
 
-	void signaleDemandeDegrevementICI(DemandeDegrevementICI dd, String nomCommune, String noParcelle, CTypeInfoArchivage infoArchivage, boolean local);
+	void signaleDemandeDegrevementICI(DemandeDegrevementICI dd, String nomCommune, String noParcelle, CTypeInfoArchivage infoArchivage, boolean local, boolean duplicata);
 
 	void signaleRappelDemandeDegrevementICI(DemandeDegrevementICI dd, String nomCommune, String noParcelle, CTypeInfoArchivage infoArchivage, boolean local);
 }

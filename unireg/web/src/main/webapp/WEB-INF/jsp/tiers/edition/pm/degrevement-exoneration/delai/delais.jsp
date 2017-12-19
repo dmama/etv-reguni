@@ -2,11 +2,11 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <c:set var="page" value="${param.page}" />
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView"--%>
+<%--@elvariable id="editDemandeDegrevementCommand" type="ch.vd.uniregctb.registrefoncier.allegement.EditDemandeDegrevementView"--%>
 
-<c:if test="${not empty command.delais}">
+<c:if test="${not empty editDemandeDegrevementCommand.delais}">
 
-	<display:table 	name="command.delais" id="delai" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+	<display:table 	name="editDemandeDegrevementCommand.delais" id="delai" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column titleKey="label.date.demande">
 			<unireg:regdate regdate="${delai.dateDemande}" />
 		</display:column>
@@ -33,7 +33,7 @@
 			<c:if test="${page == 'edit'}">
 				<c:if test="${(!delai.annule) && (!delai.first)}">
 					<unireg:linkTo name="" title="Annuler le délai"  confirm="Voulez-vous vraiment annuler ce delai ?"
-					               action="/autresdocs/delai/annuler.do" method="post" params="{id:${delai.id}}" link_class="delete"/>
+					               action="/degrevement-exoneration/delai/annuler.do" method="post" params="{id:${delai.id}}" link_class="delete"/>
 				</c:if>
 			</c:if>
 		</display:column>

@@ -383,11 +383,21 @@ public interface EditiqueCompositionService {
 	 * Envoie à l'éditique le formulaire de demande de dégrèvement ICI à imprimer localement
 	 * @param demande le formulaire à imprimer
 	 * @param dateTraitement la date de traitement de l'envoi
+	 * @param duplicata si le document est un duplicata de l'original
 	 * @return le document imprimé, en quelque sorte...
 	 * @throws EditiqueException en cas de problème
 	 * @throws JMSException en cas de souci lié au transport JMS de la demande d'impression et du document imprimé
 	 */
-	EditiqueResultat imprimeDemandeDegrevementICIOnline(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeDemandeDegrevementICIOnline(DemandeDegrevementICI demande, RegDate dateTraitement, boolean duplicata) throws EditiqueException, JMSException;
+
+	/**
+	 * Imprime un duplicata de la demande de dégrèvement spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
+	 * @param demande
+	 * @param dateTraitement
+	 * @return
+	 * @throws EditiqueException
+	 */
+	EditiqueResultat imprimeDuplicataDemandeDegrevementICIOnline(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException, JMSException;
 
 	/**
 	 * Envoie à l'éditique le rappel du formulaire de demande de dégrèvement à imprimer en masse

@@ -15,7 +15,7 @@ public interface ImpressionDemandeDegrevementICIHelper extends EditiqueAbstractH
 
 	TypeDocumentEditique getTypeDocumentEditique();
 
-	FichierImpression.Document buildDocument(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException;
+	FichierImpression.Document buildDocument(DemandeDegrevementICI demande, RegDate dateTraitement, boolean duplicata) throws EditiqueException;
 
 	String construitIdDocument(DemandeDegrevementICI demande);
 

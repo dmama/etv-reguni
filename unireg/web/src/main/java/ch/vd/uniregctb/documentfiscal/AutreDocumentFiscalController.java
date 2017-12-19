@@ -300,7 +300,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.GET)
-	public String ajouterDelaiDiPM(@RequestParam("id") long id,
+	public String ajouterDelai(@RequestParam("id") long id,
 	                               Model model) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
@@ -332,7 +332,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
-	public String ajouterDemandeDelaiPM(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view,
+	public String ajouterDelai(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view,
 	                                    BindingResult result, Model model, HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
@@ -364,7 +364,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/annuler.do", method = RequestMethod.POST)
-	public String annuler(@RequestParam("id") long id) throws AccessDeniedException {
+	public String annulerDelai(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'un autre document fiscal");
@@ -491,7 +491,7 @@ public class AutreDocumentFiscalController {
 
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/annuler.do", method = RequestMethod.POST)
-	public String annuler(@RequestParam("id") long id, @RequestParam(value = "tacheId", required = false) Long tacheId) throws AccessDeniedException {
+	public String annuler(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
@@ -514,13 +514,13 @@ public class AutreDocumentFiscalController {
 	}
 
 	/**
-	 * Désannuler une déclaration d'impôt ordinaire PM.
+	 * Désannuler une demande de dégrèvement ICI.
 	 *
-	 * @param id l'id de la déclaration d'impôt ordinaire à désannuler
+	 * @param id l'id du document fiscal à désannuler
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/desannuler.do", method = RequestMethod.POST)
-	public String desannulerDeclarationImpotPM(@RequestParam("id") long id) throws AccessDeniedException {
+	public String desannuler(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des autres documents fiscaux.");
@@ -533,7 +533,7 @@ public class AutreDocumentFiscalController {
 		}
 
 		if (!doc.isAnnule()) {
-			throw new IllegalArgumentException("La document fiscal n°" + id + " n'est pas annulée.");
+			throw new IllegalArgumentException("Le document fiscal n°" + id + " n'est pas annulée.");
 		}
 
 		// vérification des droits en écriture
@@ -547,11 +547,11 @@ public class AutreDocumentFiscalController {
 	}
 
 	/**
-	 * Imprime un duplicata de DI PM
+	 * Imprime un duplicata de document fiscal
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/duplicata.do", method = RequestMethod.POST)
-	public String duplicataDeclarationPersonnesMorales(@RequestParam("id") long id,
+	public String duplicataLettreBienvenue(@RequestParam("id") long id,
 	                                                   HttpServletResponse response) throws Exception {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {

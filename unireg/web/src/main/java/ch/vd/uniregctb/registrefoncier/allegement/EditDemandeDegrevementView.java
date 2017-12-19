@@ -1,17 +1,54 @@
 package ch.vd.uniregctb.registrefoncier.allegement;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.context.MessageSource;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.declaration.view.DelaiDocumentFiscalView;
+import ch.vd.uniregctb.declaration.view.EtatDocumentFiscalView;
+import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
 import ch.vd.uniregctb.foncier.DemandeDegrevementICI;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class EditDemandeDegrevementView extends AbstractEditDemandeDegrevementView {
 
 	private long idDemandeDegrevement;
+	private List<EtatDocumentFiscalView> etats = new ArrayList<>();
+	private List<DelaiDocumentFiscalView> delais = new ArrayList<>();
 
 	public EditDemandeDegrevementView() {
 	}
 
-	public EditDemandeDegrevementView(DemandeDegrevementICI demande) {
+	public EditDemandeDegrevementView(DemandeDegrevementICI demande, ServiceInfrastructureService infraService, MessageSource messageSource) {
 		super(demande);
 		this.idDemandeDegrevement = demande.getId();
+		this.etats = initEtats(demande.getEtats(), infraService, messageSource);
+		this.delais = initDelais(demande.getDelais(), demande.getPremierDelai(), infraService, messageSource);
+	}
+
+	private static List<EtatDocumentFiscalView> initEtats(Set<EtatDocumentFiscal> etats, ServiceInfrastructureService infraService, MessageSource messageSource) {
+		final List<EtatDocumentFiscalView> list = new ArrayList<>();
+		for (EtatDocumentFiscal etat : etats) {
+			list.add(new EtatDocumentFiscalView(etat, infraService, messageSource));
+		}
+		Collections.sort(list);
+		return list;
+	}
+
+	private static List<DelaiDocumentFiscalView> initDelais(Set<DelaiDocumentFiscal> delais, RegDate premierDelai, ServiceInfrastructureService infraService, MessageSource messageSource) {
+		final List<DelaiDocumentFiscalView> list = new ArrayList<>();
+		for (DelaiDocumentFiscal delai : delais) {
+			final DelaiDocumentFiscalView delaiView = new DelaiDocumentFiscalView(delai, infraService, messageSource);
+			delaiView.setFirst(premierDelai == delai.getDelaiAccordeAu());
+			list.add(delaiView);
+		}
+		Collections.sort(list);
+		return list;
 	}
 
 	public long getIdDemandeDegrevement() {
@@ -20,5 +57,13 @@ public class EditDemandeDegrevementView extends AbstractEditDemandeDegrevementVi
 
 	public void setIdDemandeDegrevement(long idDemandeDegrevement) {
 		this.idDemandeDegrevement = idDemandeDegrevement;
+	}
+
+	public List<EtatDocumentFiscalView> getEtats() {
+		return etats;
+	}
+
+	public List<DelaiDocumentFiscalView> getDelais() {
+		return delais;
 	}
 }

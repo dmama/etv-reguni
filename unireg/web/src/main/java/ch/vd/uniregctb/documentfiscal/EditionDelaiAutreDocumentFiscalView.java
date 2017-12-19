@@ -24,7 +24,7 @@ public class EditionDelaiAutreDocumentFiscalView {
 		this.delaiAccordeAu = delaiAccordeAu;
 	}
 
-	protected void resetDocumentInfo(AutreDocumentFiscal doc) {
+	public void resetDocumentInfo(AutreDocumentFiscal doc) {
 		this.tiersId = doc.getTiers().getId();
 		this.idDocumentFiscal = doc.getId();
 		this.perdiode = doc.getPeriodeFiscale();

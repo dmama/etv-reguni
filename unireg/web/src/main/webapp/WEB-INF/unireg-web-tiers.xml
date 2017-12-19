@@ -319,6 +319,10 @@
 		<property name="autreDocumentFiscalService" ref="autreDocumentFiscalService"/>
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
 		<property name="messageSource" ref="messageSource"/>
+		<property name="delaisService" ref="delaisService"/>
+		<property name="autreDocumentFiscalManager" ref="autreDocumentFiscalManager"/>
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="editionValidator" ref="editionAutreDocumentFiscalValidator"/>
 	</bean>
 
 </beans>

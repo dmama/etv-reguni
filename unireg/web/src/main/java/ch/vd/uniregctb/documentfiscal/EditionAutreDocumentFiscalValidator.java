@@ -101,4 +101,30 @@ public class EditionAutreDocumentFiscalValidator implements Validator {
 			}
 		}
 	}
+
+	private void validateAjouterDelai(AjouterEtatAutreDocumentFiscalView view, Errors errors) {
+
+		if (view.getId() == null) {
+			errors.reject("error.docfisc.inexistant");
+			return;
+		}
+
+		final AutreDocumentFiscal doc = (AutreDocumentFiscal) sessionFactory.getCurrentSession().get(AutreDocumentFiscal.class, view.getId());
+		if (doc == null) {
+			errors.reject("error.docfisc.inexistant");
+			return;
+		}
+
+		// [SIFISC-18086] blindage en cas de mauvais format de saisie, pour éviter le double message d'erreur
+		if (!errors.hasFieldErrors("dateRetour")) {
+			if (view.getDateRetour() == null) {
+				ValidationUtils.rejectIfEmpty(errors, "dateRetour", "error.date.retour.vide");
+			}
+			else if (view.getDateRetour().isAfter(RegDate.get())) {
+				if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateRetour")) {
+					errors.rejectValue("dateRetour", "error.date.retour.future");
+				}
+			}
+		}
+	}
 }

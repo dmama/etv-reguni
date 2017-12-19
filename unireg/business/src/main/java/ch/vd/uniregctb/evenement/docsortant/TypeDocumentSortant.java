@@ -26,6 +26,7 @@ public enum TypeDocumentSortant {
 	DUPLICATA_LETTRE_BIENENUE_APM(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_IBC, "Lettre de bienvenue APM (non-inscrit RC) (duplicata)", true),
 	RAPPEL_LETTRE_BIENVENUE(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_IBC, "Rappel de lettre de bienvenue", true),
 	DEMANDE_DEGREVEMENT_ICI(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_ICI, "Formulaire de demande de dégrèvement ICI", true),
+	DUPLICATA_DEMANDE_DEGREVEMENT_ICI(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_ICI, "Formulaire de demande de dégrèvement ICI (duplicata)", true),
 	RAPPEL_DEMANDE_DEGREVEMENT_ICI(false, CodeTypeDocumentSortant.ASSUJETTISSEMENT_ICI, "Rappel de formulaire de demande de dégrèvement ICI", true),
 
 	DI_PP_COMPLETE(false, CodeTypeDocumentSortant.DECLARATION, "Déclaration d'impôt manuscrite", true),

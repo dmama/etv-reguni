@@ -3,6 +3,7 @@
 
 <%--@elvariable id="idContribuable" type="java.lang.Long"--%>
 <%--@elvariable id="immeuble" type="ch.vd.uniregctb.registrefoncier.allegement.ResumeImmeubleView"--%>
+<%--@elvariable id="editDemandeDegrevementCommand" type="ch.vd.uniregctb.registrefoncier.allegement.EditDemandeDegrevementView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title">
@@ -30,18 +31,27 @@
 					<jsp:param name="commandName" value="editDemandeDegrevementCommand"/>
 					<jsp:param name="allowPeriodeEdit" value="false"/>
 					<jsp:param name="allowDelaiEdit" value="false"/>
-					<jsp:param name="allowRetourEdit" value="true"/>
+					<jsp:param name="allowRetourEdit" value="false"/>
 				</jsp:include>
 			</fieldset>
 
+			<!-- Debut Delais -->
+			<jsp:include page="delai/lister.jsp"/>
+			<!-- Fin Delais -->
+
+			<!-- Debut Etats -->
+			<jsp:include page="etat/lister.jsp"/>
+			<!-- Fin Etats -->
+
 			<!-- Debut Bouton -->
-			<div style="padding: 0 25%;">
-				<div style="padding: 0 20%; display: inline">
-					<input type="button" value="<fmt:message key='label.bouton.sauver'/>" onclick="Form.disableButtonAndSubmitForm(this, 'editDemandeDegrevementForm');"/>
-				</div>
-				<div style="padding: 0 20%; display: inline">
-					<unireg:buttonTo name="Retour" action="/degrevement-exoneration/edit-demandes-degrevement.do" params="{idContribuable:${idContribuable},idImmeuble:${immeuble.idImmeuble}}" method="GET"/>
-				</div>
+			<div style="margin-top:1em;">
+				<unireg:buttonTo name="Retour" action="/degrevement-exoneration/edit-demandes-degrevement.do" params="{idContribuable:${idContribuable},idImmeuble:${immeuble.idImmeuble}}" method="GET"/>
+				<!-- Duplicata demande de dégrèvement -->
+				<unireg:buttonTo name="Imprimer duplicata" action="/degrevement-exoneration/duplicata.do" id="bouton_duplicata" method="post" params="{id:${editDemandeDegrevementCommand.idDemandeDegrevement}}"
+				                 confirm="Voulez-vous imprimer un duplicata pour la demande de dégrèvement (impression locale)?"/>
+				<!-- Annulation demande de dégrèvement -->
+				<unireg:buttonTo name="Annuler document fiscal" confirm="Voulez-vous vraiment annuler cette demande de dégrèvement?"
+				                 action="/degrevement-exoneration/annuler.do" method="post" params='{id:${editDemandeDegrevementCommand.idDemandeDegrevement}}'/>
 			</div>
 			<!-- Fin Bouton -->
 
