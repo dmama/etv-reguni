@@ -1333,7 +1333,7 @@ public class DegrevementExonerationController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/annuler.do", method = RequestMethod.POST)
-	public String annuler(@RequestParam("id") long id) throws AccessDeniedException {
+	public String annulerDelai(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
 			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'une demande de dégrèvement ICI.");
@@ -1443,5 +1443,54 @@ public class DegrevementExonerationController {
 
 		Flash.message("Le quittancement du " + RegDateHelper.dateToDisplayString(retour.getDateObtention()) + " a été annulé.");
 		return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + doc.getId();
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/annuler.do", method = RequestMethod.POST)
+	public String annuler(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityHelper.isAnyGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final DemandeDegrevementICI doc = getDemandeDegrevement(id);
+
+		// vérification des droits en écriture
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// annulation de l'autre document fiscal
+		autreDocumentFiscalManager.annulerAutreDocumentFiscal(doc);
+
+		return "redirect:/degrevement-exoneration/edit-demandes-degrevement.do?idContribuable=" + ctb.getId() + " &idImmeuble=" + doc.getImmeuble().getId();
+	}
+
+	/**
+	 * Désannuler une demande de dégrèvement ICI.
+	 *
+	 * @param id l'id du document fiscal à désannuler
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/desannuler.do", method = RequestMethod.POST)
+	public String desannulerDocumentFiscal(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des demandes de dégrèvement ICI.");
+		}
+
+		final DemandeDegrevementICI doc = getDemandeDegrevement(id);
+
+		if (!doc.isAnnule()) {
+			throw new IllegalArgumentException("La demande de dégrèvement ICI n°" + id + " n'est pas annulée.");
+		}
+
+		// vérification des droits en écriture
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// désannulation de l'autre document fiscal
+		autreDocumentFiscalManager.desannulerAutreDocumentFiscal(doc);
+
+		return "redirect:/degrevement-exoneration/edit-demandes-degrevement.do?idContribuable=" + ctb.getId() + " &idImmeuble=" + doc.getImmeuble().getId();
 	}
 }

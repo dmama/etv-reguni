@@ -60,7 +60,7 @@
 						<input type="submit" id="ajouter" value="Ajouter">
 					</td>
 					<td width="25%">
-						<unireg:buttonTo id="annuler" name="Annuler" action="/degrevement-exoneration/editer.do" method="get" params="{id:${ajouterView.idDocumentFiscal}}"/>
+						<unireg:buttonTo id="annuler" name="Annuler" action="/degrevement-exoneration/edit-demande-degrevement.do" method="get" params="{id:${ajouterView.idDocumentFiscal}}"/>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>
