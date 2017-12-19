@@ -25,10 +25,46 @@
 			<map>
 				<entry key="ch.vd.uniregctb-nexus:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
 				<entry key="ch.vd.uniregctb-nexus:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
+				<entry key="ch.vd.uniregctb-nexus:type=Connections,name=Fidor" value-ref="fidorClientConnectionJmxBean" />
+				<entry key="ch.vd.uniregctb-nexus:type=Connections,name=RCPers" value-ref="rcPersClientConnectionJmxBean" />
+				<entry key="ch.vd.uniregctb-nexus:type=Connections,name=RCEnt" value-ref="rcEntClientConnectionJmxBean" />
+				<entry key="ch.vd.uniregctb-nexus:type=Connections,name=HostInt" value-ref="hostIntClientConnectionJmxBean" />
 				<entry key="ch.vd.uniregctb-nexus:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
 				<entry key="ch.vd.uniregctb-nexus:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
 			</map>
 		</property>
+	</bean>
+
+	<bean name="fidorClientConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
+		<constructor-arg>
+			<bean class="ch.vd.unireg.wsclient.WebClientPoolConnectionAdapter">
+				<constructor-arg ref="fidorWebClientPool" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<bean name="rcPersClientConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
+		<constructor-arg>
+			<bean class="ch.vd.unireg.wsclient.WebClientPoolConnectionAdapter">
+				<constructor-arg ref="rcPersWebClientPool" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<bean name="rcEntClientConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
+		<constructor-arg>
+			<bean class="ch.vd.unireg.wsclient.WebClientPoolConnectionAdapter">
+				<constructor-arg ref="rcEntWebClientPool" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<bean name="hostIntClientConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
+		<constructor-arg>
+			<bean class="ch.vd.unireg.wsclient.WebClientPoolConnectionAdapter">
+				<constructor-arg ref="hostIntWebClientPool" />
+			</bean>
+		</constructor-arg>
 	</bean>
 
 	<!-- Liste des beans containers de message listeners exportés par JMX -->

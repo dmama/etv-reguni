@@ -2,10 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
+	<bean id="rcEntWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
+		<constructor-arg value="true" />
+		<constructor-arg value="rcEntWebClientPool" />
 		<property name="baseUrl" value="${extprop.webservice.rcent.url}"/>
 		<property name="username" value="${extprop.webservice.rcent.username}"/>
 		<property name="password" value="${extprop.webservice.rcent.password}"/>
+	</bean>
+
+	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
+		<property name="wcPool" ref="rcEntWebClientPool" />
 		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
 		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
 		<property name="pingPath" value="/infrastructure/ping"/>

@@ -2,11 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="serviceInfrastructureClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientImpl">
-		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}" />
+	<bean id="hostIntWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
+		<constructor-arg value="true" />
+		<constructor-arg value="hostIntWebClientPool" />
+		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}/infrastructure" />
 		<property name="username" value="${extprop.host-interfaces.webservice.username}" />
 		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
+	</bean>
 
+	<bean id="serviceInfrastructureClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientImpl">
+		<property name="wcPool" ref="hostIntWebClientPool" />
 	</bean>
 
 	<bean id="serviceInfrastructureClientTracing" class="ch.vd.uniregctb.wsclient.host.ServiceInfrastructureClientTracing">

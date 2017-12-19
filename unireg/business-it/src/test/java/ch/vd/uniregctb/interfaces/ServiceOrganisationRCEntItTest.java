@@ -51,6 +51,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeAnnonce;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntAnnonceIDEHelper;
 import ch.vd.unireg.interfaces.organisation.rcent.RCEntSchemaHelper;
+import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientImpl;
 import ch.vd.unireg.wsclient.rcent.RcEntNoticeQuery;
@@ -335,10 +336,12 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	}
 
 	private RcEntClient createRCEntClient(boolean validating) throws Exception {
+		WebClientPool wcPool = new WebClientPool();
+		wcPool.setUsername(username);
+		wcPool.setPassword(password);
+		wcPool.setBaseUrl(baseUrl);
 		RcEntClientImpl client = new RcEntClientImpl();
-		client.setUsername(username);
-		client.setPassword(password);
-		client.setBaseUrl(baseUrl);
+		client.setWcPool(wcPool);
 		client.setOrganisationPath(BASE_PATH_ORGANISATION);
 		client.setOrganisationsOfNoticePath(BASE_PATH_ORGANISATIONS_OF_NOTICE);
 		client.setNoticeRequestValidatePath(BASE_PATH_VALIDER_ANNONCE_IDE);

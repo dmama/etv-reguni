@@ -12,6 +12,7 @@ import org.junit.Test;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.uniregctb.utils.UniregProperties;
 import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
@@ -114,10 +115,12 @@ public class FidorServiceTest {
 
 	private FidorClientImpl buildClient() throws Exception {
 		final String rcpUrl = uniregProperties.getProperty("testprop.webservice.fidor.url");
+		final WebClientPool wcPool = new WebClientPool();
+		wcPool.setBaseUrl(rcpUrl);
+		wcPool.setUsername("gvd0unireg");
+		wcPool.setPassword("Welc0me_");
 		final FidorClientImpl client = new FidorClientImpl();
-		client.setServiceUrl(rcpUrl);
-		client.setUsername("gvd0unireg");
-		client.setPassword("Welc0me_");
+		client.setWcPool(wcPool);
 		return client;
 	}
 

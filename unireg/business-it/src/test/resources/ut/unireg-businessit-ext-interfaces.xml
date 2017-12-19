@@ -8,10 +8,15 @@
 	<!-- Ce fichier définit les services d'interfaces externes; c'est-à-dire les clients de services externes à Unireg et que Unireg utilise. -->
 
 	<bean id="serviceSecuriteClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientImpl">
-		<property name="baseUrl" value="${testprop.host-interfaces.webservice.url}" />
-		<property name="username" value="${testprop.host-interfaces.webservice.username}" />
-		<property name="password" value="${testprop.host-interfaces.webservice.password}" />
-
+		<property name="wcPool">
+			<bean class="ch.vd.unireg.wsclient.WebClientPool">
+				<constructor-arg value="false" />
+				<constructor-arg value="" />
+				<property name="baseUrl" value="${testprop.host-interfaces.webservice.url}/securite" />
+				<property name="username" value="${testprop.host-interfaces.webservice.username}" />
+				<property name="password" value="${testprop.host-interfaces.webservice.password}" />
+			</bean>
+		</property>
 	</bean>
 
 	<bean id="serviceSecuriteServiceHostRest" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfacesRest">
@@ -31,15 +36,27 @@
 	<alias name="serviceSecuriteClientTracing" alias="serviceSecuriteClient"/>
 
 	<bean id="fidorClient" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
-		<property name="serviceUrl" value="${testprop.webservice.fidor.url}" />
-		<property name="username" value="${testprop.webservice.fidor.username}" />
-		<property name="password" value="${testprop.webservice.fidor.password}" />
+		<property name="wcPool">
+			<bean class="ch.vd.unireg.wsclient.WebClientPool">
+				<constructor-arg value="false" />
+				<constructor-arg value="" />
+				<property name="baseUrl" value="${testprop.webservice.fidor.url}" />
+				<property name="username" value="${testprop.webservice.fidor.username}" />
+				<property name="password" value="${testprop.webservice.fidor.password}" />
+			</bean>
+		</property>
 	</bean>
 
 	<bean id="rcPersClient" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
-		<property name="baseUrl" value="${testprop.webservice.rcpers.url}" />
-		<property name="username" value="${testprop.webservice.rcpers.username}" />
-		<property name="password" value="${testprop.webservice.rcpers.password}" />
+		<property name="wcPool">
+			<bean class="ch.vd.unireg.wsclient.WebClientPool">
+				<constructor-arg value="false" />
+				<constructor-arg value="" />
+				<property name="baseUrl" value="${testprop.webservice.rcpers.url}" />
+				<property name="username" value="${testprop.webservice.rcpers.username}" />
+				<property name="password" value="${testprop.webservice.rcpers.password}" />
+			</bean>
+		</property>
 		<property name="peoplePath" value="${testprop.webservice.rcpers.peoplePath}" />
 		<property name="peopleByEventIdPath" value="${testprop.webservice.rcpers.peopleByEventIdPath}" />
 		<property name="peopleBySocialNumberPath" value="${testprop.webservice.rcpers.peopleBySocialNumberPath}" />
@@ -51,9 +68,15 @@
 	<!-- Client RCEnt -->
 
 	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
-		<property name="baseUrl" value="${testprop.webservice.rcent.url}"/>
-		<property name="username" value="${testprop.webservice.rcent.username}"/>
-		<property name="password" value="${testprop.webservice.rcent.password}"/>
+		<property name="wcPool">
+			<bean class="ch.vd.unireg.wsclient.WebClientPool">
+				<constructor-arg value="false" />
+				<constructor-arg value="" />
+				<property name="baseUrl" value="${testprop.webservice.rcent.url}"/>
+				<property name="username" value="${testprop.webservice.rcent.username}"/>
+				<property name="password" value="${testprop.webservice.rcent.password}"/>
+			</bean>
+		</property>
 		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
 		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
 		<property name="pingPath" value="/infrastructure/ping"/>
@@ -79,10 +102,15 @@
 	</bean>
 
 	<bean id="serviceInfrastructureClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientImpl">
-		<property name="baseUrl" value="${testprop.host-interfaces.webservice.url}" />
-		<property name="username" value="${testprop.host-interfaces.webservice.username}" />
-		<property name="password" value="${testprop.host-interfaces.webservice.password}" />
-
+		<property name="wcPool">
+			<bean class="ch.vd.unireg.wsclient.WebClientPool">
+				<constructor-arg value="false" />
+				<constructor-arg value="" />
+				<property name="baseUrl" value="${testprop.host-interfaces.webservice.url}/infrastructure" />
+				<property name="username" value="${testprop.host-interfaces.webservice.username}" />
+				<property name="password" value="${testprop.host-interfaces.webservice.password}" />
+			</bean>
+		</property>
 	</bean>
 
 	<alias name="serviceInfrastructureClientRaw" alias="serviceInfrastructureClient"/>

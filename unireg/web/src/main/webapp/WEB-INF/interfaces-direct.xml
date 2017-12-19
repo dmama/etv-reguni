@@ -8,8 +8,14 @@
 
 	<!-- Client RcPers -->
 
-	<bean id="rcPersClientRaw" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
+	<bean id="rcPersWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
 		<property name="baseUrl" value="${extprop.webservice.rcpers.url}" />
+		<property name="username" value="${extprop.webservice.rcpers.username}" />
+		<property name="password" value="${extprop.webservice.rcpers.password}" />
+	</bean>
+
+	<bean id="rcPersClientRaw" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
+		<property name="wcPool" ref="rcPersWebClientPool" />
 		<property name="username" value="${extprop.webservice.rcpers.username}" />
 		<property name="password" value="${extprop.webservice.rcpers.password}" />
 		<property name="peoplePath" value="${extprop.webservice.rcpers.peoplePath}" />
@@ -44,10 +50,14 @@
 
 	<!-- Client RCEnt -->
 
-	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
+	<bean id="rcEntWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
 		<property name="baseUrl" value="${extprop.webservice.rcent.url}"/>
 		<property name="username" value="${extprop.webservice.rcent.username}"/>
 		<property name="password" value="${extprop.webservice.rcent.password}"/>
+	</bean>
+
+	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
+		<property name="wcPool" ref="rcEntWebClientPool"/>
 		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
 		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
 		<property name="pingPath" value="/infrastructure/ping"/>
@@ -100,10 +110,14 @@
 
 	<!-- Client fidor -->
 
-	<bean id="fidorClientRaw" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
-		<property name="serviceUrl" value="${extprop.webservice.fidor.url}" />
+	<bean id="fidorWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
+		<property name="baseUrl" value="${extprop.webservice.fidor.url}" />
 		<property name="username" value="${extprop.webservice.fidor.username}" />
 		<property name="password" value="${extprop.webservice.fidor.password}" />
+	</bean>
+
+	<bean id="fidorClientRaw" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
+		<property name="wcPool" ref="fidorWebClientPool"/>
 	</bean>
 
 	<bean id="fidorClientTracing" class="ch.vd.uniregctb.wsclient.fidor.FidorClientTracing">
@@ -134,11 +148,14 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceInfrastructureClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientImpl">
-		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}" />
+	<bean id="hostIntWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
+		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}/infrastructure" />
 		<property name="username" value="${extprop.host-interfaces.webservice.username}" />
 		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
+	</bean>
 
+	<bean id="serviceInfrastructureClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceInfrastructureClientImpl">
+		<property name="wcPool" ref="hostIntWebClientPool" />
 	</bean>
 
 	<bean id="serviceInfrastructureClientTracing" class="ch.vd.uniregctb.wsclient.host.ServiceInfrastructureClientTracing">

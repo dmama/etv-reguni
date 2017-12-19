@@ -28,6 +28,7 @@
 				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
 				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
 				<entry key="ch.vd.uniregctb-ws:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Connections,name=IfoSec" value-ref="ifoSecConnectionJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
 			</map>
@@ -93,6 +94,14 @@
 
 	<bean name="oracleConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
 		<constructor-arg ref="dataSource" />
+	</bean>
+
+	<bean name="ifoSecConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
+		<constructor-arg>
+			<bean class="ch.vd.unireg.wsclient.WebClientPoolConnectionAdapter">
+				<constructor-arg ref="ifoSecWebClientPool" />
+			</bean>
+		</constructor-arg>
 	</bean>
 
 	<bean name="preferencesPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">

@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
+import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.utils.UniregProperties;
@@ -170,13 +171,16 @@ public class RcPersServiceTest {
 
 		final String rcpUrl = uniregProperties.getProperty("testprop.webservice.rcpers.url");
 
+		final WebClientPool wcPool = new WebClientPool();
+		wcPool.setBaseUrl(rcpUrl);
+		wcPool.setUsername("gvd0unireg");
+		wcPool.setPassword("Welc0me_");
+
 		final RcPersClientImpl client = new RcPersClientImpl();
-		client.setBaseUrl(rcpUrl);
+		client.setWcPool(wcPool);
 		client.setPeoplePath("persons/ct.vd.rcpers");
 		client.setPeopleByEventIdPath("persons/byevent");
 		client.setEventPath("event");
-		client.setUsername("gvd0unireg");
-		client.setPassword("Welc0me_");
 		return client;
 	}
 }

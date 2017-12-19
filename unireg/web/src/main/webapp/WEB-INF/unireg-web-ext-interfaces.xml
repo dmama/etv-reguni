@@ -4,10 +4,16 @@
 
 	<!-- Ce fichier définit les services d'interfaces externes; c'est-à-dire les clients de services externes à Unireg et que Unireg utilise. -->
 
-	<bean id="serviceSecuriteClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientImpl">
-		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}" />
+	<bean id="ifoSecWebClientPool" class="ch.vd.unireg.wsclient.WebClientPool">
+		<constructor-arg value="true" />
+		<constructor-arg value="ifoSecWebClientPool-Web" />
+		<property name="baseUrl" value="${extprop.host-interfaces.webservice.url}/securite" />
 		<property name="username" value="${extprop.host-interfaces.webservice.username}" />
 		<property name="password" value="${extprop.host-interfaces.webservice.password}" />
+	</bean>
+
+	<bean id="serviceSecuriteClientRaw" class="ch.vd.unireg.wsclient.host.interfaces.ServiceSecuriteClientImpl">
+		<property name="wcPool" ref="ifoSecWebClientPool" />
 	</bean>
 
 	<bean id="serviceSecuriteServiceHostRest" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfacesRest">

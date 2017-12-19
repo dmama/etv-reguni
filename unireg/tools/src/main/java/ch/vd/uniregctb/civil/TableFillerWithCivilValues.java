@@ -44,6 +44,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing;
 import ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor;
+import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -89,16 +90,22 @@ public class TableFillerWithCivilValues {
 
 	public TableFillerWithCivilValues() throws Exception {
 
+		final WebClientPool rcpersPool = new WebClientPool();
+		rcpersPool.setBaseUrl(RCPERS_URL);
+		rcpersPool.setUsername(RCPERS_USER);
+		rcpersPool.setPassword(RCPERS_PWD);
+
 		final RcPersClientImpl rcpersClient = new RcPersClientImpl();
-		rcpersClient.setBaseUrl(RCPERS_URL);
-		rcpersClient.setUsername(RCPERS_USER);
-		rcpersClient.setPassword(RCPERS_PWD);
+		rcpersClient.setWcPool(rcpersPool);
 		rcpersClient.setPeoplePath("persons/ct.vd.rcpers");
 
+		final WebClientPool fidorPool = new WebClientPool();
+		fidorPool.setBaseUrl(FIDOR_URL);
+		fidorPool.setUsername(FIDOR_USER);
+		fidorPool.setPassword(FIDOR_PWD);
+
 		final FidorClientImpl fidorClient = new FidorClientImpl();
-		fidorClient.setServiceUrl(FIDOR_URL);
-		fidorClient.setUsername(FIDOR_USER);
-		fidorClient.setPassword(FIDOR_PWD);
+		fidorClient.setWcPool(fidorPool);
 
 		final ServiceInfrastructureFidor infraServiceFiDor = new ServiceInfrastructureFidor();
 		infraServiceFiDor.setFidorClient(fidorClient);

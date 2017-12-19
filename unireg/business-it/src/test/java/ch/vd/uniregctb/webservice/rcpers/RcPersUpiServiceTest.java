@@ -4,6 +4,7 @@ import ch.ech.ech0085.v1.GetInfoPersonResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 import ch.vd.uniregctb.utils.UniregProperties;
 import ch.vd.uniregctb.utils.UniregPropertiesImpl;
@@ -39,14 +40,16 @@ public class RcPersUpiServiceTest {
 		Assert.assertNotNull(infoAcceptee.getAccepted().getValuesStoredUnderAhvvn());
 	}
 
-	private RcPersClientImpl buildClient() throws Exception {
+	private RcPersClientImpl buildClient() {
 
 		final String rcpUrl = uniregProperties.getProperty("testprop.webservice.rcpers.url");
+		final WebClientPool wcPool = new WebClientPool();
+		wcPool.setBaseUrl(rcpUrl);
+		wcPool.setUsername("gvd0unireg");
+		wcPool.setPassword("Welc0me_");
 		final RcPersClientImpl client = new RcPersClientImpl();
-		client.setBaseUrl(rcpUrl);
+		client.setWcPool(wcPool);
 		client.setUpiGetInfoPersonPath("upi/query/getInfoPerson");
-		client.setUsername("gvd0unireg");
-		client.setPassword("Welc0me_");
 		return client;
 	}
 }

@@ -36,6 +36,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
+import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.xml.common.v2.DateRange;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.corporation.v5.LegalForm;
@@ -310,10 +311,13 @@ public class Job {
 	}
 
 	private static FidorClient buildFidorClient() {
+		final WebClientPool wcPool = new WebClientPool();
+		wcPool.setBaseUrl(urlWebServiceFidor);
+		wcPool.setUsername(userWebServiceFidor);
+		wcPool.setPassword(pwdWebServiceFidor);
+
 		final FidorClientImpl client = new FidorClientImpl();
-		client.setServiceUrl(urlWebServiceFidor);
-		client.setUsername(userWebServiceFidor);
-		client.setPassword(pwdWebServiceFidor);
+		client.setWcPool(wcPool);
 		return client;
 	}
 

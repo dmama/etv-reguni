@@ -49,6 +49,7 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscalFidor;
 import ch.vd.unireg.ws.parties.v7.Entry;
 import ch.vd.unireg.ws.parties.v7.Parties;
+import ch.vd.unireg.wsclient.WebClientPool;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.corporation.v5.TaxSystem;
 import ch.vd.unireg.xml.party.taxresidence.v4.LiabilityChangeReason;
@@ -261,10 +262,12 @@ public class Job {
 	}
 
 	private static FidorClient buildFidorClient() {
+		final WebClientPool wcPool = new WebClientPool();
+		wcPool.setBaseUrl(urlWebServiceFidor);
+		wcPool.setUsername(userWebServiceFidor);
+		wcPool.setPassword(pwdWebServiceFidor);
 		final FidorClientImpl client = new FidorClientImpl();
-		client.setServiceUrl(urlWebServiceFidor);
-		client.setUsername(userWebServiceFidor);
-		client.setPassword(pwdWebServiceFidor);
+		client.setWcPool(wcPool);
 		return client;
 	}
 
