@@ -104,7 +104,12 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
-			<artifactId>shared-jmx-atomikos</artifactId>
+			<artifactId>shared-jmx-jencks</artifactId>
+			<version>4.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.registre</groupId>
+			<artifactId>shared-jmx-tranql</artifactId>
 			<version>4.1.0</version>
 		</dependency>
 		<dependency>
