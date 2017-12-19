@@ -157,6 +157,21 @@ public class AutreDocumentFiscalManagerImpl implements AutreDocumentFiscalManage
 		return autreDocumentFiscalService.imprimeDuplicataLettreBienvenueOnline(lettre);
 	}
 
+	@Override
+	public EditiqueResultat envoieImpressionLocalDuplicataDemandeDegrevement(Long id) throws AutreDocumentFiscalException {
+
+		final DemandeDegrevementICI demande = (DemandeDegrevementICI) sessionFactory.getCurrentSession().get(DemandeDegrevementICI.class, id);
+
+		final AutreDocumentFiscalView docView = AutreDocumentFiscalViewFactory.buildView(demande, infraService, messageSource);
+		String messageInfoImpression = String.format("Impression (%s/%s) d'un duplicata de la demande de dégrèvement (%s) pour le contribuable %s",
+		                                             AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(),
+		                                             docView.getLibelleSousType(), FormatNumeroHelper.numeroCTBToDisplay(demande.getTiers().getNumero()));
+
+		Audit.info(messageInfoImpression);
+
+		return autreDocumentFiscalService.imprimeDuplicataDemandeDegrevementOnline(demande);
+	}
+
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@Override
 	public List<AutreDocumentFiscalView> getAutresDocumentsFiscauxAvecSuivi(long noCtb) {

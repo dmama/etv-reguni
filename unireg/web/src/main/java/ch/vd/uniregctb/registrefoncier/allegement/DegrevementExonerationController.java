@@ -1472,7 +1472,7 @@ public class DegrevementExonerationController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/desannuler.do", method = RequestMethod.POST)
-	public String desannulerDocumentFiscal(@RequestParam("id") long id) throws AccessDeniedException {
+	public String desannuler(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des demandes de dégrèvement ICI.");
@@ -1492,5 +1492,59 @@ public class DegrevementExonerationController {
 		autreDocumentFiscalManager.desannulerAutreDocumentFiscal(doc);
 
 		return "redirect:/degrevement-exoneration/edit-demandes-degrevement.do?idContribuable=" + ctb.getId() + " &idImmeuble=" + doc.getImmeuble().getId();
+	}
+
+	/**
+	 * Imprime un duplicata de demande de dégrèvement
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/duplicata.do", method = RequestMethod.POST)
+	public String duplicataDemandeDegrevement(@RequestParam("id") long id,
+	                                                   HttpServletResponse response) throws Exception {
+
+		if (!SecurityHelper.isAnyGranted(securityProviderInterface, Role.DEMANDES_DEGREVEMENT_ICI)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec pour imprimer des duplicata de demande de dégrèvement.");
+		}
+
+		final DemandeDegrevementICI doc = getDemandeDegrevement(id);
+
+		// vérification des droits en écriture
+		final Entreprise ctb = (Entreprise) doc.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final EditiqueResultat resultat = autreDocumentFiscalManager.envoieImpressionLocalDuplicataDemandeDegrevement(id);
+		final DegrevementExonerationController.RedirectEditDemandeDegrevement inbox = new DegrevementExonerationController.RedirectEditDemandeDegrevement(id);
+		final DegrevementExonerationController.RedirectEditDemandeDegrevementApresErreur erreur = new DegrevementExonerationController.RedirectEditDemandeDegrevementApresErreur(id, messageSource);
+		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "lb", inbox, null, erreur);
+	}
+
+	private static class RedirectEditDemandeDegrevement implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> {
+		private final long id;
+
+		public RedirectEditDemandeDegrevement(long id) {
+			this.id = id;
+		}
+
+		@Override
+		public String doJob(EditiqueResultatReroutageInbox resultat) {
+			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
+		}
+	}
+
+	private static class RedirectEditDemandeDegrevementApresErreur implements RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> {
+		private final long id;
+		private final MessageSource messageSource;
+
+		public RedirectEditDemandeDegrevementApresErreur(long id, MessageSource messageSource) {
+			this.id = id;
+			this.messageSource = messageSource;
+		}
+
+		@Override
+		public String doJob(EditiqueResultatErreur resultat) {
+			final String message = messageSource.getMessage("global.error.communication.editique", null, WebContextUtils.getDefaultLocale());
+			Flash.error(message);
+			return "redirect:/degrevement-exoneration/edit-demande-degrevement.do?id=" + id;
+		}
 	}
 }

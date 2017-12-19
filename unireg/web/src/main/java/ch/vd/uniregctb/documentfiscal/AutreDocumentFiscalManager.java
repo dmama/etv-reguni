@@ -35,6 +35,8 @@ public interface AutreDocumentFiscalManager {
 
 	EditiqueResultat envoieImpressionLocalDuplicataLettreBienvenue(Long id) throws AutreDocumentFiscalException;
 
+	EditiqueResultat envoieImpressionLocalDuplicataDemandeDegrevement(Long id) throws AutreDocumentFiscalException;
+
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	List<AutreDocumentFiscalView> getAutresDocumentsFiscauxAvecSuivi(long noCtb);
 

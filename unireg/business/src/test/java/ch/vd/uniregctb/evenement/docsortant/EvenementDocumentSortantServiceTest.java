@@ -214,7 +214,7 @@ public class EvenementDocumentSortantServiceTest extends BusinessTest {
 				infoArchivage.setTypDocument(TypeDocumentEditique.DEMANDE_DEGREVEMENT_ICI.getCodeDocumentArchivage());
 				infoArchivage.setTypDossier(ConstantesEditique.TYPE_DOSSIER_ARCHIVAGE);
 
-				service.signaleDemandeDegrevementICI(demande, "Ma super commune", "42-12-4", infoArchivage, true);
+				service.signaleDemandeDegrevementICI(demande, "Ma super commune", "42-12-4", infoArchivage, true, false);
 			}
 		});
 

@@ -605,7 +605,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			}
 		}
 
-		final String description = String.format("Document 'Lettre de bienvenue' du contribuable %s",
+		final String description = String.format("Document 'Lettre de bienvenue'%s du contribuable %s",
+		                                         isDuplicata ? " (duplicata) " : "",
 		                                         FormatNumeroHelper.numeroCTBToDisplay(lettre.getTiers().getNumero()));
 
 		final String nomDocument = impressionLettreBienvenueHelper.construitIdDocument(lettre);
@@ -1005,14 +1006,14 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocument = impressionDemandeDegrevementICIHelper.getTypeDocumentEditique();
 
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document original = impressionDemandeDegrevementICIHelper.buildDocument(demande, dateTraitement);
+		final FichierImpression.Document original = impressionDemandeDegrevementICIHelper.buildDocument(demande, dateTraitement, false);
 		root.getDocument().add(original);
 
 		// sauvegarde de la clé d'archivage
 		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
 		if (infoArchivage != null) {
 			final CTypeImmeuble infoImmeuble = original.getLettreDegrevementImm().getImmeuble();
-			evenementDocumentSortantService.signaleDemandeDegrevementICI(demande, infoImmeuble.getCommune(), infoImmeuble.getNoParcelle(), infoArchivage, false);
+			evenementDocumentSortantService.signaleDemandeDegrevementICI(demande, infoImmeuble.getCommune(), infoImmeuble.getNoParcelle(), infoArchivage, false, false);
 			demande.setCleArchivage(infoArchivage.getIdDocument());
 		}
 
@@ -1021,11 +1022,16 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public EditiqueResultat imprimeDemandeDegrevementICIOnline(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException, JMSException {
+	public EditiqueResultat imprimeDuplicataDemandeDegrevementICIOnline(DemandeDegrevementICI demande, RegDate dateTraitement) throws EditiqueException, JMSException {
+		return imprimeDemandeDegrevementICIOnline(demande, dateTraitement, true);
+	}
+
+	@Override
+	public EditiqueResultat imprimeDemandeDegrevementICIOnline(DemandeDegrevementICI demande, RegDate dateTraitement, boolean duplicata) throws EditiqueException, JMSException {
 		final TypeDocumentEditique typeDocument = impressionDemandeDegrevementICIHelper.getTypeDocumentEditique();
 
 		final FichierImpression root = new FichierImpression();
-		final FichierImpression.Document original = impressionDemandeDegrevementICIHelper.buildDocument(demande, dateTraitement);
+		final FichierImpression.Document original = impressionDemandeDegrevementICIHelper.buildDocument(demande, dateTraitement, duplicata);
 		root.getDocument().add(original);
 		final String nomDocument = impressionDemandeDegrevementICIHelper.construitIdDocument(demande);
 
@@ -1033,15 +1039,18 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final CTypeInfoArchivage infoArchivage = original.getInfoArchivage();
 		final CTypeImmeuble infoImmeuble = original.getLettreDegrevementImm().getImmeuble();
 		if (infoArchivage != null) {
-			evenementDocumentSortantService.signaleDemandeDegrevementICI(demande, infoImmeuble.getCommune(), infoImmeuble.getNoParcelle(), infoArchivage, true);
-			demande.setCleArchivage(infoArchivage.getIdDocument());
+			evenementDocumentSortantService.signaleDemandeDegrevementICI(demande, infoImmeuble.getCommune(), infoImmeuble.getNoParcelle(), infoArchivage, true, duplicata);
+			if (!duplicata) {
+				demande.setCleArchivage(infoArchivage.getIdDocument());
+			}
 		}
 
-		final String description = String.format("Formulaire de demande de dégrèvement %d pour l'entreprise %s et l'immeuble %s de la commune de %s",
+		final String description = String.format("Formulaire de demande de dégrèvement %d pour l'entreprise %s et l'immeuble %s de la commune de %s%s",
 		                                         demande.getPeriodeFiscale(),
 		                                         FormatNumeroHelper.numeroCTBToDisplay(demande.getEntreprise().getNumero()),
 		                                         infoImmeuble.getNoParcelle(),
-		                                         infoImmeuble.getCommune());
+		                                         infoImmeuble.getCommune(),
+												 duplicata ? " (duplicata)" : "");
 		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, typeDocument, FormatDocumentEditique.PCL, root, infoArchivage != null, description);
 	}
 

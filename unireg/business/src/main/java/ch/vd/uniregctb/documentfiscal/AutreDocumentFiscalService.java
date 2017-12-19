@@ -69,6 +69,8 @@ public interface AutreDocumentFiscalService {
 	 */
 	EditiqueResultat imprimeDuplicataLettreBienvenueOnline(LettreBienvenue lettre) throws AutreDocumentFiscalException;
 
+	EditiqueResultat imprimeDuplicataDemandeDegrevementOnline(DemandeDegrevementICI demande) throws AutreDocumentFiscalException;
+
 	/**
 	 * Sauve et attache un délai sur un autre document fiscal.
 	 * @param doc le document

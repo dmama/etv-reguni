@@ -200,6 +200,16 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 	}
 
 	@Override
+	public EditiqueResultat imprimeDuplicataDemandeDegrevementOnline(DemandeDegrevementICI demande) throws AutreDocumentFiscalException {
+		try {
+			return editiqueCompositionService.imprimeDuplicataDemandeDegrevementICIOnline(demande, RegDate.get());
+		}
+		catch (EditiqueException | JMSException e) {
+			throw new AutreDocumentFiscalException(e);
+		}
+	}
+
+	@Override
 	public DelaiAutreDocumentFiscal addAndSave(AutreDocumentFiscal doc, DelaiAutreDocumentFiscal delai) {
 		return AddAndSaveHelper.addAndSave(doc, delai, hibernateTemplate::merge, new DelaiDocumentFiscalAddAndSaveAccessor<>());
 	}
@@ -347,7 +357,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 			envoiCodeControlePourDemandeDegrevementICI(saved);
 
 			// impression éditique
-			return editiqueCompositionService.imprimeDemandeDegrevementICIOnline(saved, dateTraitement);
+			return editiqueCompositionService.imprimeDemandeDegrevementICIOnline(saved, dateTraitement, false);
 
 			// TODO événement fiscal ?
 		}

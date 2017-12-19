@@ -402,9 +402,9 @@ public class EvenementDocumentSortantServiceImpl implements EvenementDocumentSor
 	}
 
 	@Override
-	public void signaleDemandeDegrevementICI(DemandeDegrevementICI dd, String nomCommune, String noParcelle, CTypeInfoArchivage infoArchivage, boolean local) {
+	public void signaleDemandeDegrevementICI(DemandeDegrevementICI dd, String nomCommune, String noParcelle, CTypeInfoArchivage infoArchivage, boolean local, boolean duplicata) {
 		signaleDocumentSortant("DDICI",
-		                       TypeDocumentSortant.DEMANDE_DEGREVEMENT_ICI,
+		                       duplicata ? TypeDocumentSortant.DUPLICATA_DEMANDE_DEGREVEMENT_ICI : TypeDocumentSortant.DEMANDE_DEGREVEMENT_ICI,
 		                       CollectionsUtils.concat(Arrays.asList(TypeDocumentSortant.DEMANDE_DEGREVEMENT_ICI.getNomDocument(), nomCommune, noParcelle), " "),
 		                       dd.getEntreprise(),
 		                       local,
