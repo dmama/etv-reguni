@@ -36,6 +36,7 @@ import ch.vd.uniregctb.security.Role;
 		"classpath:WEB-INF/unireg-web-separation.xml",
 		"classpath:WEB-INF/unireg-web-deces.xml",
 		"classpath:WEB-INF/unireg-web-di.xml",
+		"classpath:WEB-INF/unireg-web-docfiscal.xml",
 		"classpath:WEB-INF/unireg-web-fourre-neutre.xml",
 		"classpath:WEB-INF/unireg-web-mouvement.xml",
 		"classpath:WEB-INF/unireg-web-tache.xml",
