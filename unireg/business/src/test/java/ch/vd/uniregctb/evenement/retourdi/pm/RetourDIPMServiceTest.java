@@ -584,7 +584,7 @@ public class RetourDIPMServiceTest extends BusinessTest {
 	@Test
 	public void testChangementDateFinExerciceCommercialMemeAnneePlusTot() throws Exception {
 
-		final int annee = RegDate.get().year() - 1;
+		final int annee = RegDate.get().year() - 2;
 		final RegDate dateDebutEntreprise = date(annee - 1, 6, 1);
 		final RegDate ancienneFinExerciceCommercial = date(annee, 6, 30);
 		final RegDate nouvelleFinExerciceCommercial = date(annee, 3, 31);      // même année en avançant
@@ -633,24 +633,19 @@ public class RetourDIPMServiceTest extends BusinessTest {
 				Assert.assertEquals(Collections.emptySet(), entreprise.getRemarques());
 
 				final List<Tache> taches = tacheDAO.find(entreprise.getNumero());
-				if (RegDate.get().month() > 3) {
-					// oui, une tâche a été créée, parce que la période se temine justement au 31.03, qui est passé
-					Assert.assertEquals(1, taches.size());
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertFalse(tache.isAnnule());
-					Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
+				// oui, une tâche a été créée, parce que la période se temine justement au 31.03, qui est passé
+				Assert.assertEquals(1, taches.size());
+				final Tache tache = taches.get(0);
+				Assert.assertNotNull(tache);
+				Assert.assertFalse(tache.isAnnule());
+				Assert.assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+				Assert.assertEquals(TypeTache.TacheEnvoiDeclarationImpotPM, tache.getTypeTache());
 
-					final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
-					Assert.assertEquals(date(annee, 4, 1), tacheEnvoi.getDateDebut());
-					Assert.assertEquals(date(annee, 4, 1), tacheEnvoi.getDateDebutExercice());
-					Assert.assertEquals(date(annee + 1, 3, 31), tacheEnvoi.getDateFin());
-					Assert.assertEquals(date(annee + 1, 3, 31), tacheEnvoi.getDateFinExercice());
-				}
-				else {
-					Assert.assertEquals(Collections.emptyList(), taches);
-				}
+				final TacheEnvoiDeclarationImpotPM tacheEnvoi = (TacheEnvoiDeclarationImpotPM) tache;
+				Assert.assertEquals(date(annee, 4, 1), tacheEnvoi.getDateDebut());
+				Assert.assertEquals(date(annee, 4, 1), tacheEnvoi.getDateDebutExercice());
+				Assert.assertEquals(date(annee + 1, 3, 31), tacheEnvoi.getDateFin());
+				Assert.assertEquals(date(annee + 1, 3, 31), tacheEnvoi.getDateFinExercice());
 
 				// la déclaration
 				final List<DeclarationImpotOrdinairePM> dis = entreprise.getDeclarationsDansPeriode(DeclarationImpotOrdinairePM.class, annee, true);
