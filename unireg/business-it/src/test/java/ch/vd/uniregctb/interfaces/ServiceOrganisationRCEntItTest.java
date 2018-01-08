@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -117,7 +116,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	}
 
 	@Test(timeout = 30000)
-	public void testGetOrganisation() throws Exception {
+	public void testGetOrganisation() {
 		Organisation org = service.getOrganisationHistory(ID_BCV);
 		assertNotNull(org);
 		assertContains(NOM_BCV, org.getNom().get(0).getPayload());
@@ -125,14 +124,14 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 //	@Ignore
 	@Test(timeout = 30000)
-	public void testGetPseudoOrganisationHistory() throws Exception {
+	public void testGetPseudoOrganisationHistory() {
 		Organisation org = service.getOrganisationEvent(ID_EVT).get(ID_ORGANISATION_EVT).getPseudoHistory();
 		assertNotNull(org);
 		assertContains(ID_NOM_EVT, org.getNom().get(0).getPayload());
 	}
 
 	@Test(timeout = 30000)
-	public void testGetOrganisationByNoIde() throws Exception {
+	public void testGetOrganisationByNoIde() {
 		final ServiceOrganisationRaw.Identifiers ids = service.getOrganisationByNoIde(IDE_SUCC);
 		assertNotNull(ids);
 		assertEquals(ID_ORGANISATION_SUCC, ids.idCantonalOrganisation);
@@ -251,7 +250,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	}
 
 	@Test(timeout = 30000)
-	public void testGetAnnonceIDE() throws Exception {
+	public void testGetAnnonceIDE() {
 		final AnnonceIDEEnvoyee annonceIDE = service.getAnnonceIDE(ID_ANNONCE, null);
 
 		assertNotNull(annonceIDE);
@@ -260,7 +259,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	}
 
 	@Test(timeout = 30000)
-	public void testValidateProtoAnnonceIDE() throws ParseException {
+	public void testValidateProtoAnnonceIDE() {
 
 		final AdresseAnnonceIDERCEnt adresse = RCEntAnnonceIDEHelper
 				.createAdresseAnnonceIDERCEnt("Rue du Marais", "1", null, MockLocalite.Geneve.getNPA(), null, MockLocalite.Geneve.getNoOrdre(), "Genève", MockPays.Suisse.getNoOfsEtatSouverain(), MockPays.Suisse.getCodeIso2(), MockPays.Suisse.getNomCourt(), null,
@@ -276,19 +275,43 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	}
 
 	@Test(timeout = 30000)
-	public void testValidateAnnonceIDEPourrie() throws ParseException {
-		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(new ProtoAnnonceIDE(TypeAnnonce.CREATION, DateHelper.getCurrentDate(), new AnnonceIDEData.UtilisateurImpl(RCEntAnnonceIDEHelper.UNIREG_USER, null), TypeDeSite.ETABLISSEMENT_PRINCIPAL, null,
-		                                                                                   new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS, RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG, RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG)));
+	public void testValidateAnnonceIDEPourrie() {
+		final ProtoAnnonceIDE proto = new ProtoAnnonceIDE(TypeAnnonce.CREATION,
+		                                                  DateHelper.getCurrentDate(),
+		                                                  new AnnonceIDEData.UtilisateurImpl(RCEntAnnonceIDEHelper.UNIREG_USER, null),
+		                                                  TypeDeSite.ETABLISSEMENT_PRINCIPAL,
+		                                                  null,
+		                                                  new AnnonceIDEData.InfoServiceIDEObligEtenduesImpl(RCEntAnnonceIDEHelper.NO_IDE_ADMINISTRATION_CANTONALE_DES_IMPOTS,
+		                                                                                                     RCEntAnnonceIDEHelper.NO_APPLICATION_UNIREG,
+		                                                                                                     RCEntAnnonceIDEHelper.NOM_APPLICATION_UNIREG));
+		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(proto);
 
 		assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
 		// TODO: check le contenu
 	}
 
 	@Test(timeout = 30000)
-	public void testValidateAnnonceIDEUnPeuMoinsPourrie() throws ParseException {
-		ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION, DateHelper.getCurrentDate(), RCEntAnnonceIDEHelper.UNIREG_USER, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL, null, null,
-		                                                                    new NumeroIDE("CHE999999998"), null, null, null, null, null, "Syntruc Asso", null, FormeLegale.N_0109_ASSOCIATION,
-		                                                                    "Fabrication d'objet synthétiques", null, null, RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
+	public void testValidateAnnonceIDEUnPeuMoinsPourrie() {
+		final ProtoAnnonceIDE proto = RCEntAnnonceIDEHelper.createProtoAnnonceIDE(TypeAnnonce.MUTATION,
+		                                                                          DateHelper.getCurrentDate(),
+		                                                                          RCEntAnnonceIDEHelper.UNIREG_USER,
+		                                                                          null,
+		                                                                          TypeDeSite.ETABLISSEMENT_PRINCIPAL,
+		                                                                          null,
+		                                                                          null,
+		                                                                          new NumeroIDE("CHE999999998"),
+		                                                                          null,
+		                                                                          null,
+		                                                                          null,
+		                                                                          null,
+		                                                                          null,
+		                                                                          "Syntruc Asso",
+		                                                                          null,
+		                                                                          FormeLegale.N_0109_ASSOCIATION,
+		                                                                          "Fabrication d'objet synthétiques",
+		                                                                          null,
+		                                                                          null,
+		                                                                          RCEntAnnonceIDEHelper.SERVICE_IDE_UNIREG);
 		final BaseAnnonceIDE.Statut statut = service.validerAnnonceIDE(proto);
 
 		assertNotNull("La validation de l'annonce n'a pas renvoyé de statut.", statut);
@@ -299,7 +322,7 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	 * [SIFISC-24996] Ce test vérifie que les adresses <i>case postale</i> d'une entreprises sont bien retournées par la méthode <i>getAdressesOrganisationHisto</i>.
 	 */
 	@Test(timeout = 30000)
-	public void testGetAdressesOrganisationHistoAvecBoitePostale() throws Exception {
+	public void testGetAdressesOrganisationHistoAvecBoitePostale() {
 
 		// tiers 34301, numéro cantonal = 101830038
 		final AdressesCivilesHisto adresses = service.getAdressesOrganisationHisto(101830038);
@@ -308,12 +331,12 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 		assertEquals(0, adresses.secondaires.size());
 		assertEquals(0, adresses.tutelles.size());
 
-		assertEquals(2, adresses.courriers.size());
-		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.courriers.get(0));
-		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.courriers.get(1));
+		assertEquals(1, adresses.courriers.size());
+//		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.courriers.get(0));
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.courriers.get(0));
 
 		assertEquals(1, adresses.casesPostales.size());
-		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), null, null, "Savigny", adresses.casesPostales.get(0));
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2017, 8, 23), null, null, "Savigny", adresses.casesPostales.get(0));
 		assertEquals("Case Postale 38", adresses.casesPostales.get(0).getCasePostale().toString());
 	}
 
@@ -321,18 +344,18 @@ public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 	 * [SIFISC-24996] Ce test vérifie que les adresses <i>case postale</i> d'une entreprises sont bien exposées sur l'entreprises retournée par la méthode <i>getOrganisationHistory</i>.
 	 */
 	@Test(timeout = 30000)
-	public void testGetOrganisationHistoryAvecBoitePostale() throws Exception {
+	public void testGetOrganisationHistoryAvecBoitePostale() {
 
 		// tiers 34301, numéro cantonal = 101830038
 		final Organisation org = service.getOrganisationHistory(101830038);
 		assertNotNull(org);
 
 		final List<Adresse> adresses = org.getAdresses();
-		assertEquals(3, adresses.size());
-		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.get(0));
-		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2016, 12, 15), null, null, "Savigny", adresses.get(1));
+		assertEquals(2, adresses.size());
+//		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2016, 9, 21), RegDate.get(2017, 8, 22), null, "Savigny", adresses.get(0));
+		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.get(0));
+		assertAdresse(TypeAdresseCivil.CASE_POSTALE, RegDate.get(2017, 8, 23), null, null, "Savigny", adresses.get(1));
 		assertEquals("Case Postale 38", adresses.get(1).getCasePostale().toString());
-		assertAdresse(TypeAdresseCivil.COURRIER, RegDate.get(2017, 8, 23), null, "Route de Vevey", "Forel (Lavaux)", adresses.get(2));
 	}
 
 	private RcEntClient createRCEntClient(boolean validating) throws Exception {
