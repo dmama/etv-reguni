@@ -142,8 +142,15 @@ public class AnnulationSeparationEchProcessorTest extends AnnulationOuCessationS
 			}
 		});
 
+		class Ids {
+			long menage;
+			long lui;
+			long elle;
+		}
+		final Ids ids = new Ids();
+
 		// mise en place fiscale avec mariage et séparation
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
@@ -158,6 +165,10 @@ public class AnnulationSeparationEchProcessorTest extends AnnulationOuCessationS
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 				addDecisionAci(mc,dateMariage,null,MockCommune.Aubonne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,"bof");
+
+				ids.menage = mc.getId();
+				ids.lui = lui.getId();
+				ids.elle = elle.getId();
 				return mc.getNumero();
 			}
 		});
@@ -181,29 +192,26 @@ public class AnnulationSeparationEchProcessorTest extends AnnulationOuCessationS
 		traiterEvenements(noIndividuLui);
 
 		// vérification du résultat
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
-				Assert.assertNotNull(mc);
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			Assert.assertNotNull(evt);
+			Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			Assert.assertNotNull(erreurs);
+			Assert.assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+			Assert.assertNotNull(mc);
 
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertNotNull(ffp.getDateFin());
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertNotNull(ffp.getDateFin());
 
-				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
-				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
-				Assert.assertEquals(message, erreur.getMessage());
-				return null;
-			}
+			final String message = "Le contribuable trouvé (" + FormatNumeroHelper.numeroCTBToDisplay(ids.lui) +
+					") appartient à un ménage  (" + FormatNumeroHelper.numeroCTBToDisplay(ids.menage) +
+					") qui fait l'objet d'une décision ACI";
+			Assert.assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
