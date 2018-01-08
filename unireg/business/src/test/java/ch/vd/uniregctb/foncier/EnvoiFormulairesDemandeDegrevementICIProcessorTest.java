@@ -986,6 +986,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateDebutEntreprise = date(2009, 4, 1);
 		final RegDate dateDebutDroit = date(2015, 7, 12);
 		final RegDate dateTraitement = RegDate.get();
+		final int anneeDerniereEstimationFiscale = 2017;
 
 		// mise en place civile
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
@@ -1014,7 +1015,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 			final CommuneRF commune = addCommuneRF(15451, "Lausanne", MockCommune.Lausanne.getNoOFS());
 			final BienFondsRF immeuble = addBienFondsRF("4545841dfsshdas", null, commune, 112, 54, 12, 53);
 			addEstimationFiscale(date(2015, 12, 1), null, date(2016, 12, 31), false, 484541745L, "RG2015", immeuble);
-			addEstimationFiscale(date(2017, 1, 6), date(2017, 1, 1), null, false, 46512165L, "2017", immeuble);
+			addEstimationFiscale(date(anneeDerniereEstimationFiscale, 1, 6), date(anneeDerniereEstimationFiscale, 1, 1), null, false, 46512165L, String.valueOf(anneeDerniereEstimationFiscale), immeuble);
 
 			addDroitPersonneMoraleRF(null, dateDebutDroit, null, null, "Achat", null, "1555sfsgbsfhd", "1555sfsgbsfhc", new IdentifiantAffaireRF(51, null, null, null), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, rf, immeuble, null);
 
@@ -1041,7 +1042,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(dateTraitement.year() + 1, envoi.periodeFiscale);
+			Assert.assertEquals(anneeDerniereEstimationFiscale + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Lausanne", envoi.nomCommune);
@@ -1088,7 +1089,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) (dateTraitement.year() + 1), demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (anneeDerniereEstimationFiscale + 1), demande.getPeriodeFiscale());
 				}
 			}
 		});
@@ -2752,7 +2753,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		{
 			final EnvoiFormulairesDemandeDegrevementICIResults.DemandeDegrevementEnvoyee envoi = results.getEnvois().get(0);
 			Assert.assertNotNull(envoi);
-			Assert.assertEquals(2018, envoi.periodeFiscale);
+			Assert.assertEquals(dateFinExoneration.year() + 1, envoi.periodeFiscale);
 			Assert.assertEquals((Long) ids.idImmeuble, envoi.idImmeuble);
 			Assert.assertEquals(ids.idContribuable, envoi.noContribuable);
 			Assert.assertEquals("Lausanne", envoi.nomCommune);
@@ -2786,7 +2787,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 					Assert.assertNull(demande.getDateRappel());
 					Assert.assertNotNull(demande.getCodeControle());
 					Assert.assertEquals((Integer) 1, demande.getNumeroSequence());
-					Assert.assertEquals((Integer) 2018, demande.getPeriodeFiscale());
+					Assert.assertEquals((Integer) (dateFinExoneration.year() + 1), demande.getPeriodeFiscale());
 				}
 			}
 		});
@@ -2801,7 +2802,7 @@ public class EnvoiFormulairesDemandeDegrevementICIProcessorTest extends Business
 		final RegDate dateDebutEntreprise = date(1990, 4, 1);
 		final RegDate dateDebutDroit = date(2010, 1, 4);
 		final RegDate dateClotureDroit = date(2016, 12, 23);
-		final RegDate dateTraitement = RegDate.get();
+		final RegDate dateTraitement = date(2017, 5, 5);
 
 		// mise en place civile
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
