@@ -34,6 +34,7 @@
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=AccessLoad" value-ref="webAccessLoadJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Connections,name=IfoSec" value-ref="ifoSecConnectionJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Connections,name=NexusRemoting" value-ref="nexusRemoteConnectionJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
 			</map>
@@ -104,6 +105,14 @@
 		<constructor-arg>
 			<bean class="ch.vd.unireg.wsclient.WebClientPoolConnectionAdapter">
 				<constructor-arg ref="ifoSecWebClientPool" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<bean name="nexusRemoteConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
+		<constructor-arg>
+			<bean class="ch.vd.unireg.servlet.remoting.CommonsHttpInvokerRequestExecutorConnectionAdapter ">
+				<constructor-arg ref="nexusHttpRequestExecutor" />
 			</bean>
 		</constructor-arg>
 	</bean>

@@ -29,6 +29,8 @@
 				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
 				<entry key="ch.vd.uniregctb-ws:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Connections,name=IfoSec" value-ref="ifoSecConnectionJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Connections,name=NexusRemoting" value-ref="nexusRemoteConnectionJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Connections,name=WebRemoting" value-ref="webRemoteConnectionJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
 			</map>
@@ -100,6 +102,22 @@
 		<constructor-arg>
 			<bean class="ch.vd.unireg.wsclient.WebClientPoolConnectionAdapter">
 				<constructor-arg ref="ifoSecWebClientPool" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<bean name="nexusRemoteConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
+		<constructor-arg>
+			<bean class="ch.vd.unireg.servlet.remoting.CommonsHttpInvokerRequestExecutorConnectionAdapter ">
+				<constructor-arg ref="nexusHttpRequestExecutor" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<bean name="webRemoteConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
+		<constructor-arg>
+			<bean class="ch.vd.unireg.servlet.remoting.CommonsHttpInvokerRequestExecutorConnectionAdapter ">
+				<constructor-arg ref="webHttpRequestExecutor" />
 			</bean>
 		</constructor-arg>
 	</bean>
