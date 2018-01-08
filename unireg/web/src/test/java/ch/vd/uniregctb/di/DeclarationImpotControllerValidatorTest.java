@@ -360,7 +360,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 				view.setPeriodeFiscale(2016);
 				view.setDateDebutPeriodeImposition(date(2016, 7, 1));
 				view.setDateFinPeriodeImposition(date(2017, 6, 30));        // pas la bonne année !
-				view.setDelaiAccorde(date(2017, 12, 31));
+				view.setDelaiAccorde(RegDate.get().addMonths(2));
 				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
 
 				final Errors errors = new BeanPropertyBindingResult(view, "view");
@@ -397,18 +397,19 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				// on tente d'ajouter une nouvelle DI qui chevauche la fontière du 30.06 (= fin d'exercice commercial)
+				// on ajoute une nouvelle DI qui s'arrête juste à la fontière du 30.06 (= fin d'exercice commercial)
 				final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
 				view.setTiersId(pmId);
 				view.setPeriodeFiscale(2016);
 				view.setDateDebutPeriodeImposition(date(2015, 7, 1));
 				view.setDateFinPeriodeImposition(date(2016, 6, 30));
-				view.setDelaiAccorde(date(2017, 12, 31));
+				view.setDelaiAccorde(RegDate.get().addMonths(2));
 				view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM_BATCH);
 
 				final Errors errors = new BeanPropertyBindingResult(view, "view");
 				validator.validate(view, errors);
 
+				// on ne devrait pas y avoir des erreurs
 				final List<ObjectError> allErrors = errors.getAllErrors();
 				assertNotNull(allErrors);
 				assertEquals(0, allErrors.size());
