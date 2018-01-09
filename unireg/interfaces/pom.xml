@@ -35,22 +35,22 @@
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>unireg-wsclient-fidor</artifactId>
-			<version>5.15-SNAPSHOT</version>
+			<version>5.15</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-wsclient-rcpers</artifactId>
-			<version>5.5-SNAPSHOT</version>
+			<version>5.5</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-wsclient-rcent</artifactId>
-			<version>3.3.3-SNAPSHOT</version>
+			<version>3.3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-wsclient-host-interfaces</artifactId>
-			<version>1.5-SNAPSHOT</version>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
