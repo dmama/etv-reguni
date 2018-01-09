@@ -31,7 +31,7 @@
 
 	    <fieldset>
 	    <legend><span><fmt:message key="label.communautes.associees" /></span></legend>
-		    <display:table name="tiers.modeles" id="modele" pagesize="25" class="display" requestURI="/registrefoncier/communaute/showTiers.do">
+		    <display:table name="tiers.modeles" id="modele" pagesize="25" class="display" requestURI="/registrefoncier/communaute/showTiers.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			    <display:column titleKey="label.numero.modele.communaute" style="width:100px" href="showModele.do" paramId="id" paramProperty="id" >
 				    <c:out value="${modele.id}"/>
 			    </display:column>

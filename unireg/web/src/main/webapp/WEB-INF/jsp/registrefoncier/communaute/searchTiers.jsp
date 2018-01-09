@@ -20,7 +20,7 @@
 			</fieldset>
 		</form:form>
 
-		<display:table name="list" id="row" pagesize="25" requestURI="/registrefoncier/communaute/searchTiers.do" class="display" sort="list">
+		<display:table name="list" id="row" pagesize="25" requestURI="/registrefoncier/communaute/searchTiers.do" class="display" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.personne.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.personne.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>

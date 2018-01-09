@@ -31,6 +31,7 @@ import ch.vd.uniregctb.foncier.AllegementFoncier;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.registrefoncier.DroitRF;
+import ch.vd.uniregctb.registrefoncier.PrincipalCommunauteRF;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.DecisionAci;
@@ -92,6 +93,7 @@ public class ConsultLogController {
 		EvenementRFMutation(EvenementRFMutation.class),
 		AllegementFoncier(AllegementFoncier.class),
 		DroitRF(DroitRF.class),
+		PrincipalCommunauteRF(PrincipalCommunauteRF.class),
 		DelaiDocumentFiscal(DelaiDocumentFiscal.class),
 		EtatDocumentFiscal(EtatDocumentFiscal.class);
 

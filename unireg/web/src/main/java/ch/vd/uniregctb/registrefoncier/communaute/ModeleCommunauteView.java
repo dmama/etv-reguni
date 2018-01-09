@@ -34,7 +34,7 @@ public class ModeleCommunauteView {
 		this.membres = modele.getMembres().stream()
 				.map(m -> new MembreCommunauteView(m, tiersService, registreFoncierService))
 				.collect(Collectors.toList());
-		this.principaux = registreFoncierService.buildPrincipalHisto(modele).stream()
+		this.principaux = registreFoncierService.buildPrincipalHisto(modele, true).stream()
 				.sorted(new DateRangeComparator<>().reversed()) // du plus récent au plus vieux
 				.map(p -> new PrincipalCommunauteRFView(p, tiersService, registreFoncierService))
 				.collect(Collectors.toList());

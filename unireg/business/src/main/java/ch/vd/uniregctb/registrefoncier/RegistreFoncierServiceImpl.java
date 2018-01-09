@@ -33,6 +33,7 @@ import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -531,7 +532,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 				// on traduit les liens d'héritage en périodes de principal des héritiers
 				final List<CommunauteRFPrincipalInfo> periodesHeritiers = extract.stream()
-						.map(h -> new CommunauteRFPrincipalInfo(null, null, h.getDateDebut(), h.getDateFin(), h.getSujetId(), false))
+						.map(h -> new CommunauteRFPrincipalInfo(null, null, h.getDateDebut(), h.getDateFin(), null, h.getSujetId(), false))
 						.collect(Collectors.toList());
 
 				// on surcharge la période de principal du défunt avec celles des héritiers calculées ci-dessus
@@ -553,7 +554,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull RegroupementCommunauteRF regroupement) {
 
 		// on calcule l'histo du modèle de communauté
-		final List<CommunauteRFPrincipalInfo> histo = buildPrincipalHisto(regroupement.getModele());
+		final List<CommunauteRFPrincipalInfo> histo = buildPrincipalHisto(regroupement.getModele(), false);
 
 		// on le réduit à la durée de validité du regroupement
 		return DateRangeHelper.extract(histo, regroupement.getDateDebut(), regroupement.getDateFin(), CommunauteRFPrincipalInfo::adapter);
@@ -561,7 +562,7 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 
 	@Override
 	@NotNull
-	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute) {
+	public List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute, boolean includeAnnules) {
 
 		// on détermine le principal par défaut
 		final Long defaultPrincipal = modeleCommunaute.getMembres().stream()
@@ -571,14 +572,13 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.map(TiersRF::getCtbRapproche)
 				.filter(Objects::nonNull)
 				.map(Tiers::getNumero)
-				.sorted(new CommunauteRFMembreComparator(tiersService, null))
-				.findFirst()
+				.min(new CommunauteRFMembreComparator(tiersService, null))
 				.orElse(null);
 
 		// on crée l'historique (une seule valeur en fait) des principaux par défaut
 		final List<CommunauteRFPrincipalInfo> defaultHisto = new ArrayList<>();
 		if (defaultPrincipal != null) {
-			defaultHisto.add(new CommunauteRFPrincipalInfo(null, null, null, null, defaultPrincipal, true));
+			defaultHisto.add(new CommunauteRFPrincipalInfo(null, null, null, null, null, defaultPrincipal, true));
 		}
 
 		// on crée l'historique des principaux explicitement désignés
@@ -591,10 +591,23 @@ public class RegistreFoncierServiceImpl implements RegistreFoncierService {
 				.collect(Collectors.toList()));
 
 		// on les combine ensemble
-		final List<CommunauteRFPrincipalInfo> histo = DateRangeHelper.override(defaultHisto, principauxInfo, CommunauteRFPrincipalInfo::adapter);
+		final List<CommunauteRFPrincipalInfo> combined = DateRangeHelper.override(defaultHisto, principauxInfo, CommunauteRFPrincipalInfo::adapter);
 
 		// on fusionne les périodes qui peuvent l'être
-		return DateRangeHelper.collate(histo);
+		final List<CommunauteRFPrincipalInfo> histo = DateRangeHelper.collate(combined);
+
+		if (includeAnnules) {
+			// on inclut les principaux annulés si demandé
+			final List<CommunauteRFPrincipalInfo> canceled = (principaux == null ? Collections.emptyList() : principaux.stream()
+					.filter(HibernateEntity::isAnnule)
+					.map(CommunauteRFPrincipalInfo::get)
+					.filter(Objects::nonNull)
+					.sorted(new DateRangeComparator<>())
+					.collect(Collectors.toList()));
+			histo.addAll(canceled);
+		}
+
+		return histo;
 	}
 
 

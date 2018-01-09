@@ -2504,6 +2504,158 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 	}
 
+
+	/**
+	 * [SIFISC-27133] Vérifie que le paramètre <i>includeAnnules</i> de la méthode <i>buildPrincipalHisto</i> fonctionne bien.
+	 */
+	@Test
+	public void testBuildPrincipalHistoAvecPrincipauxAnnules() throws Exception {
+
+		final RegDate dateDebut1 = RegDate.get(2003, 7, 28);
+		final RegDate dateDebut2 = RegDate.get(2005, 4, 12);
+		final RegDate dateDebut3 = RegDate.get(2012, 11, 19);
+
+		final class Ids {
+			Long pp1;
+			Long pp2;
+			Long pp3;
+			Long modele;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(status -> {
+
+			final PersonnePhysiqueRF pp1 = addPersonnePhysiqueRF("Charles", "Widmer", date(1970, 7, 2), "38383830ae3ff", 411451546L, null);
+			final PersonnePhysiqueRF pp2 = addPersonnePhysiqueRF("Brigitte", "Widmer", date(1970, 7, 2), "434545", 411451L, null);
+			final PersonnePhysiqueRF pp3 = addPersonnePhysiqueRF("Noémie", "Widmer", date(1970, 7, 2), "010289290", 777L, null);
+
+			final PersonnePhysique ctb1 = addNonHabitant("Charles", "Widmer", date(1970, 7, 2), Sexe.MASCULIN);
+			final PersonnePhysique ctb2 = addNonHabitant("Brigitte", "Widmer", date(1970, 7, 2), Sexe.FEMININ);
+			final PersonnePhysique ctb3 = addNonHabitant("Noémie", "Widmer", date(1970, 7, 2), Sexe.FEMININ);
+
+			addRapprochementRF(ctb1, pp1, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(ctb2, pp2, null, null, TypeRapprochementRF.AUTO);
+			addRapprochementRF(ctb3, pp3, null, null, TypeRapprochementRF.AUTO);
+
+			// le modèle de communauté
+			ModeleCommunauteRF modele = new ModeleCommunauteRF();
+			modele.addMembre(pp1);
+			modele.addMembre(pp2);
+			modele.addMembre(pp3);
+			modele.setMembresHashCode(ModeleCommunauteRF.hashCode(modele.getMembres()));
+			modele = modeleCommunauteRFDAO.save(modele);
+
+			final PrincipalCommunauteRF p1 = new PrincipalCommunauteRF();
+			p1.setModeleCommunaute(modele);
+			p1.setPrincipal(pp1);
+			p1.setDateDebut(dateDebut1);
+			p1.setDateFin(dateDebut3.getOneDayBefore());
+			modele.addPrincipal(p1);
+
+			// un deuxième principal annulé
+			final PrincipalCommunauteRF p2 = new PrincipalCommunauteRF();
+			p2.setModeleCommunaute(modele);
+			p2.setPrincipal(pp2);
+			p2.setDateDebut(dateDebut2);
+			p2.setDateFin(null);
+			p2.setAnnule(true);
+			modele.addPrincipal(p2);
+
+			final PrincipalCommunauteRF p3 = new PrincipalCommunauteRF();
+			p3.setModeleCommunaute(modele);
+			p3.setPrincipal(pp3);
+			p3.setDateDebut(dateDebut3);
+			modele.addPrincipal(p3);
+
+			ids.pp1 = pp1.getId();
+			ids.pp2 = pp2.getId();
+			ids.pp3 = pp3.getId();
+			ids.modele = modele.getId();
+			return null;
+		});
+
+		// on vérifie que les seuls principaux actifs sont retournés avec includeAnnules=false
+		doInNewTransaction(status -> {
+
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			// on vérifie qu'on a bien trois principaux (un défaut + les 2 explicites non-annulés)
+			final List<CommunauteRFPrincipalInfo> principaux = serviceRF.buildPrincipalHisto(modele, false);
+			assertNotNull(principaux);
+			assertEquals(3, principaux.size());
+
+			final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+			assertNotNull(principal0);
+			assertNull(principal0.getAyantDroitId());    // Brigite Widmer
+			assertNull(principal0.getDateDebut());
+			assertEquals(dateDebut1.getOneDayBefore(), principal0.getDateFin());
+			assertFalse(principal0.isAnnule());
+			assertTrue(principal0.isParDefaut());
+
+			final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
+			assertNotNull(principal1);
+			assertEquals(ids.pp1, principal1.getAyantDroitId());    // Charles Widmer
+			assertEquals(dateDebut1, principal1.getDateDebut());
+			assertEquals(dateDebut3.getOneDayBefore(), principal1.getDateFin());
+			assertFalse(principal1.isAnnule());
+			assertFalse(principal1.isParDefaut());
+
+			final CommunauteRFPrincipalInfo principal2 = principaux.get(2);
+			assertNotNull(principal2);
+			assertEquals(ids.pp3, principal2.getAyantDroitId());    // Noémie Widmer
+			assertEquals(dateDebut3, principal2.getDateDebut());
+			assertNull(principal2.getDateFin());
+			assertFalse(principal2.isAnnule());
+
+			return null;
+		});
+
+		// on vérifie que tous les principaux (y compris les annulés) sont retournés avec includeAnnules=true
+		doInNewTransaction(status -> {
+
+			final ModeleCommunauteRF modele = modeleCommunauteRFDAO.get(ids.modele);
+
+			// on vérifie qu'on a bien qutre principaux (un défaut + les 2 explicites non-annulés + l'annulé)
+			final List<CommunauteRFPrincipalInfo> principaux = serviceRF.buildPrincipalHisto(modele, true);
+			assertNotNull(principaux);
+			assertEquals(4, principaux.size());
+
+			final CommunauteRFPrincipalInfo principal0 = principaux.get(0);
+			assertNotNull(principal0);
+			assertNull(principal0.getAyantDroitId());    // Brigite Widmer
+			assertNull(principal0.getDateDebut());
+			assertEquals(dateDebut1.getOneDayBefore(), principal0.getDateFin());
+			assertFalse(principal0.isAnnule());
+			assertTrue(principal0.isParDefaut());
+
+			final CommunauteRFPrincipalInfo principal1 = principaux.get(1);
+			assertNotNull(principal1);
+			assertEquals(ids.pp1, principal1.getAyantDroitId());    // Charles Widmer
+			assertEquals(dateDebut1, principal1.getDateDebut());
+			assertEquals(dateDebut3.getOneDayBefore(), principal1.getDateFin());
+			assertFalse(principal1.isAnnule());
+			assertFalse(principal1.isParDefaut());
+
+			final CommunauteRFPrincipalInfo principal2 = principaux.get(2);
+			assertNotNull(principal2);
+			assertEquals(ids.pp3, principal2.getAyantDroitId());    // Noémie Widmer
+			assertEquals(dateDebut3, principal2.getDateDebut());
+			assertNull(principal2.getDateFin());
+			assertFalse(principal2.isAnnule());
+
+			// le principal annulé
+			final CommunauteRFPrincipalInfo principal3 = principaux.get(3);
+			assertNotNull(principal3);
+			assertEquals(ids.pp2, principal3.getAyantDroitId());    // Brigite Widmer
+			assertEquals(dateDebut2, principal3.getDateDebut());
+			assertNull(principal3.getDateFin());
+			assertTrue(principal3.isAnnule());
+			assertFalse(principal3.isParDefaut());
+
+			return null;
+		});
+	}
+
 	/**
 	 * [SIFISC-24999] Ce test vérifie que la méthode getDroitsForCtb fonctionne bien quand on demande les droits virtuels hérités lors d'une relatio d'héritage.
 	 */

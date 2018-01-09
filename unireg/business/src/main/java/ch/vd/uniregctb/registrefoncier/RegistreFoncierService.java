@@ -81,9 +81,11 @@ public interface RegistreFoncierService {
 	 * Construit la vue historique des principaux (par défaut + explicites) pour un modèle de communauté.
 	 *
 	 * @param modeleCommunaute un modèle de communauté
+	 * @param includeAnnules   <i>vrai</i> s'il faut inclure les principaux annulés; <i>faux</i> autrement.
 	 * @return l'historique des principaux
 	 */
-	@NotNull List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute);
+	@NotNull
+	List<CommunauteRFPrincipalInfo> buildPrincipalHisto(@NotNull ModeleCommunauteRF modeleCommunaute, boolean includeAnnules);
 
 	/**
 	 * Recherche ou crée un modèle de communauté qui correspond aux membres de communauté spécifiés.

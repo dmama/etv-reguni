@@ -22,6 +22,7 @@ public class PrincipalCommunauteRFView implements Annulable {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final MembreCommunauteView principal;
+	private final boolean annule;
 
 	public PrincipalCommunauteRFView(@NotNull CommunauteRFPrincipalInfo principal, @NotNull TiersService tiersService, @NotNull RegistreFoncierService registreFoncierService) {
 		this.id = principal.getId();
@@ -33,6 +34,7 @@ public class PrincipalCommunauteRFView implements Annulable {
 				.map(registreFoncierService::getAyantDroit)
 				.orElse(null);
 		this.principal = new MembreCommunauteView(ayantDroit, ctb, tiersService, registreFoncierService);
+		this.annule = principal.isAnnule();
 	}
 
 	public Long getId() {
@@ -57,6 +59,6 @@ public class PrincipalCommunauteRFView implements Annulable {
 
 	@Override
 	public boolean isAnnule() {
-		return false;
+		return annule;
 	}
 }
