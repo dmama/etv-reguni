@@ -31,7 +31,7 @@
 
 	    <fieldset>
 	    <legend><span><fmt:message key="label.membres.communaute" /></span></legend>
-		    <display:table name="modele.membres" id="membre" pagesize="25" class="display">
+		    <display:table name="modele.membres" id="membre" pagesize="25" class="display" requestURI="/registrefoncier/communaute/showModele.do">
 			    <c:set var="classNom"><c:if test="${membre.ctbId == modele.principalCourant.principal.ctbId}">communityLeader</c:if><c:if test="${membre.ctbId == null}">nonRapproche</c:if></c:set>
 			    <display:column style="width:10px">
 				    <c:if test="${membre.ctbId == modele.principalCourant.principal.ctbId}">
@@ -75,7 +75,7 @@
 
 	    <fieldset>
 	    <legend><span><fmt:message key="label.histo.principaux.communaute" /></span></legend>
-		    <display:table name="modele.principaux" id="principal" pagesize="25" class="display">
+		    <display:table name="modele.principaux" id="principal" pagesize="25" class="display" requestURI="/registrefoncier/communaute/showModele.do">
 			    <display:column titleKey="label.par.defaut">
 				    <input type="checkbox" disabled="disabled" <c:if test="${principal.parDefaut}">checked</c:if>/>
 			    </display:column>
@@ -108,7 +108,7 @@
 
 	    <fieldset>
 	    <legend><span><fmt:message key="label.immeubles.concernes" /></span></legend>
-		    <display:table name="modele.regroupements" id="regroupement" pagesize="25" class="display">
+		    <display:table name="modele.regroupements" id="regroupement" pagesize="25" class="display" requestURI="/registrefoncier/communaute/showModele.do">
 			    <display:column titleKey="label.date.debut">
 				    <unireg:regdate regdate="${regroupement.dateDebut}" />
 			    </display:column>

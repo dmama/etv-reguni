@@ -28,7 +28,7 @@
 
 	    <fieldset>
 		    <legend><span><fmt:message key="label.histo.principaux.communaute" /></span></legend>
-		    <display:table name="modele.principaux" id="principal" pagesize="25" class="display">
+		    <display:table name="modele.principaux" id="principal" pagesize="25" class="display" requestURI="/registrefoncier/communaute/addPrincipal.do">
 			    <display:column titleKey="label.par.defaut">
 				    <input type="checkbox" disabled="disabled" <c:if test="${principal.parDefaut}">checked</c:if>/>
 			    </display:column>
