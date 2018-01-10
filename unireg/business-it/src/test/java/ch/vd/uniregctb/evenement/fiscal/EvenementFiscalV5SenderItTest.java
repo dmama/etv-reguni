@@ -325,6 +325,66 @@ public class EvenementFiscalV5SenderItTest extends EvenementTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-26881] Vérifie que l'envoi d'un événement valide bien lorsqu'il y a un ayant-droit non-rapproché et qui ne possède pas de date de naissance.
+	 */
+	@Test(timeout = 10000L)
+	public void testSendEvenementOuvertureServitudeAyantDroitSansDateNaissanceEtNonRapproche() throws Exception {
+		AuthenticationHelper.pushPrincipal("EvenementFiscalSenderTest");
+		try {
+			// Création du message
+
+			final CommuneRF commune = new CommuneRF(12, "Echallens", 2322);
+
+			final SituationRF situation = new SituationRF();
+			situation.setDateDebut(RegDate.get(2000, 1, 1));
+			situation.setNoParcelle(212);
+			situation.setCommune(commune);
+
+			final BienFondsRF immeuble = new BienFondsRF();
+			immeuble.setId(94949L);
+			immeuble.setIdRF("39393");
+			immeuble.setEgrid("CH28282");
+			immeuble.addSituation(situation);
+
+			final PersonnePhysiqueRF tiers = new PersonnePhysiqueRF();
+			tiers.setId(281819L);
+			tiers.setPrenom("Rodolf");
+			tiers.setNom("Rentznik");
+
+			final UsufruitRF servitude = new UsufruitRF();
+			servitude.addImmeuble(immeuble);
+			servitude.addAyantDroit(tiers);
+
+			final EvenementFiscalServitude event = new EvenementFiscalServitude(RegDate.get(2017, 1, 1), servitude, EvenementFiscalDroit.TypeEvenementFiscalDroitPropriete.OUVERTURE);
+			event.setId(1234L);
+			event.setLogCreationUser("Toto");       // on s'en sert comme businessUser lors de l'envoi, et celui-ci est obligatoire
+
+			// le tiers n'est pas rapproché
+			evenementFiscalV5Factory.setRegistreFoncierService(new MockRegistreFoncierService() {
+				@Override
+				public Long getContribuableIdFor(@NotNull TiersRF tiersRF) {
+					return null;
+				}
+			});
+
+			// Envoi du message
+			sender.sendEvent(event);
+
+			// On vérifie que l'on a bien envoyé le message (et que la date de naissance n'y figure pas)
+			final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fisc-evt-5:fiscalEvent xmlns:fisc-evt-5=\"http://www.vd.ch/fiscalite/unireg/event/fiscal/5\" xmlns:common-2=\"http://www.vd.ch/fiscalite/unireg/common/2\" xmlns:corp-5=\"http://www.vd.ch/fiscalite/unireg/party/corporation/5\" xmlns:land-1=\"http://www.vd.ch/fiscalite/unireg/party/landregistry/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"fisc-evt-5:easementRightStartEventType\">" +
+					"<fisc-evt-5:date><common-2:year>2017</common-2:year><common-2:month>1</common-2:month><common-2:day>1</common-2:day></fisc-evt-5:date>" +
+					"<fisc-evt-5:rightHolders><land-1:identity xsi:type=\"land-1:naturalPersonIdentityType\"><land-1:id>0</land-1:id><land-1:firstName>Rodolf</land-1:firstName><land-1:lastName>Rentznik</land-1:lastName><land-1:padding>0</land-1:padding></land-1:identity><land-1:padding>0</land-1:padding></fisc-evt-5:rightHolders>" +
+					"<fisc-evt-5:immovablePropertyIds>94949</fisc-evt-5:immovablePropertyIds>" +
+					"<fisc-evt-5:easementType>USUFRUCT</fisc-evt-5:easementType>" +
+					"</fisc-evt-5:fiscalEvent>";
+			assertTextMessage(OUTPUT_QUEUE, texte);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
+	}
+
 	@Test(timeout = 10000L)
 	public void testSendEvenementOuvertureDroitSurEntrepriseSansNumeroRC() throws Exception {
 		AuthenticationHelper.pushPrincipal("EvenementFiscalSenderTest");
