@@ -776,8 +776,6 @@ public class LandRightBuilderTest {
 	/**
 	 * <pre>
 	 *
-	 *
-	 *
 	 *  +----------+                +----------+       individuel (1/1)                +------------+
 	 *  |          | rapprochement  |          |-------------------------------------->|            |
 	 *  |  Décédé  |--------------->| Tiers RF |                                       | Immeuble 0 |
@@ -869,6 +867,125 @@ public class LandRightBuilderTest {
 		assertEquals(Integer.valueOf(decedeId.intValue()), reference.getRightHolder().getTaxPayerNumber());
 		assertEquals(dominantId, reference.getImmovablePropertyId());
 		assertNull(reference.getCommunityId());
+	}
+
+	/**
+	 * [SIFISC-27525] Ce test vérifie que l'attribut 'ownershipTypeOverride' n'est pas renseigné sur les droits virtuels
+	 * qui pointent vers un droit de co-propriété collective (c'est-à-dire un droit de communauté où la communauté ne possède
+	 * pas tout l'immeuble).
+	 * <pre>
+	 *                         +---------------+
+	 *                         |               |
+	 *                         | Communauté RF |-----+
+	 *                         |               |     |
+	 *                         +---------------+     |
+	 *                                               |
+	 *                              +----------+     |
+	 *                              |  Autre   |     |
+	 *                              | Tiers RF |-----+
+	 *                              |          |     |
+	 *                              +----------+     |
+	 *                                               |
+	 *                                   .           |
+	 *                                   .           |
+	 *                                               |
+	 *  +----------+                +----------+     |
+	 *  |          | rapprochement  |          |     |     co-propriété collective (1/6)            +------------+
+	 *  |  Décédé  |--------------->| Tiers RF |-----+--------------------------------------------->|            |
+	 *  |          |                |          |                                                    |            |
+	 *  +----------+                +----------+                                                    | Immeuble 0 |
+	 *      ^  ^                                                                                    |            |
+	 *      |  |  hérite de (principal)                                                 +..........>|            |
+	 *      |  +-------------------------+                                              :           +------------+
+	 *      | hérite de (secondaire)     |                                              :
+	 *  +------------+              +------------+                                      :
+	 *  |            |              |            |  virtuel sur co-propriété collective :
+	 *  | Héritier 1 |              | Héritier 2 |......................................+
+	 *  |            |              |            |
+	 *  +------------+              +------------+
+	 *
+	 * </pre>
+	 */
+	@Test
+	public void testNewVirtualInheritedLandRightOnCommunityLandOwnershipRight() throws Exception {
+
+		final Long decedeId = 18991911L;
+		final Long heritier2Id = 38978178L;
+		final Long communityId = 29292882L;
+
+		final Long ppId = 8292L;
+		final long dominantId = 2928282L;
+		final RegDate dateHeritage = RegDate.get(2017, 2, 27);
+
+		final PersonnePhysiqueRF ppRF = new PersonnePhysiqueRF();
+		ppRF.setIdRF("03040303");
+		ppRF.setId(ppId);
+
+		final ProprieteParEtageRF immeuble0 = new ProprieteParEtageRF();
+		immeuble0.setIdRF("a8388e8e83");
+		immeuble0.setId(dominantId);
+
+		final CommunauteRF communaute = new CommunauteRF();
+		communaute.setId(communityId);
+		communaute.setIdRF("cccccc");
+
+		final DroitProprietePersonnePhysiqueRF droit0 = new DroitProprietePersonnePhysiqueRF();
+		droit0.setId(23320L);
+		droit0.setMasterIdRF("28288228");
+		droit0.setVersionIdRF("1");
+		droit0.setDateDebutMetier(RegDate.get(2016, 9, 22));
+		droit0.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit0.setMotifDebut("Achat");
+		droit0.setRegime(GenrePropriete.COPROPRIETE);
+		droit0.setCommunaute(communaute);
+		droit0.setPart(new Fraction(1, 6));
+		droit0.addRaisonAcquisition(new RaisonAcquisitionRF(RegDate.get(2016, 9, 22), "Achat", new IdentifiantAffaireRF(21, 2016, 322, 3)));
+		droit0.setAyantDroit(ppRF);
+		droit0.setImmeuble(immeuble0);
+
+		final DroitVirtuelHeriteRF droit2 = new DroitVirtuelHeriteRF();
+		droit2.setDateDebutMetier(dateHeritage);
+		droit2.setDateFinMetier(RegDate.get(2017, 4, 14));
+		droit2.setMotifDebut("Succession");
+		droit2.setMotifFin("Achat");
+		droit2.setNombreHeritiers(2);
+		droit2.setReference(droit0);
+		droit2.setDecedeId(decedeId);
+		droit2.setHeritierId(heritier2Id);
+
+		// on construit le landRight
+		final LandRight landRight = LandRightBuilder.newLandRight(droit2, t -> decedeId, rightHolderComparator);
+		assertNotNull(landRight);
+		assertTrue(landRight instanceof VirtualInheritedLandRight);
+
+		// on vérifie le droit virtuel
+		final VirtualInheritedLandRight virtualRight = (VirtualInheritedLandRight) landRight;
+		assertNotNull(virtualRight);
+		assertEquals(dateHeritage, DataHelper.xmlToCore(virtualRight.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(virtualRight.getDateTo()));
+		assertEquals("Succession", virtualRight.getStartReason());
+		assertEquals("Achat", virtualRight.getEndReason());
+		assertNull(virtualRight.getCaseIdentifier());
+		assertEquals(Integer.valueOf(heritier2Id.intValue()), virtualRight.getRightHolder().getTaxPayerNumber());
+		assertEquals(decedeId.longValue(), virtualRight.getInheritedFromId());
+		assertEquals(dominantId, virtualRight.getImmovablePropertyId());
+		assertTrue(virtualRight.isImplicitCommunity());
+		assertNull(virtualRight.getOwnershipTypeOverride());    // SIFISC-27525 l'override doit être nul !
+
+		// on vérifie la référence héritée
+		final LandOwnershipRight reference = (LandOwnershipRight) virtualRight.getReference();
+		assertNotNull(reference);
+		assertEquals(23320L, reference.getId());
+		assertEquals(OwnershipType.SIMPLE_CO_OWNERSHIP, reference.getType());
+		assertShare(1, 6, reference.getShare());
+		assertEquals(RegDate.get(2016, 9, 22), DataHelper.xmlToCore(reference.getDateFrom()));
+		assertEquals(RegDate.get(2017, 4, 14), DataHelper.xmlToCore(reference.getDateTo()));
+		assertEquals("Achat", reference.getStartReason());
+		assertNull(reference.getEndReason());
+		assertCaseIdentifier(21, "2016/322/3", reference.getCaseIdentifier());
+		assertEquals(Integer.valueOf(decedeId.intValue()), reference.getRightHolder().getTaxPayerNumber());
+		assertEquals(dominantId, reference.getImmovablePropertyId());
+		assertEquals(communityId, reference.getCommunityId());
 	}
 
 	/**

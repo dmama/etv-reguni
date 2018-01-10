@@ -166,7 +166,13 @@ public abstract class LandRightBuilder {
 
 		final LandRight reference = newLandRight(droitVirtuel.getReference(), ctbIdProvider, rightHolderComparator);
 		final boolean communauteImplicit = droitVirtuel.getNombreHeritiers() > 1;
-		final OwnershipType ownershipTypeOverride = (communauteImplicit ? OwnershipType.COLLECTIVE_OWNERSHIP : null);   // SIFISC-24999 (voir remarque de Carbo du 24.10.2017)
+		final boolean referenceCollectiveCoOwnership = (reference instanceof LandOwnershipRight &&
+				((LandOwnershipRight) reference).getCommunityId() != null &&
+				((LandOwnershipRight) reference).getType() == OwnershipType.SIMPLE_CO_OWNERSHIP);
+		// SIFISC-24999 (voir remarque de Carbo du 24.10.2017)
+		// SIFISC-27525 on ne renseigne pas l'override si le droit de référence correspond à une communauté en copropriété collective,
+		//              pour ne pas perdre l'information de la copropriété (il manque un type COLLECTIVE_CO_OWNERSHIP en fait).
+		final OwnershipType ownershipTypeOverride = (communauteImplicit && !referenceCollectiveCoOwnership ? OwnershipType.COLLECTIVE_OWNERSHIP : null);
 
 		final VirtualInheritedLandRight right = new VirtualInheritedLandRight();
 		fillLandRight(droitVirtuel, right);
