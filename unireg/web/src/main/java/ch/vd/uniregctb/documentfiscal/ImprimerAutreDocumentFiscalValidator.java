@@ -1,19 +1,11 @@
 package ch.vd.uniregctb.documentfiscal;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
 
 public class ImprimerAutreDocumentFiscalValidator implements Validator {
-
-	private static final Set<TypeAutreDocumentFiscalEmettableManuellement> DATE_REFERENCE_OBLIGATOIRE = EnumSet.of(TypeAutreDocumentFiscalEmettableManuellement.AUTORISATION_RADIATION,
-	                                                                                                               TypeAutreDocumentFiscalEmettableManuellement.DEMANDE_BILAN_FINAL);
-
-	private static final Set<TypeAutreDocumentFiscalEmettableManuellement> PF_OBLIGATOIRE = EnumSet.of(TypeAutreDocumentFiscalEmettableManuellement.DEMANDE_BILAN_FINAL);
 
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -23,23 +15,63 @@ public class ImprimerAutreDocumentFiscalValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		final ImprimerAutreDocumentFiscalView view = (ImprimerAutreDocumentFiscalView) target;
-		if (view.getTypeDocument() != null) {       // s'il est vide, c'est que quelqu'un joue au con... ça va pêter plus loin
-			if (!errors.hasFieldErrors("dateReference")) {
-				if (DATE_REFERENCE_OBLIGATOIRE.contains(view.getTypeDocument()) && view.getDateReference() == null) {
-					errors.rejectValue("dateReference", "error.date.vide");
-				}
-				else if (view.getDateReference() != null && view.getDateReference().isAfter(RegDate.get())) {
-					errors.rejectValue("dateReference", "error.date.future");
-				}
+		final TypeAutreDocumentFiscalEmettableManuellement typeDocument = view.getTypeDocument();
+
+		if (typeDocument != null) {       // s'il est vide, c'est que quelqu'un joue au con... ça va pêter plus loin
+			switch (typeDocument) {
+			case AUTORISATION_RADIATION:
+				validateDateReference(view, errors);
+				break;
+			case DEMANDE_BILAN_FINAL:
+				validateDateReference(view, errors);
+				validatePeriodeFiscale(view, errors);
+				break;
+			case LETTRE_TYPE_INFORMATION_LIQUIDATION:
+				// rien de spécial à faire
+				break;
+			case LETTRE_BIENVENUE:
+				validateTypeLettreBienvenue(view, errors);
+				validateDelaiRetour(view, errors);
+				break;
+			default:
+				throw new IllegalArgumentException("Type de document inconnu = [" + typeDocument + "]");
 			}
-			if (!errors.hasFieldErrors("periodeFiscale")) {
-				if (PF_OBLIGATOIRE.contains(view.getTypeDocument()) && view.getPeriodeFiscale() == null) {
-					errors.rejectValue("periodeFiscale", "error.periode.fiscale.vide");
-				}
-				else if (view.getPeriodeFiscale() != null && view.getPeriodeFiscale() > RegDate.get().year()) {
-					errors.rejectValue("periodeFiscale", "error.periode.fiscale.future");
-				}
-			}
+		}
+	}
+
+	private static void validateDateReference(ImprimerAutreDocumentFiscalView view, Errors errors) {
+		final RegDate dateReference = view.getDateReference();
+		if (dateReference == null) {
+			errors.rejectValue("dateReference", "error.date.vide");
+		}
+		else if (dateReference.isAfter(RegDate.get())) {
+			errors.rejectValue("dateReference", "error.date.future");
+		}
+	}
+
+	private static void validatePeriodeFiscale(ImprimerAutreDocumentFiscalView view, Errors errors) {
+		final Integer periodeFiscale = view.getPeriodeFiscale();
+		if (periodeFiscale == null) {
+			errors.rejectValue("periodeFiscale", "error.periode.fiscale.vide");
+		}
+		else if (periodeFiscale > RegDate.get().year()) {
+			errors.rejectValue("periodeFiscale", "error.periode.fiscale.future");
+		}
+	}
+
+	private static void validateTypeLettreBienvenue(ImprimerAutreDocumentFiscalView view, Errors errors) {
+		if (view.getTypeLettreBienvenue() == null) {
+			errors.rejectValue("typeLettreBienvenue", "error.type.lettre.bienvenue.vide");
+		}
+	}
+
+	private static void validateDelaiRetour(ImprimerAutreDocumentFiscalView view, Errors errors) {
+		final RegDate delaiRetour = view.getDelaiRetour();
+		if (delaiRetour == null) {
+			errors.rejectValue("delaiRetour", "error.delai.accorde.vide");
+		}
+		else if (delaiRetour.isBeforeOrEqual(RegDate.get())) {
+			errors.rejectValue("delaiRetour", "error.delai.accorde.invalide");
 		}
 	}
 }

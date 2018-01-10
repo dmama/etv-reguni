@@ -74,6 +74,7 @@ public class AutreDocumentFiscalController {
 		map.put(Role.ENVOI_AUTORISATION_RADIATION, EnumSet.of(TypeAutreDocumentFiscalEmettableManuellement.AUTORISATION_RADIATION));
 		map.put(Role.ENVOI_DEMANDE_BILAN_FINAL, EnumSet.of(TypeAutreDocumentFiscalEmettableManuellement.DEMANDE_BILAN_FINAL));
 		map.put(Role.ENVOI_LETTRE_TYPE_INFO_LIQUIDATION, EnumSet.of(TypeAutreDocumentFiscalEmettableManuellement.LETTRE_TYPE_INFORMATION_LIQUIDATION));
+		map.put(Role.GEST_QUIT_LETTRE_BIENVENUE, EnumSet.of(TypeAutreDocumentFiscalEmettableManuellement.LETTRE_BIENVENUE));
 		return map;
 	}
 
@@ -132,7 +133,7 @@ public class AutreDocumentFiscalController {
 
 	@InitBinder(value = "print")
 	public void initPrintBinder(WebDataBinder binder) {
-		binder.registerCustomEditor(RegDate.class, "dateReference", new RegDateEditor(true, false, false));
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
 		binder.setValidator(new ImprimerAutreDocumentFiscalValidator());
 	}
 
@@ -180,6 +181,7 @@ public class AutreDocumentFiscalController {
 		model.addAttribute("pmId", idEntreprise);
 		model.addAttribute("documents", autreDocumentFiscalManager.getAutresDocumentsFiscauxSansSuivi(idEntreprise));
 		model.addAttribute("typesDocument", getTypesAutreDocumentFiscalEmettableManuellement());
+		model.addAttribute("typesLettreBienvenue", tiersMapHelper.getTypesLettreBienvenue());
 		model.addAttribute("print", view);
 		model.addAttribute("isRadieeRCOuDissoute", autreDocumentFiscalManager.hasAnyEtat(idEntreprise, TypeEtatEntreprise.DISSOUTE, TypeEtatEntreprise.RADIEE_RC));
 		model.addAttribute("docsAvecSuivi", new AutreDocumentFiscalListView(idEntreprise, autreDocumentFiscalManager.getAutresDocumentsFiscauxAvecSuivi(idEntreprise)));
@@ -191,15 +193,18 @@ public class AutreDocumentFiscalController {
 	 */
 	@RequestMapping(value = "/print.do", method = RequestMethod.POST)
 	public String imprimerNouveauDocument(@Valid @ModelAttribute("print") final ImprimerAutreDocumentFiscalView view, BindingResult bindingResult, Model model) throws IOException {
+
 		if (bindingResult.hasErrors()) {
 			return showEditList(model, view);
 		}
 
+		// gestion des droits
 		final Set<TypeAutreDocumentFiscalEmettableManuellement> allowed = getTypesAutreDocumentFiscalEmettablesManuellement();
 		if (!allowed.contains(view.getTypeDocument())) {
 			throw new AccessDeniedException("Vous ne possédez aucun des droits IfoSec permettant d'émettre ce type de document.");
 		}
 
+		// impression
 		final EditiqueResultat resultat;
 		try {
 			resultat = autreDocumentFiscalManager.createAndPrint(view);
@@ -208,31 +213,18 @@ public class AutreDocumentFiscalController {
 			throw new ActionException("Impossible d'imprimer le document voulu", e);
 		}
 
+		// gestion du résultat de l'impression
 		final String redirect = String.format("redirect:/autresdocs/edit-list.do?pmId=%d", view.getNoEntreprise());
-
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
-				new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
-					@Override
-					public String doJob(EditiqueResultatReroutageInbox resultat) {
-						return redirect;
-					}
-				};
-
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-			@Override
-			public String doJob(EditiqueResultatErreur resultat) {
-				Flash.error(EditiqueErrorHelper.getMessageErreurEditique(resultat));
-				return redirect;
-			}
-		};
-
 		return retourEditiqueControllerHelper.traiteRetourEditiqueAfterRedirect(resultat,
 		                                                                        view.getTypeDocument().name().toLowerCase(),
 		                                                                        redirect,
 		                                                                        false,
-		                                                                        inbox,
+		                                                                        r -> redirect,
 		                                                                        null,
-		                                                                        erreur);
+		                                                                        r -> {
+			                                                                        Flash.error(EditiqueErrorHelper.getMessageErreurEditique(r));
+			                                                                        return redirect;
+		                                                                        });
 	}
 
 	/**
@@ -332,8 +324,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/delai/ajouter.do", method = RequestMethod.POST)
-	public String ajouterDelai(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view,
-	                                    BindingResult result, Model model, HttpServletResponse response) throws Exception {
+	public String ajouterDelai(@Valid @ModelAttribute("ajouterView") final EditionDelaiAutreDocumentFiscalView view, BindingResult result) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous n'avez pas le droit de gestion des delais d'un autre document fiscal");
@@ -417,7 +408,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/etat/ajouter-quittance.do", method = RequestMethod.POST)
-	public String ajouterEtat(@Valid @ModelAttribute("ajouterQuittance") final AjouterEtatAutreDocumentFiscalView view, BindingResult result, Model model) throws AccessDeniedException {
+	public String ajouterEtat(@Valid @ModelAttribute("ajouterQuittance") final AjouterEtatAutreDocumentFiscalView view, BindingResult result) throws AccessDeniedException {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");
@@ -457,7 +448,7 @@ public class AutreDocumentFiscalController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/etat/annuler-quittance.do", method = RequestMethod.POST)
-	public String annulerQuittancement(@RequestParam("id") final long id) throws Exception {
+	public String annulerQuittancement(@RequestParam("id") final long id) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.GEST_QUIT_LETTRE_BIENVENUE)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des autres documents fiscaux.");

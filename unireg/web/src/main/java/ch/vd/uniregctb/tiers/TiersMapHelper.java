@@ -59,6 +59,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
+import ch.vd.uniregctb.type.TypeLettreBienvenue;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeOperation;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -120,6 +121,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<ParametrePeriodeFiscalePM.ReferencePourDelai, String> mapReferencesPourDelai;
 	private Map<TypeMandat, String> mapTypesMandat;
 	private Map<TypeAutreDocumentFiscalEmettableManuellement, String> mapTypesAutreDocumentFiscalEmettableManuellement;
+	private Map<TypeLettreBienvenue, String> mapTypesLettreBienvenue;
 	private Map<TypeAnnonce, String> mapTypeAnnonce;
 	private Map<StatutAnnonce, String> mapStatutAnnonce;
 	private Map<EtatEvenementRF, String> mapEtatEvenementRF;
@@ -850,6 +852,16 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapTypesAutreDocumentFiscalEmettableManuellement = initMapEnum(ApplicationConfig.maskerKeyTypeAutreDocumentFiscalEmettableManuellement, TypeAutreDocumentFiscalEmettableManuellement.class);
 		}
 		return mapTypesAutreDocumentFiscalEmettableManuellement;
+	}
+
+	/**
+	 * @return la map des types de lettres de bienvenue
+	 */
+	public Map<TypeLettreBienvenue, String> getTypesLettreBienvenue() {
+		if (mapTypesLettreBienvenue == null) {
+			mapTypesLettreBienvenue = initMapEnum(ApplicationConfig.maskerKeyTypeLettreBienvenue, TypeLettreBienvenue.class);
+		}
+		return mapTypesLettreBienvenue;
 	}
 
 	public Map<TypeAnnonce, String> getTypeAnnonce() {

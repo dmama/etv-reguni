@@ -325,6 +325,15 @@ public interface EditiqueCompositionService {
 	void imprimeLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException;
 
 	/**
+	 * Envoie à l'éditique la lettre de bienvenue à imprimer localement
+	 *
+	 * @param lettre         la lettre en question
+	 * @param dateTraitement la date de traitement de l'envoi
+	 * @throws EditiqueException en cas de problème
+	 */
+	EditiqueResultat imprimeLettreBienvenueOnline(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException;
+
+	/**
 	 * Imprime un duplicata de la lettre de bienvenue spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
 	 * @param lettre
 	 * @param dateTraitement

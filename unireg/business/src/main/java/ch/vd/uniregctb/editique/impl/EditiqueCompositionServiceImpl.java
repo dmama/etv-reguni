@@ -581,6 +581,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
+	public EditiqueResultat imprimeLettreBienvenueOnline(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
+		return imprimeLettreBienvenueOnline(lettre, dateTraitement, false);
+	}
+
+	@Override
 	public EditiqueResultat imprimeDuplicataLettreBienvenueOnline(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
 		return imprimeLettreBienvenueOnline(lettre, dateTraitement, true);
 	}

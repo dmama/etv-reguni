@@ -18,6 +18,9 @@
 		<fieldset>
 			<legend><span><fmt:message key="label.autre.document.fiscal.nouvel.envoi"/></span></legend>
 
+			<%--@elvariable id="isRadieeRCOuDissoute" type="java.lang.Boolean"--%>
+			<%--@elvariable id="typesLettreBienvenue" type="java.util.List"--%>
+			<%--@elvariable id="print" type="ch.vd.uniregctb.documentfiscal.ImprimerAutreDocumentFiscalView"--%>
 			<form:form commandName="print" action="print.do" id="newDocForm" onsubmit="return NewAutreDoc.print();">
 
 				<form:hidden path="noEntreprise"/>
@@ -116,6 +119,51 @@
 							</div>
 						</td>
 					</tr>
+
+					<!-- les spécificités du document de lettre de bienvenue -->
+					<tr class="doc-bienvenue" style="display: none;">
+						<td colspan="2">
+							<div>
+								<table style="border: 0; margin-left: 15%; width: 85%;">
+									<tr>
+										<td width="20%;"><fmt:message key="label.autre.document.fiscal.delai.retour"/>&nbsp;:</td>
+										<td width="30%;">
+											<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+												<jsp:param name="path" value="delaiRetour" />
+												<jsp:param name="id" value="dateDelaiRetour" />
+												<jsp:param name="mandatory" value="true" />
+											</jsp:include>
+										</td>
+										<td rowspan="2">
+											<c:choose>
+												<c:when test="${isRadieeRCOuDissoute}">
+													<button type="button" name="print" disabled="disabled" class="dead"><fmt:message key="label.bouton.imprimer"/></button>
+													<span class="error error_icon" style="padding-left: 2em; margin-left: 2em;">
+														<fmt:message key="label.entreprise.deja.radiee.ou.dissoute"/>
+													</span>
+												</c:when>
+												<c:otherwise>
+													<button type="submit" name="print"><fmt:message key="label.bouton.imprimer"/></button>
+												</c:otherwise>
+											</c:choose>
+										</td>
+									</tr>
+									<tr>
+										<td><fmt:message key="label.types.lettre.bienvenue"/>&nbsp;:</td>
+										<td>
+											<form:select path="typeLettreBienvenue">
+												<form:option value=""/>
+												<form:options items="${typesLettreBienvenue}"/>
+											</form:select>
+											<span class="mandatory">*</span>
+											<form:errors cssClass="error" path="typeLettreBienvenue"/>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+
 				</table>
 
 			</form:form>
@@ -124,7 +172,7 @@
 				const NewAutreDoc = {
 					onChangeSelectedType: function(type) {
 						const baseTable = $('#newDocParams');
-						baseTable.find('tr.doc-autrad, tr.doc-bilfin, tr.doc-letliq').hide();
+						baseTable.find('tr.doc-autrad, tr.doc-bilfin, tr.doc-letliq, tr.doc-bienvenue').hide();
 						baseTable.find(':input').not('#newTypeDoc, :button').prop("disabled", true);
 						switch (type) {
 						case 'AUTORISATION_RADIATION':
@@ -138,6 +186,10 @@
 						case 'LETTRE_TYPE_INFORMATION_LIQUIDATION':
 							baseTable.find('tr.doc-letliq :input').prop("disabled", false);
 							baseTable.find('tr.doc-letliq').show();
+							break;
+						case 'LETTRE_BIENVENUE':
+							baseTable.find('tr.doc-bienvenue :input').prop("disabled", false);
+							baseTable.find('tr.doc-bienvenue').show();
 							break;
 						}
 						baseTable.find('tr:visible').removeClass("odd even");

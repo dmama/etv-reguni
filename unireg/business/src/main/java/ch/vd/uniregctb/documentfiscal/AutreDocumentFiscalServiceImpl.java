@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -472,6 +473,33 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		}
 		catch (EditiqueException | JMSException ex) {
 			throw new AutreDocumentFiscalException(ex);
+		}
+	}
+
+	@Override
+	public EditiqueResultat envoyerLettreBienvenueOnline(@NotNull Entreprise entreprise, @NotNull RegDate dateTraitement, @NotNull TypeLettreBienvenue typeLettre, @NotNull RegDate delaiRetour) throws AutreDocumentFiscalException {
+
+		final LettreBienvenue lettre = new LettreBienvenue();
+		lettre.setDateEnvoi(dateTraitement);
+		lettre.setType(typeLettre);
+		lettre.setEntreprise(entreprise);
+
+		final DelaiAutreDocumentFiscal delai = new DelaiAutreDocumentFiscal();
+		delai.setDateDemande(dateTraitement);
+		delai.setDateTraitement(dateTraitement);
+		delai.setDelaiAccordeAu(delaiRetour);
+		delai.setEtat(EtatDelaiDocumentFiscal.ACCORDE);
+		lettre.addDelai(delai);
+
+		final LettreBienvenue saved = hibernateTemplate.merge(lettre);
+		entreprise.addAutreDocumentFiscal(saved);
+
+		try {
+			evenementFiscalService.publierEvenementFiscalEmissionLettreBienvenue(saved);
+			return editiqueCompositionService.imprimeLettreBienvenueOnline(saved, dateTraitement);
+		}
+		catch (EditiqueException e) {
+			throw new AutreDocumentFiscalException(e);
 		}
 	}
 

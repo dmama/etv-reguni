@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.documentfiscal;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -11,6 +12,7 @@ import ch.vd.uniregctb.foncier.EnvoiFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.foncier.RappelFormulairesDemandeDegrevementICIResults;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
 /**
  * Service qui gère les autres documents fiscaux
@@ -166,4 +168,16 @@ public interface AutreDocumentFiscalService {
 	 * @throws AutreDocumentFiscalException en cas de souci
 	 */
 	EditiqueResultat envoyerLettreTypeInformationLiquidationOnline(Entreprise e, RegDate dateTraitement) throws AutreDocumentFiscalException;
+
+	/**
+	 * Génération d'une nouvelle lettre de bienvenue en impression locale
+	 *
+	 * @param entreprise     entreprise concernée
+	 * @param dateTraitement date de traitement (= date d'envoi)
+	 * @param typeLettre     le type de lettre à imprimer
+	 * @param delaiRetour    délai de retour initial
+	 * @return le document imprimé
+	 * @throws AutreDocumentFiscalException en cas de souci
+	 */
+	EditiqueResultat envoyerLettreBienvenueOnline(@NotNull Entreprise entreprise, @NotNull RegDate dateTraitement, @NotNull TypeLettreBienvenue typeLettre, @NotNull RegDate delaiRetour) throws AutreDocumentFiscalException;
 }

@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
@@ -146,6 +147,11 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 
 	@Override
 	public void imprimeLettreBienvenueForBatch(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
+	}
+
+	@Override
+	public EditiqueResultat imprimeLettreBienvenueOnline(LettreBienvenue lettre, RegDate dateTraitement) throws EditiqueException {
+		throw new NotImplementedException();
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.documentfiscal;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.TypeLettreBienvenue;
 
 public class ImprimerAutreDocumentFiscalView {
 
@@ -8,6 +9,9 @@ public class ImprimerAutreDocumentFiscalView {
 	private TypeAutreDocumentFiscalEmettableManuellement typeDocument;
 	private RegDate dateReference;
 	private Integer periodeFiscale;
+	// pour la lettre de bienvenue :
+	private RegDate delaiRetour;
+	private TypeLettreBienvenue typeLettreBienvenue;
 
 	public ImprimerAutreDocumentFiscalView(long noEntreprise, TypeAutreDocumentFiscalEmettableManuellement typeDocument) {
 		this.noEntreprise = noEntreprise;
@@ -47,5 +51,21 @@ public class ImprimerAutreDocumentFiscalView {
 
 	public void setPeriodeFiscale(Integer periodeFiscale) {
 		this.periodeFiscale = periodeFiscale;
+	}
+
+	public RegDate getDelaiRetour() {
+		return delaiRetour;
+	}
+
+	public void setDelaiRetour(RegDate delaiRetour) {
+		this.delaiRetour = delaiRetour;
+	}
+
+	public TypeLettreBienvenue getTypeLettreBienvenue() {
+		return typeLettreBienvenue;
+	}
+
+	public void setTypeLettreBienvenue(TypeLettreBienvenue typeLettreBienvenue) {
+		this.typeLettreBienvenue = typeLettreBienvenue;
 	}
 }

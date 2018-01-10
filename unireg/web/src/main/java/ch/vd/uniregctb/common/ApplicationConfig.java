@@ -73,6 +73,7 @@ public class ApplicationConfig {
 	public static final String masterKeyReferencePourDelai = "option.reference.delai.";
 	public static final String masterKeyTypeMandat = "option.mandat.type.";
 	public static final String maskerKeyTypeAutreDocumentFiscalEmettableManuellement = "option.type.autre.document.fiscal.emettable.manuellement.";
+	public static final String maskerKeyTypeLettreBienvenue = "option.type.lettre.bienvenue.";
 
 	public static final String masterKeyEtatTraitementReqDes = "option.etat.traitement.reqdes.";
 }
