@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -72,10 +71,8 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 	@Override
 	protected void truncateDatabase() throws Exception {
-		/**
-		 * Même si en fait on ne veut pas d'indexation, il est important, dans les tests d'arrivée, que l'indexeur soit
-		 * vide avant de démarrer le test (puisqu'on recherche dans les non-habitants quelqu'un qui pourrait convenir...)
-		 */
+		// Même si en fait on ne veut pas d'indexation, il est important, dans les tests d'arrivée, que l'indexeur soit
+		// vide avant de démarrer le test (puisqu'on recherche dans les non-habitants quelqu'un qui pourrait convenir...)
 		final boolean wantIndexation = this.wantIndexationTiers;
 		setWantIndexationTiers(true);
 		try {
@@ -107,40 +104,34 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement d'arrivée
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement
 		traiterEvenements(noIndividu);
 
 		// vérification du traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+			assertNotNull(pp);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArrivee, ffp.getDateDebut());
+			assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+			return null;
 		});
 	}
 
@@ -168,50 +159,41 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// Cette personne est déjà enregistrée dans la base
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+			return null;
 		});
 
 		// événement d'arrivée
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement
 		traiterEvenements(noIndividu);
 
 		// on s'assure que l'événement est détecté comme redondant
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+			assertNotNull(pp);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());
-				return null;
-			}
+			final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArrivee, ffp.getDateDebut());
+			assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());
+			return null;
 		});
 	}
 
@@ -243,113 +225,98 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noLui);
-				final PersonnePhysique elle = addHabitant(noElle);
-				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				addForPrincipal(etc.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				return null;
-			}
+		doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			final PersonnePhysique lui = addHabitant(noLui);
+			final PersonnePhysique elle = addHabitant(noElle);
+			final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			addForPrincipal(etc.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+			return null;
 		});
 
 
 		// création de l'événement civil pour l'arrivée de monsieur
-		final long evtLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtLui = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 		
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noLui);
 		
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNotNull(couple.getConjoint());
-				assertEquals(pp.getId(), couple.getPrincipal().getNumero());
-				
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
-				
-				return null;
-			}
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getConjoint());
+			assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArrivee, ffp.getDateDebut());
+			assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+
+			return null;
 		});
 		
 		// événement civil de l'arrivée de madame
-		final long evtElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(321674L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noElle);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtElle = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(321674L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noElle);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noElle);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNotNull(couple.getPrincipal());
-				assertEquals(pp.getId(), couple.getConjoint().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getPrincipal());
+			assertEquals(pp.getId(), couple.getConjoint().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArrivee, ffp.getDateDebut());
+			assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
 
-				return null;
-			}
+			return null;
 		});
 	}
 
 
 	//SIFISC-11697
 	@Test(timeout = 10000L)
-	public void testArriveesMadameSurCoupleVaudoisCommuneDifferente() throws Exception {
+	public void testArriveeMadameSurCoupleVaudoisCommuneDifferente() throws Exception {
 
 		final long noLui = 246L;
 		final long noElle = 3342L;
@@ -377,67 +344,58 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noLui);
-				final PersonnePhysique elle = addHabitant(noElle);
-				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				addForPrincipal(etc.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				return null;
-			}
+		doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			final PersonnePhysique lui = addHabitant(noLui);
+			final PersonnePhysique elle = addHabitant(noElle);
+			final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			addForPrincipal(etc.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+			return null;
 		});
 
 
 
 		// événement civil de l'arrivée de madame
-		final long evtElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(321674L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noElle);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtElle = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(321674L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noElle);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noElle);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNotNull(couple.getPrincipal());
-				assertEquals(pp.getId(), couple.getConjoint().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getPrincipal());
+			assertEquals(pp.getId(), couple.getConjoint().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				assertEquals(1,mc.getForsFiscaux().size());
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateMariage, ffp.getDateDebut());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
-				return null;
-			}
+			final MenageCommun mc = couple.getMenage();
+			assertEquals(1,mc.getForsFiscaux().size());
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateMariage, ffp.getDateDebut());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+			return null;
 		});
 	}
 
 	//SIFISC-11697
 	@Test(timeout = 10000L)
-	public void testArriveesMadameSurCoupleVaudoisMemeCommune() throws Exception {
+	public void testArriveeMadameSurCoupleVaudoisMemeCommune() throws Exception {
 
 		final long noLui = 246L;
 		final long noElle = 3342L;
@@ -465,62 +423,53 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noLui);
-				final PersonnePhysique elle = addHabitant(noElle);
-				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				addForPrincipal(etc.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				return null;
-			}
+		doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			final PersonnePhysique lui = addHabitant(noLui);
+			final PersonnePhysique elle = addHabitant(noElle);
+			final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			addForPrincipal(etc.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+			return null;
 		});
 
 
 
 		// événement civil de l'arrivée de madame
-		final long evtElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(321674L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noElle);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtElle = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(321674L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noElle);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noElle);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				assertNotNull(pp);
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNotNull(couple.getPrincipal());
-				assertEquals(pp.getId(), couple.getConjoint().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getPrincipal());
+			assertEquals(pp.getId(), couple.getConjoint().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				assertEquals(1,mc.getForsFiscaux().size());
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(MockCommune.Bussigny.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
-				assertEquals(dateMariage, ffp.getDateDebut());
-				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
-				return null;
-			}
+			final MenageCommun mc = couple.getMenage();
+			assertEquals(1,mc.getForsFiscaux().size());
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(MockCommune.Bussigny.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+			assertEquals(dateMariage, ffp.getDateDebut());
+			assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+			return null;
 		});
 	}
 
@@ -555,93 +504,81 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// création de l'événement civil pour l'arrivée de monsieur
-		final long evtLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArriveeLui);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtLui = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArriveeLui);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noLui);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNotNull(couple.getConjoint());
-				assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getConjoint());
+			assertEquals(pp.getId(), couple.getPrincipal().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArriveeLui, ffp.getDateDebut());
-				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArriveeLui, ffp.getDateDebut());
+			assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 
-				return null;
-			}
+			return null;
 		});
 
 		// événement civil de l'arrivée de madame
-		final long evtElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(321674L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArriveeElle);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noElle);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtElle = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(321674L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArriveeElle);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noElle);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noElle);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNotNull(couple.getPrincipal());
-				assertEquals(pp.getId(), couple.getConjoint().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getPrincipal());
+			assertEquals(pp.getId(), couple.getConjoint().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArriveeLui, ffp.getDateDebut());
-				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArriveeLui, ffp.getDateDebut());
+			assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 
-				return null;
-			}
+			return null;
 		});
 	}
 
@@ -676,98 +613,85 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// création de l'événement civil pour l'arrivée de monsieur
-		final long evtLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArriveeLui);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtLui = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArriveeLui);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noLui);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNotNull(couple.getConjoint());
-				assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getConjoint());
+			assertEquals(pp.getId(), couple.getPrincipal().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArriveeLui, ffp.getDateDebut());
-				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArriveeLui, ffp.getDateDebut());
+			assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 
-				return null;
-			}
+			return null;
 		});
 
 		// événement civil de l'arrivée de madame
-		final long evtElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(321674L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArriveeElle);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noElle);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtElle = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(321674L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArriveeElle);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noElle);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noElle);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNotNull(couple.getPrincipal());
-				assertEquals(pp.getId(), couple.getConjoint().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getPrincipal());
+			assertEquals(pp.getId(), couple.getConjoint().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				final RegDate dateDebutFor = ffp.getDateDebut();
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
 
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("la date d'arrivée (%s) de l'individu (n° %s) est antérieure à l'arrivée de son menage commun", RegDateHelper.dateToDashString(dateArriveeElle),noElle);
-				assertEquals(message, erreur.getMessage());
-				return null;
-			}
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("la date d'arrivée (%s) de l'individu (n° %s) est antérieure à l'arrivée de son menage commun", RegDateHelper.dateToDashString(dateArriveeElle),noElle);
+			assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -832,98 +756,85 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// création de l'événement civil pour l'arrivée de monsieur
-		final long evtLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArriveeLui);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtLui = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArriveeLui);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noLui);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNotNull(couple.getConjoint());
-				assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getConjoint());
+			assertEquals(pp.getId(), couple.getPrincipal().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArriveeLui, ffp.getDateDebut());
-				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArriveeLui, ffp.getDateDebut());
+			assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 
-				return null;
-			}
+			return null;
 		});
 
 		// événement civil de l'arrivée de madame
-		final long evtElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(321674L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArriveeElle);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noElle);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtElle = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(321674L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArriveeElle);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noElle);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noElle);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNotNull(couple.getPrincipal());
-				assertEquals(pp.getId(), couple.getConjoint().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNotNull(couple.getPrincipal());
+			assertEquals(pp.getId(), couple.getConjoint().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				final RegDate dateDebutFor = ffp.getDateDebut();
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
 
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("la date d'arrivée (%s) de l'individu (n° %s) est antérieure à l'arrivée de son menage commun", RegDateHelper.dateToDashString(dateArriveeElle),noElle);
-				assertEquals(message, erreur.getMessage());
-				return null;
-			}
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("la date d'arrivée (%s) de l'individu (n° %s) est antérieure à l'arrivée de son menage commun", RegDateHelper.dateToDashString(dateArriveeElle),noElle);
+			assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -948,34 +859,28 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement d'arrivée
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement
 		traiterEvenements(noIndividu);
 
 		// vérification du traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
 
-				return null;
-			}
+			return null;
 		});
 
 	}
@@ -998,40 +903,34 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement d'arrivée
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement
 		traiterEvenements(noIndividu);
 
 		// vérification du traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat());
 
-				final Set<EvenementCivilEchErreur> warnings = evt.getErreurs();
-				assertNotNull(warnings);
-				assertEquals(1, warnings.size());
-				final EvenementCivilEchErreur warning = warnings.iterator().next();
-				assertNotNull(warning);
-				assertEquals(TypeEvenementErreur.WARNING, warning.getType());
-				assertEquals("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.", warning.getMessage());
-				return null;
-			}
+			final Set<EvenementCivilEchErreur> warnings = evt.getErreurs();
+			assertNotNull(warnings);
+			assertEquals(1, warnings.size());
+			final EvenementCivilEchErreur warning = warnings.iterator().next();
+			assertNotNull(warning);
+			assertEquals(TypeEvenementErreur.WARNING, warning.getType());
+			assertEquals("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal.", warning.getMessage());
+			return null;
 		});
 	}
 
@@ -1055,41 +954,35 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement d'arrivée
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noInd);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noInd);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement
 		traiterEvenements(noInd);
 
 		// vérification du traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				assertNotNull(erreur);
-				assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
-				assertEquals("L'individu est inconnu dans registre fiscal mais arrive depuis une commune vaudoise (incohérence entre les deux registres)",
-						erreur.getMessage());
-				return null;
-			}
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			assertNotNull(erreur);
+			assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
+			assertEquals("L'individu est inconnu dans registre fiscal mais arrive depuis une commune vaudoise (incohérence entre les deux registres)",
+					erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -1117,58 +1010,49 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			});
 
 			// Mise en place du fiscal
-			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
-					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
-					return pp.getNumero();
-				}
+			final long ppId = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+				return pp.getNumero();
 			});
 
 			globalTiersIndexer.sync();
 
 			// événement d'arrivée
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(14532L);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateArrivee);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traitement de l'événement
 			traiterEvenements(noIndividu);
 
 			// vérification du traitement
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-					assertNotNull(pp);
-					assertEquals((Long) ppId, pp.getNumero());
-					final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(pp, null);
-					assertNotNull(etc);
-					final ForFiscalPrincipal ffpMenage = etc.getMenage().getForFiscalPrincipalAt(null);
-					assertNotNull(ffpMenage);
-					assertEquals(MotifFor.ARRIVEE_HC, ffpMenage.getMotifOuverture());
-					assertNull(ffpMenage.getDateFin());
-					final ForFiscalPrincipal ffpPP = pp.getDernierForFiscalPrincipal();
-					assertNotNull(ffpPP);
-					assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpPP.getMotifFermeture());
-					assertEquals(dateMariage.getOneDayBefore(), ffpPP.getDateFin());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertEquals((Long) ppId, pp.getNumero());
+				final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(pp, null);
+				assertNotNull(etc);
+				final ForFiscalPrincipal ffpMenage = etc.getMenage().getForFiscalPrincipalAt(null);
+				assertNotNull(ffpMenage);
+				assertEquals(MotifFor.ARRIVEE_HC, ffpMenage.getMotifOuverture());
+				assertNull(ffpMenage.getDateFin());
+				final ForFiscalPrincipal ffpPP = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffpPP);
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpPP.getMotifFermeture());
+				assertEquals(dateMariage.getOneDayBefore(), ffpPP.getDateFin());
+				return null;
 			});
 		}
 		finally {
@@ -1203,49 +1087,40 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			});
 
 			// Mise en place du fiscal
-			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
-					pp.setNumeroAssureSocial(navs13);
-					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
-					return pp.getNumero();
-				}
+			final long ppId = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+				pp.setNumeroAssureSocial(navs13);
+				addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+				return pp.getNumero();
 			});
 
 			globalTiersIndexer.sync();
 
 			// événement d'arrivée
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(14532L);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateArrivee);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traitement de l'événement
 			traiterEvenements(noIndividu);
 
 			// vérification du traitement
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-					assertNotNull(pp);
-					assertEquals((Long) ppId, pp.getNumero());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertEquals((Long) ppId, pp.getNumero());
+				return null;
 			});
 		}
 		finally {
@@ -1279,49 +1154,40 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			});
 
 			// Mise en place du fiscal
-			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Bocktaels", "Chollet", null, null);
-					pp.setNumeroAssureSocial(navs13);
-					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEPART_HC, null, null, MockCommune.Bern, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Zurich.GloriaStrasse);
-					return pp.getNumero();
-				}
+			final long ppId = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Bocktaels", "Chollet", null, null);
+				pp.setNumeroAssureSocial(navs13);
+				addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEPART_HC, null, null, MockCommune.Bern, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Zurich.GloriaStrasse);
+				return pp.getNumero();
 			});
 
 			globalTiersIndexer.sync();
 
 			// événement d'arrivée
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(14532L);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateArrivee);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traitement de l'événement
 			traiterEvenements(noIndividu);
 
 			// vérification du traitement
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-					assertNotNull(pp);
-					assertEquals((Long) ppId, pp.getNumero());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertEquals((Long) ppId, pp.getNumero());
+				return null;
 			});
 		}
 		finally {
@@ -1355,49 +1221,40 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			});
 
 			// Mise en place du fiscal
-			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Bocktaels", "Chollet", dateNaissance, null);
-					pp.setNumeroAssureSocial(navs13);
-					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEPART_HC, null, null, MockCommune.Bern, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Zurich.GloriaStrasse);
-					return pp.getNumero();
-				}
+			final long ppId = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Bocktaels", "Chollet", dateNaissance, null);
+				pp.setNumeroAssureSocial(navs13);
+				addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEPART_HC, null, null, MockCommune.Bern, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Zurich.GloriaStrasse);
+				return pp.getNumero();
 			});
 
 			globalTiersIndexer.sync();
 
 			// événement d'arrivée
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(14532L);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateArrivee);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traitement de l'événement
 			traiterEvenements(noIndividu);
 
 			// vérification du traitement
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-					assertNotNull(pp);
-					assertEquals((Long) ppId, pp.getNumero());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertEquals((Long) ppId, pp.getNumero());
+				return null;
 			});
 		}
 		finally {
@@ -1432,63 +1289,51 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			});
 
 			// Mise en place du fiscal
-			final long ppId1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
-					pp.setNumeroAssureSocial(navs13);
-					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
-					return pp.getNumero();
-				}
+			final long ppId1 = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+				pp.setNumeroAssureSocial(navs13);
+				addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+				return pp.getNumero();
 			});
 
 			// Mise en place du fiscal
-			final long ppId2 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Hortense", "Hipelnik", dateNaissance, Sexe.FEMININ);
-					pp.setNumeroAssureSocial(navs13);
-					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
-					return pp.getNumero();
-				}
+			final long ppId2 = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Hortense", "Hipelnik", dateNaissance, Sexe.FEMININ);
+				pp.setNumeroAssureSocial(navs13);
+				addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+				return pp.getNumero();
 			});
 
 			globalTiersIndexer.sync();
 
 			// événement d'arrivée
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(14532L);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateArrivee);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traitement de l'événement
 			traiterEvenements(noIndividu);
 
 			// vérification du traitement
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-					List<EvenementCivilEchErreur> erreurs = new ArrayList<>(evt.getErreurs());
-					assertEquals(1,erreurs.size());
-					final EvenementCivilEchErreur erreur = erreurs.get(0);
-					assertEquals("Plusieurs tiers non-habitants assujettis potentiels trouvés ("+FormatNumeroHelper.numeroCTBToDisplay(ppId1)+
-							", "+FormatNumeroHelper.numeroCTBToDisplay(ppId2)+")",erreur.getMessage());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				List<EvenementCivilEchErreur> erreurs = new ArrayList<>(evt.getErreurs());
+				assertEquals(1,erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.get(0);
+				assertEquals("Plusieurs tiers non-habitants assujettis potentiels trouvés ("+FormatNumeroHelper.numeroCTBToDisplay(ppId1)+
+						", "+FormatNumeroHelper.numeroCTBToDisplay(ppId2)+")",erreur.getMessage());
+				return null;
 			});
 		}
 		finally {
@@ -1524,61 +1369,49 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			});
 
 			// Mise en place du fiscal
-			final long ppId1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
-					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
-					return pp.getNumero();
-				}
+			final long ppId1 = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+				return pp.getNumero();
 			});
 
 			// Mise en place du fiscal
-			final long ppId2 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
-					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
-					return pp.getNumero();
-				}
+			final long ppId2 = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+				return pp.getNumero();
 			});
 
 			globalTiersIndexer.sync();
 
 			// événement d'arrivée
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(14532L);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateArrivee);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traitement de l'événement
 			traiterEvenements(noIndividu);
 
 			// vérification du traitement
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-					List<EvenementCivilEchErreur> erreurs = new ArrayList<>(evt.getErreurs());
-					assertEquals(1,erreurs.size());
-					final EvenementCivilEchErreur erreur = erreurs.get(0);
-					assertEquals("Plusieurs tiers non-habitants assujettis potentiels trouvés ("+FormatNumeroHelper.numeroCTBToDisplay(ppId1)+
-							", "+FormatNumeroHelper.numeroCTBToDisplay(ppId2)+")",erreur.getMessage());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				List<EvenementCivilEchErreur> erreurs = new ArrayList<>(evt.getErreurs());
+				assertEquals(1,erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.get(0);
+				assertEquals("Plusieurs tiers non-habitants assujettis potentiels trouvés ("+FormatNumeroHelper.numeroCTBToDisplay(ppId1)+
+						", "+FormatNumeroHelper.numeroCTBToDisplay(ppId2)+")",erreur.getMessage());
+				return null;
 			});
 		}
 		finally {
@@ -1615,50 +1448,41 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			});
 
 			// Mise en place du fiscal
-			final long ppId1 = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
-					pp.setNumeroAssureSocial("9518526549783");
-					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
-					return pp.getNumero();
-				}
+			final long ppId1 = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+				pp.setNumeroAssureSocial("9518526549783");
+				addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+				return pp.getNumero();
 			});
 
 			globalTiersIndexer.sync();
 
 			// événement d'arrivée
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(14532L);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateArrivee);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traitement de l'événement
 			traiterEvenements(noIndividu);
 
 			// vérification du traitement
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-					List<EvenementCivilEchErreur> erreurs = new ArrayList<>(evt.getErreurs());
-					assertEquals(1,erreurs.size());
-					final EvenementCivilEchErreur erreur = erreurs.get(0);
-					assertEquals("Le non-habitant trouvé ("+FormatNumeroHelper.numeroCTBToDisplay(ppId1)+") a un numero d'assure social qui ne correspond pas à celui de l'individu de l'évènement",erreur.getMessage());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				List<EvenementCivilEchErreur> erreurs = new ArrayList<>(evt.getErreurs());
+				assertEquals(1,erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.get(0);
+				assertEquals("Le non-habitant trouvé ("+FormatNumeroHelper.numeroCTBToDisplay(ppId1)+") a un numero d'assure social qui ne correspond pas à celui de l'individu de l'évènement",erreur.getMessage());
+				return null;
 			});
 		}
 		finally {
@@ -1693,48 +1517,39 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			});
 
 			// Mise en place du fiscal
-			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
-					addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
-					return pp.getNumero();
-				}
+			final long ppId = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+				return pp.getNumero();
 			});
 
 			globalTiersIndexer.sync();
 
 			// événement d'arrivée
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(14532L);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateArrivee);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividu);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traitement de l'événement
 			traiterEvenements(noIndividu);
 
 			// vérification du traitement
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-					assertNotNull(pp);
-					assertEquals((Long) ppId, pp.getNumero());
-					return null;
-				}
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertEquals((Long) ppId, pp.getNumero());
+				return null;
 			});
 		}
 		finally {
@@ -1782,19 +1597,16 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			});
 
 			// Le fiscal
-			final long ids[] = doInNewTransactionAndSession(new TxCallback<long[]>() {
-				@Override
-				public long[] execute(TransactionStatus status) throws Exception {
-					final PersonnePhysique ppMadame = addNonHabitant("Jolias", "Virginie", dateNaissanceMadame, Sexe.FEMININ);
-					final PersonnePhysique ppMonsieur = addNonHabitant("Jolias", "Virgil", dateNaissanceMonsieur, Sexe.MASCULIN);
-					// ancien habitant: ils ont un numéro d'individu
-					ppMadame.setNumeroIndividu(noIndividuMadame);
-					ppMonsieur.setNumeroIndividu(noIndividuMonsieur);
-					final EnsembleTiersCouple etc = addEnsembleTiersCouple(ppMonsieur, ppMadame, dateMariage, null);
-					addForPrincipal(etc.getMenage(), dateMariage,MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepartCouple.getOneDayBefore(), MotifFor.DEPART_HS, MockPays.France);
-					addForPrincipal(etc.getMenage(), date(2010,12,1),MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-					return new long[] {ppMonsieur.getNumero(), ppMadame.getNumero(), etc.getMenage().getNumero()};
-				}
+			final long ids[] = doInNewTransactionAndSession(status -> {
+				final PersonnePhysique ppMadame = addNonHabitant("Jolias", "Virginie", dateNaissanceMadame, Sexe.FEMININ);
+				final PersonnePhysique ppMonsieur = addNonHabitant("Jolias", "Virgil", dateNaissanceMonsieur, Sexe.MASCULIN);
+				// ancien habitant: ils ont un numéro d'individu
+				ppMadame.setNumeroIndividu(noIndividuMadame);
+				ppMonsieur.setNumeroIndividu(noIndividuMonsieur);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(ppMonsieur, ppMadame, dateMariage, null);
+				addForPrincipal(etc.getMenage(), dateMariage,MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepartCouple.getOneDayBefore(), MotifFor.DEPART_HS, MockPays.France);
+				addForPrincipal(etc.getMenage(), date(2010,12,1),MotifFor.ACHAT_IMMOBILIER, MockPays.France);
+				return new long[] {ppMonsieur.getNumero(), ppMadame.getNumero(), etc.getMenage().getNumero()};
 			});
 
 			final long idMonsieur = ids[0];
@@ -1803,76 +1615,64 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			globalTiersIndexer.sync();
 
 			// événement d'arrivée
-			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(14532L);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateRetourMoniseurSeul);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividuMonsieur);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evtId = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateRetourMoniseurSeul);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuMonsieur);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traitement de l'événement
 			traiterEvenements(noIndividuMonsieur);
 
 			// on s'assure que Madame n'est pas habitante ( et que monsieur l'est au passage..)
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-					final PersonnePhysique monsieur = (PersonnePhysique) tiersService.getTiers(idMonsieur);
-					assertNotNull(monsieur);
-					assertTrue("Monsieur doit être habitant", monsieur.isHabitantVD());
+				final PersonnePhysique monsieur = (PersonnePhysique) tiersService.getTiers(idMonsieur);
+				assertNotNull(monsieur);
+				assertTrue("Monsieur doit être habitant", monsieur.isHabitantVD());
 
-					final PersonnePhysique madame = (PersonnePhysique) tiersService.getTiers(idMadame);
-					assertNotNull(madame);
-					assertFalse("Madame ne doit être habitante", madame.isHabitantVD());
+				final PersonnePhysique madame = (PersonnePhysique) tiersService.getTiers(idMadame);
+				assertNotNull(madame);
+				assertFalse("Madame ne doit être habitante", madame.isHabitantVD());
 
 
-					return null;
-				}
+				return null;
 			});
 
 
 			// événement d'arrivée
-			final long evt2Id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-				@Override
-				public Long doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = new EvenementCivilEch();
-					evt.setId(14533L);
-					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-					evt.setDateEvenement(dateRetourMadameSeule);
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu(noIndividuMadame);
-					evt.setType(TypeEvenementCivilEch.ARRIVEE);
-					return hibernateTemplate.merge(evt).getId();
-				}
+			final long evt2Id = doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14533L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateRetourMadameSeule);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuMadame);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
 			});
 
 			// traitement de l'événement
 			traiterEvenements(noIndividuMadame);
 
 			// Madame arrive finallement 1 mois apres monsieur
-			doInNewTransactionAndSession(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					final EvenementCivilEch evt = evtCivilDAO.get(evt2Id);
-					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+			doInNewTransactionAndSession(status -> {
+				final EvenementCivilEch evt = evtCivilDAO.get(evt2Id);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
 
-					final PersonnePhysique madame = (PersonnePhysique) tiersService.getTiers(idMadame);
-					assertNotNull(madame);
-					assertTrue("Madame doit être habitante", madame.isHabitantVD());
-					return null;
-				}
+				final PersonnePhysique madame = (PersonnePhysique) tiersService.getTiers(idMadame);
+				assertNotNull(madame);
+				assertTrue("Madame doit être habitante", madame.isHabitantVD());
+				return null;
 			});
 		}
 		finally {
@@ -1906,48 +1706,42 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		globalTiersIndexer.sync();
 		// création de l'événement civil pour l'arrivée de Madame
-		final long evtElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArriveeElle);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noElle);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtElle = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArriveeElle);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noElle);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de madame
 		traiterEvenements(noElle);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				assertNotNull(pp);
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
+			assertNotNull(pp);
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNotNull(couple.getMenage());
-				assertNull(couple.getConjoint());
-				assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNotNull(couple.getMenage());
+			assertNull(couple.getConjoint());
+			assertEquals(pp.getId(), couple.getPrincipal().getNumero());
 
-				final MenageCommun mc = couple.getMenage();
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArriveeElle, ffp.getDateDebut());
-				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+			final MenageCommun mc = couple.getMenage();
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArriveeElle, ffp.getDateDebut());
+			assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 
-				return null;
-			}
+			return null;
 		});
 
 
@@ -1978,38 +1772,32 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		globalTiersIndexer.sync();
 		// événement civil de l'arrivée de monsieur
 
-		final long evtLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(321674L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArriveeLui);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtLui = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(321674L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArriveeLui);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noLui);
 
 		// vérification de l'état de traitement de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le conjoint de l'individu (n° %s) correspond à un(e) marié(e) seul",noLui);
-				assertEquals(message, erreur.getMessage());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("Le conjoint de l'individu (n° %s) correspond à un(e) marié(e) seul",noLui);
+			assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -2039,64 +1827,55 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, debutHS, MotifFor.DEPART_HS, MockPays.France);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, debutHS, MotifFor.DEPART_HS, MockPays.France);
+			return pp.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée
 		traiterEvenements(noIndividu);
 
 		// vérification de l'état de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				assertNull(evt.getCommentaireTraitement());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			assertNull(evt.getCommentaireTraitement());
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				final ForFiscalPrincipal ffpPP = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffpPP);
-				assertEquals(debutHS, ffpPP.getDateDebut());
-				assertEquals(TypeAutoriteFiscale.PAYS_HS, ffpPP.getTypeAutoriteFiscale());
-				assertEquals(dateMariage.getOneDayBefore(), ffpPP.getDateFin());
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			final ForFiscalPrincipal ffpPP = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffpPP);
+			assertEquals(debutHS, ffpPP.getDateDebut());
+			assertEquals(TypeAutoriteFiscale.PAYS_HS, ffpPP.getTypeAutoriteFiscale());
+			assertEquals(dateMariage.getOneDayBefore(), ffpPP.getDateFin());
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNull(couple.getConjoint());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNull(couple.getConjoint());
 
-				final MenageCommun mc = couple.getMenage();
-				assertNotNull(mc);
-				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffpMc);
-				assertEquals(dateArrivee, ffpMc.getDateDebut());
-				assertNull(ffpMc.getDateFin());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpMc.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffpMc.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+			final MenageCommun mc = couple.getMenage();
+			assertNotNull(mc);
+			final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffpMc);
+			assertEquals(dateArrivee, ffpMc.getDateDebut());
+			assertNull(ffpMc.getDateFin());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpMc.getTypeAutoriteFiscale());
+			assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffpMc.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 	}
 
@@ -2136,60 +1915,51 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noLui);
-				final PersonnePhysique elle = addHabitant(noElle);
+		doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			final PersonnePhysique lui = addHabitant(noLui);
+			final PersonnePhysique elle = addHabitant(noElle);
 
-				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateDebutRapport, null);
-				addForPrincipal(etc.getMenage(), dateDebutRapport, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
-				ids.monsieur = lui.getNumero();
-				ids.madame = elle.getNumero();
-				return null;
-			}
+			final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateDebutRapport, null);
+			addForPrincipal(etc.getMenage(), dateDebutRapport, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+			ids.monsieur = lui.getNumero();
+			ids.madame = elle.getNumero();
+			return null;
 		});
 
 
 		// création de l'événement civil pour l'arrivée de monsieur
-		final long evtLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtLui = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée de monsieur
 		traiterEvenements(noLui);
 
 		// vérification du traitement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				assertNotNull(erreur);
-				assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
-				final String messageErreurAttendu = String.format("L'arrivant(e) [%s] a un état civil marié ou pacsé à la date de l'évènement ainsi qu'un ménage commun. " +
-						"Cependant, aucun lien d'appartenance ménage n'a été trouvé pour cette date: [%s]. Vérifier si il n'y a pas une incohérence entre les dates civiles et fiscales",
-						FormatNumeroHelper.numeroCTBToDisplay(ids.monsieur),
-						RegDateHelper.dateToDashString(dateArrivee));
-				assertEquals(messageErreurAttendu,
-						erreur.getMessage());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			assertNotNull(erreur);
+			assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
+			final String messageErreurAttendu = String.format("L'arrivant(e) [%s] a un état civil marié ou pacsé à la date de l'évènement ainsi qu'un ménage commun. " +
+					"Cependant, aucun lien d'appartenance ménage n'a été trouvé pour cette date: [%s]. Vérifier si il n'y a pas une incohérence entre les dates civiles et fiscales",
+					FormatNumeroHelper.numeroCTBToDisplay(ids.monsieur),
+					RegDateHelper.dateToDashString(dateArrivee));
+			assertEquals(messageErreurAttendu,
+					erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -2224,65 +1994,56 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, debutHS, MotifFor.DEPART_HS, MockPays.France);
-				pp.setHabitant(true);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, debutHS, MotifFor.DEPART_HS, MockPays.France);
+			pp.setHabitant(true);
+			return pp.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'arrivée
 		traiterEvenements(noIndividu);
 
 		// vérification de l'état de l'événement
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				assertNull(evt.getCommentaireTraitement());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			assertNull(evt.getCommentaireTraitement());
 
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				assertNotNull(pp);
-				final ForFiscalPrincipal ffpPP = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffpPP);
-				assertEquals(debutHS, ffpPP.getDateDebut());
-				assertEquals(TypeAutoriteFiscale.PAYS_HS, ffpPP.getTypeAutoriteFiscale());
-				assertEquals(dateMariage.getOneDayBefore(), ffpPP.getDateFin());
+			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+			assertNotNull(pp);
+			final ForFiscalPrincipal ffpPP = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffpPP);
+			assertEquals(debutHS, ffpPP.getDateDebut());
+			assertEquals(TypeAutoriteFiscale.PAYS_HS, ffpPP.getTypeAutoriteFiscale());
+			assertEquals(dateMariage.getOneDayBefore(), ffpPP.getDateFin());
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				assertNotNull(couple);
-				assertNull(couple.getConjoint());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+			assertNotNull(couple);
+			assertNull(couple.getConjoint());
 
-				final MenageCommun mc = couple.getMenage();
-				assertNotNull(mc);
-				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffpMc);
-				assertEquals(dateArrivee, ffpMc.getDateDebut());
-				assertNull(ffpMc.getDateFin());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpMc.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffpMc.getNumeroOfsAutoriteFiscale());
-				return null;
-			}
+			final MenageCommun mc = couple.getMenage();
+			assertNotNull(mc);
+			final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffpMc);
+			assertEquals(dateArrivee, ffpMc.getDateDebut());
+			assertNull(ffpMc.getDateFin());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpMc.getTypeAutoriteFiscale());
+			assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffpMc.getNumeroOfsAutoriteFiscale());
+			return null;
 		});
 	}
 
@@ -2305,43 +2066,37 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividu);
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				assertNotNull(pp);
-				assertTrue(pp.isHabitantVD());
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+			assertNotNull(pp);
+			assertTrue(pp.isHabitantVD());
 
-				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
+			final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArrivee, ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
 
-				return null;
-			}
+			return null;
 		});
 	}
 
@@ -2371,49 +2126,43 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividuLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividuLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividuLui);
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
-				assertNotNull(pp);
-				assertTrue(pp.isHabitantVD());
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
+			assertNotNull(pp);
+			assertTrue(pp.isHabitantVD());
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, null);
-				assertNotNull(couple);
-				assertNotNull(couple.getPrincipal());
-				assertNotNull(couple.getConjoint());
-				assertNotNull(couple.getMenage());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, null);
+			assertNotNull(couple);
+			assertNotNull(couple.getPrincipal());
+			assertNotNull(couple.getConjoint());
+			assertNotNull(couple.getMenage());
 
-				final ForFiscalPrincipalPP ffp = couple.getMenage().getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
+			final ForFiscalPrincipalPP ffp = couple.getMenage().getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArrivee, ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
 
-				return null;
-			}
+			return null;
 		});
 	}
 
@@ -2442,49 +2191,43 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividuLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividuLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividuLui);
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
-				assertNotNull(pp);
-				assertTrue(pp.isHabitantVD());
+			final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
+			assertNotNull(pp);
+			assertTrue(pp.isHabitantVD());
 
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, null);
-				assertNotNull(couple);
-				assertNotNull(couple.getPrincipal());
-				assertNotNull(couple.getConjoint());
-				assertNotNull(couple.getMenage());
+			final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, null);
+			assertNotNull(couple);
+			assertNotNull(couple.getPrincipal());
+			assertNotNull(couple.getConjoint());
+			assertNotNull(couple.getMenage());
 
-				final ForFiscalPrincipalPP ffp = couple.getMenage().getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertNull(ffp.getDateFin());
-				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+			final ForFiscalPrincipalPP ffp = couple.getMenage().getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArrivee, ffp.getDateDebut());
+			assertNull(ffp.getDateFin());
+			assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
 
-				return null;
-			}
+			return null;
 		});
 	}
 
@@ -2518,60 +2261,51 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale : ils possédaient un immeuble avant d'arriver
-		final long ppMenage = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
+		final long ppMenage = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique lui = addHabitant(noIndividuLui);
+			final PersonnePhysique elle = addHabitant(noIndividuElle);
+			final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
 
-				addForPrincipal(mc, dateAchat, null, null, null, MockPays.EtatsUnis, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			addForPrincipal(mc, dateAchat, null, null, null, MockPays.EtatsUnis, MotifRattachement.DIPLOMATE_ETRANGER);
+			addForSecondaire(mc, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-				return mc.getNumero();
-			}
+			return mc.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividuLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividuLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividuLui);
 
 		// vérification du for principal vaudois suite à l'arrivée
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch ech = evtCivilDAO.get(evtArrivee);
-				assertNotNull(ech);
-				assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch ech = evtCivilDAO.get(evtArrivee);
+			assertNotNull(ech);
+			assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ppMenage);
-				assertNotNull(mc);
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ppMenage);
+			assertNotNull(mc);
 
-				final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
-				assertNotNull(ffp);
-				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());
-				assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
-				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
-				assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
-				return null;
-			}
+			final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
+			assertNotNull(ffp);
+			assertEquals(dateArrivee, ffp.getDateDebut());
+			assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());
+			assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+			return null;
 		});
 	}
 
@@ -2609,182 +2343,156 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale (sans calcul des parentés, siouplait...)
-		final long idMaman = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique maman = addHabitant(indMaman);
-				addForPrincipal(maman, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
-				return maman.getNumero();
-			}
+		final long idMaman = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, false, status -> {
+			final PersonnePhysique maman = addHabitant(indMaman);
+			addForPrincipal(maman, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+			return maman.getNumero();
 		});
 
 		// création de l'événement d'arrivée du bébé
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(indBebe);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(indBebe);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(indBebe);
 
 		// vérification de l'état des flags parenteDirty sur les tiers existants
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
-				final PersonnePhysique maman = tiersService.getPersonnePhysiqueByNumeroIndividu(indMaman);
-				assertNotNull(maman);
-				assertEquals((Long) idMaman, maman.getNumero());
+			final PersonnePhysique maman = tiersService.getPersonnePhysiqueByNumeroIndividu(indMaman);
+			assertNotNull(maman);
+			assertEquals((Long) idMaman, maman.getNumero());
 
-				final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
-				assertNotNull(bebe);
+			final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
+			assertNotNull(bebe);
 
-				// les relations depuis maman
-				{
-					final Set<RapportEntreTiers> relEnfants = maman.getRapportsObjet();
-					assertNotNull(relEnfants);
-					assertEquals(1, relEnfants.size());
+			// les relations depuis maman
+			{
+				final Set<RapportEntreTiers> relEnfants = maman.getRapportsObjet();
+				assertNotNull(relEnfants);
+				assertEquals(1, relEnfants.size());
 
-					final RapportEntreTiers relEnfant = relEnfants.iterator().next();
-					assertNotNull(relEnfant);
-					assertEquals(TypeRapportEntreTiers.PARENTE, relEnfant.getType());
-					assertEquals((Long) idMaman, relEnfant.getObjetId());
-					assertEquals(bebe.getNumero(), relEnfant.getSujetId());
-					assertEquals(dateNaissanceBebe, relEnfant.getDateDebut());
-					assertNull(relEnfant.getDateFin());
-					assertFalse(relEnfant.isAnnule());
+				final RapportEntreTiers relEnfant = relEnfants.iterator().next();
+				assertNotNull(relEnfant);
+				assertEquals(TypeRapportEntreTiers.PARENTE, relEnfant.getType());
+				assertEquals((Long) idMaman, relEnfant.getObjetId());
+				assertEquals(bebe.getNumero(), relEnfant.getSujetId());
+				assertEquals(dateNaissanceBebe, relEnfant.getDateDebut());
+				assertNull(relEnfant.getDateFin());
+				assertFalse(relEnfant.isAnnule());
 
-					assertFalse(maman.isParenteDirty());
-				}
-
-				// les relations depuis bébé
-				{
-					final Set<RapportEntreTiers> relParents = bebe.getRapportsSujet();
-					assertNotNull(relParents);
-					assertEquals(1, relParents.size());
-
-					final RapportEntreTiers relParent = relParents.iterator().next();
-					assertNotNull(relParent);
-					assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
-					assertEquals((Long) idMaman, relParent.getObjetId());
-					assertEquals(bebe.getNumero(), relParent.getSujetId());
-					assertEquals(dateNaissanceBebe, relParent.getDateDebut());
-					assertNull(relParent.getDateFin());
-					assertFalse(relParent.isAnnule());
-
-					assertTrue(bebe.isParenteDirty());      // il manque la relation vers papa qui n'existe pas encore au fiscal
-				}
-
-				return null;
+				assertFalse(maman.isParenteDirty());
 			}
+
+			// les relations depuis bébé
+			{
+				final Set<RapportEntreTiers> relParents = bebe.getRapportsSujet();
+				assertNotNull(relParents);
+				assertEquals(1, relParents.size());
+
+				final RapportEntreTiers relParent = relParents.iterator().next();
+				assertNotNull(relParent);
+				assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
+				assertEquals((Long) idMaman, relParent.getObjetId());
+				assertEquals(bebe.getNumero(), relParent.getSujetId());
+				assertEquals(dateNaissanceBebe, relParent.getDateDebut());
+				assertNull(relParent.getDateFin());
+				assertFalse(relParent.isAnnule());
+
+				assertTrue(bebe.isParenteDirty());      // il manque la relation vers papa qui n'existe pas encore au fiscal
+			}
+
+			return null;
 		});
 
 		// arrivée de papa (en raccourci -> on crée directement le gars en base)
 		// le recalcul des parentés est activé mais ne devrait rien changer (car la liaison entre bébé et papa est inconnue fiscalement pour le moment)
-		final long idPapa = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique papa = addHabitant(indPapa);
-				addForPrincipal(papa, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
-				return papa.getNumero();
-			}
+		final long idPapa = doInNewTransactionAndSessionUnderSwitch(parentesSynchronizer, true, status -> {
+			final PersonnePhysique papa = addHabitant(indPapa);
+			addForPrincipal(papa, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny, ModeImposition.SOURCE);
+			return papa.getNumero();
 		});
 
 		// vérification des relations depuis bébé (-> rien n'a changé)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
-				assertNotNull(bebe);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
+			assertNotNull(bebe);
 
-				// les relations depuis bébé
-				{
-					final Set<RapportEntreTiers> relParents = bebe.getRapportsSujet();
-					assertNotNull(relParents);
-					assertEquals(1, relParents.size());
+			// les relations depuis bébé
+			{
+				final Set<RapportEntreTiers> relParents = bebe.getRapportsSujet();
+				assertNotNull(relParents);
+				assertEquals(1, relParents.size());
 
-					final RapportEntreTiers relParent = relParents.iterator().next();
-					assertNotNull(relParent);
-					assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
-					assertEquals((Long) idMaman, relParent.getObjetId());
-					assertEquals(bebe.getNumero(), relParent.getSujetId());
-					assertEquals(dateNaissanceBebe, relParent.getDateDebut());
-					assertNull(relParent.getDateFin());
-					assertFalse(relParent.isAnnule());
+				final RapportEntreTiers relParent = relParents.iterator().next();
+				assertNotNull(relParent);
+				assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
+				assertEquals((Long) idMaman, relParent.getObjetId());
+				assertEquals(bebe.getNumero(), relParent.getSujetId());
+				assertEquals(dateNaissanceBebe, relParent.getDateDebut());
+				assertNull(relParent.getDateFin());
+				assertFalse(relParent.isAnnule());
 
-					assertTrue(bebe.isParenteDirty());      // il manque la relation vers papa qui n'existe pas encore au fiscal
-				}
-
-				return null;
+				assertTrue(bebe.isParenteDirty());      // il manque la relation vers papa qui n'existe pas encore au fiscal
 			}
+
+			return null;
 		});
 
 		// refresh des données de parenté du bébé (ici, on devrait créer la relation de parenté vers papa)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
-				assertNotNull(bebe);
-				tiersService.refreshParentesSurPersonnePhysique(bebe, false);
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
+			assertNotNull(bebe);
+			tiersService.refreshParentesSurPersonnePhysique(bebe, false);
+			return null;
 		});
 
 		// vérification des relations depuis bébé (-> papa est arrivé)
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
-				assertNotNull(bebe);
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique bebe = tiersService.getPersonnePhysiqueByNumeroIndividu(indBebe);
+			assertNotNull(bebe);
 
-				final Set<RapportEntreTiers> relParents = bebe.getRapportsSujet();
-				assertNotNull(relParents);
-				assertEquals(2, relParents.size());
+			final Set<RapportEntreTiers> relParents = bebe.getRapportsSujet();
+			assertNotNull(relParents);
+			assertEquals(2, relParents.size());
 
-				final List<RapportEntreTiers> sortedRelParents = new ArrayList<>(relParents);
-				Collections.sort(sortedRelParents, new Comparator<RapportEntreTiers>() {
-					@Override
-					public int compare(RapportEntreTiers o1, RapportEntreTiers o2) {
-						return Long.compare(o1.getObjetId(), o2.getObjetId());
-					}
-				});
+			final List<RapportEntreTiers> sortedRelParents = new ArrayList<>(relParents);
+			sortedRelParents.sort(Comparator.comparingLong(RapportEntreTiers::getObjetId));
 
-				{
-					final RapportEntreTiers relParent = sortedRelParents.get(0);
-					assertNotNull(relParent);
-					assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
-					assertEquals((Long) idMaman, relParent.getObjetId());
-					assertEquals(bebe.getNumero(), relParent.getSujetId());
-					assertEquals(dateNaissanceBebe, relParent.getDateDebut());
-					assertNull(relParent.getDateFin());
-					assertFalse(relParent.isAnnule());
-				}
-				{
-					final RapportEntreTiers relParent = sortedRelParents.get(1);
-					assertNotNull(relParent);
-					assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
-					assertEquals((Long) idPapa, relParent.getObjetId());
-					assertEquals(bebe.getNumero(), relParent.getSujetId());
-					assertEquals(dateNaissanceBebe, relParent.getDateDebut());
-					assertNull(relParent.getDateFin());
-					assertFalse(relParent.isAnnule());
-				}
-
-				assertFalse(bebe.isParenteDirty());
-				return null;
+			{
+				final RapportEntreTiers relParent = sortedRelParents.get(0);
+				assertNotNull(relParent);
+				assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
+				assertEquals((Long) idMaman, relParent.getObjetId());
+				assertEquals(bebe.getNumero(), relParent.getSujetId());
+				assertEquals(dateNaissanceBebe, relParent.getDateDebut());
+				assertNull(relParent.getDateFin());
+				assertFalse(relParent.isAnnule());
 			}
+			{
+				final RapportEntreTiers relParent = sortedRelParents.get(1);
+				assertNotNull(relParent);
+				assertEquals(TypeRapportEntreTiers.PARENTE, relParent.getType());
+				assertEquals((Long) idPapa, relParent.getObjetId());
+				assertEquals(bebe.getNumero(), relParent.getSujetId());
+				assertEquals(dateNaissanceBebe, relParent.getDateDebut());
+				assertNull(relParent.getDateFin());
+				assertFalse(relParent.isAnnule());
+			}
+
+			assertFalse(bebe.isParenteDirty());
+			return null;
 		});
 	}
 
@@ -2814,52 +2522,43 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// Cette personne est déjà enregistrée dans la base
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				addDecisionAci(pp, date(2008, 10, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
-				ids.virginie = pp.getNumero();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = addHabitant(noIndividu);
+			addDecisionAci(pp, date(2008, 10, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			ids.virginie = pp.getNumero();
+			return null;
 		});
 
 		// événement d'arrivée
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(14532L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtId = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(14532L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement
 		traiterEvenements(noIndividu);
 
 		// on s'assure que l'événement est détecté comme redondant
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				PersonnePhysique virginie = (PersonnePhysique)tiersDAO.get(ids.virginie);
-				assertNotNull(virginie);
-				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(virginie.getNumero()));
-				assertEquals(message, erreur.getMessage());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			PersonnePhysique virginie = (PersonnePhysique)tiersDAO.get(ids.virginie);
+			assertNotNull(virginie);
+			final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+					FormatNumeroHelper.numeroCTBToDisplay(virginie.getNumero()));
+			assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -2895,53 +2594,44 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// Cette personne est déjà enregistrée dans la base
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppLui = addHabitant(noIndividuLui);
-				final PersonnePhysique ppElle = addHabitant(noIndividuElle);
-				addDecisionAci(ppLui, date(2008, 10, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
-				ids.monsieur = ppLui.getNumero();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ppLui = addHabitant(noIndividuLui);
+			addHabitant(noIndividuElle);
+			addDecisionAci(ppLui, date(2008, 10, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			ids.monsieur = ppLui.getNumero();
+			return null;
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividuLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividuLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividuLui);
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
-				final PersonnePhysique ppLui = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
-				assertNotNull(ppLui);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(ppLui.getNumero()));
-				assertEquals(message, erreur.getMessage());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+			final PersonnePhysique ppLui = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
+			assertNotNull(ppLui);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+					FormatNumeroHelper.numeroCTBToDisplay(ppLui.getNumero()));
+			assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -2976,56 +2666,47 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// Cette personne est déjà enregistrée dans la base
-		doInNewTransactionAndSession(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique ppLui = addHabitant(noIndividuLui);
-				final PersonnePhysique ppElle = addHabitant(noIndividuElle);
-				addDecisionAci(ppElle, date(2008, 10, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
-				ids.monsieur = ppLui.getNumero();
-				ids.madame = ppElle.getNumero();
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final PersonnePhysique ppLui = addHabitant(noIndividuLui);
+			final PersonnePhysique ppElle = addHabitant(noIndividuElle);
+			addDecisionAci(ppElle, date(2008, 10, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+			ids.monsieur = ppLui.getNumero();
+			ids.madame = ppElle.getNumero();
+			return null;
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividuLui);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividuLui);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
 		traiterEvenements(noIndividuLui);
 
 		// vérification des résultats
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
-				final PersonnePhysique ppLui = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
-				final PersonnePhysique ppElle = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuElle);
-				assertNotNull(ppLui);
-				assertNotNull(ppElle);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(ppLui.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(ppElle.getNumero()));
-				assertEquals(message, erreur.getMessage());
-				return null;
-			}
+		doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+			final PersonnePhysique ppLui = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
+			final PersonnePhysique ppElle = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuElle);
+			assertNotNull(ppLui);
+			assertNotNull(ppElle);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertNotNull(erreurs);
+			assertEquals(1, erreurs.size());
+			final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+			String message = String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI",
+					FormatNumeroHelper.numeroCTBToDisplay(ppLui.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(ppElle.getNumero()));
+			assertEquals(message, erreur.getMessage());
+			return null;
 		});
 	}
 
@@ -3054,29 +2735,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale (on part du point où le départ pour pays inconnu a déjà été enregistré, car on avait reçu un départ sans destination...)
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateArrivee.getOneDayBefore(), MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
-				addForPrincipal(pp, dateArrivee, MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateArrivee.getOneDayBefore(), MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
+			addForPrincipal(pp, dateArrivee, MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
+			return pp.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
@@ -3101,7 +2776,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+				ffps.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(4, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3172,7 +2847,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
-				final MockAdresse adresseAvant = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
 
 				final MockAdresse adresseApres = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Romainmotier.CheminDuCochet, null, dateArrivee, null);
 				adresseApres.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
@@ -3182,29 +2857,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale (on part du point où le départ pour pays inconnu a déjà été enregistré, car on avait reçu un départ sans destination...)
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
-				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
+			addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
+			return pp.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
@@ -3229,7 +2898,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+				ffps.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(4, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3300,7 +2969,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
-				final MockAdresse adresseAvant = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
 
 				final MockAdresse adresseApres = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Romainmotier.CheminDuCochet, null, dateArrivee, null);
 				adresseApres.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.LIsle.getNoOFS(), null));       // L'Isle n'est pas Aubonne...
@@ -3310,29 +2979,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale (on part du point où le départ pour pays inconnu a déjà été enregistré, car on avait reçu un départ sans destination...)
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
-				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
+			addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
+			return pp.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
@@ -3365,7 +3028,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+				ffps.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(2, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3412,7 +3075,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
-				final MockAdresse adresseAvant = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
 
 				final MockAdresse adresseApres = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Romainmotier.CheminDuCochet, null, dateArrivee, null);
 				adresseApres.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
@@ -3422,29 +3085,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale (on part du point où le départ pour pays inconnu a déjà été enregistré, car on avait reçu un départ sans destination...)
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
-				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
+			addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
+			return pp.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
@@ -3477,7 +3134,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+				ffps.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(2, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3534,31 +3191,25 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale (on part du point où le départ pour pays inconnu a déjà été enregistré, car on avait reçu un départ sans destination...)
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateArrivee.getOneDayBefore(), MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
-				addForPrincipal(mc, dateArrivee, MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateArrivee.getOneDayBefore(), MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
+			addForPrincipal(mc, dateArrivee, MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
+			return mc.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
@@ -3582,7 +3233,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+				ffps.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(4, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3654,7 +3305,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
-				final MockAdresse adresseAvant = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
 
 				final MockAdresse adresseApres = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Romainmotier.CheminDuCochet, null, dateArrivee, null);
 				adresseApres.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
@@ -3665,31 +3316,25 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale (on part du point où le départ pour pays inconnu a déjà été enregistré, car on avait reçu un départ sans destination...)
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
-				addForPrincipal(mc, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
+			addForPrincipal(mc, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
+			return mc.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
@@ -3713,7 +3358,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+				ffps.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(4, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3785,7 +3430,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
-				final MockAdresse adresseAvant = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateArrivee.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateArrivee.getOneDayBefore());
 
 				final MockAdresse adresseApres = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Romainmotier.CheminDuCochet, null, dateArrivee, null);
 				adresseApres.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.LIsle.getNoOFS(), null));       // L'Isle n'est pas Aubonne
@@ -3796,31 +3441,25 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale (on part du point où le départ pour pays inconnu a déjà été enregistré, car on avait reçu un départ sans destination...)
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
-				addForPrincipal(mc, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
+			addForPrincipal(mc, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
+			return mc.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
@@ -3852,7 +3491,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+				ffps.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(2, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -3900,7 +3539,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
-				final MockAdresse adresseAvant = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
 
 				final MockAdresse adresseApres = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Romainmotier.CheminDuCochet, null, dateArrivee, null);
 				adresseApres.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
@@ -3911,31 +3550,25 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale (on part du point où le départ pour pays inconnu a déjà été enregistré, car on avait reçu un départ sans destination...)
-		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateMariage, null);
-				final MenageCommun mc = couple.getMenage();
-				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
-				addForPrincipal(mc, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
-				return mc.getNumero();
-			}
+		final long mcId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateMariage, null);
+			final MenageCommun mc = couple.getMenage();
+			addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
+			addForPrincipal(mc, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
+			return mc.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
@@ -3967,7 +3600,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 						ffps.add((ForFiscalPrincipalPP) ff);
 					}
 				}
-				Collections.sort(ffps, new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
+				ffps.sort(new AnnulableHelper.AnnulesApresWrappingComparator<>(new DateRangeComparator<>()));
 				Assert.assertEquals(2, ffps.size());
 				{
 					final ForFiscalPrincipalPP ffp = ffps.get(0);
@@ -4013,7 +3646,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Rastapopoulos", "Magdalena", Sexe.FEMININ);
-				final MockAdresse adresseAvant = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, dateDepart);
 
 				final MockAdresse adresseApres = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Romainmotier.CheminDuCochet, null, dateArrivee, null);
 				adresseApres.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
@@ -4023,30 +3656,24 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 
 		// mise en place fiscale (on part du point où le départ pour pays inconnu a déjà été enregistré, car on avait reçu un départ sans destination...)
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
-				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
-				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
-				addForSecondaire(pp, dateDepart.addDays(-10), MotifFor.ACHAT_IMMOBILIER, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				return pp.getNumero();
-			}
+		final long ppId = doInNewTransactionAndSession(status -> {
+			final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+			addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
+			addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.PaysInconnu, ModeImposition.ORDINAIRE);
+			addForSecondaire(pp, dateDepart.addDays(-10), MotifFor.ACHAT_IMMOBILIER, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+			return pp.getNumero();
 		});
 
 		// événement civil d'arrivée
-		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = new EvenementCivilEch();
-				evt.setId(3273426L);
-				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
-				evt.setDateEvenement(dateArrivee);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividu(noIndividu);
-				evt.setType(TypeEvenementCivilEch.ARRIVEE);
-				return hibernateTemplate.merge(evt).getId();
-			}
+		final long evtArrivee = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(3273426L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noIndividu);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
 		});
 
 		// traitement de l'événement civil
