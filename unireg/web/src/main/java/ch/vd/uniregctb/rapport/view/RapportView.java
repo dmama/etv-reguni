@@ -16,6 +16,7 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.Heritage;
@@ -141,12 +142,29 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 			final RepresentationLegale rl = (RepresentationLegale) rapport;
 			this.autoriteTutelaireId = rl.getAutoriteTutelaireId();
 			if (this.autoriteTutelaireId != null) {
-				this.nomAutoriteTutelaire = tiersService.getNomCollectiviteAdministrative(this.autoriteTutelaireId.intValue());
+				this.nomAutoriteTutelaire = getNomAutoriteTutelaire(this.autoriteTutelaireId, tiersService);
 			}
 		}
 
 		this.messageNumeroAbsent = null; // TDDO (msi) rapports de filiation
 		this.toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapport, adresseService, tiersService);
+	}
+
+	/**
+	 * Récupération du nom de l'autorité tutellaire à partir de son id, depuis le service infrastructure
+	 * @param autoriteTutelaireId id de l'autorité tutellaire
+	 * @param tiersService service utilisé pour la recherche
+	 * @return le nom de l'autorité tutellaire
+	 */
+	String getNomAutoriteTutelaire(Long autoriteTutelaireId, TiersService tiersService) {
+		String nom = null;
+		if (autoriteTutelaireId != null) {
+			final Tiers autoriteTutelaire = tiersService.getTiers(autoriteTutelaireId);
+			if (autoriteTutelaire instanceof CollectiviteAdministrative) {
+				nom = tiersService.getNomCollectiviteAdministrative(((CollectiviteAdministrative) autoriteTutelaire).getNumeroCollectiviteAdministrative());
+			}
+		}
+		return nom;
 	}
 
 	// ---------------------------------------------------
