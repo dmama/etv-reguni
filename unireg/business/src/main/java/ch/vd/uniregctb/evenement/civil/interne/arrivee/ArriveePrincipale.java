@@ -639,6 +639,12 @@ public class ArriveePrincipale extends Arrivee {
 
 			MotifFor motifOuverture = getMotifOuvertureFor();
 
+			if (ffpMenage != null && ffpMenage.getDateFin() == null && ffpMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				// SIFISC-26927 dans le cas d'une arrivée HS/HC d'un conjoint sur un ménage qui possède déjà un for fiscal actif sur une commune vaudoise,
+				//              le motif d'ouverture doit être DEMENAGEMENT_VD (et non pas ARRIVEE_HS ou ARRIVEE_HC)
+				motifOuverture = MotifFor.DEMENAGEMENT_VD;
+			}
+
 			// détermination du mode d'imposition
 			final ModeImposition modeImposition;
 			final RattrapageDepartHSInconnu rattrapageDepartHSInconnu;

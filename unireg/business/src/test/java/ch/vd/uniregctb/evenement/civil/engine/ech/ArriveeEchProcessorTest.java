@@ -473,6 +473,152 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 	}
 
+	/**
+	 * [SIFISC-26927] Ce test vérifie que les motifs de fermeture/ouverture des fors fiscaux sont calculés correctement dans le cas suivant :
+	 * <ol>
+	 * <li>un ménage est composé d'un habitant et d'une non-habitante</li>
+	 * <li>l'habitant déménage dans le canton à une date X => les fors fiscaux du ménage sont mis-à-jour en conséquences (OK)</li>
+	 * <li>la non-habitante arrive dans le canton à une date Y <b>antérieure</b> à la date X de déménagement du couple,
+	 * mais le traitement de l'arrivée se fait après le déménagement => l'événement d'arrivée part en erreur (OK)</li>
+	 * <li>un opérateur annule le déménagement du ménage pour permettre le traitement de l'événement d'arrivée (OK)</li>
+	 * <li>le traitement de l'événement d'arrivée va redéménager le ménage à la date X sur la commune du principal (OK),
+	 * <b>mais doit utiliser les motifs de fermeture/ouverture des fors fiscaux "Déménagement"</b> et non pas "Arrive HS/HC" dans ce cas-là (KO avant le SIFISC-26927).</li>
+	 * </ol>
+	 */
+	@Test//(timeout = 10000L)
+	public void testArriveeMadameSurCoupleVaudoisAyantDemenageEntretemps() throws Exception {
+
+		// cas du ménage n°115.666.96
+		final long noMonsieur = 322847L;
+		final long noMadame = 2450547L;
+		final RegDate naissanceMonsieur = date(1970, 1, 1);
+		final RegDate naissanceMadame = date(1970, 1, 1);
+
+		final RegDate dateMariage = date(2017, 4, 3);
+		final RegDate dateDemenagement = date(2017, 10, 1); // date déménagement de monsieur
+		final RegDate dateArrivee = date(2017, 9, 5);       // date d'arrivée de madame
+
+		setWantIndexationTiers(true);
+
+		// adresses de monsieur : Bussigny puis Moudon le 01.10.2017
+		// adresses de madame : France puis Moudon le 05.09.2017
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noMonsieur, naissanceMonsieur, "Tartempion", "François", true);
+				final MockIndividu elle = addIndividu(noMadame, naissanceMadame, "Tartempion", "Françoise", false);
+				addNationalite(lui, MockPays.Suisse, naissanceMonsieur, null);
+				addNationalite(elle, MockPays.France, naissanceMadame, null);
+				marieIndividus(lui, elle, dateMariage);
+
+				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, naissanceMonsieur, dateDemenagement.getOneDayBefore());
+				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Moudon.LeBourg, null, dateDemenagement, null);
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Moudon.LeBourg, null, dateArrivee, null);
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+			}
+		});
+
+		class Ids {
+			Long monsieur;
+			Long madame;
+			Long menage;
+		}
+		final Ids ids = new Ids();
+
+		// situation fiscal du ménage :
+		//  - un for fiscal sur Bussigny, puis
+		//  - un for fiscal sur Moudon
+		doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			final PersonnePhysique monsieur = addHabitant(noMonsieur);
+			final PersonnePhysique madame = addNonHabitant("Françoise", "Tartempion", naissanceMadame, Sexe.FEMININ);
+			final EnsembleTiersCouple etc = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+			final MenageCommun menage = etc.getMenage();
+			addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
+			addForPrincipal(menage, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Moudon);
+			ids.monsieur = monsieur.getNumero();
+			ids.madame = madame.getNumero();
+			ids.menage = menage.getNumero();
+			return null;
+		});
+
+		globalTiersIndexer.sync();
+
+		// événement civil de l'arrivée de madame
+		final long evtMadame = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(321674L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateArrivee);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noMadame);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
+		});
+
+		// traitement de l'arrivée de madame
+		traiterEvenements(noMadame);
+
+		// l'événement est en erreur parce que madame arrive avant le déménagement du ménage mais que l'arrivée est traitée après le déménagement.
+		doInNewTransactionAndSession(status -> {
+
+			// l'événement doit être en erreur
+			final EvenementCivilEch evt = evtCivilDAO.get(evtMadame);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertEquals(1, erreurs.size());
+			assertEquals("Il y a eu d'autres changements déjà pris en compte après l'arrivée", erreurs.iterator().next().getMessage());
+
+			// rien ne doit avoir changé sur le ménage
+			final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.menage);
+			final List<ForFiscal> forsFiscaux = mc.getForsFiscauxSorted();
+			assertEquals(2, forsFiscaux.size());
+			assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                   dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD,
+			                   MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) forsFiscaux.get(0));
+			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD,
+			                   MockCommune.Moudon, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) forsFiscaux.get(1));
+			return null;
+		});
+
+		// on annule le déménagement du ménage commun (dans la réalité, c'est un opérateur que le fait manuellement)
+		doInNewTransaction(status -> {
+			final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.menage);
+			final List<ForFiscal> forsFiscaux = mc.getForsFiscauxSorted();
+
+			// on annule le for sur Moudon
+			forsFiscaux.get(1).setAnnule(true);
+
+			// on réouvre le for sur Bussigny
+			final ForFiscalPrincipal forBussigny = (ForFiscalPrincipal) forsFiscaux.get(0);
+			forBussigny.setDateFin(null);
+			forBussigny.setMotifFermeture(null);
+
+			return null;
+		});
+
+		// on relance le traitement de l'arrivée de madame
+		traiterEvenements(noMadame);
+
+		// l'événement doit maintenant être traité
+		doInNewTransactionAndSession(status -> {
+
+			final EvenementCivilEch evt = evtCivilDAO.get(evtMadame);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+			// le ménage commun doit être maintenant correctement déménagé sur Moudon (avec surtout les motifs DEMENAGEMENT_VD)
+			final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.menage);
+			final List<ForFiscalPrincipalPP> forsFiscaux = mc.getForsFiscauxPrincipauxActifsSorted();
+			assertEquals(2, forsFiscaux.size());
+			assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			                   dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD,
+			                   MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, forsFiscaux.get(0));
+			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD,
+			                   MockCommune.Moudon, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, forsFiscaux.get(1));
+			return null;
+		});
+	}
 
 	@Test(timeout = 10000L)
 	public void testArriveesCoupleAvecRedondancePosterieure() throws Exception {
