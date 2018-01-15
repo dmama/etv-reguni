@@ -548,7 +548,9 @@ public class IdentificationController {
 			return new ModelAndView("identification/gestion-messages/list", model);
 		}
 
-		criteria = manageCriteria(request, criteria, "identificationCriteria", wipeCriteria == null);
+		// [SIFISC-27085] on ne veut jamais recharger le criteria de la session lorsqu'on soumet (POST) le formulaire
+		final boolean keepCriteria = (wipeCriteria == null && "GET".equals(request.getMethod()));
+		criteria = manageCriteria(request, criteria, "identificationCriteria", keepCriteria);
 		criteria.setUserCourant(AuthenticationHelper.getCurrentPrincipal());
 
 		addPaginationToModel(request, model);
