@@ -17,7 +17,6 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
@@ -99,7 +98,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		initListenerContainer(INPUT_QUEUE, handler, myErrorHandler);
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testSendReponseContribuableTrouve() throws Exception {
 
 		// Création du message
@@ -123,7 +122,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testSendReponseContribuableNonTrouve() throws Exception {
 
 		// Création du message
@@ -155,7 +154,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testSendReponseContribuableSansManuel() throws Exception {
 
 		// Création du message
@@ -190,7 +189,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testSendReponseContribuableManuelAveckAck() throws Exception {
 
 		// Création du message
@@ -225,32 +224,32 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 	private static final String EXPECTED_XML_TEMPLATE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>%s</iden:type><iden:code>%s</iden:code><iden:message>%s</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testSendReponseErreurTechnique() throws Exception {
 		testSendReponseErreur(TypeErreur.TECHNIQUE,	"TestErreurTechnique",	"Erreur technique de test");
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testSendReponseErreurContribuableInconnu() throws Exception {
 		testSendReponseErreur(IdentificationContribuable.ErreurMessage.AUCUNE_CORRESPONDANCE);
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testSendReponseErreurVersACI() throws Exception {
 		testSendReponseErreur(IdentificationContribuable.ErreurMessage.ACI_AUTRE_CANTON);
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testSendReponseErreurVersIs() throws Exception {
 		testSendReponseErreur(IdentificationContribuable.ErreurMessage.SECTION_IMPOT_SOURCE);
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testSendReponseErreurVersOMPI() throws Exception {
 		testSendReponseErreur(IdentificationContribuable.ErreurMessage.OIPM);
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testSendReponseErreurFrontalier() throws Exception {
 		testSendReponseErreur(IdentificationContribuable.ErreurMessage.FRONTALIER);
 	}
@@ -283,7 +282,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertTextMessage(OUTPUT_QUEUE, String.format(EXPECTED_XML_TEMPLATE, type.name().substring(0,1), code, msgErreur));
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testReceiveDemandeIdentificationCtb() throws Exception {
 
 		final List<IdentificationContribuable> messages = new ArrayList<>();
@@ -354,7 +353,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertNull(adresse.getTypeAdresse());
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testDemandeIdentificationAvecUrlDocument() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
@@ -390,7 +389,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertEquals(url, header.getDocumentUrl());
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testDemandeIdentificationAvecDateFarfelue() throws Exception {
 
 		final List<IdentificationContribuable> messages = new ArrayList<>();
@@ -421,7 +420,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertNull(m.getDemande().getPersonne().getDateNaissance());
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testDemandeIdentificationErreurMontant() throws Exception {
 
 		final List<IdentificationContribuable> messages = new ArrayList<>();
@@ -453,7 +452,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertEquals(ErrorType.BUSINESS,errorDescription.errorType);
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testDemandeIdentificationNCS() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
@@ -485,7 +484,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertEquals(TypeDemande.NCS, m.getDemande().getTypeDemande());
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testDemandeIdentificationImpotSource_LISTE_IS() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
@@ -517,7 +516,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertEquals(TypeDemande.IMPOT_SOURCE, m.getDemande().getTypeDemande());
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testDemandeIdentificationE_Facture() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<>();
 
@@ -549,7 +548,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertEquals(TypeDemande.E_FACTURE, m.getDemande().getTypeDemande());
 	}
 
-	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	@Test(timeout = 10000)
 	public void testDemandeIdentificationAvecMetaDataAdditionnels() throws Exception {
 
 		final List<IdentificationContribuable> messages = new ArrayList<>();
