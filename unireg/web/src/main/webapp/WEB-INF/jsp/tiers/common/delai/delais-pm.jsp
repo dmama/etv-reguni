@@ -14,21 +14,6 @@
 		<display:column titleKey="label.decision">
 			<fmt:message key="option.etat.delai.${delai.etat}"/>
 		</display:column>
-		<c:if test="${page == 'visu' }">
-			<display:column titleKey="label.confirmation.ecrite">
-				<c:if test="${delai.etat != 'DEMANDE'}">
-					<c:choose>
-						<c:when test="${delai.urlVisualisationExterneDocument != null}">
-							<a href="#" class="pdf" onclick="VisuExterneDoc.openWindow('${delai.urlVisualisationExterneDocument}');" title="Visualisation du courrier émis">&nbsp;</a>
-						</c:when>
-						<c:when test="${delai.confirmationEcrite}">
-							<a href="../declaration/copie-conforme-delai.do?idDelai=${delai.id}&url_memorize=false" class="pdf" id="print-delai-${delai.id}" onclick="Link.tempSwap(this, '#disabled-print-delai-${delai.id}');">&nbsp;</a>
-							<span class="pdf-grayed" id="disabled-print-delai-${delai.id}" style="display: none;">&nbsp;</span>
-						</c:when>
-					</c:choose>
-				</c:if>
-			</display:column>
-		</c:if>
 		<display:column titleKey="label.date.delai.accorde">
 			<unireg:regdate regdate="${delai.delaiAccordeAu}" />
 			<c:if test="${delai.sursis && delai.delaiAccordeAu != null}">
