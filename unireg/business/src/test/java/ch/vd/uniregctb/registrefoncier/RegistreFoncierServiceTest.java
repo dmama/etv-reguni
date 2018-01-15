@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -31,6 +31,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.registrefoncier.EvenementFiscalCommunaute;
@@ -1740,15 +1741,13 @@ public class RegistreFoncierServiceTest extends BusinessTest {
 		});
 
 		// on créé 20 threads différents qui vont demander le même modèle tous en même
-		ForkJoinPool forkJoinPool = new ForkJoinPool(20);
-		final ForkJoinTask<?> task = forkJoinPool.submit(() -> IntStream.range(0, 20)
-				.parallel()
-				.mapToObj(i -> loadModelInTx(ids.pp1, ids.pp2))
-				.collect(Collectors.toList()));
+		final ExecutorService executor = Executors.newFixedThreadPool(20);
+		final List<Integer> idsToLoad = IntStream.range(0, 20).boxed().collect(Collectors.toList());
+		final List<ModeleCommunauteRF> modeles = CollectionsUtils.parallelMap(idsToLoad, i -> loadModelInTx(ids.pp1, ids.pp2), executor);
+		executor.shutdown();
 
 		// on vérifie qu'on a chargé 20 fois le même modèle
 		//noinspection unchecked
-		final List<ModeleCommunauteRF> modeles = (List<ModeleCommunauteRF>) task.join();
 		assertEquals(20, modeles.size());
 		final Long id = modeles.get(0).getId();
 		for (int i = 0; i < 20; ++i) {

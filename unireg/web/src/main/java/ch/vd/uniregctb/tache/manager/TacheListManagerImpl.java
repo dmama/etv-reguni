@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.stream.Collectors;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +21,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.pagination.ParamPagination;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -79,7 +78,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	private AdresseService adresseService;
 	private ServiceSecuriteService serviceSecurite;
 	private EditiqueCompositionService editiqueService;
-	private ForkJoinPool forkJoinPool;
+	private ExecutorService threadPool;
 	private PlatformTransactionManager transactionManager;
 	private AutorisationCache autorisationCache;
 
@@ -111,8 +110,8 @@ public class TacheListManagerImpl implements TacheListManager {
 		this.editiqueService = editiqueService;
 	}
 
-	public void setForkJoinPool(ForkJoinPool forkJoinPool) {
-		this.forkJoinPool = forkJoinPool;
+	public void setThreadPool(ExecutorService threadPool) {
+		this.threadPool = threadPool;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -152,18 +151,7 @@ public class TacheListManagerImpl implements TacheListManager {
 		final List<Tache> taches = tacheDAO.find(coreCriteria, paramPagination);
 
 		// on les transforme dans leurs vues respectives en utilisant plusieurs threads
-		final ForkJoinTask<List<TacheListView>> task = forkJoinPool.submit(() -> {
-			//noinspection CodeBlock2Expr
-			return taches.stream()
-					.parallel()
-					.map(Tache::getId)
-					.map((tacheId) -> newTacheView(tacheId, currentPrincipal, currentOID))
-					.collect(Collectors.toList());
-		});
-
-		//noinspection UnnecessaryLocalVariable
-		final List<TacheListView> tachesView = task.join();
-		return tachesView;
+		return CollectionsUtils.parallelMap(taches, t -> newTacheView(t.getId(), currentPrincipal, currentOID), threadPool);
 	}
 
 	@NotNull

@@ -217,8 +217,9 @@
 
 	<!-- Beans du web-service v7 mais sans le end-point jaxrs -->
 
-	<bean id="wsThreadPoolv7" class="java.util.concurrent.ForkJoinPool">
-		<constructor-arg value="20"/> <!-- nombre maximum de threads -->
+	<bean id="wsThreadPoolv7" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+		<property name="corePoolSize" value="5"/> <!-- nombre minimum de threads -->
+		<property name="maxPoolSize" value="20"/> <!-- nombre maximum de threads -->
 	</bean>
 
 	<bean id="wsv7Access" class="ch.vd.uniregctb.webservices.v7.BusinessWebServiceAccessChecker">
@@ -260,7 +261,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
 		<property name="EFactureService" ref="efactureService"/>
-		<property name="forkJoinPool" ref="wsThreadPoolv7"/>
+		<property name="threadPool" ref="wsThreadPoolv7"/>
 		<property name="avatarService" ref="avatarService"/>
 		<property name="exerciceCommercialHelper" ref="exerciceCommercialHelper"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService"/>

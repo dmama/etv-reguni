@@ -14,17 +14,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.FlushMode;
@@ -95,6 +92,7 @@ import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -182,7 +180,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	private final Context context = new Context();
 	private GlobalTiersSearcher tiersSearcher;
-	private ForkJoinPool forkJoinPool;
+	private ExecutorService threadPool;
 	private AvatarService avatarService;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
@@ -269,8 +267,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		context.eFactureService = eFactureService;
 	}
 
-	public void setForkJoinPool(ForkJoinPool forkJoinPool) {
-		this.forkJoinPool = forkJoinPool;
+	public void setThreadPool(ExecutorService threadPool) {
+		this.threadPool = threadPool;
 	}
 
 	public void setAvatarService(AvatarService avatarService) {
@@ -306,17 +304,11 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	public SecurityListResponse getSecurityOnParties(@NotNull String user, @NotNull List<Integer> partyNos) {
 
 		// on charge les données sur plusieurs threads
-		final ForkJoinTask<SecurityListResponse> task = forkJoinPool.submit(() -> {
-			List<PartyAccess> partyAccesses = new HashSet<>(partyNos).stream()
-					.parallel()
-					.filter(Objects::nonNull)
-					.map((Integer partyNo) -> resolvePartyAccess(user, partyNo))
-					.sorted(Comparator.comparing(PartyAccess::getPartyNo))
-					.collect(Collectors.toList());
-			return new SecurityListResponse(user, partyAccesses);
-		});
+		final List<PartyAccess> partyAccesses = CollectionsUtils.parallelMap(partyNos, partyNo -> resolvePartyAccess(user, partyNo), threadPool);
 
-		return task.join();
+		// on retourne la liste triée
+		partyAccesses.sort(Comparator.comparing(PartyAccess::getPartyNo));
+		return new SecurityListResponse(user, partyAccesses);
 	}
 
 	@NotNull
@@ -977,7 +969,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		// on envoie la sauce sur plusieurs threads
-		final ExecutorCompletionService<Parties> executor = new ExecutorCompletionService<>(forkJoinPool);
+		final ExecutorCompletionService<Parties> executor = new ExecutorCompletionService<>(threadPool);
 		final BatchIterator<Integer> iterator = new StandardBatchIterator<>(nos, PARTIES_BATCH_SIZE);
 		int nbRemainingTasks = 0;
 		while (iterator.hasNext()) {
@@ -1119,17 +1111,14 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		// on charge les données sur plusieurs threads
-		final ForkJoinTask<ImmovablePropertyList> task = forkJoinPool.submit(() -> {
-			final List<ImmovablePropertyEntry> entries = new HashSet<>(immoIds).stream()
-					.parallel()
-					.filter(Objects::nonNull)
-					.map((Long immoId) -> executeInTx(currentPrincipal, currentOID, status -> resolveImmovablePropertyEntry(immoId)))
-					.sorted(Comparator.comparing(ImmovablePropertyEntry::getImmovablePropertyId))
-					.collect(Collectors.toList());
-			return new ImmovablePropertyList(entries);
-		});
+		final List<ImmovablePropertyEntry> entries = CollectionsUtils.parallelMap(immoIds, immoId -> {
+			//noinspection CodeBlock2Expr
+			return executeInTx(currentPrincipal, currentOID, status -> resolveImmovablePropertyEntry(immoId));
+		}, threadPool);
 
-		return task.join();
+		// on retourne la liste triée
+		entries.sort(Comparator.comparing(ImmovablePropertyEntry::getImmovablePropertyId));
+		return new ImmovablePropertyList(entries);
 	}
 
 	@NotNull
@@ -1176,17 +1165,14 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		// on charge les données sur plusieurs threads
-		final ForkJoinTask<BuildingList> task = forkJoinPool.submit(() -> {
-			final List<BuildingEntry> entries = new HashSet<>(buildingIds).stream()
-					.parallel()
-					.filter(Objects::nonNull)
-					.map((Long buildingId) -> executeInTx(currentPrincipal, currentOID, status -> resolveBuildingEntry(buildingId)))
-					.sorted(Comparator.comparing(BuildingEntry::getBuildingId))
-					.collect(Collectors.toList());
-			return new BuildingList(entries);
-		});
+		final List<BuildingEntry> entries = CollectionsUtils.parallelMap(buildingIds, buildingId -> {
+			//noinspection CodeBlock2Expr
+			return executeInTx(currentPrincipal, currentOID, status -> resolveBuildingEntry(buildingId));
+		}, threadPool);
 
-		return task.join();
+		// on retourne la liste triée
+		entries.sort(Comparator.comparing(BuildingEntry::getBuildingId));
+		return new BuildingList(entries);
 	}
 
 	private BuildingEntry resolveBuildingEntry(long batimentId) {
@@ -1230,17 +1216,14 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		}
 
 		// on charge les données sur plusieurs threads
-		final ForkJoinTask<CommunityOfOwnersList> task = forkJoinPool.submit(() -> {
-			final List<CommunityOfOwnersEntry> entries = new HashSet<>(communityIds).stream()
-					.parallel()
-					.filter(Objects::nonNull)
-					.map((Long communityId) -> executeInTx(currentPrincipal, currentOID, status -> resolveCommunityEntry(communityId)))
-					.sorted(Comparator.comparing(CommunityOfOwnersEntry::getCommunityOfOwnersId))
-					.collect(Collectors.toList());
-			return new CommunityOfOwnersList(entries);
-		});
+		final List<CommunityOfOwnersEntry> entries = CollectionsUtils.parallelMap(communityIds, communityId -> {
+			//noinspection CodeBlock2Expr
+			return executeInTx(currentPrincipal, currentOID, status -> resolveCommunityEntry(communityId));
+		}, threadPool);
 
-		return task.join();
+		// on retourne le résultat global
+		entries.sort(Comparator.comparing(CommunityOfOwnersEntry::getCommunityOfOwnersId));
+		return new CommunityOfOwnersList(entries);
 	}
 
 	private CommunityOfOwnersEntry resolveCommunityEntry(long communityId) {

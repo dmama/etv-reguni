@@ -22,8 +22,9 @@
 	</bean>
 
 	<!-- pool de threads à disposition des contrôleurs et des managers web -->
-	<bean id="webForkJoinPool" class="java.util.concurrent.ForkJoinPool">
-		<constructor-arg value="10"/>
+	<bean id="webThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+		<property name="corePoolSize" value="5"/> <!-- nombre minimum de threads -->
+		<property name="maxPoolSize" value="10"/> <!-- nombre maximum de threads -->
 	</bean>
 
 	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">

@@ -10,7 +10,7 @@
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="editiqueService" ref="editiqueCompositionService" />
 		<property name="tacheService" ref="tacheService"/>
-		<property name="forkJoinPool" ref="webForkJoinPool"/>
+		<property name="threadPool" ref="webThreadPool"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autorisationCache" ref="autorisationCache"/>
 	</bean>

@@ -10,6 +10,10 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.RandomAccess;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -365,6 +369,43 @@ public abstract class CollectionsUtils {
 		}
 		else {
 			return new ArrayList<>(coll);
+		}
+	}
+
+	/**
+	 * Transforme les éléments d'une collection en appliquant une fonction de mapping. La transformation est exécutée en parallèle sur plusieurs threads
+	 * (threads fournis par l'ExecutorService spécifié). Cette méthode est <b>compatible</b> avec les transactions Spring (à l'inverse du ForkJoinPool qui peut
+	 * faire du work-stealing et provoquer de graves problèmes avec les transactions Spring, voir SIFISC-27817).
+	 *
+	 * @param coll            une collection
+	 * @param mapper          une fonction de mapping
+	 * @param executorService un executorService
+	 * @param <T>             le type des éléments entrant
+	 * @param <R>             le type des éléments sortant
+	 * @return une list avec les éléments mappés.
+	 */
+	public static <T, R> List<R> parallelMap(@NotNull Collection<T> coll, @NotNull Function<? super T, ? extends R> mapper, @NotNull ExecutorService executorService) {
+
+		// on soumet les traitements asynchrones
+		final List<CompletableFuture<R>> futures = new ArrayList<>(coll.size());
+		coll.forEach(t -> {
+			final CompletableFuture<R> future = CompletableFuture.supplyAsync(() -> mapper.apply(t), executorService);
+			futures.add(future);
+		});
+
+		// on récupère le résultats des traitements asynchrones
+		final List<R> results = new ArrayList<>(coll.size());
+		futures.forEach(f -> results.add(getFuture(f)));
+
+		return results;
+	}
+
+	private static <T> T getFuture(CompletableFuture<T> f) {
+		try {
+			return f.get();
+		}
+		catch (InterruptedException | ExecutionException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }
