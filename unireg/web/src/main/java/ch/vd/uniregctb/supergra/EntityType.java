@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.supergra;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.DocumentFiscal;
+import ch.vd.uniregctb.documentfiscal.EtatDocumentFiscal;
 import ch.vd.uniregctb.tiers.DonneeCivileEntreprise;
 
 /**
@@ -11,9 +14,9 @@ public enum EntityType {
 	Tiers(ch.vd.uniregctb.tiers.Tiers.class, "tiers", "le tiers", "du tiers"),
 	ForFiscal(ch.vd.uniregctb.tiers.ForFiscal.class, "for fiscal", "le for fiscal", "du for fiscal"),
 	AdresseTiers(ch.vd.uniregctb.adresse.AdresseTiers.class, "adresse", "l'adresse", "de l'adresse"),
-	Declaration(ch.vd.uniregctb.declaration.Declaration.class, "déclaration", "la déclaration", "de la déclaration"),
-	EtatDeclaration(ch.vd.uniregctb.declaration.EtatDeclaration.class, "état de déclaration", "l'état de la déclaration", "de l'état de la déclaration"),
-	DelaiDeclaration(ch.vd.uniregctb.declaration.DelaiDeclaration.class, "délai de déclaration", "le délai de la déclaration", "du délai de la déclaration"),
+	DocumentFiscal(DocumentFiscal.class, "document fiscal", "le document fiscal", "du document fiscal"),
+	EtatDocument(EtatDocumentFiscal.class, "état du document", "l'état du document", "de l'état du document"),
+	DelaiDocument(DelaiDocumentFiscal.class, "délai du document", "le délai du document", "du délai du document"),
 	RapportEntreTiers(ch.vd.uniregctb.tiers.RapportEntreTiers.class, "rapport entre tiers", "le rapport entre tiers", "du rapport en tiers"),
 	IdentificationPersonne(ch.vd.uniregctb.tiers.IdentificationPersonne.class, "identification de personne", "l'identification de personne", "de l'identification de personne"),
 	IdentificationEntreprise(ch.vd.uniregctb.tiers.IdentificationEntreprise.class, "identification d'entreprise", "l'identification d'entreprise", "de l'identification d'entreprise"),
@@ -34,7 +37,6 @@ public enum EntityType {
 	EtatEntreprise(ch.vd.uniregctb.tiers.EtatEntreprise.class, "état", "l'état", "de l'état"),
 	FlagEntreprise(ch.vd.uniregctb.tiers.FlagEntreprise.class, "flag entreprise", "le flag entreprise", "du flag entreprise"),
 	AdresseMandataire(ch.vd.uniregctb.adresse.AdresseMandataire.class, "adresse mandataire", "l'adresse mandataire", "de l'adresse mandataire"),
-	AutreDocumentFiscal(ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal.class, "document fiscal", "le document fiscal", "du document fiscal"),
 	AyantDroitRF(ch.vd.uniregctb.registrefoncier.AyantDroitRF.class, "ayant-droit", "l'ayant-droit", "de l'ayant-droit"),
 	DroitRF(ch.vd.uniregctb.registrefoncier.DroitRF.class, "droit", "le droit", "du droit"),
 	ImmeubleRF(ch.vd.uniregctb.registrefoncier.ImmeubleRF.class, "immeuble", "l'immeuble", "de l'immeuble"),
