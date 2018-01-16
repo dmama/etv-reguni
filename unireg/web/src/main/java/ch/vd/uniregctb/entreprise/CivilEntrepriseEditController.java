@@ -316,9 +316,18 @@ public class CivilEntrepriseEditController {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de forme juridique.");
 		}
 
+		// on ajoute la forme juridique demandée
 		tiersService.addFormeJuridiqueFiscale(entreprise, view.getFormeJuridique(), view.getDateDebut(), view.getDateFin());
 
-		return "redirect:/civil/entreprise/edit.do?id=" + tiersId;// + buildHighlightForParam(newFor); plus tard
+		final DegreAssociationRegistreCivil degre = tiersService.determineDegreAssociationCivil(entreprise, view.getDateDebut());
+		if (degre == DegreAssociationRegistreCivil.CIVIL_ESCLAVE) {
+			// [SIFISC-22479] si l'entreprise ne peut plus être éditée fiscalement, on redirige vers la page de visulation
+			return "redirect:/tiers/visu.do?id=" + tiersId;
+		}
+		else {
+			// autrement, on continue l'édition
+			return "redirect:/civil/entreprise/edit.do?id=" + tiersId;// + buildHighlightForParam(newFor); plus tard
+		}
 	}
 
 	@RequestMapping(value = "/formejuridique/edit.do", method = RequestMethod.GET)
