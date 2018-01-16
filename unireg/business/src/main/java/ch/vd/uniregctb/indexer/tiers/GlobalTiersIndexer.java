@@ -2,6 +2,7 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.StatusManager;
@@ -77,7 +78,7 @@ public interface GlobalTiersIndexer {
 	 * @throws ch.vd.uniregctb.indexer.IndexerException
 	 *          si l'indexation n'a pas pu être faite.
 	 */
-	int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode) throws IndexerException;
+	int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, @NotNull Mode mode) throws IndexerException;
 
 	/**
 	 * <b>Note :</b> le switch n'est actif que sur le thread courant

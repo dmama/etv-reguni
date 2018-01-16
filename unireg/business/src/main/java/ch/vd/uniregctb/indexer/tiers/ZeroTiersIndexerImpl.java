@@ -2,6 +2,8 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -14,7 +16,7 @@ public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 	}
 
 	@Override
-	public int indexAllDatabase(StatusManager statusManager, int nbThreads, Mode mode) throws IndexerException {
+	public int indexAllDatabase(StatusManager statusManager, int nbThreads, @NotNull Mode mode) throws IndexerException {
 		return 0;
 	}
 

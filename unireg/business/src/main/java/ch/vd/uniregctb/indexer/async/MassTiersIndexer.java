@@ -4,6 +4,7 @@ import java.time.Duration;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -29,7 +30,7 @@ public class MassTiersIndexer {
 	private long totalUserTime;
 	private long totalExecTime;
 
-	public MassTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, int nbThreads, int queueByThreadSize, Mode mode,
+	public MassTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, int nbThreads, int queueByThreadSize, @NotNull Mode mode,
 	                        Dialect dialect, @Nullable ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
 		this(nbThreads, queueByThreadSize,
 		     new TiersIndexerWorker(false,                      // on indexe une liste précise de tiers, par besoin d'étendre l'indexation à d'autres tiers.

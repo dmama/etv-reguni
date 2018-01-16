@@ -8,6 +8,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -233,7 +234,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		final SessionFactory sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 		final GlobalTiersIndexerImpl indexer = new GlobalTiersIndexerImpl() {
 			@Override
-			protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread) {
+			protected MassTiersIndexer createMassTiersIndexer(int nbThreads, @NotNull Mode mode, int queueSizeByThread) {
 				return new MassTiersIndexer(nbThreads, queueSizeByThread, new BatchWorker<Long>() {
 					@Override
 					public void process(List<Long> data) throws Exception {

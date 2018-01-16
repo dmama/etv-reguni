@@ -221,7 +221,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	}
 
 	@Override
-	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode) throws
+	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, @NotNull Mode mode) throws
 			IndexerException {
 
 		if (statusManager == null) {
@@ -311,7 +311,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 	}
 
-	private int indexMultithreads(List<Long> list, int nbThreads, Mode mode, StatusManager statusManager) throws Exception {
+	private int indexMultithreads(List<Long> list, int nbThreads, @NotNull Mode mode, StatusManager statusManager) throws Exception {
 
 		LOGGER.info("ASYNC indexation de " + list.size() + " tiers par " + nbThreads + " threads en mode " + mode);
 
@@ -398,7 +398,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	 * @param queueSizeByThread         la taille maximale de la queue par thread
 	 * @return l'indexer de la classe {@link MassTiersIndexer}
 	 */
-	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread) {
+	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, @NotNull Mode mode, int queueSizeByThread) {
 		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect, serviceCivilCacheWarmer);
 	}
 
