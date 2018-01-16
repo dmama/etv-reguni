@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -46,7 +47,7 @@ public class OnTheFlyTiersIndexer {
 		this.dialect = dialect;
 
 		// Un queue bloquante de longueur illimitée
-		this.queue = new WorkingQueue<>(MIN_THREADS, new TiersIndexerWorker(null, indexer, sessionFactory, transactionManager, dialect, "OnTheFly", null));
+		this.queue = new WorkingQueue<>(MIN_THREADS, newTiersIndexerWorker());
 		this.queue.start();
 
 		// Démarre le monitoring de la queue
@@ -144,7 +145,6 @@ public class OnTheFlyTiersIndexer {
 
 			if (queueSize < LOW_LEVEL && threadSize > MIN_THREADS) {
 				// on enlève un thread
-				final int last = threadSize - 1;
 				try {
 					if (LOGGER.isTraceEnabled()) {
 						LOGGER.trace("Demande de suppression du dernier thread d'indexation...");
@@ -162,10 +162,15 @@ public class OnTheFlyTiersIndexer {
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Demande d'ajout d'un nouveau thread d'indexation...");
 				}
-				final String name = queue.addNewWorker(new TiersIndexerWorker(null, indexer, sessionFactory, transactionManager, dialect, "OnTheFly", null));
+				final String name = queue.addNewWorker(newTiersIndexerWorker());
 				LOGGER.info("Ajouté un thread d'indexation " + name + " (threadSize=" + (threadSize + 1) + ", queueSize=" + queueSize + ')');
 			}
 		}
+	}
+
+	@NotNull
+	private TiersIndexerWorker newTiersIndexerWorker() {
+		return new TiersIndexerWorker(true, true, indexer, sessionFactory, transactionManager, dialect, "OnTheFly", null);
 	}
 
 	public int getQueueSize() {
