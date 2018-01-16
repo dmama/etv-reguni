@@ -44,8 +44,17 @@ public interface GlobalTiersIndexer {
 	void sync();
 
 	enum Mode {
+		/**
+		 * Réindexe toute la population spécifiée.
+		 */
 		FULL,
-		INCREMENTAL,
+		/**
+		 * Réindexe les tiers qui manquent et supprime ceux en trop (par rapport à la DB)
+		 */
+		MISSING_ONLY,
+		/**
+		 * Réindexe les tiers flaggés comme <i>dirty</i> dans la DB.
+		 */
 		DIRTY_ONLY
 	}
 

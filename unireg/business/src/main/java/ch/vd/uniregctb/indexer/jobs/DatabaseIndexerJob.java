@@ -37,7 +37,7 @@ public class DatabaseIndexerJob extends JobDefinition {
 		param1.setName(MODE);
 		param1.setMandatory(true);
 		param1.setType(new JobParamEnum(Mode.class));
-		addParameterDefinition(param1, Mode.INCREMENTAL);
+		addParameterDefinition(param1, Mode.MISSING_ONLY);
 	}
 
 	@Override

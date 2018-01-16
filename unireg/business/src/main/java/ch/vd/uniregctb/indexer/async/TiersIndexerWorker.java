@@ -169,9 +169,9 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 			// de la base de données : les tiers liés vont de toutes façons se faire indexer pour eux-même.
 			final boolean followDependents = (mode == null);
 
-			// on n'enlève pas préalablement les données indexées en mode FULL et INCREMENTAL, parce que - par définition -
+			// on n'enlève pas préalablement les données indexées en mode FULL et MISSING_ONLY, parce que - par définition -
 			// ces données n'existent pas dans ces modes-là.
-			final boolean removeBefore = (mode != GlobalTiersIndexer.Mode.FULL && mode != GlobalTiersIndexer.Mode.INCREMENTAL);
+			final boolean removeBefore = (mode != GlobalTiersIndexer.Mode.FULL && mode != GlobalTiersIndexer.Mode.MISSING_ONLY);
 
 			indexer.indexTiers(tiers, removeBefore, followDependents);
 

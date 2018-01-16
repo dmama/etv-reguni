@@ -279,7 +279,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 					deltaIds = new DeltaIds(tiersDAO.getDirtyIds());
 					break;
 
-				case INCREMENTAL:
+				case MISSING_ONLY:
 					deltaIds = getIncrementalIds();
 					break;
 
