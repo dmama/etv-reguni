@@ -116,6 +116,128 @@ public class ServitudesRFHelperTest {
 	}
 
 	@Test
+	public void testEqualsUsufruitMultipleImmeublesOK() throws Exception {
+
+		final ImmeubleRF immeuble1 = new BienFondsRF();
+		immeuble1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
+
+		final ImmeubleRF immeuble2 = new BienFondsRF();
+		immeuble2.setIdRF("_1f109152380ffd8901380ffe15bb729d");
+
+		final ImmeubleRF immeuble3 = new BienFondsRF();
+		immeuble3.setIdRF("_1f109152380ffd8901380ffe15bb729e");
+
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setIdRF("_1f109152380ffd8901380ffdabcc2441");
+
+		final UsufruitRF usufruit = newUsufruit(immeuble1, pp, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
+		                                        "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
+		usufruit.addImmeuble(immeuble2);
+		usufruit.addImmeuble(immeuble3);
+
+		final BelastetesGrundstueck grundstueck1 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
+		final BelastetesGrundstueck grundstueck2 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729d", null, null);
+		final BelastetesGrundstueck grundstueck3 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729e", null, null);
+		final NatuerlichePersonGb natuerlichePerson = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
+		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
+		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(Arrays.asList(grundstueck1, grundstueck2, grundstueck3), Collections.singletonList(natuerlichePerson), dienstbarkeit);
+
+		assertTrue(ServitudesRFHelper.dataEquals(usufruit, discreteDienstbarkeit));
+	}
+
+	@Test
+	public void testEqualsUsufruitMultipleImmeublesKO() throws Exception {
+
+		final ImmeubleRF immeuble1 = new BienFondsRF();
+		immeuble1.setIdRF("_1f109152380ffd8901380ffe15bb729c");
+
+		final ImmeubleRF immeuble2 = new BienFondsRF();
+		immeuble2.setIdRF("_1f109152380ffd8901380ffe15bb729d");
+
+		final ImmeubleRF immeuble3 = new BienFondsRF();
+		immeuble3.setIdRF("_1f109152380ffd8901380ffe15bb729e");
+
+		final PersonnePhysiqueRF pp = new PersonnePhysiqueRF();
+		pp.setIdRF("_1f109152380ffd8901380ffdabcc2441");
+
+		final UsufruitRF usufruit = newUsufruit(immeuble1, pp, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
+		                                        "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
+		usufruit.addImmeuble(immeuble2);
+		usufruit.addImmeuble(immeuble3);
+
+		final BelastetesGrundstueck grundstueck1 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
+		final BelastetesGrundstueck grundstueck2 = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729d", null, null);
+		final BelastetesGrundstueck grundstueck3 = new BelastetesGrundstueck("urkkrur", null, null);
+		final NatuerlichePersonGb natuerlichePerson = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
+		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
+		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(Arrays.asList(grundstueck1, grundstueck2, grundstueck3), Collections.singletonList(natuerlichePerson), dienstbarkeit);
+
+		// un des trois immeubles n'est pas le même
+		assertFalse(ServitudesRFHelper.dataEquals(usufruit, discreteDienstbarkeit));
+	}
+
+	@Test
+	public void testEqualsUsufruitMultiplePersonnesOK() throws Exception {
+
+		final ImmeubleRF immeuble = new BienFondsRF();
+		immeuble.setIdRF("_1f109152380ffd8901380ffe15bb729c");
+
+		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
+		pp1.setIdRF("_1f109152380ffd8901380ffdabcc2441");
+
+		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
+		pp2.setIdRF("_1f109152380ffd8901380ffdabcc2442");
+
+		final PersonnePhysiqueRF pp3 = new PersonnePhysiqueRF();
+		pp3.setIdRF("_1f109152380ffd8901380ffdabcc2443");
+
+		final UsufruitRF usufruit = newUsufruit(immeuble, pp1, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
+		                                        "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
+		usufruit.addAyantDroit(pp2);
+		usufruit.addAyantDroit(pp3);
+
+		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
+		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
+		final NatuerlichePersonGb natuerlichePerson2 = newNatuerlichePersonGb("Robert", "Gaillard", "_1f109152380ffd8901380ffdabcc2442");
+		final NatuerlichePersonGb natuerlichePerson3 = newNatuerlichePersonGb("Jean", "Gaillard", "_1f109152380ffd8901380ffdabcc2443");
+		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
+		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(Collections.singletonList(grundstueck), Arrays.asList(natuerlichePerson1, natuerlichePerson2, natuerlichePerson3), dienstbarkeit);
+
+		assertTrue(ServitudesRFHelper.dataEquals(usufruit, discreteDienstbarkeit));
+	}
+
+	@Test
+	public void testEqualsUsufruitMultiplePersonnesKO() throws Exception {
+
+		final ImmeubleRF immeuble = new BienFondsRF();
+		immeuble.setIdRF("_1f109152380ffd8901380ffe15bb729c");
+
+		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
+		pp1.setIdRF("_1f109152380ffd8901380ffdabcc2441");
+
+		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
+		pp2.setIdRF("_1f109152380ffd8901380ffdabcc2442");
+
+		final PersonnePhysiqueRF pp3 = new PersonnePhysiqueRF();
+		pp3.setIdRF("bla bla bla");
+
+		final UsufruitRF usufruit = newUsufruit(immeuble, pp1, new IdentifiantDroitRF(8, 2005, 699), RegDate.get(2002, 9, 2), null,
+		                                        "1f109152380ffd8901380ffed6694392",  "1f109152380ffd8901380ffed66943a2", new IdentifiantAffaireRF(8, 2002, 392, null));
+		usufruit.addAyantDroit(pp2);
+		usufruit.addAyantDroit(pp3);
+
+		final BelastetesGrundstueck grundstueck = new BelastetesGrundstueck("_1f109152380ffd8901380ffe15bb729c", null, null);
+		final NatuerlichePersonGb natuerlichePerson1 = newNatuerlichePersonGb("Roger", "Gaillard", "_1f109152380ffd8901380ffdabcc2441");
+		final NatuerlichePersonGb natuerlichePerson2 = newNatuerlichePersonGb("Robert", "Gaillard", "_1f109152380ffd8901380ffdabcc2442");
+		final NatuerlichePersonGb natuerlichePerson3 = newNatuerlichePersonGb("Jean", "Gaillard", "_1f109152380ffd8901380ffdabcc2443");
+		final Dienstbarkeit dienstbarkeit = newDienstbarkeit("1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2", "_1f109152380ffd8901380ffed6694392", 2005, 699, 8, "Usufruit", "2002/392", null, RegDate.get(2002, 9, 2), null);
+		final DienstbarkeitExtendedElement discreteDienstbarkeit = newDienstbarkeitExtended(Collections.singletonList(grundstueck), Arrays.asList(natuerlichePerson1, natuerlichePerson2, natuerlichePerson3), dienstbarkeit);
+
+		// un des trois personnes n'est pas la même
+		assertFalse(ServitudesRFHelper.dataEquals(usufruit, discreteDienstbarkeit));
+	}
+
+	@Test
 	public void testEqualsDroitHabitation() throws Exception {
 
 		final ImmeubleRF immeuble = new BienFondsRF();

@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.registrefoncier.dataimport.helper;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -113,12 +116,83 @@ public class ServitudesRFHelper {
 	}
 
 	private static boolean equalsServitude(@NotNull ServitudeRF left, @NotNull ServitudeRF right) {
-		return Objects.equals(left.getIdentifiantDroit(), right.getIdentifiantDroit()) &&
+
+		final boolean baseEquals = Objects.equals(left.getIdentifiantDroit(), right.getIdentifiantDroit()) &&
 				numeroAffaireEquals(left.getNumeroAffaire(), right.getNumeroAffaire()) &&
 				left.getDateDebutMetier() == right.getDateDebutMetier() &&
 				left.getDateFinMetier() == right.getDateFinMetier() &&
 				Objects.equals(left.getMotifDebut(), right.getMotifDebut()) &&
 				Objects.equals(left.getMotifFin(), right.getMotifFin());
+		if (!baseEquals) {
+			return false;
+		}
+
+		// [SIFISC-27523] on vérifie que les listes d'ayants-droit et d'immeubles sont les mêmes
+		return ayantDroitsEquals(left.getAyantDroits(), right.getAyantDroits()) &&
+				immeublesEquals(left.getImmeubles(), right.getImmeubles());
+	}
+
+	/**
+	 * @param left  une collection d'ayants-droits (une collection nulle est assimilée à une collection vide)
+	 * @param right une autre collection d'ayants-droits (une collection nulle est assimilée à une collection vide)
+	 * @return <b>vrai</b> si les deux collections possèdent les mêmes ayants-droits (= les mêmes ID RF); <b>faux</b> autrement.
+	 */
+	private static boolean ayantDroitsEquals(@Nullable Collection<AyantDroitRF> left, @Nullable Collection<AyantDroitRF> right) {
+
+		if (left == null) {
+			left = Collections.emptyList();
+		}
+		if (right == null) {
+			right = Collections.emptyList();
+		}
+
+		if (left.size() != right.size()) {
+			return false;
+		}
+
+		final List<AyantDroitRF> sortedLeft = new ArrayList<>(left);
+		sortedLeft.sort(Comparator.comparing(AyantDroitRF::getIdRF));
+
+		final List<AyantDroitRF> sortedRight = new ArrayList<>(right);
+		sortedRight.sort(Comparator.comparing(AyantDroitRF::getIdRF));
+
+		for (int i = 0; i < sortedLeft.size(); i++) {
+			final AyantDroitRF l = sortedLeft.get(i);
+			final AyantDroitRF r = sortedRight.get(i);
+			if (!l.getIdRF().equals(r.getIdRF())) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param left  une collection d'immeubles
+	 * @param right une autre collection d'immeubles
+	 * @return <b>vrai</b> si les deux collections possèdent les mêmes immeubles (= les mêmes ID RF); <b>faux</b> autrement.
+	 */
+	private static boolean immeublesEquals(@NotNull Collection<ImmeubleRF> left, @NotNull Collection<ImmeubleRF> right) {
+
+		if (left.size() != right.size()) {
+			return false;
+		}
+
+		final List<ImmeubleRF> sortedLeft = new ArrayList<>(left);
+		sortedLeft.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+
+		final List<ImmeubleRF> sortedRight = new ArrayList<>(right);
+		sortedRight.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+
+		for (int i = 0; i < sortedLeft.size(); i++) {
+			final ImmeubleRF l = sortedLeft.get(i);
+			final ImmeubleRF r = sortedRight.get(i);
+			if (!l.getIdRF().equals(r.getIdRF())) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	@NotNull
