@@ -152,6 +152,10 @@ public abstract class ImmeubleRFHelper {
 		return true;
 	}
 
+	public static boolean idRFEquals(@NotNull ImmeubleRF left, @NotNull ImmeubleRF right) {
+		return Objects.equals(left.getIdRF(), right.getIdRF());
+	}
+
 	@NotNull
 	public static ImmeubleRFKey newImmeubleRFKey(@NotNull Grundstueck immeuble) {
 		return new ImmeubleRFKey(immeuble.getGrundstueckID());

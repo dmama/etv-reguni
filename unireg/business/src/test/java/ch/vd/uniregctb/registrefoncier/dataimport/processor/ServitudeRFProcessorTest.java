@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.mutable.MutableLong;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.ResourceUtils;
@@ -31,7 +30,6 @@ import ch.vd.uniregctb.evenement.registrefoncier.TypeEntiteRF;
 import ch.vd.uniregctb.evenement.registrefoncier.TypeMutationRF;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.BienFondsRF;
-import ch.vd.uniregctb.registrefoncier.DroitRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantAffaireRF;
 import ch.vd.uniregctb.registrefoncier.IdentifiantDroitRF;
 import ch.vd.uniregctb.registrefoncier.ImmeubleRF;
@@ -226,33 +224,31 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 	}
 
 	/*
-	 * Ce test vérifie que le processing d'une mutation de modification de droits fonctionne bien.
+	 * Ce test vérifie que le processing d'une mutation de modification de droits fonctionne bien quand il y a un ayant-droit et un immeuble en plus.
 	 */
-	// FIXME (msi)
-	@Ignore(value = "Ignoré car il n'est pas du clair si une servitude peut changer au court du temps")
 	@Test
-	public void testProcessMutationModification() throws Exception {
+	public void testProcessMutationModificationElementsEnPlus() throws Exception {
 
-		final String idPPRF1 = "_1f1091523810375901381037f42e3142";
-		final String idPPRF2 = "_1f109152381037590138103835995c0d";
-		final String idImmeubleRF1 = "_1f109152381037590138103b6f6e3cfa";
+		final String idPPRF1 = "_1f109152380ffd8901380ffdabcc2441";
+		final String idPPRF2 = "_1f109152380ffd8901380ffda8131c65";
+		final String idImmeubleRF1 = "_1f109152380ffd8901380ffe15bb729c";
 		final String idImmeubleRF2 = "_1f109152381037590138103b6f6e3cfc";
 		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
 
-		// précondition : il y a déjà deux usufruits dans la base de données
-		final Long ppId = doInNewTransaction(status -> {
+		// précondition : il y a déjà un usufruit avec un ayant-droit et un immeuble dans la base de données
+		final Long usuId = doInNewTransaction(status -> {
 
 			PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
 			pp1.setIdRF(idPPRF1);
-			pp1.setNom("Porchet");
-			pp1.setPrenom("Jean-Jacques");
+			pp1.setNom("Gaillard");
+			pp1.setPrenom("Roger");
 			pp1.setDateNaissance(RegDate.get(1900, 1, 1));
 			pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
 
 			PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
 			pp2.setIdRF(idPPRF2);
-			pp2.setNom("Porchet");
-			pp2.setPrenom("Jeanne");
+			pp2.setNom("Lassueur");
+			pp2.setPrenom("Anne-Lise");
 			pp2.setDateNaissance(RegDate.get(1900, 1, 1));
 			ayantDroitRFDAO.save(pp2);
 
@@ -264,38 +260,28 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 			immeuble2.setIdRF(idImmeubleRF2);
 			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
 
-			// un usufruit différent de celui qui arrive dans le fichier XML
-			final UsufruitRF usu0 = new UsufruitRF();
-			usu0.setMasterIdRF("1f1091523810375901381044fa823515");
-			usu0.setDateDebut(null);
-			usu0.setMotifDebut(null);
-			usu0.setDateDebutMetier(RegDate.get(2010, 3, 8));
-			usu0.setNumeroAffaire(new IdentifiantAffaireRF(5, 2010, 731, 666));   // <- index différent
-			usu0.setIdentifiantDroit(new IdentifiantDroitRF(5, 2010, 432));
-			usu0.addAyantDroit(pp1);
-			usu0.addImmeuble(immeuble1);
-			droitRFDAO.save(usu0);
+			// un usufruit avec seulement un ayant-droit et un immeuble
+			UsufruitRF usu = new UsufruitRF();
+			usu.setMasterIdRF("1f109152380ffd8901380ffed6694392");
+			usu.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
+			usu.setDateDebut(null);
+			usu.setMotifDebut(null);
+			usu.setDateDebutMetier(RegDate.get(2002, 9, 2));
+			usu.setDateFinMetier(RegDate.get(2111, 2, 23));
+			usu.setNumeroAffaire(new IdentifiantAffaireRF(8, "2002/392"));
+			usu.setIdentifiantDroit(new IdentifiantDroitRF(8, 2005, 699));
+			usu.addAyantDroit(pp1);
+			usu.addImmeuble(immeuble1);
+			usu = (UsufruitRF) droitRFDAO.save(usu);
 
-			// un usufruit identique à celui qui arrive dans le fichier XML
-			final UsufruitRF usu1 = new UsufruitRF();
-			usu1.setMasterIdRF("1f1091523810375901381044fa823515");
-			usu1.setDateDebut(null);
-			usu1.setMotifDebut(null);
-			usu1.setDateDebutMetier(RegDate.get(2010, 3, 8));
-			usu1.setNumeroAffaire(new IdentifiantAffaireRF(5, 2010, 731, 0));
-			usu1.setIdentifiantDroit(new IdentifiantDroitRF(5, 2010, 432));
-			usu1.addAyantDroit(pp1);
-			usu1.addImmeuble(immeuble2);
-			droitRFDAO.save(usu1);
-
-			return pp1.getId();
+			return usu.getId();
 		});
 
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_servitude_rf.xml");
 		final String xml = FileUtils.readFileToString(file, "UTF-8");
 
 		// on insère la mutation dans la base
-		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.SERVITUDE, TypeMutationRF.MODIFICATION, idPPRF1, null);
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.SERVITUDE, TypeMutationRF.MODIFICATION, "1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2");
 
 		// on process la mutation
 		doInNewTransaction(status -> {
@@ -305,67 +291,158 @@ public class ServitudeRFProcessorTest extends MutationRFProcessorTestCase {
 		});
 
 		// postcondition : la mutation est traitée et :
-		//  - le usu0 est fermé
-		//  - le usu1 est inchangé
-		//  - un nouveau usufruit est créé
+		//  - un nouvel ayant-droit est ajouté
+		//  - un nouvel immeuble est ajouté
 		doInNewTransaction(status -> {
 
-			final PersonnePhysiqueRF pp = (PersonnePhysiqueRF) ayantDroitRFDAO.get(ppId);
-			assertNotNull(pp);
+			final UsufruitRF usu = (UsufruitRF) droitRFDAO.get(usuId);
+			assertNotNull(usu);
 
-			final Set<ServitudeRF> servitudes = pp.getServitudes();
-			assertNotNull(servitudes);
-			assertEquals(3, servitudes.size());
+			// les propriétés de base sont inchangées
+			assertEquals("1f109152380ffd8901380ffed6694392", usu.getMasterIdRF());
+			assertEquals("1f109152380ffd8901380ffed66943a2", usu.getVersionIdRF());
+			assertNull(usu.getDateDebut());
+			assertNull(usu.getDateFin());
+			assertNull(usu.getMotifDebut());
+			assertEquals(RegDate.get(2002, 9, 2), usu.getDateDebutMetier());
+			assertEquals(RegDate.get(2111, 2, 23), usu.getDateFinMetier());
+			assertEquals(new IdentifiantAffaireRF(8, "2002/392"), usu.getNumeroAffaire());
+			assertEquals(new IdentifiantDroitRF(8, 2005, 699), usu.getIdentifiantDroit());
 
-			final List<DroitRF> servitudesList = new ArrayList<>(servitudes);
-			servitudesList.sort(Comparator.naturalOrder());
+			// il y a un ayant-droit de plus
+			final List<AyantDroitRF> ayantDroits = new ArrayList<>(usu.getAyantDroits());
+			assertEquals(2, ayantDroits.size());
+			ayantDroits.sort(Comparator.comparing(AyantDroitRF::getIdRF));
+			assertEquals("_1f109152380ffd8901380ffda8131c65", ayantDroits.get(0).getIdRF());
+			assertEquals("_1f109152380ffd8901380ffdabcc2441", ayantDroits.get(1).getIdRF());
 
-			// le usu0 doit être fermé
-			final UsufruitRF usufruit0 = (UsufruitRF) servitudesList.get(0);
-			assertNotNull(usufruit0);
-			assertEquals("1f1091523810375901381044fa823515", usufruit0.getMasterIdRF());
-			assertNull(usufruit0.getDateDebut());
-			assertEquals(dateSecondImport.getOneDayBefore(), usufruit0.getDateFin());
-			assertNull(usufruit0.getMotifDebut());
-			assertEquals(RegDate.get(2010, 3, 8), usufruit0.getDateDebutMetier());
-			assertNull(usufruit0.getDateFinMetier());
-			assertEquals(new IdentifiantAffaireRF(5, 2010, 731, 666), usufruit0.getNumeroAffaire());
-			assertEquals(new IdentifiantDroitRF(5, 2010, 432), usufruit0.getIdentifiantDroit());
+			// il y a un immeuble de plus
+			final List<ImmeubleRF> immeubles = new ArrayList<>(usu.getImmeubles());
+			assertEquals(2, immeubles.size());
+			immeubles.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+			assertEquals("_1f109152380ffd8901380ffe15bb729c", immeubles.get(0).getIdRF());
+			assertEquals("_1f109152381037590138103b6f6e3cfc", immeubles.get(1).getIdRF());
 
-			final Set<ImmeubleRF> immeubles0 = usufruit0.getImmeubles();
-			assertEquals(1, immeubles0.size());
-			assertEquals("_1f109152381037590138103b6f6e3cfa", immeubles0.iterator().next().getIdRF());
+			return null;
+		});
+	}
+	
+	/*
+	 * Ce test vérifie que le processing d'une mutation de modification de droits fonctionne bien quand il y a un ayant-droit et un immeuble en moins.
+	 */
+	@Test
+	public void testProcessMutationModificationElementsEnMoins() throws Exception {
 
-			// un nouveau usufruit doit remplacer le usu1
-			final UsufruitRF usufruit1 = (UsufruitRF) servitudesList.get(1);
-			assertNotNull(usufruit1);
-			assertEquals("1f1091523810375901381044fa823515", usufruit1.getMasterIdRF());
-			assertEquals(dateSecondImport, usufruit1.getDateDebut());
-			assertNull(usufruit1.getDateFin());
-			assertNull(usufruit1.getMotifDebut());
-			assertEquals(RegDate.get(2010, 3, 8), usufruit1.getDateDebutMetier());
-			assertNull(usufruit1.getDateFinMetier());
-			assertEquals(new IdentifiantAffaireRF(5, 2010, 731, 0), usufruit1.getNumeroAffaire());
-			assertEquals(new IdentifiantDroitRF(5, 2010, 432), usufruit1.getIdentifiantDroit());
+		final String idPPRF1 = "_1f109152380ffd8901380ffdabcc2441";
+		final String idPPRF2 = "_1f109152380ffd8901380ffda8131c65";
+		final String idPPRF3 = "34893489438934";
+		final String idImmeubleRF1 = "_1f109152380ffd8901380ffe15bb729c";
+		final String idImmeubleRF2 = "_1f109152381037590138103b6f6e3cfc";
+		final String idImmeubleRF3 = "e2392390390";
+		final RegDate dateSecondImport = RegDate.get(2016, 10, 1);
 
-			final Set<ImmeubleRF> immeubles1 = usufruit1.getImmeubles();
-			assertEquals(1, immeubles1.size());
-			assertEquals("_1f109152381037590138103b6f6e3cfa", immeubles1.iterator().next().getIdRF());
+		// précondition : il y a déjà un usufruit avec trois ayants-droits et trois immeubles dans la base de données
+		final Long usuId = doInNewTransaction(status -> {
 
-			// le dernier usufruit reste inchangé
-			final UsufruitRF usufruit2 = (UsufruitRF) servitudesList.get(2);
-			assertNotNull(usufruit2);
-			assertEquals("1f1091523810375901381044fa823515", usufruit2.getMasterIdRF());
-			assertNull(usufruit2.getDateDebut());
-			assertNull(usufruit2.getDateFin());
-			assertNull(usufruit2.getMotifDebut());
-			assertEquals(RegDate.get(2010, 3, 8), usufruit2.getDateDebutMetier());
-			assertNull(usufruit2.getDateFinMetier());
-			assertEquals(new IdentifiantAffaireRF(5, 2010, 731, 0), usufruit2.getNumeroAffaire());
-			assertEquals(new IdentifiantDroitRF(5, 2010, 432), usufruit2.getIdentifiantDroit());
-			final Set<ImmeubleRF> immeubles2 = usufruit2.getImmeubles();
-			assertEquals(2, immeubles2.size());
-			assertEquals("_1f109152381037590138103b6f6e3cfc", immeubles2.iterator().next().getIdRF());
+			PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
+			pp1.setIdRF(idPPRF1);
+			pp1.setNom("Gaillard");
+			pp1.setPrenom("Roger");
+			pp1.setDateNaissance(RegDate.get(1900, 1, 1));
+			pp1 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp1);
+
+			PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
+			pp2.setIdRF(idPPRF2);
+			pp2.setNom("Lassueur");
+			pp2.setPrenom("Anne-Lise");
+			pp2.setDateNaissance(RegDate.get(1900, 1, 1));
+			pp2 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp2);
+
+			PersonnePhysiqueRF pp3 = new PersonnePhysiqueRF();
+			pp3.setIdRF(idPPRF3);
+			pp3.setNom("Muche");
+			pp3.setPrenom("Truc");
+			pp3.setDateNaissance(RegDate.get(1900, 1, 1));
+			pp3 = (PersonnePhysiqueRF) ayantDroitRFDAO.save(pp3);
+
+			BienFondsRF immeuble1 = new BienFondsRF();
+			immeuble1.setIdRF(idImmeubleRF1);
+			immeuble1 = (BienFondsRF) immeubleRFDAO.save(immeuble1);
+
+			BienFondsRF immeuble2 = new BienFondsRF();
+			immeuble2.setIdRF(idImmeubleRF2);
+			immeuble2 = (BienFondsRF) immeubleRFDAO.save(immeuble2);
+
+			BienFondsRF immeuble3 = new BienFondsRF();
+			immeuble3.setIdRF(idImmeubleRF3);
+			immeuble3 = (BienFondsRF) immeubleRFDAO.save(immeuble3);
+
+			// un usufruit avec trois ayants-droit et trois immeubles (au lieu de 2 * 2 dans le XML)
+			UsufruitRF usu = new UsufruitRF();
+			usu.setMasterIdRF("1f109152380ffd8901380ffed6694392");
+			usu.setVersionIdRF("1f109152380ffd8901380ffed66943a2");
+			usu.setDateDebut(null);
+			usu.setMotifDebut(null);
+			usu.setDateDebutMetier(RegDate.get(2002, 9, 2));
+			usu.setDateFinMetier(RegDate.get(2111, 2, 23));
+			usu.setNumeroAffaire(new IdentifiantAffaireRF(8, "2002/392"));
+			usu.setIdentifiantDroit(new IdentifiantDroitRF(8, 2005, 699));
+			usu.addAyantDroit(pp1);
+			usu.addAyantDroit(pp2);
+			usu.addAyantDroit(pp3);
+			usu.addImmeuble(immeuble1);
+			usu.addImmeuble(immeuble2);
+			usu.addImmeuble(immeuble3);
+			usu = (UsufruitRF) droitRFDAO.save(usu);
+
+			return usu.getId();
+		});
+
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/registrefoncier/processor/mutation_servitude_rf.xml");
+		final String xml = FileUtils.readFileToString(file, "UTF-8");
+
+		// on insère la mutation dans la base
+		final Long mutationId = insertMutation(xml, dateSecondImport, TypeEntiteRF.SERVITUDE, TypeMutationRF.MODIFICATION, "1f109152380ffd8901380ffed6694392", "1f109152380ffd8901380ffed66943a2");
+
+		// on process la mutation
+		doInNewTransaction(status -> {
+			final EvenementRFMutation mutation = evenementRFMutationDAO.get(mutationId);
+			processor.process(mutation, false, null);
+			return null;
+		});
+
+		// postcondition : la mutation est traitée et :
+		//  - l'ayant-droit en trop a été supprimé
+		//  - l'immeuble en trop a été supprimé
+		doInNewTransaction(status -> {
+
+			final UsufruitRF usu = (UsufruitRF) droitRFDAO.get(usuId);
+			assertNotNull(usu);
+
+			// les propriétés de base sont inchangées
+			assertEquals("1f109152380ffd8901380ffed6694392", usu.getMasterIdRF());
+			assertEquals("1f109152380ffd8901380ffed66943a2", usu.getVersionIdRF());
+			assertNull(usu.getDateDebut());
+			assertNull(usu.getDateFin());
+			assertNull(usu.getMotifDebut());
+			assertEquals(RegDate.get(2002, 9, 2), usu.getDateDebutMetier());
+			assertEquals(RegDate.get(2111, 2, 23), usu.getDateFinMetier());
+			assertEquals(new IdentifiantAffaireRF(8, "2002/392"), usu.getNumeroAffaire());
+			assertEquals(new IdentifiantDroitRF(8, 2005, 699), usu.getIdentifiantDroit());
+
+			// l'ayant-droit en plus a disparu
+			final List<AyantDroitRF> ayantDroits = new ArrayList<>(usu.getAyantDroits());
+			assertEquals(2, ayantDroits.size());
+			ayantDroits.sort(Comparator.comparing(AyantDroitRF::getIdRF));
+			assertEquals("_1f109152380ffd8901380ffda8131c65", ayantDroits.get(0).getIdRF());
+			assertEquals("_1f109152380ffd8901380ffdabcc2441", ayantDroits.get(1).getIdRF());
+
+			// l'immeuble en plus a disparu
+			final List<ImmeubleRF> immeubles = new ArrayList<>(usu.getImmeubles());
+			assertEquals(2, immeubles.size());
+			immeubles.sort(Comparator.comparing(ImmeubleRF::getIdRF));
+			assertEquals("_1f109152380ffd8901380ffe15bb729c", immeubles.get(0).getIdRF());
+			assertEquals("_1f109152381037590138103b6f6e3cfc", immeubles.get(1).getIdRF());
 
 			return null;
 		});

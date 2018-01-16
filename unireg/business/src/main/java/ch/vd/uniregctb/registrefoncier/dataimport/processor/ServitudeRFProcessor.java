@@ -2,6 +2,8 @@ package ch.vd.uniregctb.registrefoncier.dataimport.processor;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.camel.converter.jaxp.StringSource;
@@ -10,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.registrefoncier.EtatEvenementRF;
 import ch.vd.uniregctb.evenement.registrefoncier.EvenementRFMutation;
@@ -26,6 +28,8 @@ import ch.vd.uniregctb.registrefoncier.dao.ImmeubleRFDAO;
 import ch.vd.uniregctb.registrefoncier.dataimport.MutationsRFProcessorResults;
 import ch.vd.uniregctb.registrefoncier.dataimport.XmlHelperRF;
 import ch.vd.uniregctb.registrefoncier.dataimport.elements.servitude.DienstbarkeitExtendedElement;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.AyantDroitRFHelper;
+import ch.vd.uniregctb.registrefoncier.dataimport.helper.ImmeubleRFHelper;
 import ch.vd.uniregctb.registrefoncier.dataimport.helper.ServitudesRFHelper;
 import ch.vd.uniregctb.registrefoncier.key.AyantDroitRFKey;
 import ch.vd.uniregctb.registrefoncier.key.DroitRFKey;
@@ -166,13 +170,64 @@ public class ServitudeRFProcessor implements MutationRFProcessor {
 	 */
 	private void processModification(@NotNull RegDate dateValeur, @NotNull ServitudeRF servitude) {
 
-		final DroitRF persisted = droitRFDAO.find(new DroitRFKey(servitude));
-		if (persisted == null) {
+		final DroitRF p = droitRFDAO.find(new DroitRFKey(servitude));
+		if (p == null) {
 			throw new IllegalArgumentException("La servitude idRF=[" + servitude.getMasterIdRF() + "] versionRF=[" + servitude.getVersionIdRF() + "] n'existe pas dans la DB.");
 		}
+		if (!(p instanceof ServitudeRF)) {
+			throw new IllegalArgumentException("Le droit idRF=[" + servitude.getMasterIdRF() + "] versionRF=[" + servitude.getVersionIdRF() + "] ne correspond pas à une servitude dans la DB.");
+		}
+		final ServitudeRF persisted = (ServitudeRF) p;
 
-		// FIXME (msi) que faire ?
-		throw new NotImplementedException();
+		// on met-à-jour la servitude persistée (sans gestion de l'historique pour l'instant, ça sera fait dans le SIFISC-27574)
+		persisted.setIdentifiantDroit(servitude.getIdentifiantDroit());
+		persisted.setNumeroAffaire(servitude.getNumeroAffaire());
+		persisted.setDateDebutMetier(servitude.getDateDebutMetier());
+		persisted.setDateFinMetier(servitude.getDateFinMetier());
+		persisted.setMotifDebut(servitude.getMotifDebut());
+		persisted.setMotifFin(servitude.getMotifFin());
+
+		// changement sur les ayants-droits
+		{
+
+			// on détermine les changements
+			final List<AyantDroitRF> toAddList = new LinkedList<>(servitude.getAyantDroits());
+			final List<AyantDroitRF> toRemoveList = new LinkedList<>(persisted.getAyantDroits());
+			CollectionsUtils.removeCommonElements(toAddList, toRemoveList, AyantDroitRFHelper::idRFEquals);  // on enlève des deux listes tous les ayants-droits identiques
+
+			// on applique les changements
+			toAddList.forEach(a -> {
+				persisted.addAyantDroit(a);
+				a.addServitude(persisted);
+			});
+			toRemoveList.forEach(a -> {
+				persisted.getAyantDroits().remove(a);
+				a.getServitudes().remove(persisted);
+			});
+		}
+
+		// changement sur les immeubles
+		{
+			final Set<ImmeubleRF> persistedImmeubles = persisted.getImmeubles();
+
+			// on détermine les changements
+			final List<ImmeubleRF> toAddList = new LinkedList<>(servitude.getImmeubles());
+			final List<ImmeubleRF> toRemoveList = new LinkedList<>(persistedImmeubles);
+			CollectionsUtils.removeCommonElements(toAddList, toRemoveList, ImmeubleRFHelper::idRFEquals);  // on enlève des deux listes tous les immeubles identiques
+
+			// on applique les changements
+			toAddList.forEach(i -> {
+				persisted.addImmeuble(i);
+				i.addServitude(persisted);
+			});
+			toRemoveList.forEach(i -> {
+				persisted.getImmeubles().remove(i);
+				i.getServitudes().remove(persisted);
+			});
+		}
+
+		// on publie l'événement fiscal correspondant
+		evenementFiscalService.publierModificationServitude(dateValeur, persisted);
 	}
 
 	/**

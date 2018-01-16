@@ -227,6 +227,10 @@ public abstract class AyantDroitRFHelper {
 				Objects.equals(left.getRaisonSociale(), right.getName());
 	}
 
+	public static boolean idRFEquals(@NotNull AyantDroitRF left, @NotNull AyantDroitRF right) {
+		return Objects.equals(left.getIdRF(), right.getIdRF());
+	}
+
 	public static AyantDroitRFKey newAyantDroitKey(@NotNull Rechteinhaber rechteinhaber) {
 		if (rechteinhaber instanceof Personstamm) {
 			return new AyantDroitRFKey(((Personstamm) rechteinhaber).getPersonstammID());

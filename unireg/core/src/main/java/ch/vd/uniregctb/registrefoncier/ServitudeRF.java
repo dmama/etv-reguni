@@ -62,6 +62,7 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 		this.numeroAffaire = (right.numeroAffaire == null ? null : new IdentifiantAffaireRF(right.numeroAffaire));
 	}
 
+	// configuration hibernate : la servitude possède les ayants-droit
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "RF_SERVITUDE_AYANT_DROIT",
 			joinColumns = @JoinColumn(name = "DROIT_ID"),
@@ -82,6 +83,7 @@ public abstract class ServitudeRF extends DroitRF implements Duplicable<Servitud
 		this.ayantDroits.add(ayantDroit);
 	}
 
+	// configuration hibernate : la servitude possède les immeubles
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "RF_SERVITUDE_IMMEUBLE",
 			joinColumns = @JoinColumn(name = "DROIT_ID"),
