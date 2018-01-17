@@ -63,6 +63,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public List<Long> getAllIdsFor(boolean includeCancelled, @Nullable Collection<TypeTiers> types) {
+		return target.getAllIdsFor(includeCancelled, types);
+	}
+
+	@Override
 	public List<Tiers> getAll() {
 		return target.getAll();
 	}

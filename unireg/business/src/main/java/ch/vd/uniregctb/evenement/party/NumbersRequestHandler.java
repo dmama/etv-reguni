@@ -1,11 +1,12 @@
 package ch.vd.uniregctb.evenement.party;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.core.io.ClassPathResource;
@@ -49,7 +50,7 @@ public class NumbersRequestHandler implements RequestHandlerV1<NumbersRequest> {
 
 		// on récupère les ids demandés
 		final List<PartyType> types = request.getTypes();
-		final TypeTiers[] tiersTypes = party2tiers(types);
+		final Set<TypeTiers> tiersTypes = party2tiers(types);
 		final Date time = DateHelper.getCurrentDate();
 		final List<Long> ids = tiersDAO.getAllIdsFor(request.isIncludeCancelled(), tiersTypes);
 
@@ -85,15 +86,15 @@ public class NumbersRequestHandler implements RequestHandlerV1<NumbersRequest> {
 	}
 
 	@Nullable
-	private static TypeTiers[] party2tiers(@Nullable List<PartyType> types) {
+	private static Set<TypeTiers> party2tiers(@Nullable List<PartyType> types) {
 		if (types == null || types.isEmpty()) {
 			return null;
 		}
-		final List<TypeTiers> party = new ArrayList<>();
+		final Set<TypeTiers> party = new HashSet<>();
 		for (PartyType type : types) {
 			party.addAll(party2tiers(type));
 		}
-		return party.toArray(new TypeTiers[party.size()]);
+		return party;
 	}
 
 	private static List<TypeTiers> party2tiers(PartyType type) {

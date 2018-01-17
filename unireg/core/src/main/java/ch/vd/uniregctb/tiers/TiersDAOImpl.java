@@ -615,6 +615,11 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Long> getAllIdsFor(boolean includeCancelled, TypeTiers... types) {
+		return getAllIdsFor(includeCancelled, types == null ? null : Arrays.asList(types));
+	}
+
+	@Override
+	public List<Long> getAllIdsFor(boolean includeCancelled, @Nullable Collection<TypeTiers> types) {
 		final StringBuilder whereClause = new StringBuilder();
 		whereClause.append("where 1=1");
 
@@ -624,7 +629,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 
 		// conditions sur les types
-		if (types != null && types.length != 0) {
+		if (types != null && !types.isEmpty()) {
 			whereClause.append(" and tiers.class in (");
 			boolean first = true;
 			for (TypeTiers t : types) {

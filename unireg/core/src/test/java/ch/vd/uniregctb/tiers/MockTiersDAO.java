@@ -111,6 +111,11 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public List<Long> getAllIdsFor(boolean includeCancelled, @Nullable Collection<TypeTiers> types) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<Long> getDirtyIds() {
 		throw new NotImplementedException();
 	}
