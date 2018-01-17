@@ -1,12 +1,15 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.tiers.TypeTiers;
 
 public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 
@@ -17,6 +20,11 @@ public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 
 	@Override
 	public int indexAllDatabase(@NotNull Mode mode, int nbThreads, StatusManager statusManager) throws IndexerException {
+		return 0;
+	}
+
+	@Override
+	public int indexAllDatabase(@NotNull GlobalTiersIndexer.Mode mode, @NotNull Set<TypeTiers> typesTiers, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException {
 		return 0;
 	}
 
