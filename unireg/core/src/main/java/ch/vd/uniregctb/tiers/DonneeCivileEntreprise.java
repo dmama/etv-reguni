@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -61,8 +62,11 @@ public abstract class DonneeCivileEntreprise extends HibernateDateRangeEntity im
 		this.id = id;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = "ENTREPRISE_ID", nullable = false)
+	// configuration hibernate : l'entreprise possède les données civiles
+	@ManyToOne(cascade = {
+			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
+	})
+	@JoinColumn(name = "ENTREPRISE_ID", insertable = false, updatable = false, nullable = false)
 	public Entreprise getEntreprise() {
 		return entreprise;
 	}

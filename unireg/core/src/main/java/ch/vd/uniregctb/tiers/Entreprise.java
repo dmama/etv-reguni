@@ -31,7 +31,6 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscal;
 import ch.vd.uniregctb.type.GroupeFlagsEntreprise;
 import ch.vd.uniregctb.type.GroupeTypesDocumentBatchLocal;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Entreprise connue du registre des personnes morales de l'ACI
@@ -136,8 +135,9 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 				.collect(Collectors.toList());
 	}
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "ENTREPRISE_ID")
+	// configuration hibernate : l'entreprise possède les données civiles
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "ENTREPRISE_ID", nullable = false)
 	public Set<DonneeCivileEntreprise> getDonneesCiviles() {
 		return donneesCiviles;
 	}
