@@ -71,7 +71,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties (ce qui inclut les tiers schedulés pour être réindexés)
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY);
+		indexer.indexAllDatabase(GlobalTiersIndexer.Mode.DIRTY_ONLY, 1, null);
 
 		// On vérifie que le tiers n'est plus schedulé pour être réindexé
 		assertTiers(false, null, id);
@@ -104,7 +104,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties (ce qui inclut les tiers schedulés pour être réindexés)
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY);
+		indexer.indexAllDatabase(GlobalTiersIndexer.Mode.DIRTY_ONLY, 1, null);
 
 		// On vérifie que le tiers n'est plus schedulé pour être réindexé
 		assertTiers(false, null, id);
@@ -136,7 +136,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY);
+		indexer.indexAllDatabase(GlobalTiersIndexer.Mode.DIRTY_ONLY, 1, null);
 
 		// On vérifie que le tiers n'est plus dirty, mais qu'il est toujours schedulé pour être réindexé dans le futur
 		assertTiers(false, dans10jours, id);
@@ -169,7 +169,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY);
+		indexer.indexAllDatabase(GlobalTiersIndexer.Mode.DIRTY_ONLY, 1, null);
 
 		// On vérifie que le tiers n'est plus dirty, mais qu'il est toujours schedulé pour être réindexé dans le futur
 		assertTiers(false, dans10jours, id);
@@ -307,7 +307,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		});
 
 		try {
-			indexer.indexAllDatabase(null, 4, GlobalTiersIndexer.Mode.FULL);
+			indexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL, 4, null);
 			Assert.fail("Comment ça, tout s'est bien passé ???");
 		}
 		catch (IndexerException e) {
@@ -436,7 +436,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		}
 
 		// on réindexe en mode FULL_INCREMENTAL
-		final int nbIndexed = indexer.indexAllDatabase(null, 4, GlobalTiersIndexer.Mode.FULL);
+		final int nbIndexed = indexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL, 4, null);
 		assertEquals(3, nbIndexed);
 
 		// on vérifie que Test2, Test3 et Test4 sont maintenant indexés et que Test1 ne l'est plus
@@ -511,7 +511,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		}
 
 		// on réindexe en mode FULL_INCREMENTAL
-		final int nbIndexed = indexer.indexAllDatabase(null, 4, GlobalTiersIndexer.Mode.FULL_INCREMENTAL);
+		final int nbIndexed = indexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL_INCREMENTAL, 4, null);
 		assertEquals(3, nbIndexed);
 
 		// on vérifie que Test2, Test3 et Test4 sont maintenant indexés et que Test1 ne l'est plus

@@ -215,6 +215,6 @@ public abstract class BusinessItTestApplication {
 	}
 
 	protected void reindexDatabase() {
-		indexer.indexAllDatabase(null, 4, Mode.MISSING_ONLY);
+		indexer.indexAllDatabase(Mode.MISSING_ONLY, 4, null);
 	}
 }

@@ -16,7 +16,7 @@ public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 	}
 
 	@Override
-	public int indexAllDatabase(StatusManager statusManager, int nbThreads, @NotNull Mode mode) throws IndexerException {
+	public int indexAllDatabase(@NotNull Mode mode, int nbThreads, StatusManager statusManager) throws IndexerException {
 		return 0;
 	}
 

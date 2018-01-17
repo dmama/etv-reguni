@@ -222,11 +222,11 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	@Override
 	public int indexAllDatabase() throws IndexerException {
-		return indexAllDatabase(null, 1, Mode.FULL);
+		return indexAllDatabase(Mode.FULL, 1, null);
 	}
 
 	@Override
-	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, @NotNull Mode mode) throws
+	public int indexAllDatabase(@NotNull Mode mode, int nbThreads, @Nullable StatusManager statusManager) throws
 			IndexerException {
 
 		if (statusManager == null) {

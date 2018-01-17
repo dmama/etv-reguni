@@ -75,14 +75,14 @@ public interface GlobalTiersIndexer {
 	/**
 	 * Indexe ou réindexe tout ou partie de la base de données.
 	 *
-	 * @param statusManager             un status manager pour suivre l'évolution de l'indexation (peut être nul)
-	 * @param nbThreads                 le nombre de threads simultanés utilisés pour indexer la base
 	 * @param mode                      le mode d'indexation voulu.
+	 * @param nbThreads                 le nombre de threads simultanés utilisés pour indexer la base
+	 * @param statusManager             un status manager pour suivre l'évolution de l'indexation (peut être nul)
 	 * @return le nombre de tiers indexés
 	 * @throws ch.vd.uniregctb.indexer.IndexerException
 	 *          si l'indexation n'a pas pu être faite.
 	 */
-	int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, @NotNull Mode mode) throws IndexerException;
+	int indexAllDatabase(@NotNull Mode mode, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException;
 
 	/**
 	 * <b>Note :</b> le switch n'est actif que sur le thread courant

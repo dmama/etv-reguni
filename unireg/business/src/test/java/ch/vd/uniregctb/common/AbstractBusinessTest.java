@@ -351,7 +351,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected void indexTiersData() throws Exception {
-        globalTiersIndexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.FULL);
+        globalTiersIndexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL, 1, null);
     }
 
 	protected void indexMessagesIdentificationData() throws Exception {
