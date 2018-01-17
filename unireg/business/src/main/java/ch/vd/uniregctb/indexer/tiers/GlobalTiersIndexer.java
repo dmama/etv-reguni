@@ -46,9 +46,13 @@ public interface GlobalTiersIndexer {
 
 	enum Mode {
 		/**
-		 * Réindexe toute la population spécifiée.
+		 * Réindexe toute la population spécifiée en faisant table rase des données de l'indexe.
 		 */
 		FULL,
+		/**
+		 * Réindexe toute la population spécifiée en mettant-à-jour incrémentalement les données de l'indexe.
+		 */
+		FULL_INCREMENTAL,
 		/**
 		 * Réindexe les tiers qui manquent et supprime ceux en trop (par rapport à la DB)
 		 */

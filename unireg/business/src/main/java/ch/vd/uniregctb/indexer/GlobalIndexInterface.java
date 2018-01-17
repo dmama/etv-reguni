@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.jetbrains.annotations.NotNull;
 
 
 public interface GlobalIndexInterface {
@@ -47,8 +48,14 @@ public interface GlobalIndexInterface {
 	 */
 	int deleteDuplicate();
 
-
 	void removeEntity(Long id) throws IndexerException;
+
+	/**
+	 * Supprime de l'indexe les éléments qui correspondent à la query spécifiée.
+	 *
+	 * @param query une query
+	 */
+	void deleteEntitiesMatching(@NotNull Query query);
 
 	/**
 	 * Recherche les <i>maxHits</i> meilleures résultats.
@@ -78,5 +85,4 @@ public interface GlobalIndexInterface {
 	 * @return the indexPath
 	 */
 	String getIndexPath();
-
 }

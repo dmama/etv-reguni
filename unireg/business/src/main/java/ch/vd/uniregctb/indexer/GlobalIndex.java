@@ -7,6 +7,7 @@ import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -362,6 +363,35 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Removing done of " + id);
 		}
+	}
+
+	@Override
+	public void deleteEntitiesMatching(@NotNull Query query) {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Deleting entities matching query " + query+ "...");
+		}
+
+		if (index == null) {
+			LOGGER.warn("L'indexeur n'est pas initialisé" + hashCode());
+			return;
+		}
+
+		try {
+			index.write(writer -> {
+				writer.deleteDocuments(query);
+				writer.commit();
+				return null;
+			});
+		}
+		catch (LuceneException e) {
+			throw new IndexerException(e);
+		}
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Deleting entities matching query done.");
+		}
+
 	}
 
 	/**

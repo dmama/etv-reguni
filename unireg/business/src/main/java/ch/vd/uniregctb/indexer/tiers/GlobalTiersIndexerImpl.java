@@ -4,12 +4,15 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.lucene.search.NumericRangeQuery;
+import org.apache.lucene.search.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +26,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.simpleindexer.LuceneException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -229,6 +234,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 
 		Audit.info("Réindexation de la base de données (mode = " + mode + ')');
+		final Date indexationStart = DateHelper.getCurrentDate();
 
 		if (mode == Mode.FULL) {
 			// Ecrase l'indexe lucene sur le disque local
@@ -243,6 +249,12 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 			int nbIndexed = indexMultithreads(deltaIds.toAdd, nbThreads, mode, statusManager);
 			remove(deltaIds.toRemove, statusManager);
 
+			if (mode == Mode.FULL_INCREMENTAL) {
+				// on supprime les tiers non-indexés dans la phase incrémentale (car cela veut dire qu'ils n'existent plus)
+				statusManager.setMessage("Nettoyage des tiers surnuméraires...");
+				deleteEntitiesIndexedBefore(indexationStart);
+			}
+
 			// [SIFISC-1184] on détecte et supprime les doublons une fois l'indexation effectuée
 			statusManager.setMessage("Suppression des doublons...");
 			globalIndex.deleteDuplicate();
@@ -251,6 +263,27 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 		catch (Exception e) {
 			Audit.error("Erreur lors de l'indexation: " + e.getMessage());
+			throw new IndexerException(e);
+		}
+	}
+
+	/**
+	 * Supprime de l'indexe les éléments dont la date d'indexation est antérieure à la date spécifiée.
+	 *
+	 * @param date une date
+	 */
+	void deleteEntitiesIndexedBefore(@NotNull Date date) {
+
+		try {
+			// on efface les entités dont la date d'indexation tombe dans le range [0..date[
+			final Query query = NumericRangeQuery.newLongRange(TiersIndexableData.INDEXATION_DATE,
+			                                                   null,
+			                                                   date.getTime(),
+			                                                   false,
+			                                                   false);
+			globalIndex.deleteEntitiesMatching(query);
+		}
+		catch (LuceneException e) {
 			throw new IndexerException(e);
 		}
 	}
@@ -267,6 +300,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 				final DeltaIds deltaIds;
 				switch (mode) {
 				case FULL:
+				case FULL_INCREMENTAL:
 				{
 					// JDE : on traite les identifiants dans l'ordre décroissant pour traiter les PP d'abord...
 					final List<Long> allIds = new ArrayList<>(tiersDAO.getAllIds());

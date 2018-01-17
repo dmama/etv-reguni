@@ -33,9 +33,9 @@ public class MassTiersIndexer {
 	public MassTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, int nbThreads, int queueByThreadSize, @NotNull Mode mode,
 	                        Dialect dialect, @Nullable ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
 		this(nbThreads, queueByThreadSize,
-		     new TiersIndexerWorker(false,                      // on indexe une liste précise de tiers, par besoin d'étendre l'indexation à d'autres tiers.
-		                            (mode == Mode.DIRTY_ONLY),  // on n'enlève pas préalablement les données indexées en mode FULL et MISSING_ONLY,
-		                                                        // parce que - par définition - ces données n'existent pas dans ces modes-là.
+		     new TiersIndexerWorker(false,                                                          // on indexe une liste précise de tiers, par besoin d'étendre l'indexation à d'autres tiers.
+		                            (mode == Mode.DIRTY_ONLY || mode == Mode.FULL_INCREMENTAL),     // on n'enlève pas préalablement les données indexées en mode FULL et MISSING_ONLY,
+		                                                                                            // parce que - par définition - ces données n'existent pas dans ces modes-là.
 		                            indexer,
 		                            sessionFactory,
 		                            transactionManager,

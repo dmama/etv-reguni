@@ -77,6 +77,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String CORPORATION_TRANSFERED_PATRIMONY = "S_CORP_TRANSFERED_PATRIMONY";
 	public static final String CONNU_CIVIL = "S_CONNU_CIVIL";
 	public static final String TYPE_ETABLISSEMENT = "S_TYPE_ETB";
+	public static final String INDEXATION_DATE = "S_INDEXATION_DATE";
 
 	// champs de stockage (pas recherchables)
 	public static final String NOM1 = "D_NOM1";
@@ -96,7 +97,6 @@ public class TiersIndexableData extends IndexableData {
 	public static final String DATE_FERMETURE_FOR_VD = "D_DATE_FERMETURE_FOR_VD";
 	public static final String DOMICILE_VD = "D_DOMICILE_VD";
 	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
-	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
 	public static final String MODE_COMMUNICATION = "D_MODE_COMMUNICATION";
 	public static final String D_DATE_NAISSANCE = "D_DATE_NAISSANCE";
 	public static final String ASSUJETTISSEMENT_PP = "D_ASSUJETTISSEMENT_PP";
@@ -139,6 +139,7 @@ public class TiersIndexableData extends IndexableData {
 	private Boolean corporationSplit;           // vrai si l'entreprise a subi une scission
 	private Boolean corporationTransferedPatrimony; // vrai si l'entreprise a émis (= transmis) du patrimoine à une autre entreprise
 	private Set<TypeEtablissement> typesEtablissement;
+	private Long indexationDate;
 
 	// champs de stockage (pas recherchables)
 	private String nom1;
@@ -158,7 +159,6 @@ public class TiersIndexableData extends IndexableData {
 	private String dateFermetureForVd;
 	private String domicileVd;
 	private String noOfsDomicileVd;
-	private String indexationDate;
 	private ModeCommunication modeCommunication;   // uniquement renseigné sur les débiteurs (SIFISC-6587)
 	private TypeAssujettissement assujettissementPP;  // seulement sur les PP/MC (SIFISC-11102)
 	private TypeAssujettissement assujettissementPM;  // seulement sur les entreprises (SIFISC-21524)
@@ -171,6 +171,10 @@ public class TiersIndexableData extends IndexableData {
 
 	@Override
 	public Document asDoc() {
+
+		if (indexationDate == null) {
+			throw new IllegalArgumentException();
+		}
 
 		final Document d = super.asDoc();
 
@@ -211,6 +215,7 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.CORPORATION_WAS_SPLIT, corporationSplit, BOOLEAN_RENDERER);
 		addNotAnalyzedValue(d, TiersIndexableData.CORPORATION_TRANSFERED_PATRIMONY, corporationTransferedPatrimony, BOOLEAN_RENDERER);
 		addMultiValuedNotAnalyzedValue(d, TiersIndexableData.TYPE_ETABLISSEMENT, typesEtablissement, ENUM_RENDERER);
+		addNumber(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
 		addToutValues(d, numeros, OurOwnReader.convert(nomRaison), OurOwnReader.convert(autresNom), toSearchString(datesNaissanceInscriptionRC), forPrincipal, rue, npaCourrier, localiteEtPays, natureJuridique, navs11, navs13, ancienNumeroSourcier, categorieDebiteurIs, noSymic, ide);
@@ -233,7 +238,6 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR_VD, dateFermetureForVd);
 		addStoredValue(d, TiersIndexableData.DOMICILE_VD, domicileVd);
 		addStoredValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
-		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
 		addStoredValue(d, TiersIndexableData.MODE_COMMUNICATION, modeCommunication, ENUM_RENDERER);
 		addStoredValue(d, TiersIndexableData.D_DATE_NAISSANCE, IndexerFormatHelper.dateCollectionToString(datesNaissanceInscriptionRC, IndexerFormatHelper.DateStringMode.STORAGE));
 		addStoredValue(d, TiersIndexableData.ASSUJETTISSEMENT_PP, assujettissementPP, ENUM_RENDERER);
@@ -354,7 +358,7 @@ public class TiersIndexableData extends IndexableData {
 
 	public RegDate getDateInscriptionRc() {
 		if (datesNaissanceInscriptionRC != null && ! datesNaissanceInscriptionRC.isEmpty()) {
-			datesNaissanceInscriptionRC.get(0);
+			return datesNaissanceInscriptionRC.get(0);
 		}
 		return null;
 	}
@@ -667,11 +671,11 @@ public class TiersIndexableData extends IndexableData {
 		this.noOfsDomicileVd = noOfsDomicileVd;
 	}
 
-	public String getIndexationDate() {
+	public Long getIndexationDate() {
 		return indexationDate;
 	}
 
-	public void setIndexationDate(String indexationDate) {
+	public void setIndexationDate(Long indexationDate) {
 		this.indexationDate = indexationDate;
 	}
 

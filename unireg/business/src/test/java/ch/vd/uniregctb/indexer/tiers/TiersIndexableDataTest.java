@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -59,6 +60,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		final TiersIndexableData data = new TiersIndexableData(ID, "test", "test");
 		data.setAnnule(Boolean.FALSE);
 		data.setDebiteurInactif(Boolean.FALSE);
+		data.setIndexationDate(new Date().getTime());
 		return data;
 	}
 
@@ -96,6 +98,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		data.setNumeros("10760550");
 		data.setAnnule(Boolean.FALSE);
 		data.setDebiteurInactif(Boolean.FALSE);
+		data.setIndexationDate(new Date().getTime());
 		globalIndex.indexEntity(data);
 
 		// recherche avec numéro non-formatté
