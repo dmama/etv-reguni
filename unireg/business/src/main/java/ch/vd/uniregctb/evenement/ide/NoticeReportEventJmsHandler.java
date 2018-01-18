@@ -8,6 +8,7 @@ import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.xml.sax.SAXException;
 
+import ch.vd.evd0022.v3.NoticeRequest;
+import ch.vd.evd0022.v3.NoticeRequestIdentification;
+import ch.vd.evd0022.v3.NoticeRequestREEHeader;
 import ch.vd.evd0022.v3.NoticeRequestReport;
 import ch.vd.evd0024.v3.ObjectFactory;
 import ch.vd.registre.base.date.DateHelper;
@@ -110,7 +114,18 @@ public class NoticeReportEventJmsHandler implements EsbMessageHandler, Initializ
 	 */
 	private void onEvenementRapportAnnonceIDE(Source xml) throws EsbBusinessException {
 
-		NoticeRequestReport message = decodeNoticeRequestReport(xml);
+		final NoticeRequestReport message = decodeNoticeRequestReport(xml);
+		if (message.getNoticeRequest().getNoticeRequestHeader() == null) {
+			// SIFISC-27766 on ignore les annonces REE pour l'instant
+			final String requestId = Optional.of(message)
+					.map(NoticeRequestReport::getNoticeRequest)
+					.map(NoticeRequest::getNoticeRequestREEHeader)
+					.map(NoticeRequestREEHeader::getNoticeRequestIdentification)
+					.map(NoticeRequestIdentification::getNoticeRequestId)
+					.orElse(null);
+			Audit.warn("Arrivée d'un événement d'annonce au REE (requestId=[" + requestId + "]). Le traitement des événements REE n'est pas implémenté, on l'ignore.");
+			return;
+		}
 
 		final AnnonceIDEEnvoyee annonce;
 		// En lieu et place d'une pénible validation, pour attrapper les NPE en cas de champs métiers pas correctement remplis par RCEnt.

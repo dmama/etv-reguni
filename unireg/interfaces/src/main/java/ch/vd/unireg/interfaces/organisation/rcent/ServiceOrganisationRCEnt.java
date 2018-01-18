@@ -150,8 +150,10 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 				// on adapte les réponses
 				final List<AnnonceIDE> annonces = new ArrayList<>(notices.getNumberOfElements());
 				for (NoticeRequestReport n : notices.getContent()) {
-					final AnnonceIDE a = RCEntAnnonceIDEHelper.buildAnnonceIDE(n);
-					annonces.add(a);
+					if (n.getNoticeRequest().getNoticeRequestHeader() != null) {    // SIFISC-27766 on ignore les annonces REE pour l'instant
+						final AnnonceIDE a = RCEntAnnonceIDEHelper.buildAnnonceIDE(n);
+						annonces.add(a);
+					}
 				}
 				return new PageImpl<>(annonces, pageable, notices.getTotalElements());
 			}
