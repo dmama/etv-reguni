@@ -17,9 +17,9 @@ public class RCEntSchemaHelper {
     */
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
-			"eVD-0022-3-3.xsd",
-			"eVD-0023-3-3.xsd",
-			"eVD-0024-3-4.xsd"
+			"eVD-0022-3-5.xsd",
+			"eVD-0023-3-5.xsd",
+			"eVD-0024-3-5.xsd"
 	};
 
 	public static Resource[] getRCEntSchemaClassPathResource() {

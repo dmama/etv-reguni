@@ -262,7 +262,7 @@ public class RCEntAnnonceIDEHelper {
 			body.setBranchText(contenu.getSecteurActivite());
 		}
 
-		return new NoticeRequest(header, body);
+		return new NoticeRequest(header, body, null, null);
 	}
 
 	@NotNull

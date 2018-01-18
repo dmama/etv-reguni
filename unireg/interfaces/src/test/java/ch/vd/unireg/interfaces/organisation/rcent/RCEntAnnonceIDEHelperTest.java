@@ -79,8 +79,8 @@ public class RCEntAnnonceIDEHelperTest {
 		body.setLegalForm(LegalForm.N_0109_ASSOCIATION);
 		body.setTypeOfLocation(TypeOfLocation.ETABLISSEMENT_PRINCIPAL);
 
-		final NoticeRequest request = new NoticeRequest(header, body);
-		final NoticeRequestStatus s = new NoticeRequestStatus(status, requetsDate);
+		final NoticeRequest request = new NoticeRequest(header, body, null, null);
+		final NoticeRequestStatus s = new NoticeRequestStatus(status, requetsDate, null, null);
 		return new NoticeRequestReport(request, s, null);
 	}
 }
