@@ -1,29 +1,15 @@
 package ch.vd.uniregctb.webservices.v7.cache;
 
-import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 
-public class GetCommunityOfHeirsKey {
-
-	private final int deceasedId;
+public class GetCommunityOfHeirsKey extends PartyCacheKey {
 
 	public GetCommunityOfHeirsKey(int deceasedId) {
-		this.deceasedId = deceasedId;
-	}
-
-	public int getDeceasedId() {
-		return deceasedId;
+		super(deceasedId);
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		final GetCommunityOfHeirsKey that = (GetCommunityOfHeirsKey) o;
-		return deceasedId == that.deceasedId;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(deceasedId);
+	protected String toStringPart() {
+		return StringUtils.EMPTY;
 	}
 }

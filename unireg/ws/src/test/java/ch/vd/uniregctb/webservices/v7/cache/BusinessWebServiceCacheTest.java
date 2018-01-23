@@ -225,6 +225,11 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
 				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
 
+				final PersonnePhysique heritier1 = addNonHabitant("Germaine", "Heritier", date(1987, 7, 23), Sexe.FEMININ);
+				addHeritage(heritier1, eric, date(2010, 1, 1), null, true);
+				final PersonnePhysique heritier2 = addNonHabitant("Adelaïde", "Heritier", date(1987, 7, 23), Sexe.FEMININ);
+				addHeritage(heritier2, eric, date(2010, 1, 1), null, false);
+
 				final SituationFamillePersonnePhysique situation = new SituationFamillePersonnePhysique();
 				situation.setDateDebut(date(1989, 5, 1));
 				situation.setNombreEnfants(0);
@@ -582,6 +587,34 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		// On vérifie que le cache est vide
 		assertNull(getCacheValue(partyNo));
+	}
+
+	/**
+	 * [SIFISC-27869] Ce test vérifie que les communautés d'héritiers sont bien supprimées du cache lorsque le décédé change.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testEvictCommunityOfHeirs() throws Exception {
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
+		final int partyNo = ids.eric.intValue();
+
+		// On charge le cache avec des tiers
+		assertNotNull(cache.getCommunityOfHeirs(userLogin, partyNo));
+
+		// on vérifie que l'élément est bien dans le cache
+		{
+			final GetCommunityOfHeirsKey key = new GetCommunityOfHeirsKey(partyNo);
+			final Element element = ehcache.get(key);
+			assertNotNull(element);
+			assertNotNull(element.getObjectValue());
+		}
+
+		// On evicte les tiers
+		cache.evictParty(partyNo);
+
+		// On vérifie que le cache est vide
+		assertNull(ehcache.get(new GetCommunityOfHeirsKey(partyNo)));
 	}
 
 	/**
