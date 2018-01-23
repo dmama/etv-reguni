@@ -4,7 +4,8 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import ch.vd.registre.web.http.HttpUtilities;
+import org.apache.commons.lang.StringEscapeUtils;
+
 import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**
@@ -18,7 +19,7 @@ public class JspTagEnvironnement extends BodyTagSupport {
 		try {
 			final JspWriter out = pageContext.getOut();
 
-			out.print(HttpUtilities.htmlEncode(UniregModeHelper.getEnvironnement()));
+			out.print(StringEscapeUtils.escapeHtml(UniregModeHelper.getEnvironnement()));
 
 			// Skips the body.
 			return SKIP_BODY;

@@ -181,7 +181,7 @@
 	<!-- Filtre qui renseigne la date d'expiration sur les éléments statiques de l'application (= permet le caching au niveau browser) -->
 	<filter>
 		<filter-name>CachingFilter</filter-name>
-		<filter-class>ch.vd.registre.web.filter.CachingFilter</filter-class>
+		<filter-class>ch.vd.uniregctb.servlet.AddResponseHeadersFilter</filter-class>
 		<init-param>
 			<param-name>Cache-Control</param-name>
 			<param-value>max-age=86400</param-value><!-- a day, in seconds -->
@@ -212,7 +212,7 @@
 	<!-- Filtre qui empêche tout caching des ressources concernées -->
 	<filter>
 		<filter-name>NoCacheFilter</filter-name>
-		<filter-class>ch.vd.registre.web.filter.CachingFilter</filter-class>
+		<filter-class>ch.vd.uniregctb.servlet.AddResponseHeadersFilter</filter-class>
 		<init-param>
 			<param-name>Cache-Control</param-name>
 			<param-value>no-cache, no-store, must-revalidate</param-value>

@@ -21,7 +21,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.GenericFilterBean;
 
-import ch.vd.registre.web.filter.IAMUtil;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.EncodingFixHelper;
 
