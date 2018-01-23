@@ -7,10 +7,6 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import ch.vd.uniregctb.document.Document;
-import ch.vd.uniregctb.web.HtmlTextWriter;
-import ch.vd.uniregctb.web.HtmlTextWriterAttribute;
-import ch.vd.uniregctb.web.HtmlTextWriterTag;
-import ch.vd.uniregctb.web.io.StringWriter;
 
 /**
  * Tag jsp permettant d'afficher un icon du document en fonction de son type et de le télécharger
@@ -40,25 +36,12 @@ public class JspTagDocument extends BodyTagSupport {
 			return "";
 		}
 
-		StringWriter w = new StringWriter();
-		HtmlTextWriter writer = new HtmlTextWriter(w);
+		final String downloadURL = request.getContextPath() + "/common/docs/download.do?id=" + doc.getId() + "&url_memorize=false";
+		final String imageURL = request.getContextPath() + "/images/" + doc.getFileExtension() + "_icon.png";
 
-		// Un lien permettant de télécharger le document
-		final String href = request.getContextPath() + "/common/docs/download.do?id=" + doc.getId() + "&url_memorize=false";
-		writer.addAttribute(HtmlTextWriterAttribute.Href, href);
-		writer.renderBeginTag(HtmlTextWriterTag.A);
-		{
-			// Un image représentant le type de document
-			final String src = request.getContextPath() + "/images/" + doc.getFileExtension() + "_icon.png";
-			writer.addAttribute(HtmlTextWriterAttribute.Src, src);
-			writer.addAttribute(HtmlTextWriterAttribute.Align, "top");
-			writer.addAttribute(HtmlTextWriterAttribute.Id, "IMG_DOC_" + doc.getId());
-			writer.renderBeginTag(HtmlTextWriterTag.Img);
-			writer.renderEndTag();
-		}
-		writer.renderEndTag();
-
-		return w.toString();
+		return "<a href=\"" + downloadURL + "\">" +
+				"<img src=\"" + imageURL + "\" align=\"top\" id=\"IMG_DOC_" + doc.getId() + "\">" +
+				"</a>";
 	}
 
 	public void setDoc(Document doc) {
