@@ -111,7 +111,7 @@
 
 	<bean name="nexusRemoteConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
 		<constructor-arg>
-			<bean class="ch.vd.unireg.servlet.remoting.CommonsHttpInvokerRequestExecutorConnectionAdapter ">
+			<bean class="ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorConnectionAdapter">
 				<constructor-arg ref="nexusHttpRequestExecutor" />
 			</bean>
 		</constructor-arg>
