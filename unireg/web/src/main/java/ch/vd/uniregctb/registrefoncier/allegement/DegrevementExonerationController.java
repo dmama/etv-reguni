@@ -61,6 +61,7 @@ import ch.vd.uniregctb.documentfiscal.AjouterEtatAutreDocumentFiscalView;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalException;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalManager;
 import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalService;
+import ch.vd.uniregctb.documentfiscal.AutreDocumentFiscalView;
 import ch.vd.uniregctb.documentfiscal.DelaiDocumentFiscal;
 import ch.vd.uniregctb.documentfiscal.EditionDelaiAutreDocumentFiscalView;
 import ch.vd.uniregctb.documentfiscal.EtatAutreDocumentFiscal;
@@ -1111,6 +1112,10 @@ public class DegrevementExonerationController {
 				.map(dd -> new DemandeDegrevementICIView(dd, infraService, messageSource))
 				.sorted(new AnnulableHelper.AnnulesApresWrappingComparator<>(Comparator.comparingInt(DemandeDegrevementICIView::getPeriodeFiscale).reversed()))
 				.collect(Collectors.toList());
+		final Set<Integer> periodesActives = demandes.stream()    // les périodes fiscales pour lesquelles des demandes non-annulées existent déjà
+				.filter(AnnulableHelper::nonAnnule)
+				.map(AutreDocumentFiscalView::getPeriodeFiscale)
+				.collect(Collectors.toSet());
 
 		final ResumeImmeubleView immeubleView = new ResumeImmeubleView(immeuble, null, registreFoncierService);
 
@@ -1121,6 +1126,7 @@ public class DegrevementExonerationController {
 		model.addAttribute("demandesDegrevement", demandes);
 		model.addAttribute("immeuble", immeubleView);
 		model.addAttribute("droits", viewsDroits);
+		model.addAttribute("periodesActives", periodesActives);
 		return "tiers/edition/pm/degrevement-exoneration/edit-demandes-degrevement";
 	}
 
@@ -1488,8 +1494,15 @@ public class DegrevementExonerationController {
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		// désannulation de l'autre document fiscal
-		autreDocumentFiscalManager.desannulerAutreDocumentFiscal(doc);
+		// [SIFISC-27974] on vérifie qu'il n'y a pas une autre demande de dégrèvement déjà active pour la période fiscale considérée
+		final List<DemandeDegrevementICI> demandesActives = ctb.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, false);
+		if (demandesActives.stream().anyMatch(d -> Objects.equals(d.getPeriodeFiscale(), doc.getPeriodeFiscale()))) {
+			Flash.error("Impossible de désannuler la demande spécifiée car il existe déjà une demande active pour la période fiscale " + doc.getPeriodeFiscale());
+		}
+		else {
+			// désannulation de l'autre document fiscal
+			autreDocumentFiscalManager.desannulerAutreDocumentFiscal(doc);
+		}
 
 		return "redirect:/degrevement-exoneration/edit-demandes-degrevement.do?idContribuable=" + ctb.getId() + " &idImmeuble=" + doc.getImmeuble().getId();
 	}

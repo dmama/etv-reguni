@@ -64,7 +64,8 @@
 				</c:if>
 				<unireg:raccourciAnnuler onClick="EditDemandeDegrevement.cancel(${demande.id});" tooltip="Annuler"/>
 			</c:when>
-			<c:when test="${mode == 'edit' && demande.annule}">
+			<%--@elvariable id="periodesActives" type="java.util.Set"--%>
+			<c:when test="${mode == 'edit' && demande.annule && !periodesActives.contains(demande.periodeFiscale)}">
 				<unireg:linkTo name="" title="Désannuler la demande de dégrèvement" action="/degrevement-exoneration/desannuler.do" method="post" params="{id:${demande.id}}"
 				               confirm="Voulez-vous vraiment désannuler ce document fiscal ?" link_class="undelete" />
 			</c:when>
