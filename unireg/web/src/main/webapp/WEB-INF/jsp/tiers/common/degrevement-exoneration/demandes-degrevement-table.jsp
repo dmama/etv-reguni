@@ -59,9 +59,7 @@
 				<unireg:consulterLog entityNature="AutreDocumentFiscal" entityId="${demande.id}"/>
 			</c:when>
 			<c:when test="${mode == 'edit' && !demande.annule}">
-				<c:if test="${demande.dateRetour == null}">
-					<unireg:raccourciModifier link='edit-demande-degrevement.do?id=${demande.id}' tooltip="Modifier la demande de dégrèvement"/>
-				</c:if>
+				<unireg:raccourciModifier link='edit-demande-degrevement.do?id=${demande.id}' tooltip="Modifier la demande de dégrèvement"/>
 				<unireg:raccourciAnnuler onClick="EditDemandeDegrevement.cancel(${demande.id});" tooltip="Annuler"/>
 			</c:when>
 			<%--@elvariable id="periodesActives" type="java.util.Set"--%>
