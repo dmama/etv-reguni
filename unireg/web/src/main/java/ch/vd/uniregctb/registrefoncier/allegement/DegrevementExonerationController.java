@@ -1494,9 +1494,11 @@ public class DegrevementExonerationController {
 		final Entreprise ctb = (Entreprise) doc.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		// [SIFISC-27974] on vérifie qu'il n'y a pas une autre demande de dégrèvement déjà active pour la période fiscale considérée
+		// [SIFISC-27974] on vérifie qu'il n'y a pas une autre demande de dégrèvement déjà active pour la période fiscale considérée et l'immeuble considéré
 		final List<DemandeDegrevementICI> demandesActives = ctb.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, false);
-		if (demandesActives.stream().anyMatch(d -> Objects.equals(d.getPeriodeFiscale(), doc.getPeriodeFiscale()))) {
+		if (demandesActives.stream()
+				.filter(d -> Objects.equals(d.getImmeuble().getId(), doc.getImmeuble().getId()))
+				.anyMatch(d -> Objects.equals(d.getPeriodeFiscale(), doc.getPeriodeFiscale()))) {
 			Flash.error("Impossible de désannuler la demande spécifiée car il existe déjà une demande active pour la période fiscale " + doc.getPeriodeFiscale());
 		}
 		else {
