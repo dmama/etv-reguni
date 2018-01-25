@@ -3,6 +3,7 @@ package ch.vd.uniregctb.documentfiscal;
 import javax.jms.JMSException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -303,7 +304,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
 		demande.setDateEnvoi(dateEnvoi);
-		demande.setCodeControle(buildCodeControleDemandeDegrevementICI(entreprise));
+		demande.setCodeControle(getCodeControleDemandeDegrevementICI(entreprise, immeuble, periodeFiscale));
 		demande.setImmeuble(immeuble);
 		demande.setNumeroSequence(getNewSequenceNumberDemandeDegrevementICI(entreprise, periodeFiscale));
 		demande.setPeriodeFiscale(periodeFiscale);
@@ -338,7 +339,7 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 
 		final DemandeDegrevementICI demande = new DemandeDegrevementICI();
 		demande.setDateEnvoi(dateTraitement);
-		demande.setCodeControle(buildCodeControleDemandeDegrevementICI(entreprise));
+		demande.setCodeControle(getCodeControleDemandeDegrevementICI(entreprise, immeuble, periodeFiscale));
 		demande.setImmeuble(immeuble);
 		demande.setNumeroSequence(getNewSequenceNumberDemandeDegrevementICI(entreprise, periodeFiscale));
 		demande.setPeriodeFiscale(periodeFiscale);
@@ -382,8 +383,21 @@ public class AutreDocumentFiscalServiceImpl implements AutreDocumentFiscalServic
 		                                                              nomCommune, numeroParcelle, demande.getDelaiRetour());
 	}
 
-	private static String buildCodeControleDemandeDegrevementICI(Entreprise e) {
-		final Set<String> existing = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true).stream()
+	static String getCodeControleDemandeDegrevementICI(@NotNull Entreprise e, @NotNull ImmeubleRF immeuble, int periodeFiscale) {
+
+		// [SIFISC-27973] s'il existe déjà un code de contrôle pour la période fiscale et l'immeuble spécifiés (même sur une demande annulée), on le réutilise
+		final List<DemandeDegrevementICI> demandes = e.getAutresDocumentsFiscaux(DemandeDegrevementICI.class, false, true);
+		final String code = demandes.stream()
+				.filter(d -> Objects.equals(d.getPeriodeFiscale(), periodeFiscale))
+				.filter(d -> Objects.equals(d.getImmeuble().getId(), immeuble.getId()))
+				.max(Comparator.nullsFirst(Comparator.comparing(DemandeDegrevementICI::getDateEnvoi)))
+				.map(DemandeDegrevementICI::getCodeControle)
+				.orElse(null);
+		if (code != null) {
+			return code;
+		}
+
+		final Set<String> existing = demandes.stream()
 				.map(DemandeDegrevementICI::getCodeControle)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet());
