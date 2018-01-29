@@ -131,7 +131,6 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 				modeImposition = ((ForFiscalPrincipalPP) forRevenuFortune).getModeImposition();
 			}
 			else if (forRevenuFortune instanceof ForFiscalPrincipalPM) {
-				// TODO [SIPM] Il y a quelque chose à prévoir ?
 				throw new NotImplementedException("Les extractions RPT ne sont (pour l'instant ?) pas capable d'intégrer les PM...");
 			}
 			else {

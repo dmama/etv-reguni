@@ -1171,7 +1171,7 @@ public abstract class DataHelper {
 			case VIRTUAL_LAND_RIGHTS:
 			case LAND_TAX_LIGHTENINGS:
 			case VIRTUAL_INHERITANCE_LAND_RIGHTS:
-				// TODO rien à faire pour le moment, mais ce n'est que partie remise...
+				// rien à faire
 				break;
 			default:
 				throw new IllegalArgumentException("Type de parts inconnue = [" + p + ']');

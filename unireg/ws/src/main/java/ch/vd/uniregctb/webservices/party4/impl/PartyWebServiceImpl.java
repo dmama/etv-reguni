@@ -624,7 +624,6 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 */
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
-		// TODO [SIPM] Remettre quelque chose ?
 		return new SearchCorporationEventsResponse();
 	}
 

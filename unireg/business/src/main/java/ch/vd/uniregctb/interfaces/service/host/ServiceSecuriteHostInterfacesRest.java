@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.interfaces.service.host;
 
-import javax.ws.rs.WebApplicationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -81,18 +80,6 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 	}
 
 	/**
-	 * @return vrai si l'exception spécifiée est levée par host-interface parce que l'opérateur inconnu.
-	 */
-	private static boolean isOperateurInconnuException(ServiceSecuriteClientException e) {
-		final Exception root = getRootException(e);
-		if (root instanceof WebApplicationException) {
-			//TODO En attendant d'avoir des codes http et des messages host interfaces qui  sont exploitables
-			return true;
-		}
-		return false;
-	}
-
-	/**
 	 * Dans le cas où on demande les collectivités d'un opérateur maintenant invalide (= terminé), Host-Interface nous renvoie une exception...
 	 *
 	 * @return vrai si l'exception spécifiée est levée par host-interface parce que l'opérateur est terminé (= avec une date de fin de validité)
@@ -101,19 +88,6 @@ public class ServiceSecuriteHostInterfacesRest implements ServiceSecuriteService
 		// [SIFISC-26756] Depuis le passage à CXF 3.1.9, le message retourné par Host-Interface est directement contenu dans le message de l'exception.
 		final Matcher matcher = MESSAGE_VISA_OPERATEUR_TERMINE_PATTERN.matcher(e.getMessage());
 		return matcher.find();
-	}
-
-	/**
-	 * @return l'exception première à la racine de l'exception spécifiée.
-	 */
-	private static Exception getRootException(ServiceSecuriteClientException e) {
-		Exception root = e;
-		Exception current = e;
-		while (current != null) {
-			root = current;
-			current = (Exception) current.getCause();
-		}
-		return root;
 	}
 
 	/**

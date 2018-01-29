@@ -27,7 +27,7 @@ public class RueImpl implements Rue, Serializable {
 
 	private RueImpl(Street target) {
 		this.designationCourrier = target.getLongName();
-		this.noLocalite = target.getSwissZipCodeId().get(0);        // TODO on prend la première...
+		this.noLocalite = target.getSwissZipCodeId().get(0);
 		this.noRue = target.getEstrid();
 
 		final Range validity = target.getValidity();

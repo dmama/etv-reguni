@@ -185,7 +185,6 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 		return OrganisationHelper.getAdresses(donneesSites);
 	}
 
-	// TODO: A générer dans l'adapter?
 	/**
 	 * Liste des sites principaux
 	 * @return La liste des sites principaux

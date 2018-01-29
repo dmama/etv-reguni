@@ -353,7 +353,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			final int pf = key.getTaxPeriod();
 			final int noSeq = key.getSequenceNumber();
 
-			// TODO JDE : faut-il faire ce test ? Il n'était pas fait dans les versions précédentes du service...
 			WebServiceHelper.checkPartyReadWriteAccess(context.securityProvider, userLogin, partyNo);
 
 			final Tiers tiers = context.tiersService.getTiers(partyNo);

@@ -111,15 +111,6 @@ public abstract class BeanUtils {
 		return areBeansAssignableToEachOther(bean1, EMPTY_STRING_ARRAY, bean2, bean2PropertiesToIgnore);
 	}
 
-	/**
-	 * TODO (fnr) commenter cette méthode
-	 *
-	 * @param bean1
-	 * @param bean1PropertiesToIgnore
-	 * @param bean2
-	 * @param bean2PropertiesToIgnore
-	 * @return
-	 */
 	public static boolean areBeansAssignableToEachOther (Object bean1, String [] bean1PropertiesToIgnore, Object bean2, String [] bean2PropertiesToIgnore) {
 		return
 		isAssignable(bean2, bean1, bean1PropertiesToIgnore) &&
@@ -127,11 +118,6 @@ public abstract class BeanUtils {
 	}
 
 	/**
-	 * TODO (fnr) commenter cette méthode
-	 *
-	 * @param beanToCheck
-	 * @param beanToCompareFrom
-	 * @return
 	 * @throws IllegalArgumentException si un ou les 2 paramètres sont null.
 	 */
 	public static String[] findMissingProperties (Object beanToCheck, Object  beanToCompareFrom) {

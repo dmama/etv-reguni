@@ -15,52 +15,31 @@ import ch.vd.uniregctb.security.DroitAccesException;
 
 public interface UtilisateurEditRestrictionManager {
 
-
     /**
      * Alimente la vue du controller
-     *
-     * @return
-     * @throws ServiceInfrastructureException
      */
     @Transactional(readOnly = true)
     UtilisateurEditRestrictionView get(long noIndividuOperateur, WebParamPagination pagination) throws ServiceInfrastructureException, AdresseException;
 
-
     /**
      * Alimente la vue RecapPersonneUtilisateurView
-     *
-     * @param numeroTiers
-     * @param noIndividuOperateur
-     * @return
-     * @throws ServiceInfrastructureException
-     * @throws AdressesResolutionException
      */
     @Transactional(readOnly = true)
     RecapPersonneUtilisateurView get(Long numeroTiers, Long noIndividuOperateur) throws ServiceInfrastructureException, AdressesResolutionException;
 
-
     /**
      * Annule une liste de restrictions
-     *
-     * @param listIdRestriction
      */
-
     @Transactional(rollbackFor = Throwable.class)
     void annulerRestrictions(List<Long> listIdRestriction) throws DroitAccesException;
 
     /**
      * Annule toutes les restrictions
-     *
-     * @param noIndividuOperateur
      */
-
     @Transactional(rollbackFor = Throwable.class)
     void annulerToutesLesRestrictions(Long noIndividuOperateur);
     /**
      * Persiste le DroitAcces
-     *
-     * @param recapPersonneUtilisateurView
-     * @throws DroitAccesException TODO
      */
     @Transactional(rollbackFor = Throwable.class)
     void save(RecapPersonneUtilisateurView recapPersonneUtilisateurView) throws DroitAccesException;
@@ -73,5 +52,4 @@ public interface UtilisateurEditRestrictionManager {
      */
     @Transactional(readOnly = true)
     ExtractionJob exportListeDroitsAcces(Long operateurId);
-
 }

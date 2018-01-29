@@ -96,7 +96,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 /**
- * TODO: triple check everything
  * Convertisseur d'événements reçus de RCEnt en événements organisation internes
  */
 public class EvenementOrganisationTranslatorImpl implements EvenementOrganisationTranslator, InitializingBean {

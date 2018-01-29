@@ -371,8 +371,6 @@ public abstract class EvenementOrganisationInterne {
 			erreurs.addErreur("La date de l'événement est dans le futur");
 		}
 
-		// TODO: Validations supplémentaires pour organisations?
-
 		// en tout cas, l'individu devrait exister dans le registre civil !
 		final Organisation organisation = getOrganisation();
 		if (organisation == null) {

@@ -303,7 +303,6 @@ public class WebServiceEndPoint implements WebService, DetailedLoadMonitorable {
 				final int nbItems = countParties(parties.getEntries());
 				final MediaType preferred = getPreferredMediaTypeFromXmlOrJson();
 				if (preferred == WebServiceHelper.APPLICATION_JSON_WITH_UTF8_CHARSET_TYPE) {
-					// TODO quel format utiliser pour le retour JSON ?
 					throw new NotImplementedException();
 				}
 				else if (preferred == MediaType.APPLICATION_XML_TYPE) {

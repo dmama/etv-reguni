@@ -56,8 +56,6 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterneDeTra
 
 		autoriteFiscalePrincipale = sitePrincipal.getDomicile(getDateEvt());
 
-		// TODO: Ecrire plus de tests?
-
 		// TODO: Générer événements fiscaux
 
 		// TODO: Générer documents éditique

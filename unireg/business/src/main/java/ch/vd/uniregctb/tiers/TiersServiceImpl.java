@@ -3992,7 +3992,7 @@ public class TiersServiceImpl implements TiersService {
             return oid;
         }
 
-	    // TODO [SIPM] pour les PM, l'office de gestion est l'OIPM, non ?
+	    // Pour les PM, l'office de gestion est l'OIPM
 	    if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
 		    return ServiceInfrastructureService.noOIPM;
 	    }

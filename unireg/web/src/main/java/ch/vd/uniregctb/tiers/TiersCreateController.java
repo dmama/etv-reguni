@@ -528,7 +528,7 @@ public class TiersCreateController {
 		for (ForFiscalSecondaire forACreer : ajustementForsSecondaires.getACreer()) {
 			final Commune commune = infraService.getCommuneByNumeroOfs(forACreer.getNumeroOfsAutoriteFiscale(), forACreer.getDateDebut());
 			if (!commune.isPrincipale()) {
-				Assert.notNull(forACreer.getMotifOuverture(), "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
+				Assert.notNull(forACreer.getMotifOuverture(), "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton");
 				tiersService.addForSecondaire(entreprise, forACreer.getDateDebut(), forACreer.getDateFin(), forACreer.getMotifRattachement(), forACreer.getNumeroOfsAutoriteFiscale(),
 				                              forACreer.getTypeAutoriteFiscale(),
 				                              forACreer.getMotifOuverture(), forACreer.getMotifFermeture(), GenreImpot.BENEFICE_CAPITAL);
