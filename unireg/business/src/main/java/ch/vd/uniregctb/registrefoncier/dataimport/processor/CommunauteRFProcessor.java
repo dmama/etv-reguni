@@ -11,14 +11,13 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.registrefoncier.AyantDroitRF;
 import ch.vd.uniregctb.registrefoncier.CommunauteRF;
@@ -154,73 +153,53 @@ public class CommunauteRFProcessor {
 	@NotNull
 	private Set<RegroupementCommunauteRF> calculateRegroupements(@NotNull CommunauteRF communaute) {
 
-		final Set<DroitProprieteRF> droits = communaute.getMembres().stream()
+		final List<DateRange> droits = communaute.getMembres().stream()
 				.filter(AnnulableHelper::nonAnnule)
-				.collect(Collectors.toSet());
+				.map(DroitRF::getRangeMetier)
+				.collect(Collectors.toList());
 
 		if (droits.isEmpty()) {
 			// pas de droit, pas de regroupement
 			return Collections.emptySet();
 		}
 
-		// on recherche la date de début métier de la communauté (normalement, tous les droits d'une communauté
-		// sont créés en même temps lors de sa création : ils possèdent donc tous la même date de début métier.
-		// Cependant, il arrive que des oublis ou des erreurs de saisie provoquent des incohérences, dans ce cas,
-		// on prend la date métier la plus petite)
-		RegDate dateDebutMetier = RegDateHelper.getLateDate();
-		for (DroitProprieteRF droit : droits) {
-			if (NullDateBehavior.EARLIEST.compare(droit.getDateDebutMetier(), dateDebutMetier) < 0) {
-				dateDebutMetier = droit.getDateDebutMetier();
-			}
-		}
-
-		// on recherche toutes les dates de fin des droits des membres de la communauté (à l'inverse de leurs
-		// création, les droits des membres d'une communauté peuvent s'arrêter à des dates différentes)
-		final List<RegDate> datesFinMetier = droits.stream()
-				.map(DroitRF::getDateFinMetier)
-				.distinct()
-				.sorted(NullDateBehavior.LATEST::compare)
-				.collect(Collectors.toList());
-
+		// On détermine les périodes où les droits des membres de la communauté sont constants
 		//
 		//  Exemple de droits sur une communauté :
 		//
 		//  D1:  02.05.2010 |------------------------------------------------------------------...
 		//
-		//  D2:  02.05.2010 |---------| 17.05.2012
+		//  D2:  02.05.2010 |----------------| 17.05.2012
 		//
-		//  D3:  02.05.2010 |----------| 18.05.2012
+		//  D3:  02.05.2010 |------------------| 18.05.2012
 		//
-		//  D4:    13.05.2010 |-------------------------------------------| 04.12.2013
+		//  D4:       13.06.2010 |-------------------------------------------| 04.12.2013
 		//
 		//  D5:  02.05.2010 |------------------------------------------------------------------...
 		//
 		//  Périodes de composition constante des membres :
 		//
-		//  P1:  02.05.2010 |---------| 17.05.2012
+		//  P1:  02.05.2010 |----| 12.06.2010
 		//
-		//  P2:            18.05.2012 |-| 18.05.2012
+		//  P2:  13.06.2010      |-----------| 17.05.2012
 		//
-		//  P3:              19.05.2012 |---------------------------------| 04.12.2014
+		//  P2:                   18.05.2012 |-| 18.05.2012
 		//
-		//  P4:                                                05.12.2014 |--------------------...
+		//  P3:                     19.05.2012 |---------------------------------| 04.12.2014
 		//
-
-		if (datesFinMetier.isEmpty()) {
-			// si on arrive là, c'est que l'algo est foireux
-			throw new ProgrammingException("Aucune date de fin trouvée");
-		}
+		//  P4:                                                       05.12.2014 |-------------...
+		//
+		final List<DateRange> periodesConstantes = DateRangeHelper.projectRanges(droits);
 
 		final Set<RegroupementCommunauteRF> regroupements = new HashSet<>();
 
-		// on boucle sur toutes les périodes où la composition des membres de la communauté est constante
-		RegDate dateDebut = dateDebutMetier;
-		for (final RegDate dateFin : datesFinMetier) {
+		// on boucle sur toutes les périodes
+		for (final DateRange periode : periodesConstantes) {
 
 			// on cherche les membres valides pour la période
 			final Set<AyantDroitRF> membresValides = communaute.getMembres().stream()
 					.filter(AnnulableHelper::nonAnnule)
-					.filter(d -> d.getRangeMetier().isValidAt(dateFin))
+					.filter(d -> d.getRangeMetier().isValidAt(periode.getDateFin()))
 					.map(DroitProprieteRF::getAyantDroit)
 					.collect(Collectors.toSet());
 
@@ -230,15 +209,12 @@ public class CommunauteRFProcessor {
 
 				// on créé le regroupement qui va bien
 				RegroupementCommunauteRF regroupement = new RegroupementCommunauteRF();
-				regroupement.setDateDebut(dateDebut);
-				regroupement.setDateFin(dateFin);
+				regroupement.setDateDebut(periode.getDateDebut());
+				regroupement.setDateFin(periode.getDateFin());
 				regroupement.setCommunaute(communaute);
 				regroupement.setModele(modele);
 				regroupements.add(regroupement);
 			}
-
-			// période suivante
-			dateDebut = (dateFin == null ? null : dateFin.getOneDayAfter());
 		}
 
 		return regroupements;

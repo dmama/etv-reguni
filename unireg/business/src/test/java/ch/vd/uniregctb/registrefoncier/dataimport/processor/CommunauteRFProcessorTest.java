@@ -63,7 +63,7 @@ public class CommunauteRFProcessorTest {
 	 * Vérifie qu'aucun regroupement n'est créé si la communauté ne possède pas de membre.
 	 */
 	@Test
-	public void testProcessCommunauteSansMembreNiRegroupement() throws Exception {
+	public void testProcessCommunauteSansMembreNiRegroupement() {
 
 		// une communauté sans membre, ni regroupement
 		CommunauteRF communaute = new CommunauteRF();
@@ -83,7 +83,7 @@ public class CommunauteRFProcessorTest {
 	 * Vérifie que les éventuels regroupements sont annulés si la communauté ne possède pas de membre.
 	 */
 	@Test
-	public void testProcessCommunauteSansMembreAvecRegroupement() throws Exception {
+	public void testProcessCommunauteSansMembreAvecRegroupement() {
 
 		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
 		pp1.setId(1L);
@@ -122,7 +122,7 @@ public class CommunauteRFProcessorTest {
 	 * Vérifie qu'un regroupement est créé si la communauté possède des membres.
 	 */
 	@Test
-	public void testProcessCommunauteAvecMembresSansRegroupement() throws Exception {
+	public void testProcessCommunauteAvecMembresSansRegroupement() {
 
 		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
 		pp1.setId(1L);
@@ -169,7 +169,7 @@ public class CommunauteRFProcessorTest {
 	 * Vérifie que deux regroupements sont créés dans le cas où un des membres d'une communauté renonce à sa part.
 	 */
 	@Test
-	public void testProcessCommunauteAvecUnMembreQuiRenonceASaPart() throws Exception {
+	public void testProcessCommunauteAvecUnMembreQuiRenonceASaPart() {
 
 		final RegDate dateSuccession = RegDate.get(2000, 1, 1);
 		final RegDate dateRenoncement = RegDate.get(2000, 7, 12);
@@ -240,10 +240,182 @@ public class CommunauteRFProcessorTest {
 	}
 
 	/**
+	 * [SIFISC-28009] Vérifie que les regroupements sont bien créés dans le cas où un nouveau membre s'ajoute à une.
+	 */
+	@Test
+	public void testProcessCommunauteAvecNouveauMembreQuiSAjoute() {
+
+		final RegDate dateSuccession = RegDate.get(2000, 1, 1);
+		final RegDate dateAdmission = RegDate.get(2000, 7, 12);
+
+		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
+		pp1.setId(1L);
+		pp1.setPrenom("Ronald");
+		pp1.setNom("Lasalt");
+
+		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
+		pp2.setId(2L);
+		pp2.setPrenom("Georgette");
+		pp2.setNom("Lasalt");
+
+		final PersonnePhysiqueRF pp3 = new PersonnePhysiqueRF();
+		pp3.setId(3L);
+		pp3.setPrenom("Jean-Rodolphe");
+		pp3.setNom("Zwarisk");
+
+		final DroitProprietePersonnePhysiqueRF droit1 = new DroitProprietePersonnePhysiqueRF();
+		droit1.setId(11L);
+		droit1.setDateDebutMetier(dateSuccession);
+		droit1.setDateFinMetier(null);
+		droit1.setAyantDroit(pp1);
+
+		final DroitProprietePersonnePhysiqueRF droit2 = new DroitProprietePersonnePhysiqueRF();
+		droit2.setId(12L);
+		droit2.setDateDebutMetier(dateSuccession);
+		droit2.setDateFinMetier(null);
+		droit2.setAyantDroit(pp2);
+
+		final DroitProprietePersonnePhysiqueRF droit3 = new DroitProprietePersonnePhysiqueRF();
+		droit3.setId(13L);
+		droit3.setDateDebutMetier(dateAdmission);   // <--- arrivée du nouveau membre
+		droit3.setDateFinMetier(null);
+		droit3.setAyantDroit(pp3);
+
+		// une communauté avec trois membres
+		CommunauteRF communaute = new CommunauteRF();
+		communaute.setRegroupements(new HashSet<>());
+		communaute.addMembre(droit1);
+		communaute.addMembre(droit2);
+		communaute.addMembre(droit3);
+
+		droit1.setCommunaute(communaute);
+		droit2.setCommunaute(communaute);
+		droit3.setCommunaute(communaute);
+
+		processor.process(communaute);
+
+		// deux regroupements devraient être créés :
+		//  1. un premier regroupement pendant la période à deux membres (entre la succession et l'admission)
+		//  2. un second regroupement pendant la période à trois membres (depuis l'admission)
+		final List<RegroupementCommunauteRF> regroupements = new ArrayList<>(communaute.getRegroupements());
+		regroupements.sort(new DateRangeComparator<>());
+		assertEquals(2, regroupements.size());
+
+		final RegroupementCommunauteRF regroupement0 = regroupements.get(0);
+		assertFalse(regroupement0.isAnnule());
+		assertRegroupement(dateSuccession, dateAdmission.getOneDayBefore(), communaute, regroupement0, pp1, pp2);
+
+		final RegroupementCommunauteRF regroupement1 = regroupements.get(1);
+		assertFalse(regroupement1.isAnnule());
+		assertRegroupement(dateAdmission, null, communaute, regroupement1, pp1, pp2, pp3);
+
+		// aucun événement ne devrait être envoyé car le principal ne change pas
+		assertEmpty(evenementsModificationPrincipalCommunaute);
+	}
+
+	/**
+	 * Vérifie que les regroupements sont bien créés dans le cas suivant (communauté n°189976085) :
+	 * <pre>
+	 *     Droit 1  : 19990712 |---------------------------------------------------
+	 *     Droit 2  : 19990712 |---------------------------------------------------
+	 *     Droit 3  : 19990712 |-----------------| 20081219
+	 *     Droit 4  :                   20081219 |---------------------------------
+	 *     Droit 5  :                                        20170627 |------------
+	 * </pre>
+	 */
+	@Test
+	public void testProcessCommunauteAvecMembresRemplacementPlusAdditionTardive() {
+
+		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
+		pp1.setId(1L);
+		pp1.setPrenom("Ronald");
+		pp1.setNom("Lasalt");
+
+		final PersonnePhysiqueRF pp2 = new PersonnePhysiqueRF();
+		pp2.setId(2L);
+		pp2.setPrenom("Georgette");
+		pp2.setNom("Lasalt");
+
+		final PersonnePhysiqueRF pp3 = new PersonnePhysiqueRF();
+		pp3.setId(3L);
+		pp3.setPrenom("Lucette");
+		pp3.setNom("Lasalt");
+
+		final PersonnePhysiqueRF pp4 = new PersonnePhysiqueRF();
+		pp4.setId(4L);
+		pp4.setPrenom("Elodie");
+		pp4.setNom("Lasalt");
+
+		final PersonnePhysiqueRF pp5 = new PersonnePhysiqueRF();
+		pp5.setId(5L);
+		pp5.setPrenom("Edouard");
+		pp5.setNom("Lasalt");
+
+		final DroitProprietePersonnePhysiqueRF droit1 = new DroitProprietePersonnePhysiqueRF();
+		droit1.setId(11L);
+		droit1.setDateDebutMetier(RegDate.get(1999, 7, 12));
+		droit1.setDateFinMetier(null);
+		droit1.setAyantDroit(pp1);
+
+		final DroitProprietePersonnePhysiqueRF droit2 = new DroitProprietePersonnePhysiqueRF();
+		droit2.setId(12L);
+		droit2.setDateDebutMetier(RegDate.get(1999, 7, 12));
+		droit2.setDateFinMetier(null);
+		droit2.setAyantDroit(pp2);
+
+		final DroitProprietePersonnePhysiqueRF droit3 = new DroitProprietePersonnePhysiqueRF();
+		droit3.setId(13L);
+		droit3.setDateDebutMetier(RegDate.get(1999, 7, 12));
+		droit3.setDateFinMetier(RegDate.get(2008, 12, 19));
+		droit3.setAyantDroit(pp3);
+
+		final DroitProprietePersonnePhysiqueRF droit4 = new DroitProprietePersonnePhysiqueRF();
+		droit4.setId(14L);
+		droit4.setDateDebutMetier(RegDate.get(2008, 12, 19));
+		droit4.setDateFinMetier(null);
+		droit4.setAyantDroit(pp4);
+
+		final DroitProprietePersonnePhysiqueRF droit5 = new DroitProprietePersonnePhysiqueRF();
+		droit5.setId(15L);
+		droit5.setDateDebutMetier(RegDate.get(2017, 6, 27));
+		droit5.setDateFinMetier(null);
+		droit5.setAyantDroit(pp5);
+
+		// une communauté avec deux membres, mais sans regroupement
+		CommunauteRF communaute = new CommunauteRF();
+		communaute.setRegroupements(new HashSet<>());
+		communaute.addMembre(droit1);
+		communaute.addMembre(droit2);
+		communaute.addMembre(droit3);
+		communaute.addMembre(droit4);
+		communaute.addMembre(droit5);
+
+		processor.process(communaute);
+
+		// les regroupememts suivants devraient être créés :
+		//
+		// Regroupement 1  : 19990712 |-----------------| 20081218
+		// Regroupement 2  :                   20081219 |-| 20081219
+		// Regroupement 3  :                     20081220 |-----------------| 20170626
+		// Regroupement 4  :                                       20170627 |-----------
+		//
+		final List<RegroupementCommunauteRF> regroupements = new ArrayList<>(communaute.getRegroupements());
+		regroupements.sort(new DateRangeComparator<>());
+		assertEquals(4, regroupements.size());
+		assertRegroupement(RegDate.get(1999, 7, 12), RegDate.get(2008, 12, 18), communaute, regroupements.get(0), pp1, pp2, pp3);
+		assertRegroupement(RegDate.get(2008, 12, 19), RegDate.get(2008, 12, 19), communaute, regroupements.get(1), pp1, pp2, pp3, pp4);
+		assertRegroupement(RegDate.get(2008, 12, 20), RegDate.get(2017, 6, 26), communaute, regroupements.get(2), pp1, pp2, pp4);
+		assertRegroupement(RegDate.get(2017, 6, 27), null, communaute, regroupements.get(3), pp1, pp2, pp4, pp5);
+
+		// aucun événement ne devrait être envoyé car le principal ne change pas
+		assertEmpty(evenementsModificationPrincipalCommunaute);
+	}
+
+	/**
 	 * Vérifie que rien n'est changé si la communauté possède des membres et le regroupement correspondant.
 	 */
 	@Test
-	public void testProcessCommunauteAvecMembresEtRegroupementCorrespondant() throws Exception {
+	public void testProcessCommunauteAvecMembresEtRegroupementCorrespondant() {
 
 		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
 		pp1.setId(1L);
@@ -298,7 +470,7 @@ public class CommunauteRFProcessorTest {
 	 * et un regroupement mais qu'il ne correspond pas.
 	 */
 	@Test
-	public void testProcessCommunauteAvecMembresEtRegroupementDifferent() throws Exception {
+	public void testProcessCommunauteAvecMembresEtRegroupementDifferent() {
 
 		final PersonnePhysiqueRF pp1 = new PersonnePhysiqueRF();
 		pp1.setId(1L);
@@ -362,7 +534,7 @@ public class CommunauteRFProcessorTest {
 	 * Cas métier : renoncement du principal sélectionné à ses droits dans la communauté -> création d'un nouveau modèle de communauté et sélection d'un nouveau principal
 	 */
 	@Test
-	public void testProcessCommunauteAvecChangementPrincipal() throws Exception {
+	public void testProcessCommunauteAvecChangementPrincipal() {
 
 		final RegDate dateSuccession = RegDate.get(2000, 1, 1);
 		final RegDate dateRenoncement = RegDate.get(2000, 7, 12);
