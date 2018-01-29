@@ -620,6 +620,89 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 	}
 
+	/**
+	 * [SIFISC-17204] Ce test vérifie que le déménagement dans une autre une autre commune d'un individu séparé alors qu'il est en ménage-commun lève bien une erreur (ce cas doit être traité manuellement).
+	 */
+	@Test(timeout = 10000L)
+	public void testArriveeVDMadameSepareeSurCoupleMarieSeul() throws Exception {
+
+		final long noMadame = 123456L;
+		final RegDate naissanceMadame = date(1972, 9, 4);
+
+		final RegDate dateMariage = date(2001, 10, 12);
+		final RegDate dateSeparation = date(2008, 6, 1);
+		final RegDate dateArrivee = RegDate.get(2010, 1, 1);
+		final RegDate dateDemenagement = date(2015, 5, 27);
+
+		setWantIndexationTiers(true);
+
+		// adresses de madame : Lausanne puis Renens le 27.05.2015
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu elle = addIndividu(noMadame, naissanceMadame, "Tartempion", "Françoise", false);
+				addNationalite(elle, MockPays.France, naissanceMadame, null);
+				marieIndividu(elle, dateMariage);
+				separeIndividu(elle, dateSeparation);
+
+				addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, dateDemenagement.getOneDayBefore());
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, dateDemenagement, null);
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
+			}
+		});
+
+		class Ids {
+			Long madame;
+			Long menage;
+		}
+		final Ids ids = new Ids();
+
+		// situation fiscal du ménage :
+		//  - un for fiscal sur Lausanne
+		doInNewTransactionAndSession((TransactionCallback<Long>) status -> {
+			final PersonnePhysique madame = addHabitant(noMadame);
+			final EnsembleTiersCouple etc = addEnsembleTiersCouple(madame, null, dateMariage, null);
+			final MenageCommun menage = etc.getMenage();
+			addForPrincipal(menage, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			ids.madame = madame.getNumero();
+			ids.menage = menage.getNumero();
+			return null;
+		});
+
+		globalTiersIndexer.sync();
+
+		// événement civil de l'arrivée de madame
+		final long evtMadame = doInNewTransactionAndSession(status -> {
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(321674L);
+			evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+			evt.setDateEvenement(dateDemenagement);
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(noMadame);
+			evt.setType(TypeEvenementCivilEch.ARRIVEE);
+			return hibernateTemplate.merge(evt).getId();
+		});
+
+		// traitement de l'arrivée de madame
+		traiterEvenements(noMadame);
+
+		// l'événement devrait être en erreur parce que la situation civile (séparé) ne correspond pas à la situation fiscale (mariée)
+		doInNewTransactionAndSession(status -> {
+
+			// l'événement doit être en erreur
+			final EvenementCivilEch evt = evtCivilDAO.get(evtMadame);
+			assertNotNull(evt);
+			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+			final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+			assertEquals(1, erreurs.size());
+			assertEquals("La personne arrivante (n°" + FormatNumeroHelper.numeroCTBToDisplay(ids.madame) +
+					             ") est seule au civil (SEPARE) mais appartient à un ménage-commun au fiscal (n°" + FormatNumeroHelper.numeroCTBToDisplay(ids.menage) +
+					             "). Veuillez traiter l'événement manuellement.", erreurs.iterator().next().getMessage());
+
+			return null;
+		});
+	}
+
 	@Test(timeout = 10000L)
 	public void testArriveesCoupleAvecRedondancePosterieure() throws Exception {
 

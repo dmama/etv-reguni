@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,15 +10,18 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
@@ -216,6 +220,7 @@ public class ArriveePrincipale extends Arrivee {
 		super.validateSpecific(erreurs, warnings);
 		validateArriveeAdressePrincipale(erreurs, warnings);
 		validateForPrincipal(erreurs);
+		validateCoherenceCivilFiscal(erreurs);
 
 		// On vérifie que l'individu arrive de hors-canton ou hors-Suisse s'il est inconnu dans Unireg, autrement il y a un problème de cohérence.
 		final PersonnePhysique habitant = getPrincipalPP();
@@ -261,6 +266,36 @@ public class ArriveePrincipale extends Arrivee {
 					}
 				}
 			}
+		}
+	}
+
+	private void validateCoherenceCivilFiscal(@NotNull EvenementCivilErreurCollector erreurs) {
+
+		final PersonnePhysique pp = getPrincipalPP();
+		if (pp == null) {
+			// arrivée d'une personne physique inconnue, rien à faire
+			return;
+		}
+
+		final RapportEntreTiers rapportMenage = pp.getRapportSujetValidAt(getDate(), TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+		if (rapportMenage == null) {
+			// la personne n'appartient pas à un ménage, rien à faire
+			return;
+		}
+
+		final EtatCivil etatCivil = Optional.ofNullable(getIndividu())
+				.map(i -> i.getEtatCivil(getDate()))
+				.orElse(null);
+		final boolean individuSeul = !EtatCivilHelper.estMarieOuPacse(etatCivil);
+
+		// [SIFISC-17204] si l'individu est seul (célibataire ou séparé/divorcé) au civil mais dans un ménage-commun au fiscal => traitement manuel
+		if (individuSeul) {
+			final TypeEtatCivil typeEtatCivil = Optional.ofNullable(etatCivil)
+					.map(EtatCivil::getTypeEtatCivil)
+					.orElse(null);
+			final MenageCommun menage = (MenageCommun) context.getTiersService().getTiers(rapportMenage.getObjetId());
+			erreurs.addErreur("La personne arrivante (n°" + FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()) + ") est seule au civil (" + typeEtatCivil + ") " +
+					                  "mais appartient à un ménage-commun au fiscal (n°" + FormatNumeroHelper.numeroCTBToDisplay(menage.getNumero()) + "). Veuillez traiter l'événement manuellement.");
 		}
 	}
 
