@@ -401,11 +401,13 @@ public class CommunauteRFProcessorTest {
 		//
 		final List<RegroupementCommunauteRF> regroupements = new ArrayList<>(communaute.getRegroupements());
 		regroupements.sort(new DateRangeComparator<>());
-		assertEquals(4, regroupements.size());
+		assertEquals(3, regroupements.size());
 		assertRegroupement(RegDate.get(1999, 7, 12), RegDate.get(2008, 12, 18), communaute, regroupements.get(0), pp1, pp2, pp3);
-		assertRegroupement(RegDate.get(2008, 12, 19), RegDate.get(2008, 12, 19), communaute, regroupements.get(1), pp1, pp2, pp3, pp4);
-		assertRegroupement(RegDate.get(2008, 12, 20), RegDate.get(2017, 6, 26), communaute, regroupements.get(2), pp1, pp2, pp4);
-		assertRegroupement(RegDate.get(2017, 6, 27), null, communaute, regroupements.get(3), pp1, pp2, pp4, pp5);
+		// [SIFISC-27517] les droits sont corrigés lorsqu'il y a remplacement d'un membre par un autre pour éviter d'avoir une journée avec
+		//                les deux membres actifs. Le regroupement ci-dessous n'existe donc plus.
+		//assertRegroupement(RegDate.get(2008, 12, 19), RegDate.get(2008, 12, 19), communaute, regroupements.get(1), pp1, pp2, pp3, pp4);
+		assertRegroupement(RegDate.get(2008, 12, 19), RegDate.get(2017, 6, 26), communaute, regroupements.get(1), pp1, pp2, pp4);
+		assertRegroupement(RegDate.get(2017, 6, 27), null, communaute, regroupements.get(2), pp1, pp2, pp4, pp5);
 
 		// aucun événement ne devrait être envoyé car le principal ne change pas
 		assertEmpty(evenementsModificationPrincipalCommunaute);

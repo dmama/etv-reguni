@@ -104,7 +104,7 @@ public class CommunauteRFProcessor {
 		CollectionsUtils.removeCommonElements(persistes, theoriques, this::regroupementEquals);
 
 		// on détermine les changements qui ne concernent que des regroupements à fermer
-		final List<Pair<RegroupementCommunauteRF, RegroupementCommunauteRF>> fermes = CollectionsUtils.extractCommonElements(persistes, theoriques, this::regroupementEqualsSaufDateFin);
+		final List<Pair<RegroupementCommunauteRF, RegroupementCommunauteRF>> fermes = CollectionsUtils.extractCommonElements(persistes, theoriques, this::regroupementEqualsSaufDateFinNouvellementFermee);
 
 		// ce qui reste dans la collection 'persistes' est en trop, on l'annule
 		persistes.forEach(r -> r.setAnnule(true));
@@ -150,10 +150,12 @@ public class CommunauteRFProcessor {
 				r1.getModele() == r2.getModele();
 	}
 
-	private boolean regroupementEqualsSaufDateFin(@NotNull RegroupementCommunauteRF r1, @NotNull RegroupementCommunauteRF r2) {
-		return r1.getDateDebut() == r2.getDateDebut() &&
-				r1.getCommunaute() == r2.getCommunaute() &&
-				r1.getModele() == r2.getModele();
+	private boolean regroupementEqualsSaufDateFinNouvellementFermee(@NotNull RegroupementCommunauteRF oldReg, @NotNull RegroupementCommunauteRF newReg) {
+		return oldReg.getDateDebut() == newReg.getDateDebut() &&
+				oldReg.getCommunaute() == newReg.getCommunaute() &&
+				oldReg.getModele() == newReg.getModele() &&
+				oldReg.getDateFin() == null &&
+				newReg.getDateFin() != null;
 	}
 
 	/**
@@ -173,6 +175,43 @@ public class CommunauteRFProcessor {
 		if (droits.isEmpty()) {
 			// pas de droit, pas de regroupement
 			return Collections.emptySet();
+		}
+
+		// [SIFISC-27517] Dans le cas où un membre est remplacé par un autre membre au sein d'une communauté, on
+		// recule de un jour la date de fin du membre remplacé de telle manière que les deux membres
+		// ne se retrouvent pas en même temps dans la communauté
+		//
+		// Exemple : communauté n°189976085
+		//
+		//  D1:  12.07.1999 |------------------------------------------
+		//
+		//  D2:  12.07.1999 |----------------| 19.12.2008
+		//
+		//  D3:                   19.12.2008 |-------------------------
+		//
+		//  droits corrigés
+		//
+		//  D1:  12.07.1999 |------------------------------------------
+		//
+		//  D2:  12.07.1999 |---------------| 18.12.2008 (-1 jour)
+		//
+		//  D3:                   19.12.2008 |-------------------------
+
+		final Set<RegDate> autresDatesDebut = droits.stream()
+				.map(DateRange::getDateDebut)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+
+		for (int i = 0; i < droits.size(); i++) {
+			final DateRange droit = droits.get(i);
+			final RegDate dateDebut = droit.getDateDebut();
+			final RegDate dateFin = droit.getDateFin();
+			if (dateFin != null && (dateDebut == null || dateFin.isAfter(dateDebut)) && autresDatesDebut.contains(dateFin)) {
+				// le droit courant s'arrête le même jour qu'un autre droit qui débute
+				// => on recule de un jour la date de fin
+				final DateRange droitCorrige = new DateRangeHelper.Range(dateDebut, dateFin.getOneDayBefore());
+				droits.set(i, droitCorrige);
+			}
 		}
 
 		// On détermine les périodes où les droits des membres de la communauté sont constants
