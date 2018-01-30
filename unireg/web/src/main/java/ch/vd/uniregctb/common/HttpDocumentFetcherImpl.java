@@ -2,19 +2,22 @@ package ch.vd.uniregctb.common;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.ConnectTimeoutException;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.SimpleHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -34,26 +37,33 @@ public class HttpDocumentFetcherImpl implements HttpDocumentFetcher {
 	 * @throws HttpDocumentFetcher.HttpDocumentException si la réponse HTTP n'est pas 200-OK ou 204-No-Content
 	 */
 	public HttpDocument fetch(URL url, Integer timeoutms) throws IOException, HttpDocumentException {
-		final GetMethod method;
-		try {
-			method = new GetMethod(url.toExternalForm());
-			if (timeoutms != null) {
-				method.getParams().setSoTimeout(timeoutms);
-			}
-		}
-		catch (IllegalStateException e) {
-			throw new IllegalArgumentException("URL non supportée : " + url, e);
-		}
 
+		final HttpGet method = new HttpGet(url.toExternalForm());
 		try {
-			final SimpleHttpConnectionManager httpConnectionManager = new SimpleHttpConnectionManager(true);
-			final HttpClient client = new HttpClient(httpConnectionManager);
+			// config de la requête
+			final RequestConfig.Builder configBuilder = RequestConfig.custom();
 			if (timeoutms != null) {
-				client.getParams().setConnectionManagerTimeout(timeoutms);
+				configBuilder.setSocketTimeout(timeoutms);
+				configBuilder.setConnectTimeout(timeoutms);
+				configBuilder.setConnectionRequestTimeout(timeoutms);
 			}
-			final int responseCode = client.executeMethod(method);
+			final RequestConfig config = configBuilder.build();
+			final CloseableHttpClient client = HttpClients.custom().setDefaultRequestConfig(config).build();
+
+			// on exécute la requête
+			final CloseableHttpResponse response;
+			try {
+				response = client.execute(method);
+			}
+			catch (ClientProtocolException e) {
+				throw new IllegalArgumentException("URL non supportée : " + url, e);
+			}
+
+			// gestion d'erreur
+			final StatusLine statusLine = response.getStatusLine();
+			final int responseCode = statusLine.getStatusCode();
 			if (responseCode != HttpURLConnection.HTTP_OK && responseCode != HttpURLConnection.HTTP_NO_CONTENT) {
-				final String responseMessage = method.getStatusText();
+				final String responseMessage = statusLine.getReasonPhrase();
 				if (responseCode / 100 == 4) {
 					throw new HttpDocumentClientException(responseCode, responseMessage);
 				}
@@ -65,24 +75,27 @@ public class HttpDocumentFetcherImpl implements HttpDocumentFetcher {
 				}
 			}
 
+			// récupération du contenu du fichier
 			final Integer length;
 			if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
 				length = 0;
 			}
 			else {
-				final String lengthHeader = extractResponseString(method, HTTP_CONTENT_LENGTH);
+				final String lengthHeader = extractResponseString(response, HTTP_CONTENT_LENGTH);
 				length = lengthHeader != null && !lengthHeader.isEmpty() ? Integer.parseInt(lengthHeader) : null;
 			}
 			if (length == null || length > 0) {
-				final String contentType = extractResponseString(method, HTTP_CONTENT_TYPE);
-				final String proposedFilename = extractFilename(extractResponseString(method, HTTP_CONTENT_DISPOSITION));
-				return new HttpDocument(contentType, length, proposedFilename, method.getResponseBodyAsStream());
+				final String contentType = extractResponseString(response, HTTP_CONTENT_TYPE);
+				final String proposedFilename = extractFilename(extractResponseString(response, HTTP_CONTENT_DISPOSITION));
+				try (final InputStream content = response.getEntity().getContent()) {
+					return new HttpDocument(contentType, length, proposedFilename, content);
+				}
 			}
 			else {
 				return null;
 			}
 		}
-		catch (ConnectTimeoutException | SocketTimeoutException e) {
+		catch (SocketTimeoutException e) {
 			throw new HttpDocumentServerException(504, "Gateway timeout: " + e.getMessage());
 		}
 		finally {
@@ -90,9 +103,8 @@ public class HttpDocumentFetcherImpl implements HttpDocumentFetcher {
 		}
 	}
 
-	@Nullable
-	private static String extractResponseString(HttpMethod method, String headerName) {
-		final Header header = method.getResponseHeader(headerName);
+	private static String extractResponseString(CloseableHttpResponse response, String headerName) {
+		final Header header = response.getFirstHeader(headerName);
 		return header != null ? StringUtils.trimToNull(header.getValue()) : null;
 	}
 

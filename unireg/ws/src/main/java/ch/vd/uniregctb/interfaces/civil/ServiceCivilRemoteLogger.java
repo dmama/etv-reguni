@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.interfaces.civil;
 
-import ch.vd.unireg.servlet.remoting.GentilHttpInvokerRequestExecutorWithCustomHeaders;
+import ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorWithCustomHeaders;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilLogger;
 
 /**
@@ -10,9 +10,9 @@ public class ServiceCivilRemoteLogger implements ServiceCivilLogger {
 
 	public static final String INDIVIDU_LOGGING_HEADER = "individu-logging";
 
-	private GentilHttpInvokerRequestExecutorWithCustomHeaders executor;
+	private UniregHttpInvokerRequestExecutorWithCustomHeaders executor;
 
-	public void setExecutor(GentilHttpInvokerRequestExecutorWithCustomHeaders executor) {
+	public void setExecutor(UniregHttpInvokerRequestExecutorWithCustomHeaders executor) {
 		this.executor = executor;
 	}
 

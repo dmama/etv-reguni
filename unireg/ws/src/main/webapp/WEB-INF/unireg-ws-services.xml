@@ -3,11 +3,11 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- Exécuteur HTTP pour tous les appels spring-remoting de WS vers Web -->
-	<bean id="webHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.GentilHttpInvokerRequestExecutor">
-		<constructor-arg value="web"/>
+	<bean id="webHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.UniregHttpInvokerRequestExecutorFactory">
+		<property name="serviceName" value="web"/>
 		<property name="username" value="${extprop.remoting.unireg.username}" />
 		<property name="password" value="${extprop.remoting.unireg.password}" />
-		<property name="maxConnectionsPerHost" value="${extprop.remoting.web.maxConnectionsPerHost}" />
+		<property name="maxConnectionsPerRoute" value="${extprop.remoting.web.maxConnectionsPerHost}" />
 		<property name="maxTotalConnections" value="${extprop.remoting.web.maxTotalConnections}" />
 	</bean>
 
