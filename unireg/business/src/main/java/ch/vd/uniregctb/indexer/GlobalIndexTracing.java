@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -137,6 +138,17 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 		finally {
 			tracing.end(time, "removeEntity", () -> String.format("id=%d", id));
+		}
+	}
+
+	@Override
+	public void deleteEntitiesMatching(@NotNull Query query) {
+		long time = tracing.start();
+		try {
+			target.deleteEntitiesMatching(query);
+		}
+		finally {
+			tracing.end(time, "deleteEntitiesMatching", () -> "query=" + query);
 		}
 	}
 

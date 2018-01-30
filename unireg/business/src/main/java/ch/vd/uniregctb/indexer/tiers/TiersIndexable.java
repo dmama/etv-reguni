@@ -69,7 +69,7 @@ public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 		data.setTypeAvatar(avatarService.getTypeAvatar(tiers));
 
 		final Long millisecondes = DateHelper.getCurrentDate().getTime();
-		data.setIndexationDate(IndexerFormatHelper.numberToString(millisecondes));
+		data.setIndexationDate(millisecondes);
 	}
 
 	protected void fillAssujettissementData(TiersIndexableData data) {

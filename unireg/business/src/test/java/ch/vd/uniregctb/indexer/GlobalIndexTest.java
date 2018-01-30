@@ -7,11 +7,13 @@ import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
@@ -54,13 +56,15 @@ public class GlobalIndexTest extends BusinessTest {
 		private String raison;
 		private String description;
 		private String date;
+		private Long number;
 
-		private Data(Long id, String type, String subType, String nom, String raison, String description, String date) {
+		private Data(Long id, String type, String subType, String nom, String raison, String description, String date, Long number) {
 			super(id, type, subType);
 			this.nom = nom;
 			this.raison = raison;
 			this.description = description;
 			this.date = date;
+			this.number = number;
 		}
 
 		@Override
@@ -78,22 +82,23 @@ public class GlobalIndexTest extends BusinessTest {
 			d.add(new TextField("RAISON", raison, Field.Store.YES));
 			d.add(new TextField("DESCR", description, Field.Store.YES));
 			d.add(new TextField("DATE", date, Field.Store.YES));
+			d.add(new LongField("NUMBER", number, Field.Store.YES));
 
 			return d;
 		}
 	}
 
 	private static final Data[] data = {
-			new Data(1234L, TYPE, SUBTYPE, "Cuendét Jean-Eric", "JeSC Consulting", "Une société de conseil en informatique", "19740322"),
-			new Data(2345L, TYPE, SUBTYPE, "Lehmann Jean-Pierre", "SoPE", "Solutions pedagogiques", "19520811"),
-			new Data(4567L, TYPE, SUBTYPE, "Mme Cuendet Sara née Barbie", "Sage femmes réunies", "Solutions d'accouchements a la maison", "19790223"),
-			new Data(1234L, TYPE_ALT, SUBTYPE_ALT, "Un autre gars", "Une raison", "Corporate engineering2", "20060317"),
-			new Data(6543L, TYPE_ALT, SUBTYPE_ALT, "Bla bli", "Une raison", "Corporate engineering1", "200603"),
-			new Data(6544L, TYPE_ALT, SUBTYPE_ALT, "Corporate society", "Une raison", "Voila engineering", "20060322"),
-			new Data(6545L, TYPE_ALT, SUBTYPE_ALT, "Une raison", "Un corporate building", "Bien au beurre salé", "2006"),
-			new Data(2345L, TYPE_ALT, SUBTYPE_ALT, "Encore une autre raison", "Encore un autre building", "Encore un autre champ", "20070127"),
-			new Data(7373L, TYPE, SUBTYPE, "Le nom 1", "La raison 1", "Une description: TemaPHilE", "20070127"),
-			new Data(7374L, TYPE, SUBTYPE, "Le nom 2", "La raison 2", "Une description: telephone", "20070127")
+			new Data(1234L, TYPE, SUBTYPE, "Cuendét Jean-Eric", "JeSC Consulting", "Une société de conseil en informatique", "19740322", 1L),
+			new Data(2345L, TYPE, SUBTYPE, "Lehmann Jean-Pierre", "SoPE", "Solutions pedagogiques", "19520811", 2L),
+			new Data(4567L, TYPE, SUBTYPE, "Mme Cuendet Sara née Barbie", "Sage femmes réunies", "Solutions d'accouchements a la maison", "19790223", 3L),
+			new Data(1234L, TYPE_ALT, SUBTYPE_ALT, "Un autre gars", "Une raison", "Corporate engineering2", "20060317", 4L),
+			new Data(6543L, TYPE_ALT, SUBTYPE_ALT, "Bla bli", "Une raison", "Corporate engineering1", "200603", 5L),
+			new Data(6544L, TYPE_ALT, SUBTYPE_ALT, "Corporate society", "Une raison", "Voila engineering", "20060322", 6L),
+			new Data(6545L, TYPE_ALT, SUBTYPE_ALT, "Une raison", "Un corporate building", "Bien au beurre salé", "2006", 7L),
+			new Data(2345L, TYPE_ALT, SUBTYPE_ALT, "Encore une autre raison", "Encore un autre building", "Encore un autre champ", "20070127", 8L),
+			new Data(7373L, TYPE, SUBTYPE, "Le nom 1", "La raison 1", "Une description: TemaPHilE", "20070127", 9L),
+			new Data(7374L, TYPE, SUBTYPE, "Le nom 2", "La raison 2", "Une description: telephone", "20070127", 10L)
 	};
 
 	// Members
@@ -421,6 +426,26 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(1, LuceneHelper.F_ENTITYID + ":123666");
 	}
 
+	@Test
+	public void testDeleteEntitiesMatching() {
+
+		globalIndex.overwriteIndex();
+
+		// mélange des deux
+		globalIndex.indexEntity(new Data(7373L, TYPE, SUBTYPE, "Le nom 1", "La raison 1", "Une description", "20070121", 1L));
+		globalIndex.indexEntity(new Data(7374L, TYPE, SUBTYPE, "Le nom 2", "La raison 2", "Une description", "20070122", 2L));
+		globalIndex.indexEntity(new Data(7375L, TYPE, SUBTYPE, "Le nom 3", "La raison 3", "Une description", "20070123", 3L));
+		globalIndex.indexEntity(new Data(7376L, TYPE, SUBTYPE, "Le nom 4", "La raison 4", "Une description", "20070124", 4L));
+		globalIndex.indexEntity(new Data(7377L, TYPE, SUBTYPE, "Le nom 5", "La raison 5", "Une description", "20070125", 5L));
+		assertEquals(5, globalIndex.getExactDocCount());
+
+		final Query query = NumericRangeQuery.newLongRange("NUMBER", 2L, 4L, true, true);
+		globalIndex.deleteEntitiesMatching(query);
+		assertEquals(2, globalIndex.getExactDocCount());
+		assertHits(1, LuceneHelper.F_ENTITYID + ":7373");
+		assertHits(1, LuceneHelper.F_ENTITYID + ":7377");
+	}
+
 	/**
 	 * On fait 2 recherches qui renvoie 1 entité et 2 entités. On en supprime une, le nombre de docs dans l'indexer ne doit pas changer. On optimize l'indexe et le
 	 * nombre d'entités dans l'index doit changer
@@ -517,7 +542,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 		// Incremental indexer
 		{
-			Data newData = new Data(data[0].getId(), data[0].getType(), data[0].getSubType(), "Cuendet Marc-André", "JeSC Corporation", "Une société de conseil en informatique", "20020123");
+			Data newData = new Data(data[0].getId(), data[0].getType(), data[0].getSubType(), "Cuendet Marc-André", "JeSC Corporation", "Une société de conseil en informatique", "20020123", 1L);
 			// This should replace the "Cuendet jean-Eric" doc with ID=1234
 			globalIndex.removeThenIndexEntity(newData);
 		}

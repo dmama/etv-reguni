@@ -753,7 +753,8 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	 * @return les valeurs du paramètre; ou une liste vide si le paramètre n'est pas renseigné.
 	 * @throws IllegalArgumentException si le paramètre était noté comme obligatoire alors qu'il n'est pas renseigné, si aucun paramètre de ce nom n'a été défini, ou la valeur est invalide
 	 */
-	protected final <T extends Enum<T>> List<T> getMultiSelectEnumValue(Map<String, Object> params, String key, Class<T> clazz) {
+	@NotNull
+	protected final <T extends Enum<T>> List<T> getMultiSelectEnumValue(Map<String, Object> params, @NotNull String key, @NotNull Class<T> clazz) {
 		final JobParam parameterDefinition = getParameterDefinition(key, true);
 		final List<T> values = new ArrayList<>();
 		if (params != null) {

@@ -77,7 +77,7 @@ public class LoadDatabaseJob extends JobDefinition {
 		});
 
 		status.setMessage("Reindexation de la base en cours...");
-		globalIndexer.indexAllDatabase(status, 2, GlobalTiersIndexer.Mode.FULL);
+		globalIndexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL, 2, status);
 
 		Audit.success("La base de données a été rechargée et indexée à partir du fichier " + doc.getNom() + " (document #" + doc.getId()
 				+ ").");

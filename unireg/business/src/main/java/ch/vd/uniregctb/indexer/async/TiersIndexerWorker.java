@@ -13,6 +13,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +23,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.indexer.IndexerBatchException;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAOImpl;
@@ -45,36 +44,42 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 	private final GlobalTiersIndexerImpl indexer;
 	private final SessionFactory sessionFactory;
 	private final Dialect dialect;
+	private final boolean followDependents;
+	private final boolean removeBefore;
 
-	private final GlobalTiersIndexer.Mode mode;
-
-	@Nullable private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+	@Nullable
+	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
 	private final String name;
 
 	/**
 	 * Construit un thread d'indexation qui consomme les ids des tiers à indexer à partir d'une queue.
 	 *
-	 * @param mode                      le mode d'indexation voulu. Renseigné dans le cas d'une réindexation complète ou partielle; ou <b>null</b> dans le cas d'une indexation au fil de l'eau des tiers.
-	 * @param globalTiersIndexer        l'indexer des tiers
-	 * @param sessionFactory            la session factory hibernate
-	 * @param transactionManager        le transaction manager
-	 * @param dialect                   le dialect hibernate utilisé
-	 * @param name                      le nom du thread
-	 * @param serviceCivilCacheWarmer   le warmer du cache du service civil
+	 * @param followDependentsTiers   <i>vrai</i> s'il faut aussi indexer les tiers liés au tiers courant.
+	 * @param removeBeforeIndexing    <i>vrai</i> s'il faut supprimer le tiers de l'indexe avant de l'indexer.
+	 * @param globalTiersIndexer      l'indexer des tiers
+	 * @param sessionFactory          la session factory hibernate
+	 * @param transactionManager      le transaction manager
+	 * @param dialect                 le dialect hibernate utilisé
+	 * @param name                    le nom du thread
+	 * @param serviceCivilCacheWarmer le warmer du cache du service civil
 	 */
-	public TiersIndexerWorker(GlobalTiersIndexer.Mode mode, GlobalTiersIndexerImpl globalTiersIndexer, SessionFactory sessionFactory, PlatformTransactionManager transactionManager, Dialect dialect,
-	                          String name, @Nullable ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+	public TiersIndexerWorker(boolean followDependentsTiers,
+	                          boolean removeBeforeIndexing,
+	                          @NotNull GlobalTiersIndexerImpl globalTiersIndexer,
+	                          @NotNull SessionFactory sessionFactory,
+	                          @NotNull PlatformTransactionManager transactionManager,
+	                          Dialect dialect,
+	                          String name,
+	                          @Nullable ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
 		this.indexer = globalTiersIndexer;
 		this.transactionManager = transactionManager;
 		this.sessionFactory = sessionFactory;
-		this.mode = mode;
 		this.dialect = dialect;
 		this.name = name;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
-		Assert.notNull(this.indexer);
-		Assert.notNull(this.transactionManager);
-		Assert.notNull(this.sessionFactory);
+		this.followDependents = followDependentsTiers;
+		this.removeBefore = removeBeforeIndexing;
 	}
 
 	@Override
@@ -165,16 +170,8 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 		}
 
 		try {
-			// on n'indexe pas les tiers liés au tiers courant lorsqu'on veut indexer toute ou une fraction déterminée
-			// de la base de données : les tiers liés vont de toutes façons se faire indexer pour eux-même.
-			final boolean followDependents = (mode == null);
-
-			// on n'enlève pas préalablement les données indexées en mode FULL et INCREMENTAL, parce que - par définition -
-			// ces données n'existent pas dans ces modes-là.
-			final boolean removeBefore = (mode != GlobalTiersIndexer.Mode.FULL && mode != GlobalTiersIndexer.Mode.INCREMENTAL);
-
+			// on index le tiers
 			indexer.indexTiers(tiers, removeBefore, followDependents);
-
 			setDirtyFlag(extractIds(tiers), false, session);
 		}
 		catch (IndexerBatchException e) {

@@ -2,12 +2,16 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -23,8 +27,10 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.worker.BatchWorker;
 
@@ -34,13 +40,13 @@ import static org.junit.Assert.assertNotNull;
 @SuppressWarnings({"JavaDoc"})
 public class GlobalTiersIndexerTest extends BusinessTest {
 
-	private GlobalTiersIndexer indexer;
+	private GlobalTiersIndexerImpl indexer;
 	private GlobalTiersSearcher searcher;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		indexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
+		indexer = getBean(GlobalTiersIndexerImpl.class, "globalTiersIndexer");
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 
 		indexer.overwriteIndex();
@@ -68,7 +74,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties (ce qui inclut les tiers schedulés pour être réindexés)
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY);
+		indexer.indexAllDatabase(GlobalTiersIndexer.Mode.DIRTY_ONLY, 1, null);
 
 		// On vérifie que le tiers n'est plus schedulé pour être réindexé
 		assertTiers(false, null, id);
@@ -101,7 +107,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties (ce qui inclut les tiers schedulés pour être réindexés)
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY);
+		indexer.indexAllDatabase(GlobalTiersIndexer.Mode.DIRTY_ONLY, 1, null);
 
 		// On vérifie que le tiers n'est plus schedulé pour être réindexé
 		assertTiers(false, null, id);
@@ -133,7 +139,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY);
+		indexer.indexAllDatabase(GlobalTiersIndexer.Mode.DIRTY_ONLY, 1, null);
 
 		// On vérifie que le tiers n'est plus dirty, mais qu'il est toujours schedulé pour être réindexé dans le futur
 		assertTiers(false, dans10jours, id);
@@ -166,7 +172,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY);
+		indexer.indexAllDatabase(GlobalTiersIndexer.Mode.DIRTY_ONLY, 1, null);
 
 		// On vérifie que le tiers n'est plus dirty, mais qu'il est toujours schedulé pour être réindexé dans le futur
 		assertTiers(false, dans10jours, id);
@@ -233,7 +239,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		final SessionFactory sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 		final GlobalTiersIndexerImpl indexer = new GlobalTiersIndexerImpl() {
 			@Override
-			protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread) {
+			protected MassTiersIndexer createMassTiersIndexer(int nbThreads, @NotNull Mode mode, int queueSizeByThread) {
 				return new MassTiersIndexer(nbThreads, queueSizeByThread, new BatchWorker<Long>() {
 					@Override
 					public void process(List<Long> data) throws Exception {
@@ -304,7 +310,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		});
 
 		try {
-			indexer.indexAllDatabase(null, 4, GlobalTiersIndexer.Mode.FULL);
+			indexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL, 4, null);
 			Assert.fail("Comment ça, tout s'est bien passé ???");
 		}
 		catch (IndexerException e) {
@@ -312,6 +318,365 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		}
 		finally {
 			indexer.destroy();
+		}
+	}
+
+	/**
+	 * [UNIREG-1979] Vérifie que l'indexation des dirty va bien réindexer un tiers dirty malgré une date de réindexation schedulée dans le futur. Après l'exécution, le tiers doit avoir été réindexé, il
+	 * ne doit plus être dirty <b>et</b> la date de schedule doit être inchangée.
+	 */
+	@Test
+	public void testDeleteTiersIndexedBeforeAllTypes() throws Exception {
+
+		setWantIndexationTiers(true);
+
+		// on indexe deux personnes
+		doInNewTransaction(status -> {
+			addNonHabitant("Jean", "Test1", date(1960, 3, 3), Sexe.MASCULIN);
+			addNonHabitant("Jean", "Test2", date(1960, 3, 3), Sexe.MASCULIN);
+			return null;
+		});
+
+		indexer.sync();
+
+		// on indexe une personne supplémentaire
+		final Date dateAvantPP3 = new Date();
+		doInNewTransaction(status -> {
+			addNonHabitant("Jean", "Test3", date(1960, 3, 3), Sexe.MASCULIN);
+			return null;
+		});
+
+		indexer.sync();
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison("Jean");
+
+		// on vérifie que les trois personnes sont dans l'indexe
+		{
+			assertEquals(3, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(3, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Test1", results.get(0).getNom1());
+			assertEquals("Jean Test2", results.get(1).getNom1());
+			assertEquals("Jean Test3", results.get(2).getNom1());
+		}
+
+		// on efface les tiers indexés avant le tiers PP3
+		indexer.deleteTiersIndexedBefore(dateAvantPP3, EnumSet.allOf(TypeTiers.class));
+
+		// on vérifie que seule la personne PP3 reste
+		{
+			assertEquals(1, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(1, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Test3", results.get(0).getNom1());
+		}
+	}
+
+	/**
+	 * [UNIREG-1979] Vérifie que l'indexation des dirty va bien réindexer un tiers dirty malgré une date de réindexation schedulée dans le futur. Après l'exécution, le tiers doit avoir été réindexé, il
+	 * ne doit plus être dirty <b>et</b> la date de schedule doit être inchangée.
+	 */
+	@Test
+	public void testDeleteTiersIndexedBeforeOneType() throws Exception {
+
+		setWantIndexationTiers(true);
+
+		// on indexe deux personnes et une entreprise
+		doInNewTransaction(status -> {
+			addNonHabitant("Jean", "Test1", date(1960, 3, 3), Sexe.MASCULIN);
+			addNonHabitant("Jean", "Test2", date(1960, 3, 3), Sexe.MASCULIN);
+			addEntrepriseInconnueAuCivil("Jean Entreprise1", date(1970, 1, 1));
+			return null;
+		});
+
+		indexer.sync();
+
+		// on indexe une personne et une entreprise supplémentaire
+		final Date dateAvantAjout = new Date();
+		doInNewTransaction(status -> {
+			addNonHabitant("Jean", "Test3", date(1960, 3, 3), Sexe.MASCULIN);
+			addEntrepriseInconnueAuCivil("Jean Entreprise2", date(1970, 1, 1));
+			return null;
+		});
+
+		indexer.sync();
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison("Jean");
+
+		// on vérifie que les cinq tiers sont dans l'indexe
+		{
+			assertEquals(5, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(5, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Entreprise1", results.get(0).getNom1());
+			assertEquals("Jean Entreprise2", results.get(1).getNom1());
+			assertEquals("Jean Test1", results.get(2).getNom1());
+			assertEquals("Jean Test2", results.get(3).getNom1());
+			assertEquals("Jean Test3", results.get(4).getNom1());
+		}
+
+		// on efface les personnes physiques indexées avant l'ajout
+		indexer.deleteTiersIndexedBefore(dateAvantAjout, EnumSet.of(TypeTiers.PERSONNE_PHYSIQUE));
+
+		// on vérifie que seules les personne Test1 et Test2 ont été effacées (et que l'entreprise Entreprise1 n'a pas été touchée)
+		{
+			assertEquals(3, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(3, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Entreprise1", results.get(0).getNom1());
+			assertEquals("Jean Entreprise2", results.get(1).getNom1());
+			assertEquals("Jean Test3", results.get(2).getNom1());
+		}
+	}
+
+	/**
+	 * Ce test vérifie que le mode FULL fonctionne bien.
+	 */
+	@Test
+	public void testIndexAllDatabaseFull() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		truncateDatabase();
+		setWantIndexationTiers(true);
+
+		// on indexe trois personnes
+		final Long test1Id = doInNewTransaction(status -> {
+			final PersonnePhysique test1 = addNonHabitant("Jean", "Test1", date(1960, 3, 3), Sexe.MASCULIN);
+			addNonHabitant("Jean", "Test2", date(1960, 3, 3), Sexe.MASCULIN);
+			addNonHabitant("Jean", "Test3", date(1960, 3, 3), Sexe.MASCULIN);
+			return test1.getId();
+		});
+		indexer.sync();
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison("Jean");
+
+		// on vérifie que les trois personnes sont dans l'indexe
+		{
+			assertEquals(3, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(3, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Test1", results.get(0).getNom1());
+			assertEquals("Jean Test2", results.get(1).getNom1());
+			assertEquals("Jean Test3", results.get(2).getNom1());
+		}
+
+		setWantIndexationTiers(false);
+
+		// on supprime Test1 et on ajoute Test4
+		doInNewTransaction(status -> {
+			tiersDAO.remove(test1Id);
+			addNonHabitant("Jean", "Test4", date(1960, 3, 3), Sexe.MASCULIN);
+			return null;
+		});
+
+		// l'indexe doit être inchangé
+		{
+			assertEquals(3, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(3, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Test1", results.get(0).getNom1());
+			assertEquals("Jean Test2", results.get(1).getNom1());
+			assertEquals("Jean Test3", results.get(2).getNom1());
+		}
+
+		// on réindexe en mode FULL_INCREMENTAL
+		final int nbIndexed = indexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL, 4, null);
+		assertEquals(3, nbIndexed);
+
+		// on vérifie que Test2, Test3 et Test4 sont maintenant indexés et que Test1 ne l'est plus
+		{
+			assertEquals(3, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(3, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Test2", results.get(0).getNom1());
+			assertEquals("Jean Test3", results.get(1).getNom1());
+			assertEquals("Jean Test4", results.get(2).getNom1());
+		}
+	}
+
+	/**
+	 * [SIFISC-27025] Ce test vérifie que le mode FULL_INCREMENTAL fonctionne bien.
+	 */
+	@Test
+	public void testIndexAllDatabaseFullIncremental() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		truncateDatabase();
+		setWantIndexationTiers(true);
+
+		// on indexe trois personnes
+		final Long test1Id = doInNewTransaction(status -> {
+			final PersonnePhysique test1 = addNonHabitant("Jean", "Test1", date(1960, 3, 3), Sexe.MASCULIN);
+			addNonHabitant("Jean", "Test2", date(1960, 3, 3), Sexe.MASCULIN);
+			addNonHabitant("Jean", "Test3", date(1960, 3, 3), Sexe.MASCULIN);
+			return test1.getId();
+		});
+		indexer.sync();
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison("Jean");
+
+		// on vérifie que les trois personnes sont dans l'indexe
+		{
+			assertEquals(3, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(3, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Test1", results.get(0).getNom1());
+			assertEquals("Jean Test2", results.get(1).getNom1());
+			assertEquals("Jean Test3", results.get(2).getNom1());
+		}
+
+		setWantIndexationTiers(false);
+
+		// on supprime Test1 et on ajoute Test4
+		doInNewTransaction(status -> {
+			tiersDAO.remove(test1Id);
+			addNonHabitant("Jean", "Test4", date(1960, 3, 3), Sexe.MASCULIN);
+			return null;
+		});
+
+		// l'indexe doit être inchangé
+		{
+			assertEquals(3, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(3, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Test1", results.get(0).getNom1());
+			assertEquals("Jean Test2", results.get(1).getNom1());
+			assertEquals("Jean Test3", results.get(2).getNom1());
+		}
+
+		// on réindexe en mode FULL_INCREMENTAL
+		final int nbIndexed = indexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL_INCREMENTAL, 4, null);
+		assertEquals(3, nbIndexed);
+
+		// on vérifie que Test2, Test3 et Test4 sont maintenant indexés et que Test1 ne l'est plus
+		{
+			assertEquals(3, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(3, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Test2", results.get(0).getNom1());
+			assertEquals("Jean Test3", results.get(1).getNom1());
+			assertEquals("Jean Test4", results.get(2).getNom1());
+		}
+	}
+
+	/**
+	 * [SIFISC-27025] Ce test vérifie que le mode FULL_INCREMENTAL fonctionne bien dans le cas où ne veut réindexer que les entreprises.
+	 */
+	@Test
+	public void testIndexAllDatabaseFullIncrementalWithType() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide
+			}
+		});
+
+		truncateDatabase();
+		setWantIndexationTiers(true);
+
+		class Ids {
+			Long pp1;
+			Long pm1;
+		}
+		final Ids ids = new Ids();
+
+		// on indexe deux entreprises et trois personnes
+		doInNewTransaction(status -> {
+			final Entreprise pm1 = addEntrepriseInconnueAuCivil("Jean Entreprise1", date(1970, 1, 1));
+			addEntrepriseInconnueAuCivil("Jean Entreprise2", date(1970, 1, 1));
+			final PersonnePhysique pp1 = addNonHabitant("Jean", "Test1", date(1960, 3, 3), Sexe.MASCULIN);
+			addNonHabitant("Jean", "Test2", date(1960, 3, 3), Sexe.MASCULIN);
+			addNonHabitant("Jean", "Test3", date(1960, 3, 3), Sexe.MASCULIN);
+			ids.pm1 = pm1.getId();
+			ids.pp1 = pp1.getId();
+			return null;
+		});
+		indexer.sync();
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison("Jean");
+
+		// on vérifie que les cinq tiers sont dans l'indexe
+		{
+			assertEquals(5, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(5, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Entreprise1", results.get(0).getNom1());
+			assertEquals("Jean Entreprise2", results.get(1).getNom1());
+			assertEquals("Jean Test1", results.get(2).getNom1());
+			assertEquals("Jean Test2", results.get(3).getNom1());
+			assertEquals("Jean Test3", results.get(4).getNom1());
+		}
+
+		setWantIndexationTiers(false);
+
+		// on supprime une entreprise, une personne et on ajoute une autre entreprise et une autre personne
+		doInNewTransaction(status -> {
+			tiersDAO.remove(ids.pm1);
+			tiersDAO.remove(ids.pp1);
+			addEntrepriseInconnueAuCivil("Jean Entreprise3", date(1970, 1, 1));
+			addNonHabitant("Jean", "Test4", date(1960, 3, 3), Sexe.MASCULIN);
+			return null;
+		});
+
+		// l'indexe doit être inchangé
+		{
+			assertEquals(5, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(5, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Entreprise1", results.get(0).getNom1());
+			assertEquals("Jean Entreprise2", results.get(1).getNom1());
+			assertEquals("Jean Test1", results.get(2).getNom1());
+			assertEquals("Jean Test2", results.get(3).getNom1());
+			assertEquals("Jean Test3", results.get(4).getNom1());
+		}
+
+		// on réindexe les entreprises uniquement en mode FULL_INCREMENTAL
+		final int nbIndexed = indexer.indexAllDatabase(GlobalTiersIndexer.Mode.FULL_INCREMENTAL, EnumSet.of(TypeTiers.ENTREPRISE), 4, null);
+		assertEquals(2, nbIndexed); // les deux entreprises
+
+		// on vérifie que :
+		//  - Entreprise3 est maintenant indexée et que Entreprise1 ne l'est plus
+		//  - Test1 est toujours indexés et que Test4 ne l'est toujours pas
+		{
+			assertEquals(5, searcher.getExactDocCount());
+			final List<TiersIndexedData> results = searcher.search(criteria);
+			assertEquals(5, results.size());
+			results.sort(Comparator.comparing(TiersIndexedData::getNom1));
+			assertEquals("Jean Entreprise2", results.get(0).getNom1());
+			assertEquals("Jean Entreprise3", results.get(1).getNom1());
+			assertEquals("Jean Test1", results.get(2).getNom1());
+			assertEquals("Jean Test2", results.get(3).getNom1());
+			assertEquals("Jean Test3", results.get(4).getNom1());
 		}
 	}
 }

@@ -4,12 +4,21 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.NumericRangeQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.jetbrains.annotations.NotNull;
@@ -19,11 +28,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.simpleindexer.LuceneException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -44,6 +53,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
 import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
 import ch.vd.uniregctb.indexer.async.TiersIndexerWorker;
+import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -67,6 +77,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersHelper;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.LogLevel;
 
@@ -217,31 +228,43 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	@Override
 	public int indexAllDatabase() throws IndexerException {
-		return indexAllDatabase(null, 1, Mode.FULL);
+		return indexAllDatabase(Mode.FULL, 1, null);
 	}
 
 	@Override
-	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode) throws
-			IndexerException {
+	public int indexAllDatabase(@NotNull Mode mode, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException {
+    	// on prends en compte toute la population
+		return indexAllDatabase(mode, EnumSet.allOf(TypeTiers.class), nbThreads, statusManager);
+	}
+
+	@Override
+	public int indexAllDatabase(@NotNull GlobalTiersIndexer.Mode mode, @NotNull Set<TypeTiers> typesTiers, int nbThreads, @Nullable StatusManager statusManager) throws IndexerException {
 
 		if (statusManager == null) {
 			statusManager = new LoggingStatusManager(LOGGER, LogLevel.Level.DEBUG);
 		}
 
-		Audit.info("Réindexation de la base de données (mode = " + mode + ')');
+		Audit.info("Réindexation de la base de données (mode = " + mode + ", typesTiers = " + typesTiers + ")");
+		final Date indexationStart = DateHelper.getCurrentDate();
 
 		if (mode == Mode.FULL) {
 			// Ecrase l'indexe lucene sur le disque local
-			statusManager.setMessage("Efface le repertoire d'indexation");
+			statusManager.setMessage("Effacement du répertoire d'indexation...");
 			overwriteIndex();
 		}
 
 		statusManager.setMessage("Récupération des tiers à indexer...");
-		final DeltaIds deltaIds = getIdsToIndex(mode);
+		final DeltaIds deltaIds = getIdsToIndex(mode, typesTiers);
 
 		try {
 			int nbIndexed = indexMultithreads(deltaIds.toAdd, nbThreads, mode, statusManager);
 			remove(deltaIds.toRemove, statusManager);
+
+			if (mode == Mode.FULL_INCREMENTAL) {
+				// on supprime les tiers non-indexés dans la phase incrémentale (car cela veut dire qu'ils n'existent plus)
+				statusManager.setMessage("Nettoyage des tiers surnuméraires...");
+				deleteTiersIndexedBefore(indexationStart, typesTiers);
+			}
 
 			// [SIFISC-1184] on détecte et supprime les doublons une fois l'indexation effectuée
 			statusManager.setMessage("Suppression des doublons...");
@@ -255,39 +278,112 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 	}
 
-	private DeltaIds getIdsToIndex(final Mode mode) {
+	/**
+	 * Supprime de l'indexe les éléments dont la date d'indexation est antérieure à la date spécifiée.
+	 *
+	 * @param date       une date
+	 * @param typesTiers les types de tiers à prendre en compte
+	 */
+	void deleteTiersIndexedBefore(@NotNull Date date, @NotNull Set<TypeTiers> typesTiers) {
+
+		final Set<String> subTypes = typesTiers.stream()
+				.map(GlobalTiersIndexerImpl::getIndexSubTypes)
+				.flatMap(Collection::stream)
+				.collect(Collectors.toSet());
+
+		try {
+			// critère de recherche sur la date d'indexation (qui doit tomber dans le range [0..date[ )
+			final Query dateQuery = NumericRangeQuery.newLongRange(TiersIndexableData.INDEXATION_DATE,
+			                                                   null,
+			                                                   date.getTime(),
+			                                                   false,
+			                                                   false);
+
+			// critère de recherche sur le ou les types de contribuables
+			final BooleanQuery typeQuery = new BooleanQuery();
+			for (String s : subTypes) {
+				typeQuery.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, s)), BooleanClause.Occur.SHOULD);
+			}
+
+			// les deux critères doivent être respectés
+			final BooleanQuery fullQuery = new BooleanQuery();
+			fullQuery.add(dateQuery, BooleanClause.Occur.MUST);
+			fullQuery.add(typeQuery, BooleanClause.Occur.MUST);
+
+			// on efface les tiers qui correspondent au critère complet
+			globalIndex.deleteEntitiesMatching(fullQuery);
+		}
+		catch (LuceneException e) {
+			throw new IndexerException(e);
+		}
+	}
+
+	/**
+	 * @param type un type de tiers
+	 * @return le ou less sous-type d'indexation qui correspondent au type de tiers spécifié.
+	 */
+	@NotNull
+	private static List<String> getIndexSubTypes(@NotNull TypeTiers type) {
+		final List<String> sub = new ArrayList<>(2);
+		switch (type) {
+		case AUTRE_COMMUNAUTE:
+			sub.add(AutreCommunauteIndexable.SUB_TYPE);
+			break;
+		case COLLECTIVITE_ADMINISTRATIVE:
+			sub.add(CollectiviteAdministrativeIndexable.SUB_TYPE);
+			break;
+		case DEBITEUR_PRESTATION_IMPOSABLE:
+			sub.add(DebiteurPrestationImposableIndexable.SUB_TYPE);
+			break;
+		case ENTREPRISE:
+			sub.add(EntrepriseIndexable.SUB_TYPE);
+			break;
+		case ETABLISSEMENT:
+			sub.add(EtablissementIndexable.SUB_TYPE);
+			break;
+		case MENAGE_COMMUN:
+			sub.add(MenageCommunIndexable.SUB_TYPE);
+			break;
+		case PERSONNE_PHYSIQUE:
+			sub.add(HabitantIndexable.SUB_TYPE);
+			sub.add(NonHabitantIndexable.SUB_TYPE);
+			break;
+		default:
+			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
+		}
+		return sub;
+	}
+
+	private DeltaIds getIdsToIndex(final Mode mode, @NotNull Set<TypeTiers> typesTiers) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
+		return template.execute(status -> {
 
-		return template.execute(new TransactionCallback<DeltaIds>() {
-			@Override
-			public DeltaIds doInTransaction(TransactionStatus status) {
-				
-				final DeltaIds deltaIds;
-				switch (mode) {
-				case FULL:
-				{
-					// JDE : on traite les identifiants dans l'ordre décroissant pour traiter les PP d'abord...
-					final List<Long> allIds = new ArrayList<>(tiersDAO.getAllIds());
-					allIds.sort(Collections.reverseOrder());
-					deltaIds = new DeltaIds(allIds);
-					break;
-				}
-
-				case DIRTY_ONLY:
-					deltaIds = new DeltaIds(tiersDAO.getDirtyIds());
-					break;
-
-				case INCREMENTAL:
-					deltaIds = getIncrementalIds();
-					break;
-
-				default:
-					throw new ProgrammingException("Mode d'indexation inconnu = " + mode);
-				}
-				return deltaIds;
+			final DeltaIds deltaIds;
+			switch (mode) {
+			case FULL:
+			case FULL_INCREMENTAL:
+			{
+				// JDE : on traite les identifiants dans l'ordre décroissant pour traiter les PP d'abord...
+				final List<Long> allIds = new ArrayList<>(tiersDAO.getAllIdsFor(true, typesTiers));
+				allIds.sort(Collections.reverseOrder());
+				deltaIds = new DeltaIds(allIds);
+				break;
 			}
+
+			case DIRTY_ONLY:
+				deltaIds = new DeltaIds(tiersDAO.getDirtyIds());
+				break;
+
+			case MISSING_ONLY:
+				deltaIds = getIncrementalIds();
+				break;
+
+			default:
+				throw new ProgrammingException("Mode d'indexation inconnu = " + mode);
+			}
+			return deltaIds;
 		});
 	}
 
@@ -311,7 +407,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 	}
 
-	private int indexMultithreads(List<Long> list, int nbThreads, Mode mode, StatusManager statusManager) throws Exception {
+	private int indexMultithreads(List<Long> list, int nbThreads, @NotNull Mode mode, StatusManager statusManager) throws Exception {
 
 		LOGGER.info("ASYNC indexation de " + list.size() + " tiers par " + nbThreads + " threads en mode " + mode);
 
@@ -398,7 +494,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	 * @param queueSizeByThread         la taille maximale de la queue par thread
 	 * @return l'indexer de la classe {@link MassTiersIndexer}
 	 */
-	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread) {
+	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, @NotNull Mode mode, int queueSizeByThread) {
 		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect, serviceCivilCacheWarmer);
 	}
 
