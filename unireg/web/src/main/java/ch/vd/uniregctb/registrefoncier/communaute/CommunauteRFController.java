@@ -294,6 +294,8 @@ public class CommunauteRFController {
 					.flatMap(Collection::stream)
 					.filter(AnnulableHelper::nonAnnule)
 					.map(RegroupementCommunauteRF::getModele)
+					// [SIFISC-27517] on n'affiche pas les modèles avec un seul membre parce que cela rend les utilisateurs confus (et il n'y pas grand-chose à faire sur de telles communautés)
+					.filter(m -> m.getMembres().size() > 1)
 					.distinct()
 					.count();
 
@@ -332,9 +334,12 @@ public class CommunauteRFController {
 				.filter(AnnulableHelper::nonAnnule)
 				.forEach(r -> {
 					final ModeleCommunauteRF modele = r.getModele();
-					final ModeleCommunauteForTiersView modeleView = map.computeIfAbsent(modele.getId(),
-					                                                                    k -> new ModeleCommunauteForTiersView(ctb.getNumero(), modele, tiersService, registreFoncierService));
-					modeleView.addRegroupement(new RegroupementRFView(r, registreFoncierService));
+					// [SIFISC-27517] on n'affiche pas les modèles avec un seul membre parce que cela rend les utilisateurs confus (et il n'y pas grand-chose à faire sur de telles communautés)
+					if (modele.getMembres().size() > 1) {
+						final ModeleCommunauteForTiersView modeleView = map.computeIfAbsent(modele.getId(),
+						                                                                    k -> new ModeleCommunauteForTiersView(ctb.getNumero(), modele, tiersService, registreFoncierService));
+						modeleView.addRegroupement(new RegroupementRFView(r, registreFoncierService));
+					}
 				});
 
 		final List<ModeleCommunauteForTiersView> modeles = map.values().stream()
