@@ -49,6 +49,7 @@ import ch.vd.uniregctb.registrefoncier.TiersRF;
 import ch.vd.uniregctb.registrefoncier.dao.AyantDroitRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.ModeleCommunauteRFDAO;
 import ch.vd.uniregctb.registrefoncier.dao.PrincipalCommunauteRFDAO;
+import ch.vd.uniregctb.registrefoncier.dataimport.processor.CommunauteRFProcessor;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -77,6 +78,7 @@ public class CommunauteRFController {
 	private Validator criteriaValidator;
 	private Validator addPrincipalViewValidator;
 	private RegistreFoncierService registreFoncierService;
+	private CommunauteRFProcessor communauteRFProcessor;
 
 
 	@InitBinder(value = "criteria")
@@ -154,6 +156,24 @@ public class CommunauteRFController {
 		model.addAttribute("tiers", view);
 
 		return "registrefoncier/communaute/showTiers";
+	}
+
+
+	@RequestMapping(value = "/recalculRegroupement.do", method = RequestMethod.POST)
+	@Transactional(rollbackFor = Throwable.class)
+	@SecurityCheck(rolesToCheck = {Role.ADMIN, Role.TESTER}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String recalculRegroupement(@RequestParam("id") long id) {
+
+		final Contribuable ctb = (Contribuable) tiersService.getTiers(id);
+		if (ctb == null) {
+			throw new TiersNotFoundException(id);
+		}
+
+		ctb.getRapprochementsRFNonAnnulesTries().stream()
+				.map(RapprochementRF::getTiersRF)
+				.forEach(tiers -> communauteRFProcessor.processAll(tiers));
+
+		return "redirect:/registrefoncier/communaute/showTiers.do?id=" + id;
 	}
 
 	@RequestMapping(value = "/showModele.do", method = RequestMethod.GET)
@@ -374,5 +394,9 @@ public class CommunauteRFController {
 
 	public void setRegistreFoncierService(RegistreFoncierService registreFoncierService) {
 		this.registreFoncierService = registreFoncierService;
+	}
+
+	public void setCommunauteRFProcessor(CommunauteRFProcessor communauteRFProcessor) {
+		this.communauteRFProcessor = communauteRFProcessor;
 	}
 }

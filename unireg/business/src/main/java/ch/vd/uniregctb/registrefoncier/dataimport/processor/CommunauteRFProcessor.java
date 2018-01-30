@@ -70,6 +70,18 @@ public class CommunauteRFProcessor {
 	}
 
 	/**
+	 * Recalcule les regroupements sur toutes les communautés de tous les immeubles de l'ayant-droit spécifié.
+	 *
+	 * @param ayantDroit un ayant-droit
+	 */
+	public void processAll(@NotNull AyantDroitRF ayantDroit) {
+		ayantDroit.getDroitsPropriete().stream()
+				.map(DroitProprieteRF::getImmeuble)
+				.distinct()
+				.forEach(this::processAll);
+	}
+
+	/**
 	 * Recalcule les regroupements et met-à-jour la communauté si nécessaire.
 	 *
 	 * @param communaute une communauté

@@ -52,6 +52,7 @@
 			<bean class="ch.vd.uniregctb.registrefoncier.communaute.AddPrincipalViewValidator"/>
 		</property>
 		<property name="registreFoncierService" ref="serviceRF"/>
+		<property name="communauteRFProcessor" ref="communauteRFProcessor"/>
 	</bean>
 
 	<bean id="situationSurchargeRFController" class="ch.vd.uniregctb.registrefoncier.situation.surcharge.SituationSurchargeRFController">

@@ -31,6 +31,12 @@
 
 	    <fieldset>
 	    <legend><span><fmt:message key="label.communautes.associees" /></span></legend>
+		    <authz:authorize ifAnyGranted="ROLE_TESTER, ROLE_ADMIN">
+		    <div style="float: right">
+		        <unireg:buttonTo name="Recalculer les regroupements" action="/registrefoncier/communaute/recalculRegroupement.do?id=${tiers.ctbId}" method="post"
+		        title="Recalcule les regroupements entre les communautés RF et les modèles de communauté Unireg à partir des droits de propriété du tiers. Tous les regroupements sur toutes les communautés de tous les immeubles du tiers sont recalculés."/>
+		    </div>
+		    </authz:authorize>
 		    <display:table name="tiers.modeles" id="modele" pagesize="25" class="display" requestURI="/registrefoncier/communaute/showTiers.do" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			    <display:column titleKey="label.numero.modele.communaute" style="width:100px" href="showModele.do" paramId="id" paramProperty="id" >
 				    <c:out value="${modele.id}"/>
