@@ -75,6 +75,7 @@
 						    <th><fmt:message key="label.egrid"/></th>
 						    <th><fmt:message key="label.date.debut"/><span class="jTip formInfo" title="<c:url value="/htm/debutRegroupementCommunaute.htm?width=375"/>" id="forPrincipalActif2">?</span></th>
 						    <th><fmt:message key="label.date.fin"/><span class="jTip formInfo" title="<c:url value="/htm/finRegroupementCommunaute.htm?width=375"/>" id="forPrincipalActif2">?</span></th>
+						    <th><fmt:message key="label.numero.communaute"/></th>
 					    </tr>
 					    <c:forEach items="${modele.regroupements}" var="regroupement" varStatus="loop">
 						    <tr>
@@ -83,6 +84,7 @@
 							    <td><c:out value="${regroupement.immeuble.egrid}"/></td>
 							    <td><unireg:regdate regdate="${regroupement.dateDebut}" /></td>
 							    <td><unireg:regdate regdate="${regroupement.dateFin}" /></td>
+							    <td><c:out value="${regroupement.communauteId}"/></td>
 						    </tr>
 					    </c:forEach>
 				    </table>

@@ -13,11 +13,13 @@ public class RegroupementRFView {
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
+	private final long communauteId;
 	private final ImmeubleRFView immeuble;
 
 	public RegroupementRFView(@NotNull RegroupementCommunauteRF r, @NotNull RegistreFoncierService registreFoncierService) {
 		this.dateDebut = r.getDateDebut();
 		this.dateFin = r.getDateFin();
+		this.communauteId = r.getCommunaute().getId();
 		final Set<DroitProprieteRF> droits = r.getCommunaute().getDroitsPropriete();
 		if (droits.size() > 1) {
 			// par définition, une communauté ne possède qu'un seul droit
@@ -33,6 +35,10 @@ public class RegroupementRFView {
 
 	public RegDate getDateFin() {
 		return dateFin;
+	}
+
+	public long getCommunauteId() {
+		return communauteId;
 	}
 
 	public ImmeubleRFView getImmeuble() {
