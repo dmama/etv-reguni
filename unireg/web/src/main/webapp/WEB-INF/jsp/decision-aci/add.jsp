@@ -31,30 +31,33 @@
 				<form:hidden path="tiersId"/>
 
 				<script type="text/javascript">
+                    function selectAutoriteFiscale(name) {
+                        selectAutoriteFiscale(name, null, null)
+                    }
 
-					function selectAutoriteFiscale(name) {
+					function selectAutoriteFiscale(name, autNo, autNom) {
 						if (name == 'COMMUNE_OU_FRACTION_VD') {
 							$('#for_commune_vd_label').show();
 							$('#for_commune_hc_label').hide();
 							$('#for_pays_label').hide();
-							$('#autoriteFiscale').val(null);
-							$('#numeroAutoriteFiscale').val(null);
+							$('#autoriteFiscale').val(autNom);
+							$('#numeroAutoriteFiscale').val(autNo);
 							Fors.autoCompleteCommunesVD('#autoriteFiscale', '#numeroAutoriteFiscale');
 						}
 						else if (name == 'COMMUNE_HC') {
 							$('#for_commune_vd_label').hide();
 							$('#for_commune_hc_label').show();
 							$('#for_pays_label').hide();
-							$('#autoriteFiscale').val(null);
-							$('#numeroAutoriteFiscale').val(null);
+							$('#autoriteFiscale').val(autNom);
+							$('#numeroAutoriteFiscale').val(autNo);
 							Fors.autoCompleteCommunesHC('#autoriteFiscale', '#numeroAutoriteFiscale');
 						}
 						else if (name == 'PAYS_HS') {
 							$('#for_commune_vd_label').hide();
 							$('#for_commune_hc_label').hide();
 							$('#for_pays_label').show();
-							$('#autoriteFiscale').val(null);
-							$('#numeroAutoriteFiscale').val(null);
+							$('#autoriteFiscale').val(autNom);
+							$('#numeroAutoriteFiscale').val(autNo);
 							Fors.autoCompletePaysHS('#autoriteFiscale', '#numeroAutoriteFiscale');
 						}
 					}
@@ -121,7 +124,7 @@
 
 				<script type="text/javascript">
 					// on initialise l'auto-completion de l'autorité fiscale
-					selectAutoriteFiscale('${command.typeAutoriteFiscale}');
+					selectAutoriteFiscale('${command.typeAutoriteFiscale}', '${command.numeroAutoriteFiscale}', '${command.autoriteFiscaleNom}');
 
 				</script>
 			</fieldset>

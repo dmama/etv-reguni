@@ -237,6 +237,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="autorisationManager" ref="autorisationManager"/>
 		<property name="decisionAciValidator" ref="decisionAciValidator"/>
+		<property name="infrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
 	<bean id="searchTiersController" class="ch.vd.uniregctb.search.SearchTiersController">

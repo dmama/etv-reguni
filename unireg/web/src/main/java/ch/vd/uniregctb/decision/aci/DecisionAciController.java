@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DecisionAci;
@@ -44,6 +47,7 @@ public class DecisionAciController {
 	private HibernateTemplate hibernateTemplate;
 	private AutorisationManager autorisationManager;
 
+	private ServiceInfrastructureService infrastructureService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -77,7 +81,9 @@ public class DecisionAciController {
 		this.decisionAciValidator = decisionAciValidator;
 	}
 
-
+	public void setInfrastructureService(ServiceInfrastructureService infrastructureService) {
+		this.infrastructureService = infrastructureService;
+	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	@InitBinder
@@ -133,6 +139,18 @@ public class DecisionAciController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
+			// [SIFISC-27087] récupération du nom de l'autorité fiscale à partir de son numéro
+			if(view.getNumeroAutoriteFiscale() != null) {
+				Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNumeroAutoriteFiscale(), null);
+				Pays pays = infrastructureService.getPays(view.getNumeroAutoriteFiscale(), null);
+				if(commune != null) {
+					view.setAutoriteFiscaleNom(commune.getNomOfficiel());
+				} else {
+					if(pays != null){
+						view.setAutoriteFiscaleNom(pays.getNomCourt());
+					}
+				}
+			}
 			return "decision-aci/add";
 		}
 
