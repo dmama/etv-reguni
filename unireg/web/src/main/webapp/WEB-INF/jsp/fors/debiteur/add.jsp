@@ -37,19 +37,23 @@
 						}
 					}
 
-					function selectAutoriteFiscale(name) {
+                    function selectAutoriteFiscale(name) {
+                        selectAutoriteFiscale(name, null, null);
+                    }
+
+					function selectAutoriteFiscale(name, autNo, autNom) {
 						if (name == 'COMMUNE_OU_FRACTION_VD') {
 							$('#for_commune_vd_label').show();
 							$('#for_commune_hc_label').hide();
-							$('#autoriteFiscale').val(null);
-							$('#noAutoriteFiscale').val(null);
+							$('#autoriteFiscale').val(autNom);
+							$('#noAutoriteFiscale').val(autNo);
 							Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale');
 						}
 						else if (name == 'COMMUNE_HC') {
 							$('#for_commune_vd_label').hide();
 							$('#for_commune_hc_label').show();
-							$('#autoriteFiscale').val(null);
-							$('#noAutoriteFiscale').val(null);
+							$('#autoriteFiscale').val(autNom);
+							$('#noAutoriteFiscale').val(autNo);
 							Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale');
 						}
 					}
@@ -141,7 +145,7 @@
 			$(function() {
 				// pour forcer la validation au chargement
 				dateOuverture_OnChange($('#dateDebut').get(0));
-				selectAutoriteFiscale('${command.typeAutoriteFiscale}');
+				selectAutoriteFiscale('${command.typeAutoriteFiscale}', '${command.noAutoriteFiscale}', '${command.nomAutoriteFiscale}');
 				updateMotifsFors();
 			});
 		</script>

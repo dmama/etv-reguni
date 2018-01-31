@@ -18,6 +18,7 @@ public class AddForDebiteurView implements AddForAvecMotifsView {
 
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
+	private String nomAutoriteFiscale;
 
 	public AddForDebiteurView() {
 	}
@@ -101,6 +102,16 @@ public class AddForDebiteurView implements AddForAvecMotifsView {
 	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
 		this.noAutoriteFiscale = noAutoriteFiscale;
 	}
+
+	@Override
+	public String getNomAutoriteFiscale() {
+		return nomAutoriteFiscale;
+	}
+
+	public void setNomAutoriteFiscale(String nomAutoriteFiscale) {
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
+	}
+
 
 	@Override
 	public GenreImpot getGenreImpot() {

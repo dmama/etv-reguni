@@ -124,7 +124,7 @@
 
 				<script type="text/javascript">
 					// on initialise l'auto-completion de l'autorité fiscale
-					selectAutoriteFiscale('${command.typeAutoriteFiscale}', '${command.numeroAutoriteFiscale}', '${command.autoriteFiscaleNom}');
+					selectAutoriteFiscale('${command.typeAutoriteFiscale}', '${command.numeroAutoriteFiscale}', '${command.nomAutoriteFiscale}');
 
 				</script>
 			</fieldset>

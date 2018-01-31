@@ -31,6 +31,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -71,6 +72,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.RegDateEditor;
 import ch.vd.uniregctb.validation.fors.ForDebiteurPrestationImposableValidator;
 
@@ -348,9 +350,16 @@ public class ForsController {
 			model.addAttribute("genresImpot", getMapGenresImpotForsPrincipaux(ctb));
 			// [SIFISC-27087] récupération du nom de l'autorité fiscale à partir de son numéro
 			if(view.getNoAutoriteFiscale() != null) {
-				Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNoAutoriteFiscale(), null);
-				if(commune != null) {
-					view.setAutoriteFiscaleNom(commune.getNomOfficiel());
+				if(TypeAutoriteFiscale.PAYS_HS.equals(view.getTypeAutoriteFiscale())) {
+					Pays pays = infrastructureService.getPays(view.getNoAutoriteFiscale(), null);
+					if(pays != null){
+						view.setNomAutoriteFiscale(pays.getNomCourt());
+					}
+				} else {
+					Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNoAutoriteFiscale(), null);
+					if(commune != null) {
+						view.setNomAutoriteFiscale(commune.getNomOfficiel());
+					}
 				}
 			}
 
@@ -578,7 +587,7 @@ public class ForsController {
 			if(view.getNoAutoriteFiscale() != null) {
 				Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNoAutoriteFiscale(), null);
 				if(commune != null) {
-					view.setAutoriteFiscaleNom(commune.getNomOfficiel());
+					view.setNomAutoriteFiscale(commune.getNomOfficiel());
 				}
 			}
 
@@ -699,6 +708,22 @@ public class ForsController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("rattachements", getMotifsRattachementPourForAutreElementImposable());
+
+			// [SIFISC-27087] récupération du nom de l'autorité fiscale à partir de son numéro
+			if(view.getNoAutoriteFiscale() != null) {
+				if(TypeAutoriteFiscale.PAYS_HS.equals(view.getTypeAutoriteFiscale())) {
+					Pays pays = infrastructureService.getPays(view.getNoAutoriteFiscale(), null);
+					if(pays != null){
+						view.setNomAutoriteFiscale(pays.getNomCourt());
+					}
+				} else {
+					Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNoAutoriteFiscale(), null);
+					if(commune != null) {
+						view.setNomAutoriteFiscale(commune.getNomOfficiel());
+					}
+				}
+			}
+
 			return "fors/autreelementimposable/add";
 		}
 
@@ -816,6 +841,22 @@ public class ForsController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("genresImpot", getGenresImpotPourForAutreImpot());
+
+			// [SIFISC-27087] récupération du nom de l'autorité fiscale à partir de son numéro
+			if(view.getNoAutoriteFiscale() != null) {
+				if(TypeAutoriteFiscale.PAYS_HS.equals(view.getTypeAutoriteFiscale())) {
+					Pays pays = infrastructureService.getPays(view.getNoAutoriteFiscale(), null);
+					if(pays != null){
+						view.setNomAutoriteFiscale(pays.getNomCourt());
+					}
+				} else {
+					Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNoAutoriteFiscale(), null);
+					if(commune != null) {
+						view.setNomAutoriteFiscale(commune.getNomOfficiel());
+					}
+				}
+			}
+
 			return "fors/autreimpot/add";
 		}
 
@@ -905,6 +946,22 @@ public class ForsController {
 		if (result.hasErrors()) {
 			model.addAttribute("anneeMinimaleForDebiteur", paramService.getAnneeMinimaleForDebiteur());
 			model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscaleDPI());
+
+			// [SIFISC-27087] récupération du nom de l'autorité fiscale à partir de son numéro
+			if(view.getNoAutoriteFiscale() != null) {
+				if(TypeAutoriteFiscale.PAYS_HS.equals(view.getTypeAutoriteFiscale())) {
+					Pays pays = infrastructureService.getPays(view.getNoAutoriteFiscale(), null);
+					if(pays != null){
+						view.setNomAutoriteFiscale(pays.getNomCourt());
+					}
+				} else {
+					Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNoAutoriteFiscale(), null);
+					if(commune != null) {
+						view.setNomAutoriteFiscale(commune.getNomOfficiel());
+					}
+				}
+			}
+
 			return "fors/debiteur/add";
 		}
 
