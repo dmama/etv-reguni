@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
  * Comparateur de droits RF qui utilise les critères suivants pour les ordonner les valeurs :
  * <ul>
  * <li>les dates métier</li>
+ * <li>le statut virtuel ou non (droit réel / droit virtuel)</li>
  * <li>le type de droit (droit de propriété / servitude)</li>
  * <li>le nombre d'ayants-droits</li>
  * <li>le nombre d'immeubles</li>
@@ -19,6 +20,10 @@ public class DroitRFRangeMetierComparator implements Comparator<DroitRF> {
 	@Override
 	public int compare(DroitRF o1, DroitRF o2) {
 		int c = DateRangeComparator.compareRanges(o1.getRangeMetier(), o2.getRangeMetier());
+		if (c != 0) {
+			return c;
+		}
+		c = compareStatus(o1, o2);
 		if (c != 0) {
 			return c;
 		}
@@ -35,6 +40,21 @@ public class DroitRFRangeMetierComparator implements Comparator<DroitRF> {
 			return c;
 		}
 		return c;
+	}
+
+	private static int compareStatus(DroitRF o1, DroitRF o2) {
+		final boolean o1Virtuel = o1 instanceof DroitVirtuelRF;
+		final boolean o2Virtuel = o2 instanceof DroitVirtuelRF;
+
+		if (o1Virtuel == o2Virtuel) {
+			return 0;
+		}
+		else if (o1Virtuel) {
+			return 1;   // les droits virtuels à la fin
+		}
+		else {
+			return -1;
+		}
 	}
 
 	/**
