@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<launchConfiguration type="org.maven.ide.eclipse.Maven2LaunchConfigurationType">
-<stringAttribute key="M2_GOALS" value="install"/>
-<stringAttribute key="M2_PROFILES" value=""/>
-<listAttribute key="M2_PROPERTIES"/>
-<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.5.0_12"/>
-<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="C:\projets\registre\trunk\UniregCTB\04-Implementation\unireg"/>
-</launchConfiguration>
