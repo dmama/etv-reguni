@@ -231,7 +231,10 @@ public class PartyWebServiceCache implements UniregCacheInterface, KeyDumpableCa
 				// on met-à-jour le tiers (s'il existe) avec les parts chargées
 				GetPartyValue value = (GetPartyValue) element.getObjectValue();
 				Assert.isFalse(value.isNull());
-				value.addParts(parts, entry.getParty());
+				// [SIFISC-28103] on ne doit ajouter que les parts qui manquent
+				if (parts != null) {
+					value.addMissingParts(parts, entry.getParty());
+				}
 			}
 		}
 	}
