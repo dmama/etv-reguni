@@ -394,8 +394,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 						                          .filter(VirtualTransitiveLandRight.class::isInstance)
 						                          .collect(Collectors.toList()));
 			}
-			else
-			if (parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
+			else if (parts.contains(PartyPart.VIRTUAL_INHERITANCE_LAND_RIGHTS)) {
 				// la collection de destination n'est pas vide, on ajoute uniquement les droits virtuels hérités
 				to.getLandRights().addAll(from.getLandRights().stream()
 						                          .filter(VirtualInheritedLandRight.class::isInstance)

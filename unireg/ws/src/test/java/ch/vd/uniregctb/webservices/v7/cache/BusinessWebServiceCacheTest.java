@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,6 +30,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -56,6 +58,9 @@ import ch.vd.unireg.xml.party.address.v3.Address;
 import ch.vd.unireg.xml.party.address.v3.FormattedAddress;
 import ch.vd.unireg.xml.party.corporation.v5.Corporation;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatus;
+import ch.vd.unireg.xml.party.landregistry.v1.LandOwnershipRight;
+import ch.vd.unireg.xml.party.landregistry.v1.LandRight;
+import ch.vd.unireg.xml.party.landregistry.v1.VirtualTransitiveLandRight;
 import ch.vd.unireg.xml.party.person.v5.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v5.Nationality;
 import ch.vd.unireg.xml.party.person.v5.NaturalPerson;
@@ -111,8 +116,10 @@ import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRapprochementRF;
+import ch.vd.uniregctb.webservices.common.AccessDeniedException;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.v7.BusinessWebService;
+import ch.vd.uniregctb.xml.ServiceException;
 
 import static ch.vd.uniregctb.webservices.v7.BusinessWebServiceTest.assertFoundEntry;
 import static org.junit.Assert.assertEquals;
@@ -295,6 +302,8 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				final PersonnePhysiqueRF tiersRF = addPersonnePhysiqueRF("Eric", "Bolomey", dateNaissance, "38383830ae3ff", 216451157465L, null);
 				addDroitPersonnePhysiqueRF(RegDate.get(2004, 5, 21), RegDate.get(2004, 4, 12), null, null, "Achat", null, "48390a0e044", "48390a0e043",
 				                           new IdentifiantAffaireRF(123, 2004, 202, 3), new Fraction(1, 1), GenrePropriete.INDIVIDUELLE, tiersRF, immeuble0, null);
+				addDroitPropriete(immeuble0, immeuble1, GenrePropriete.FONDS_DOMINANT, new Fraction(1, 34), date(2010, 1, 1), date(2010, 1, 1), null, null,
+				                  "Constitution PPE", new IdentifiantAffaireRF(28, 2010, 208, 1), "02828289", "1");
 				addRapprochementRF(eric, tiersRF, RegDate.get(2000, 1, 1), null, TypeRapprochementRF.MANUEL);
 
 				return null;
@@ -1252,6 +1261,112 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 			assertEquals(2, getNumberOfCalls(calls));
 			assertEquals(2, getNumberOfCallsToGetParties(calls));
 			assertEquals(Collections.singletonList(ids.eric.intValue()), getLastCallParametersToGetParties(calls).getLeft());
+		}
+	}
+
+	/**
+	 * [SIFISC-28103] Vérifie que les appels concurrents sur getParties sont bien gérés et que les éléments liés aux parts n'apparaissent pas à double.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetPartiesConcurrent() throws Exception {
+
+		// on utilise une implémentation du WS qui est assez lente pour que :
+		//  1. les deux appels en parallèle ci-dessous trouvent chacun un cache vide au début de l'appel
+		//  2. que le premier appel se termine bien avant le second
+		//  3. que le second appel se trouve avec un cache partiellement (ou totalement) chargé au moment où le cache est mis-à-jour (rappel : le cache était vide au début des deux appels)
+		// => avant correction du SIFISC-28103, la méthode 'cacheParties' ajoutait les parts du second appels aux parts déjà stockées par le premier appel et provoquait des doublons.
+		cache.setTarget(new MockBusinessWebService(implementation) {
+			@Override
+			public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+				try {
+					// les deux appels doivent prendre du temps
+					Thread.sleep(100);
+					if (parts != null && parts.contains(PartyPart.PARENTS)) {
+						// le second appel doit prendre beaucoup de temps pour bien tester la méthode 'cacheParties'
+						Thread.sleep(1000);
+					}
+				}
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+				return super.getParties(user, partyNos, parts);
+			}
+		});
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
+		final List<Integer> idEric = Collections.singletonList(ids.eric.intValue());
+
+		// Etat initial : aucun appel au web-service
+		assertEquals(0, getNumberOfCalls(calls));
+
+		final ExecutorService executor = Executors.newFixedThreadPool(2);
+		try {
+			// on lance deux appels en parallèle
+			final CompletableFuture<Parties> futureParties1 = CompletableFuture.supplyAsync(() -> getParties(userLogin, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS)), executor);
+			final CompletableFuture<Parties> futureParties2 = CompletableFuture.supplyAsync(() -> getParties(userLogin, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS, PartyPart.PARENTS)), executor);
+
+
+			// on vérifique que les données retournées sont correctes
+
+			// 1er appel
+			{
+				final Parties parties = futureParties1.get();
+				assertNotNull(parties);
+				assertEquals(1, parties.getEntries().size());
+				final NaturalPerson eric = (NaturalPerson) parties.getEntries().get(0).getParty();
+				assertLandRightsEric(eric, ids);
+			}
+
+			// 2ème appel : identique au premier
+			{
+				final Parties parties = futureParties2.get();
+				assertNotNull(parties);
+				assertEquals(1, parties.getEntries().size());
+				final NaturalPerson eric = (NaturalPerson) parties.getEntries().get(0).getParty();
+				assertLandRightsEric(eric, ids);
+			}
+		}
+		finally {
+			executor.shutdown();
+		}
+
+		// on fait un appel synchrone supplémentaire pour vérifier que le cache est toujours cohérent
+		{
+			final Parties parties = getParties(userLogin, idEric, EnumSet.of(PartyPart.VIRTUAL_LAND_RIGHTS, PartyPart.HOUSEHOLD_MEMBERS));
+			assertNotNull(parties);
+			assertEquals(1, parties.getEntries().size());
+			final NaturalPerson eric = (NaturalPerson) parties.getEntries().get(0).getParty();
+			// Note: avant la correction du SIFISC-28103, on se trouvait avec les droits virtuels à double
+			assertLandRightsEric(eric, ids);
+		}
+	}
+
+	private static void assertLandRightsEric(NaturalPerson eric, @NotNull Ids ids) {
+
+		// on vérifie que que les données retournées sont correctes
+		final List<LandRight> landRights = eric.getLandRights();
+		assertEquals(2, landRights.size());
+
+		// le droit de propriété réel
+		final LandOwnershipRight landRight0 = (LandOwnershipRight) landRights.get(0);
+		assertEquals(new Date(2004, 4, 12), landRight0.getDateFrom());
+		assertNull(landRight0.getDateTo());
+		assertEquals(ids.immeuble0.longValue(), landRight0.getImmovablePropertyId());
+
+		// le droit de propriété virtuel
+		final VirtualTransitiveLandRight landRight1 = (VirtualTransitiveLandRight) landRights.get(1);
+		assertEquals(new Date(2010, 1, 1), landRight1.getDateFrom());
+		assertNull(landRight1.getDateTo());
+		assertEquals(ids.immeuble1.longValue(), landRight1.getImmovablePropertyId());
+	}
+
+	private Parties getParties(@NotNull UserLogin userLogin, @NotNull List<Integer> ids, @Nullable Set<PartyPart> parts) {
+		try {
+			return cache.getParties(userLogin, ids, parts);
+		}
+		catch (AccessDeniedException | ServiceException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

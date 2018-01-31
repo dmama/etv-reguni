@@ -274,7 +274,8 @@ public class BusinessWebServiceCache implements BusinessWebService, UniregCacheI
 					// données dans le cache à compléter par celle qu'on a maintenant
 					final GetPartyValue value = (GetPartyValue) element.getObjectValue();
 					Assert.isFalse(value.isNull());
-					value.addParts(parts, party);
+					// [SIFISC-28103] on ne doit ajouter que les parts qui manquent
+					value.addMissingParts(parts, party);
 				}
 			}
 		}

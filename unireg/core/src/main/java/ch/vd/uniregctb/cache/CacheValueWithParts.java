@@ -81,6 +81,20 @@ public abstract class CacheValueWithParts<T, P extends Enum<P>> implements Seria
 	}
 
 	/**
+	 * Ajoute les parts qui manquent (et seulement elles) à la valeur cachée.
+	 *
+	 * @param parts    les parts disponibles dans le paramètre <i>newValue</i>.
+	 * @param newValue une valeur qui doit posséder les parts spécifiées dans le paramètre <i>parts</i>.
+	 */
+	public synchronized void addMissingParts(@NotNull Set<P> parts, T newValue) {
+		final EnumSet<P> missing = EnumSet.copyOf(parts);
+		missing.removeAll(this.parts);
+		if (!missing.isEmpty()) {
+			addParts(missing, newValue);
+		}
+	}
+
+	/**
 	 * Cette méthode doit copier la partie spécifiée de l'objet <i>from</i> à l'objet <i>to</i>.
 	 *
 	 * @param parts les parts à copier
