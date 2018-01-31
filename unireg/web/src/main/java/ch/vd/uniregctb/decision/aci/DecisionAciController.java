@@ -32,6 +32,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.dao.DecisionAciDAO;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 import ch.vd.uniregctb.tiers.manager.Autorisations;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -141,13 +142,15 @@ public class DecisionAciController {
 			model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
 			// [SIFISC-27087] récupération du nom de l'autorité fiscale à partir de son numéro
 			if(view.getNumeroAutoriteFiscale() != null) {
-				Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNumeroAutoriteFiscale(), null);
-				Pays pays = infrastructureService.getPays(view.getNumeroAutoriteFiscale(), null);
-				if(commune != null) {
-					view.setAutoriteFiscaleNom(commune.getNomOfficiel());
-				} else {
+				if(TypeAutoriteFiscale.PAYS_HS.equals(view.getTypeAutoriteFiscale())) {
+					Pays pays = infrastructureService.getPays(view.getNumeroAutoriteFiscale(), null);
 					if(pays != null){
 						view.setAutoriteFiscaleNom(pays.getNomCourt());
+					}
+				} else {
+					Commune commune = infrastructureService.getCommuneByNumeroOfs(view.getNumeroAutoriteFiscale(), null);
+					if(commune != null) {
+						view.setAutoriteFiscaleNom(commune.getNomOfficiel());
 					}
 				}
 			}
