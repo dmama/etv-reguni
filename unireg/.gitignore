@@ -1,8 +1,0 @@
-*.log
-*/*.iml
-*/target
-base/profiles.xml
-base/unireg-ut.properties
-.idea
-target
-business/tmp/

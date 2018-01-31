@@ -1,4 +1,9 @@
 */*.iml
 */target
 */.idea
+.idea
+*.log
 target
+base/profiles.xml
+base/unireg-ut.properties
+business/tmp/
