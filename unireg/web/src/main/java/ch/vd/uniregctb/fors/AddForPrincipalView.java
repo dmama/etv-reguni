@@ -24,7 +24,7 @@ public class AddForPrincipalView implements AddForRevenuFortuneView {
 	private MotifRattachement motifRattachement;
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
-	private String autoriteFiscaleNom;
+	private String nomAutoriteFiscale;
 	private ModeImposition modeImposition;
 	private GenreImpot genreImpot;
 
@@ -121,12 +121,13 @@ public class AddForPrincipalView implements AddForRevenuFortuneView {
 		return noAutoriteFiscale;
 	}
 
-	public String getAutoriteFiscaleNom() {
-		return autoriteFiscaleNom;
+	@Override
+	public String getNomAutoriteFiscale() {
+		return nomAutoriteFiscale;
 	}
 
-	public void setAutoriteFiscaleNom(String autoriteFiscaleNom) {
-		this.autoriteFiscaleNom = autoriteFiscaleNom;
+	public void setNomAutoriteFiscale(String nomAutoriteFiscale) {
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 
 	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {

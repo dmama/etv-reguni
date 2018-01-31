@@ -20,6 +20,7 @@ public class AddForAutreElementImposableView implements AddForRevenuFortuneView 
 
 	private MotifRattachement motifRattachement;
 	private Integer noAutoriteFiscale;
+	private String nomAutoriteFiscale;
 
 	public AddForAutreElementImposableView() {
 	}
@@ -109,6 +110,15 @@ public class AddForAutreElementImposableView implements AddForRevenuFortuneView 
 
 	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
 		this.noAutoriteFiscale = noAutoriteFiscale;
+	}
+
+	@Override
+	public String getNomAutoriteFiscale() {
+		return nomAutoriteFiscale;
+	}
+
+	public void setNomAutoriteFiscale(String nomAutoriteFiscale) {
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
 	}
 
 	@Override

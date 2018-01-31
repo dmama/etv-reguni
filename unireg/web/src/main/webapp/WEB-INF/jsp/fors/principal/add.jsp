@@ -193,7 +193,7 @@
 
 				<script type="text/javascript">
 					// on initialise l'auto-completion de l'autorité fiscale
-					selectAutoriteFiscale('${command.typeAutoriteFiscale}', '${command.autoriteFiscaleNom}', '${command.noAutoriteFiscale}');
+					selectAutoriteFiscale('${command.typeAutoriteFiscale}', '${command.nomAutoriteFiscale}', '${command.noAutoriteFiscale}');
 
 					// on initialise les motifs au chargement de la page
 					updateMotifsFors();

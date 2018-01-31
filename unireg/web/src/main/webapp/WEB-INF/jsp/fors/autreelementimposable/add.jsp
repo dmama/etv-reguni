@@ -103,8 +103,9 @@
 
 				<script type="text/javascript">
 					// on initialise l'auto-completion de l'autorité fiscale
+                    $('#autoriteFiscale').val('${command.nomAutoriteFiscale}');
+                    $('#noAutoriteFiscale').val('${command.noAutoriteFiscale}');
 					Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale');
-
 					// on initialise les motifs au chargement de la page
 					updateMotifsFors();
 				</script>

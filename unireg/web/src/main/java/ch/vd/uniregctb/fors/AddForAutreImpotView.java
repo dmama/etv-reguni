@@ -12,6 +12,7 @@ public class AddForAutreImpotView implements AddForView {
 	private RegDate dateEvenement;
 	private GenreImpot genreImpot;
 	private Integer noAutoriteFiscale;
+	private String nomAutoriteFiscale;
 
 	public AddForAutreImpotView() {
 	}
@@ -82,4 +83,14 @@ public class AddForAutreImpotView implements AddForView {
 	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
 		this.noAutoriteFiscale = noAutoriteFiscale;
 	}
+
+	@Override
+	public String getNomAutoriteFiscale() {
+		return nomAutoriteFiscale;
+	}
+
+	public void setNomAutoriteFiscale(String nomAutoriteFiscale) {
+		this.nomAutoriteFiscale = nomAutoriteFiscale;
+	}
+
 }

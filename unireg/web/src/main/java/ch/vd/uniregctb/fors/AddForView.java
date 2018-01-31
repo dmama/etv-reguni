@@ -21,6 +21,8 @@ public interface AddForView {
 
 	Integer getNoAutoriteFiscale();
 
+	String getNomAutoriteFiscale();
+
 	boolean isDateFinFutureAutorisee();
 
 	GenreImpot getGenreImpot();
