@@ -4,12 +4,12 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>uniregctb-nexus</artifactId>
+	<artifactId>unireg-nexus</artifactId>
 	<packaging>war</packaging>
 
 	<parent>
 		<groupId>ch.vd.unireg</groupId>
-		<artifactId>uniregctb</artifactId>
+		<artifactId>unireg</artifactId>
 		<!-- BEGIN_LVERSION -->
 		<version>18R2.A.0-SNAPSHOT</version>
 		<!-- END_LVERSION -->
@@ -57,7 +57,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>uniregctb-business</artifactId>
+			<artifactId>unireg-business</artifactId>
 			<version>${project.parent.version}</version>
 			<exclusions>
 				<exclusion>
@@ -223,7 +223,7 @@
 					<deployables>
 						<deployable>
 							<groupId>ch.vd.unireg</groupId>
-							<artifactId>uniregctb-nexus</artifactId>
+							<artifactId>unireg-nexus</artifactId>
 							<type>war</type>
 							<properties>
 								<context>/unireg/nexus</context>

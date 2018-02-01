@@ -6,12 +6,12 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>uniregctb-business-it</artifactId>
+    <artifactId>unireg-business-it</artifactId>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>ch.vd.unireg</groupId>
-        <artifactId>uniregctb</artifactId>
+        <artifactId>unireg</artifactId>
 		<!-- BEGIN_LVERSION -->
 		<version>18R2.A.0-SNAPSHOT</version>
 		<!-- END_LVERSION -->
@@ -24,26 +24,26 @@
     <dependencies>
         <dependency>
 			<groupId>${project.parent.groupId}</groupId>
-            <artifactId>uniregctb-business</artifactId>
+            <artifactId>unireg-business</artifactId>
 			<version>${project.parent.version}</version>
         </dependency>
 	    <dependency>
 			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>uniregctb-core</artifactId>
+			<artifactId>unireg-core</artifactId>
 			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 	    </dependency>
 	    <dependency>
 			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>uniregctb-interfaces</artifactId>
+			<artifactId>unireg-interfaces</artifactId>
 			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 	    </dependency>
 	    <dependency>
 			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>uniregctb-business</artifactId>
+			<artifactId>unireg-business</artifactId>
 			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>

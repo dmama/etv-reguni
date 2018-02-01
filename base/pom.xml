@@ -7,7 +7,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>ch.vd.unireg</groupId>
-	<artifactId>uniregctb</artifactId>
+	<artifactId>unireg</artifactId>
 	<!-- BEGIN_LVERSION -->
 	<version>18R2.A.0-SNAPSHOT</version>
 	<!-- END_LVERSION -->
@@ -543,7 +543,7 @@
 	<distributionManagement>
 		<site>
 			<id>unireg.website</id>
-			<url>scp://sirec@tom.etat-de-vaud.ch/var/www/html/unireg/javadoc-site/uniregctb-base</url>
+			<url>scp://sirec@tom.etat-de-vaud.ch/var/www/html/unireg/javadoc-site/unireg-base</url>
 		</site>
 		<repository>
 			<id>nexus.releases</id>

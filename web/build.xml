@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="uniregctb-web" default="deploy.tomcat" basedir=".">
+<project name="unireg-web" default="deploy.tomcat" basedir=".">
 
 	<!-- Build.xml for web -->
 
@@ -11,7 +11,7 @@
 		<!-- END_LVERSION -->
 
 		<!-- BEGIN_LVERSION -->
-		<copy overwrite="true" verbose="true" file="target/uniregctb-web-18R2.A.0-SNAPSHOT.war" tofile="/opt/apache-tomcat-6.0.16/webapps/unireg#web.war" />
+		<copy overwrite="true" verbose="true" file="target/unireg-web-18R2.A.0-SNAPSHOT.war" tofile="/opt/apache-tomcat-6.0.16/webapps/unireg#web.war" />
 		<!-- END_LVERSION -->
 
 	</target>

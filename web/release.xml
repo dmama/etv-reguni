@@ -89,7 +89,7 @@
 	</fileSets>
 	<files>
 		<file>
-			<source>target/uniregctb-web-${project.version}.war</source>
+			<source>target/unireg-web-${project.version}.war</source>
 			<outputDirectory>unireg-web-${project.version}/deployment</outputDirectory>
 			<destName>unireg-web.war</destName>
 		</file>

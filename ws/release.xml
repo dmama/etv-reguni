@@ -83,7 +83,7 @@
 	</fileSets>
 	<files>
 		<file>
-			<source>target/uniregctb-ws-${project.version}.war</source>
+			<source>target/unireg-ws-${project.version}.war</source>
 			<outputDirectory>unireg-ws-${project.version}/deployment</outputDirectory>
 			<destName>unireg-ws.war</destName>
 		</file>

@@ -7,7 +7,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>ch.vd.unireg</groupId>
-	<artifactId>uniregctb-ubr</artifactId>
+	<artifactId>unireg-ubr</artifactId>
 	<packaging>jar</packaging>
 
 	<!-- BEGIN_LVERSION -->
@@ -20,7 +20,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>ch.vd.unireg</groupId>
-			<artifactId>uniregctb-ubr-data</artifactId>
+			<artifactId>unireg-ubr-data</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

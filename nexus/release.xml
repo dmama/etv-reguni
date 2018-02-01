@@ -88,7 +88,7 @@
 
 	<files>
 		<file>
-			<source>target/uniregctb-nexus-${project.version}.war</source>
+			<source>target/unireg-nexus-${project.version}.war</source>
 			<outputDirectory>unireg-nexus-${project.version}/deployment</outputDirectory>
 			<destName>unireg-nexus.war</destName>
 		</file>
