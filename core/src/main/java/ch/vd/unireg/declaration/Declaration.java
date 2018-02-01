@@ -27,193 +27,117 @@ import ch.vd.unireg.documentfiscal.EtatDocumentFiscal;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 /**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
  * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uCd8AOqeEdySTq6PFlf9jQ"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uCd8AOqeEdySTq6PFlf9jQ"
  */
 @Entity
 public abstract class Declaration extends DocumentFiscal implements DateRange {
 
 	/**
-	 * <!-- begin-user-doc -->
 	 * <p>
 	 * Date de début d'imposition pour la déclaration.
 	 * <p>
 	 * Dans la majeure partie des cas, cette date est égale au 1er janvier de la période fiscale considérée. Elle peut être différente dans
 	 * le cas d'une arrivée en cours d'année (et à ce moment-là elle est égale à la date d'arrivée).
 	 * <p>
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_XJ1FcOqgEdySTq6PFlf9jQ"
 	 */
 	private RegDate dateDebut;
 
 	/**
-	 * <!-- begin-user-doc -->
 	 * <p>
 	 * Date de fin d'imposition pour la déclaration.
 	 * <p>
 	 * Dans la majeure partie des cas, cette date est égale au 31 décembre de la période fiscale considérée. elle peut être différente dans
 	 * le cas d'un départ en cours d'année (et à ce moment-là elle est égale à la date de départ).
 	 * <p>
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ajGHUOqgEdySTq6PFlf9jQ"
 	 */
 	private RegDate dateFin;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_R75A8uqgEdySTq6PFlf9jQ"
-	 */
 	private PeriodeFiscale periode;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_pEXLgS4DEd2H4bonmeBdag"
-	 */
 	private ModeleDocument modeleDocument;
 
 	@Transient
 	public Set<DelaiDeclaration> getDelaisDeclaration() {
-		// begin-user-code
 		return super.getDelais().stream().map(d -> (DelaiDeclaration)d).collect(Collectors.toSet());
-		// end-user-code
 	}
 
 	public void setDelaisDeclaration(Set<DelaiDeclaration> theDelais) {
-		// begin-user-code
 		super.setDelais(new HashSet<>(theDelais));
-		// end-user-code
 	}
 
 	@Transient
 	public Set<EtatDeclaration> getEtatsDeclaration() {
-		// begin-user-code
 		return super.getEtats().stream().map(e -> (EtatDeclaration)e).collect(Collectors.toSet());
-		// end-user-code
 	}
 
 	public void setEtatsDeclaration(Set<EtatDeclaration> theEtats) {
-		// begin-user-code
 		super.setEtats(new HashSet<>(theEtats));
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the periode
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_R75A8uqgEdySTq6PFlf9jQ?GETTER"
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH }, fetch=FetchType.LAZY)
 	@JoinColumn(name = "PERIODE_ID")
 	@ForeignKey(name = "FK_DOCFISC_PF_ID")
 	public PeriodeFiscale getPeriode() {
-		// begin-user-code
 		return periode;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @param thePeriode the periode to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_R75A8uqgEdySTq6PFlf9jQ?SETTER"
 	 */
 	public void setPeriode(PeriodeFiscale thePeriode) {
-		// begin-user-code
 		periode = thePeriode;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the dateDebut
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_XJ1FcOqgEdySTq6PFlf9jQ?GETTER"
 	 */
 	@Override
 	@Column(name = "DATE_DEBUT")
 	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateDebut() {
-		// begin-user-code
 		return dateDebut;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @param theDateDebut the dateDebut to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_XJ1FcOqgEdySTq6PFlf9jQ?SETTER"
 	 */
 	public void setDateDebut(RegDate theDateDebut) {
-		// begin-user-code
 		dateDebut = theDateDebut;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the dateFin
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ajGHUOqgEdySTq6PFlf9jQ?GETTER"
 	 */
 	@Override
 	@Column(name = "DATE_FIN")
 	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateFin() {
-		// begin-user-code
 		return dateFin;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @param theDateFin the dateFin to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ajGHUOqgEdySTq6PFlf9jQ?SETTER"
 	 */
 	public void setDateFin(RegDate theDateFin) {
-		// begin-user-code
 		dateFin = theDateFin;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the modeleDocument
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_pEXLgS4DEd2H4bonmeBdag?GETTER"
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH }, fetch=FetchType.LAZY)
 	@JoinColumn(name = "MODELE_DOC_ID")
 	@ForeignKey(name = "FK_DOCFISC_MODOC_ID")
 	public ModeleDocument getModeleDocument() {
-		// begin-user-code
 		return modeleDocument;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @param theModeleDocument the modeleDocument to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_pEXLgS4DEd2H4bonmeBdag?SETTER"
 	 */
 	public void setModeleDocument(ModeleDocument theModeleDocument) {
-		// begin-user-code
 		modeleDocument = theModeleDocument;
-		// end-user-code
 	}
 
 	public void addEtatDeclaration(EtatDeclaration etat) {

@@ -36,13 +36,7 @@ import ch.vd.unireg.declaration.EtatDeclaration;
 import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 
 /**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
  * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0d5HUOqeEdySTq6PFlf9jQ"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0d5HUOqeEdySTq6PFlf9jQ"
  */
 @Entity
 @Table(name = "ETAT_DOCUMENT_FISCAL")
@@ -50,29 +44,9 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 @DiscriminatorColumn(name = "ETAT_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class EtatDocumentFiscal<E extends EtatDocumentFiscal> extends HibernateEntity implements DateRange, Comparable<EtatDocumentFiscal>, LinkedEntity {
 
-
-	/**
-	 * The ID
-	 */
 	private Long id;
-
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Waz4wOqfEdySTq6PFlf9jQ"
-	 */
 	private RegDate dateObtention;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0jfjkuqfEdySTq6PFlf9jQ"
-	 */
 	private DocumentFiscal documentFiscal;
-
 	private TypeEtatDocumentFiscal etat;
 
 	public EtatDocumentFiscal() {
@@ -127,57 +101,37 @@ public abstract class EtatDocumentFiscal<E extends EtatDocumentFiscal> extends H
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the dateObtention
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Waz4wOqfEdySTq6PFlf9jQ?GETTER"
 	 */
 	@Column(name = "DATE_OBTENTION", nullable = false)
 	@Type(type = "ch.vd.unireg.hibernate.RegDateUserType")
 	public RegDate getDateObtention() {
-		// begin-user-code
 		return dateObtention;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @param theDateObtention the dateObtention to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Waz4wOqfEdySTq6PFlf9jQ?SETTER"
 	 */
 	public void setDateObtention(RegDate theDateObtention) {
-		// begin-user-code
 		dateObtention = theDateObtention;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the document
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0jfjkuqfEdySTq6PFlf9jQ?GETTER"
 	 */
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable = false, updatable = false, nullable = false)
 	@ForeignKey(name = "FK_ET_DOCFISC_DOCFISC_ID")
 	@Index(name = "IDX_ET_DOCFISC_DOCFISC_ID", columnNames = "DOCUMENT_FISCAL_ID")
 	public DocumentFiscal getDocumentFiscal() {
-		// begin-user-code
 		return documentFiscal;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @param theDocumentFiscal the declaration to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0jfjkuqfEdySTq6PFlf9jQ?SETTER"
 	 */
 	public void setDocumentFiscal(DocumentFiscal theDocumentFiscal) {
-		// begin-user-code
 		documentFiscal = theDocumentFiscal;
-		// end-user-code
 	}
 
 	/**

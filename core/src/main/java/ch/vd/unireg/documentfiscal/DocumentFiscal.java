@@ -42,35 +42,9 @@ import ch.vd.unireg.type.TypeEtatDocumentFiscal;
 @DiscriminatorColumn(name = "DOCUMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
 public abstract class DocumentFiscal extends HibernateEntity implements LinkedEntity {
 
-	/**
-	 * The ID
-	 */
 	private Long id;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ZtXOoOqfEdySTq6PFlf9jQ"
-	 */
 	private Tiers tiers;
-
-
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_e6QxUeqfEdySTq6PFlf9jQ"
-	 */
 	private Set<DelaiDocumentFiscal> delais; // Ex: Echeances
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0jfjkeqfEdySTq6PFlf9jQ"
-	 */
 	private Set<EtatDocumentFiscal> etats; // Ex: Envois
 
 	@Transient
@@ -94,58 +68,38 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the tiers
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ZtXOoOqfEdySTq6PFlf9jQ?GETTER"
 	 */
 	@ManyToOne
 	// msi: pas de cascade, parce qu'on veut pouvoir ajouter une déclaration à un tiers sans automatiquement modifier celui-ci (perfs)
 	@JoinColumn(name = "TIERS_ID", nullable = false)
 	@Index(name = "IDX_DOCFISC_TRS_ID", columnNames = "TIERS_ID")
 	public Tiers getTiers() {
-		// begin-user-code
 		return tiers;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @param theTiers the tiers to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ZtXOoOqfEdySTq6PFlf9jQ?SETTER"
 	 */
 	public void setTiers(Tiers theTiers) {
-		// begin-user-code
 		tiers = theTiers;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the delais
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_e6QxUeqfEdySTq6PFlf9jQ?GETTER"
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", insertable=false, updatable=false, nullable= false)
 	@ForeignKey(name = "FK_DEL_DOCFISC_DOCFISC_ID")
 	public Set<DelaiDocumentFiscal> getDelais() {
-		// begin-user-code
 		return delais;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @param theDelais the delais to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_e6QxUeqfEdySTq6PFlf9jQ?SETTER"
 	 */
 	public void setDelais(Set<DelaiDocumentFiscal> theDelais) {
-		// begin-user-code
 		delais = theDelais;
-		// end-user-code
 	}
 
 	/**
@@ -167,30 +121,20 @@ public abstract class DocumentFiscal extends HibernateEntity implements LinkedEn
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the etats
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0jfjkeqfEdySTq6PFlf9jQ?GETTER"
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "DOCUMENT_FISCAL_ID", nullable = false)
 	@ForeignKey(name = "FK_ET_DOCFISC_DOCFISC_ID")
 	public Set<EtatDocumentFiscal> getEtats() {
-		// begin-user-code
 		return etats;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @param theEtats the etats to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0jfjkeqfEdySTq6PFlf9jQ?SETTER"
 	 */
 	public void setEtats(Set<EtatDocumentFiscal> theEtats) {
-		// begin-user-code
 		etats = theEtats;
-		// end-user-code
 	}
 
 	/**
